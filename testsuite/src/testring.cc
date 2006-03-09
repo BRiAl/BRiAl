@@ -20,8 +20,8 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
-// Revision 1.1  2006/03/09 14:35:25  dreyer
-// Initial revision
+// Revision 1.1.1.1  2006/03/09 14:35:25  dreyer
+// + Project started
 //
 
 // load standard iostream capapilities

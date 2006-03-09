@@ -21,8 +21,8 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
-// Revision 1.1  2006/03/09 14:34:31  dreyer
-// Initial revision
+// Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
+// + Project started
 //
 
 // load header file
