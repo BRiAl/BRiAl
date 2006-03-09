@@ -1,6 +1,4 @@
 // -*- c++ -*-
-// $Id$
-//
 //*****************************************************************************
 /** @file 
  *
@@ -15,15 +13,21 @@
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
  *
+ * @internal 
+ * @version \$Id$
+ *
+ * @par History:
+ * @verbatim
+ * $Log$
+ * Revision 1.2  2006/03/09 16:22:15  dreyer
+ * + File header revised
+ *
+ * Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
+ * + Project started
+ *
+ * @endverbatim
 **/
 //*****************************************************************************
-//
-// Last edit by $Author$ on $Date$
-// 
-// $Log$
-// Revision 1.1  2006/03/09 14:34:31  dreyer
-// Initial revision
-//
 
 #include "pbori_defs.h"
 
