@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/10 15:13:06  dreyer
+ * ADD: Added static access to current ring
+ *
  * Revision 1.2  2006/03/10 08:25:54  dreyer
  * + refined header style
  *
@@ -34,13 +37,23 @@
 // load header file
 # include "BoolePolyRing.h"
 
+// get error types
+# include "PBoRiError.h"
+
+
 BEGIN_NAMESPACE_PBORI
 
+// initialize pointer to active ring with 0 pointer
+BoolePolyRing* BoolePolyRing::current_ring = NULL;
+
 // interface with cudd's variable management
-BoolePolyRing::BoolePolyRing(size_type nvars) :
-  mgr(0, nvars) {
+BoolePolyRing::BoolePolyRing(size_type nvars_, bool_type make_active) :
+  mgr(0, nvars_), nvars(nvars_) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
+
+  if(make_active)
+    activate();
 }
 
 // destructor
@@ -86,4 +99,39 @@ BoolePolyRing::variable(idx_type nvar) const {
 
   return mgr.zddVar(nvar);
 }
+
+// get number of ring variables
+BoolePolyRing::size_type
+BoolePolyRing::nvariables() const {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::nvariables() const" );
+
+  return nvars;
+}
+
+// access current global ring setting
+BoolePolyRing&
+BoolePolyRing::ring() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ring() const" );
+
+  if(current_ring != NULL){
+    return *current_ring;
+  }
+  else {
+    throw PBoRiError(CTypes::no_ring);
+  }
+    
+
+}
+
+//  make this global ring
+void
+BoolePolyRing::activate() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::activate() const" );
+
+  current_ring = this;
+}
+
 END_NAMESPACE_PBORI

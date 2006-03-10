@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/10 15:13:06  dreyer
+ * ADD: Added static access to current ring
+ *
  * Revision 1.2  2006/03/10 08:25:54  dreyer
  * + refined header style
  *
@@ -53,26 +56,24 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
-  /// generic access to decision diagram manager as base type
-  typedef CTypes::manager_type manager_type;
 
   /// generic access to current type
   typedef BoolePolyRing self;
 
-  /// adopt global decision diagram manager type
+  /// @name adopt global type definitions
+  //@{
+  typedef CTypes::manager_type manager_type;
   typedef CTypes::dd_type dd_type;
-
-  /// adopt global size type definition 
+  typedef CTypes::bool_type bool_type;
   typedef CTypes::size_type size_type;
-
-  /// adopt global index type definition 
   typedef CTypes::idx_type idx_type;
+  //@}
 
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
   /// constructor for @em nvars variables
-  BoolePolyRing(size_type nvars);
+  BoolePolyRing(size_type nvars, bool_type make_active = true);
   
   /// destructor
   ~BoolePolyRing();
@@ -95,10 +96,26 @@ class BoolePolyRing {
   /// access nvar-th ring variable
   dd_type variable(idx_type nvar) const;
 
- protected:
+  /// get number of ring variables
+  size_type nvariables() const;
+
+
+  /// access current global ring setting
+  static self& ring();
+
+  /// make this global ring
+  void activate();
+
+protected:
+
+  /// pointer to current global ring setting
+  static self* current_ring;
 
   /// interprete @c mgr as structure of Boolean polynomial ring
   mutable manager_type mgr;
+
+  /// store number of ring variables
+  size_type nvars;
 };
 
 END_NAMESPACE_PBORI
