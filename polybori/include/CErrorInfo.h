@@ -8,8 +8,9 @@
  * This file includes all header files, which are necessary
  * for using the polybori lib.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
+ * @par Copyright:
+ *   (c) 2006 by
+ *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
  *
@@ -19,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/10 08:25:54  dreyer
+ * + refined header style
+ *
  * Revision 1.2  2006/03/09 16:22:15  dreyer
  * + File header revised
  *

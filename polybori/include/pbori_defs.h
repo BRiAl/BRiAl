@@ -1,8 +1,6 @@
 // -*- c++ -*-
-// $Id$
-//
 //*****************************************************************************
-/** @file pbori_defs.h
+/** @file 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
@@ -12,20 +10,28 @@
  *
  * @note Uses c++ namespace if @c PBORI_NO_NAMESPACES is undefined.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
+ * @par Copyright:
+ *   (c) 2006 by
+ *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
  *
+ * @internal 
+ * @version \$Id$
+ *
+ * @par History:
+ * @verbatim
+ * $Log$
+ * Revision 1.2  2006/03/10 08:25:54  dreyer
+ * + refined header style
+ *
+ * Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
+ * + Project started
+ *
+ * @endverbatim
 **/
 //*****************************************************************************
-//
-// Last edit by $Author$ on $Date$
-//
-// $Log$
-// Revision 1.1  2006/03/09 14:34:31  dreyer
-// Initial revision
-//
+
 
 // load cudd's c++ interface
 # include <cuddObj.hh>
