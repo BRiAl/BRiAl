@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/10 15:10:16  dreyer
+ * ADD: Global bool_type added.
+ *
  * Revision 1.2  2006/03/10 08:25:54  dreyer
  * + refined header style
  *
@@ -90,7 +93,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class Types
+/** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
  *
  * It mainly consists of definitions for
@@ -115,6 +118,9 @@ struct CTypes {
   //-------------------------------------------------------------------------
   // types for several purposes
   //-------------------------------------------------------------------------
+
+  /// type for standard true/false statements
+  typedef bool bool_type;
 
   /// type for lengths, dimensions, etc.
   typedef unsigned int size_type;
