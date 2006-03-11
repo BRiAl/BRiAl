@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/11 08:41:07  bricken
+ * *bricken: standard/copy constructor
+ *
  * Revision 1.3  2006/03/10 15:13:06  dreyer
  * ADD: Added static access to current ring
  *
@@ -73,7 +76,8 @@ class BoolePolyRing {
   // constructors and destructor
   //-------------------------------------------------------------------------
   /// constructor for @em nvars variables
-  BoolePolyRing(size_type nvars, bool_type make_active = true);
+  BoolePolyRing(size_type nvars=100, bool_type make_active = true);
+  BoolePolyRing(const BoolePolyRing &);
   
   /// destructor
   ~BoolePolyRing();

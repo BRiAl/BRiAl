@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/11 08:41:25  bricken
+ * *bricken: standard/copy constructor
+ *
  * Revision 1.3  2006/03/10 15:13:06  dreyer
  * ADD: Added static access to current ring
  *
@@ -54,6 +57,14 @@ BoolePolyRing::BoolePolyRing(size_type nvars_, bool_type make_active) :
 
   if(make_active)
     activate();
+}
+BoolePolyRing::BoolePolyRing(const BoolePolyRing& r) :
+mgr(0, r.nvars), nvars(r.nvars) {
+  
+  PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
+  
+  //if(make_active)
+  //  activate();
 }
 
 // destructor
