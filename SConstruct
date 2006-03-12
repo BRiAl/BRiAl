@@ -106,5 +106,6 @@ if HAVE_PYTHON_EXTENSION:
         env.LoadableModule('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
     else:
         env.SharedLibrary('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"],
-            LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
+            LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so",\
+            SHLIBPREFIX="")
      
