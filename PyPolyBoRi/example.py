@@ -41,10 +41,27 @@ for xi in v:
     xi.printMinterm()
     xi.printToStdout(100,1)
 
+def myprint(f):
+    f.printMinterm()
+    #f.printCover()
+    f.printToStdout(r.nVars(),1)
+zdd_false=v[1] & v[2]
 
 print "generated variables"
-(v[1]+v[2]).printMinterm()
-(v[1]+v[2]).printToStdout(100,1)
+def poly_add(a,b):
+    return a.diff(b) +b.diff(a)
+def poly_add2(a,b):
+    return a.union(b).diff(a.intersect(b))
+myprint(zdd_false)
+#myprint(zdd_false-v[1])
+#myprint(v[1])
+myprint(poly_add(v[1],v[2]))
+myprint(poly_add(poly_add(v[1],v[2]),v[1]))
+myprint(poly_add2(v[1],v[2]))
+myprint(poly_add2(poly_add2(v[1],v[2]),v[1]))
+#myprint(v[1].diffConst(v[2]))
+#myprint((v[1]+v[2]).diffConst(v[2]))
+
 print dir()
 del v
 #get segfault on destruction of r, if still objects exist
