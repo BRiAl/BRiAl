@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/12 05:34:23  bricken
+ * *bricken: made destructor safer, clean current_ring
+ *
  * Revision 1.4  2006/03/11 08:41:25  bricken
  * *bricken: standard/copy constructor
  *
@@ -74,6 +77,8 @@ BoolePolyRing::~BoolePolyRing() {
 
   // call manager's destructor
   mgr.~manager_type();
+  if (BoolePolyRing::current_ring==this)
+    BoolePolyRing::current_ring=NULL;
 }
 
 
