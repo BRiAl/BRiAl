@@ -1,18 +1,23 @@
 #$Id$
 opts = Options('custom.py')
+try:
+	import SCons.Tool.applelink as applelink
+except:
+	pass
 import os
 env=Environment(options=opts)
+if (env['PLATFORM']=="darwin"):
+    applelink.generate(env)
 
 
-#cudd_libs=Split("cudd obj dddmp mtr st util epd")
 cudd_libs=Split("obj cudd dddmp mtr st util epd")
 
 
 
-HAVE_PYTHON_EXTENSION=0
+HAVE_PYTHON_EXTENSION=1
 
 class PythonConfig(object):
-    def __init__(self, version="2.3", prefix="/usr", libdir=None, incdir=None, libname=None):
+    def __init__(self, version="2.4", prefix="/usr", libdir=None, incdir=None, libname=None):
         self.version=version
         if libdir:
             self.libdir=libdir
@@ -32,14 +37,10 @@ class PythonConfig(object):
 
 
 PYTHONSEARCH=[\
-    PythonConfig(version="2.3"),\
+    PythonConfig(version="2.4", prefix="/sw"),\
     PythonConfig(version="2.4"),\
-    PythonConfig(version="2.4",\
-                    libdir="/Library/Frameworks/Python.framework/Versions/2.4/lib",\
-                    libname="python",\
-                    incdir="/Library/Frameworks/Python.framework/Versions/2.4/include/python2.4"),\
-                    PythonConfig(version="2.3"),\
-                    PythonConfig(version="2.4")]
+    PythonConfig(version="2.3"),]
+                    
 
 
 
@@ -51,11 +52,14 @@ env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPPATH=["./Cudd/include"])
 env.Append(LIBPATH=["polybori"])
 env['ENV']['HOME']=os.environ["HOME"]
+if env['PLATFORM']=="darwin":
+        env.Append(LIBPATH="/sw/lib")
+        env.Append(CPPPATH="/sw/include")
 
-#env.Append(CPPDEFINES=["NDEBUG"])
+
 env.Append(LIBS=["m"])
-#env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-30 -ansi -Wno-long-double"))
-env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-30 -ansi"))
+
+env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi"))
 
 
 
@@ -65,33 +69,21 @@ for l in cudd_libs:
     env.Append(LIBS=[l])
     
 
-#configure python extension
-if HAVE_PYTHON_EXTENSION:
-    for c in PYTHONSEARCH:
-        if conf.CheckCHeader(c.incdir+"/Python.h"):
-            PYTHON_CONFIG=c
-            break
-    if not PYTHON_CONFIG:
-        print 'Python header not found'
-        Exit(1)
-    BOOST_PREFIX="/sw"
-    env.Append(CPPPATH=[PYTHON_CONFIG.incdir])
-    #if platform =="cygwin":
-    #  env.Append(CPPPATH="/usr/local/include/boost-1_32")
-    #else:
-    env.Append(CPPPATH=BOOST_PREFIX+"/include")
-    print PYTHON_CONFIG.incdir
-    print env['CPPPATH']
-    if not conf.CheckCXXHeader('boost/python.hpp'):
-        print 'Boost/python must be installed'
-        Exit(1)
+
+HAVE_PYTHON_EXTENSION=0
+for c in PYTHONSEARCH:
+    if conf.CheckCHeader(c.incdir+"/Python.h"):
+        PYTHON_CONFIG=c
+        print "Python.h found in " + c.incdir
+        env.Append(CPPPATH=[c.incdir])
+        break
+
+if not conf.CheckCXXHeader('boost/python.hpp'):
+    print 'Warning Boost/python must be installed for python support'
+else:
+    HAVE_PYTHON_EXTENSION=1
     
-    if not conf.CheckCXXHeader('boost/shared_ptr.hpp'):
-        print 'Boost must be installed'
-        Exit(1)
-    env.Append(LIBPATH=[BOOST_PREFIX+"/lib"])
-    env.Append(CPPPATH=[BOOST_PREFIX+"/include"])
-    env.Append(LIBS=["boost_python"])
+
 
 
 
@@ -101,20 +93,18 @@ env = conf.Finish()
 pb_src=Split("BoolePolyRing.cc CErrorInfo.cc PBoRiError.cc")
 pb_src=["./polybori/src/"+ source for source in pb_src]
 l=env.StaticLibrary("polybori/polybori", pb_src)
+Default(l)
 tests=["errorcodes","testring"]
 
 for t in tests:
-    env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l])
-
-
-
+    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))
 
 if HAVE_PYTHON_EXTENSION:
-
+ 
     
-
-    BOOST_VERSION = 'boost.cvs'
-    BOOST = '/usr/local/src/' + BOOST_VERSION
-    BOOSTLIBPATH = BOOST+'/stage/lib'
-    
-    env.SharedLibrary ('PolyBoRi', ["PyPolyBoRi/dummy.cc"])
+    if env['PLATFORM']=="darwin":
+        env.LoadableModule('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
+    else:
+        env.SharedLibrary('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"],
+            LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
+     
