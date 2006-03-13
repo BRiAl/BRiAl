@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/13 09:58:10  bricken
+ * *bricken: USER_CPPPATH
+ *
  * Revision 1.3  2006/03/10 15:10:16  dreyer
  * ADD: Global bool_type added.
  *
@@ -47,7 +50,7 @@
 #define PBORINAME polybori
 
 
-
+#define PBORI_NO_NAMESPACES
 #ifndef PBORI_NO_NAMESPACES
 
 /// start project's namespace

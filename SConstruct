@@ -1,5 +1,8 @@
 #$Id$
 opts = Options('custom.py')
+USER_CPPPATH=Split(ARGUMENTS.get("CPPPATH",""))
+USER_LIBPATH=Split(ARGUMENTS.get("LIBPATH",""))
+
 try:
 	import SCons.Tool.applelink as applelink
 except:
@@ -47,7 +50,8 @@ PYTHONSEARCH=[\
 
 
 conf = Configure(env)
-
+env.Append(CPPPATH=USER_CPPPATH)
+env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPPATH=["./Cudd/include"])
 env.Append(LIBPATH=["polybori"])
