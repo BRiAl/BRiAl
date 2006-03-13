@@ -64,7 +64,7 @@ ICFLAGS	= -g -O6
 # Gcc 2.8.1 or higher on i686.
 #XCFLAGS	= -mcpu=pentiumpro -malign-double -DHAVE_IEEE_754 -DBSD
 # Gcc 3.2.2 or higher on i686.
-#XCFLAGS	= -mcpu=pentium4 -malign-double -DHAVE_IEEE_754 -DBSD
+XCFLAGS	= -mcpu=pentium4 -malign-double -DHAVE_IEEE_754 -DBSD
 # Icc on i686.
 #XCFLAGS	= -ansi -align -ip -DHAVE_IEEE_754 -DBSD
 # Gcc on ia64.
@@ -72,7 +72,6 @@ ICFLAGS	= -g -O6
 # Icc/ecc on ia64.
 #XCFLAGS = -ansi -DBSD -DHAVE_IEEE_754 -DSIZEOF_VOID_P=8 -DSIZEOF_LONG=8
 #
-#XCFLAGS = -DBSD
 #==========================
 #  Solaris
 #
