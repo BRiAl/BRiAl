@@ -55,7 +55,8 @@ env['ENV']['HOME']=os.environ["HOME"]
 if env['PLATFORM']=="darwin":
         env.Append(LIBPATH="/sw/lib")
         env.Append(CPPPATH="/sw/include")
-
+#workaround for linux
+#env.Append(LIBPATH=".")
 
 env.Append(LIBS=["m"])
 
@@ -93,7 +94,12 @@ env = conf.Finish()
 pb_src=Split("BoolePolyRing.cc CErrorInfo.cc PBoRiError.cc")
 pb_src=["./polybori/src/"+ source for source in pb_src]
 l=env.StaticLibrary("polybori/polybori", pb_src)
+print "l:", l, dir(l)
+#sometimes l seems to be boxed by a list
+if isinstance(l,list):
+    l=l[0]
 Default(l)
+
 tests=["errorcodes","testring"]
 
 for t in tests:
@@ -105,7 +111,8 @@ if HAVE_PYTHON_EXTENSION:
     if env['PLATFORM']=="darwin":
         env.LoadableModule('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
     else:
-        env.SharedLibrary('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"],
-            LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so",\
-            SHLIBPREFIX="")
+        print "l:", l
+        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=env['LIBS']+['boost_python',"polybori"])
+            #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
+            #SHLIBPREFIX="")
      
