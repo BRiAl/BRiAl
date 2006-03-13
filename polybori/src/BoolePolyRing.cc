@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/13 12:27:24  dreyer
+ * CHANGE: consistent function names
+ *
  * Revision 1.5  2006/03/12 05:34:23  bricken
  * *bricken: made destructor safer, clean current_ring
  *
@@ -118,7 +121,7 @@ BoolePolyRing::variable(idx_type nvar) const {
 
 // get number of ring variables
 BoolePolyRing::size_type
-BoolePolyRing::nvariables() const {
+BoolePolyRing::nVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::nvariables() const" );
 

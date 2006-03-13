@@ -14,7 +14,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 //#ifdef WRAP_ALSO_CUUD
   .def("var", &BoolePolyRing::variable,with_custodian_and_ward_postcall<0,1>())
 //#endif
-  .def("nVars", &BoolePolyRing::nvariables);
+  .def("nVars", &BoolePolyRing::nVariables);
   boost::python::class_<ZDD>("ZDD")
   .def(boost::python::init <const ZDD&>())
   .def(boost::python::init <>())

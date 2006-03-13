@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/13 12:27:24  dreyer
+ * CHANGE: consistent function names
+ *
  * Revision 1.4  2006/03/11 08:41:07  bricken
  * *bricken: standard/copy constructor
  *
@@ -101,7 +104,7 @@ class BoolePolyRing {
   dd_type variable(idx_type nvar) const;
 
   /// get number of ring variables
-  size_type nvariables() const;
+  size_type nVariables() const;
 
 
   /// access current global ring setting

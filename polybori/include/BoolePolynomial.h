@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/13 12:27:24  dreyer
+ * CHANGE: consistent function names
+ *
  * Revision 1.1  2006/03/10 15:14:24  dreyer
  * + Initial Version
  *
@@ -64,11 +67,6 @@ public:
   /// Fix type for treatment of monomials
   typedef self monom_type; 
 
-  /// @todo A more sophisticated treatment for leading terms is needed.
-
-  /// Fix type of leading terms
-  typedef self lead_reference;
-
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
@@ -92,16 +90,11 @@ public:
   /// @name Arithmetical operations
   //@{
   self& operator+=(const self&);
-  self operator+(const self&);
   self& operator*=(const monom_type&);
-  self operator*(const monom_type&);
   //@}
 
   /// Get leading term
-  lead_reference lead() const;
-
-  /// Compute spoly of two polynomials
-  self spoly(const self&) const;
+  monom_type lead() const;
 
   /// Total degree of the polynomial
   size_type totalDegree() const;
@@ -113,10 +106,10 @@ public:
   size_type nNodes() const;
 
   /// Number of variables of the polynomial
-  size_type nVariables() const;
+  size_type nUsedVariables() const;
 
   /// Set of variables of the polynomial
-  ddvector_type variables() const;
+  ddvector_type usedVariables() const;
 
 protected:
   /// @name Access to internal decision diagramm structure
@@ -130,6 +123,18 @@ private:
   dd_type m_dd;
 };
 
+
+///  Addition operation 
+BoolePolynomial 
+operator+(const BoolePolynomial&, const BoolePolynomial&);
+
+///  Multiplication with monomial
+BoolePolynomial
+operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
+
+/// Compute spoly of two polynomials
+BoolePolynomial 
+spoly(const BoolePolynomial&, const BoolePolynomial&);
 
 END_NAMESPACE_PBORI
 

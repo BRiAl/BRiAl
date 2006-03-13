@@ -20,8 +20,11 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
-// Revision 1.1  2006/03/09 14:35:25  dreyer
-// Initial revision
+// Revision 1.2  2006/03/13 12:27:24  dreyer
+// CHANGE: consistent function names
+//
+// Revision 1.1.1.1  2006/03/09 14:35:25  dreyer
+// + Project started
 //
 
 // load standard iostream capapilities
@@ -35,6 +38,12 @@ USING_NAMESPACE_PBORI
 int
 main(){
 
+  try{
+    BoolePolyRing::ring();
+  }
+  catch(PBoRiError err){
+    std::cout << "Exception caught sucessfully: "<<err.text() <<std::endl;
+  }
 
   BoolePolyRing ring(4);
 
@@ -51,6 +60,15 @@ main(){
   std::cout << "Variable 3:"<<std::endl;
   ring.variable(3).print(3, verbosity);
 
+
+  try{
+    BoolePolyRing::ring();
+  }
+  catch(PBoRiError err){
+    std::cout << "Warning! Accessing global ring failed. ";
+    std::cout << "Unexpected exception occured: ";
+    std::cout <<err.text() <<std::endl;
+  }
   return 0;
 }
 
