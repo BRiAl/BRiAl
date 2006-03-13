@@ -1,7 +1,7 @@
 #$Id$
 opts = Options('custom.py')
-USER_CPPPATH=Split(ARGUMENTS.get("CPPPATH",""))
-USER_LIBPATH=Split(ARGUMENTS.get("LIBPATH",""))
+USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
+USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
 
 try:
 	import SCons.Tool.applelink as applelink
