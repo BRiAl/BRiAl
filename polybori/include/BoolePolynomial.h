@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/16 17:09:12  dreyer
+ * ADD BoolePolynial functionality started
+ *
  * Revision 1.2  2006/03/13 12:27:24  dreyer
  * CHANGE: consistent function names
  *
@@ -52,7 +55,7 @@ public:
   //-------------------------------------------------------------------------
 
   /// Generic access to current type
-  typedef BoolePolyRing self;
+  typedef BoolePolynomial self;
 
   /// @name Adopt global type definitions
   //@{
@@ -60,6 +63,7 @@ public:
   typedef CTypes::ddvector_type ddvector_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
+  typedef CTypes::ostream_type ostream_type;
   //@}
 
   /// @todo A more sophisticated treatment for monomials is needed.
@@ -111,7 +115,15 @@ public:
   /// Set of variables of the polynomial
   ddvector_type usedVariables() const;
 
+
+  /// Print current polynomial to cout
+  /// @todo Cudd provides only cout functionality, iostream needed.
+  ostream_type& print(ostream_type&) const;
+
+#ifndef PBORI_DEVELOPER
 protected:
+#endif
+
   /// @name Access to internal decision diagramm structure
   //@{
   dd_type& diagram();
@@ -135,6 +147,11 @@ operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
 /// Compute spoly of two polynomials
 BoolePolynomial 
 spoly(const BoolePolynomial&, const BoolePolynomial&);
+
+
+/// Stream output operator
+BoolePolynomial::ostream_type& 
+operator<<(BoolePolynomial::ostream_type&, const BoolePolynomial&);
 
 END_NAMESPACE_PBORI
 

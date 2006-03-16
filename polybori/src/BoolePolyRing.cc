@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/03/16 17:09:13  dreyer
+ * ADD BoolePolynial functionality started
+ *
  * Revision 1.6  2006/03/13 12:27:24  dreyer
  * CHANGE: consistent function names
  *
@@ -69,8 +72,6 @@ mgr(0, r.nvars), nvars(r.nvars) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
   
-  //if(make_active)
-  //  activate();
 }
 
 // destructor
@@ -78,10 +79,11 @@ BoolePolyRing::~BoolePolyRing() {
 
   PBORI_TRACE_FUNC( "~BoolePolyRing()" );
 
-  // call manager's destructor
-  mgr.~manager_type();
-  if (BoolePolyRing::current_ring==this)
-    BoolePolyRing::current_ring=NULL;
+  // clear global ring setting, if current active ring is killed
+  if (BoolePolyRing::current_ring == this)
+    BoolePolyRing::current_ring = NULL;
+
+  // Note: Compiler automatically called mgr.~manager_type()
 }
 
 
@@ -119,6 +121,16 @@ BoolePolyRing::variable(idx_type nvar) const {
   return mgr.zddVar(nvar);
 }
 
+// access nvar-th variable of the active ring
+BoolePolyRing::dd_type
+BoolePolyRing::ringVariable(idx_type nvar) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ringVariable(idx_type nvar)" );
+
+  return ring().variable(nvar); 
+
+}
+
 // get number of ring variables
 BoolePolyRing::size_type
 BoolePolyRing::nVariables() const {
@@ -126,6 +138,15 @@ BoolePolyRing::nVariables() const {
   PBORI_TRACE_FUNC( "BoolePolyRing::nvariables() const" );
 
   return nvars;
+}
+
+// get number of ring variables of the active ring
+BoolePolyRing::size_type
+BoolePolyRing::nRingVars() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::nRingvariables() const" );
+
+  return ring().nVariables();
 }
 
 // access current global ring setting
@@ -143,6 +164,8 @@ BoolePolyRing::ring() {
     
 
 }
+
+
 
 //  make this global ring
 void

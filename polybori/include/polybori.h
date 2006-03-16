@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/16 17:09:13  dreyer
+ * ADD BoolePolynial functionality started
+ *
  * Revision 1.2  2006/03/10 08:25:54  dreyer
  * + refined header style
  *
@@ -34,6 +37,8 @@
 #define polybori_h_
 
 #include "BoolePolyRing.h"
+#include "BoolePolynomial.h"
+#include "BooleVariable.h"
 #include "PBoRiError.h"
 
 

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/03/16 17:09:13  dreyer
+ * ADD BoolePolynial functionality started
+ *
  * Revision 1.6  2006/03/16 13:37:41  dreyer
  * ADD: added error codes and PBORI_DEVELOPER marker
  *
@@ -45,9 +48,27 @@
 // load cudd's c++ interface
 # include <cuddObj.hh>
 
-
 #ifndef pbori_defs_h_
 #define pbori_defs_h_
+
+/// Get out stream type
+#ifndef PBORI_NO_STDSTREAMS
+
+# include <iostream>
+# define PBORI_OSTREAM std::ostream
+
+#else
+
+/// @struct Dummy structure if std::ostream is not available
+struct PBORI_OSTREAM {};
+
+template <class StreamedType>
+PBORI_OSTREAM& 
+operator<<(PBORI_OSTREAM& dummy, const StreamedType&) {
+  return dummy;
+};
+
+#endif // of #ifndef PBORI_NO_STDSTREAMS
 
 /// Name the project
 #define PBORINAME polybori
@@ -95,7 +116,7 @@
 /// Generate trace function if debugging
 #ifdef PBORI_DEBUG_TRACE
 # include <iostream>
-# define PBORI_TRACE_FUNC(text) std::cerr << test << std::endl;
+# define PBORI_TRACE_FUNC(text) std::cerr << text << std::endl;
 #else
 # define PBORI_TRACE_FUNC(text) 
 #endif
@@ -158,8 +179,17 @@ struct CTypes {
   /// Type used to verbose error information
   typedef const char* errortext_type;
 
+  /// Type for out-stream
+  typedef PBORI_OSTREAM ostream_type;
 };
 
 END_NAMESPACE_PBORI
+
+#ifdef PBORI_DEVELOPER
+# define PBORI_NOT_IMPLEMENTED \
+  throw PBORI::PBoRiError(PBORI::CTypes::not_implemented);
+#else
+# define PBORI_NOT_IMPLEMENTED 
+#endif
 
 #endif // of #ifndef pbori_defs_h_

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/16 17:09:12  dreyer
+ * ADD BoolePolynial functionality started
+ *
  * Revision 1.5  2006/03/13 12:27:24  dreyer
  * CHANGE: consistent function names
  *
@@ -103,9 +106,14 @@ class BoolePolyRing {
   /// access nvar-th ring variable
   dd_type variable(idx_type nvar) const;
 
+  /// access nvar-th variable of the active ring
+  static dd_type ringVariable(idx_type nvar);
+
   /// get number of ring variables
   size_type nVariables() const;
 
+  /// get number of ring variables the of active ring
+  static size_type nRingVars();
 
   /// access current global ring setting
   static self& ring();
