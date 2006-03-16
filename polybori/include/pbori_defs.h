@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/16 13:37:41  dreyer
+ * ADD: added error codes and PBORI_DEVELOPER marker
+ *
  * Revision 1.5  2006/03/13 10:06:29  bricken
  * *bricken: undo last checkin
  *
@@ -46,32 +49,35 @@
 #ifndef pbori_defs_h_
 #define pbori_defs_h_
 
-/// name the project
+/// Name the project
 #define PBORINAME polybori
 
-
+/// Define deverloper's mode
+#ifndef PBORI_NO_DEVELOPER
+#  define PBORI_DEVELOPER
+#endif
 
 #ifndef PBORI_NO_NAMESPACES
 
-/// start project's namespace
+/// Start project's namespace
 #  define BEGIN_NAMESPACE_PBORI namespace PBORINAME {
 
-/// finish project's namespace
+/// Finish project's namespace
 #  define END_NAMESPACE_PBORI } // end of namespace 
 
-/// use project's namespace
+/// Use project's namespace
 #  define USING_NAMESPACE_PBORI using namespace PBORINAME;
 
-/// access something in project's namespace using PBORI::
+/// Access something in project's namespace using PBORI::
 #  define PBORI PBORINAME
 
-/// using something from project's namespace
+/// Using something from project's namespace
 #  define USING_PBORI using PBORI
 
-/// start some namespace
+/// Start some namespace
 #  define PBORI_BEGIN_NAMESPACE( sub_space ) namespace sub_space {
 
-/// finish some namespace
+/// Finish some namespace
 #  define PBORI_END_NAMESPACE }
 
 #else 
@@ -86,7 +92,7 @@
 
 #endif // PBORI_NO_NAMESPACES
 
-/// @def Generate trace function if debugging
+/// Generate trace function if debugging
 #ifdef PBORI_DEBUG_TRACE
 # include <iostream>
 # define PBORI_TRACE_FUNC(text) std::cerr << test << std::endl;
@@ -109,43 +115,47 @@ struct CTypes {
   // types for treatment of decision diagrams
   //-------------------------------------------------------------------------
 
-  /// type of underlying binary decicion diagrams 
+  /// Type of underlying binary decicion diagrams 
   typedef ZDD dd_type;
 
-  /// vector of dd_type
+  ///Vector of dd_type
   typedef ZDDvector ddvector_type;
 
-  /// manage variables to be used by polynomials over Boolean ring
+  /// Manage variables to be used by polynomials over Boolean ring
   typedef Cudd manager_type;
 
   //-------------------------------------------------------------------------
   // types for several purposes
   //-------------------------------------------------------------------------
 
-  /// type for standard true/false statements
+  /// Type for standard true/false statements
   typedef bool bool_type;
 
-  /// type for lengths, dimensions, etc.
+  /// Type for lengths, dimensions, etc.
   typedef unsigned int size_type;
 
-  /// type for integer numbers
+  /// Type for integer numbers
   typedef int integer_type;
 
-  /// type for indices
+  /// Type for indices
   typedef int idx_type;
 
-  /// error codes enumeration
+  /// Error codes enumeration
   enum errorcodes {
     alright = 0,
     failed,
     no_ring,
+    invalid,
+#ifdef PBORI_DEVELOPER
+   not_implemented,
+#endif
     last_error
   };
 
-  /// type used to store error codes
+  /// Type used to store error codes
   typedef unsigned int errornum_type;
 
-  /// type used to verbose error information
+  /// Type used to verbose error information
   typedef const char* errortext_type;
 
 };

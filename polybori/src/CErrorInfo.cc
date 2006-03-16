@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/16 13:37:41  dreyer
+ * ADD: added error codes and PBORI_DEVELOPER marker
+ *
  * Revision 1.2  2006/03/10 08:25:54  dreyer
  * + refined header style
  *
@@ -46,7 +49,11 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::alright] = "No error.";
   pErrorText[CTypes::failed] = "Unspecified error.";
   pErrorText[CTypes::no_ring] = "No polynomial ring structure defined.";
-
+  pErrorText[CTypes::invalid] = "Invalid operation called.";
+#ifdef PBORI_DEVELOPER
+  pErrorText[CTypes::not_implemented] = 
+    "Sorry! Functionality not impletement yet.";
+#endif
 }
 
 // convert error code to description text

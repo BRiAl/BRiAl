@@ -20,8 +20,11 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
-// Revision 1.1  2006/03/09 14:35:25  dreyer
-// Initial revision
+// Revision 1.2  2006/03/16 13:37:41  dreyer
+// ADD: added error codes and PBORI_DEVELOPER marker
+//
+// Revision 1.1.1.1  2006/03/09 14:35:25  dreyer
+// + Project started
 //
 
 // load standard iostream capapilities
@@ -34,6 +37,8 @@ USING_NAMESPACE_PBORI
 
 int
 main(){
+
+  std::cout << "Testing important error codes" <<std::endl;   
 
   try {
     std::cout << "Throwing 'alright'"<<std::endl;
@@ -65,6 +70,19 @@ main(){
     std::cout << "    which says: "<< err.text() <<std::endl;  
   }
 
+  std::cout <<std::endl << "Testing all error codes " <<std::endl;   
+
+  for(CTypes::errornum_type i_err = 0; i_err < CTypes::last_error; ++i_err) {
+    try {
+      std::cout << "Throwing error # "<< i_err <<std::endl;
+      throw PBoRiError(i_err);
+      std::cout << "--------> Should not reach here!'"<<std::endl;
+    }
+    catch (PBoRiError& err) {
+      std::cout << "  Caught error # "<< err.code() <<std::endl;   
+      std::cout << "    which says: "<< err.text() <<std::endl;  
+    }
+  }
 
   return 0;
 }
