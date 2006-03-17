@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/17 16:53:37  dreyer
+ * ADD added nNodes(), operator*= to BoolePolynomial
+ *
  * Revision 1.7  2006/03/16 17:09:13  dreyer
  * ADD BoolePolynial functionality started
  *
@@ -132,6 +135,26 @@ BoolePolyRing::ringVariable(idx_type nvar) {
 }
 
 // get number of ring variables
+// access nvar-th ring variable
+BoolePolyRing::dd_type
+BoolePolyRing::empty() const {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::empty() const" );
+
+  return mgr.zddZero();
+}
+
+// access nvar-th variable of the active ring
+BoolePolyRing::dd_type
+BoolePolyRing::ringEmpty() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
+
+  return ring().empty(); 
+
+}
+
+
 BoolePolyRing::size_type
 BoolePolyRing::nVariables() const {
 

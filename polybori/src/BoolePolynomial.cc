@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/17 16:53:37  dreyer
+ * ADD added nNodes(), operator*= to BoolePolynomial
+ *
  * Revision 1.1  2006/03/16 17:09:13  dreyer
  * ADD BoolePolynial functionality started
  *
@@ -82,7 +85,6 @@ BoolePolynomial::operator+=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator+=(const self&)" );
 
-  // dd_type tmp = m_dd.Union( rhs.m_dd);
   m_dd = m_dd.Union( rhs.m_dd ).Diff( m_dd.Intersect(rhs.m_dd) );
 
   return *this;
@@ -94,7 +96,7 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  PBORI_NOT_IMPLEMENTED;
+  m_dd = m_dd.UnateProduct(rhs.m_dd);
 
   return *this;
 }
@@ -138,9 +140,7 @@ BoolePolynomial::nNodes() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nNodes() const" );
 
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
+  return Cudd_zddDagSize(m_dd.getNode());
 }
 
 // Number of variables of the polynomial
@@ -182,6 +182,7 @@ BoolePolynomial::diagram() const {
 
   return m_dd;
 }
+
 // Print current polynomial to cout
 BoolePolynomial::ostream_type&
 BoolePolynomial::print(ostream_type& os) const {
@@ -190,10 +191,10 @@ BoolePolynomial::print(ostream_type& os) const {
 
   ///  @todo: add std::cout capability for cudd's ZDD type
 
-  os << '(';
+  os << "-> ";
   m_dd.print(BoolePolyRing::nRingVars());
   m_dd.PrintMinterm();
-  os << ')';
+
   return os;
 }
 

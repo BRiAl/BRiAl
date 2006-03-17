@@ -104,7 +104,7 @@ if isinstance(l,list):
     l=l[0]
 Default(l)
 
-tests=["errorcodes","testring", "boolevars"]
+tests=["errorcodes","testring", "boolevars", "boolepoly"]
 
 for t in tests:
     Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))

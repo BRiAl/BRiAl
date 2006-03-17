@@ -1,34 +1,34 @@
 // -*- c++ -*-
-// $Id$
-//
 //*****************************************************************************
 /** @file 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
  *
- * This file contains tests for the class PBoRiError.
+ * This file contains tests for the Boolean Variables.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
+ * @par Copyright:
+ *   (c) 2006 by
+ *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
  *
+ * @internal 
+ * @version \$Id$
+ *
+ * @par History:
+ * @verbatim
+ * $Log$
+ * Revision 1.2  2006/03/17 16:53:37  dreyer
+ * ADD added nNodes(), operator*= to BoolePolynomial
+ *
+ * Revision 1.1  2006/03/16 17:09:13  dreyer
+ * ADD BoolePolynial functionality started
+ *
+ * @endverbatim
 **/
 //*****************************************************************************
-//
-// Last edit by $Author$ on $Date$
-// 
-// $Log$
-// Revision 1.1  2006/03/16 17:09:13  dreyer
-// ADD BoolePolynial functionality started
-//
-// Revision 1.2  2006/03/16 13:37:41  dreyer
-// ADD: added error codes and PBORI_DEVELOPER marker
-//
-// Revision 1.1.1.1  2006/03/09 14:35:25  dreyer
-// + Project started
-//
+
 
 // load standard iostream capapilities
 #include <iostream>
