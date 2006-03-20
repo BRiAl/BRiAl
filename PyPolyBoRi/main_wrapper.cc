@@ -8,9 +8,13 @@ USING_NAMESPACE_PBORI
 void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
 }
+void print_variable(const BooleVariable & p){
+  ((const BoolePolynomial&) p).print(cout);
+}
+
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
-
+  BoolePolyRing r; //workaround for having a current_ring
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
     .def(boost::python::init <BoolePolyRing::size_type>())
@@ -57,21 +61,27 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("printMinterm", &ZDD::PrintMinterm);
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
-  .def(init<BooleVariable::idx_type>());
+  .def(init<BooleVariable::idx_type>())
+  .def("toStdOut", &print_variable);
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
+  .def(init<const BooleVariable &>())
   .def(self+=self)
   .def(self*=self)
+  .def(self+=BooleVariable())
+  .def(self*=BooleVariable())
+  //.def(self*self)
+  //.def(self+self)
   .def("deg", &BoolePolynomial::totalDegree)
   .def("lmDeg", &BoolePolynomial::deg)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("totalDegree", &BoolePolynomial::nUsedVariables)
   //wrap usedVariables
-  //.def("toStdOut", &BoolePolynomial::print)
+  .def("toStdOut", &print_polynomial)
   
   ;
-  
+ // def("spoly",&spoly);
   }
 /*
 
