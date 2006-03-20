@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/20 14:51:00  dreyer
+ * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+ *
  * Revision 1.7  2006/03/16 17:09:13  dreyer
  * ADD BoolePolynial functionality started
  *
@@ -50,25 +53,6 @@
 
 #ifndef pbori_defs_h_
 #define pbori_defs_h_
-
-/// Get out stream type
-#ifndef PBORI_NO_STDSTREAMS
-
-# include <iostream>
-# define PBORI_OSTREAM std::ostream
-
-#else
-
-/// @struct Dummy structure if std::ostream is not available
-struct PBORI_OSTREAM {};
-
-template <class StreamedType>
-PBORI_OSTREAM& 
-operator<<(PBORI_OSTREAM& dummy, const StreamedType&) {
-  return dummy;
-};
-
-#endif // of #ifndef PBORI_NO_STDSTREAMS
 
 /// Name the project
 #define PBORINAME polybori
@@ -120,8 +104,34 @@ operator<<(PBORI_OSTREAM& dummy, const StreamedType&) {
 #else
 # define PBORI_TRACE_FUNC(text) 
 #endif
+/// Get output stream type
+#ifndef PBORI_NO_STDSTREAMS
+
+# include <iostream>
+# define PBORI_OSTREAM std::ostream
+
+#else
 
 BEGIN_NAMESPACE_PBORI
+
+/// @struct Dummy structure if std::ostream is not available
+struct PBORI_OSTREAM {};
+
+template <class StreamedType>
+PBORI_OSTREAM& 
+operator<<(PBORI_OSTREAM& dummy, const StreamedType&) {
+  return dummy;
+};
+END_NAMESPACE_PBORI
+
+#endif // of #ifndef PBORI_NO_STDSTREAMS
+
+
+BEGIN_NAMESPACE_PBORI
+
+// Forward declaration of decision diagram interface
+template <class DDType>
+class CDDInterface;
 
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
@@ -137,7 +147,10 @@ struct CTypes {
   //-------------------------------------------------------------------------
 
   /// Type of underlying binary decicion diagrams 
-  typedef ZDD dd_type;
+  typedef ZDD dd_base;
+
+  /// Type of interface to binary decicion diagrams 
+  typedef CDDInterface<dd_base> dd_type;
 
   ///Vector of dd_type
   typedef ZDDvector ddvector_type;

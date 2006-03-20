@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.3  2006/03/20 14:51:01  dreyer
+// CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+//
 // Revision 1.2  2006/03/13 12:27:24  dreyer
 // CHANGE: consistent function names
 //
@@ -49,16 +52,16 @@ main(){
 
   int verbosity = 2;
   std::cout << "Variable 0:"<<std::endl;
-  ring.variable(0).print(3, verbosity);
+  ((ZDD)ring.variable(0)).print(3, verbosity);
 
   std::cout << "Variable 1:"<<std::endl;
-  ring.variable(1).print(3, verbosity);
+  ((ZDD)ring.variable(1)).print(3, verbosity);
 
   std::cout << "Variable 2:"<<std::endl;
-  ring.variable(2).print(3, verbosity);
+  ((ZDD)ring.variable(2)).print(3, verbosity);
 
   std::cout << "Variable 3:"<<std::endl;
-  ring.variable(3).print(3, verbosity);
+  ((ZDD)ring.variable(3)).print(3, verbosity);
 
 
   try{

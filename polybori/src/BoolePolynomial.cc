@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/20 14:51:01  dreyer
+ * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+ *
  * Revision 1.3  2006/03/20 12:11:57  dreyer
  * CHANGE: Revised *deg*() functions.
  *
@@ -88,8 +91,9 @@ BoolePolynomial::operator+=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator+=(const self&)" );
 
-  m_dd = m_dd.Union( rhs.m_dd ).Diff( m_dd.Intersect(rhs.m_dd) );
+  // m_dd = m_dd.Union( rhs.m_dd ).Diff( m_dd.Intersect(rhs.m_dd) );
 
+  m_dd = m_dd.unite( rhs.m_dd ).diff( m_dd.intersect(rhs.m_dd) );
   return *this;
 }
 
@@ -99,8 +103,8 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  m_dd = m_dd.UnateProduct(rhs.m_dd);
-
+  // m_dd = m_dd.UnateProduct(rhs.m_dd);
+  m_dd.unateProduct(rhs.m_dd);
   return *this;
 }
 
@@ -165,7 +169,7 @@ BoolePolynomial::nNodes() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nNodes() const" );
 
-  return Cudd_zddDagSize(m_dd.getNode());
+  return m_dd.nNodes();// Cudd_zddDagSize(m_dd.getNode());
 }
 
 // Number of variables of the polynomial
@@ -217,8 +221,7 @@ BoolePolynomial::print(ostream_type& os) const {
   ///  @todo: add std::cout capability for cudd's ZDD type
 
   os << "-> ";
-  m_dd.print(BoolePolyRing::nRingVars());
-  m_dd.PrintMinterm();
+  m_dd.print(os, BoolePolyRing::nRingVariables());
 
   return os;
 }

@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/20 14:51:00  dreyer
+ * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+ *
  * Revision 1.4  2006/03/20 12:11:57  dreyer
  * CHANGE: Revised *deg*() functions.
  *
@@ -41,7 +44,7 @@
 #define BoolePolynomial_h_
 
 // include basic definitions
-#include "pbori_defs.h"
+#include "CDDInterface.h"
 
 BEGIN_NAMESPACE_PBORI
 

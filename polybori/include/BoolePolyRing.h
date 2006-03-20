@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/03/20 14:51:00  dreyer
+ * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+ *
  * Revision 1.8  2006/03/20 09:52:57  dreyer
  * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
  *
@@ -51,6 +54,8 @@
 // load PolyBoRi settings
 # include "pbori_defs.h"
 
+// include basic definitions
+#include "CDDInterface.h"
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
@@ -132,7 +137,12 @@ class BoolePolyRing {
   size_type nVariables() const;
 
   /// get number of ring variables the of active ring
-  static size_type nRingVars();
+  static size_type nRingVariables();
+
+#ifdef PBORI_DEVELOPER
+  /// get number of ring variables the of active ring
+  static size_type nRingVars() { return nRingVariables(); };
+#endif 
 
   /// access current global ring setting
   static self& ring();

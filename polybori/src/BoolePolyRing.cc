@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/03/20 14:51:01  dreyer
+ * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
+ *
  * Revision 1.9  2006/03/20 09:52:57  dreyer
  * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
  *
@@ -134,11 +137,11 @@ BoolePolyRing::variable(idx_type nvar) const {
   PBORI_TRACE_FUNC( "BoolePolyRing::variable(idx_type) const" );
 
   dd_type dd( ddVariable(nvar) );
-  size_type nlen = BoolePolyRing::nRingVars();
+  size_type nlen = BoolePolyRing::nRingVariables();
 
   for(size_type i = 0; i < nlen; ++i)
     if (i != nvar)
-      dd = dd.Subset0(i);
+      dd.subset0Assign(i);
  
   return dd;
 }
@@ -184,7 +187,7 @@ BoolePolyRing::nVariables() const {
 
 // get number of ring variables of the active ring
 BoolePolyRing::size_type
-BoolePolyRing::nRingVars() {
+BoolePolyRing::nRingVariables() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::nRingvariables() const" );
 
