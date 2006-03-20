@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/03/20 09:52:57  dreyer
+ * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
+ *
  * Revision 1.8  2006/03/17 16:53:37  dreyer
  * ADD added nNodes(), operator*= to BoolePolynomial
  *
@@ -117,11 +120,27 @@ BoolePolyRing::manager() const {
 
 // access nvar-th ring variable
 BoolePolyRing::dd_type
+BoolePolyRing::ddVariable(idx_type nvar) const {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ddVariable(idx_type) const" );
+
+  return mgr.zddVar(nvar);
+}
+
+// access nvar-th ring variable
+BoolePolyRing::dd_type
 BoolePolyRing::variable(idx_type nvar) const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::variable(idx_type) const" );
 
-  return mgr.zddVar(nvar);
+  dd_type dd( ddVariable(nvar) );
+  size_type nlen = BoolePolyRing::nRingVars();
+
+  for(size_type i = 0; i < nlen; ++i)
+    if (i != nvar)
+      dd = dd.Subset0(i);
+ 
+  return dd;
 }
 
 // access nvar-th variable of the active ring

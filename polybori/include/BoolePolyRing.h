@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/20 09:52:57  dreyer
+ * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
+ *
  * Revision 1.7  2006/03/17 16:53:37  dreyer
  * ADD added nNodes(), operator*= to BoolePolynomial
  *
@@ -100,11 +103,14 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // other member functions
   //-------------------------------------------------------------------------
-  /// access to base
+  /// access to decision diagram manager
   manager_type& manager();
 
-  /// constant access to base
+  /// constant access to decision diagram manager
   const manager_type& manager() const;
+
+  /// access nvar-th variable of decision diagram manager
+  dd_type ddVariable(idx_type nvar) const;
 
   /// access nvar-th ring variable
   dd_type variable(idx_type nvar) const;

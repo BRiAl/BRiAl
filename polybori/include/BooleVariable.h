@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/20 09:52:57  dreyer
+ * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
+ *
  * Revision 1.1  2006/03/16 17:09:13  dreyer
  * ADD BoolePolynial functionality started
  *
@@ -47,19 +50,22 @@ BEGIN_NAMESPACE_PBORI
  * with a special constructor.
  *
  **/
-class BooleVariable:
-  public BoolePolynomial {
+class BooleVariable {
 
  public:
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
 
+  /// @name Adopt global type definitions
+  //@{
+  typedef CTypes::dd_type dd_type;
+  typedef CTypes::size_type size_type;
+  typedef CTypes::idx_type idx_type;
+  //@}
+
   /// Generic access to current type
   typedef BooleVariable self;
-
-  /// Generic access to base type
-  typedef BoolePolynomial base;
 
   /// Constructor idx-th variable of active ring
   BooleVariable(idx_type idx = 0);
@@ -67,8 +73,10 @@ class BooleVariable:
   /// Copy constructor
   BooleVariable(const self&);
 
+  operator const BoolePolynomial&() const;
 
-
+private:
+  BoolePolynomial m_poly;
 };
 
 
