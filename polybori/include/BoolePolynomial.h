@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/20 12:11:57  dreyer
+ * CHANGE: Revised *deg*() functions.
+ *
  * Revision 1.3  2006/03/16 17:09:12  dreyer
  * ADD BoolePolynial functionality started
  *
@@ -100,11 +103,17 @@ public:
   /// Get leading term
   monom_type lead() const;
 
-  /// Total degree of the polynomial
-  size_type totalDegree() const;
+  /// Maximal degree of the polynomial
+  size_type deg() const;
 
   /// Degree of the leading term
-  size_type deg() const;
+  size_type lmDeg() const;
+
+  /// Total maximal degree of the polynomial
+  size_type totalDeg() const;
+
+  /// Total degree of the leading term
+  size_type lmTotalDeg() const;
 
   /// Number of nodes in the decision diagram
   size_type nNodes() const;

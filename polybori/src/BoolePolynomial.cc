@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/20 12:11:57  dreyer
+ * CHANGE: Revised *deg*() functions.
+ *
  * Revision 1.2  2006/03/17 16:53:37  dreyer
  * ADD added nNodes(), operator*= to BoolePolynomial
  *
@@ -112,18 +115,7 @@ BoolePolynomial::lead() const {
   return monom_type();
 }
 
-// Total degree of the polynomial
-BoolePolynomial::size_type
-BoolePolynomial::totalDegree() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::totalDegree() const" );
-
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
-}
-
-// Degree of the leading term
+// Maximal degree of the polynomial
 BoolePolynomial::size_type
 BoolePolynomial::deg() const {
 
@@ -132,6 +124,39 @@ BoolePolynomial::deg() const {
   PBORI_NOT_IMPLEMENTED;
 
   return 0;
+}
+
+
+// Degree of the leading term
+BoolePolynomial::size_type
+BoolePolynomial::lmDeg() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
+
+  PBORI_NOT_IMPLEMENTED;
+
+  return 0;
+}
+
+
+// Total (weighted) maximal degree of the polynomial
+BoolePolynomial::size_type
+BoolePolynomial::totalDeg() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::totalDeg() const" );
+
+  // No weighted degrees yet, so map to non-weighted variant
+  return deg();
+}
+
+// Total (weighted) degree of the leading term
+BoolePolynomial::size_type
+BoolePolynomial::lmTotalDeg() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::lmTotalDeg() const" );
+
+  // No weighted degrees yet, so map to non-weighted variant
+  return lmDeg();
 }
 
 // Number of nodes in the decision diagram
