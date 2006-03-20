@@ -1,10 +1,13 @@
 #include <boost/python.hpp>
+#include <iostream>
 #include "polybori.h"
-
 using namespace boost::python;
+using namespace std;
 USING_NAMESPACE_PBORI
 #define WRAP_ALSO_CUDD 1
-
+void print_polynomial(const BoolePolynomial & p){
+  p.print(cout);
+}
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
 
@@ -52,6 +55,22 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("intersect", &ZDD::Intersect)
   .def("ite", &ZDD::Ite)
   .def("printMinterm", &ZDD::PrintMinterm);
+  boost::python::class_<BooleVariable>("Variable")
+  .def(init<const BooleVariable &>())
+  .def(init<BooleVariable::idx_type>());
+  boost::python::class_<BoolePolynomial>("Polynomial")
+  .def(init<>())
+  .def(init<const BoolePolynomial &>())
+  .def(self+=self)
+  .def(self*=self)
+  .def("deg", &BoolePolynomial::totalDegree)
+  .def("lmDeg", &BoolePolynomial::deg)
+  .def("nNodes", &BoolePolynomial::nNodes)
+  .def("totalDegree", &BoolePolynomial::nUsedVariables)
+  //wrap usedVariables
+  //.def("toStdOut", &BoolePolynomial::print)
+  
+  ;
   
   }
 /*
