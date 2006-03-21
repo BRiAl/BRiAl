@@ -1,7 +1,19 @@
 #$Id$
 opts = Options('custom.py')
+
+
+
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
+try:
+    import custom
+    if "LIBPATH" in dir(custom):
+        USER_LIBPATH=custom.LIBPATH+USER_LIBPATH
+    if "CPPPATH" in dir(custom):
+        USER_CPPPATH=custom.CPPPATH+USER_CPPPATH
+except:
+    pass
+
 
 try:
 	import SCons.Tool.applelink as applelink
@@ -36,18 +48,10 @@ class PythonConfig(object):
         else:
             self.incdir=self.prefix+"/include/python"+self.version
 
-
-
-
 PYTHONSEARCH=[\
     PythonConfig(version="2.4", prefix="/sw"),\
     PythonConfig(version="2.4"),\
     PythonConfig(version="2.3"),]
-                    
-
-
-
-
 
 conf = Configure(env)
 env.Append(CPPPATH=USER_CPPPATH)
@@ -67,13 +71,10 @@ env.Append(LIBS=["m"])
 env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi"))
 
 
-
-
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])
     env.Append(LIBS=[l])
     
-
 
 HAVE_PYTHON_EXTENSION=0
 for c in PYTHONSEARCH:
@@ -88,9 +89,6 @@ if not conf.CheckCXXHeader('boost/python.hpp'):
 else:
     HAVE_PYTHON_EXTENSION=1
     
-
-
-
 
 env = conf.Finish()
 
