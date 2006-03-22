@@ -19,8 +19,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/22 16:39:54  dreyer
+ * ADD Switch for using valgrind
+ *
  * Revision 1.1  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * @endverbatim
 **/

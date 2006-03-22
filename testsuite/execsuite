@@ -8,6 +8,9 @@
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.3  2006/03/22 16:39:54  dreyer
+# ADD Switch for using valgrind
+#
 # Revision 1.2  2006/03/22 09:21:47  dreyer
 # CHANGE: More meaningful usage text
 #
@@ -25,6 +28,10 @@ dodiff=true;
 runonly=false;
 keeptemp=false;
 
+runit=""
+postproc=""
+docheck=false;
+
 doloop=true;
 while $doloop
 do
@@ -36,6 +43,7 @@ do
       echo "  -b: Build reference file"
       echo "  -r: Run only test suite without diffing"
       echo "  -t: Keep temporary output file"
+      echo "  -c: Run only, but apply valgrind's memcheck tool"
       exit
   ;;
     "-b") shift
@@ -47,6 +55,12 @@ do
     "-t") shift
       keeptemp=true
   ;;
+    "-c") shift
+      runit="valgrind --tool=memcheck --leak-check=yes --show-reachable=yes "
+      postproc='grep ERROR.SUMMARY '
+      runonly=true    
+      docheck=true;
+    ;;
      *) doloop=false
   esac
 done
@@ -60,7 +74,11 @@ if $runonly; then
     echo "----------------------" 
     echo "Executing $i"
     echo "----------------------" 
-    $i
+    if $docheck; then
+      $runit $i 2>&1 | $postproc
+    else
+      $runit $i
+    fi
     done
    echo "-------------------" 
    echo "Testsuite finished." 
