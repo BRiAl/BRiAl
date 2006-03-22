@@ -73,7 +73,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(self*=BooleVariable())
   //.def(self*self)
   //.def(self+self)
-  .def("deg", &BoolePolynomial::totalDegree)
+  .def("deg", &BoolePolynomial::totalDeg)
   .def("lmDeg", &BoolePolynomial::deg)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("totalDegree", &BoolePolynomial::nUsedVariables)

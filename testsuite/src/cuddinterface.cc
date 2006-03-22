@@ -19,14 +19,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.3  2006/03/22 08:06:59  dreyer
+ * Revision 1.1  2006/03/22 08:06:59  dreyer
  * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
- *
- * Revision 1.2  2006/03/17 16:53:37  dreyer
- * ADD added nNodes(), operator*= to BoolePolynomial
- *
- * Revision 1.1  2006/03/16 17:09:13  dreyer
- * ADD BoolePolynial functionality started
  *
  * @endverbatim
 **/
@@ -37,31 +31,44 @@
 #include <iostream>
 
 // load polybori header file
-# include "polybori.h"
+#include "polybori.h"
+
+// cudd interface
+#include "CDDManager.h"
 
 USING_NAMESPACE_PBORI
 
 int
 main(){
 
-  std::cout << "Testing boolean ring variables" <<std::endl;   
+  std::cout << "Testing cudd interface" <<std::endl;   
 
   try {
-    BoolePolyRing the_ring(5);
+    CDDManager<Cudd> man(3);
 
-    BoolePolynomial x = BooleVariable(0);
-    std::cout << x << std::endl;
+    CDDInterface<ZDD> dd0 (man.variable(0));
+    dd0.print(std::cout);
 
-    BoolePolynomial y = BooleVariable(1);
-    std::cout << y << std::endl;
+    CDDInterface<ZDD> dd1 ( man.variable(1));
+    dd1.print(std::cout);
 
-    BoolePolynomial poly = x;
-    poly += y;
+    dd0.unateProductAssign(dd1);
+    dd0.print(std::cout);
 
-    std::cout << "Sum: "<<std::endl;
-    std::cout << poly <<std::endl;
+    dd0 = man.variable(0);
+    dd0.subset0Assign(1);
+    dd0.subset0Assign(2);
 
-    std::cout << "Finished."<<std::endl;
+    dd0.print(std::cout);
+
+    dd1.subset0Assign(0);
+    dd1.subset0Assign(2);
+
+    dd1.print(std::cout);
+
+    dd0.unateProductAssign(dd1);
+    dd0.print(std::cout);
+
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

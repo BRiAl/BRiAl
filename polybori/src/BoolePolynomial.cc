@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/22 08:06:59  dreyer
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ *
  * Revision 1.4  2006/03/20 14:51:01  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
  *
@@ -91,8 +94,6 @@ BoolePolynomial::operator+=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator+=(const self&)" );
 
-  // m_dd = m_dd.Union( rhs.m_dd ).Diff( m_dd.Intersect(rhs.m_dd) );
-
   m_dd = m_dd.unite( rhs.m_dd ).diff( m_dd.intersect(rhs.m_dd) );
   return *this;
 }
@@ -103,8 +104,7 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  // m_dd = m_dd.UnateProduct(rhs.m_dd);
-  m_dd.unateProduct(rhs.m_dd);
+  m_dd.unateProductAssign(rhs.m_dd);
   return *this;
 }
 

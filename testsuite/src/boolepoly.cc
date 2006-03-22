@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/22 08:06:59  dreyer
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ *
  * Revision 1.1  2006/03/20 10:40:22  dreyer
  * + Initial Version
  *
@@ -43,8 +46,8 @@ main(){
   try {
     BoolePolyRing the_ring(5);
 
-    BoolePolynomial x = BooleVariable(0);
-    BoolePolynomial y = BooleVariable(1);
+    BoolePolynomial x = the_ring.variable(0);
+    BoolePolynomial y = the_ring.variable(1);
 
     BoolePolynomial z = BooleVariable(2);
 
@@ -54,6 +57,9 @@ main(){
     std::cout << x << std::endl;
     std::cout << y << std::endl;
     std::cout << z << std::endl;
+    std::cout << v << std::endl;
+    std::cout << w << std::endl;
+
 
     BoolePolynomial poly = x;
     poly *= y;
@@ -96,6 +102,8 @@ main(){
     std::cout << poly <<std::endl;
 
     std::cout << "Node count: "<< poly.nNodes() <<std::endl;
+    std::cout << "N: "<< BoolePolyRing::nRingVariables() <<std::endl;
+
 //       pdiag =  
 //       (poly.diagram().Intersect(BoolePolyRing::ringVariable(3) ));
 

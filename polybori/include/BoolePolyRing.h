@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/03/22 08:06:59  dreyer
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ *
  * Revision 1.9  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
  *
@@ -54,8 +57,8 @@
 // load PolyBoRi settings
 # include "pbori_defs.h"
 
-// include basic definitions
-#include "CDDInterface.h"
+// include basic decision diagram manager interface 
+#include "CDDManager.h"
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
@@ -83,6 +86,7 @@ class BoolePolyRing {
   /// @name adopt global type definitions
   //@{
   typedef CTypes::manager_type manager_type;
+  typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::bool_type bool_type;
   typedef CTypes::size_type size_type;
@@ -92,8 +96,13 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
-  /// constructor for @em nvars variables
+  /// Constructor for @em nvars variables
   BoolePolyRing(size_type nvars=100, bool_type make_active = true);
+
+  /// Construct from pointer to manager
+  BoolePolyRing(manager_ptr pManager);
+
+  /// Copy constructor
   BoolePolyRing(const BoolePolyRing &);
   
   /// destructor
@@ -102,64 +111,57 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // member operators
   //-------------------------------------------------------------------------
-  /// cast to base operator
-  operator manager_type&();
+  /// Cast to base operator
+  // operator manager_type&();
 
   //-------------------------------------------------------------------------
   // other member functions
   //-------------------------------------------------------------------------
-  /// access to decision diagram manager
+  /// Access to decision diagram manager
   manager_type& manager();
 
-  /// constant access to decision diagram manager
+  /// Constant access to decision diagram manager
   const manager_type& manager() const;
 
-  /// access nvar-th variable of decision diagram manager
+  /// Access nvar-th variable of decision diagram manager
   dd_type ddVariable(idx_type nvar) const;
 
-  /// access nvar-th ring variable
+  /// Access nvar-th ring variable
   dd_type variable(idx_type nvar) const;
 
-  /// access nvar-th variable of the active ring
+  /// Access nvar-th variable of the active ring
   static dd_type ringVariable(idx_type nvar);
 
-  /// access empty variable set
+  /// Access empty variable set
   dd_type empty() const;
 
-  /// access current ring's empty variable set
+  /// Access current ring's empty variable set
   static dd_type ringEmpty();
 
-  /// access full variable set
-  dd_type full() const {return  mgr.zddOne(nVariables());  };
+  /// Access full variable set
+  dd_type full() const;
 
+  /// Access current ring's full variable set
+  static dd_type ringFull();
 
-  /// get number of ring variables
+  /// Get number of ring variables
   size_type nVariables() const;
 
-  /// get number of ring variables the of active ring
+  /// Get number of ring variables the of active ring
   static size_type nRingVariables();
 
-#ifdef PBORI_DEVELOPER
-  /// get number of ring variables the of active ring
-  static size_type nRingVars() { return nRingVariables(); };
-#endif 
+  /// Access current global ring setting
+  static self ring();
 
-  /// access current global ring setting
-  static self& ring();
-
-  /// make this global ring
+  /// Make this global ring
   void activate();
 
 protected:
+  /// Pointer to current global manager setting
+  static manager_ptr current_mgr;
 
-  /// pointer to current global ring setting
-  static self* current_ring;
-
-  /// interprete @c mgr as structure of Boolean polynomial ring
-  mutable manager_type mgr;
-
-  /// store number of ring variables
-  size_type nvars;
+  /// Interprete @c m_mgr as structure of Boolean polynomial ring
+  manager_ptr pMgr;
 };
 
 END_NAMESPACE_PBORI

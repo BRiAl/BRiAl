@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/03/22 08:06:59  dreyer
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ *
  * Revision 1.8  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
  *
@@ -104,6 +107,7 @@
 #else
 # define PBORI_TRACE_FUNC(text) 
 #endif
+
 /// Get output stream type
 #ifndef PBORI_NO_STDSTREAMS
 
@@ -126,12 +130,27 @@ END_NAMESPACE_PBORI
 
 #endif // of #ifndef PBORI_NO_STDSTREAMS
 
+/// Get shared pointer type
+#ifndef PBORI_NO_BOOST_PTR
+
+# include <boost/shared_ptr.hpp>
+# define PBORI_SHARED_PTR(Type) boost::shared_ptr<Type>
+
+#else
+# define PBORI_SHARED_PTR(Type) Type *
+
+#endif // of #ifndef PBORI_NO_BOOST_PTR
+
 
 BEGIN_NAMESPACE_PBORI
 
-// Forward declaration of decision diagram interface
+/// Forward declaration of decision diagram interface
 template <class DDType>
 class CDDInterface;
+
+/// Forward declaration of decision diagram manager interface
+template <class ManType>
+class CDDManager;
 
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
@@ -152,11 +171,11 @@ struct CTypes {
   /// Type of interface to binary decicion diagrams 
   typedef CDDInterface<dd_base> dd_type;
 
-  ///Vector of dd_type
+  /// Vector of dd_type
   typedef ZDDvector ddvector_type;
 
   /// Manage variables to be used by polynomials over Boolean ring
-  typedef Cudd manager_type;
+  typedef CDDManager<Cudd> manager_type;
 
   //-------------------------------------------------------------------------
   // types for several purposes
@@ -180,6 +199,7 @@ struct CTypes {
     failed,
     no_ring,
     invalid,
+    out_of_bounds,
 #ifdef PBORI_DEVELOPER
    not_implemented,
 #endif
