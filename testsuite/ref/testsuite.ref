@@ -1,0 +1,136 @@
+Starting Testsuite...
+---------------------
+----------------------
+Executing testring
+----------------------
+Exception caught sucessfully: No polynomial ring structure defined.
+Variable 0:
+: 1 nodes 0.5 minterms
+1000 1
+
+Variable 1:
+: 1 nodes 0.5 minterms
+0100 1
+
+Variable 2:
+: 1 nodes 0.5 minterms
+0010 1
+
+Variable 3:
+: 1 nodes 0.5 minterms
+0001 1
+
+----------------------
+Executing boolevars
+----------------------
+Testing boolean ring variables
+-> : 1 nodes 1 minterms
+10000 1
+
+-> : 1 nodes 1 minterms
+01000 1
+
+Sum: 
+-> : 2 nodes 2 minterms
+10000 1
+01000 1
+
+Finished.
+----------------------
+Executing cuddinterface
+----------------------
+Testing cudd interface
+: 3 nodes 0.5 minterms
+1-- 1
+: 3 nodes 0.5 minterms
+-1- 1
+: 3 nodes 0.25 minterms
+11- 1
+: 1 nodes 0.125 minterms
+100 1
+: 1 nodes 0.125 minterms
+010 1
+: 2 nodes 0.125 minterms
+110 1
+----------------------
+Executing errorcodes
+----------------------
+Testing important error codes
+Throwing 'alright'
+  Caught error # 0
+    which says: No error.
+Throwing 'failed'
+  Caught error # 1
+    which says: Unspecified error.
+Throwing 'no_ring'
+  Caught error # 2
+    which says: No polynomial ring structure defined.
+
+Testing all error codes 
+Throwing error # 0
+  Caught error # 0
+    which says: No error.
+Throwing error # 1
+  Caught error # 1
+    which says: Unspecified error.
+Throwing error # 2
+  Caught error # 2
+    which says: No polynomial ring structure defined.
+Throwing error # 3
+  Caught error # 3
+    which says: Invalid operation called.
+Throwing error # 4
+  Caught error # 4
+    which says: Variable index out of bounds.
+Throwing error # 5
+  Caught error # 5
+    which says: Sorry! Functionality not implemented yet.
+----------------------
+Executing boolepoly
+----------------------
+Testing Boolean polynomials
+-> : 1 nodes 1 minterms
+10000 1
+
+-> : 1 nodes 1 minterms
+01000 1
+
+-> : 1 nodes 1 minterms
+00100 1
+
+-> : 1 nodes 1 minterms
+00010 1
+
+-> : 1 nodes 1 minterms
+00001 1
+
+x*y : 
+-> : 2 nodes 1 minterms
+11000 1
+
+x*y + z: 
+-> : 3 nodes 2 minterms
+11000 1
+00100 1
+
+(x + y)* z: 
+-> : 3 nodes 2 minterms
+10100 1
+01100 1
+
+(x*v + y*v + z ) 
+-> : 4 nodes 3 minterms
+10010 1
+01010 1
+00100 1
+
+(x*v + y*v + z )* (v*y): 
+-> : 5 nodes 3 minterms
+11010 1
+01-10 1
+
+Node count: 5
+N: 5
+Finished.
+-------------------
+Testsuite finished.

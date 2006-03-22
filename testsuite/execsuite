@@ -1,0 +1,78 @@
+#! /bin/sh
+# $Id$
+# 
+# usage: execsuite
+#
+# Description: 
+# Executes and compares test suite
+#
+# Author: Alexander Dreyer, 2006
+# $Log$
+# Revision 1.1  2006/03/22 09:02:04  dreyer
+# ADD execsuite for running testsuite
+#
+
+srcdir="src";
+exe=""
+reffile="ref/testsuite.ref"
+tmpfile="ref/testsuite$$.tmp"
+
+dobuild=false;
+dodiff=true;
+runonly=false;
+keeptemp=false;
+
+doloop=true;
+while $doloop
+do
+  case $1 in
+    "-h" | "--help") 
+      echo "usage: $0 [-b][-r][-t]"
+      exit
+  ;;
+    "-b") shift
+      dobuild=true
+  ;;
+    "-r") shift
+      runonly=true
+  ;;
+    "-t") shift
+      keeptemp=true
+  ;;
+     *) doloop=false
+  esac
+done
+
+if $runonly; then
+  echo "Starting Testsuite..." 
+  echo "---------------------" 
+  find $srcdir -type f -name '*.cc' -print | \
+    sed -e "s/.cc/$exe/" -e "s/$srcdir\///"| while read i
+  do
+    echo "----------------------" 
+    echo "Executing $i"
+    echo "----------------------" 
+    $i
+    done
+   echo "-------------------" 
+   echo "Testsuite finished." 
+
+else
+  echo "Running testsuite..."
+  $0 -r > $tmpfile
+  if $dobuild; then
+    echo "Building new reference file $reffile."
+    cp $tmpfile $reffile
+    echo "Finished."
+  else 
+    echo "Diffing..."
+    diff $tmpfile $reffile
+    echo "Finished."
+  fi
+
+  if $keeptemp; then
+    echo "Execution log saved to $tmpfile."
+  else
+    rm $tmpfile
+  fi
+fi
