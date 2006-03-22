@@ -1,13 +1,16 @@
 #! /bin/sh
 # $Id$
 # 
-# usage: execsuite
+# usage: execsuite [-h][-b][-r][-t]
 #
 # Description: 
 # Executes and compares test suite
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.2  2006/03/22 09:21:47  dreyer
+# CHANGE: More meaningful usage text
+#
 # Revision 1.1  2006/03/22 09:02:04  dreyer
 # ADD execsuite for running testsuite
 #
@@ -27,7 +30,12 @@ while $doloop
 do
   case $1 in
     "-h" | "--help") 
-      echo "usage: $0 [-b][-r][-t]"
+      echo "usage: $0 [-h][-b][-r][-t]"
+      echo "  Runs test suite executables and compares output with reference"
+      echo "  -h: Displays this message"
+      echo "  -b: Build reference file"
+      echo "  -r: Run only test suite without diffing"
+      echo "  -t: Keep temporary output file"
       exit
   ;;
     "-b") shift
