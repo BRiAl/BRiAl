@@ -20,8 +20,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/03/22 16:48:13  dreyer
+ * ADD alternative to shared_ptr (if not available)
+ *
  * Revision 1.10  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.9  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
@@ -86,9 +90,9 @@ class BoolePolyRing {
   /// @name adopt global type definitions
   //@{
   typedef CTypes::manager_type manager_type;
-  typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
-  typedef CTypes::dd_type dd_type;
+  typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::bool_type bool_type;
+  typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
   //@}
@@ -96,6 +100,7 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
+
   /// Constructor for @em nvars variables
   BoolePolyRing(size_type nvars=100, bool_type make_active = true);
 
@@ -104,7 +109,7 @@ class BoolePolyRing {
 
   /// Copy constructor
   BoolePolyRing(const BoolePolyRing &);
-  
+
   /// destructor
   ~BoolePolyRing();
 
@@ -118,10 +123,10 @@ class BoolePolyRing {
   // other member functions
   //-------------------------------------------------------------------------
   /// Access to decision diagram manager
-  manager_type& manager();
+   manager_type& manager();
 
   /// Constant access to decision diagram manager
-  const manager_type& manager() const;
+   const manager_type& manager() const;
 
   /// Access nvar-th variable of decision diagram manager
   dd_type ddVariable(idx_type nvar) const;

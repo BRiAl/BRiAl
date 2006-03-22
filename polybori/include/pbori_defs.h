@@ -22,8 +22,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/03/22 16:48:13  dreyer
+ * ADD alternative to shared_ptr (if not available)
+ *
  * Revision 1.9  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.8  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
@@ -49,7 +53,6 @@
  * @endverbatim
 **/
 //*****************************************************************************
-
 
 // load cudd's c++ interface
 # include <cuddObj.hh>
@@ -137,7 +140,59 @@ END_NAMESPACE_PBORI
 # define PBORI_SHARED_PTR(Type) boost::shared_ptr<Type>
 
 #else
-# define PBORI_SHARED_PTR(Type) Type *
+
+/** @internal @class pbori_shared_ptr
+ * @brief This is a class template replacement for shared_ptr<>, if the latter
+ * is not available.
+ *
+ * @warning Copy constructor and operator= do only reference copies, the
+ * allocated memory is destroyed, when the initial instance is destroyed.
+ * 
+ **/
+template <class ValueType>
+class pbori_shared_ptr {
+public:
+
+  /// The type this class is referencing
+  typedef ValueType value_type;
+
+  /// Type of *this
+  typedef pbori_shared_ptr<value_type> self;
+
+  /// Construct initial instance 
+  /// @note This class instance is assumed to manage *pRhs exclusively
+  pbori_shared_ptr(value_type* pRhs = NULL): 
+    pVal(pRhs), is_shared(pRhs == NULL) {}
+
+  /// Shallow copy constructor
+  pbori_shared_ptr(const self& rhs):
+    pVal(rhs.pVal), is_shared(true) {}
+
+  /// Destructor
+  ~pbori_shared_ptr(){ if (!is_shared) delete pVal; }
+
+  /// Reference assignment
+  self& operator=(const self& rhs) { pVal = rhs.pVal; is_shared = true; return *this;} 
+
+  /// @name Operators for mimicing pointer behavior
+  //@{
+  value_type* operator->(){ return pVal; }
+  const value_type* operator->() const { return pVal; }
+  value_type& operator*(){ return *pVal; }
+  const value_type& operator*() const { return *pVal; }
+  operator bool() const { return pVal != NULL; }
+  //@}
+
+protected:
+
+  /// The actual pointer
+  value_type* pVal;
+
+  /// Flag for determining whether the pointer is shared.
+  bool is_shared;
+};
+
+# define PBORI_SHARED_PTR(Type) pbori_shared_ptr<Type>
 
 #endif // of #ifndef PBORI_NO_BOOST_PTR
 
@@ -176,6 +231,9 @@ struct CTypes {
 
   /// Manage variables to be used by polynomials over Boolean ring
   typedef CDDManager<Cudd> manager_type;
+
+  /// Define shared pointer to decision diagram manager
+  typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
 
   //-------------------------------------------------------------------------
   // types for several purposes

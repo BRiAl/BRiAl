@@ -20,8 +20,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/03/22 16:48:13  dreyer
+ * ADD alternative to shared_ptr (if not available)
+ *
  * Revision 1.11  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.10  2006/03/20 14:51:01  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
@@ -67,7 +71,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-// initialize pointer to active ring with 0 pointer
+// initialize pointer to active ring
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
 // interface with cudd's variable management
@@ -85,7 +89,7 @@ BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) :
   pMgr(rhs.pMgr) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
-  
+
 }
 
 // copy constructor (shallow copy)
@@ -93,7 +97,6 @@ BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
   pMgr(pRhs) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
-  
 }
 
 // destructor
@@ -101,16 +104,8 @@ BoolePolyRing::~BoolePolyRing() {
 
   PBORI_TRACE_FUNC( "~BoolePolyRing()" );
   // deconstruction is managed using the shared pointer class.
+
 }
-
-
-// //  cast to base operator
-// BoolePolyRing::operator manager_type&() {
-
-//   PBORI_TRACE_FUNC( "BoolePolyRing::operator manager_type()" );
-
-//   return *pMgr;
-// }
 
 // access to base
 BoolePolyRing::manager_type&
@@ -120,6 +115,7 @@ BoolePolyRing::manager() {
 
   return *pMgr;
 }
+
 //  constant access to base
 const BoolePolyRing::manager_type&
 BoolePolyRing::manager() const {
@@ -135,7 +131,7 @@ BoolePolyRing::ddVariable(idx_type nvar) const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ddVariable(idx_type) const" );
 
-  return (*pMgr).variable(nvar);
+  return pMgr->variable(nvar);
 }
 
 // access nvar-th ring variable
@@ -160,9 +156,7 @@ BoolePolyRing::ringVariable(idx_type nvar) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringVariable(idx_type nvar)" );
 
-  self the_ring(current_mgr);
-  return the_ring.variable(nvar); 
-
+   return ring().variable(nvar); 
 }
 
 // get number of ring variables
@@ -181,8 +175,7 @@ BoolePolyRing::ringEmpty() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return ring().empty(); 
-
+  return current_mgr->zeroDD();
 }
 
 // get number of ring variables
@@ -201,8 +194,7 @@ BoolePolyRing::ringFull() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return ring().full(); 
-
+  return  current_mgr->oneDD();
 }
 
 
@@ -220,7 +212,7 @@ BoolePolyRing::nRingVariables() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::nRingVariables() const" );
 
-  return ring().nVariables();
+  return current_mgr->nVariables();
 }
 
 // access current global ring setting
@@ -229,14 +221,12 @@ BoolePolyRing::ring() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ring() const" );
 
-  if(current_mgr != NULL){
+  if(current_mgr){
     return self(current_mgr);
   }
   else {
     throw PBoRiError(CTypes::no_ring);
   }
-    
-
 }
 
 
