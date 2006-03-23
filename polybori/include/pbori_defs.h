@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/03/23 09:23:11  dreyer
+ * ADD: pbori_shared_ptr_postclean, used by ~BoolePolyRing() to clean
+ * current_mgr, if pbori_shared_ptr<> is used (not for boost::shared_ptr<>).
+ *
  * Revision 1.10  2006/03/22 16:48:13  dreyer
  * ADD alternative to shared_ptr (if not available)
  *
@@ -139,8 +143,20 @@ END_NAMESPACE_PBORI
 # include <boost/shared_ptr.hpp>
 # define PBORI_SHARED_PTR(Type) boost::shared_ptr<Type>
 
+BEGIN_NAMESPACE_PBORI
+
+// Clean second pointer
+template <class ValueType>
+void
+pbori_shared_ptr_postclean( const PBORI_SHARED_PTR(ValueType)&, 
+                            const PBORI_SHARED_PTR(ValueType)& ){
+  // nothing needed for boost::shared_ptr
+}
+END_NAMESPACE_PBORI
+
 #else
 
+BEGIN_NAMESPACE_PBORI
 /** @internal @class pbori_shared_ptr
  * @brief This is a class template replacement for shared_ptr<>, if the latter
  * is not available.
@@ -172,7 +188,10 @@ public:
   ~pbori_shared_ptr(){ if (!is_shared) delete pVal; }
 
   /// Reference assignment
-  self& operator=(const self& rhs) { pVal = rhs.pVal; is_shared = true; return *this;} 
+  self& operator=(const self& rhs) {
+    pVal = rhs.pVal; is_shared = true; 
+    return *this;
+  } 
 
   /// @name Operators for mimicing pointer behavior
   //@{
@@ -180,19 +199,35 @@ public:
   const value_type* operator->() const { return pVal; }
   value_type& operator*(){ return *pVal; }
   const value_type& operator*() const { return *pVal; }
+  bool operator==(const self& rhs) const { return (pVal==rhs.pVal); }
   operator bool() const { return pVal != NULL; }
   //@}
 
-protected:
+  /// Check whether pVal was instantiated by *this
+  bool unique() const { return !is_shared; }
 
+protected:
   /// The actual pointer
   value_type* pVal;
 
   /// Flag for determining whether the pointer is shared.
   bool is_shared;
 };
+END_NAMESPACE_PBORI
 
-# define PBORI_SHARED_PTR(Type) pbori_shared_ptr<Type>
+# define PBORI_SHARED_PTR(Type) PBORI::pbori_shared_ptr<Type>
+
+BEGIN_NAMESPACE_PBORI
+// Clean second pointer
+template <class ValueType>
+void
+pbori_shared_ptr_postclean( const PBORI_SHARED_PTR(ValueType)& lhs, 
+                            PBORI_SHARED_PTR(ValueType)& rhs ){
+  if( lhs.unique() && (lhs == rhs) )
+    rhs = PBORI_SHARED_PTR(ValueType)();
+}
+END_NAMESPACE_PBORI
+
 
 #endif // of #ifndef PBORI_NO_BOOST_PTR
 

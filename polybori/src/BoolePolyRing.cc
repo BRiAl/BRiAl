@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/03/23 09:23:11  dreyer
+ * ADD: pbori_shared_ptr_postclean, used by ~BoolePolyRing() to clean
+ * current_mgr, if pbori_shared_ptr<> is used (not for boost::shared_ptr<>).
+ *
  * Revision 1.12  2006/03/22 16:48:13  dreyer
  * ADD alternative to shared_ptr (if not available)
  *
@@ -105,6 +109,8 @@ BoolePolyRing::~BoolePolyRing() {
   PBORI_TRACE_FUNC( "~BoolePolyRing()" );
   // deconstruction is managed using the shared pointer class.
 
+  // Clean current_mgr, if necessary
+  pbori_shared_ptr_postclean(pMgr, current_mgr);
 }
 
 // access to base
