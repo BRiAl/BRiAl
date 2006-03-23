@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.1  2006/03/22 08:06:59  dreyer
  * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
  *
@@ -37,7 +41,6 @@
 
 // get decision diagram definitions.
 #include "CDDInterface.h"
-
 
 BEGIN_NAMESPACE_PBORI
 
@@ -70,26 +73,32 @@ class CDDManager<Cudd> {
 
   /// Default constructor
   CDDManager(size_type nvars_ = 0): 
-    m_interfaced(0, nvars_), nvars(nvars_) { }
+    m_interfaced(0, nvars_) { }
 
   /// Copy constructor
   CDDManager(const self& rhs): 
-    m_interfaced(rhs.m_interfaced), nvars(rhs.nvars) {}
+    m_interfaced(rhs.m_interfaced) { }
+
+  /// Constructor from given ring
+  CDDManager(interfaced_type& rhs): 
+    m_interfaced(rhs) { }
 
   /// Destructor
-  ~CDDManager() {}
+  ~CDDManager() { }
 
   /// Access nvar-th managed variable
-  dd_base variable(idx_type nvar) const { return m_interfaced.zddVar(nvar); }
+  dd_base variable(idx_type nvar) const {  return m_interfaced.zddVar(nvar); }
 
   /// Get number of managed variables
-  size_type nVariables() const { return nvars; }
+  size_type nVariables() const { 
+    return Cudd_ReadZddSize(m_interfaced.getManager()); 
+  }
 
   /// Get empty decision diagram 
   dd_base zeroDD() const { return m_interfaced.zddZero(); }
 
   /// Get decision diagram with all variables
-  dd_base oneDD() const { return m_interfaced.zddOne(nvars); }
+  dd_base oneDD() const { return m_interfaced.zddOne(nVariables()); }
 
   /// Casting operator to interfaced type
   operator interfaced_type&() { return m_interfaced; }
@@ -98,9 +107,6 @@ class CDDManager<Cudd> {
   operator const interfaced_type&() const { return m_interfaced; }
 
 private:
-  /// Store number of ring variables
-  size_type nvars;  
-
   /// Actual decision diagram manager
   mutable interfaced_type m_interfaced;
 };

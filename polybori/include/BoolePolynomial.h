@@ -21,6 +21,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.5  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
  *
@@ -65,6 +69,8 @@ public:
 
   /// @name Adopt global type definitions
   //@{
+  typedef CTypes::manager_type manager_type;
+  typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::ddvector_type ddvector_type;
   typedef CTypes::size_type size_type;

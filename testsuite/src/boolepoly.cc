@@ -19,8 +19,13 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.2  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.1  2006/03/20 10:40:22  dreyer
  * + Initial Version

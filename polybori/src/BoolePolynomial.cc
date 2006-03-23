@@ -20,8 +20,13 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.5  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.4  2006/03/20 14:51:01  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
@@ -114,9 +119,23 @@ BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
-  PBORI_NOT_IMPLEMENTED;
+  dd_type leadterm = m_dd;
+  dd_type nextterm = m_dd;
 
-  return monom_type();
+  BoolePolyRing the_ring(m_dd.manager());
+  size_type nlen = the_ring.nVariables();
+
+  for(idx_type idx = 0; idx < nlen; ++idx){
+
+    nextterm.intersectAssign( the_ring.ddVariable(idx) );
+
+    if (nextterm !=  the_ring.empty())
+      leadterm = nextterm;    
+    else
+      nextterm = leadterm;
+  }
+
+  return leadterm;
 }
 
 // Maximal degree of the polynomial
@@ -137,9 +156,8 @@ BoolePolynomial::lmDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
+  // Equals number of nodes for monomials
+  return lead().nNodes();
 }
 
 
@@ -169,7 +187,7 @@ BoolePolynomial::nNodes() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nNodes() const" );
 
-  return m_dd.nNodes();// Cudd_zddDagSize(m_dd.getNode());
+  return m_dd.nNodes();
 }
 
 // Number of variables of the polynomial

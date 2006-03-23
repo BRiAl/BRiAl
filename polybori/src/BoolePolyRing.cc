@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.13  2006/03/23 09:23:11  dreyer
  * ADD: pbori_shared_ptr_postclean, used by ~BoolePolyRing() to clean
  * current_mgr, if pbori_shared_ptr<> is used (not for boost::shared_ptr<>).
@@ -96,11 +100,18 @@ BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) :
 
 }
 
-// copy constructor (shallow copy)
+// construct from pointer to manager
 BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
   pMgr(pRhs) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
+}
+
+// construct from manager
+BoolePolyRing::BoolePolyRing(const manager_type& manager) :
+  pMgr( new manager_type(manager) ) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing(const manager_type&)" );
 }
 
 // destructor
@@ -129,6 +140,15 @@ BoolePolyRing::manager() const {
   PBORI_TRACE_FUNC( "BoolePolyRing::manager() const" );
 
   return *pMgr;
+}
+
+// access nvar-th ring variable
+BoolePolyRing::dd_type
+BoolePolyRing::ringDdVariable(idx_type nvar) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ringDdVariable(idx_type)" );
+
+  return current_mgr->variable(nvar);
 }
 
 // access nvar-th ring variable
@@ -200,14 +220,14 @@ BoolePolyRing::ringFull() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return  current_mgr->oneDD();
+  return current_mgr->oneDD();
 }
 
 
 BoolePolyRing::size_type
 BoolePolyRing::nVariables() const {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing::nvVriables() const" );
+  PBORI_TRACE_FUNC( "BoolePolyRing::nVariables() const" );
 
   return pMgr->nVariables();
 }

@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.1  2006/03/20 14:51:00  dreyer
  * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
  *
@@ -34,6 +38,9 @@
 
 // load basic definitions
 #include "pbori_defs.h"
+
+// load decision diagram manger Interface
+#include "CDDManager.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -111,6 +118,8 @@ class CDDInterface<ZDD>:
   /// Type for output streams
   typedef CTypes::ostream_type ostream_type;
 
+  /// Type for comparisons
+  typedef CTypes::bool_type bool_type;
 
   /// Default constructor
   CDDInterface(): base_type() {}
@@ -179,6 +188,17 @@ class CDDInterface<ZDD>:
     return *this;
   };
 
+  /// Generate subset, where decision diagram manager variable idx is asserted
+  self subset1(idx_type idx) {
+    return m_interfaced.Subset1(idx);
+  };
+
+  /// subset1 with assignment
+  self& subset1Assign(idx_type idx) {
+    m_interfaced = m_interfaced.Subset1(idx);
+    return *this;
+  };
+
   /// Get number of nodes in decision diagram
   size_type nNodes() const {
     return Cudd_zddDagSize(m_interfaced.getNode());
@@ -192,6 +212,18 @@ class CDDInterface<ZDD>:
     return os;
   }
 
+  /// Equality check
+  bool_type operator==(const self& rhs) {
+    return (m_interfaced == rhs.m_interfaced);
+  }
+
+  /// Nonequality check
+  bool_type operator!=(const self& rhs) {
+    return (m_interfaced != rhs.m_interfaced);
+  }
+  Cudd& manager() const {
+    return  *m_interfaced.manager();
+  }
 };
 
 

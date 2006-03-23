@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/03/23 17:15:04  dreyer
+ * ADD: lead() and lmdeg() functionality to BoolePolynomial,
+ * BoolePolyRing(const manager_type &); leading term exampl.
+ *
  * Revision 1.11  2006/03/22 16:48:13  dreyer
  * ADD alternative to shared_ptr (if not available)
  *
@@ -104,6 +108,9 @@ class BoolePolyRing {
   /// Constructor for @em nvars variables
   BoolePolyRing(size_type nvars=100, bool_type make_active = true);
 
+  /// Construct from manager
+  BoolePolyRing(const manager_type &);
+
   /// Construct from pointer to manager
   BoolePolyRing(manager_ptr pManager);
 
@@ -130,6 +137,9 @@ class BoolePolyRing {
 
   /// Access nvar-th variable of decision diagram manager
   dd_type ddVariable(idx_type nvar) const;
+
+  /// Access nvar-th variable of the active ring
+  static dd_type ringDdVariable(idx_type nvar);
 
   /// Access nvar-th ring variable
   dd_type variable(idx_type nvar) const;

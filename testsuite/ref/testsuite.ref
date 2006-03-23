@@ -132,5 +132,37 @@ x*y + z:
 Node count: 5
 N: 5
 Finished.
+----------------------
+Executing leadterm
+----------------------
+Testing leading terms
+x*y + z: 
+-> : 3 nodes 2 minterms
+11000 1
+00100 1
+
+leading term: 
+-> : 2 nodes 1 minterms
+11000 1
+
+x*y*w + z*: 
+-> : 4 nodes 2 minterms
+11001 1
+00101 1
+
+leading term: 
+-> : 3 nodes 1 minterms
+11001 1
+
+# ring variabled: 
+5
+lmdeg()
+3
+-> : 5 nodes 4 minterms
+11001 1
+01000 1
+000-1 1
+
+Finished.
 -------------------
 Testsuite finished.

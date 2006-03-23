@@ -69,8 +69,7 @@ if env['PLATFORM']=="darwin":
 env.Append(LIBS=["m"])
 
 env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi"))
-
-
+#env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])
     env.Append(LIBS=[l])
@@ -102,7 +101,8 @@ if isinstance(l,list):
     l=l[0]
 Default(l)
 
-tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface"]
+tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
+  "leadterm"]
 
 for t in tests:
     Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))
