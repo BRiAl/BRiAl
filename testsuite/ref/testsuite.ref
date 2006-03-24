@@ -159,8 +159,8 @@ leading term:
 lmdeg()
 3
 usedVariables()
--> : 4 nodes 1 minterms
-11101 1
+-> : 5 nodes 2 minterms
+111-1 1
 
 -> : 5 nodes 4 minterms
 11001 1
@@ -168,8 +168,8 @@ usedVariables()
 000-1 1
 
 usedVariables()
--> : 4 nodes 1 minterms
-11011 1
+-> : 5 nodes 2 minterms
+11-11 1
 
 # usedVariables()
 4

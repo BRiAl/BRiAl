@@ -68,7 +68,7 @@ if env['PLATFORM']=="darwin":
 
 env.Append(LIBS=["m"])
 
-env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi"))
+env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi --pedantic"))
 #env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])

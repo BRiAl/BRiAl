@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/24 16:15:15  dreyer
+ * CHANGE: (n)usedVariables() now uses Cudd-internal commands
+ * ADD: CDDInterface<> support() and nSupport() (for above)
+ *
  * Revision 1.7  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -191,7 +195,6 @@ BoolePolynomial::nNodes() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nNodes() const" );
 
-  // Equals number of nodes for monomials
   return m_dd.nNodes();
 }
 
@@ -201,7 +204,7 @@ BoolePolynomial::nUsedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nUsedVariables() const" );
 
-  return usedVariables().nNodes();
+  return m_dd.nSupport();
 }
 
 // Set of variables of the polynomial
@@ -210,17 +213,7 @@ BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
-  manager_reference mgr(m_dd.manager());
-  size_type nlen = mgr.nVariables();
-
-  dd_type term = mgr.oneDD();
-
-   for(idx_type idx = 0; idx < nlen; ++idx){
-     if (m_dd.intersect( mgr.variable(idx) ) !=  mgr.zeroDD())
-       term.changeAssign(idx); 
-  }
-
-  return term;
+  return m_dd.support();
 }
 
 // Access to internal decision diagramm structure

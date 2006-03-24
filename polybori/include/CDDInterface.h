@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/24 16:15:15  dreyer
+ * CHANGE: (n)usedVariables() now uses Cudd-internal commands
+ * ADD: CDDInterface<> support() and nSupport() (for above)
+ *
  * Revision 1.3  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -254,6 +258,20 @@ class CDDInterface<ZDD>:
   /// Get reference to actual decision diagram manager 
   manager_base& manager() const {
     return *m_interfaced.manager();
+  }
+
+  /// Get numbers of used variables
+  size_type nSupport() const {
+    return Cudd_SupportSize(manager().getManager(), m_interfaced.getNode());
+  }
+
+  /// Get used variables
+  self support() const {
+
+    BDD supp( &manager(), 
+              Cudd_Support(manager().getManager(), m_interfaced.getNode()) );
+
+    return supp.PortToZdd();
   }
 };
 
