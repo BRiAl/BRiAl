@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/03/24 15:02:44  dreyer
+ * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
+ * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
+ *
  * Revision 1.14  2006/03/23 17:15:04  dreyer
  * ADD: lead() and lmdeg() functionality to BoolePolynomial,
  * BoolePolyRing(const manager_type &); leading term exampl.
@@ -110,7 +114,7 @@ BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
 // construct from manager
 BoolePolyRing::BoolePolyRing(const manager_type& manager) :
   pMgr( new manager_type(manager) ) {
-
+  std::cout <<"manager_type&"<<std::endl;
   PBORI_TRACE_FUNC( "BoolePolyRing(const manager_type&)" );
 }
 

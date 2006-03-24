@@ -40,17 +40,17 @@ Finished.
 Executing cuddinterface
 ----------------------
 Testing cudd interface
-: 3 nodes 0.5 minterms
+: 3 nodes 4 minterms
 1-- 1
-: 3 nodes 0.5 minterms
+: 3 nodes 4 minterms
 -1- 1
-: 3 nodes 0.25 minterms
+: 3 nodes 2 minterms
 11- 1
-: 1 nodes 0.125 minterms
+: 1 nodes 1 minterms
 100 1
-: 1 nodes 0.125 minterms
+: 1 nodes 1 minterms
 010 1
-: 2 nodes 0.125 minterms
+: 2 nodes 1 minterms
 110 1
 ----------------------
 Executing errorcodes
@@ -158,11 +158,21 @@ leading term:
 5
 lmdeg()
 3
+usedVariables()
+-> : 4 nodes 1 minterms
+11101 1
+
 -> : 5 nodes 4 minterms
 11001 1
 01000 1
 000-1 1
 
+usedVariables()
+-> : 4 nodes 1 minterms
+11011 1
+
+# usedVariables()
+4
 Finished.
 -------------------
 Testsuite finished.

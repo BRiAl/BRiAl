@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/03/24 15:02:44  dreyer
+ * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
+ * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
+ *
  * Revision 1.11  2006/03/23 09:23:11  dreyer
  * ADD: pbori_shared_ptr_postclean, used by ~BoolePolyRing() to clean
  * current_mgr, if pbori_shared_ptr<> is used (not for boost::shared_ptr<>).
@@ -266,6 +270,9 @@ struct CTypes {
 
   /// Manage variables to be used by polynomials over Boolean ring
   typedef CDDManager<Cudd> manager_type;
+
+  /// Reference to decision diagramm manager
+  typedef CDDManager<Cudd&> manager_reference;
 
   /// Define shared pointer to decision diagram manager
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;

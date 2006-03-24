@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/03/24 15:02:44  dreyer
+ * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
+ * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
+ *
  * Revision 1.12  2006/03/23 17:15:04  dreyer
  * ADD: lead() and lmdeg() functionality to BoolePolynomial,
  * BoolePolyRing(const manager_type &); leading term exampl.
@@ -94,6 +98,7 @@ class BoolePolyRing {
   /// @name adopt global type definitions
   //@{
   typedef CTypes::manager_type manager_type;
+  typedef CTypes::manager_reference manager_reference;
   typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::bool_type bool_type;
   typedef CTypes::dd_type dd_type;

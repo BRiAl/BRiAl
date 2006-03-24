@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/03/24 15:02:44  dreyer
+ * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
+ * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
+ *
  * Revision 1.6  2006/03/23 17:15:04  dreyer
  * ADD: lead() and lmdeg() functionality to BoolePolynomial,
  * BoolePolyRing(const manager_type &); leading term exampl.
@@ -122,14 +126,14 @@ BoolePolynomial::lead() const {
   dd_type leadterm = m_dd;
   dd_type nextterm = m_dd;
 
-  BoolePolyRing the_ring(m_dd.manager());
-  size_type nlen = the_ring.nVariables();
+  manager_reference mgr(m_dd);
+  size_type nlen = mgr.nVariables();
 
   for(idx_type idx = 0; idx < nlen; ++idx){
 
-    nextterm.intersectAssign( the_ring.ddVariable(idx) );
+    nextterm.intersectAssign( mgr.variable(idx) );
 
-    if (nextterm !=  the_ring.empty())
+    if (nextterm !=  mgr.zeroDD())
       leadterm = nextterm;    
     else
       nextterm = leadterm;
@@ -187,6 +191,7 @@ BoolePolynomial::nNodes() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nNodes() const" );
 
+  // Equals number of nodes for monomials
   return m_dd.nNodes();
 }
 
@@ -196,20 +201,26 @@ BoolePolynomial::nUsedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nUsedVariables() const" );
 
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
+  return usedVariables().nNodes();
 }
 
 // Set of variables of the polynomial
-BoolePolynomial::ddvector_type
+BoolePolynomial::monom_type
 BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
-  PBORI_NOT_IMPLEMENTED;
+  manager_reference mgr(m_dd.manager());
+  size_type nlen = mgr.nVariables();
 
-  return ddvector_type(0, NULL, NULL);
+  dd_type term = mgr.oneDD();
+
+   for(idx_type idx = 0; idx < nlen; ++idx){
+     if (m_dd.intersect( mgr.variable(idx) ) !=  mgr.zeroDD())
+       term.changeAssign(idx); 
+  }
+
+  return term;
 }
 
 // Access to internal decision diagramm structure
@@ -239,7 +250,7 @@ BoolePolynomial::print(ostream_type& os) const {
   ///  @todo: add std::cout capability for cudd's ZDD type
 
   os << "-> ";
-  m_dd.print(os, BoolePolyRing::nRingVariables());
+  m_dd.print(os);
 
   return os;
 }

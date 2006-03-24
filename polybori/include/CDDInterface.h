@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/24 15:02:44  dreyer
+ * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
+ * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
+ *
  * Revision 1.2  2006/03/23 17:15:04  dreyer
  * ADD: lead() and lmdeg() functionality to BoolePolynomial,
  * BoolePolyRing(const manager_type &); leading term exampl.
@@ -38,9 +42,6 @@
 
 // load basic definitions
 #include "pbori_defs.h"
-
-// load decision diagram manger Interface
-#include "CDDManager.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -103,6 +104,12 @@ class CDDInterface<ZDD>:
   /// Interfacing Cudd's zero-suppressed decision diagram type
   typedef ZDD interfaced_type;
   
+  /// Cudd's decision diagram manager type
+  typedef Cudd manager_base;
+
+  /// Interface to Cudd's decision diagram manager type
+  typedef CDDManager<Cudd> manager_type;
+
   /// Generic access to base type
   typedef CDDInterfaceBase<interfaced_type> base_type;
 
@@ -134,7 +141,7 @@ class CDDInterface<ZDD>:
   ~CDDInterface() {}
 
   /// Set union
-  self unite(const self& rhs) {
+  self unite(const self& rhs) const {
     return self(base_type(m_interfaced.Union(rhs.m_interfaced)));
   };
 
@@ -145,7 +152,7 @@ class CDDInterface<ZDD>:
   };
 
   /// Set difference
-  self diff(const self& rhs) {
+  self diff(const self& rhs) const {
     return m_interfaced.Diff(rhs.m_interfaced);
   };
 
@@ -156,7 +163,7 @@ class CDDInterface<ZDD>:
   };
 
   /// Set intersection
-  self intersect(const self& rhs) {
+  self intersect(const self& rhs) const {
     return m_interfaced.Intersect(rhs.m_interfaced);
   };
 
@@ -166,8 +173,19 @@ class CDDInterface<ZDD>:
     return *this;
   };
 
+  /// Product
+  self product(const self& rhs) const {
+    return m_interfaced.Product(rhs.m_interfaced);
+  };
+
+  /// Product with assignment
+  self& productAssign(const self& rhs) {
+    m_interfaced = m_interfaced.Product(rhs.m_interfaced);
+    return *this;
+  };
+
   /// Unate product
-  self unateProduct(const self& rhs) {
+  self unateProduct(const self& rhs) const {
     return m_interfaced.UnateProduct(rhs.m_interfaced);
   };
 
@@ -178,7 +196,7 @@ class CDDInterface<ZDD>:
   };
 
   /// Generate subset, where decision diagram manager variable idx is false
-  self subset0(idx_type idx) {
+  self subset0(idx_type idx) const {
     return m_interfaced.Subset0(idx);
   };
 
@@ -189,7 +207,7 @@ class CDDInterface<ZDD>:
   };
 
   /// Generate subset, where decision diagram manager variable idx is asserted
-  self subset1(idx_type idx) {
+  self subset1(idx_type idx) const {
     return m_interfaced.Subset1(idx);
   };
 
@@ -199,30 +217,43 @@ class CDDInterface<ZDD>:
     return *this;
   };
 
+  /// Substitute variable mit index idx with its complement
+  self change(idx_type idx) const {
+    return m_interfaced.Change(idx);
+  };
+
+  /// Change with assignment
+  self& changeAssign(idx_type idx) {
+    m_interfaced = m_interfaced.Change(idx);
+    return *this;
+  };
+
   /// Get number of nodes in decision diagram
   size_type nNodes() const {
     return Cudd_zddDagSize(m_interfaced.getNode());
   }
 
   /// Get number of nodes in decision diagram
-  ostream_type& print(ostream_type& os, size_type nvars = 0) const {
+  ostream_type& print(ostream_type& os) const {
 
-    m_interfaced.print(nvars);
+    m_interfaced.print( Cudd_ReadZddSize(manager().getManager()) );
     m_interfaced.PrintMinterm();
     return os;
   }
 
   /// Equality check
-  bool_type operator==(const self& rhs) {
+  bool_type operator==(const self& rhs) const {
     return (m_interfaced == rhs.m_interfaced);
   }
 
   /// Nonequality check
-  bool_type operator!=(const self& rhs) {
+  bool_type operator!=(const self& rhs) const {
     return (m_interfaced != rhs.m_interfaced);
   }
-  Cudd& manager() const {
-    return  *m_interfaced.manager();
+
+  /// Get reference to actual decision diagram manager 
+  manager_base& manager() const {
+    return *m_interfaced.manager();
   }
 };
 
