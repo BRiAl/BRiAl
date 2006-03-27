@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/03/27 15:02:43  dreyer
+ * ADD: BoolePolynomial::operator/=(const self&) and spoly
+ *
  * Revision 1.9  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -121,6 +124,16 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
   m_dd.unateProductAssign(rhs.m_dd);
+  return *this;
+}
+
+// Division
+BoolePolynomial&
+BoolePolynomial::operator/=(const monom_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
+
+  m_dd.divideAssign(rhs.m_dd);
   return *this;
 }
 
@@ -290,11 +303,27 @@ operator*(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom)
 
 }
 
+// division by monomial (skipping remainder)
+BoolePolynomial
+operator/(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom) {
+
+  PBORI_TRACE_FUNC("operator/(const BoolePolynomial&,const monom_type&)");
+
+  BoolePolynomial result(poly);
+  return (result /= monom);
+
+}
+
 /// Compute spoly of two polynomials
 BoolePolynomial 
-spoly(const BoolePolynomial&, const BoolePolynomial&){
-  PBORI_NOT_IMPLEMENTED;
-  return BoolePolynomial();
+spoly(const BoolePolynomial& first, const BoolePolynomial& second){
+
+  BoolePolynomial lead1(first.lead()), lead2(second.lead());
+
+  BoolePolynomial prod = lead1;
+  prod *= lead2;
+
+  return ( first * (prod / lead1) ) + ( second * (prod / lead2) );
 }
 
 // Stream output for Boolean polynomials

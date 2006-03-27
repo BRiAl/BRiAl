@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/27 15:02:43  dreyer
+ * ADD: BoolePolynomial::operator/=(const self&) and spoly
+ *
  * Revision 1.4  2006/03/24 16:15:15  dreyer
  * CHANGE: (n)usedVariables() now uses Cudd-internal commands
  * ADD: CDDInterface<> support() and nSupport() (for above)
@@ -229,6 +232,27 @@ class CDDInterface<ZDD>:
   /// Change with assignment
   self& changeAssign(idx_type idx) {
     m_interfaced = m_interfaced.Change(idx);
+    return *this;
+  };
+
+  /// Division
+  self divide(const self& rhs) const {
+    return m_interfaced.Divide(rhs);
+  };
+
+  /// Division with assignment
+  self& divideAssign(const self& rhs) {
+    m_interfaced = m_interfaced.Divide(rhs);
+    return *this;
+  };
+  /// Weak division
+  self weakDivide(const self& rhs) const {
+    return m_interfaced.WeakDiv(rhs);
+  };
+
+  /// Weak division with assignment
+  self& WeakDivideAssign(const self& rhs) {
+    m_interfaced = m_interfaced.WeakDiv(rhs);
     return *this;
   };
 

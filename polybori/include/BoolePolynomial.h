@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/03/27 15:02:43  dreyer
+ * ADD: BoolePolynomial::operator/=(const self&) and spoly
+ *
  * Revision 1.8  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -115,6 +118,7 @@ public:
   //@{
   self& operator+=(const self&);
   self& operator*=(const monom_type&);
+  self& operator/=(const monom_type&);
   //@}
 
   /// @name Logical operations
@@ -174,6 +178,11 @@ operator+(const BoolePolynomial&, const BoolePolynomial&);
 /// Multiplication with monomial
 BoolePolynomial
 operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
+
+
+/// Division by monomial (skipping remainder)
+BoolePolynomial
+operator/(const BoolePolynomial&, const BoolePolynomial::monom_type&);
 
 /// Compute spoly of two polynomials
 BoolePolynomial 

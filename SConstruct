@@ -102,7 +102,7 @@ if isinstance(l,list):
 Default(l)
 
 tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
-  "leadterm"]
+  "leadterm", "spoly" ]
 
 for t in tests:
     Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/27 15:02:43  dreyer
+ * ADD: BoolePolynomial::operator/=(const self&) and spoly
+ *
  * Revision 1.4  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -121,52 +124,11 @@ main(){
     std::cout << std::endl << "Nonequality? "  <<std::endl;
     std::cout <<  (poly != ((x*v + y*v + z )* (v*y)) ) <<std::endl;
 
-//       pdiag =  
-//       (poly.diagram().Intersect(BoolePolyRing::ringVariable(3) ));
+    std::cout << std::endl << "Division ok? "  <<std::endl;
+    std::cout <<  ( ( (x*y*z + x*z*w +v) / (x*z) ) == ( y + w ) ) <<std::endl;
 
+    std::cout << std::endl;
 
-//     poly2 = pdiag;
-//     std::cout << "____1A______"<<std::endl;
-//     std::cout << poly2 <<"!"<<(pdiag ==  zdd_false ) <<std::endl;
-
-//     pdiag =  poly.diagram().Subset1(1);
-//     //  pdiag =  poly.diagram().UnateProduct(BoolePolyRing::ringVariable(2) );
-
-//     poly2 = pdiag;
-//     std::cout << "____2______"<<std::endl;
-//     std::cout << poly2 <<std::endl;
-
-//     pdiag = pdiag|(  poly.diagram().UnateProduct(
-//    BoolePolyRing::ringVariable(1) ));
-
-//     pdiag = pdiag.Union(  poly.diagram().UnateProduct(
-//       BoolePolyRing::ringVariable(2) ));
-
-//     pdiag = pdiag.Union(  poly.diagram().UnateProduct(
-//       BoolePolyRing::ringVariable(3) ));
-//     pdiag = pdiag.Union(  poly.diagram().UnateProduct(
-//       BoolePolyRing::ringVariable(4) ));
-
-//     poly2 = pdiag;
-//     std::cout << "____1b______"<<std::endl;
-//     std::cout << poly2 <<std::endl;
-
-//     BoolePolynomial::dd_type     diag = diag.UnateProduct(poly.diagram());
-
-
-//     poly = diag;
-//     std::cout << "____2______"<<std::endl;
-//     std::cout << poly <<std::endl;
-
-//     poly3 = x;
-//     poly3 += y;
-
-//     poly = diag.Intersect(poly3.diagram()); 
-
-//     std::cout << "____3______"<<std::endl;
-//     std::cout << poly <<std::endl;
-
- 
     std::cout << "Finished."<<std::endl;
   }
   catch (PBoRiError& err) {

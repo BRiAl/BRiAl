@@ -21,6 +21,34 @@ Variable 3:
 0001 1
 
 ----------------------
+Executing spoly
+----------------------
+Testing boolean ring variables
+Poly 1: 
+-> : 5 nodes 4 minterms
+11000 1
+10100 1
+01000 1
+00001 1
+
+Poly 2: 
+-> : 2 nodes 2 minterms
+-0001 1
+
+spoly: 
+-> : 3 nodes 2 minterms
+10101 1
+00001 1
+
+Expected result: 
+-> : 3 nodes 2 minterms
+10101 1
+00001 1
+
+Equality? 
+1
+Finished.
+----------------------
 Executing boolevars
 ----------------------
 Testing boolean ring variables
@@ -149,6 +177,10 @@ Equality?
 
 Nonequality? 
 0
+
+Division ok? 
+1
+
 Finished.
 ----------------------
 Executing leadterm
