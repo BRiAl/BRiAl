@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/03/27 15:18:09  dreyer
+ * + Removed some debug code.
+ *
  * Revision 1.16  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -117,7 +120,7 @@ BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
 // construct from manager
 BoolePolyRing::BoolePolyRing(const manager_type& manager) :
   pMgr( new manager_type(manager) ) {
-  std::cout <<"manager_type&"<<std::endl;
+
   PBORI_TRACE_FUNC( "BoolePolyRing(const manager_type&)" );
 }
 
