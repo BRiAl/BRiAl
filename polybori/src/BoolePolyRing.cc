@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.15  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -152,7 +155,7 @@ BoolePolyRing::ringDdVariable(idx_type nvar) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringDdVariable(idx_type)" );
 
-  return current_mgr->variable(nvar);
+  return current_mgr->ddVariable(nvar);
 }
 
 // access nvar-th ring variable
@@ -161,7 +164,7 @@ BoolePolyRing::ddVariable(idx_type nvar) const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ddVariable(idx_type) const" );
 
-  return pMgr->variable(nvar);
+  return pMgr->ddVariable(nvar);
 }
 
 // access nvar-th ring variable
@@ -170,14 +173,7 @@ BoolePolyRing::variable(idx_type nvar) const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::variable(idx_type) const" );
 
-  dd_type dd( ddVariable(nvar) );
-  size_type nlen = BoolePolyRing::nRingVariables();
-
-  for(size_type i = 0; i < nlen; ++i)
-    if (i != nvar)
-      dd.subset0Assign(i);
- 
-  return dd;
+  return pMgr->variable(nvar);
 }
 
 // access nvar-th variable of the active ring
@@ -186,45 +182,44 @@ BoolePolyRing::ringVariable(idx_type nvar) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringVariable(idx_type nvar)" );
 
-   return ring().variable(nvar); 
+  // return ring().variable(nvar);
+   return current_mgr->variable(nvar);
 }
 
-// get number of ring variables
-// access nvar-th ring variable
+// get empty decision diagram
 BoolePolyRing::dd_type
 BoolePolyRing::empty() const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::empty() const" );
 
-  return pMgr->zeroDD();
+  return pMgr->empty();
 }
 
-// access nvar-th variable of the active ring
+// get empty decision diagram of the active ring
 BoolePolyRing::dd_type
 BoolePolyRing::ringEmpty() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return current_mgr->zeroDD();
+  return current_mgr->empty();
 }
 
-// get number of ring variables
-// access nvar-th ring variable
+// get decision diagram with all variables negated
 BoolePolyRing::dd_type
-BoolePolyRing::full() const {
+BoolePolyRing::zero() const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::empty() const" );
 
-  return pMgr->oneDD();
+  return pMgr->allZero();
 }
 
-// access nvar-th variable of the active ring
+// get decision diagram with all variables negated of the active ring
 BoolePolyRing::dd_type
-BoolePolyRing::ringFull() {
+BoolePolyRing::ringZero() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return current_mgr->oneDD();
+  return current_mgr->allZero();
 }
 
 

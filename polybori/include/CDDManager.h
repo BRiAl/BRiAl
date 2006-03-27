@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.3  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -31,7 +34,8 @@
  * BoolePolyRing(const manager_type &); leading term exampl.
  *
  * Revision 1.1  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * @endverbatim
 **/
@@ -106,7 +110,14 @@ class CDDManagerBase<Cudd, StorageType> {
   ~CDDManagerBase() { }
 
   /// Access nvar-th managed variable
-  dd_base variable(idx_type nvar) const {  return m_interfaced.zddVar(nvar); }
+  dd_base ddVariable(idx_type nvar) const {  
+    return m_interfaced.zddVar(nvar); 
+  }
+
+  /// Access nvar-th managed variable
+  dd_base variable(idx_type nvar) const {  
+    return allZero().change(nvar); 
+  }
 
   /// Get number of managed variables
   size_type nVariables() const { 
@@ -114,12 +125,12 @@ class CDDManagerBase<Cudd, StorageType> {
   }
 
   /// Get empty decision diagram 
-  dd_base zeroDD() const { return m_interfaced.zddZero(); }
+  dd_type empty() const { return m_interfaced.zddZero(); }
 
-  /// Get decision diagram with all variables
-  dd_base oneDD() const { return m_interfaced.zddOne(nVariables()); }
+  /// Get decision diagram with all variables negated
+  dd_type allZero() const { return m_interfaced.zddOne(nVariables()); }
 
-  /// Casting operator to interfaced type
+ /// Casting operator to interfaced type
   operator interfaced_type&() { return m_interfaced; }
 
   /// Constant casting operator to interfaced type

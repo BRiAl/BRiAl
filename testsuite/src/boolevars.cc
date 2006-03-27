@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.3  2006/03/22 08:06:59  dreyer
  * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
  *
@@ -60,6 +63,15 @@ main(){
 
     std::cout << "Sum: "<<std::endl;
     std::cout << poly <<std::endl;
+
+    BoolePolynomial zeroPoly;
+
+    std::cout << "Zero polynomial: " <<std::endl;
+    std::cout << zeroPoly <<std::endl;
+
+    std::cout << "0 += x " <<std::endl;
+    zeroPoly += x;
+    std::cout << zeroPoly <<std::endl;
 
     std::cout << "Finished."<<std::endl;
   }

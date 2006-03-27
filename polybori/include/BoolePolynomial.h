@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.7  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -79,6 +82,7 @@ public:
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
+  typedef CTypes::bool_type bool_type;
   typedef CTypes::ostream_type ostream_type;
   //@}
 
@@ -111,6 +115,12 @@ public:
   //@{
   self& operator+=(const self&);
   self& operator*=(const monom_type&);
+  //@}
+
+  /// @name Logical operations
+  //@{
+  bool_type operator==(const self&);
+  bool_type operator!=(const self&);
   //@}
 
   /// Get leading term
@@ -157,11 +167,11 @@ private:
 };
 
 
-///  Addition operation 
+/// Addition operation 
 BoolePolynomial 
 operator+(const BoolePolynomial&, const BoolePolynomial&);
 
-///  Multiplication with monomial
+/// Multiplication with monomial
 BoolePolynomial
 operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
 

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.8  2006/03/24 16:15:15  dreyer
  * CHANGE: (n)usedVariables() now uses Cudd-internal commands
  * ADD: CDDInterface<> support() and nSupport() (for above)
@@ -70,7 +73,7 @@ BEGIN_NAMESPACE_PBORI
 
 // Default constructor
 BoolePolynomial::BoolePolynomial():
-  m_dd()  {
+  m_dd( BoolePolyRing::ringEmpty() ) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial()" );
 }
@@ -121,6 +124,24 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   return *this;
 }
 
+// Equality
+BoolePolynomial::bool_type
+BoolePolynomial::operator==(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(const self&)" );
+
+  return (m_dd == rhs.m_dd);
+}
+
+// Nonequality
+BoolePolynomial::bool_type
+BoolePolynomial::operator!=(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(const self&)" );
+
+  return (m_dd != rhs.m_dd);
+}
+
 // Leading term
 BoolePolynomial::monom_type
 BoolePolynomial::lead() const {
@@ -135,9 +156,9 @@ BoolePolynomial::lead() const {
 
   for(idx_type idx = 0; idx < nlen; ++idx){
 
-    nextterm.intersectAssign( mgr.variable(idx) );
+    nextterm.intersectAssign( mgr.ddVariable(idx) );
 
-    if (nextterm !=  mgr.zeroDD())
+    if (nextterm !=  mgr.empty())
       leadterm = nextterm;    
     else
       nextterm = leadterm;
@@ -246,6 +267,34 @@ BoolePolynomial::print(ostream_type& os) const {
   m_dd.print(os);
 
   return os;
+}
+
+// addition operation 
+BoolePolynomial 
+operator+(const BoolePolynomial& first, const BoolePolynomial& second){
+
+  PBORI_TRACE_FUNC("operator+(const BoolePolynomial&,const BoolePolynomial&)");
+
+  BoolePolynomial result(first);
+  return (result += second);
+}
+
+// multiplication with monomial
+BoolePolynomial
+operator*(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom) {
+
+  PBORI_TRACE_FUNC("operator*(const BoolePolynomial&,const monom_type&)");
+
+  BoolePolynomial result(poly);
+  return (result *= monom);
+
+}
+
+/// Compute spoly of two polynomials
+BoolePolynomial 
+spoly(const BoolePolynomial&, const BoolePolynomial&){
+  PBORI_NOT_IMPLEMENTED;
+  return BoolePolynomial();
 }
 
 // Stream output for Boolean polynomials

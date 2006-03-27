@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.13  2006/03/24 15:02:44  dreyer
  * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
  * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
@@ -152,17 +155,17 @@ class BoolePolyRing {
   /// Access nvar-th variable of the active ring
   static dd_type ringVariable(idx_type nvar);
 
-  /// Access empty variable set
+  /// Get empty decision diagram 
   dd_type empty() const;
 
-  /// Access current ring's empty variable set
+  /// Get empty decision diagram of the active ring
   static dd_type ringEmpty();
 
-  /// Access full variable set
-  dd_type full() const;
+  /// Get decision diagram with all variables negated
+  dd_type zero() const;
 
-  /// Access current ring's full variable set
-  static dd_type ringFull();
+  /// Get decision diagram with all variables negated of the active ring
+  static dd_type ringZero();
 
   /// Get number of ring variables
   size_type nVariables() const;

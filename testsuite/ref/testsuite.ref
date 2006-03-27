@@ -35,6 +35,13 @@ Sum:
 10000 1
 01000 1
 
+Zero polynomial: 
+-> : is the empty ZDD
+
+0 += x 
+-> : 1 nodes 1 minterms
+10000 1
+
 Finished.
 ----------------------
 Executing cuddinterface
@@ -131,6 +138,17 @@ x*y + z:
 
 Node count: 5
 N: 5
+
+(x*v + y*v + z )* (v*y): 
+-> : 5 nodes 3 minterms
+11010 1
+01-10 1
+
+Equality? 
+1
+
+Nonequality? 
+0
 Finished.
 ----------------------
 Executing leadterm

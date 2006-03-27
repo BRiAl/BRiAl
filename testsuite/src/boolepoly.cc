@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/27 13:47:58  dreyer
+ * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
+ *
  * Revision 1.3  2006/03/23 17:15:04  dreyer
  * ADD: lead() and lmdeg() functionality to BoolePolynomial,
  * BoolePolyRing(const manager_type &); leading term exampl.
@@ -108,6 +111,15 @@ main(){
 
     std::cout << "Node count: "<< poly.nNodes() <<std::endl;
     std::cout << "N: "<< BoolePolyRing::nRingVariables() <<std::endl;
+
+    std::cout << std::endl << "(x*v + y*v + z )* (v*y): " <<std::endl;
+    std::cout <<  (x*v + y*v + z )* (v*y) <<std::endl;
+
+    std::cout <<  "Equality? "  <<std::endl;
+    std::cout <<  (poly == ((x*v + y*v + z )* (v*y)) ) <<std::endl;
+
+    std::cout << std::endl << "Nonequality? "  <<std::endl;
+    std::cout <<  (poly != ((x*v + y*v + z )* (v*y)) ) <<std::endl;
 
 //       pdiag =  
 //       (poly.diagram().Intersect(BoolePolyRing::ringVariable(3) ));
