@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/03/29 16:20:12  dreyer
+ * CHANGE: revised testsuite
+ *
  * Revision 1.3  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -55,26 +58,33 @@ main(){
 
     CDDInterface<ZDD> dd0 (man.ddVariable(0));
     dd0.print(std::cout);
-
+    //    dd0.testpath();
     CDDInterface<ZDD> dd1 ( man.ddVariable(1));
     dd1.print(std::cout);
-
+    //    dd1.testpath();
     dd0.unateProductAssign(dd1);
     dd0.print(std::cout);
-
+    //    dd0.testpath();
     dd0 = man.ddVariable(0);
     dd0.subset0Assign(1);
     dd0.subset0Assign(2);
 
     dd0.print(std::cout);
-
+    //    dd0.testpath();
     dd1.subset0Assign(0);
     dd1.subset0Assign(2);
 
     dd1.print(std::cout);
-
+    //    dd1.testpath();
     dd0.unateProductAssign(dd1);
     dd0.print(std::cout);
+
+    //    dd0.testpath();
+    dd0.uniteAssign( man.ddVariable(2) );
+    dd0.print(std::cout);
+
+    //    dd0.testpath();
+
 
   }
   catch (PBoRiError& err) {

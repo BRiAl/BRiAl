@@ -87,6 +87,10 @@ Testing cudd interface
 010 1
 : 2 nodes 1 minterms
 110 1
+: 5 nodes 5 minterms
+11- 1
+101 1
+0-1 1
 ----------------------
 Executing errorcodes
 ----------------------
