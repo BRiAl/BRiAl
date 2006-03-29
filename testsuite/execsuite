@@ -8,6 +8,9 @@
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.4  2006/03/29 11:50:22  dreyer
+# CHANGE: Information about differing files will be displayed
+#
 # Revision 1.3  2006/03/22 16:39:54  dreyer
 # ADD Switch for using valgrind
 #
@@ -92,7 +95,12 @@ else
     echo "Finished."
   else 
     echo "Diffing..."
-    diff $tmpfile $reffile
+    (sed -e 's/Executing/Checking/' $tmpfile | diff - $reffile; echo "END") |\
+    sed -e '/[0-9]c/ { N; /\n.*Checking/ D }
+            /^---$/{ N; /\n .*Executing/ D}; /Executing/ D' |sed -e '
+    /Checking/ {N; /\n.*Checking/D; /\nEND/D}; s/^END$//' 
+
+
     echo "Finished."
   fi
 
