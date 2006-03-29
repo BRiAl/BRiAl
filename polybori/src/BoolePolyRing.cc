@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/03/29 16:26:46  dreyer
+ * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
+ *
  * Revision 1.17  2006/03/27 15:18:09  dreyer
  * + Removed some debug code.
  *
@@ -117,12 +120,12 @@ BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
 }
 
-// construct from manager
-BoolePolyRing::BoolePolyRing(const manager_type& manager) :
-  pMgr( new manager_type(manager) ) {
+// // construct from manager
+// BoolePolyRing::BoolePolyRing(const manager_type& manager) :
+//   pMgr( new manager_type(manager) ) {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing(const manager_type&)" );
-}
+//   PBORI_TRACE_FUNC( "BoolePolyRing(const manager_type&)" );
+// }
 
 // destructor
 BoolePolyRing::~BoolePolyRing() {

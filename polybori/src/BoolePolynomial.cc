@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/03/29 16:26:46  dreyer
+ * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
+ *
  * Revision 1.10  2006/03/27 15:02:43  dreyer
  * ADD: BoolePolynomial::operator/=(const self&) and spoly
  *
@@ -58,6 +61,8 @@
 **/
 //*****************************************************************************
 
+
+#define PBORI_USE_CCUDDFIRSTITER
 
 // load header file
 # include "BoolePolynomial.h"
@@ -155,27 +160,42 @@ BoolePolynomial::operator!=(const self& rhs) {
   return (m_dd != rhs.m_dd);
 }
 
+
 // Leading term
 BoolePolynomial::monom_type
 BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
-  dd_type leadterm = m_dd;
+#ifndef PBORI_USE_CCUDDFIRSTITER
+  // high level implementation
+  
   dd_type nextterm = m_dd;
-
+  
   manager_reference mgr(m_dd);
   size_type nlen = mgr.nVariables();
-
+  
   for(idx_type idx = 0; idx < nlen; ++idx){
-
+    
     nextterm.intersectAssign( mgr.ddVariable(idx) );
-
+    
     if (nextterm !=  mgr.empty())
       leadterm = nextterm;    
     else
       nextterm = leadterm;
   }
+
+#else 
+  // More efficient implementation relying on CCuddFirstIter (may be buggy)
+  dd_type leadterm = manager_reference(m_dd).allZero();
+  dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+
+  while (start != finish){
+    leadterm.changeAssign(*start);
+    ++start;
+  }
+
+#endif
 
   return leadterm;
 }
@@ -186,9 +206,9 @@ BoolePolynomial::deg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
-  PBORI_NOT_IMPLEMENTED;
+  /// @todo: This is currently just an upper bound, efficient search needed.
 
-  return 0;
+  return nUsedVariables();
 }
 
 
@@ -198,8 +218,21 @@ BoolePolynomial::lmDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
+#ifndef PBORI_USE_CCUDDFIRSTITER
   // Equals number of nodes for monomials
   return lead().nNodes();
+
+#else
+  dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+  size_type degree = 0;
+
+  while (start != finish){
+    ++degree;
+    ++start;
+  }
+
+  return degree;
+#endif
 }
 
 

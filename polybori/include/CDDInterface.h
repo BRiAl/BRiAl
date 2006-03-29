@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/03/29 16:26:46  dreyer
+ * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
+ *
  * Revision 1.5  2006/03/27 15:02:43  dreyer
  * ADD: BoolePolynomial::operator/=(const self&) and spoly
  *
@@ -49,6 +52,9 @@
 
 // load basic definitions
 #include "pbori_defs.h"
+
+// Getting iterator type for retrieving first minterm from Cudd's ZDDs
+#include "CCuddFirstIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -134,6 +140,9 @@ class CDDInterface<ZDD>:
 
   /// Type for comparisons
   typedef CTypes::bool_type bool_type;
+
+  /// Iterator type for retrieving first minterm from Cudd's ZDDs
+  typedef CCuddFirstIter first_iterator;
 
   /// Default constructor
   CDDInterface(): base_type() {}
@@ -296,6 +305,16 @@ class CDDInterface<ZDD>:
               Cudd_Support(manager().getManager(), m_interfaced.getNode()) );
 
     return supp.PortToZdd();
+  }
+
+  /// Start of first minterm
+  first_iterator firstBegin() const{
+    return first_iterator(m_interfaced.getNode());
+  }
+
+  /// Finish of first minterm 
+  first_iterator firstEnd() const{
+    return first_iterator();
   }
 };
 
