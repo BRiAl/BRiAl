@@ -8,6 +8,9 @@
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.5  2006/03/29 16:19:52  dreyer
+# CHANGE: removed empty line in output
+#
 # Revision 1.4  2006/03/29 11:50:22  dreyer
 # CHANGE: Information about differing files will be displayed
 #
@@ -98,7 +101,7 @@ else
     (sed -e 's/Executing/Checking/' $tmpfile | diff - $reffile; echo "END") |\
     sed -e '/[0-9]c/ { N; /\n.*Checking/ D }
             /^---$/{ N; /\n .*Executing/ D}; /Executing/ D' |sed -e '
-    /Checking/ {N; /\n.*Checking/D; /\nEND/D}; s/^END$//' 
+    /Checking/ {N; /\n.*Checking/D; /\nEND/D}; /END/ {D}' 
 
 
     echo "Finished."
