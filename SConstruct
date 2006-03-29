@@ -1,6 +1,6 @@
 #$Id$
 opts = Options('custom.py')
-
+BOOST_WORKS=False
 
 
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
@@ -11,6 +11,8 @@ try:
         USER_LIBPATH=custom.LIBPATH+USER_LIBPATH
     if "CPPPATH" in dir(custom):
         USER_CPPPATH=custom.CPPPATH+USER_CPPPATH
+    if "BOOST_WORKS" in dir(custom):
+        BOOST_WORKS=custom.BOOST_WORKS
 except:
     pass
 
@@ -67,8 +69,11 @@ if env['PLATFORM']=="darwin":
 #env.Append(LIBPATH=".")
 
 env.Append(LIBS=["m"])
+try:
+    env.Append(CCFLAGS=Split(custom.CCFLAGS))
+except:
+    env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi --pedantic"))
 
-env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi --pedantic"))
 #env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])
@@ -83,10 +88,11 @@ for c in PYTHONSEARCH:
         env.Append(CPPPATH=[c.incdir])
         break
 
-if not conf.CheckCXXHeader('boost/python.hpp'):
-    print 'Warning Boost/python must be installed for python support'
+
+if BOOST_WORKS or conf.CheckCXXHeader('boost/python.hpp'):
+        HAVE_PYTHON_EXTENSION=1
 else:
-    HAVE_PYTHON_EXTENSION=1
+    print 'Warning Boost/python must be installed for python support'
     
 
 env = conf.Finish()
