@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.2  2006/03/30 08:52:57  dreyer
  * CHANGE: testsuite revised
  *
@@ -101,13 +104,20 @@ main(){
     std::cout << poly.lead() <<std::endl;
 
  
-    poly = BoolePolyRing::ringEmpty();
+    poly = BoolePolyRing::ringZero();
     std::cout << "Leading term of empty diagram "<<std::endl;
     std::cout << poly.lead() <<std::endl;
 
-    poly = BoolePolyRing::ringZero();
-    std::cout << "Leading term of zero polynomial "<<std::endl;
+    poly = BoolePolyRing::ringOne();
+    std::cout << "Leading term of constant polynomial one"<<std::endl;
     std::cout << poly.lead() <<std::endl;
+
+    std::cout << "Checkung handling of constants: x*y + z + 1"<<std::endl;
+    std::cout <<  x*y + z + 1 <<std::endl;
+
+    std::cout << "Checkung handling of constants: x*y + z + 0"<<std::endl;
+    std::cout <<  x*y + z + 0 <<std::endl;
+
 
     std::cout << "Finished."<<std::endl;
   }

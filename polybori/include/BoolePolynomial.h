@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.9  2006/03/27 15:02:43  dreyer
  * ADD: BoolePolynomial::operator/=(const self&) and spoly
  *
@@ -100,6 +103,9 @@ public:
 
   /// Default constructor
   BoolePolynomial();
+
+  /// Construct polynomial from a constant value 0 or 1
+  BoolePolynomial(bool_type);
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);

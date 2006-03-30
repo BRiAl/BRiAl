@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.12  2006/03/30 08:59:42  dreyer
  * FIX: CCuddFirstIter works for empty and zero polynomials now
  *
@@ -84,9 +87,16 @@ BEGIN_NAMESPACE_PBORI
 
 // Default constructor
 BoolePolynomial::BoolePolynomial():
-  m_dd( BoolePolyRing::ringEmpty() ) {
+  m_dd( BoolePolyRing::ringZero() ) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial()" );
+}
+
+// Construct polynomial from a constant value 0 or 1
+BoolePolynomial::BoolePolynomial(bool_type isOne):
+  m_dd(isOne? BoolePolyRing::ringOne() : BoolePolyRing::ringZero() )  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(bool_type)" );
 }
 
 // Constructor polynomial from existing decision diagram
@@ -195,7 +205,7 @@ BoolePolynomial::lead() const {
   if (m_dd.emptiness())
     leadterm = m_dd;
   else {
-    leadterm = manager_reference(m_dd).allZero();
+    leadterm = manager_reference(m_dd).blank();
     dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
     
     while (start != finish){

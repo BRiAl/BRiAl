@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.18  2006/03/29 16:26:46  dreyer
  * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
  *
@@ -194,38 +197,38 @@ BoolePolyRing::ringVariable(idx_type nvar) {
 
 // get empty decision diagram
 BoolePolyRing::dd_type
-BoolePolyRing::empty() const {
+BoolePolyRing::zero() const {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing::empty() const" );
+  PBORI_TRACE_FUNC( "BoolePolyRing::zero() const" );
 
   return pMgr->empty();
 }
 
 // get empty decision diagram of the active ring
 BoolePolyRing::dd_type
-BoolePolyRing::ringEmpty() {
+BoolePolyRing::ringZero() {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
+  PBORI_TRACE_FUNC( "BoolePolyRing::ringZero()" );
 
   return current_mgr->empty();
 }
 
 // get decision diagram with all variables negated
 BoolePolyRing::dd_type
-BoolePolyRing::zero() const {
+BoolePolyRing::one() const {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::empty() const" );
 
-  return pMgr->allZero();
+  return pMgr->blank();
 }
 
 // get decision diagram with all variables negated of the active ring
 BoolePolyRing::dd_type
-BoolePolyRing::ringZero() {
+BoolePolyRing::ringOne() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ringEmpty()" );
 
-  return current_mgr->allZero();
+  return current_mgr->blank();
 }
 
 

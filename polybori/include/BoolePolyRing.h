@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.14  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -156,16 +159,16 @@ class BoolePolyRing {
   static dd_type ringVariable(idx_type nvar);
 
   /// Get empty decision diagram 
-  dd_type empty() const;
-
-  /// Get empty decision diagram of the active ring
-  static dd_type ringEmpty();
-
-  /// Get decision diagram with all variables negated
   dd_type zero() const;
 
-  /// Get decision diagram with all variables negated of the active ring
+  /// Get empty decision diagram of the active ring
   static dd_type ringZero();
+
+  /// Get decision diagram with all variables negated
+  dd_type one() const;
+
+  /// Get decision diagram with all variables negated of the active ring
+  static dd_type ringOne();
 
   /// Get number of ring variables
   size_type nVariables() const;

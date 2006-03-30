@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/03/30 11:57:11  dreyer
+ * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
+ *
  * Revision 1.4  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -116,7 +119,7 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Access nvar-th managed variable
   dd_base variable(idx_type nvar) const {  
-    return allZero().change(nvar); 
+    return blank().change(nvar); 
   }
 
   /// Get number of managed variables
@@ -125,10 +128,12 @@ class CDDManagerBase<Cudd, StorageType> {
   }
 
   /// Get empty decision diagram 
+  /// @note Corresponds to the empty set (or the zero polynomial)
   dd_type empty() const { return m_interfaced.zddZero(); }
 
   /// Get decision diagram with all variables negated
-  dd_type allZero() const { return m_interfaced.zddOne(nVariables()); }
+  /// @note Set containing the empty set only (or the constant polynomial one)
+  dd_type blank() const { return m_interfaced.zddOne(nVariables()); }
 
  /// Casting operator to interfaced type
   operator interfaced_type&() { return m_interfaced; }
