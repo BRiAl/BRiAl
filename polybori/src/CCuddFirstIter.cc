@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/30 08:59:42  dreyer
+ * FIX: CCuddFirstIter works for empty and zero polynomials now
+ *
  * Revision 1.1  2006/03/29 16:26:46  dreyer
  * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
  *
@@ -48,15 +51,7 @@ CCuddFirstIter::CCuddFirstIter(pointer_type ptr):
   pNode(ptr) {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::CCuddFirstIter(pointer_type)" );
-
-//   if( (pNode != NULL)&& Cudd_IsConstant(pNode)) {
-//     if( Cudd_V(pNode) == 0 ) 
-//       pNode = Cudd_E(pNode);
-//     else
-//       pNode = NULL;
-//   }
-
-
+  validate();
 }
 
 // copy constructor
@@ -81,16 +76,8 @@ CCuddFirstIter::operator++() {
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator++()" );
 
   if(pNode != NULL) {
-
     pNode = Cudd_T(pNode);
-    while ((pNode != NULL) && Cudd_IsConstant(pNode)) {
-      if( Cudd_V(pNode) == 0 ) 
-        pNode = Cudd_E(pNode);
-      else
-        pNode = NULL;         // at end of path
-    }
-
-
+    validate();
   }
 
   return *this;
@@ -113,8 +100,6 @@ CCuddFirstIter::value_type
 CCuddFirstIter::operator*() const {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator*() const" );
-  PBORI_TRACE_FUNC( pNode );
-  PBORI_TRACE_FUNC( Cudd_Regular(pNode)->index);
   return Cudd_Regular(pNode)->index;
 };
 
@@ -140,6 +125,20 @@ CCuddFirstIter::operator!=(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator!=(const self&) const" );
   return (pNode != rhs.pNode);
+};
+
+// go to valid node
+void
+CCuddFirstIter::validate() {
+
+  PBORI_TRACE_FUNC( "CCuddFirstIter::validate()" );
+
+  while ((pNode != NULL) && Cudd_IsConstant(pNode)) {
+    if( Cudd_V(pNode) == 0 ) 
+      pNode = Cudd_E(pNode);
+    else
+      pNode = NULL;         // at end of path
+  }
 };
 
 

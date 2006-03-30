@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/30 08:59:42  dreyer
+ * FIX: CCuddFirstIter works for empty and zero polynomials now
+ *
  * Revision 1.1  2006/03/29 16:26:46  dreyer
  * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
  *
@@ -84,6 +87,11 @@ public:
   /// Nonequality test
   bool_type operator!=(const self&) const;
 
+
+protected:
+  /// Go to valid node
+  void validate();
+  
 private:
   pointer_type pNode;
 };

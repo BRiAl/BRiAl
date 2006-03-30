@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/03/30 08:59:42  dreyer
+ * FIX: CCuddFirstIter works for empty and zero polynomials now
+ *
  * Revision 1.6  2006/03/29 16:26:46  dreyer
  * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
  *
@@ -308,13 +311,18 @@ class CDDInterface<ZDD>:
   }
 
   /// Start of first minterm
-  first_iterator firstBegin() const{
+  first_iterator firstBegin() const {
     return first_iterator(m_interfaced.getNode());
   }
 
   /// Finish of first minterm 
-  first_iterator firstEnd() const{
+  first_iterator firstEnd() const { 
     return first_iterator();
+  }
+
+  /// Checks whether the decision diagram is empty
+  bool_type emptiness() const {
+    return ( m_interfaced == manager().zddZero() );
   }
 };
 

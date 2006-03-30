@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/03/30 08:59:42  dreyer
+ * FIX: CCuddFirstIter works for empty and zero polynomials now
+ *
  * Revision 1.11  2006/03/29 16:26:46  dreyer
  * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
  *
@@ -187,12 +190,18 @@ BoolePolynomial::lead() const {
 
 #else 
   // More efficient implementation relying on CCuddFirstIter (may be buggy)
-  dd_type leadterm = manager_reference(m_dd).allZero();
-  dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+  dd_type leadterm;
 
-  while (start != finish){
-    leadterm.changeAssign(*start);
-    ++start;
+  if (m_dd.emptiness())
+    leadterm = m_dd;
+  else {
+    leadterm = manager_reference(m_dd).allZero();
+    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+    
+    while (start != finish){
+      leadterm.changeAssign(*start);
+      ++start;
+    }
   }
 
 #endif
