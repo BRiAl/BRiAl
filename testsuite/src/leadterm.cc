@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/03/30 08:52:57  dreyer
+ * CHANGE: testsuite revised
+ *
  * Revision 1.1  2006/03/28 07:34:03  dreyer
  * + Initial Version
  *
@@ -93,6 +96,18 @@ main(){
     std::cout << "# usedVariables()"<<std::endl;
     std::cout << poly.nUsedVariables() <<std::endl;
 
+    poly = BoolePolyRing::ringVariable(3);
+    std::cout <<std::endl << "Leading term of simple monomial "<<std::endl;
+    std::cout << poly.lead() <<std::endl;
+
+ 
+    poly = BoolePolyRing::ringEmpty();
+    std::cout << "Leading term of empty diagram "<<std::endl;
+    std::cout << poly.lead() <<std::endl;
+
+    poly = BoolePolyRing::ringZero();
+    std::cout << "Leading term of zero polynomial "<<std::endl;
+    std::cout << poly.lead() <<std::endl;
 
     std::cout << "Finished."<<std::endl;
   }

@@ -1,7 +1,7 @@
 Starting Testsuite...
 ---------------------
 ----------------------
-Executing testring
+Executing testsuite/testring
 ----------------------
 Exception caught sucessfully: No polynomial ring structure defined.
 Variable 0:
@@ -21,7 +21,7 @@ Variable 3:
 0001 1
 
 ----------------------
-Executing spoly
+Executing testsuite/spoly
 ----------------------
 Testing boolean ring variables
 Poly 1: 
@@ -49,7 +49,7 @@ Equality?
 1
 Finished.
 ----------------------
-Executing boolevars
+Executing testsuite/boolevars
 ----------------------
 Testing boolean ring variables
 -> : 1 nodes 1 minterms
@@ -72,7 +72,7 @@ Zero polynomial:
 
 Finished.
 ----------------------
-Executing cuddinterface
+Executing testsuite/cuddinterface
 ----------------------
 Testing cudd interface
 : 3 nodes 4 minterms
@@ -92,7 +92,7 @@ Testing cudd interface
 101 1
 0-1 1
 ----------------------
-Executing errorcodes
+Executing testsuite/errorcodes
 ----------------------
 Testing important error codes
 Throwing 'alright'
@@ -125,7 +125,7 @@ Throwing error # 5
   Caught error # 5
     which says: Sorry! Functionality not implemented yet.
 ----------------------
-Executing boolepoly
+Executing testsuite/boolepoly
 ----------------------
 Testing Boolean polynomials
 -> : 1 nodes 1 minterms
@@ -187,7 +187,7 @@ Division ok?
 
 Finished.
 ----------------------
-Executing leadterm
+Executing testsuite/leadterm
 ----------------------
 Testing leading terms
 x*y + z: 
@@ -227,6 +227,18 @@ usedVariables()
 
 # usedVariables()
 4
+
+Leading term of simple monomial 
+-> : 1 nodes 1 minterms
+00010 1
+
+Leading term of empty diagram 
+-> : is the empty ZDD
+
+Leading term of zero polynomial 
+-> : 0 nodes 1 minterms
+00000 1
+
 Finished.
 -------------------
 Testsuite finished.
