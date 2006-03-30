@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/03/30 12:21:20  dreyer
+ * CHANGE: more consistency
+ *
  * Revision 1.7  2006/03/30 08:59:42  dreyer
  * FIX: CCuddFirstIter works for empty and zero polynomials now
  *
@@ -56,7 +59,7 @@
 // load basic definitions
 #include "pbori_defs.h"
 
-// Getting iterator type for retrieving first minterm from Cudd's ZDDs
+// Getting iterator type for retrieving first term from Cudd's ZDDs
 #include "CCuddFirstIter.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -144,7 +147,7 @@ class CDDInterface<ZDD>:
   /// Type for comparisons
   typedef CTypes::bool_type bool_type;
 
-  /// Iterator type for retrieving first minterm from Cudd's ZDDs
+  /// Iterator type for retrieving first term from Cudd's ZDDs
   typedef CCuddFirstIter first_iterator;
 
   /// Default constructor
@@ -263,7 +266,7 @@ class CDDInterface<ZDD>:
   };
 
   /// Weak division with assignment
-  self& WeakDivideAssign(const self& rhs) {
+  self& weakDivideAssign(const self& rhs) {
     m_interfaced = m_interfaced.WeakDiv(rhs);
     return *this;
   };
@@ -310,12 +313,12 @@ class CDDInterface<ZDD>:
     return supp.PortToZdd();
   }
 
-  /// Start of first minterm
+  /// Start of first term
   first_iterator firstBegin() const {
     return first_iterator(m_interfaced.getNode());
   }
 
-  /// Finish of first minterm 
+  /// Finish of first term 
   first_iterator firstEnd() const { 
     return first_iterator();
   }
