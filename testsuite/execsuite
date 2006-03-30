@@ -8,6 +8,9 @@
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.6  2006/03/30 08:52:32  dreyer
+# ADD: execsuite may be called from othere directories
+#
 # Revision 1.5  2006/03/29 16:19:52  dreyer
 # CHANGE: removed empty line in output
 #
@@ -24,10 +27,11 @@
 # ADD execsuite for running testsuite
 #
 
-srcdir="src";
+thisdir=`dirname $0`
+srcdir="$thisdir/src";
 exe=""
-reffile="ref/testsuite.ref"
-tmpfile="ref/testsuite$$.tmp"
+reffile="$thisdir/ref/testsuite.ref"
+tmpfile="$thisdir/ref/testsuite$$.tmp"
 
 dobuild=false;
 dodiff=true;
@@ -74,8 +78,9 @@ done
 if $runonly; then
   echo "Starting Testsuite..." 
   echo "---------------------" 
+
   find $srcdir -type f -name '*.cc' -print | \
-    sed -e "s/.cc/$exe/" -e "s/$srcdir\///"| while read i
+    sed -e "s/.cc/$exe/" -e "s|$srcdir|$thisdir|"| while read i
   do
     echo "----------------------" 
     echo "Executing $i"
