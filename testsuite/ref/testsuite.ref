@@ -235,9 +235,19 @@ Leading term of simple monomial
 Leading term of empty diagram 
 -> : is the empty ZDD
 
-Leading term of zero polynomial 
+Leading term of constant polynomial one
 -> : 0 nodes 1 minterms
 00000 1
+
+Checkung handling of constants: x*y + z + 1
+-> : 3 nodes 3 minterms
+11000 1
+00-00 1
+
+Checkung handling of constants: x*y + z + 0
+-> : 3 nodes 2 minterms
+11000 1
+00100 1
 
 Finished.
 -------------------
