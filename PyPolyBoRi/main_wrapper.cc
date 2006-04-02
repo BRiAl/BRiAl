@@ -20,12 +20,13 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def(boost::python::init <BoolePolyRing::size_type>())
 //#ifdef WRAP_ALSO_CUUD
   .def("var", &BoolePolyRing::variable,with_custodian_and_ward_postcall<0,1>())
+  .def("one", &BoolePolyRing::one,with_custodian_and_ward_postcall<0,1>())
 //#endif
   .def("nVars", &BoolePolyRing::nVariables);
-  boost::python::class_<ZDD>("ZDD")
-  .def(boost::python::init <const ZDD&>())
+  boost::python::class_<CTypes::dd_type>("DD")
+  .def(boost::python::init <const CTypes::dd_type&>())
   .def(boost::python::init <>())
-  .def(self + self)
+  /*.def(self + self)
   .def(self | self)
   .def(self * self)
   .def(self & self)
@@ -38,27 +39,28 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(self<=self)
   .def(self>=self)
   .def(self<self)
-  .def(self>self)
-  .def(self-self)
-  .def(self-=self)
-  .def("printToStdout", &ZDD::print)
-  .def("count", &ZDD::Count)
-  .def("product", &ZDD::Product)
-  .def("unateProduct", &ZDD::UnateProduct)
-  .def("weakDiv", &ZDD::WeakDiv)
-  .def("divide", &ZDD::Divide)
-  .def("weakDivF", &ZDD::WeakDivF)
-  .def("divideF", &ZDD::DivideF)
-  .def("printCover", &ZDD::PrintCover)
-  .def("diff", &ZDD::Diff)
-  .def("diffConst", &ZDD::DiffConst)
-  .def("subset1",&ZDD::Subset1)
-  .def("subset0",&ZDD::Subset0)
-  .def("change", &ZDD::Change)
-  .def("union",&ZDD::Union)
-  .def("intersect", &ZDD::Intersect)
-  .def("ite", &ZDD::Ite)
-  .def("printMinterm", &ZDD::PrintMinterm);
+  .def(self>self)*/
+  //.def(self-self)
+  //.def(self-=self)
+  //.def("printToStdout", &CTypes::dd_type::print)
+  //.def("count", &CTypes::dd_type::count)
+  .def("product", &CTypes::dd_type::product)
+  .def("unateProduct", &CTypes::dd_type::unateProduct)
+  //.def("weakDiv", &CTypes::dd_type::weakDiv)
+  //.def("divide", &CTypes::dd_type::divide)
+  //.def("weakDivF", &CTypes::dd_type::weakDivF)
+  //.def("divideF", &CTypes::dd_type::divideF)
+  //.def("printCover", &CTypes::dd_type::printCover)
+  .def("diff", &CTypes::dd_type::diff)
+  //.def("diffConst", &CTypes::dd_type::diffConst)
+  .def("subset1",&CTypes::dd_type::subset1)
+  .def("subset0",&CTypes::dd_type::subset0)
+  .def("change", &CTypes::dd_type::change)
+  .def("nNodes", &CTypes::dd_type::nNodes)
+  //.def("union",&CTypes::dd_type::union)
+  .def("intersect", &CTypes::dd_type::intersect);
+  //.def("ite", &CTypes::dd_type::ite)
+  //.def("printMinterm", &CTypes::dd_type::printMinterm);
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
@@ -66,22 +68,23 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
+  .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
   .def(self+=self)
   .def(self*=self)
+  .def(self/self)
+  .def(self/=self)
   .def(self+=BooleVariable())
   .def(self*=BooleVariable())
-  //.def(self*self)
-  //.def(self+self)
+  .def(self*self)
+  .def(self+self)
   .def("deg", &BoolePolynomial::totalDeg)
   .def("lmDeg", &BoolePolynomial::deg)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("totalDegree", &BoolePolynomial::nUsedVariables)
   //wrap usedVariables
-  .def("toStdOut", &print_polynomial)
-  
-  ;
- // def("spoly",&spoly);
+  .def("toStdOut", &print_polynomial);
+  def("spoly",&spoly);
   }
 /*
 
