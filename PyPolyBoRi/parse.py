@@ -4,7 +4,10 @@ from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
 import math
 import operator
 from PyPolyBoRi import *
-
+try:
+    set
+except NameError:
+    from sets import Set as set
 #variables=["x","y","z"]
 #def pushFirst( strg, loc, toks ):
 #    exprStack.append( toks[0] )
