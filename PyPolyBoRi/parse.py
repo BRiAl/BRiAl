@@ -94,17 +94,22 @@ def translate_ideal(s,vars):
         myp=Polynomial()
         for t in p:
             #myterm=r.one()
-            vars=[var_cache[trans[v]] for v in t]
-            myterm=Polynomial(vars[0])           
-            for v in vars[1:]:
-                myterm*=v
-            # for v in t:
-#                 
-#                 print v
-#                 print trans[v]
-#                 myterm.change(trans[v])
-            print "nodes per term", myterm.nNodes()
+            if len(t)>0:
+                vars=[var_cache[trans[v]] for v in t]
+                
+                myterm=Polynomial(vars[0])           
+                for v in vars[1:]:
+                    myterm*=v
+                # for v in t:
+    #                 
+    #                 print v
+    #                 print trans[v]
+    #                 myterm.change(trans[v])
+                print "nodes per term", myterm.nNodes()
+            else:
+                myterm=r.one()
             myp+=Polynomial(myterm)
+                
         res.append(myp)
     return res
 
