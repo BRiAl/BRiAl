@@ -5,6 +5,8 @@ BOOST_WORKS=False
 
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
+PYPREFIX="/sw"
+
 try:
     import custom
     if "LIBPATH" in dir(custom):
@@ -13,6 +15,8 @@ try:
         USER_CPPPATH=custom.CPPPATH+USER_CPPPATH
     if "BOOST_WORKS" in dir(custom):
         BOOST_WORKS=custom.BOOST_WORKS
+    if "PYPREFIX" in dir(custom):
+        PYPREFIX=custom.PYPREFIX
 except:
     pass
 
@@ -51,7 +55,7 @@ class PythonConfig(object):
             self.incdir=self.prefix+"/include/python"+self.version
 
 PYTHONSEARCH=[\
-    PythonConfig(version="2.4", prefix="/sw"),\
+    PythonConfig(version="2.4", prefix=PYPREFIX),\
     PythonConfig(version="2.4"),\
     PythonConfig(version="2.3"),]
 

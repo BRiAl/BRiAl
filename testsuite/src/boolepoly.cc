@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/03 10:45:57  dreyer
+ * ADD: custom python-seach prefix PYPREFIX
+ *
  * Revision 1.5  2006/03/27 15:02:43  dreyer
  * ADD: BoolePolynomial::operator/=(const self&) and spoly
  *
@@ -130,6 +133,7 @@ main(){
     std::cout << std::endl;
 
     std::cout << "Finished."<<std::endl;
+
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
