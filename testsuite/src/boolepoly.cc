@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/04/04 12:07:37  dreyer
+ * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
+ *
  * Revision 1.8  2006/04/04 11:21:22  dreyer
  * ADD lmDivisors() added
  *
@@ -181,7 +184,19 @@ main(){
     std::cout <<"Divisors of the leading monomial of  (x*z + y): "<<std::endl;
     std::cout <<   (x*z + y).lmDivisors()  <<std::endl;
 
-    std::cout <<  "Finished."<<std::endl;
+    std::cout <<  "(x*z + y).reducibleBy(z): ";
+    std::cout <<  (x*z + y).reducibleBy(z)  <<std::endl;
+
+    std::cout <<  "(x*z*y + y).reducibleBy(y*z): ";
+    std::cout <<   (x*z*y + y).reducibleBy(y*z)  <<std::endl;
+
+    std::cout <<  "(x*z*y + y).reducibleBy(w): ";
+    std::cout <<   (x*z*y + y).reducibleBy(w)  <<std::endl;
+
+    std::cout <<  "(x*y + y).reducibleBy(z+w): ";
+    std::cout <<   (x*y + y).reducibleBy(z+w)  <<std::endl;
+
+    std::cout <<std::endl<<  "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

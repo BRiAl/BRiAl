@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/04/04 12:07:37  dreyer
+ * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
+ *
  * Revision 1.16  2006/04/04 12:00:01  bricken
  * + hash function
  *
@@ -162,6 +165,37 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
   m_dd.divideAssign(rhs.m_dd);
   return *this;
+}
+ 
+// tests whether polynomial can be reduced by rhs
+BoolePolynomial::bool_type
+BoolePolynomial::reducibleBy(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::reducibleBy(const self&) const" );
+
+  if( rhs.isOne() )
+    return true;
+
+  if( isZero() )
+    return rhs.isZero();
+
+
+  first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd()),
+    rhs_start(rhs.firstBegin()), rhs_finish(rhs.firstEnd());
+    
+  bool_type is_reducible = true;
+  
+  while (is_reducible && (rhs_start != rhs_finish) ) {
+    idx_type rhs_idx(*rhs_start); 
+
+    while( (start != finish) && (*start < rhs_idx)  ) 
+      ++start;
+
+    is_reducible = (start != finish) && (*start == rhs_idx);
+    ++rhs_start;
+  }
+
+  return is_reducible;
 }
 
 // Equality
@@ -423,6 +457,23 @@ BoolePolynomial::print(ostream_type& os) const {
 
   return os;
 }
+
+// Start of leading term
+BoolePolynomial::first_iterator 
+BoolePolynomial::firstBegin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::firstBegin() const" );
+  return m_dd.firstBegin();
+}
+
+// Finish of leading term 
+BoolePolynomial::first_iterator 
+BoolePolynomial::firstEnd() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::firstEnd() const" );
+  return m_dd.firstEnd();
+}
+
 
 // addition operation 
 BoolePolynomial 

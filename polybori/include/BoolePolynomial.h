@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/04/04 12:07:37  dreyer
+ * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
+ *
  * Revision 1.13  2006/04/04 11:59:54  bricken
  * + hash function
  *
@@ -101,6 +104,9 @@ public:
   typedef CTypes::ostream_type ostream_type;
   //@}
 
+  /// Iterator type for iterating over indices of the leading term
+  typedef dd_type::first_iterator first_iterator;
+
   /// @todo A more sophisticated treatment for monomials is needed.
 
   /// Fix type for treatment of monomials
@@ -144,6 +150,7 @@ public:
   bool_type operator!=(bool_type) const;
   bool_type isZero() const;
   bool_type isOne() const;
+  bool_type reducibleBy(const self&) const;
   //@}
 
   /// Get leading term
@@ -179,6 +186,12 @@ public:
   /// Print current polynomial to cout
   /// @todo Cudd provides only cout functionality, iostream needed.
   ostream_type& print(ostream_type&) const;
+
+  /// Start of leading term
+  first_iterator firstBegin() const;
+
+  /// Finish of leading term 
+  first_iterator firstEnd() const;
 
 #ifndef PBORI_DEVELOPER
 protected:

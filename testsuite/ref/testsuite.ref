@@ -201,6 +201,11 @@ Divisors of the leading monomial of  (x*z + y):
 -> : 2 nodes 4 minterms
 -0-00 1
 
+(x*z + y).reducibleBy(z): 1
+(x*z*y + y).reducibleBy(y*z): 1
+(x*z*y + y).reducibleBy(w): 0
+(x*y + y).reducibleBy(z+w): 0
+
 Finished.
 ----------------------
 Executing testsuite/leadterm
