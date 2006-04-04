@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/04/04 15:31:06  dreyer
+ * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
+ *
  * Revision 1.15  2006/04/04 13:01:28  bricken
  * + copyDiagram
  *
@@ -110,6 +113,9 @@ public:
   /// Iterator type for iterating over indices of the leading term
   typedef dd_type::first_iterator first_iterator;
 
+  /// Iterator-like type for navigating through diagram structure
+  typedef dd_type::navigator navigator;
+
   /// @todo A more sophisticated treatment for monomials is needed.
 
   /// Fix type for treatment of monomials
@@ -195,7 +201,10 @@ public:
 
   /// Finish of leading term 
   first_iterator firstEnd() const;
-  
+
+  /// Navigate through structure
+  navigator navigation() const;
+ 
   /// gives a copy of the diagram
   dd_type copyDiagram(){
     return diagram();

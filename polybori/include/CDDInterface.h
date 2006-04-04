@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/04/04 15:31:06  dreyer
+ * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
+ *
  * Revision 1.9  2006/04/04 07:36:35  dreyer
  * ADD: tests isZero(), isOne() and poly == bool, bool == poly
  *
@@ -61,6 +64,9 @@
 
 // load basic definitions
 #include "pbori_defs.h"
+
+// Getting iterator type for navigating through Cudd's ZDDs structure
+#include "CCuddNavigator.h"
 
 // Getting iterator type for retrieving first term from Cudd's ZDDs
 #include "CCuddFirstIter.h"
@@ -152,6 +158,9 @@ class CDDInterface<ZDD>:
 
   /// Iterator type for retrieving first term from Cudd's ZDDs
   typedef CCuddFirstIter first_iterator;
+
+  /// Iterator type for navigation throught Cudd's ZDDs structure
+  typedef CCuddNavigator navigator;
 
   /// Default constructor
   CDDInterface(): base_type() {}
@@ -324,6 +333,11 @@ class CDDInterface<ZDD>:
   /// Finish of first term 
   first_iterator firstEnd() const { 
     return first_iterator();
+  }
+
+  /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()
+  navigator navigation() const {
+    return navigator(m_interfaced.getNode());
   }
 
   /// Checks whether the decision diagram is empty

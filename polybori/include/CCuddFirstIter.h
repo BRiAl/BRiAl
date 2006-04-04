@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/04 15:31:06  dreyer
+ * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
+ *
  * Revision 1.2  2006/03/30 08:59:42  dreyer
  * FIX: CCuddFirstIter works for empty and zero polynomials now
  *
@@ -33,7 +36,10 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "pbori_defs.h"
+#include "CCuddNavigator.h"
+
+#ifndef CCuddFirstIter_h_
+#define CCuddFirstIter_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -43,23 +49,17 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 
-class CCuddFirstIter {
+class CCuddFirstIter :
+  public CCuddNavigator {
+
 public:
-  /// Cudd's node pointer
-  typedef DdNode* pointer_type;
-
-  /// Type for indices
-  typedef int idx_type;
-
-  /// Type for boolean results
-  typedef bool bool_type;
-
-  /// Return type of dereferencing operator
-  typedef idx_type value_type;
 
   /// Get type of *this
   typedef CCuddFirstIter self;
-  
+
+  /// Get base type 
+  typedef CCuddNavigator base;
+
   /// Default constructor and construct from node pointer
   CCuddFirstIter(pointer_type ptr = NULL);
 
@@ -75,26 +75,12 @@ public:
   /// Postfix increment operator
   self operator++(int);
 
-  /// Constant dereference operator
-  value_type operator*() const;
-
-  /// Constant pointer access operator
-  const pointer_type operator->() const;
-
-  /// Equality test
-  bool_type operator==(const self&) const;
-
-  /// Nonequality test
-  bool_type operator!=(const self&) const;
-
-
 protected:
   /// Go to valid node
   void validate();
-  
-private:
-  pointer_type pNode;
 };
 
 
 END_NAMESPACE_PBORI
+
+#endif

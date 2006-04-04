@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/04/04 15:31:06  dreyer
+ * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
+ *
  * Revision 1.17  2006/04/04 12:07:37  dreyer
  * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
  *
@@ -325,7 +328,9 @@ BoolePolynomial::lmDivisors() const {
 // hash value of lm
 int 
 BoolePolynomial::lmHash() const {
+
   PBORI_TRACE_FUNC( "BoolePolynomial::lmHash() const" );
+
   if (m_dd.emptiness())
     return 0;
   else {
@@ -474,6 +479,13 @@ BoolePolynomial::firstEnd() const {
   return m_dd.firstEnd();
 }
 
+// Navigate through diagram structure
+BoolePolynomial::navigator 
+BoolePolynomial::navigation() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::navigation() const" );
+  return m_dd.navigation();
+}
 
 // addition operation 
 BoolePolynomial 

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/04 15:31:07  dreyer
+ * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
+ *
  * Revision 1.2  2006/03/30 08:59:42  dreyer
  * FIX: CCuddFirstIter works for empty and zero polynomials now
  *
@@ -35,20 +38,11 @@
 // include basic definitions
 #include "CCuddFirstIter.h"
 
-// Get Cudd's internal definitions
-//#include "cuddInt.h"
-
 BEGIN_NAMESPACE_PBORI
-
-/** @class CCuddFirstIter
- * @brief This class defines an iterator over the first minimal term of a given
- * ZDD node.
- *
- **/
 
 // constructor
 CCuddFirstIter::CCuddFirstIter(pointer_type ptr):
-  pNode(ptr) {
+  base(ptr) {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::CCuddFirstIter(pointer_type)" );
   validate();
@@ -56,7 +50,7 @@ CCuddFirstIter::CCuddFirstIter(pointer_type ptr):
 
 // copy constructor
 CCuddFirstIter::CCuddFirstIter(const self& rhs):
-  pNode(rhs.pNode) {
+  base(rhs) {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::CCuddFirstIter(const self&)" );
 }
@@ -66,7 +60,7 @@ CCuddFirstIter::CCuddFirstIter(const self& rhs):
 CCuddFirstIter::~CCuddFirstIter() {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::~CCuddFirstIter()" );
-  // does nothing, because pNode is manages outside the class
+  // does nothing, because everything is managed in base
 }
 
 // prefix increment operator
@@ -75,11 +69,8 @@ CCuddFirstIter::operator++() {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator++()" );
 
-  if(pNode != NULL) {
-    pNode = Cudd_T(pNode);
-    validate();
-  }
-
+  incrementThen();
+  validate();
   return *this;
 };
 
@@ -90,41 +81,9 @@ CCuddFirstIter::operator++(int) {
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator++(int)" );
 
   self tmp(*this);
-  operator++();
+  incrementThen();
 
   return tmp;
-};
-
-// constant pointer access operator
-CCuddFirstIter::value_type
-CCuddFirstIter::operator*() const {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator*() const" );
-  return Cudd_Regular(pNode)->index;
-};
-
-// constant pointer access operator
-const CCuddFirstIter::pointer_type
-CCuddFirstIter::operator->() const {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator->() const" );
-  return pNode;
-};
-
-// equality test
-CCuddFirstIter::bool_type 
-CCuddFirstIter::operator==(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator==(const self&) const" );
-  return (pNode == rhs.pNode);
-};
-
-// nonequality test
-CCuddFirstIter::bool_type 
-CCuddFirstIter::operator!=(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator!=(const self&) const" );
-  return (pNode != rhs.pNode);
 };
 
 // go to valid node
@@ -133,11 +92,11 @@ CCuddFirstIter::validate() {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::validate()" );
 
-  while ((pNode != NULL) && Cudd_IsConstant(pNode)) {
-    if( Cudd_V(pNode) == 0 ) 
-      pNode = Cudd_E(pNode);
+  while (terminated()) {        // find non-terminated node, if any path exists
+    if (finished()) 
+      *this = self();           // mark end of path reached
     else
-      pNode = NULL;         // at end of path
+      incrementElse();          // follow else branch
   }
 };
 
