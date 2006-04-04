@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/04/04 13:01:28  bricken
+ * + copyDiagram
+ *
  * Revision 1.14  2006/04/04 12:07:37  dreyer
  * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
  *
@@ -192,7 +195,11 @@ public:
 
   /// Finish of leading term 
   first_iterator firstEnd() const;
-
+  
+  /// gives a copy of the diagram
+  dd_type copyDiagram(){
+    return diagram();
+  }
 #ifndef PBORI_DEVELOPER
 protected:
 #endif
