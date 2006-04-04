@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/04/04 11:59:54  bricken
+ * + hash function
+ *
  * Revision 1.12  2006/04/04 11:21:22  dreyer
  * ADD lmDivisors() added
  *
@@ -148,7 +151,10 @@ public:
 
   /// Get all divisors of the leading term
   monom_type lmDivisors() const;
-
+  
+  /// hash value of the leading term
+  int lmHash() const;
+  
   /// Maximal degree of the polynomial
   size_type deg() const;
 

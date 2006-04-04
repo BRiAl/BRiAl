@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/04/04 12:00:01  bricken
+ * + hash function
+ *
  * Revision 1.15  2006/04/04 11:21:22  dreyer
  * ADD lmDivisors() added
  *
@@ -283,6 +286,27 @@ BoolePolynomial::lmDivisors() const {
   }
 
   return terms;
+}
+
+// hash value of lm
+int 
+BoolePolynomial::lmHash() const {
+  PBORI_TRACE_FUNC( "BoolePolynomial::lmHash() const" );
+  if (m_dd.emptiness())
+    return 0;
+  else {
+  
+    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+    int vars=0;
+    int sum=0;
+    while (start != finish){
+      vars++;
+      sum+=((*start)+1)*((*start)+1);
+      ++start;
+    }
+    return sum*vars;
+  }
+    
 }
 
 // Maximal degree of the polynomial
