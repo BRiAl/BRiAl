@@ -3,7 +3,7 @@
 #include "polybori.h"
 #include "pbori_defs.h"
 #include "dd_wrapper.h"
-#include "poly_wrapper.h"
+#include "Poly_wrapper.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
