@@ -120,12 +120,13 @@ for t in tests:
 
 if HAVE_PYTHON_EXTENSION:
  
-    
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "poly_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
-        env.LoadableModule('PyPolyBori/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
+        env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files, LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
     else:
         print "l:", l
-        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', ["PyPolyBoRi/main_wrapper.cc"], LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=env['LIBS']+['boost_python',"polybori"])
+        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files, LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=env['LIBS']+['boost_python',"polybori"])
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
-     
+else:
+    print "no python extension"
