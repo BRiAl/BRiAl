@@ -8,8 +8,8 @@
  */
 #include <boost/python.hpp>
 #include <iostream>
+#include "CDDInterface.h"
 #include "polybori.h"
-#include "pbori_defs.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -17,6 +17,30 @@ USING_NAMESPACE_PBORI
 void changeAssign(CTypes::dd_type& c, CTypes::dd_type::idx_type idx){
   c.changeAssign(idx);
 }
+
+typedef CTypes::dd_type dd_type;
+typedef CTypes::manager_reference manager_reference;
+static dd_type one_path(const dd_type& m_dd){
+  dd_type leadterm;
+
+  if (m_dd.emptiness())
+  leadterm = m_dd;
+  else {
+    leadterm = manager_reference(m_dd).blank();
+    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+    
+    while (start != finish){
+      leadterm.changeAssign(*start);
+      ++start;
+    }
+  }
+
+
+
+  return leadterm;
+}
+
+
 void export_dd(){
   boost::python::class_<CTypes::dd_type>("DD")
   .def(boost::python::init <const CTypes::dd_type&>())
@@ -57,7 +81,8 @@ void export_dd(){
   .def("nSupport", &CTypes::dd_type::nSupport)
   //.def("union",&CTypes::dd_type::unite)
   
-  .def("intersect", &CTypes::dd_type::intersect);
+  .def("intersect", &CTypes::dd_type::intersect)
+  .def("onePath", one_path);
   //.def("ite", &CTypes::dd_type::ite)
   //.def("printMinterm", &CTypes::dd_type::printMinterm);
 }

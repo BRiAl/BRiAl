@@ -14,8 +14,11 @@ using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
 #include "Poly_wrapper.h"
-void print_polynomial(const BoolePolynomial & p){
+static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
+}
+static int poly_hash(const BoolePolynomial& p){
+  return p.lmHash();
 }
 void export_poly(){
 
@@ -24,6 +27,7 @@ void export_poly(){
   .def(init<const BoolePolynomial &>())
   .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
+  .def("__hash__", poly_hash)
   .def(self+=self)
   .def(self*=self)
   .def(self/self)
@@ -32,11 +36,18 @@ void export_poly(){
   .def(self*=BooleVariable())
   .def(self*self)
   .def(self==self)
+  .def(self==bool())
   .def(self!=self)
+  .def(self!=bool())
   .def(self+self)
+  .def("isZero", &BoolePolynomial::isZero)
+  .def("isOne", &BoolePolynomial::isOne)
+
   .def("deg", &BoolePolynomial::deg)
+  .def("lmDivisors", &BoolePolynomial::lmDivisors)
   .def("lead", &BoolePolynomial::lead)
-  
+  .def("reducibleBy", &BoolePolynomial::reducibleBy)
+
   .def("lmDeg", &BoolePolynomial::lmDeg)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("nVars", &BoolePolynomial::nUsedVariables)
