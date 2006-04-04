@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/04/04 11:21:22  dreyer
+ * ADD lmDivisors() added
+ *
  * Revision 1.14  2006/04/04 07:36:35  dreyer
  * ADD: tests isZero(), isOne() and poly == bool, bool == poly
  *
@@ -255,6 +258,31 @@ BoolePolynomial::lead() const {
 #endif
 
   return leadterm;
+}
+
+// all dividers
+BoolePolynomial::monom_type
+BoolePolynomial::lmDivisors() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
+
+  // Implementation relying on CCuddFirstIter (may be buggy)
+  dd_type terms;
+
+  if (m_dd.emptiness())
+    terms = m_dd;
+  else {
+    terms = manager_reference(m_dd).blank();
+    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+    
+    while (start != finish){
+
+      terms.uniteAssign( terms.change(*start) );
+      ++start;
+    }
+  }
+
+  return terms;
 }
 
 // Maximal degree of the polynomial

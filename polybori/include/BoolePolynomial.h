@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/04/04 11:21:22  dreyer
+ * ADD lmDivisors() added
+ *
  * Revision 1.11  2006/04/04 07:36:35  dreyer
  * ADD: tests isZero(), isOne() and poly == bool, bool == poly
  *
@@ -142,6 +145,9 @@ public:
 
   /// Get leading term
   monom_type lead() const;
+
+  /// Get all divisors of the leading term
+  monom_type lmDivisors() const;
 
   /// Maximal degree of the polynomial
   size_type deg() const;

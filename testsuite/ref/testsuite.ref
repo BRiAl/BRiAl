@@ -197,6 +197,9 @@ One polynomial == 0? 0
 One polynomial == 1? 1
 Constant 0 == One polynomial? 0
 Constant 1 == One polynomial? 1
+Divisors of the leading monomial of  (x*z + y): 
+-> : 2 nodes 4 minterms
+-0-00 1
 
 Finished.
 ----------------------

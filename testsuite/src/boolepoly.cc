@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/04/04 11:21:22  dreyer
+ * ADD lmDivisors() added
+ *
  * Revision 1.7  2006/04/04 07:36:35  dreyer
  * ADD: tests isZero(), isOne() and poly == bool, bool == poly
  *
@@ -174,9 +177,12 @@ main(){
 
     std::cout << "Constant 1 == One polynomial? ";
     std::cout <<  (1 == poly) <<std::endl;
-    std::cout <<std::endl << "Finished."<<std::endl;
+    
+    std::cout <<"Divisors of the leading monomial of  (x*z + y): "<<std::endl;
+    std::cout <<   (x*z + y).lmDivisors()  <<std::endl;
 
-  }
+    std::cout <<  "Finished."<<std::endl;
+ }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
