@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/04/04 07:36:35  dreyer
+ * ADD: tests isZero(), isOne() and poly == bool, bool == poly
+ *
  * Revision 1.6  2006/04/03 10:45:57  dreyer
  * ADD: custom python-seach prefix PYPREFIX
  *
@@ -132,7 +135,46 @@ main(){
 
     std::cout << std::endl;
 
-    std::cout << "Finished."<<std::endl;
+    poly = BoolePolynomial();
+
+    std::cout << "Zero polynomial: isZero? ";
+    std::cout <<  poly.isZero() <<std::endl;
+
+    std::cout << "Zero polynomial: isOne? ";
+    std::cout <<  poly.isOne() <<std::endl;
+
+    std::cout << "Zero polynomial == 0? ";
+    std::cout <<  (poly == 0) <<std::endl;
+
+    std::cout << "Zero polynomial == 1? ";
+    std::cout <<  (poly == 1) <<std::endl;
+
+    std::cout << "Constant 0 == Zero polynomial? ";
+    std::cout <<  (0 == poly) <<std::endl;
+
+    std::cout << "Constant 1 == Zero polynomial? ";
+    std::cout <<  (1 == poly) <<std::endl;
+
+    poly = BoolePolynomial(1);
+
+    std::cout << "One polynomial: isZero? ";
+    std::cout <<  poly.isZero() <<std::endl;
+
+    std::cout << "One polynomial: isOne? ";
+    std::cout <<  poly.isOne() <<std::endl;
+
+    std::cout << "One polynomial == 0? ";
+    std::cout <<  (poly == 0) <<std::endl;
+
+    std::cout << "One polynomial == 1? ";
+    std::cout <<  (poly == 1) <<std::endl;
+
+    std::cout << "Constant 0 == One polynomial? ";
+    std::cout <<  (0 == poly) <<std::endl;
+
+    std::cout << "Constant 1 == One polynomial? ";
+    std::cout <<  (1 == poly) <<std::endl;
+    std::cout <<std::endl << "Finished."<<std::endl;
 
   }
   catch (PBoRiError& err) {

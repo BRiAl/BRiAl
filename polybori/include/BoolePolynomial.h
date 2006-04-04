@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/04/04 07:36:35  dreyer
+ * ADD: tests isZero(), isOne() and poly == bool, bool == poly
+ *
  * Revision 1.10  2006/03/30 11:57:11  dreyer
  * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
  *
@@ -129,8 +132,12 @@ public:
 
   /// @name Logical operations
   //@{
-  bool_type operator==(const self&);
-  bool_type operator!=(const self&);
+  bool_type operator==(const self&) const;
+  bool_type operator!=(const self&) const;
+  bool_type operator==(bool_type) const;
+  bool_type operator!=(bool_type) const;
+  bool_type isZero() const;
+  bool_type isOne() const;
   //@}
 
   /// Get leading term
@@ -194,6 +201,19 @@ operator/(const BoolePolynomial&, const BoolePolynomial::monom_type&);
 BoolePolynomial 
 spoly(const BoolePolynomial&, const BoolePolynomial&);
 
+/// Equality check (with constant lhs)
+inline BoolePolynomial::bool_type
+operator==(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
+
+  return (rhs == lhs); 
+};
+
+/// Nonquality check (with constant lhs)
+inline BoolePolynomial::bool_type
+operator!=(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
+
+  return (rhs != lhs); 
+};
 
 /// Stream output operator
 BoolePolynomial::ostream_type& 

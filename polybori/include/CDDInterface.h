@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/04/04 07:36:35  dreyer
+ * ADD: tests isZero(), isOne() and poly == bool, bool == poly
+ *
  * Revision 1.8  2006/03/30 12:21:20  dreyer
  * CHANGE: more consistency
  *
@@ -327,6 +330,13 @@ class CDDInterface<ZDD>:
   bool_type emptiness() const {
     return ( m_interfaced == manager().zddZero() );
   }
+
+  /// Checks whether the decision diagram has every variable negated
+  bool_type blankness() const {
+    return ( m_interfaced == 
+             manager().zddOne( Cudd_ReadZddSize(manager().getManager() )) );
+  }
+
 };
 
 

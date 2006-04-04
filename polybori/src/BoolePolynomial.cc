@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/04/04 07:36:35  dreyer
+ * ADD: tests isZero(), isOne() and poly == bool, bool == poly
+ *
  * Revision 1.13  2006/03/30 11:57:11  dreyer
  * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
  *
@@ -157,22 +160,57 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
 // Equality
 BoolePolynomial::bool_type
-BoolePolynomial::operator==(const self& rhs) {
+BoolePolynomial::operator==(const self& rhs) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(const self&)" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(const self&) const" );
 
   return (m_dd == rhs.m_dd);
 }
 
 // Nonequality
 BoolePolynomial::bool_type
-BoolePolynomial::operator!=(const self& rhs) {
+BoolePolynomial::operator!=(const self& rhs) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(const self&)" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(const self&) const" );
 
   return (m_dd != rhs.m_dd);
 }
 
+// Equality (compare with constant polynomial)
+BoolePolynomial::bool_type
+BoolePolynomial::operator==(bool_type rhs) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(bool_type) const" );
+
+  return ( rhs? isOne() : isZero() );
+}
+
+// Nonequality (compare with constant polynomial)
+BoolePolynomial::bool_type
+BoolePolynomial::operator!=(bool_type rhs) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(bool_type) const" );
+
+  return ( rhs? isZero() : isOne() );
+}
+
+// Check whether polynomial is zero
+BoolePolynomial::bool_type
+BoolePolynomial::isZero() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isZero() const" );
+
+  return m_dd.emptiness();
+}
+
+// Check whether polynomial is one
+BoolePolynomial::bool_type
+BoolePolynomial::isOne() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isOne() const" );
+
+  return m_dd.blankness();
+}
 
 // Leading term
 BoolePolynomial::monom_type

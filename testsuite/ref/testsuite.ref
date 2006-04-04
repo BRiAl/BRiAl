@@ -185,6 +185,19 @@ Nonequality?
 Division ok? 
 1
 
+Zero polynomial: isZero? 1
+Zero polynomial: isOne? 0
+Zero polynomial == 0? 1
+Zero polynomial == 1? 0
+Constant 0 == Zero polynomial? 1
+Constant 1 == Zero polynomial? 0
+One polynomial: isZero? 0
+One polynomial: isOne? 1
+One polynomial == 0? 0
+One polynomial == 1? 1
+Constant 0 == One polynomial? 0
+Constant 1 == One polynomial? 1
+
 Finished.
 ----------------------
 Executing testsuite/leadterm
