@@ -76,10 +76,10 @@ void export_dd(){
   .def("subset0",&CTypes::dd_type::subset0)
   .def("change", &CTypes::dd_type::change)
   .def("changeAssign", changeAssign)
-  
+  .def("empty", &dd_type::emptiness)
   .def("nNodes", &CTypes::dd_type::nNodes)
   .def("nSupport", &CTypes::dd_type::nSupport)
-  //.def("union",&CTypes::dd_type::unite)
+  .def("union",&CTypes::dd_type::unite)
   
   .def("intersect", &CTypes::dd_type::intersect)
   .def("onePath", one_path);

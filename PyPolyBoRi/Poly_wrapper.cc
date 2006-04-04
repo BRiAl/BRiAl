@@ -52,6 +52,7 @@ void export_poly(){
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("nVars", &BoolePolynomial::nUsedVariables)
   .def("totalDegree", &BoolePolynomial::totalDeg)
+  .def("diagram", &BoolePolynomial::copyDiagram)
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
