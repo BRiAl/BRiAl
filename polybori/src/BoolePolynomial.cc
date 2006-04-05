@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/04/05 14:56:38  dreyer
+ * ADD prettyPrint functions for dot-output to stdout or file
+ *
  * Revision 1.18  2006/04/04 15:31:06  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -462,6 +465,27 @@ BoolePolynomial::print(ostream_type& os) const {
 
   return os;
 }
+
+/// Pretty print to stdout
+void BoolePolynomial::prettyPrint() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint() const" );
+  m_dd.prettyPrint();
+}
+
+/// Pretty print to filename
+void BoolePolynomial::prettyPrint(const char* filename) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint(const char*) const" );
+
+  FILE* theFile = fopen( filename, "w");
+  if (theFile == NULL)
+    throw PBoRiError(CTypes::io_error);
+
+  m_dd.prettyPrint(theFile);
+  fclose(theFile);
+}
+
 
 // Start of leading term
 BoolePolynomial::first_iterator 

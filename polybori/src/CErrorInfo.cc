@@ -20,8 +20,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/05 14:56:38  dreyer
+ * ADD prettyPrint functions for dot-output to stdout or file
+ *
  * Revision 1.4  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; ring uses shared_ptr now
+ * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
+ * ring uses shared_ptr now
  *
  * Revision 1.3  2006/03/16 13:37:41  dreyer
  * ADD: added error codes and PBORI_DEVELOPER marker
@@ -54,6 +58,7 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::no_ring] = "No polynomial ring structure defined.";
   pErrorText[CTypes::invalid] = "Invalid operation called.";
   pErrorText[CTypes::out_of_bounds] = "Variable index out of bounds.";
+  pErrorText[CTypes::io_error] = "I/O error.";
 #ifdef PBORI_DEVELOPER
   pErrorText[CTypes::not_implemented] = 
     "Sorry! Functionality not implemented yet.";

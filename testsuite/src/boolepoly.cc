@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/04/05 14:56:38  dreyer
+ * ADD prettyPrint functions for dot-output to stdout or file
+ *
  * Revision 1.9  2006/04/04 12:07:37  dreyer
  * ADD BoolePolynomial::reducibleby(), and firstBegin(), firstEnd()
  *
@@ -195,6 +198,9 @@ main(){
 
     std::cout <<  "(x*y + y).reducibleBy(z+w): ";
     std::cout <<   (x*y + y).reducibleBy(z+w)  <<std::endl;
+
+    std::cout <<std::endl<<  "Pretty print: "<<std::endl;
+    (x*y + y).prettyPrint();
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }

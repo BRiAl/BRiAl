@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/04/05 14:56:38  dreyer
+ * ADD prettyPrint functions for dot-output to stdout or file
+ *
  * Revision 1.10  2006/04/04 15:31:06  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -162,6 +165,9 @@ class CDDInterface<ZDD>:
   /// Iterator type for navigation throught Cudd's ZDDs structure
   typedef CCuddNavigator navigator;
 
+  /// Type for output of pretty print
+  typedef FILE* pretty_out_type;
+
   /// Default constructor
   CDDInterface(): base_type() {}
 
@@ -291,10 +297,26 @@ class CDDInterface<ZDD>:
   /// Get number of nodes in decision diagram
   ostream_type& print(ostream_type& os) const {
 
+    FILE* oldstdout = manager().ReadStdout();
+
+    /// Enable ostream cerr (at least)
+    if (os == std::cerr)
+      manager().SetStdout(stderr);
+
     m_interfaced.print( Cudd_ReadZddSize(manager().getManager()) );
     m_interfaced.PrintMinterm();
+
+    manager().SetStdout(oldstdout);
     return os;
   }
+
+  void prettyPrint(pretty_out_type filehandle = stdout) const {
+
+    ZDDvector dummyvec(1, &manager());
+    dummyvec[0] = m_interfaced;
+
+    dummyvec.DumpDot( NULL, NULL, filehandle );
+  };
 
   /// Equality check
   bool_type operator==(const self& rhs) const {

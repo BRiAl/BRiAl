@@ -123,6 +123,9 @@ Throwing error # 4
     which says: Variable index out of bounds.
 Throwing error # 5
   Caught error # 5
+    which says: I/O error.
+Throwing error # 6
+  Caught error # 6
     which says: Sorry! Functionality not implemented yet.
 ----------------------
 Executing testsuite/boolepoly
@@ -205,6 +208,38 @@ Divisors of the leading monomial of  (x*z + y):
 (x*z*y + y).reducibleBy(y*z): 1
 (x*z*y + y).reducibleBy(w): 0
 (x*y + y).reducibleBy(z+w): 0
+
+Pretty print: 
+digraph "ZDD" {
+size = "7.5,10"
+center = true;
+edge [dir = none];
+{ node [shape = plaintext];
+  edge [style = invis];
+  "CONST NODES" [style = invis];
+" 0 " -> " 1 " -> "CONST NODES"; 
+}
+{ rank = same; node [shape = box]; edge [style = invis];
+"F0"; }
+{ rank = same; " 0 ";
+"4c";
+}
+{ rank = same; " 1 ";
+"2b";
+}
+{ rank = same; "CONST NODES";
+{ node [shape = box]; "22";
+"21";
+}
+}
+"F0" -> "4c" [style = solid];
+"4c" -> "2b";
+"4c" -> "2b" [style = dashed];
+"2b" -> "21";
+"2b" -> "22" [style = dashed];
+"22" [label = "0"];
+"21" [label = "1"];
+}
 
 Finished.
 ----------------------

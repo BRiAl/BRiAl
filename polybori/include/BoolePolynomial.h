@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/04/05 14:56:38  dreyer
+ * ADD prettyPrint functions for dot-output to stdout or file
+ *
  * Revision 1.16  2006/04/04 15:31:06  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -116,6 +119,9 @@ public:
   /// Iterator-like type for navigating through diagram structure
   typedef dd_type::navigator navigator;
 
+  /// Type for output of pretty print
+  typedef dd_type::pretty_out_type pretty_out_type;
+
   /// @todo A more sophisticated treatment for monomials is needed.
 
   /// Fix type for treatment of monomials
@@ -195,6 +201,12 @@ public:
   /// Print current polynomial to cout
   /// @todo Cudd provides only cout functionality, iostream needed.
   ostream_type& print(ostream_type&) const;
+
+  /// Pretty print to stdout
+  void prettyPrint() const;
+
+  /// Pretty print to filename
+  void prettyPrint(const char* filename) const;
 
   /// Start of leading term
   first_iterator firstBegin() const;
