@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/04/05 15:26:03  dreyer
+ * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
+ *
  * Revision 1.17  2006/04/05 14:56:38  dreyer
  * ADD prettyPrint functions for dot-output to stdout or file
  *
@@ -121,6 +124,9 @@ public:
 
   /// Type for output of pretty print
   typedef dd_type::pretty_out_type pretty_out_type;
+
+  /// Type for naming file for pretty print
+  typedef dd_type::filename_type filename_type;
 
   /// @todo A more sophisticated treatment for monomials is needed.
 

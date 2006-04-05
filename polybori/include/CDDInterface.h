@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/04/05 15:26:04  dreyer
+ * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
+ *
  * Revision 1.11  2006/04/05 14:56:38  dreyer
  * ADD prettyPrint functions for dot-output to stdout or file
  *
@@ -168,6 +171,9 @@ class CDDInterface<ZDD>:
   /// Type for output of pretty print
   typedef FILE* pretty_out_type;
 
+  /// Type for file name of pretty print output
+  typedef const char* filename_type;
+
   /// Default constructor
   CDDInterface(): base_type() {}
 
@@ -310,6 +316,7 @@ class CDDInterface<ZDD>:
     return os;
   }
 
+  /// Print Dot-output to file given by file handle
   void prettyPrint(pretty_out_type filehandle = stdout) const {
 
     ZDDvector dummyvec(1, &manager());
@@ -317,6 +324,19 @@ class CDDInterface<ZDD>:
 
     dummyvec.DumpDot( NULL, NULL, filehandle );
   };
+
+  /// Print Dot-output to file given by file name
+  bool_type prettyPrint(filename_type filename) const {
+
+    FILE* theFile = fopen( filename, "w");
+    if (theFile == NULL)
+      return true;
+
+    prettyPrint(theFile);
+    fclose(theFile);
+
+    return false;
+ };
 
   /// Equality check
   bool_type operator==(const self& rhs) const {

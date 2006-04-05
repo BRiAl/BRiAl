@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/04/05 15:26:04  dreyer
+ * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
+ *
  * Revision 1.19  2006/04/05 14:56:38  dreyer
  * ADD prettyPrint functions for dot-output to stdout or file
  *
@@ -474,16 +477,13 @@ void BoolePolynomial::prettyPrint() const {
 }
 
 /// Pretty print to filename
-void BoolePolynomial::prettyPrint(const char* filename) const {
+void BoolePolynomial::prettyPrint(filename_type filename) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint(const char*) const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint(filename_type) const" );
+  bool_type error = m_dd.prettyPrint(filename);
 
-  FILE* theFile = fopen( filename, "w");
-  if (theFile == NULL)
+  if (error)
     throw PBoRiError(CTypes::io_error);
-
-  m_dd.prettyPrint(theFile);
-  fclose(theFile);
 }
 
 
