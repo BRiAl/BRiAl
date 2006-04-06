@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/04/06 14:10:58  dreyer
+ * ADD hash_type and CCuddNavigator::hash()
+ *
  * Revision 1.19  2006/04/06 13:54:58  dreyer
  * ADD BoolePolynomial::length()
  *
@@ -117,6 +120,7 @@ public:
   typedef CTypes::idx_type idx_type;
   typedef CTypes::bool_type bool_type;
   typedef CTypes::ostream_type ostream_type;
+  typedef CTypes::hash_type hash_type;
   //@}
 
   /// Iterator type for iterating over indices of the leading term
@@ -184,7 +188,7 @@ public:
   monom_type lmDivisors() const;
   
   /// hash value of the leading term
-  int lmHash() const;
+  hash_type lmHash() const;
   
   /// Maximal degree of the polynomial
   size_type deg() const;

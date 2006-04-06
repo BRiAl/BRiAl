@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/04/06 14:10:58  dreyer
+ * ADD hash_type and CCuddNavigator::hash()
+ *
  * Revision 1.21  2006/04/06 13:54:58  dreyer
  * ADD BoolePolynomial::length()
  *
@@ -335,7 +338,7 @@ BoolePolynomial::lmDivisors() const {
 }
 
 // hash value of lm
-int 
+BoolePolynomial::hash_type 
 BoolePolynomial::lmHash() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmHash() const" );

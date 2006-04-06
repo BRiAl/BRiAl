@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/06 14:10:58  dreyer
+ * ADD hash_type and CCuddNavigator::hash()
+ *
  * Revision 1.2  2006/04/06 13:05:54  dreyer
  * CHANGE more suitable names for CCuddNavigator functions
  *
@@ -53,6 +56,9 @@ public:
 
   /// Type for indices
   typedef int idx_type;
+
+  /// Type for hashing
+  typedef int hash_type;
 
   /// Type for boolean results
   typedef bool bool_type;
@@ -89,6 +95,9 @@ public:
 
   /// Constant pointer access operator
   const pointer_type operator->() const;
+
+  /// Constant pointer access operator
+  hash_type hash() const;
 
   /// Equality test
   bool_type operator==(const self&) const;

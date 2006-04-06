@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/04/06 14:10:58  dreyer
+ * ADD hash_type and CCuddNavigator::hash()
+ *
  * Revision 1.13  2006/04/05 14:56:38  dreyer
  * ADD prettyPrint functions for dot-output to stdout or file
  *
@@ -295,6 +298,9 @@ struct CTypes {
 
   /// Type for indices
   typedef int idx_type;
+
+  /// Type for hashing
+  typedef int hash_type;
 
   /// Error codes enumeration
   enum errorcodes {

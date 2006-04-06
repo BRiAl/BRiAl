@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/06 14:10:59  dreyer
+ * ADD hash_type and CCuddNavigator::hash()
+ *
  * Revision 1.2  2006/04/06 13:05:54  dreyer
  * CHANGE more suitable names for CCuddNavigator functions
  *
@@ -123,6 +126,14 @@ CCuddNavigator::operator->() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::operator->() const" );
   return pNode;
+};
+
+// constant pointer access operator
+CCuddNavigator::hash_type
+CCuddNavigator::hash() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::hash() const" );
+  return reinterpret_cast<hash_type>(pNode);
 };
 
 // equality test
