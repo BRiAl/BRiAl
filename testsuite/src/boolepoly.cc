@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/04/06 15:54:50  dreyer
+ * CHANGE testsuite revised
+ *
  * Revision 1.10  2006/04/05 14:56:38  dreyer
  * ADD prettyPrint functions for dot-output to stdout or file
  *
@@ -199,8 +202,6 @@ main(){
     std::cout <<  "(x*y + y).reducibleBy(z+w): ";
     std::cout <<   (x*y + y).reducibleBy(z+w)  <<std::endl;
 
-    std::cout <<std::endl<<  "Pretty print: "<<std::endl;
-    (x*y + y).prettyPrint();
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }

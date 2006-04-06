@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/06 15:54:50  dreyer
+ * CHANGE testsuite revised
+ *
  * Revision 1.1  2006/04/06 13:05:54  dreyer
  * CHANGE more suitable names for CCuddNavigator functions
  *
@@ -38,11 +41,39 @@
 
 // load standard iostream capapilities
 #include <iostream>
+#include <list>
 
 // load polybori header file
 # include "polybori.h"
 
 USING_NAMESPACE_PBORI
+
+
+template <class NaviType, class TermType, class ListType>
+void
+find_paths(NaviType navi, const TermType& currentPath, ListType& theList ) {
+
+  if (navi.isConstant()) {      // Reached end of path
+    if (navi.terminalValue())   // Case of a valid path
+      theList.push_back(currentPath);
+  }
+  else {
+    find_paths(navi.thenBranch(), currentPath.change(*navi), theList);
+    find_paths(navi.elseBranch(), currentPath, theList);
+  }
+}
+
+template <class IteratorType>
+void
+print_test(IteratorType start, IteratorType end) {
+
+  while(start != end){
+    (*start).print(std::cout);
+    ++start;
+  }
+  
+}
+
 
 int
 main(){
@@ -79,21 +110,11 @@ main(){
 
     BoolePolynomial::navigator navi = poly.navigation();
 
-    std::cout << "* "<< *navi  <<std::endl;
+    std::list<CDDInterface<ZDD> > theList;
 
+    find_paths(navi, BoolePolyRing::ringOne(),  theList);
 
-    navi.incrementThen();
-    std::cout << "inc * "<< *navi  <<std::endl;
-    navi.incrementThen();
-    std::cout << "inc * "<< *navi  <<std::endl;
-
-    std::cout << "value "<< navi.terminalValue()  <<std::endl;
-
-    navi.incrementElse(); 
-    //navi.incrementThen();
-    std::cout << "inc * "<< *navi  <<std::endl;
-    std::cout << "inc * "<<""  <<std::endl;
-    std::cout << "value "<< navi.terminalValue()  <<std::endl;
+    print_test(theList.begin(), theList.end());
 
     std::cout << "Finished."<<std::endl;
   }
