@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/06 13:05:54  dreyer
+ * CHANGE more suitable names for CCuddNavigator functions
+ *
  * Revision 1.1  2006/04/04 15:31:07  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -68,12 +71,20 @@ CCuddNavigator::incrementThen() {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::incrementThen()" );
 
-  if (isValid()) {
+  if (isValid())
     pNode = Cudd_T(pNode);
-    //    validate();
-  }
 
   return *this;
+};
+
+// go to then direction
+CCuddNavigator
+CCuddNavigator::thenBranch() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::thenBranch() const" );
+
+  self copy(*this);
+  return copy.incrementThen();
 };
 
 // increment in else direction
@@ -82,12 +93,20 @@ CCuddNavigator::incrementElse() {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::incrementElse()" );
 
-  if(isValid()) {
+  if(isValid()) 
     pNode = Cudd_E(pNode);
-    //  validate();
-  }
 
   return *this;
+};
+
+// go to else direction
+CCuddNavigator
+CCuddNavigator::elseBranch() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::ielseBranch() const" );
+
+  self copy(*this);
+  return copy.incrementElse();
 };
 
 // constant pointer access operator
@@ -124,17 +143,17 @@ CCuddNavigator::operator!=(const self& rhs) const {
 
 // whether constant node was reached
 CCuddNavigator::bool_type 
-CCuddNavigator::terminated() const {
+CCuddNavigator::isConstant() const {
 
-  PBORI_TRACE_FUNC( "CCuddNavigator::terminated() const" );
+  PBORI_TRACE_FUNC( "CCuddNavigator::isConstant() const" );
   return isValid() && Cudd_IsConstant(pNode);
 };
 
 // constant node value
 CCuddNavigator::bool_type 
-CCuddNavigator::finished() const {
+CCuddNavigator::terminalValue() const {
 
-  PBORI_TRACE_FUNC( "CCuddNavigator::finished() const" );
+  PBORI_TRACE_FUNC( "CCuddNavigator::terminalValue() const" );
   return Cudd_V(pNode);
 };
 

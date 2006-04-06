@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/06 13:05:54  dreyer
+ * CHANGE more suitable names for CCuddNavigator functions
+ *
  * Revision 1.3  2006/04/04 15:31:07  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -45,7 +48,7 @@ CCuddFirstIter::CCuddFirstIter(pointer_type ptr):
   base(ptr) {
 
   PBORI_TRACE_FUNC( "CCuddFirstIter::CCuddFirstIter(pointer_type)" );
-  validate();
+  terminateConstant();
 }
 
 // copy constructor
@@ -70,7 +73,7 @@ CCuddFirstIter::operator++() {
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator++()" );
 
   incrementThen();
-  validate();
+  terminateConstant();
   return *this;
 };
 
@@ -88,16 +91,13 @@ CCuddFirstIter::operator++(int) {
 
 // go to valid node
 void
-CCuddFirstIter::validate() {
+CCuddFirstIter::terminateConstant() {
 
-  PBORI_TRACE_FUNC( "CCuddFirstIter::validate()" );
+  PBORI_TRACE_FUNC( "CCuddFirstIter::terminateConstant()" );
 
-  while (terminated()) {        // find non-terminated node, if any path exists
-    if (finished()) 
+  if (isConstant()) 
       *this = self();           // mark end of path reached
-    else
-      incrementElse();          // follow else branch
-  }
+
 };
 
 

@@ -38,7 +38,7 @@ void export_nav(){
   .def(self==self)
   .def(self!=self)
   .def("value",value)
-  .def("constant", &CCuddNavigator::terminated)
-  .def("terminalOne", &CCuddNavigator::finished)
+  .def("constant", &CCuddNavigator::isConstant)
+  .def("terminalOne", &CCuddNavigator::terminalValue)
   .def("valid", &CCuddNavigator::isValid);
 }

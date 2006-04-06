@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/06 13:05:54  dreyer
+ * CHANGE more suitable names for CCuddNavigator functions
+ *
  * Revision 1.1  2006/04/04 15:31:06  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -72,8 +75,14 @@ public:
   /// Increment in @i then direction
   self& incrementThen();
 
+  /// Increment in @i then direction
+  self thenBranch() const;
+
   /// Increment in @i else direction
   self& incrementElse();
+
+  /// Increment in @i else direction
+  self elseBranch() const;
 
   /// Constant dereference operator
   value_type operator*() const;
@@ -88,10 +97,10 @@ public:
   bool_type operator!=(const self&) const;
 
   /// Check whether constant node was reached
-  bool_type terminated() const;
+  bool_type isConstant() const;
 
   /// Check whether terminal node marks end of path
-  bool_type finished() const;
+  bool_type terminalValue() const;
 
   /// Check whether *this is not the default iterator self() (NULL pointer)
   bool_type isValid() const;

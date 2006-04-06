@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/06 13:05:54  dreyer
+ * CHANGE more suitable names for CCuddNavigator functions
+ *
  * Revision 1.3  2006/04/04 15:31:06  dreyer
  * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
  *
@@ -76,8 +79,8 @@ public:
   self operator++(int);
 
 protected:
-  /// Go to valid node
-  void validate();
+  /// Constant nodes are marked as the end of a path
+  void terminateConstant();
 };
 
 
