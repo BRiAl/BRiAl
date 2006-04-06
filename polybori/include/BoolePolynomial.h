@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/04/06 13:54:58  dreyer
+ * ADD BoolePolynomial::length()
+ *
  * Revision 1.18  2006/04/05 15:26:03  dreyer
  * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
  *
@@ -203,6 +206,9 @@ public:
 
   /// Set of variables of the polynomial
   monom_type usedVariables() const;
+
+  /// Returns number of terms
+  size_type length() const;
 
   /// Print current polynomial to cout
   /// @todo Cudd provides only cout functionality, iostream needed.

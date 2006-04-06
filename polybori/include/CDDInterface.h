@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/04/06 13:54:58  dreyer
+ * ADD BoolePolynomial::length()
+ *
  * Revision 1.12  2006/04/05 15:26:04  dreyer
  * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
  *
@@ -391,6 +394,11 @@ class CDDInterface<ZDD>:
   bool_type blankness() const {
     return ( m_interfaced == 
              manager().zddOne( Cudd_ReadZddSize(manager().getManager() )) );
+  }
+
+  /// Returns number of terms
+  size_type length() const {
+    return m_interfaced.Count();
   }
 
 };

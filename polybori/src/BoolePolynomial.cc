@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/04/06 13:54:58  dreyer
+ * ADD BoolePolynomial::length()
+ *
  * Revision 1.20  2006/04/05 15:26:04  dreyer
  * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
  *
@@ -436,6 +439,16 @@ BoolePolynomial::usedVariables() const {
 
   return m_dd.support();
 }
+
+/// Returns number of terms
+BoolePolynomial::size_type
+BoolePolynomial::length() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::length() const" );
+
+  return m_dd.length();
+}
+
 
 // Access to internal decision diagramm structure
 BoolePolynomial::dd_type&
