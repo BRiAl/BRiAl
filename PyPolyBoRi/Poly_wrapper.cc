@@ -58,6 +58,7 @@ void export_poly(){
   .def("diagram", &BoolePolynomial::copyDiagram)
   .def("navigation", &BoolePolynomial::navigation)
   .def("plot",plot)
+  .def("__len__", &BoolePolynomial::length)
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
