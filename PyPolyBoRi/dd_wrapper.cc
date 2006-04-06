@@ -80,7 +80,7 @@ void export_dd(){
   .def("nNodes", &CTypes::dd_type::nNodes)
   .def("nSupport", &CTypes::dd_type::nSupport)
   .def("union",&CTypes::dd_type::unite)
-  
+  .def("navigation", &dd_type::navigation)
   .def("intersect", &CTypes::dd_type::intersect)
   .def("onePath", one_path);
   //.def("ite", &CTypes::dd_type::ite)

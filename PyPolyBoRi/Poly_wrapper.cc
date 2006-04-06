@@ -20,6 +20,9 @@ static void print_polynomial(const BoolePolynomial & p){
 static int poly_hash(const BoolePolynomial& p){
   return p.lmHash();
 }
+static void plot(const BoolePolynomial& p, const char* c){
+  p.prettyPrint(c);
+}
 void export_poly(){
 
   boost::python::class_<BoolePolynomial>("Polynomial")
@@ -53,6 +56,8 @@ void export_poly(){
   .def("nVars", &BoolePolynomial::nUsedVariables)
   .def("totalDegree", &BoolePolynomial::totalDeg)
   .def("diagram", &BoolePolynomial::copyDiagram)
+  .def("navigation", &BoolePolynomial::navigation)
+  .def("plot",plot)
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);

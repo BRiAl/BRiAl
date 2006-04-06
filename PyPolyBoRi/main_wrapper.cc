@@ -4,6 +4,7 @@
 #include "pbori_defs.h"
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
+#include "navigator_wrap.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -18,6 +19,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   BoolePolyRing r; //workaround for having a current_ring
   export_dd();
   export_poly();
+  export_nav();
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
     .def(boost::python::init <BoolePolyRing::size_type>())
