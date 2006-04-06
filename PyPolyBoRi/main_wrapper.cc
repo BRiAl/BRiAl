@@ -32,7 +32,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
-  .def("toStdOut", &print_variable);
+  .def("toStdOut", print_variable)
+    .def("__len__", &BoolePolynomial::length);
    }
 /*
 
