@@ -108,7 +108,7 @@ def translate_ideal(s,vars):
     #                 print v
     #                 print trans[v]
     #                 myterm.change(trans[v])
-                print "nodes per term", myterm.nNodes()
+                #print "nodes per term", myterm.nNodes()
             else:
                 myterm=r.one()
             myp+=Polynomial(myterm)
