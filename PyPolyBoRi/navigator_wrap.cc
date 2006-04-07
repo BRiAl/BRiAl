@@ -40,5 +40,6 @@ void export_nav(){
   .def("value",value)
   .def("constant", &CCuddNavigator::isConstant)
   .def("terminalOne", &CCuddNavigator::terminalValue)
+  .def("__hash__", &CCuddNavigator::hash)
   .def("valid", &CCuddNavigator::isValid);
 }

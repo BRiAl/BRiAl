@@ -114,7 +114,7 @@ def translate_ideal(s,vars):
             myp+=Polynomial(myterm)
                 
         res.append(myp)
-    return res
+    return (r,res)
 
 if __name__=='__main__':
     print parse_ideal("x*y*z+x, x*z+y*z,y*z+x", ["x","y","z"])
