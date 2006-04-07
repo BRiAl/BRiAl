@@ -3,29 +3,41 @@ Starting Testsuite...
 ----------------------
 Executing testsuite/zddnavi
 ----------------------
-Testing leading terms
--> : 5 nodes 3 minterms
-10111 1
-10100 1
-01000 1
-
+Testing navigating through decision diagrams
 poly:  
 -> : 5 nodes 3 minterms
 10111 1
 10100 1
 01000 1
 
-leading term: 
+Navigation: 
 -> : 4 nodes 1 minterms
 10111 1
 
-Navigation: 
-: 4 nodes 1 minterms
-10111 1
-: 2 nodes 1 minterms
+-> : 2 nodes 1 minterms
 10100 1
-: 1 nodes 1 minterms
+
+-> : 1 nodes 1 minterms
 01000 1
+
+
+Printing via dd_transform: 
+-> : 4 nodes 1 minterms
+10111 1
+-> : 2 nodes 1 minterms
+10100 1
+-> : 1 nodes 1 minterms
+01000 1
+
+Storing via dd_transform: 
+0, 2, 3, 4, 
+0, 2, 
+1, 
+
+pure print dd_transform: 
+0 2 3 4 
+0 2 
+1 
 Finished.
 ----------------------
 Executing testsuite/testring

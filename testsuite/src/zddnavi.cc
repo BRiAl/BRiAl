@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/07 16:32:08  dreyer
+ * ADD dd_transform and resp. examples
+ *
  * Revision 1.2  2006/04/06 15:54:50  dreyer
  * CHANGE testsuite revised
  *
@@ -42,9 +45,13 @@
 // load standard iostream capapilities
 #include <iostream>
 #include <list>
+#include <iterator>
+#include <sstream>
 
 // load polybori header file
 # include "polybori.h"
+
+#include "pbori_algo.h"
 
 USING_NAMESPACE_PBORI
 
@@ -63,22 +70,50 @@ find_paths(NaviType navi, const TermType& currentPath, ListType& theList ) {
   }
 }
 
-template <class IteratorType>
-void
-print_test(IteratorType start, IteratorType end) {
 
-  while(start != end){
-    (*start).print(std::cout);
-    ++start;
+template <class IteratorType>
+void print1D(IteratorType first, IteratorType last) {
+
+  while (first != last) {
+    std::cout << *first <<", ";
+    ++first;
   }
+}
+
+template<class IteratorType>
+void print2D(IteratorType first, IteratorType last) {
+
+  while (first != last) {
+    print1D( (*first).begin(), (*first).end());
+    std::cout << std::endl;
+    ++first;
+  }
+}
+
+
+// dummy type for storing monomial data
+class variables_list :
+  public std::list<int> {
+public:
   
+  typedef std::list<int> base;
+  variables_list() : base() {}
+};
+
+std::ostream& 
+operator<<(std::ostream& os, const variables_list& varlist) {
+
+   std::copy(varlist.begin(), varlist.end(), 
+             std::ostream_iterator<variables_list::value_type>(os, " ") );
+
+  return os;
 }
 
 
 int
 main(){
 
-  std::cout << "Testing leading terms" <<std::endl;   
+  std::cout << "Testing navigating through decision diagrams" <<std::endl;   
 
   try {
     BoolePolyRing the_ring(5);
@@ -91,20 +126,10 @@ main(){
     BoolePolynomial v = BooleVariable(3);
     BoolePolynomial w = BooleVariable(4);
 
-
-    BoolePolynomial poly;
-
-
-    poly =  ( x*z  )    * (z + v*w) + y;
-
-
-   std::cout << poly <<std::endl;
+    BoolePolynomial poly = (x*z) * (z + v*w) + y;
 
     std::cout << "poly:  "<<std::endl;
     std::cout << poly <<std::endl;
-
-    std::cout << "leading term: "<<std::endl;
-    std::cout << poly.lead() <<std::endl;
 
     std::cout << "Navigation: "<<std::endl;
 
@@ -112,11 +137,39 @@ main(){
 
     std::list<CDDInterface<ZDD> > theList;
 
-    find_paths(navi, BoolePolyRing::ringOne(),  theList);
+    dd_transform( navi, BoolePolyRing::ringOne(),  
+                  std::back_inserter(theList),
+                  change<CDDInterface<ZDD> >() );
 
-    print_test(theList.begin(), theList.end());
+    std::copy(theList.begin(), theList.end(), 
+              std::ostream_iterator<BoolePolynomial>(std::cout, "\n") );
+
+
+    std::cout <<std::endl<< "Printing via dd_transform: "<<std::endl;
+    dd_transform( navi, BoolePolyRing::ringOne(), 
+                  std::ostream_iterator<BoolePolynomial>(std::cout, ""),
+                  change<CDDInterface<ZDD>, int> () );
+
+    std::cout <<std::endl<< "Storing via dd_transform: "<<std::endl;
+
+    std::list<std::list<int>  > allLists;
+
+    dd_transform( navi, std::list<int>(),
+                  std::back_inserter(allLists),
+                  push_back<std::list<int> >() );
+
+    print2D(allLists.begin(), allLists.end());
+
+    std::cout <<std::endl<< "pure print dd_transform: "<<std::endl;
+
+    dd_transform( navi, variables_list(),
+                  std::ostream_iterator<variables_list>(std::cout, "\n"),
+                  push_back<variables_list>() );
+
+
 
     std::cout << "Finished."<<std::endl;
+
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
