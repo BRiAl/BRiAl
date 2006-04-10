@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/10 14:38:39  dreyer
+ * FIX operator*= works for nontrivial lhs
+ *
  * Revision 1.3  2006/04/07 16:32:08  dreyer
  * ADD dd_transform and resp. examples
  *
@@ -126,7 +129,7 @@ main(){
     BoolePolynomial v = BooleVariable(3);
     BoolePolynomial w = BooleVariable(4);
 
-    BoolePolynomial poly = (x*z) * (z + v*w) + y;
+    BoolePolynomial poly = (z + v*w) * (x*z) + y;
 
     std::cout << "poly:  "<<std::endl;
     std::cout << poly <<std::endl;
@@ -166,10 +169,7 @@ main(){
                   std::ostream_iterator<variables_list>(std::cout, "\n"),
                   push_back<variables_list>() );
 
-
-
     std::cout << "Finished."<<std::endl;
-
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

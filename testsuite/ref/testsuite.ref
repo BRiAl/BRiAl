@@ -247,6 +247,10 @@ Divisors of the leading monomial of  (x*z + y):
 (x*z*y + y).reducibleBy(y*z): 1
 (x*z*y + y).reducibleBy(w): 0
 (x*y + y).reducibleBy(z+w): 0
+Multiplication tests: 
+1
+1
+1
 
 Finished.
 ----------------------

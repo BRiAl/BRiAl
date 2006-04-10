@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/04/10 14:38:39  dreyer
+ * FIX operator*= works for nontrivial lhs
+ *
  * Revision 1.22  2006/04/06 14:10:58  dreyer
  * ADD hash_type and CCuddNavigator::hash()
  *
@@ -106,6 +109,12 @@
 // get error types
 # include "PBoRiError.h"
 
+// get transformation algorithms
+# include "pbori_algo.h"
+
+// get functionals
+# include "pbori_func.h"
+
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -168,7 +177,21 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  m_dd.unateProductAssign(rhs.m_dd);
+  monom_type::first_iterator start(rhs.firstBegin()), finish(rhs.firstEnd());
+
+  while (start != finish) {
+
+    // get all terms not containing the variable with index *start
+    dd_type tmp( m_dd.subset0(*start) );
+
+    // get the complementary terms
+    m_dd.diffAssign(tmp);
+
+    // construct polynomial terms
+    *this += tmp.change(*start);
+
+    ++start;
+  }
   return *this;
 }
 

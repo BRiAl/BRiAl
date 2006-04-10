@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/04/10 14:38:39  dreyer
+ * FIX operator*= works for nontrivial lhs
+ *
  * Revision 1.11  2006/04/06 15:54:50  dreyer
  * CHANGE testsuite revised
  *
@@ -202,6 +205,11 @@ main(){
     std::cout <<  "(x*y + y).reducibleBy(z+w): ";
     std::cout <<   (x*y + y).reducibleBy(z+w)  <<std::endl;
 
+    std::cout <<  "Multiplication tests: "<<std::endl;
+    std::cout << ( ((x*y + x)*y) == 0) <<std::endl;
+    std::cout << ( ((x*y + x + y*z)*y) == y*z) <<std::endl;
+    std::cout << ( (x*y*z + y + x*z + v*w +x*v)*(y*z)  == 
+                   (y*z + y*z*v*w + x*y*z*v) ) <<std::endl;
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }
