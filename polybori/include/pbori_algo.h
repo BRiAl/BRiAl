@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/10 07:36:27  dreyer
+ * ADD pbori_func.h to carry PolyBoRi related functionals
+ *
  * Revision 1.1  2006/04/07 16:32:08  dreyer
  * ADD dd_transform and resp. examples
  *
@@ -27,89 +30,16 @@
 **/
 //*****************************************************************************
 
+// include polybori's definitions
 #include "pbori_defs.h"
+
+// get polybori's functionals
+#include "pbori_func.h"
 
 #ifndef pbori_algo_h_
 #define pbori_algo_h_
 
 BEGIN_NAMESPACE_PBORI
-
-/// @class push_back 
-/// @brief Accessing .push_back()
-template <class ListType, class ValueType = typename ListType::value_type >
-class push_back {
-public:
-
-  ListType
-  operator()(ListType theList, const ValueType& elt) const {
-    theList.push_back(elt);
-    return theList;
-  }
-};
-
-/// @class change
-/// @brief Accessing .change()
-template <class RhsType, class LhsType = typename RhsType::idx_type >
-class change {
-public:
-
-  RhsType operator() (const RhsType& rhs, const LhsType& lhs) const {
-    return (rhs.change(lhs));
-  } 
-
-};
-
-
-/// @class project_nth
-/// @brief Accessing nth argument (NTH = 0also works as identity)
-template <class FirstType, unsigned int NTH>
-class project_nth;
-
-// project to first and identity
-template <class FirstType>
-class project_nth<FirstType, 0> {
-
-public:
-
-  const FirstType& 
-  operator() (const FirstType& value) const {
-    return value;
-  } 
-
-  FirstType& operator() (FirstType& value) const {
-    return value;
-  } 
-
-  template <class SecondType>
-  const FirstType& 
-  operator() (const FirstType& value, const SecondType&) const {
-    return value;
-  } 
-
-  template <class SecondType>
-  FirstType& operator() (FirstType& value, const SecondType&) const {
-    return value;
-  } 
-};
-
-// project to second
-template <class SecondType>
-class project_nth<SecondType, 1> {
-
-public:
-
-  template <class FirstType>
-  const SecondType& 
-  operator() (const FirstType&, const SecondType& value) const {
-    return value;
-  } 
-
-  template <class FirstType>
-  SecondType& operator() (FirstType&, const SecondType& value) const {
-    return value;
-  } 
-};
-
 
 /// Function templates for transforming decision diagrams 
 template< class NaviType, class TermType, class OutIterator,
@@ -144,7 +74,7 @@ dd_transform( const NaviType& navi, const TermType& init,
               const ElseBinaryOperator& else_binop ) {
 
   dd_transform(navi, init, result, then_binop, else_binop, 
-               project_nth<TermType, 0>() );
+               project_ith<1>() );
 }
 
 /// Function templates for transforming decision diagrams 
@@ -156,8 +86,8 @@ dd_transform( const NaviType& navi, const TermType& init,
               const ThenBinaryOperator& then_binop ) {
 
   dd_transform(navi, init, result, then_binop,
-               project_nth<TermType, 0>(),
-               project_nth<TermType, 0>() );
+               project_ith<1, 2>(),
+               project_ith<1>() );
 }
 
 END_NAMESPACE_PBORI
