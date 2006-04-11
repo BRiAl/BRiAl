@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.4  2006/04/11 09:26:57  dreyer
+// ADD  BoolePolyRing::printInfo();
+//
 // Revision 1.3  2006/03/20 14:51:01  dreyer
 // CHANGE: Use CDDInterface temple specializations instead of raw dd_type
 //
@@ -63,6 +66,7 @@ main(){
   std::cout << "Variable 3:"<<std::endl;
   ((ZDD)ring.variable(3)).print(3, verbosity);
 
+    BoolePolyRing::printInfo();
 
   try{
     BoolePolyRing::ring();

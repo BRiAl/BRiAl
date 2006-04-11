@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/04/11 09:26:57  dreyer
+ * ADD  BoolePolyRing::printInfo();
+ *
  * Revision 1.19  2006/03/30 11:57:11  dreyer
  * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
  *
@@ -274,4 +277,12 @@ BoolePolyRing::activate() {
   current_mgr = pMgr;
 }
 
+// print statistics about the current ring
+void
+BoolePolyRing::printInfo() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::info() const" );
+
+  return current_mgr->printInfo();
+}
 END_NAMESPACE_PBORI

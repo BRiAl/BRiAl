@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/11 09:26:57  dreyer
+ * ADD  BoolePolyRing::printInfo();
+ *
  * Revision 1.5  2006/03/30 11:57:11  dreyer
  * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
  *
@@ -140,6 +143,9 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Constant casting operator to interfaced type
   operator const interfaced_type&() const { return m_interfaced; }
+
+  /// Print out statistics and settings for a decision diagram manager
+  void printInfo() const { m_interfaced.info(); }
 
 private:
   /// Actual decision diagram manager
