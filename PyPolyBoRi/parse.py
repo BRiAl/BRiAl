@@ -63,12 +63,12 @@ def generate_ideal_bnf(variables):
     addop  = plus | minus
     multop = mult | div
     expop = Literal( "^" )
-
+    one=Literal("1")
     
     poly = Forward()
     variable = Or([Literal(v) for v in variables]).setParseAction(set_variable)
     factor = Forward()
-    factor << variable + ZeroOrMore( ( expop + exponent))
+    factor << Or([one,variable + ZeroOrMore( ( expop + exponent))])
     
     term = Forward()
     term << factor + ZeroOrMore( ( multop + factor ))
@@ -76,7 +76,7 @@ def generate_ideal_bnf(variables):
     poly << term + ZeroOrMore( ( addop + term ) ).setParseAction(add_poly)
     ideal=Forward()
     
-    ideal << poly+ ZeroOrMore( ( seperator + poly ) )
+    ideal << poly+ ZeroOrMore( ( seperator + poly ) )+Literal(";")
     return ideal
     
 def parse_ideal(i, variables):

@@ -39,6 +39,8 @@ void export_poly(){
   .def(self/=self)
   .def(self+=BooleVariable())
   .def(self*=BooleVariable())
+  .def(self* BooleVariable())
+  .def(self+BooleVariable())
   .def(self*self)
   .def(self==self)
   .def(self==bool())
