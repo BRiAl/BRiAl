@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/12 16:23:54  dreyer
+ * ADD template class CIDXPath<>
+ *
  * Revision 1.2  2006/04/10 07:36:27  dreyer
  * ADD pbori_func.h to carry PolyBoRi related functionals
  *
@@ -89,6 +92,35 @@ dd_transform( const NaviType& navi, const TermType& init,
                project_ith<1, 2>(),
                project_ith<1>() );
 }
+
+
+template <class InputIterator, class OutputIterator, 
+          class FirstFunction, class UnaryFunction>
+OutputIterator 
+special_first_transform(InputIterator first, InputIterator last,
+                        OutputIterator result, 
+                        FirstFunction firstop, UnaryFunction op) {
+  InputIterator second(first);
+  if (second != last) {
+    ++second;
+    result = std::transform(first, second, result, firstop);
+  }
+  return std::transform(second, last, result, op);
+};
+
+
+/// Function templates for transforming decision diagrams 
+template< class NaviType, class TermType, class OutIterator,
+          class ThenBinaryOperator >
+void
+transform( const NaviType& navi, const TermType& init, 
+              const OutIterator& result, 
+              const ThenBinaryOperator& then_binop ) {
+
+
+
+}
+
 
 END_NAMESPACE_PBORI
 

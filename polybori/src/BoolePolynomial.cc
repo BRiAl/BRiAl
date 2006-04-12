@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/04/12 16:23:54  dreyer
+ * ADD template class CIDXPath<>
+ *
  * Revision 1.24  2006/04/12 10:33:01  bricken
  * *bricken: elimination length
  *
@@ -112,6 +115,9 @@
 
 // get error types
 # include "PBoRiError.h"
+
+// get 
+# include "CIdxPath.h"
 
 // get transformation algorithms
 # include "pbori_algo.h"

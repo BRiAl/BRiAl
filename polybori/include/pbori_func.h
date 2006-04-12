@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/12 16:23:54  dreyer
+ * ADD template class CIDXPath<>
+ *
  * Revision 1.1  2006/04/10 07:36:27  dreyer
  * ADD pbori_func.h to carry PolyBoRi related functionals
  *
@@ -26,7 +29,12 @@
 **/
 //*****************************************************************************
 
+// get polybori definitions
 #include "pbori_defs.h"
+
+// get standard string and string stream functionality
+#include <string>
+#include <sstream>
 
 #ifndef pbori_func_h_
 #define pbori_func_h_
@@ -143,6 +151,87 @@ public:
                          ValueType& value, ...) const {
     return value;
   } 
+};
+
+
+/// @class default_varname
+/// @brief Generate variable name
+template <class IdxType, 
+          class OutType = std::string, class StringType = OutType>
+class default_varname:
+  public std::unary_function<IdxType, OutType>{
+
+public:
+
+  /// Get type of *this
+  typedef default_varname<IdxType, OutType> self;
+
+  /// Get base type
+  typedef std::unary_function<IdxType, OutType> base;
+
+  /// Default constructor
+  default_varname():
+    pre_str("x("), post_str(")"), base() {}
+
+  /// Constructor with custom pre and post strings
+  default_varname(const StringType& before):
+    pre_str(before), post_str(")"), base() {
+    pre_str.append("x(");
+  }
+
+   /// Constructor with custom before and after strings
+  default_varname(const StringType& before, const StringType& after):
+    pre_str(before), post_str(")"), base() {
+    pre_str.append("x(");
+    post_str.append(after);
+  }
+
+  /// Constructor with custom before, after, pre and post strings
+  default_varname(const StringType& before,
+                  const StringType& pre, const StringType& post, 
+                  const StringType& after):
+    pre_str(before), post_str(post), base() {
+    pre_str.append(pre);
+    post_str.append(after);
+  }
+
+ /// Copy constructor 
+  default_varname(const self& rhs):
+    pre_str(rhs.pre_str), post_str(rhs.post_str), base() {}
+
+  /// Functional operator 
+  OutType operator() (IdxType idx)  {
+    std::ostringstream oss;
+    oss << pre_str << idx << post_str;
+
+    return oss.str();
+  } 
+
+private:
+  StringType  pre_str, post_str;
+};
+
+
+class list_separator {
+
+public:
+  typedef const char* result_type;
+
+  result_type operator()(){
+    return ", ";
+  }
+
+};
+
+class times_as_separator {
+
+public:
+  typedef const char* result_type;
+
+  result_type operator()(){
+    return "*";
+  }
+
 };
 
 END_NAMESPACE_PBORI

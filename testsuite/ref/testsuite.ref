@@ -1,6 +1,15 @@
 Starting Testsuite...
 ---------------------
 ----------------------
+Executing testsuite/idxtypes
+----------------------
+Testing CIdxPath, CIdx
+Print list style: 
+x(0), x(1), x(17), x(5), x(0)
+Print monomial style: 
+x(0)*x(1)*x(17)*x(5)*x(0)
+Finished. 
+----------------------
 Executing testsuite/zddnavi
 ----------------------
 Testing navigating through decision diagrams
