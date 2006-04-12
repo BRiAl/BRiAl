@@ -5,6 +5,7 @@
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
 #include "navigator_wrap.h"
+#include "pairs.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -20,6 +21,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_dd();
   export_poly();
   export_nav();
+  def("print_ring_info", &BoolePolyRing::printInfo);
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
     .def(boost::python::init <BoolePolyRing::size_type>())
@@ -33,7 +35,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
     .def("toStdOut", print_variable);
-    
+  export_pairs();
    }
 /*
 
