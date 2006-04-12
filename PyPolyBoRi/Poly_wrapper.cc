@@ -61,6 +61,7 @@ void export_poly(){
   .def("totalDegree", &BoolePolynomial::totalDeg)
   .def("diagram", &BoolePolynomial::copyDiagram)
   .def("navigation", &BoolePolynomial::navigation)
+  .def("elength", &BoolePolynomial::eliminationLength)
   .def("plot",plot)
   .def("__len__", &BoolePolynomial::length)
   //wrap usedVariables

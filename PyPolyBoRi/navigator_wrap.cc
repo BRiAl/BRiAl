@@ -42,4 +42,7 @@ void export_nav(){
   .def("terminalOne", &CCuddNavigator::terminalValue)
   .def("__hash__", &CCuddNavigator::hash)
   .def("valid", &CCuddNavigator::isValid);
+  def("one", &BoolePolyRing::ringOne);
+  def("zero", &BoolePolyRing::ringZero);
+  def("nVars", &BoolePolyRing::nRingVariables);
 }

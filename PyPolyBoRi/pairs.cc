@@ -21,8 +21,9 @@ public:
   BoolePolynomial p;
   int deg;
   int length;
-  Pair(const BoolePolynomial &p){
-    deg=p.deg();
+  Pair(const BoolePolynomial &p, int deg){
+    //deg=p.deg();
+    this->deg=deg;
     this->p=p;
     length=p.eliminationLength();//p.length();
       cout<<"len: "<<length<<endl;
@@ -57,7 +58,7 @@ bool operator>(const Pair &p1, const Pair& p2){
 bool operator>=(const Pair &p1, const Pair& p2){
   return p1.deg>=p2.deg;
 }
-#endif
+
 
 bool operator<(const Pair &p1, const Pair& p2){
   return p1.length<p2.length;
@@ -76,10 +77,36 @@ bool operator>=(const Pair &p1, const Pair& p2){
   return p1.length>=p2.length;
 }
 
+#endif
+
+bool operator<(const Pair &p1, const Pair& p2){
+  if (p1.deg<p2.deg) return true;
+  if (p1.deg>p2.deg) return false;
+  return p1.length<p2.length;
+}
+
+bool operator<=(const Pair &p1, const Pair& p2){
+  if (p1.deg<p2.deg) return true;
+  if (p1.deg>p2.deg) return false;
+  return p1.length<=p2.length;
+  
+}
+
+bool operator>(const Pair &p1, const Pair& p2){
+  if (p1.deg>p2.deg) return true;
+  if (p1.deg<p2.deg) return false;
+  return p1.length>p2.length;
+  
+}
+bool operator>=(const Pair &p1, const Pair& p2){
+  if (p1.deg>p2.deg) return true;
+  if (p1.deg<p2.deg) return false;
+  return p1.length>=p2.length;
+}
 
 void export_pairs(){
   boost::python::class_<Pair>("Pair")
-  .def(init<const BoolePolynomial &>())
+  .def(init<const BoolePolynomial &, int>())
   .def("poly",&Pair::getPolynomial,return_internal_reference<1>())
   .def("deg", &Pair::getDeg)
   .def(self<self)
