@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/04/12 10:33:01  bricken
+ * *bricken: elimination length
+ *
  * Revision 1.23  2006/04/10 14:38:39  dreyer
  * FIX operator*= works for nontrivial lhs
  *
@@ -97,7 +100,8 @@
 **/
 //*****************************************************************************
 
-
+#include <list>
+#include <iterator>
 #define PBORI_USE_CCUDDFIRSTITER
 
 // load header file
@@ -599,6 +603,38 @@ BoolePolynomial::ostream_type&
 operator<<(BoolePolynomial::ostream_type& os, const BoolePolynomial& source) {
 
   return source.print(os);
+}
+static int len_cheated;
+template <class ExponentVectorType> class EliminationDegreeAdder{
+public:
+  int min;
+  int sum;
+  EliminationDegreeAdder(int min){
+    this->min=min;
+    sum=0;
+  }
+  void operator() (const ExponentVectorType& ev){
+    int s=ev.size();
+    sum++;
+    if(s>min)
+      sum+=s-min;
+    len_cheated=sum;
+  }
+};
+int BoolePolynomial::eliminationLength() const{
+  if (isZero()) return 0;
+  BoolePolynomial::navigator navi = navigation();
+  std::list<std::list<int>  > allLists;
+  
+  dd_transform( navi, std::list<int>(),
+                std::back_inserter(allLists),
+                push_back<std::list<int> >() );
+  
+  int deg=(*allLists.begin()).size();
+  EliminationDegreeAdder<std::list<int> > sum_up(deg);
+  for_each(allLists.begin(), allLists.end(), sum_up);
+//return sum_up.sum;
+  return len_cheated;
 }
 
 END_NAMESPACE_PBORI

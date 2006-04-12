@@ -24,7 +24,8 @@ public:
   Pair(const BoolePolynomial &p){
     deg=p.deg();
     this->p=p;
-    length=p.length();
+    length=p.eliminationLength();//p.length();
+      cout<<"len: "<<length<<endl;
   }
   Pair(){
     deg=0;

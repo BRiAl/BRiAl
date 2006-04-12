@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/04/12 10:33:01  bricken
+ * *bricken: elimination length
+ *
  * Revision 1.20  2006/04/06 14:10:58  dreyer
  * ADD hash_type and CCuddNavigator::hash()
  *
@@ -237,6 +240,7 @@ public:
   dd_type copyDiagram(){
     return diagram();
   }
+  int eliminationLength() const;
 #ifndef PBORI_DEVELOPER
 protected:
 #endif
