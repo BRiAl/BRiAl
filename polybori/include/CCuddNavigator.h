@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/13 08:41:34  dreyer
+ * CHANGE change() used by BoolePolynomial backward (for efficiency)
+ *
  * Revision 1.3  2006/04/06 14:10:58  dreyer
  * ADD hash_type and CCuddNavigator::hash()
  *
@@ -68,7 +71,15 @@ public:
 
   /// Get type of *this
   typedef CCuddNavigator self;
-  
+
+  /// @name Interface types for standard iterator access
+  //@{
+  typedef std::forward_iterator_tag iterator_category;
+  typedef int difference_type;
+  typedef pointer_type pointer;
+  typedef value_type& reference;
+  //@}
+
   /// Default constructor and construct from node pointer
   CCuddNavigator(pointer_type ptr = NULL);
 

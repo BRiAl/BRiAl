@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/04/13 08:41:34  dreyer
+ * CHANGE change() used by BoolePolynomial backward (for efficiency)
+ *
  * Revision 1.26  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -194,7 +197,13 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  monom_type::first_iterator start(rhs.firstBegin()), finish(rhs.firstEnd());
+   // get indices
+  CIdxPath<idx_type> indices(rhs.lmDeg());
+  std::copy(rhs.firstBegin(), rhs.firstEnd(), indices.begin() );
+  
+  // insert backward (for efficiency reasons)
+  CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
+    finish(indices.rend());
 
   while (start != finish) {
 
@@ -339,8 +348,15 @@ BoolePolynomial::lead() const {
     leadterm = m_dd;
   else {
     leadterm = manager_reference(m_dd).blank();
-    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
-    
+
+    // get indices
+    CIdxPath<idx_type> indices(lmDeg());
+    std::copy(m_dd.firstBegin(), m_dd.firstEnd(), indices.begin() );
+
+    // insert backward (for efficiency reasons)
+    CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
+      finish(indices.rend());
+
     while (start != finish){
       leadterm.changeAssign(*start);
       ++start;
@@ -365,10 +381,16 @@ BoolePolynomial::lmDivisors() const {
     terms = m_dd;
   else {
     terms = manager_reference(m_dd).blank();
-    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
-    
-    while (start != finish){
 
+    // get indices
+    CIdxPath<idx_type> indices(lmDeg());
+    std::copy(m_dd.firstBegin(), m_dd.firstEnd(), indices.begin() );
+  
+    // insert backward (for efficiency reasons)
+    CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
+      finish(indices.rend());
+ 
+    while (start != finish){
       terms.uniteAssign( terms.change(*start) );
       ++start;
     }
@@ -407,8 +429,6 @@ BoolePolynomial::deg() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
   /// @todo: This is currently just brute force, efficient search needed.
-
-  ///  return nUsedVariables();
 
   size_type max_deg(0);
 
@@ -608,7 +628,8 @@ operator*(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom)
 
 // division by monomial (skipping remainder)
 BoolePolynomial
-operator/(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom) {
+operator/(const BoolePolynomial& poly, 
+          const BoolePolynomial::monom_type& monom) {
 
   PBORI_TRACE_FUNC("operator/(const BoolePolynomial&,const monom_type&)");
 
@@ -652,8 +673,12 @@ public:
     len_cheated=sum;
   }
 };
+
 int BoolePolynomial::eliminationLength() const{
-  if (isZero()) return 0;
+
+  if (isZero()) 
+    return 0;
+
   BoolePolynomial::navigator navi = navigation();
   std::list<std::list<int>  > allLists;
   
@@ -662,9 +687,11 @@ int BoolePolynomial::eliminationLength() const{
                 push_back<std::list<int> >() );
   
   int deg=(*allLists.begin()).size();
+
   EliminationDegreeAdder<std::list<int> > sum_up(deg);
   for_each(allLists.begin(), allLists.end(), sum_up);
-//return sum_up.sum;
+
+  //return sum_up.sum;
   return len_cheated;
 }
 
