@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.2  2006/04/12 16:23:54  dreyer
  * ADD template class CIDXPath<>
  *
@@ -232,6 +235,69 @@ public:
     return "*";
   }
 
+};
+
+
+class print_it {
+public:
+
+  print_it(std::ostream& os_):os(os_){}
+
+  template<class Type>
+  Type& operator()(Type& val){
+    os <<val;
+    return val;
+  }
+  std::ostream& os;
+};
+
+
+class print_it_plus {
+public:
+  print_it_plus(std::ostream& os_):os(os_){}
+  template<class Type>
+  Type& operator()(Type& val){
+    os <<" + "<<val;
+    return val;
+  }
+  std::ostream& os;
+};
+
+class dummy_iterator {
+public:
+  typedef dummy_iterator self;
+
+  template <class Type>
+  self& operator=(const Type&) { return *this;}
+
+  self& operator*() { return *this;}
+  self& operator++() { return *this;}
+  self& operator++(int) { return *this;}
+};
+
+template<class ValueType>
+class incremement_value {
+
+public:
+
+  ValueType operator()(const ValueType& val, const ValueType& ) const {
+    return (val + 1);
+  }
+
+};
+
+template<class ValueType>
+class maximum_iteration {
+public:
+  maximum_iteration(ValueType & init) : max(init){}
+
+  ValueType& operator()(const ValueType& val) const {
+    return max = std::max(max, val);
+  }
+
+
+private:
+  ValueType & max;
 };
 
 END_NAMESPACE_PBORI

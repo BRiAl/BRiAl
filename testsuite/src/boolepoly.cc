@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.12  2006/04/10 14:38:39  dreyer
  * FIX operator*= works for nontrivial lhs
  *
@@ -210,6 +213,9 @@ main(){
     std::cout << ( ((x*y + x + y*z)*y) == y*z) <<std::endl;
     std::cout << ( (x*y*z + y + x*z + v*w +x*v)*(y*z)  == 
                    (y*z + y*z*v*w + x*y*z*v) ) <<std::endl;
+
+    std::cout <<  "Degree: "<<std::endl;
+    std::cout << "2? " << (x + y*z).deg() <<std::endl;
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }

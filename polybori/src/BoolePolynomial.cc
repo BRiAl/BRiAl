@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.25  2006/04/12 16:23:54  dreyer
  * ADD template class CIDXPath<>
  *
@@ -105,6 +108,10 @@
 
 #include <list>
 #include <iterator>
+
+#include "pbori_algo.h"
+#include "CIdxPath.h"
+
 #define PBORI_USE_CCUDDFIRSTITER
 
 // load header file
@@ -399,9 +406,19 @@ BoolePolynomial::deg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
-  /// @todo: This is currently just an upper bound, efficient search needed.
+  /// @todo: This is currently just brute force, efficient search needed.
 
-  return nUsedVariables();
+  ///  return nUsedVariables();
+
+  size_type max_deg(0);
+
+  dd_transform( navigation(), size_type(),
+                dummy_iterator(),
+                incremement_value<size_type>(),
+                project_ith<1,2>(),
+                maximum_iteration<size_type>(max_deg) );
+
+  return max_deg;
 }
 
 
@@ -504,17 +521,25 @@ BoolePolynomial::diagram() const {
   return m_dd;
 }
 
+
 // Print current polynomial to cout
 BoolePolynomial::ostream_type&
 BoolePolynomial::print(ostream_type& os) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::print() const" );
 
-  ///  @todo: add std::cout capability for cudd's ZDD type
 
-  os << "-> ";
-  m_dd.print(os);
-
+  typedef CIdxPath<idx_type, times_as_separator> path_type;
+  if( isZero() )
+    os << 0;
+  else
+    dd_transform( navigation(), path_type(),
+                  dummy_iterator(),
+                  push_back<path_type>(),
+                  project_ith<1, 2>(),  
+                  print_it_plus(os),
+                  print_it(os) );
+  os << ' ';
   return os;
 }
 

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.1  2006/04/12 16:23:54  dreyer
  * ADD template class CIDXPath<>
  *
@@ -91,7 +94,9 @@ public:
   /// Print to out-stream
   ostream_type& print(ostream_type& os) const {
 
-
+    if (begin() == end()) {
+      os << 1;
+    }
     special_first_transform( begin(), end(), 
                              std::ostream_iterator<std::string>(os),
                              default_varname<idx_type, std::string>(),

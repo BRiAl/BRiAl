@@ -14,30 +14,14 @@ Executing testsuite/zddnavi
 ----------------------
 Testing navigating through decision diagrams
 poly:  
--> : 5 nodes 3 minterms
-10111 1
-10100 1
-01000 1
-
+x(0)*x(2)*x(3)*x(4) + x(0)*x(2) + x(1) 
 Navigation: 
--> : 4 nodes 1 minterms
-10111 1
-
--> : 2 nodes 1 minterms
-10100 1
-
--> : 1 nodes 1 minterms
-01000 1
-
+x(0)*x(2)*x(3)*x(4) 
+x(0)*x(2) 
+x(1) 
 
 Printing via dd_transform: 
--> : 4 nodes 1 minterms
-10111 1
--> : 2 nodes 1 minterms
-10100 1
--> : 1 nodes 1 minterms
-01000 1
-
+x(0)*x(2)*x(3)*x(4) x(0)*x(2) x(1) 
 Storing via dd_transform: 
 0, 2, 3, 4, 
 0, 2, 
@@ -47,7 +31,7 @@ pure print dd_transform:
 0 2 3 4 
 0 2 
 1 
-Finished.
+0 2 3 4 , 0 2 , 1 , Finished.
 ----------------------
 Executing testsuite/testring
 ----------------------
@@ -121,26 +105,13 @@ Executing testsuite/spoly
 ----------------------
 Testing boolean ring variables
 Poly 1: 
--> : 5 nodes 4 minterms
-11000 1
-10100 1
-01000 1
-00001 1
-
+x(0)*x(1) + x(0)*x(2) + x(1) + x(4) 
 Poly 2: 
--> : 2 nodes 2 minterms
--0001 1
-
+x(0)*x(4) + x(4) 
 spoly: 
--> : 3 nodes 2 minterms
-10101 1
-00001 1
-
+x(0)*x(2)*x(4) + x(4) 
 Expected result: 
--> : 3 nodes 2 minterms
-10101 1
-00001 1
-
+x(0)*x(2)*x(4) + x(4) 
 Equality? 
 1
 Finished.
@@ -148,24 +119,14 @@ Finished.
 Executing testsuite/boolevars
 ----------------------
 Testing boolean ring variables
--> : 1 nodes 1 minterms
-10000 1
-
--> : 1 nodes 1 minterms
-01000 1
-
+x(0) 
+x(1) 
 Sum: 
--> : 2 nodes 2 minterms
-10000 1
-01000 1
-
+x(0) + x(1) 
 Zero polynomial: 
--> : is the empty ZDD
-
+0 
 0 += x 
--> : 1 nodes 1 minterms
-10000 1
-
+x(0) 
 Finished.
 ----------------------
 Executing testsuite/cuddinterface
@@ -227,54 +188,26 @@ Throwing error # 6
 Executing testsuite/boolepoly
 ----------------------
 Testing Boolean polynomials
--> : 1 nodes 1 minterms
-10000 1
-
--> : 1 nodes 1 minterms
-01000 1
-
--> : 1 nodes 1 minterms
-00100 1
-
--> : 1 nodes 1 minterms
-00010 1
-
--> : 1 nodes 1 minterms
-00001 1
-
+x(0) 
+x(1) 
+x(2) 
+x(3) 
+x(4) 
 x*y : 
--> : 2 nodes 1 minterms
-11000 1
-
+x(0)*x(1) 
 x*y + z: 
--> : 3 nodes 2 minterms
-11000 1
-00100 1
-
+x(0)*x(1) + x(2) 
 (x + y)* z: 
--> : 3 nodes 2 minterms
-10100 1
-01100 1
-
+x(0)*x(2) + x(1)*x(2) 
 (x*v + y*v + z ) 
--> : 4 nodes 3 minterms
-10010 1
-01010 1
-00100 1
-
+x(0)*x(3) + x(1)*x(3) + x(2) 
 (x*v + y*v + z )* (v*y): 
--> : 5 nodes 3 minterms
-11010 1
-01-10 1
-
+x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3) 
 Node count: 5
 N: 5
 
 (x*v + y*v + z )* (v*y): 
--> : 5 nodes 3 minterms
-11010 1
-01-10 1
-
+x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3) 
 Equality? 
 1
 
@@ -297,9 +230,7 @@ One polynomial == 1? 1
 Constant 0 == One polynomial? 0
 Constant 1 == One polynomial? 1
 Divisors of the leading monomial of  (x*z + y): 
--> : 2 nodes 4 minterms
--0-00 1
-
+x(0)*x(2) + x(0) + x(2) + 1 
 (x*z + y).reducibleBy(z): 1
 (x*z*y + y).reducibleBy(y*z): 1
 (x*z*y + y).reducibleBy(w): 0
@@ -308,6 +239,8 @@ Multiplication tests:
 1
 1
 1
+Degree: 
+2? 2
 
 Finished.
 ----------------------
@@ -315,64 +248,35 @@ Executing testsuite/leadterm
 ----------------------
 Testing leading terms
 x*y + z: 
--> : 3 nodes 2 minterms
-11000 1
-00100 1
-
+x(0)*x(1) + x(2) 
 leading term: 
--> : 2 nodes 1 minterms
-11000 1
-
+x(0)*x(1) 
 x*y*w + z*: 
--> : 4 nodes 2 minterms
-11001 1
-00101 1
-
+x(0)*x(1)*x(4) + x(2)*x(4) 
 leading term: 
--> : 3 nodes 1 minterms
-11001 1
-
+x(0)*x(1)*x(4) 
 # ring variabled: 
 5
 lmdeg()
 3
 usedVariables()
--> : 5 nodes 2 minterms
-111-1 1
-
--> : 5 nodes 4 minterms
-11001 1
-01000 1
-000-1 1
-
+x(0)*x(1)*x(2)*x(3)*x(4) + x(0)*x(1)*x(2)*x(4) 
+x(0)*x(1)*x(4) + x(1) + x(3)*x(4) + x(4) 
 usedVariables()
--> : 5 nodes 2 minterms
-11-11 1
-
+x(0)*x(1)*x(2)*x(3)*x(4) + x(0)*x(1)*x(3)*x(4) 
 # usedVariables()
 4
 
 Leading term of simple monomial 
--> : 1 nodes 1 minterms
-00010 1
-
+x(3) 
 Leading term of empty diagram 
--> : is the empty ZDD
-
+0 
 Leading term of constant polynomial one
--> : 0 nodes 1 minterms
-00000 1
-
+1 
 Checkung handling of constants: x*y + z + 1
--> : 3 nodes 3 minterms
-11000 1
-00-00 1
-
+x(0)*x(1) + x(2) + 1 
 Checkung handling of constants: x*y + z + 0
--> : 3 nodes 2 minterms
-11000 1
-00100 1
-
+x(0)*x(1) + x(2) 
 Finished.
 -------------------
 Testsuite finished.

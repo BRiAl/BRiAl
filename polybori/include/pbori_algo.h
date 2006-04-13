@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.3  2006/04/12 16:23:54  dreyer
  * ADD template class CIDXPath<>
  *
@@ -48,10 +51,11 @@ BEGIN_NAMESPACE_PBORI
 template< class NaviType, class TermType, class OutIterator,
           class ThenBinaryOperator, class ElseBinaryOperator, 
           class TerminalOperator >
-void
+OutIterator
 dd_transform( NaviType navi, TermType init, OutIterator result, 
               ThenBinaryOperator then_binop, ElseBinaryOperator else_binop,
               TerminalOperator terminate ) {
+ 
 
   if (navi.isConstant()) {      // Reached end of path
     if (navi.terminalValue()){   // Case of a valid path
@@ -60,11 +64,37 @@ dd_transform( NaviType navi, TermType init, OutIterator result,
     }
   }
   else {
-    dd_transform(navi.thenBranch(), then_binop(init, *navi), result,
+    result = dd_transform(navi.thenBranch(), then_binop(init, *navi), result,
                  then_binop, else_binop, terminate);
-    dd_transform(navi.elseBranch(), else_binop(init, *navi), result,
+    result = dd_transform(navi.elseBranch(), else_binop(init, *navi), result,
                  then_binop, else_binop, terminate);
   }
+  return result;
+}
+
+/// Function templates for transforming decision diagrams 
+/// with special treatment of the leading term
+template< class NaviType, class TermType, class OutIterator,
+          class ThenBinaryOperator, class ElseBinaryOperator, 
+          class TerminalOperator, class FirstTermOp >
+OutIterator
+dd_transform( NaviType navi, TermType init, OutIterator result, 
+              ThenBinaryOperator then_binop, ElseBinaryOperator else_binop,
+              TerminalOperator terminate, FirstTermOp terminate_first ) {
+
+  if (navi.isConstant()) {      // Reached end of path
+    if (navi.terminalValue()){   // Case of a valid path - here leading term
+      *result = terminate_first(init);
+      ++result;
+    }
+  }
+  else {
+    result = dd_transform(navi.thenBranch(), then_binop(init, *navi), result,
+                 then_binop, else_binop, terminate, terminate_first);
+    result = dd_transform(navi.elseBranch(), else_binop(init, *navi), result,
+                 then_binop, else_binop, terminate);
+  }
+  return result;
 }
 
 /// Function templates for transforming decision diagrams 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/13 07:53:19  dreyer
+ * CHANGE BoolePolynomial::print() and deg() produces more useful results
+ *
  * Revision 1.4  2006/04/10 14:38:39  dreyer
  * FIX operator*= works for nontrivial lhs
  *
@@ -50,6 +53,7 @@
 #include <list>
 #include <iterator>
 #include <sstream>
+#include <vector>
 
 // load polybori header file
 # include "polybori.h"
@@ -168,7 +172,15 @@ main(){
     dd_transform( navi, variables_list(),
                   std::ostream_iterator<variables_list>(std::cout, "\n"),
                   push_back<variables_list>() );
+ 
+    std::vector<variables_list > monomvec( poly.length() );
 
+
+    dd_transform( navi,  variables_list(),
+                  monomvec.begin(),
+                  push_back<variables_list>() );
+
+    print1D(monomvec.begin(), monomvec.end());
     std::cout << "Finished."<<std::endl;
   }
   catch (PBoRiError& err) {
