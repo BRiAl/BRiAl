@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/04/14 15:45:30  bricken
+ * + removed semicolons
+ *
  * Revision 1.21  2006/04/12 10:33:01  bricken
  * *bricken: elimination length
  *
@@ -279,14 +282,14 @@ inline BoolePolynomial::bool_type
 operator==(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 
   return (rhs == lhs); 
-};
+}
 
 /// Nonquality check (with constant lhs)
 inline BoolePolynomial::bool_type
 operator!=(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 
   return (rhs != lhs); 
-};
+}
 
 /// Stream output operator
 BoolePolynomial::ostream_type& 

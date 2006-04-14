@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/14 15:45:30  bricken
+ * + removed semicolons
+ *
  * Revision 1.4  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -136,7 +139,7 @@ special_first_transform(InputIterator first, InputIterator last,
     result = std::transform(first, second, result, firstop);
   }
   return std::transform(second, last, result, op);
-};
+}
 
 
 /// Function templates for transforming decision diagrams 
