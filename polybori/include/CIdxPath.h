@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/18 07:17:24  dreyer
+ * FIX bug in CIdxPath using begin() and end() from inherited template
+ *
  * Revision 1.2  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -94,10 +97,10 @@ public:
   /// Print to out-stream
   ostream_type& print(ostream_type& os) const {
 
-    if (begin() == end()) {
+    if (base::begin() == base::end()) {
       os << 1;
     }
-    special_first_transform( begin(), end(), 
+    special_first_transform( base::begin(), base::end(), 
                              std::ostream_iterator<std::string>(os),
                              default_varname<idx_type, std::string>(),
                              default_varname<idx_type, 
