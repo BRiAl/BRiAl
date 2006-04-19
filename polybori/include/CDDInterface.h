@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.13  2006/04/06 13:54:58  dreyer
  * ADD BoolePolynomial::length()
  *
@@ -266,7 +269,7 @@ class CDDInterface<ZDD>:
     return *this;
   };
 
-  /// Substitute variable mit index idx with its complement
+  /// Substitute variable with index idx by its complement
   self change(idx_type idx) const {
     return m_interfaced.Change(idx);
   };

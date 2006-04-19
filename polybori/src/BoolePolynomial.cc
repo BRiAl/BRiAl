@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.27  2006/04/13 08:41:34  dreyer
  * CHANGE change() used by BoolePolynomial backward (for efficiency)
  *
@@ -119,6 +122,7 @@
 
 // load header file
 # include "BoolePolynomial.h"
+# include "BooleMonomial.h"
 
 // get polynomial riung definition
 # include "BoolePolyRing.h"
@@ -198,9 +202,12 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
    // get indices
-  CIdxPath<idx_type> indices(rhs.lmDeg());
-  std::copy(rhs.firstBegin(), rhs.firstEnd(), indices.begin() );
-  
+//   CIdxPath<idx_type> indices(rhs.lmDeg());
+//   std::copy(rhs.firstBegin(), rhs.firstEnd(), indices.begin() );
+
+  CIdxPath<idx_type> indices(rhs.deg());
+  std::copy(rhs.begin(), rhs.end(), indices.begin() );
+
   // insert backward (for efficiency reasons)
   CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
     finish(indices.rend());
@@ -227,7 +234,7 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-  m_dd.divideAssign(rhs.m_dd);
+  m_dd.divideAssign( ( (const BoolePolynomial&)rhs).m_dd );
   return *this;
 }
  
@@ -322,32 +329,12 @@ BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
-#ifndef PBORI_USE_CCUDDFIRSTITER
-  // high level implementation
-  
-  dd_type nextterm = m_dd;
-  
-  manager_reference mgr(m_dd);
-  size_type nlen = mgr.nVariables();
-  
-  for(idx_type idx = 0; idx < nlen; ++idx){
-    
-    nextterm.intersectAssign( mgr.ddVariable(idx) );
-    
-    if (nextterm !=  mgr.empty())
-      leadterm = nextterm;    
-    else
-      nextterm = leadterm;
-  }
-
-#else 
-  // More efficient implementation relying on CCuddFirstIter (may be buggy)
-  dd_type leadterm;
+  // Note: implementation relying on CCuddFirstIter 
+  monom_type leadterm;
 
   if (m_dd.emptiness())
-    leadterm = m_dd;
+    leadterm = 0;
   else {
-    leadterm = manager_reference(m_dd).blank();
 
     // get indices
     CIdxPath<idx_type> indices(lmDeg());
@@ -363,13 +350,11 @@ BoolePolynomial::lead() const {
     }
   }
 
-#endif
-
   return leadterm;
 }
 
 // all dividers
-BoolePolynomial::monom_type
+BoolePolynomial
 BoolePolynomial::lmDivisors() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
@@ -505,7 +490,7 @@ BoolePolynomial::nUsedVariables() const {
 }
 
 // Set of variables of the polynomial
-BoolePolynomial::monom_type
+BoolePolynomial
 BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
@@ -605,6 +590,31 @@ BoolePolynomial::navigation() const {
   return m_dd.navigation();
 }
 
+
+// fetch list of terms
+void
+BoolePolynomial::fetchTerms(termlist_type& theList) const {
+
+  PBORI_TRACE_FUNC("BoolePolynomial:fetchTerms(const termlist_type&)");
+
+  theList.resize(length());
+  dd_transform( navigation(), monom_type(),
+                theList.begin(),
+                change<monom_type>() );
+}
+
+
+// return list of terms
+BoolePolynomial::termlist_type
+BoolePolynomial::terms() const {
+
+  PBORI_TRACE_FUNC("BoolePolynomial::terms() const" ); 
+  termlist_type theList;
+  fetchTerms(theList);
+
+  return theList;
+}
+
 // addition operation 
 BoolePolynomial 
 operator+(const BoolePolynomial& first, const BoolePolynomial& second){
@@ -617,9 +627,22 @@ operator+(const BoolePolynomial& first, const BoolePolynomial& second){
 
 // multiplication with monomial
 BoolePolynomial
-operator*(const BoolePolynomial& poly, const BoolePolynomial::monom_type& monom) {
+operator*(const BoolePolynomial& poly,
+          const BoolePolynomial::monom_type& monom) {
 
   PBORI_TRACE_FUNC("operator*(const BoolePolynomial&,const monom_type&)");
+
+  BoolePolynomial result(poly);
+  return (result *= monom);
+
+}
+
+// multiplication with monomial
+BoolePolynomial
+operator*(const BoolePolynomial::monom_type& monom, 
+          const BoolePolynomial& poly) {
+
+  PBORI_TRACE_FUNC("operator*(const monom_type&,const BoolePolynomial&)");
 
   BoolePolynomial result(poly);
   return (result *= monom);
@@ -642,12 +665,12 @@ operator/(const BoolePolynomial& poly,
 BoolePolynomial 
 spoly(const BoolePolynomial& first, const BoolePolynomial& second){
 
-  BoolePolynomial lead1(first.lead()), lead2(second.lead());
+   BooleMonomial lead1(first.lead()), lead2(second.lead());
 
-  BoolePolynomial prod = lead1;
-  prod *= lead2;
+   BooleMonomial prod = lead1;
+   prod *= lead2;
 
-  return ( first * (prod / lead1) ) + ( second * (prod / lead2) );
+   return ( first * (prod / lead1) ) + ( second * (prod / lead2) );
 }
 
 // Stream output for Boolean polynomials

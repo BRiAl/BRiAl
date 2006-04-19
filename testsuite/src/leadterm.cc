@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.3  2006/03/30 11:57:11  dreyer
  * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
  *
@@ -49,13 +52,13 @@ main(){
   try {
     BoolePolyRing the_ring(5);
 
-    BoolePolynomial x = the_ring.variable(0);
-    BoolePolynomial y = the_ring.variable(1);
+    BooleMonomial x = BooleVariable(0);
+    BooleMonomial y = BooleVariable(1);
 
-    BoolePolynomial z = BooleVariable(2);
+    BooleMonomial z = BooleVariable(2);
 
-    BoolePolynomial v = BooleVariable(3);
-    BoolePolynomial w = BooleVariable(4);
+    BooleMonomial v = BooleVariable(3);
+    BooleMonomial w = BooleVariable(4);
 
 
     BoolePolynomial poly = x;
@@ -70,7 +73,7 @@ main(){
 
     poly *= w;
 
-    std::cout << "x*y*w + z*: "<<std::endl;
+    std::cout << "x*y*w + z*w: "<<std::endl;
     std::cout << poly <<std::endl;
 
     std::cout << "leading term: "<<std::endl;
@@ -84,6 +87,8 @@ main(){
 
     std::cout << "usedVariables()"<<std::endl;
     std::cout << poly.usedVariables() <<std::endl;
+
+
 
     poly = x;
     poly *= y;

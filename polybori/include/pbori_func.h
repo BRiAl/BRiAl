@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.3  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -68,7 +71,6 @@ public:
   } 
 
 };
-
 
 /// @class project_ith
 /// @brief Accessing ith of n arguments 

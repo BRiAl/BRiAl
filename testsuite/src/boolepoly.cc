@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.13  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -81,13 +84,13 @@ main(){
   try {
     BoolePolyRing the_ring(5);
 
-    BoolePolynomial x = the_ring.variable(0);
-    BoolePolynomial y = the_ring.variable(1);
+    BooleMonomial x = BooleVariable(0);
+    BooleMonomial y = BooleVariable(1);
 
-    BoolePolynomial z = BooleVariable(2);
+    BooleMonomial z = BooleVariable(2);
 
-    BoolePolynomial v = BooleVariable(3);
-    BoolePolynomial w = BooleVariable(4);
+    BooleMonomial v = BooleVariable(3);
+    BooleMonomial w = BooleVariable(4);
 
     std::cout << x << std::endl;
     std::cout << y << std::endl;
@@ -125,7 +128,7 @@ main(){
 
     poly += z;
 
-    BoolePolynomial poly3 = y;
+    BooleMonomial poly3 = y;
     poly3 *= v;
 
 

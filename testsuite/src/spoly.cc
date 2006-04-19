@@ -36,11 +36,11 @@ main(){
   try {
     BoolePolyRing the_ring(5);
 
-    BoolePolynomial x = BooleVariable(0);
-    BoolePolynomial y = BooleVariable(1);
-    BoolePolynomial z = BooleVariable(2);
-    BoolePolynomial v = BooleVariable(3);
-    BoolePolynomial w = BooleVariable(4);
+    BooleMonomial x = BooleVariable(0);
+    BooleMonomial y = BooleVariable(1);
+    BooleMonomial z = BooleVariable(2);
+    BooleMonomial v = BooleVariable(3);
+    BooleMonomial w = BooleVariable(4);
 
 
     BoolePolynomial poly1 = x*y + x*z + y + w;

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.14  2006/04/06 14:10:58  dreyer
  * ADD hash_type and CCuddNavigator::hash()
  *
@@ -299,6 +302,9 @@ struct CTypes {
   /// Type for indices
   typedef int idx_type;
 
+  /// Type for comparisons
+  typedef int comp_type;
+
   /// Type for hashing
   typedef int hash_type;
 
@@ -314,6 +320,15 @@ struct CTypes {
    not_implemented,
 #endif
     last_error
+  };
+
+  /// Comparision codes enumeration
+  enum comparecodes {
+    less_than = -1,
+    equality = 0,
+    greater_than = +1,
+    less_or_equal_max = 0,
+    greater_or_equal_min = 0
   };
 
   /// Type used to store error codes

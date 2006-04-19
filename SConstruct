@@ -103,7 +103,8 @@ env = conf.Finish()
 
 
 pb_src=Split("BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc \
-CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc")
+CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc \
+BooleMonomial.cc")
 pb_src=["./polybori/src/"+ source for source in pb_src]
 l=env.StaticLibrary("polybori/polybori", pb_src)
 print "l:", l, dir(l)
@@ -113,7 +114,7 @@ if isinstance(l,list):
 Default(l)
 
 tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
-  "leadterm", "spoly", "zddnavi", "idxtypes" ]
+  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial" ]
 
 for t in tests:
     Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))

@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.22  2006/04/14 15:45:30  bricken
  * + removed semicolons
  *
@@ -96,10 +99,16 @@
 #ifndef BoolePolynomial_h_
 #define BoolePolynomial_h_
 
+// include standard definitions
+#include <vector>
+
 // include basic definitions
 #include "CDDInterface.h"
 
+
 BEGIN_NAMESPACE_PBORI
+
+class BooleMonomial;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -109,6 +118,10 @@ BEGIN_NAMESPACE_PBORI
 class BoolePolynomial {
 
 public:
+
+  /// Let BooleMonomial access protected and private members
+  friend class BooleMonomial;
+
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
@@ -144,7 +157,10 @@ public:
   /// @todo A more sophisticated treatment for monomials is needed.
 
   /// Fix type for treatment of monomials
-  typedef self monom_type; 
+  typedef BooleMonomial monom_type; 
+
+  /// Type for lists of terms
+  typedef std::vector<monom_type> termlist_type;
 
   //-------------------------------------------------------------------------
   // constructors and destructor
@@ -191,9 +207,9 @@ public:
   monom_type lead() const;
 
   /// Get all divisors of the leading term
-  monom_type lmDivisors() const;
+  self lmDivisors() const;
   
-  /// hash value of the leading term
+  /// Hash value of the leading term
   hash_type lmHash() const;
   
   /// Maximal degree of the polynomial
@@ -215,7 +231,7 @@ public:
   size_type nUsedVariables() const;
 
   /// Set of variables of the polynomial
-  monom_type usedVariables() const;
+  self usedVariables() const;
 
   /// Returns number of terms
   size_type length() const;
@@ -243,7 +259,15 @@ public:
   dd_type copyDiagram(){
     return diagram();
   }
+
   int eliminationLength() const;
+
+  /// Get list of all terms
+  void fetchTerms(termlist_type&) const;
+
+  /// Return of all terms
+  termlist_type terms() const;
+
 #ifndef PBORI_DEVELOPER
 protected:
 #endif
@@ -268,6 +292,9 @@ operator+(const BoolePolynomial&, const BoolePolynomial&);
 BoolePolynomial
 operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
 
+/// Multiplication with monomial
+BoolePolynomial
+operator*(const BoolePolynomial::monom_type&, const BoolePolynomial&);
 
 /// Division by monomial (skipping remainder)
 BoolePolynomial

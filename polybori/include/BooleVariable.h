@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.2  2006/03/20 09:52:57  dreyer
  * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
  *
@@ -74,6 +77,8 @@ class BooleVariable {
   BooleVariable(const self&);
 
   operator const BoolePolynomial&() const;
+
+  idx_type index() const { return *m_poly.firstBegin(); }
 
 private:
   BoolePolynomial m_poly;

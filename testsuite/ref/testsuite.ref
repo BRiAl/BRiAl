@@ -31,7 +31,11 @@ pure print dd_transform:
 0 2 3 4 
 0 2 
 1 
-0 2 3 4 , 0 2 , 1 , Finished.
+0 2 3 4 , 0 2 , 1 , 
+
+Get terms: 
+x(0)*x(2)*x(3)*x(4) , x(0)*x(2) , x(1) , 
+Finished.
 ----------------------
 Executing testsuite/testring
 ----------------------
@@ -251,7 +255,7 @@ x*y + z:
 x(0)*x(1) + x(2) 
 leading term: 
 x(0)*x(1) 
-x*y*w + z*: 
+x*y*w + z*w: 
 x(0)*x(1)*x(4) + x(2)*x(4) 
 leading term: 
 x(0)*x(1)*x(4) 
@@ -277,6 +281,53 @@ Checkung handling of constants: x*y + z + 1
 x(0)*x(1) + x(2) + 1 
 Checkung handling of constants: x*y + z + 0
 x(0)*x(1) + x(2) 
+Finished.
+----------------------
+Executing testsuite/monomial
+----------------------
+Testing Boolean monomials
+x(0) 
+x(1) 
+x(2) 
+x(3) 
+x(4) 
+
+Monomial x*y: x(0)*x(1) 
+
+Monomial x*y*z: x(0)*x(1)*x(2)  degree: 3
+(Sum of) Divisors: 
+x(0)*x(1)*x(2) + x(0)*x(1) + x(0)*x(2) + x(0) + x(1)*x(2) + x(1) + x(2) + 1 
+
+Indices:
+0
+1
+2
+x*y*z*w / y*z: x(0)*x(4) 
+x / x: 1 
+x / y*z: 0 
+x * y (as BooleVariable): x(0)*x(1) 
+x*y*z / y (as BooleVariable): x(0)*x(2) 
+x(0)*x(1)*x(4) .compare( x(0)*x(1)*x(4) ) :0
+x(0)*x(1)*x(4) .compare( x(0)*x(1)*x(2) ) :-1
+x(0)*x(1)*x(2) .compare( x(0)*x(1)*x(4) ) :1
+x(0)*x(1)*x(4)  < x(0)*x(1)*x(2)  :1
+x(0)*x(1)*x(4)  > x(0)*x(1)*x(2)  :0
+x(0)*x(1)*x(4)  <= x(0)*x(1)*x(2)  :1
+x(0)*x(1)*x(4)  >= x(0)*x(1)*x(2)  :0
+x(0)*x(1)*x(4)  == x(0)*x(1)*x(2)  :0
+x(0)*x(1)*x(4)  < x(0)*x(1)*x(4)  :0
+x(0)*x(1)*x(4)  > x(0)*x(1)*x(4)  :0
+x(0)*x(1)*x(4)  <= x(0)*x(1)*x(4)  :1
+x(0)*x(1)*x(4)  >= x(0)*x(1)*x(4)  :1
+x(0)*x(1)*x(4)  == x(0)*x(1)*x(4)  :1
+
+x(0)*x(1)*x(3)*x(4) 
+x(0)*x(1)*x(3)*x(4) .LCMDeg( x(0)*x(1)*x(2) ) :5
+x(0)*x(1)*x(2) .LCMDeg( x(0)*x(1)*x(3)*x(4) ) :5
+GCD( x(0)*x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(0)*x(1) 
+GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(1) 
+GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2)*x(4) ) :x(1)*x(4) 
+
 Finished.
 -------------------
 Testsuite finished.

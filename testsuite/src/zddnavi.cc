@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/19 15:55:53  dreyer
+ * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
+ *
  * Revision 1.5  2006/04/13 07:53:19  dreyer
  * CHANGE BoolePolynomial::print() and deg() produces more useful results
  *
@@ -125,13 +128,13 @@ main(){
   try {
     BoolePolyRing the_ring(5);
 
-    BoolePolynomial x = the_ring.variable(0);
-    BoolePolynomial y = the_ring.variable(1);
+    BooleMonomial x = BooleVariable(0);
+    BooleMonomial y = BooleVariable(1);
 
-    BoolePolynomial z = BooleVariable(2);
+    BooleMonomial z = BooleVariable(2);
 
-    BoolePolynomial v = BooleVariable(3);
-    BoolePolynomial w = BooleVariable(4);
+    BooleMonomial v = BooleVariable(3);
+    BooleMonomial w = BooleVariable(4);
 
     BoolePolynomial poly = (z + v*w) * (x*z) + y;
 
@@ -181,7 +184,13 @@ main(){
                   push_back<variables_list>() );
 
     print1D(monomvec.begin(), monomvec.end());
-    std::cout << "Finished."<<std::endl;
+
+    std::cout <<std::endl<<std::endl<< "Get terms: "<<std::endl;
+    BoolePolynomial::termlist_type theTerms = poly.terms();
+    
+    print1D(theTerms.begin(), theTerms.end());
+
+    std::cout <<std::endl<< "Finished."<<std::endl;
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
