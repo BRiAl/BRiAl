@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/04/20 16:59:47  dreyer
+ * routine
+ *
  * Revision 1.24  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -264,9 +267,10 @@ public:
   navigator navigation() const;
  
   /// gives a copy of the diagram
-  dd_type copyDiagram(){
-    return diagram();
-  }
+  dd_type copyDiagram(){   return diagram();  }
+
+  /// Casting operator
+  operator const dd_type&() const { return diagram(); };
 
   int eliminationLength() const;
 
@@ -276,15 +280,15 @@ public:
   /// Return of all terms
   termlist_type terms() const;
 
+  /// Read-only access to internal decision diagramm structure
+  const dd_type& diagram() const;
+
 #ifndef PBORI_DEVELOPER
 protected:
 #endif
 
-  /// @name Access to internal decision diagramm structure
-  //@{
+  /// Access to internal decision diagramm structure
   dd_type& diagram();
-  const dd_type& diagram() const;
-  //@}
 
 private:
   /// The actual decision diagramm

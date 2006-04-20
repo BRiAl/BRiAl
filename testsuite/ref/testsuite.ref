@@ -332,6 +332,10 @@ GCD( x(0)*x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(0)*x(1)
 GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(1) 
 GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2)*x(4) ) :x(1)*x(4) 
 
+Multiples of x(0)*x(1) wrt. x(1)*x(2)*x(4) : 
+: 4 nodes 4 minterms
+11-0- 1
+
 Finished.
 -------------------
 Testsuite finished.

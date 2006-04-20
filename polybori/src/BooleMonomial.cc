@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file BooleMonomial.cc
  *
  * @author Alexander Dreyer
  * @date 2006-04-19
@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/20 16:59:47  dreyer
+ * routine
+ *
  * Revision 1.2  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -283,6 +286,23 @@ BooleMonomial::GCDAssign(const self& rhs) {
   }
 
   return *this;
+}
+
+// lcm
+BooleMonomial
+BooleMonomial::LCM(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::GCD(const self&) const" );
+  return self(*this).LCMAssign(rhs);
+}
+
+// lcm with assignment
+BooleMonomial&
+BooleMonomial::LCMAssign(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::GCDAssign(const self&)" );
+
+  return (*this *= rhs);
 }
 
 // Multiples wrt. given monom

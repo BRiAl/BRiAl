@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/20 16:59:47  dreyer
+ * routine
+ *
  * Revision 1.2  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -101,6 +104,9 @@ class BooleMonomial {
 
   /// Casting operator
   operator const BoolePolynomial&() const;
+ 
+  /// Casting operator
+  operator const dd_type&() const { return m_poly; };
 
   /// Start iteration over indices
   const_iterator begin() const { return m_poly.firstBegin(); }
@@ -152,11 +158,27 @@ class BooleMonomial {
   /// Degree of the least common multiple
   size_type LCMDeg(const self&) const;
 
+  /// Compute theleast common multiple and assign
+  self& LCMAssign(const self&);
+
+  /// Compute the greatest common divisor
+  self LCM(const self&) const;
+
   /// Compute the greatest common divisor and assign
   self& GCDAssign(const self&);
 
   /// Compute the greatest common divisor
   self GCD(const self&) const;
+ 
+  /// Read-only access to internal decision diagramm structure
+  const dd_type& diagram() const { return m_poly.diagram(); }
+
+#ifndef PBORI_DEVELOPER
+protected:
+#endif
+
+  /// Access to internal decision diagramm structure
+  dd_type& diagram() { return m_poly.diagram(); }
 
 private:
   BoolePolynomial m_poly;
@@ -211,6 +233,13 @@ inline BooleMonomial
 GCD(const BooleMonomial& lhs, const BooleMonomial& rhs ){
 
   return lhs.GCD(rhs);
+}
+
+/// Compute the greatest common divisor of two monomials
+inline BooleMonomial
+LCM(const BooleMonomial& lhs, const BooleMonomial& rhs ){
+
+  return lhs.LCM(rhs);
 }
 
 END_NAMESPACE_PBORI
