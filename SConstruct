@@ -113,6 +113,17 @@ if isinstance(l,list):
     l=l[0]
 Default(l)
 
+
+gb_src=Split("groebner.cc pairs.cc")
+gb_src=["./groebner/src/"+ source for source in gb_src]
+gb=env.StaticLibrary("groebner", gb_src+[l])
+print "gb:", gb, dir(gb)
+#sometimes l seems to be boxed by a list
+if isinstance(gb,list):
+    gb=gb[0]
+Default(gb)
+
+
 tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial" ]
 
