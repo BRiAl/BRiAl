@@ -37,9 +37,12 @@ PolyEntry::PolyEntry(const Polynomial &p){
 }
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
+  leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
+  
   generators.push_back(e);
   pairs.status.prolong();
   const int s=generators.size()-1;
+  lm2Index[generators[s].lm]=s;
   int i;
   for(i=0;i<s;i++){
     if (GCD(this->generators[i].lm, generators[s].lm).deg()>0){

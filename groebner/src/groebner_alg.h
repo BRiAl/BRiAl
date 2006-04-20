@@ -16,6 +16,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <map>
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
@@ -68,6 +69,7 @@ public:
   
   PairManager pairs;
   PolyEntryVector generators;
+  MonomialSet leadingTerms;
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
@@ -76,7 +78,8 @@ public:
   int easyProductCriterions;
   int extendedProductCrit;
   int averageLength;
-
+  GroebnerStrategy():leadingTerms(Polynomial(0).copyDiagram()){}
+  std::map<Monomial,int> lm2Index;
 };
 
 END_NAMESPACE_PBORIGB

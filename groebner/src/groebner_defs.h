@@ -34,6 +34,7 @@ typedef long long wlen_type;
 typedef long len_type;
 typedef int deg_type;
 typedef  polybori::CTypes::idx_type idx_type;
+typedef polybori::BooleSet MonomialSet;
 END_NAMESPACE_PBORIGB
 
 #endif
