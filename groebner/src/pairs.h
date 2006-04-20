@@ -8,6 +8,9 @@
  */
 #include "groebner_defs.h"
 #include <boost/shared_ptr.hpp>
+
+#ifndef PB_PAIR_H
+#define PB_PAIR_H
  BEGIN_NAMESPACE_PBORIGB
 
 typedef long wlen_type;
@@ -30,3 +33,5 @@ class PairLS{
 typedef PairLS Pair;
 
  END_NAMESPACE_PBORIGB
+
+#endif

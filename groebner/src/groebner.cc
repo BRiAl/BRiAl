@@ -8,4 +8,4 @@
  */
 
 #include "groebner.h"
-
+#include "groebner_alg.h"
