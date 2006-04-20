@@ -22,8 +22,6 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-
-
 class PairStatusSet{
 public:
   typedef boost::dynamic_bitset<> bitvector_type;
@@ -63,14 +61,10 @@ public:
 class GroebnerStrategy{
 public:
   void addGenerator(const BoolePolynomial& p);
-  PairManager pairs;
-   PolyEntryVector generators;
+  void addGeneratorDelayed(const BoolePolynomial & p);
   
-
-
-
-
-
+  PairManager pairs;
+  PolyEntryVector generators;
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;

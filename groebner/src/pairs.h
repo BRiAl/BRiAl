@@ -9,8 +9,11 @@
 #include "groebner_defs.h"
 #include <boost/shared_ptr.hpp>
 #include <queue>
+#include <algorithm>
+#include <utility>
 #ifndef PB_PAIR_H
 #define PB_PAIR_H
+
  BEGIN_NAMESPACE_PBORIGB
 
 class PolyEntry{
@@ -22,7 +25,7 @@ public:
   len_type length;
   deg_type deg;
   deg_type lmDeg;
-  deg_type ecart(){
+  deg_type ecart() const{
     return deg-lmDeg;
   }
 };
@@ -47,13 +50,13 @@ public:
     this->j=j;
   }
 };
-class PolyData: public PairData{
+class PolyPairData: public PairData{
 public:
   Polynomial p;
   Polynomial extract(const PolyEntryVector& v){
     return p;
   }
-  PolyData(const BoolePolynomial& p){
+  PolyPairData(const BoolePolynomial& p){
     this->p=p;
   }
 };
@@ -71,6 +74,8 @@ public:
   }
 };
 typedef boost::shared_ptr<PairData> pair_data_ptr;
+const int VARIABLE_PAIR=0;
+
 class PairLS{
 public:
   wlen_type wlen;
@@ -81,6 +86,26 @@ public:
   Monomial lm; //must not be the real lm, can be lm of syzygy or something else
   Polynomial extract(const PolyEntryVector& v){
     data->extract(v);
+  }
+  PairLS(int i, int j, const PolyEntryVector &v):
+    data(new IJPairData(i,j)),
+    lm(v[i].lm*v[j].lm),
+    wlen(v[i].weightedLength+v[j].weightedLength-2)
+  {
+    sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
+  }
+  PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
+    data(new VariablePairData(i,v)),sugar(gen[i].deg+1),wlen(gen[i].weightedLength),
+  lm(gen[i].lm)
+  
+  {
+    assert(type==VARIABLE_PAIR);
+  }
+  
+  PairLS(const Polynomial& delayed):
+    data(new PolyPairData(delayed)),
+    lm(delayed.lead()), 
+    sugar(delayed.deg()), wlen(delayed.eliminationLength()){
   }
   
 };
