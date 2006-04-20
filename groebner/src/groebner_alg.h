@@ -14,6 +14,8 @@
 #include "pairs.h"
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
+#include <algorithm>
+#include <utility>
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
@@ -22,18 +24,33 @@ BEGIN_NAMESPACE_PBORIGB
 
 
 
-class PairStatusSet: protected std::vector<boost::dynamic_bitset<> >{
-  bool calculated(int i, int j){
-    if (i>j){
-      int h;
-      h=i;
-      i=j;
-      j=h;
+class PairStatusSet{
+public:
+  typedef boost::dynamic_bitset<> bitvector_type;
+  bool calculated(int ia, int ja){
+    int i,j;
+    i=std::min(ia,ja);
+    j=std::max(ia,ja);
+    return table[j][i];
+  }
+  void setToCalculated(int ia, int ja){
+    int i,j;
+    i=std::min(ia,ja);
+    j=std::max(ia,ja);
+    table[j][i]=1;
+  }
+  void prolong(){
+    int s=table.size();
+    table.push_back(bitvector_type(s));
+  }
+  PairStatusSet(int size=0){
+    int s=0;
+    for(s=0;s<size;s++){
+      prolong();
     }
-    assert(i<j);
   }
-  void setToCalculated(int i, int j){
-  }
+protected:
+std::vector<bitvector_type> table;
 };
 class PairManager{
 public:

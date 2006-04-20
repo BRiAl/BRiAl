@@ -8,6 +8,7 @@
  */
 
 #include <polybori.h>
+
 #ifndef PBORI_GB_DEFS_H
 #define PBORI_GB_DEFS_H
 #ifndef PBORI_NO_NAMESPACES
