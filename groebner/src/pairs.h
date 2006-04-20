@@ -6,6 +6,7 @@
  *  Copyright 2006 Mathematisches Forschungsinstitut Oberwolfach. All rights reserved.
  *
  */
+#include <functional>
 #include "groebner_defs.h"
 #include <boost/shared_ptr.hpp>
 #include <queue>
@@ -29,6 +30,7 @@ public:
     return deg-lmDeg;
   }
 };
+//using std::less;
 typedef std::vector<PolyEntry> PolyEntryVector;
 
 class PairData{
@@ -108,6 +110,17 @@ public:
     sugar(delayed.deg()), wlen(delayed.eliminationLength()){
   }
   
+};
+
+class PairLSCompare{
+public:
+  ///replaces less template
+  bool operator() (const PairLS& l, const PairLS& r){
+    if (l.sugar!=r.sugar) return l.sugar>r.sugar; //greater sugar, less importance
+    if (l.wlen!=r.wlen) return l.wlen>r.wlen;
+    ///@todo lm comparison
+    return false;
+  }
 };
 
 typedef PairLS Pair;

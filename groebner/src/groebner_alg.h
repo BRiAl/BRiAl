@@ -53,9 +53,12 @@ std::vector<bitvector_type> table;
 class PairManager{
 public:
   PairStatusSet status;
-  typedef std::priority_queue<Pair> queue_type;
+  typedef std::priority_queue<Pair,std::vector<Pair>, PairLSCompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
+  Polynomial nextSpoly(const PolyEntryVector& gen);
+  bool pairSetEmpty();
+  void cleanTopByChainCriterion();
  };
 
 class GroebnerStrategy{
