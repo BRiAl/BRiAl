@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/04/20 13:30:11  bricken
+ * *bricken: improved readibility
+ *
  * Revision 1.29  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -596,13 +599,13 @@ BoolePolynomial::navigation() const {
 
 // fetch list of terms
 void
-BoolePolynomial::fetchTerms(termlist_type& theList) const {
+BoolePolynomial::fetchTerms(termlist_type& theOutputList) const {
 
   PBORI_TRACE_FUNC("BoolePolynomial:fetchTerms(const termlist_type&)");
 
-  theList.resize(length());
+  theOutputList.resize(length());
   dd_transform( navigation(), monom_type(),
-                theList.begin(),
+                theOutputList.begin(),
                 change<monom_type>() );
 }
 
