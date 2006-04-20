@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/20 17:31:05  dreyer
+ * FIX removed casting operator, which caused ambigeous overloads
+ *
  * Revision 1.1  2006/04/20 16:59:47  dreyer
  * routine
  *
@@ -74,7 +77,7 @@ BooleSet::addAssign(const term_type& rhs) {
 
   PBORI_TRACE_FUNC( "BooleSet::addAssign(const term_type&) const" );
 
-  uniteAssign(rhs);
+  uniteAssign(rhs.diagram());
   return *this;
 }
 
@@ -93,7 +96,7 @@ BooleSet::owns(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::owns(const term_type&) const" );
 
-  return !(intersect(rhs).emptiness());
+  return !(intersect(rhs.diagram()).emptiness());
 }
 
 

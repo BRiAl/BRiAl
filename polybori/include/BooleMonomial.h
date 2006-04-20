@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/20 17:31:05  dreyer
+ * FIX removed casting operator, which caused ambigeous overloads
+ *
  * Revision 1.3  2006/04/20 16:59:47  dreyer
  * routine
  *
@@ -106,7 +109,7 @@ class BooleMonomial {
   operator const BoolePolynomial&() const;
  
   /// Casting operator
-  operator const dd_type&() const { return m_poly; };
+//  operator const dd_type&() const { return m_poly.diagram(); };
 
   /// Start iteration over indices
   const_iterator begin() const { return m_poly.firstBegin(); }
