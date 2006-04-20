@@ -114,7 +114,7 @@ if isinstance(l,list):
 Default(l)
 
 
-gb_src=Split("groebner.cc pairs.cc")
+gb_src=Split("groebner.cc pairs.cc groebner_alg.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
 gb=env.StaticLibrary("groebner", gb_src+[l])
 print "gb:", gb, dir(gb)
