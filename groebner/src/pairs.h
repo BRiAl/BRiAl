@@ -13,9 +13,8 @@
 #define PB_PAIR_H
  BEGIN_NAMESPACE_PBORIGB
 
-typedef long wlen_type;
 
-typedef int deg_type;
+
 class PairData{
   //gives back encoded
   virtual ~PairData();

@@ -26,5 +26,7 @@ class CTypes{
 typedef polybori::BoolePolynomial Polynomial;
 typedef polybori::BooleMonomial Monomial;
 END_NAMESPACE_PBORIGB
-
+typedef long long wlen_type;
+typedef long len_type;
+typedef int deg_type;
 #endif

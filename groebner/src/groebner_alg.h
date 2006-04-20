@@ -41,10 +41,18 @@ public:
   std::vector<Pair> queue;
   
 };
+class PolyEntry{
+  Polynomial p;
+  Monomial lm;
+  wlen_type weighted_length;
+  len_type length;
+  
+  
+};
 class GroebnerStrategy{
 public:
   PairManager pairs;
-  
+  std::vector<PolyEntry> generators;
   
 
 
