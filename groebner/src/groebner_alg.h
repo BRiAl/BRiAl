@@ -55,21 +55,16 @@ std::vector<bitvector_type> table;
 class PairManager{
 public:
   PairStatusSet status;
-  std::vector<Pair> queue;
-  
-};
-class PolyEntry{
-  Polynomial p;
-  Monomial lm;
-  wlen_type weighted_length;
-  len_type length;
-  
-  
-};
+  typedef std::priority_queue<Pair> queue_type;
+  queue_type queue;
+  void introducePair(const Pair& p);
+ };
+
 class GroebnerStrategy{
 public:
+  void addGenerator(const BoolePolynomial& p);
   PairManager pairs;
-  std::vector<PolyEntry> generators;
+   PolyEntryVector generators;
   
 
 

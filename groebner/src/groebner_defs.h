@@ -8,7 +8,7 @@
  */
 
 #include <polybori.h>
-
+#include <boost/integer.hpp>
 #ifndef PBORI_GB_DEFS_H
 #define PBORI_GB_DEFS_H
 #ifndef PBORI_NO_NAMESPACES
@@ -26,8 +26,14 @@ class CTypes{
 };
 typedef polybori::BoolePolynomial Polynomial;
 typedef polybori::BooleMonomial Monomial;
-END_NAMESPACE_PBORIGB
+typedef polybori::BooleVariable Variable;
+/*typedef boost::int_fast_t<64> wlen_type;
+typedef boost::int_fast_t<32> len_type;
+typedef boost::int_fast_t<16> deg_type;*/
 typedef long long wlen_type;
 typedef long len_type;
 typedef int deg_type;
+typedef  polybori::CTypes::idx_type idx_type;
+END_NAMESPACE_PBORIGB
+
 #endif
