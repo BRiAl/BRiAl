@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.23  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -102,9 +105,11 @@
 // include standard definitions
 #include <vector>
 
-// include basic definitions
+// include basic definitions and decision diagram interface
 #include "CDDInterface.h"
 
+// include definition of sets of Boolean variables
+#include "BooleSet.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -162,6 +167,9 @@ public:
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
 
+  /// Type for sets of Boolean variables
+  typedef BooleSet set_type;
+
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
@@ -207,7 +215,7 @@ public:
   monom_type lead() const;
 
   /// Get all divisors of the leading term
-  self lmDivisors() const;
+  set_type lmDivisors() const;
   
   /// Hash value of the leading term
   hash_type lmHash() const;
@@ -285,20 +293,33 @@ private:
 
 
 /// Addition operation 
-BoolePolynomial 
-operator+(const BoolePolynomial&, const BoolePolynomial&);
+inline BoolePolynomial 
+operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
+
+  return BoolePolynomial(lhs) += rhs;
+}
 
 /// Multiplication with monomial
-BoolePolynomial
-operator*(const BoolePolynomial&, const BoolePolynomial::monom_type&);
+inline BoolePolynomial
+operator*(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
 
-/// Multiplication with monomial
-BoolePolynomial
-operator*(const BoolePolynomial::monom_type&, const BoolePolynomial&);
+  return BoolePolynomial(lhs) *= rhs;
+}
+
+/// Multiplication of monomials by a polynomial
+inline BoolePolynomial
+operator*(const BoolePolynomial::monom_type& lhs, 
+          const BoolePolynomial& rhs){
+
+  return BoolePolynomial(rhs) *= lhs;
+}
 
 /// Division by monomial (skipping remainder)
-BoolePolynomial
-operator/(const BoolePolynomial&, const BoolePolynomial::monom_type&);
+inline BoolePolynomial
+operator/(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
+
+  return BoolePolynomial(lhs) /= rhs;
+}
 
 /// Compute spoly of two polynomials
 BoolePolynomial 

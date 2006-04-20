@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/20 08:31:22  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.1  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -190,7 +193,14 @@ main(){
     std::cout << "GCD( "<<monom1 <<", "<<monom2<<") :";
     std::cout << GCD(monom1, monom2)<<std::endl;
 
-    std::cout <<std::endl<<  "Finished."<<std::endl;
+    monom1 = x*y;
+    monom2 = y*z*w;
+
+    std::cout << std::endl;
+    std::cout << "Multiples of "<< monom1 << "wrt. "<< monom2<<": "<<std::endl;
+    std::cout << monom1.multiples(monom2);
+
+    std::cout <<std::endl << "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

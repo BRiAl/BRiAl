@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.14  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -311,8 +314,10 @@ class CDDInterface<ZDD>:
 
     FILE* oldstdout = manager().ReadStdout();
 
-    /// Enable ostream cerr (at least)
-    if (os == std::cerr)
+    /// Enable ostream cout and cerr (at least)
+    if (os == std::cout)
+      manager().SetStdout(stdout);
+    else if (os == std::cerr)
       manager().SetStdout(stderr);
 
     m_interfaced.print( Cudd_ReadZddSize(manager().getManager()) );
@@ -405,6 +410,14 @@ class CDDInterface<ZDD>:
   }
 
 };
+
+/// Stream output operator
+template <class DDType>
+typename CDDInterface<DDType>::ostream_type& 
+operator<<( typename CDDInterface<DDType>::ostream_type& os, 
+            const CDDInterface<DDType>& dd ) {
+  return dd.print(os);
+}
 
 
 END_NAMESPACE_PBORI

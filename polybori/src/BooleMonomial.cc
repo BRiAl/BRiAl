@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.1  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -235,6 +238,8 @@ BooleMonomial::LCMDeg(const self& rhs) const {
 // gcd
 BooleMonomial
 BooleMonomial::GCD(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::GCD(const self&) const" );
   return self(*this).GCDAssign(rhs);
 }
 
@@ -279,5 +284,14 @@ BooleMonomial::GCDAssign(const self& rhs) {
 
   return *this;
 }
+
+// Multiples wrt. given monom
+BooleMonomial::set_type
+BooleMonomial::multiples(const self& monom) const {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::multiples(const self&) const" );
+  return m_poly.diagram().unateProduct(monom.divisors());
+}
+
 
 END_NAMESPACE_PBORI

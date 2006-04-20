@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.28  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -354,13 +357,13 @@ BoolePolynomial::lead() const {
 }
 
 // all dividers
-BoolePolynomial
+BoolePolynomial::set_type
 BoolePolynomial::lmDivisors() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
 
   // Implementation relying on CCuddFirstIter (may be buggy)
-  dd_type terms;
+  set_type terms;
 
   if (m_dd.emptiness())
     terms = m_dd;
@@ -613,52 +616,6 @@ BoolePolynomial::terms() const {
   fetchTerms(theList);
 
   return theList;
-}
-
-// addition operation 
-BoolePolynomial 
-operator+(const BoolePolynomial& first, const BoolePolynomial& second){
-
-  PBORI_TRACE_FUNC("operator+(const BoolePolynomial&,const BoolePolynomial&)");
-
-  BoolePolynomial result(first);
-  return (result += second);
-}
-
-// multiplication with monomial
-BoolePolynomial
-operator*(const BoolePolynomial& poly,
-          const BoolePolynomial::monom_type& monom) {
-
-  PBORI_TRACE_FUNC("operator*(const BoolePolynomial&,const monom_type&)");
-
-  BoolePolynomial result(poly);
-  return (result *= monom);
-
-}
-
-// multiplication with monomial
-BoolePolynomial
-operator*(const BoolePolynomial::monom_type& monom, 
-          const BoolePolynomial& poly) {
-
-  PBORI_TRACE_FUNC("operator*(const monom_type&,const BoolePolynomial&)");
-
-  BoolePolynomial result(poly);
-  return (result *= monom);
-
-}
-
-// division by monomial (skipping remainder)
-BoolePolynomial
-operator/(const BoolePolynomial& poly, 
-          const BoolePolynomial::monom_type& monom) {
-
-  PBORI_TRACE_FUNC("operator/(const BoolePolynomial&,const monom_type&)");
-
-  BoolePolynomial result(poly);
-  return (result /= monom);
-
 }
 
 /// Compute spoly of two polynomials

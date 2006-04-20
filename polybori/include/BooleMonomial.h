@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.1  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -75,6 +78,9 @@ class BooleMonomial {
   /// Type of Boolean variables
   typedef BooleVariable var_type;
 
+  /// Type of sets of Boolean variables
+  typedef BooleSet set_type;
+
   /// Access to iterator type of leading terms
   typedef poly_type::first_iterator const_iterator;
 
@@ -106,9 +112,10 @@ class BooleMonomial {
   size_type deg() const { return m_poly.nNodes(); }
 
   /// Divisors of the monomial
-  /// @todo Result is currently stored in a polynomial, whose terms carry the
-  /// divisors. Special class needed.
-  poly_type divisors() const { return m_poly.lmDivisors(); }
+  set_type divisors() const { return m_poly.lmDivisors(); }
+
+  /// multiples of the monomial wrt. given monomial
+  set_type multiples(const self&) const; 
 
   /// Hash value of the monomial
   hash_type hash() const { return m_poly.lmHash(); }
@@ -138,9 +145,6 @@ class BooleMonomial {
   bool_type reducibleBy(const self& rhs) const { 
     return m_poly.reducibleBy(rhs); }
   bool_type reducibleBy(const var_type& rhs) const;
-
-//  { 
-//     return m_poly.reducibleBy(rhs); }
 
   /// Compare with rhs monomial and return comparision code
   comp_type compare(const self&) const;

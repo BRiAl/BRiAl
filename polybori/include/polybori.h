@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/20 08:31:21  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.4  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -39,6 +42,7 @@
 #ifndef polybori_h_
 #define polybori_h_
 
+#include "BooleSet.h"
 #include "BoolePolyRing.h"
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"

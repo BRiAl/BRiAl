@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/20 08:31:22  dreyer
+ * ADD BooleMonomial::mulples(...)
+ *
  * Revision 1.4  2006/03/29 16:20:12  dreyer
  * CHANGE: revised testsuite
  *
@@ -57,34 +60,29 @@ main(){
     CDDManager<Cudd> man(3);
 
     CDDInterface<ZDD> dd0 (man.ddVariable(0));
-    dd0.print(std::cout);
-    //    dd0.testpath();
+    std::cout << dd0;
+
     CDDInterface<ZDD> dd1 ( man.ddVariable(1));
-    dd1.print(std::cout);
-    //    dd1.testpath();
+    std::cout << dd1;
+
     dd0.unateProductAssign(dd1);
-    dd0.print(std::cout);
-    //    dd0.testpath();
+    std::cout << dd0;
+
     dd0 = man.ddVariable(0);
     dd0.subset0Assign(1);
     dd0.subset0Assign(2);
 
-    dd0.print(std::cout);
-    //    dd0.testpath();
+    std::cout << dd0;
     dd1.subset0Assign(0);
     dd1.subset0Assign(2);
 
-    dd1.print(std::cout);
-    //    dd1.testpath();
+     std::cout << dd1;
+
     dd0.unateProductAssign(dd1);
-    dd0.print(std::cout);
+    std::cout << dd0;
 
-    //    dd0.testpath();
     dd0.uniteAssign( man.ddVariable(2) );
-    dd0.print(std::cout);
-
-    //    dd0.testpath();
-
+     std::cout << dd0;
 
   }
   catch (PBoRiError& err) {
