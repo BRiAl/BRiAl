@@ -110,7 +110,7 @@ libpb=env.StaticLibrary("polybori/polybori", pb_src)
 #print "l:", l, dir(l)
 #sometimes l seems to be boxed by a list
 if isinstance(libpb,list):
-    libpb=l[0]
+    libpb=libpb[0]
 Default(libpb)
 
 
