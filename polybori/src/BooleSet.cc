@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/21 06:35:45  dreyer
+ * CHANGE Default constructor starts with empty set
+ *
  * Revision 1.2  2006/04/20 17:31:05  dreyer
  * FIX removed casting operator, which caused ambigeous overloads
  *
@@ -34,7 +37,7 @@
 // load header files
 # include "BooleSet.h"
 # include "BooleMonomial.h"
-
+# include "BoolePolyRing.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -44,7 +47,7 @@ BEGIN_NAMESPACE_PBORI
 
 // Default constructor
 BooleSet::BooleSet():
-  base()  {
+  base( BoolePolyRing::ringZero() )  {
 
   PBORI_TRACE_FUNC( "BooleSet()" );
 
