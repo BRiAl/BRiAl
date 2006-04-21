@@ -23,8 +23,11 @@ static int poly_hash(const BoolePolynomial& p){
 static void plot(const BoolePolynomial& p, const char* c){
   p.prettyPrint(c);
 }
+
+
 void export_poly(){
 
+  BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) = &BoolePolynomial::diagram;
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
@@ -59,7 +62,7 @@ void export_poly(){
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("nVars", &BoolePolynomial::nUsedVariables)
   .def("totalDegree", &BoolePolynomial::totalDeg)
-  .def("diagram", &BoolePolynomial::copyDiagram)
+  .def("diagram", diagram, return_internal_reference<1>())
   .def("navigation", &BoolePolynomial::navigation)
   .def("elength", &BoolePolynomial::eliminationLength)
   .def("plot",plot)

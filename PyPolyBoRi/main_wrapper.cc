@@ -8,7 +8,7 @@
 
 //#include "pairs.h"
 #include "strategy_wrapper.h"
-
+#include "monomial_wrapper.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -39,6 +39,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<BooleVariable::idx_type>())
     .def("toStdOut", print_variable);
   export_strategy();
+  export_monomial();
    }
 /*
 
