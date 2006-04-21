@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/04/21 16:17:12  dreyer
+ * ADD template class CTermIter<>
+ *
  * Revision 1.6  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -62,6 +65,10 @@
 # include "polybori.h"
 
 #include "pbori_algo.h"
+
+#include "pbori_func.h"
+
+#include "CTermIter.h"
 
 USING_NAMESPACE_PBORI
 
@@ -189,6 +196,33 @@ main(){
     BoolePolynomial::termlist_type theTerms = poly.terms();
     
     print1D(theTerms.begin(), theTerms.end());
+
+    std::cout <<std::endl <<std::endl<<"Test Term iteration "<<std::endl;
+
+    typedef CTermIter<BooleMonomial, CCuddNavigator, 
+      changeAssign<BooleMonomial>, changeAssign<BooleMonomial> >
+      term_iterator;
+
+       poly += x*z*w;
+    std::cout << poly <<std::endl;
+    term_iterator iter(poly.navigation());
+
+    std::cout << *iter <<std::endl;
+
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+    ++iter;
+    std::cout << "  last: "<< std::endl;
+    std::cout << *iter <<std::endl;
 
     std::cout <<std::endl<< "Finished."<<std::endl;
   }

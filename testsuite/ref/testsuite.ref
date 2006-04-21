@@ -35,6 +35,16 @@ pure print dd_transform:
 
 Get terms: 
 x(0)*x(2)*x(3)*x(4) , x(0)*x(2) , x(1) , 
+
+Test Term iteration 
+x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) 
+x(0)*x(2)*x(3)*x(4) 
+x(0)*x(2)*x(4) 
+x(0)*x(2) 
+x(1) 
+  last: 
+1 
+
 Finished.
 ----------------------
 Executing testsuite/testring

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/21 16:17:12  dreyer
+ * ADD template class CTermIter<>
+ *
  * Revision 1.5  2006/04/20 08:31:22  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -82,7 +85,7 @@ main(){
     std::cout << dd0;
 
     dd0.uniteAssign( man.ddVariable(2) );
-     std::cout << dd0;
+    std::cout << dd0;
 
   }
   catch (PBoRiError& err) {

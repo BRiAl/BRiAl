@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2006/04/21 16:17:11  dreyer
+ * ADD template class CTermIter<>
+ *
  * Revision 1.31  2006/04/21 13:13:30  dreyer
  * ADD PBoRiOutITer for more generic manipulations
  *
@@ -372,7 +375,7 @@ BoolePolynomial::lmDivisors() const {
     // define iterator, which uses appends the divisors wrt. a Boolean
     // variable of given index
     PBoRiOutIter<dd_type, idx_type, append_indexed_divisor<dd_type> >  
-      outiter(terms) ;
+      outiter(terms);
     
     // insert backward (for efficiency reasons)
     reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
