@@ -132,20 +132,20 @@ for t in tests:
 
 LIBS=env['LIBS']+['boost_python',libpb, gb]
 CPPPATH=env['CPPPATH']+['./groebner/src']
-
+LIBPATH=env['LIBPATH']+["."]
 if HAVE_PYTHON_EXTENSION:
  
-    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "strategy_wrapper.cc"]]
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader /sw/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=CPPPATH)
+            CPPPATH=CPPPATH, LIBPATH=LIBPATH)
     else:
         #print "l:", l
         env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
-            CPPPATH=CPPPATH)
+            CPPPATH=CPPPATH, LIBPATH=LIBPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
 else:
