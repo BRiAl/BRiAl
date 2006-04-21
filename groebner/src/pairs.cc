@@ -8,4 +8,7 @@
  */
 
 #include "pairs.h"
-
+BEGIN_NAMESPACE_PBORIGB
+PairData::~PairData(){
+}
+END_NAMESPACE_PBORIGB

@@ -61,4 +61,8 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   }
   
 }
+
+void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
+  this->pairs.introducePair(Pair(p));
+}
 END_NAMESPACE_PBORIGB

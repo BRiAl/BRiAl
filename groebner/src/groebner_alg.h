@@ -66,8 +66,7 @@ class GroebnerStrategy{
 public:
   void addGenerator(const BoolePolynomial& p);
   void addGeneratorDelayed(const BoolePolynomial & p);
-  
-  PairManager pairs;
+    PairManager pairs;
   PolyEntryVector generators;
   MonomialSet leadingTerms;
    unsigned int reductionSteps;
@@ -80,7 +79,13 @@ public:
   int averageLength;
   GroebnerStrategy():leadingTerms(Polynomial(0).copyDiagram()){}
   std::map<Monomial,int> lm2Index;
+  Polynomial nextSpoly(){
+    pairs.nextSpoly(generators);
+  }
+  
 };
 
 END_NAMESPACE_PBORIGB
+
 #endif
+

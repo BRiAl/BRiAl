@@ -13,7 +13,8 @@
 #define PBORI_GB_DEFS_H
 #ifndef PBORI_NO_NAMESPACES
 #define BEGIN_NAMESPACE_PBORIGB namespace PBORINAME { namespace groebner{
-#define END_NAMESPACE_PBORIGB }} // end of namespace 
+#define END_NAMESPACE_PBORIGB }} // end of namespace
+#define USING_NAMESPACE_PBORIGB using namespace PBORINAME::groebner;
 #else
 #endif
 
