@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/21 07:11:50  dreyer
+ * ADD operator=
+ *
  * Revision 1.3  2006/04/21 06:35:45  dreyer
  * CHANGE Default constructor starts with empty set
  *
@@ -72,6 +75,26 @@ BooleSet::BooleSet(const base& rhs) :
 BooleSet::~BooleSet() {
 
   PBORI_TRACE_FUNC( "~BooleSet()" );
+}
+
+// Assignment
+BooleSet&
+BooleSet::operator=(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BooleSet::operator=(const self&) const" );
+
+  base::operator=(rhs);
+  return *this;
+}
+
+// Assignment
+BooleSet&
+BooleSet::operator=(const base& rhs) {
+
+  PBORI_TRACE_FUNC( "BooleSet::operator=(const base&) const" );
+
+  base::operator=(rhs);
+  return *this;
 }
 
 // Add given monomial to sets and assign

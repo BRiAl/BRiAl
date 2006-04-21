@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/21 07:11:49  dreyer
+ * ADD operator=
+ *
  * Revision 1.2  2006/04/20 16:59:47  dreyer
  * routine
  *
@@ -70,6 +73,12 @@ public:
 
   /// Destructor
   ~BooleSet();
+
+  /// Assignment operator
+  self& operator=(const self&);
+
+  /// Assignment operator of base element
+  self& operator=(const base&);
 
   /// Add given monomial to sets and assign
   self& addAssign(const term_type&);
