@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/21 13:13:30  dreyer
+ * ADD PBoRiOutITer for more generic manipulations
+ *
  * Revision 1.4  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -68,6 +71,17 @@ public:
 
   RhsType operator() (const RhsType& rhs, const LhsType& lhs) const {
     return (rhs.change(lhs));
+  } 
+
+};
+/// @class changeAssign
+/// @brief Accessing .change()
+template <class RhsType, class LhsType = typename RhsType::idx_type >
+class changeAssign {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    return (rhs.changeAssign(lhs));
   } 
 
 };
@@ -300,6 +314,50 @@ public:
 
 private:
   ValueType & max;
+};
+
+template <class DDType>
+class dd_add_assign {
+public:
+
+  DDType& operator()(DDType& lhs, const DDType& rhs) const {
+    return (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
+  };
+
+};
+
+template <class DDType, class IdxType = typename DDType::idx_type>
+class times_indexed_var {
+public:
+
+
+  DDType& operator()(DDType& lhs, IdxType idx) const {
+
+  // get all terms not containing the variable with index idx
+    DDType tmp( lhs.subset0(idx) );
+
+    // get the complementary terms
+    lhs.diffAssign(tmp);
+
+    // construct polynomial terms
+    dd_add_assign<DDType>()(lhs, tmp.change(idx));
+
+    return lhs;
+  }
+
+};
+
+
+template <class DDType, class IdxType = typename DDType::idx_type>
+class append_indexed_divisor {
+public:
+
+  DDType& operator()(DDType& lhs, IdxType idx) const {
+
+    lhs.uniteAssign( lhs.change(idx) );
+    return lhs;
+  }
+
 };
 
 END_NAMESPACE_PBORI

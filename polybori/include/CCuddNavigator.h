@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/21 13:13:29  dreyer
+ * ADD PBoRiOutITer for more generic manipulations
+ *
  * Revision 1.4  2006/04/13 08:41:34  dreyer
  * CHANGE change() used by BoolePolynomial backward (for efficiency)
  *
@@ -38,6 +41,8 @@
 **/
 //*****************************************************************************
 
+#include <iterator>
+
 // include basic definitions
 #include "pbori_defs.h"
 
@@ -53,18 +58,19 @@ BEGIN_NAMESPACE_PBORI
  **/
 
 class CCuddNavigator {
+
 public:
   /// Cudd's node pointer
   typedef DdNode* pointer_type;
 
   /// Type for indices
-  typedef int idx_type;
+  typedef CTypes::idx_type idx_type;
 
   /// Type for hashing
-  typedef int hash_type;
+  typedef CTypes::hash_type hash_type;
 
   /// Type for boolean results
-  typedef bool bool_type;
+  typedef CTypes::bool_type bool_type;
 
   /// Return type of dereferencing operator
   typedef idx_type value_type;
@@ -75,9 +81,9 @@ public:
   /// @name Interface types for standard iterator access
   //@{
   typedef std::forward_iterator_tag iterator_category;
-  typedef int difference_type;
-  typedef pointer_type pointer;
-  typedef value_type& reference;
+  typedef std::iterator_traits<pointer_type>::difference_type difference_type;
+  typedef void pointer;
+  typedef const value_type& reference;
   //@}
 
   /// Default constructor and construct from node pointer
@@ -128,7 +134,6 @@ public:
 private:
   pointer_type pNode;
 };
-
 
 END_NAMESPACE_PBORI
 

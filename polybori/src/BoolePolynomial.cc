@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2006/04/21 13:13:30  dreyer
+ * ADD PBoRiOutITer for more generic manipulations
+ *
  * Revision 1.30  2006/04/20 13:30:11  bricken
  * *bricken: improved readibility
  *
@@ -120,6 +123,7 @@
 
 #include <list>
 #include <iterator>
+#include <algorithm>
 
 #include "pbori_algo.h"
 #include "CIdxPath.h"
@@ -144,6 +148,10 @@
 
 // get functionals
 # include "pbori_func.h"
+
+// include definition of output iterator over monomials
+//# include "OutMonomIter.h"
+# include "PBoRiOutIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -197,7 +205,7 @@ BoolePolynomial::operator+=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator+=(const self&)" );
 
-  m_dd = m_dd.unite( rhs.m_dd ).diff( m_dd.intersect(rhs.m_dd) );
+  dd_add_assign<dd_type>()(m_dd, rhs.m_dd);
   return *this;
 }
 
@@ -207,30 +215,17 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
-   // get indices
-//   CIdxPath<idx_type> indices(rhs.lmDeg());
-//   std::copy(rhs.firstBegin(), rhs.firstEnd(), indices.begin() );
-
+  // store indices in list
   CIdxPath<idx_type> indices(rhs.deg());
-  std::copy(rhs.begin(), rhs.end(), indices.begin() );
-
+  
+  // iterator, which generates m_dd *= var(idx) for given index idx
+  // on assignment of dereferenced object
+  PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
+    outiter(m_dd) ;
+  
   // insert backward (for efficiency reasons)
-  CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
-    finish(indices.rend());
+  reversed_inter_copy(rhs.begin(), rhs.end(), indices, outiter);
 
-  while (start != finish) {
-
-    // get all terms not containing the variable with index *start
-    dd_type tmp( m_dd.subset0(*start) );
-
-    // get the complementary terms
-    m_dd.diffAssign(tmp);
-
-    // construct polynomial terms
-    *this += tmp.change(*start);
-
-    ++start;
-  }
   return *this;
 }
 
@@ -257,7 +252,7 @@ BoolePolynomial::reducibleBy(const self& rhs) const {
     return rhs.isZero();
 
 
-  first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd()),
+  first_iterator start(firstBegin()), finish(firstEnd()),
     rhs_start(rhs.firstBegin()), rhs_finish(rhs.firstEnd());
     
   bool_type is_reducible = true;
@@ -342,18 +337,16 @@ BoolePolynomial::lead() const {
     leadterm = 0;
   else {
 
-    // get indices
+    // store indices in list
     CIdxPath<idx_type> indices(lmDeg());
-    std::copy(m_dd.firstBegin(), m_dd.firstEnd(), indices.begin() );
 
+    // iterator, which uses changeAssign to insert variable
+    // wrt. given indices to a monomial
+    PBoRiOutIter<monom_type, idx_type, changeAssign<monom_type> >  
+      outiter(leadterm) ;
+    
     // insert backward (for efficiency reasons)
-    CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
-      finish(indices.rend());
-
-    while (start != finish){
-      leadterm.changeAssign(*start);
-      ++start;
-    }
+    reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
   }
 
   return leadterm;
@@ -373,18 +366,16 @@ BoolePolynomial::lmDivisors() const {
   else {
     terms = manager_reference(m_dd).blank();
 
-    // get indices
+    // store indices in list
     CIdxPath<idx_type> indices(lmDeg());
-    std::copy(m_dd.firstBegin(), m_dd.firstEnd(), indices.begin() );
-  
+
+    // define iterator, which uses appends the divisors wrt. a Boolean
+    // variable of given index
+    PBoRiOutIter<dd_type, idx_type, append_indexed_divisor<dd_type> >  
+      outiter(terms) ;
+    
     // insert backward (for efficiency reasons)
-    CIdxPath<idx_type>::const_reverse_iterator start(indices.rbegin()), 
-      finish(indices.rend());
- 
-    while (start != finish){
-      terms.uniteAssign( terms.change(*start) );
-      ++start;
-    }
+    reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
   }
 
   return terms;
@@ -400,7 +391,7 @@ BoolePolynomial::lmHash() const {
     return 0;
   else {
   
-    dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
+    dd_type::first_iterator start(firstBegin()), finish(firstEnd());
     int vars=0;
     int sum=0;
     while (start != finish){
@@ -444,15 +435,8 @@ BoolePolynomial::lmDeg() const {
   return lead().nNodes();
 
 #else
-  dd_type::first_iterator start(m_dd.firstBegin()), finish(m_dd.firstEnd());
-  size_type degree = 0;
 
-  while (start != finish){
-    ++degree;
-    ++start;
-  }
-
-  return degree;
+  return std::distance(firstBegin(), firstEnd());
 #endif
 }
 

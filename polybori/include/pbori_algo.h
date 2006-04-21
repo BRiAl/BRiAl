@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/21 13:13:30  dreyer
+ * ADD PBoRiOutITer for more generic manipulations
+ *
  * Revision 1.5  2006/04/14 15:45:30  bricken
  * + removed semicolons
  *
@@ -152,6 +155,20 @@ transform( const NaviType& navi, const TermType& init,
 
 
 
+}
+
+
+/// Function templates doing a reversed copy using intermediate storage
+template <class InputIterator, class Intermediate, class OutputIterator>
+OutputIterator
+reversed_inter_copy( InputIterator start, InputIterator finish,
+                     Intermediate& inter, OutputIterator output ) {
+
+    std::copy(start, finish, inter.begin());
+    // force constant
+    return std::copy( const_cast<const Intermediate&>(inter).rbegin(),
+                      const_cast<const Intermediate&>(inter).rend(), 
+                      output );
 }
 
 
