@@ -135,7 +135,7 @@ CPPPATH=env['CPPPATH']+['./groebner/src']
 
 if HAVE_PYTHON_EXTENSION:
  
-    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "pairs.cc", "strategy_wrapper.cc"]]
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "strategy_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader /sw/bin/python",
