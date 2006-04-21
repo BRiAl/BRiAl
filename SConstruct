@@ -106,17 +106,17 @@ pb_src=Split("BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc \
 CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc \
 BooleMonomial.cc BooleSet.cc")
 pb_src=["./polybori/src/"+ source for source in pb_src]
-l=env.StaticLibrary("polybori/polybori", pb_src)
-print "l:", l, dir(l)
+libpb=env.StaticLibrary("polybori/polybori", pb_src)
+#print "l:", l, dir(l)
 #sometimes l seems to be boxed by a list
-if isinstance(l,list):
-    l=l[0]
-Default(l)
+if isinstance(libpb,list):
+    libpb=l[0]
+Default(libpb)
 
 
 gb_src=Split("groebner.cc pairs.cc groebner_alg.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
-gb=env.StaticLibrary("groebner", gb_src+[l])
+gb=env.StaticLibrary("groebner", gb_src+[libpb])
 print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
@@ -128,16 +128,24 @@ tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface",
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial" ]
 
 for t in tests:
-    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[l]))
+    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[libpb]))
+
+LIBS=env['LIBS']+['boost_python',libpb, gb]
+CPPPATH=env['CPPPATH']+['./groebner/src']
 
 if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "pairs.cc"]]
     if env['PLATFORM']=="darwin":
-        env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files, LINKFLAGS="-bundle_loader /sw/bin/python", LIBS=env['LIBS']+['boost_python',l],LDMODULESUFFIX=".so")
+        env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
+            LINKFLAGS="-bundle_loader /sw/bin/python",
+            LIBS=LIBS,LDMODULESUFFIX=".so",
+            CPPPATH=CPPPATH)
     else:
-        print "l:", l
-        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files, LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=env['LIBS']+['boost_python',"polybori"])
+        #print "l:", l
+        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
+            CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
 else:
