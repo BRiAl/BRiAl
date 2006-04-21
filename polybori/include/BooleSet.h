@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/21 09:31:44  dreyer
+ * CHANGE reducing redundancy
+ *
  * Revision 1.3  2006/04/21 07:11:49  dreyer
  * ADD operator=
  *
@@ -77,8 +80,8 @@ public:
   /// Assignment operator
   self& operator=(const self&);
 
-  /// Assignment operator of base element
-  self& operator=(const base&);
+  /// Use assignment operator of base element
+  using base::operator=;
 
   /// Add given monomial to sets and assign
   self& addAssign(const term_type&);

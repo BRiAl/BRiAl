@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/21 09:31:44  dreyer
+ * CHANGE reducing redundancy
+ *
  * Revision 1.4  2006/04/21 07:11:50  dreyer
  * ADD operator=
  *
@@ -82,16 +85,6 @@ BooleSet&
 BooleSet::operator=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BooleSet::operator=(const self&) const" );
-
-  base::operator=(rhs);
-  return *this;
-}
-
-// Assignment
-BooleSet&
-BooleSet::operator=(const base& rhs) {
-
-  PBORI_TRACE_FUNC( "BooleSet::operator=(const base&) const" );
 
   base::operator=(rhs);
   return *this;
