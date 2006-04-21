@@ -64,7 +64,7 @@ env.Append(CPPPATH=USER_CPPPATH)
 env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPPATH=["./Cudd/include"])
-env.Append(LIBPATH=["polybori"])
+env.Append(LIBPATH=["polybori","groebner"])
 env['ENV']['HOME']=os.environ["HOME"]
 if env['PLATFORM']=="darwin":
         env.Append(LIBPATH="/sw/lib")
@@ -116,7 +116,7 @@ Default(libpb)
 
 gb_src=Split("groebner.cc pairs.cc groebner_alg.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
-gb=env.StaticLibrary("groebner", gb_src+[libpb])
+gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
@@ -130,9 +130,9 @@ tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface",
 for t in tests:
     Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[libpb]))
 
-LIBS=env['LIBS']+['boost_python',libpb, gb]
+LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
 CPPPATH=env['CPPPATH']+['./groebner/src']
-LIBPATH=env['LIBPATH']+["."]
+
 if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc"]]
@@ -140,12 +140,12 @@ if HAVE_PYTHON_EXTENSION:
         env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader /sw/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=CPPPATH, LIBPATH=LIBPATH)
+            CPPPATH=CPPPATH)
     else:
         #print "l:", l
         env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
-            CPPPATH=CPPPATH, LIBPATH=LIBPATH)
+            CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
 else:
