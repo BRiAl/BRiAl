@@ -5,7 +5,10 @@
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
 #include "navigator_wrap.h"
-#include "pairs.h"
+
+//#include "pairs.h"
+#include "strategy_wrapper.h"
+
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -35,7 +38,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
     .def("toStdOut", print_variable);
-  export_pairs();
+  export_strategy();
    }
 /*
 
