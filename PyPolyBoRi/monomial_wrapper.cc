@@ -34,7 +34,7 @@ void export_monomial(){
     
   
       
-  boost::python::class_<BooleMonomial>("Polynomial")
+  boost::python::class_<BooleMonomial>("Monomial")
   .def(init<>())
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
