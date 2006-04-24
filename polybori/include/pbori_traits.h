@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/24 11:41:56  dreyer
+ * FIX only necessary types are traits
+ *
  * Revision 1.1  2006/04/24 11:34:05  dreyer
  * + Initial Version
  *
@@ -28,6 +31,9 @@
 
 // include basic definitions
 #include "pbori_defs.h"
+
+#ifndef pbori_traits_h_
+#define pbori_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -45,23 +51,17 @@ public:
   //-------------------------------------------------------------------------
   typedef ValueType value_type;
 
-  /// Type of underlying binary decicion diagrams 
-  typedef typename value_type::dd_base dd_base;
-
   /// Type of interface to binary decicion diagrams 
   typedef typename value_type::dd_type dd_type;
 
-  /// Vector of dd_type
-  typedef typename value_type::ddvector_type ddvector_type;
+//   /// Manage variables to be used by polynomials over Boolean ring
+//   typedef typename value_type::manager_type manager_type;
 
-  /// Manage variables to be used by polynomials over Boolean ring
-  typedef typename value_type::manager_type manager_type;
+//   /// Reference to decision diagramm manager
+//    typedef typename value_type::manager_reference manager_reference;
 
-  /// Reference to decision diagramm manager
-   typedef typename value_type::manager_reference manager_reference;
-
-  /// Define shared pointer to decision diagram manager
-   typedef typename value_type::manager_ptr manager_ptr;
+//   /// Define shared pointer to decision diagram manager
+//    typedef typename value_type::manager_ptr manager_ptr;
 
   //-------------------------------------------------------------------------
   // types for several purposes
@@ -77,25 +77,13 @@ public:
   typedef typename value_type::integer_type integer_type;
 
   /// Type for indices
-   typedef typename value_type:idx_type idx_type;
+   typedef typename value_type::idx_type idx_type;
 
   /// Type for comparisons
   typedef typename value_type::comp_type comp_type;
 
   /// Type for hashing
   typedef typename value_type::hash_type hash_type;
-
-  /// Error codes enumeration
-  typedef typename value_type::errorcodes errorcodes;
-
-  /// Comparision codes enumeration
-   typedef typename value_type::comparecodes comparecodes;
-
-  /// Type used to store error codes
-  typedef typename value_type::errornum_type errornum_type;
-
-  /// Type used to verbose error information
-  typedef typename value_type::errortext_type errortext_type;
 
   /// Type for out-stream
   typedef typename value_type::ostream_type ostream_type;
@@ -127,3 +115,5 @@ class pbori_traits<long int>:
 
 
 END_NAMESPACE_PBORI
+
+#endif

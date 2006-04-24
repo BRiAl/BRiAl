@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/24 11:41:56  dreyer
+ * FIX only necessary types are traits
+ *
  * Revision 1.4  2006/04/20 17:31:05  dreyer
  * FIX removed casting operator, which caused ambigeous overloads
  *
@@ -73,6 +76,8 @@ class BooleMonomial {
   typedef CTypes::hash_type hash_type;
   typedef CTypes::bool_type bool_type;
   typedef CTypes::comp_type comp_type;
+  typedef CTypes::integer_type integer_type;
+  typedef CTypes::ostream_type ostream_type;
   //@}
 
   /// Generic access to current type
