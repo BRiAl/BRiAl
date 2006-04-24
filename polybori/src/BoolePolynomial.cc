@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2006/04/24 15:00:48  dreyer
+ * CHANGE BoolePolynomial::eliminationLength() uses lmDeg() now
+ *
  * Revision 1.34  2006/04/24 14:45:36  dreyer
  * FIX CTermIter; ADD BoolePolynomial uses CTermIter
  *
@@ -718,7 +721,7 @@ BoolePolynomial::eliminationLength() const{
 //   return len_cheated;
 
   return std::accumulate( degBegin(), degEnd(), size_type(0), 
-                          AddEliminationDegree<size_type>(*degBegin()) );
+                          AddEliminationDegree<size_type>(lmDeg()) );
 }
 
 END_NAMESPACE_PBORI
