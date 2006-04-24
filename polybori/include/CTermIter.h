@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/04/24 05:21:05  bricken
+ * + name rhs of parameter was missing
+ *
  * Revision 1.1  2006/04/21 16:17:11  dreyer
  * ADD template class CTermIter<>
  *
@@ -127,7 +130,7 @@ public:
   bool_type operator==(const self& rhs) const { return top() == rhs.top(); }
 
   /// Nonequality test
-  bool_type operator!=(const self&) const { return top() != rhs.top(); }
+  bool_type operator!=(const self& rhs) const { return top() != rhs.top(); }
 
   /// Get element on stack
   const top_type& top() const { return thestack.top(); }
