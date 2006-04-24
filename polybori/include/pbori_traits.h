@@ -1,0 +1,129 @@
+// -*- c++ -*-
+//*****************************************************************************
+/** @file pbori_traits.h
+ *
+ * @author Alexander Dreyer
+ * @date 2006-04-24
+ *
+ * This file defines properties of built-in an polybori types.
+ *
+ * @par Copyright:
+ *   (c) 2006 by
+ *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
+ *   Fraunhofer Institute for Industrial Mathematics (ITWM)
+ *   D-67663 Kaiserslautern, Germany
+ *
+ * @internal 
+ * @version \$Id$
+ *
+ * @par History:
+ * @verbatim
+ * $Log$
+ * Revision 1.1  2006/04/24 11:34:05  dreyer
+ * + Initial Version
+ *
+ * @endverbatim
+**/
+//*****************************************************************************
+
+// include basic definitions
+#include "pbori_defs.h"
+
+BEGIN_NAMESPACE_PBORI
+
+/** @class pbori_traits 
+ * @brief This classs contains property definitions to be used in polybori 
+ * classes
+ *
+ **/
+template <class ValueType>
+class pbori_traits {
+
+public:
+  //-------------------------------------------------------------------------
+  // types for treatment of decision diagrams
+  //-------------------------------------------------------------------------
+  typedef ValueType value_type;
+
+  /// Type of underlying binary decicion diagrams 
+  typedef typename value_type::dd_base dd_base;
+
+  /// Type of interface to binary decicion diagrams 
+  typedef typename value_type::dd_type dd_type;
+
+  /// Vector of dd_type
+  typedef typename value_type::ddvector_type ddvector_type;
+
+  /// Manage variables to be used by polynomials over Boolean ring
+  typedef typename value_type::manager_type manager_type;
+
+  /// Reference to decision diagramm manager
+   typedef typename value_type::manager_reference manager_reference;
+
+  /// Define shared pointer to decision diagram manager
+   typedef typename value_type::manager_ptr manager_ptr;
+
+  //-------------------------------------------------------------------------
+  // types for several purposes
+  //-------------------------------------------------------------------------
+
+  /// Type for standard true/false statements
+  typedef typename value_type::bool_type bool_type;
+
+  /// Type for lengths, dimensions, etc.
+  typedef typename value_type::size_type size_type;
+
+  /// Type for integer numbers
+  typedef typename value_type::integer_type integer_type;
+
+  /// Type for indices
+   typedef typename value_type:idx_type idx_type;
+
+  /// Type for comparisons
+  typedef typename value_type::comp_type comp_type;
+
+  /// Type for hashing
+  typedef typename value_type::hash_type hash_type;
+
+  /// Error codes enumeration
+  typedef typename value_type::errorcodes errorcodes;
+
+  /// Comparision codes enumeration
+   typedef typename value_type::comparecodes comparecodes;
+
+  /// Type used to store error codes
+  typedef typename value_type::errornum_type errornum_type;
+
+  /// Type used to verbose error information
+  typedef typename value_type::errortext_type errortext_type;
+
+  /// Type for out-stream
+  typedef typename value_type::ostream_type ostream_type;
+
+
+};
+
+// Built-in types inherit global definitions
+template <>
+class pbori_traits<void>:
+  public CTypes {
+};
+
+template <>
+class pbori_traits<int>:
+  public CTypes {
+};
+
+template <>
+class pbori_traits<unsigned int>:
+  public CTypes {
+};
+
+template <>
+class pbori_traits<long int>:
+  public CTypes {
+};
+
+
+
+END_NAMESPACE_PBORI
