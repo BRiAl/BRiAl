@@ -9,8 +9,10 @@
 //#include "pairs.h"
 #include "strategy_wrapper.h"
 #include "monomial_wrapper.h"
+#include "set_wrapper.h"
 using namespace boost::python;
 using namespace std;
+
 USING_NAMESPACE_PBORI
 #define WRAP_ALSO_CUDD 1
 
@@ -40,6 +42,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();
+  export_bset();
    }
 /*
 
