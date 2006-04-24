@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/04/24 08:40:46  dreyer
+ * FIX CTermIter<> treats o/1 Monomials correctly.
+ *
  * Revision 1.7  2006/04/21 16:17:12  dreyer
  * ADD template class CTermIter<>
  *
@@ -53,7 +56,6 @@
 **/
 //*****************************************************************************
 
-
 // load standard iostream capapilities
 #include <iostream>
 #include <list>
@@ -69,6 +71,8 @@
 #include "pbori_func.h"
 
 #include "CTermIter.h"
+
+
 
 USING_NAMESPACE_PBORI
 
@@ -224,7 +228,39 @@ main(){
     std::cout << "  last: "<< std::endl;
     std::cout << *iter <<std::endl;
 
+    std::cout << "  next: "<< std::endl;
+    poly += 1;
+    std::cout << poly <<std::endl;
+    iter = poly.navigation();
+    ++iter;    ++iter;    ++iter;   ++iter;
+    std::cout << *iter <<std::endl;
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+
+    std::cout << "  next: "<< std::endl;
+
+    poly = 1;
+    std::cout << poly <<std::endl;
+    iter = poly.navigation();
+
+    std::cout << *iter <<std::endl;
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+
+    std::cout << "  next: "<< std::endl;
+    poly = 0;
+    std::cout << poly <<std::endl;
+    iter = poly.navigation();
+
+    std::cout << *iter <<std::endl;
+    ++iter;
+
+    std::cout << *iter <<std::endl;
+
     std::cout <<std::endl<< "Finished."<<std::endl;
+
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
