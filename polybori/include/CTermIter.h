@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/24 10:24:36  dreyer
+ * FIX CTermIter::reference
+ *
  * Revision 1.3  2006/04/24 08:40:46  dreyer
  * FIX CTermIter<> treats o/1 Monomials correctly.
  *
@@ -97,7 +100,7 @@ public:
   typedef typename std::iterator_traits<navigator_type>::difference_type 
   difference_type;
   typedef void pointer;
-  typedef const value_type& reference;
+  typedef value_type reference;
   //@}
 
   /// Define type for stacking
