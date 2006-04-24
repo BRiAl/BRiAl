@@ -77,7 +77,7 @@ void export_dd(){
   .def("subset1",&CTypes::dd_type::subset1)
   .def("subset0",&CTypes::dd_type::subset0)
   .def("change", &CTypes::dd_type::change)
-  .def("changeAssign", changeAssign)
+  //.def("changeAssign", &dd_type::changeAssign)
   .def("empty", &dd_type::emptiness)
   .def("nNodes", &CTypes::dd_type::nNodes)
   .def("nSupport", &CTypes::dd_type::nSupport)

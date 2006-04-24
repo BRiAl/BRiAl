@@ -56,7 +56,7 @@ void export_bset(){
   .def("subset1",&BooleSet::subset1)
   .def("subset0",&BooleSet::subset0)
   .def("change", &BooleSet::change)
-  .def("changeAssign", changeAssign)
+  //.def("changeAssign", changeAssign)
   .def("empty", &BooleSet::emptiness)
   .def("nNodes", &BooleSet::nNodes)
   .def("nSupport", &BooleSet::nSupport)
