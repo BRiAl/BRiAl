@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/24 10:23:22  dreyer
+ * ADD BoolePolynomial::begin() and end()
+ * FIX type reference in CCuddNavigator
+ *
  * Revision 1.5  2006/04/21 13:13:29  dreyer
  * ADD PBoRiOutITer for more generic manipulations
  *
@@ -83,7 +87,7 @@ public:
   typedef std::forward_iterator_tag iterator_category;
   typedef std::iterator_traits<pointer_type>::difference_type difference_type;
   typedef void pointer;
-  typedef const value_type& reference;
+  typedef value_type reference;
   //@}
 
   /// Default constructor and construct from node pointer
@@ -108,7 +112,7 @@ public:
   self elseBranch() const;
 
   /// Constant dereference operator
-  value_type operator*() const;
+  reference operator*() const;
 
   /// Constant pointer access operator
   const pointer_type operator->() const;

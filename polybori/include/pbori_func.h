@@ -19,6 +19,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/24 10:23:22  dreyer
+ * ADD BoolePolynomial::begin() and end()
+ * FIX type reference in CCuddNavigator
+ *
  * Revision 1.5  2006/04/21 13:13:30  dreyer
  * ADD PBoRiOutITer for more generic manipulations
  *
@@ -74,12 +78,45 @@ public:
   } 
 
 };
+
+/// @class index_traits
+/// @brief Getting idx_type
+template <class IndexedType>
+class index_traits {
+public:
+  typedef typename IndexedType::idx_type type;
+};
+
+template <>
+class index_traits<void> {
+public:
+  typedef int type;
+};
+
 /// @class changeAssign
 /// @brief Accessing .change()
-template <class RhsType, class LhsType = typename RhsType::idx_type >
+template <class RhsType = void,
+          class LhsType = typename index_traits<RhsType>::type >
+class changeAssign;
+
+/// @class changeAssign
+/// @brief Accessing .change()
+template <class RhsType, class LhsType>
 class changeAssign {
 public:
 
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    return (rhs.changeAssign(lhs));
+  } 
+
+};
+/// @class changeAssign
+/// @brief Accessing .change(); variante using member templates
+template<>
+class changeAssign<void, int> {
+public:
+
+  template <class RhsType, class LhsType>
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
     return (rhs.changeAssign(lhs));
   } 

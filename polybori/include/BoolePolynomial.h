@@ -21,6 +21,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/04/24 10:23:22  dreyer
+ * ADD BoolePolynomial::begin() and end()
+ * FIX type reference in CCuddNavigator
+ *
  * Revision 1.25  2006/04/20 16:59:47  dreyer
  * routine
  *
@@ -113,6 +117,8 @@
 
 // include definition of sets of Boolean variables
 #include "BooleSet.h"
+#include "CTermIter.h"
+#include "pbori_func.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -166,6 +172,12 @@ public:
 
   /// Fix type for treatment of monomials
   typedef BooleMonomial monom_type; 
+
+  /// Iterator type for iterating all monomials
+  typedef CTermIter<monom_type, navigator, 
+                    changeAssign<>, 
+                    changeAssign<> >
+  const_iterator;
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
@@ -256,6 +268,12 @@ public:
 
   /// Pretty print to filename
   void prettyPrint(const char* filename) const;
+
+  /// Start of iteration over monomials
+  const_iterator begin() const;
+
+  /// Finish of iteration over indices
+  const_iterator end() const;
 
   /// Start of leading term
   first_iterator firstBegin() const;

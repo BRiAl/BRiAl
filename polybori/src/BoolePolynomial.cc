@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2006/04/24 10:23:22  dreyer
+ * ADD BoolePolynomial::begin() and end()
+ * FIX type reference in CCuddNavigator
+ *
  * Revision 1.32  2006/04/21 16:17:11  dreyer
  * ADD template class CTermIter<>
  *
@@ -574,6 +578,23 @@ BoolePolynomial::firstEnd() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::firstEnd() const" );
   return m_dd.firstEnd();
 }
+
+// Start of iteration over monomials
+BoolePolynomial::const_iterator 
+BoolePolynomial::begin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::begin() const" );
+  return navigation();
+}
+
+// Finish of iteration over monomials
+BoolePolynomial::const_iterator 
+BoolePolynomial::end() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::end() const" );
+  return const_iterator();
+}
+
 
 // Navigate through diagram structure
 BoolePolynomial::navigator 
