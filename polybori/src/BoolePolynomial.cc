@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2006/04/24 16:58:53  bricken
+ * + inverted comparison operator
+ *
  * Revision 1.35  2006/04/24 15:00:48  dreyer
  * CHANGE BoolePolynomial::eliminationLength() uses lmDeg() now
  *
@@ -690,7 +693,7 @@ public:
 
   size_type& operator()(size_type& rhs, size_type lhs) {
     ++rhs;
-    if (lhs < m_min)
+    if (lhs > m_min)
       rhs += (lhs - m_min);
     return rhs;
   }
