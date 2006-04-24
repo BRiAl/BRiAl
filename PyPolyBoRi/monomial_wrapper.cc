@@ -10,7 +10,10 @@
 #include "monomial_wrapper.h"
 
 #include <boost/python.hpp>
+#include <boost/python/tuple.hpp>
+#include <boost/python/iterator.hpp>
 #include <iostream>
+#include <vector>
 #include "polybori.h"
 #include "pbori_defs.h"
 using namespace boost::python;
@@ -26,7 +29,9 @@ USING_NAMESPACE_PBORI
 //static void plot(const BooleMonomial& p, const char* c){
 //  p.prettyPrint(c);
 //}
-
+static boost::python::tuple mon2tuple(const BooleMonomial& m ){
+  return tuple(m);
+}
 void export_monomial(){
   BooleMonomial::dd_type&  (BooleMonomial::*diagram)(void) = &BooleMonomial::diagram;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
@@ -39,12 +44,15 @@ void export_monomial(){
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
   .def(boost::python::init<bool>())
+  .def("__iter__", range(&BooleMonomial::begin, &BooleMonomial::end))
+  //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash)
   //.def("__len__", &BooleMonomial::length)
   //.def(self+=self)
   .def(self*=self)
   .def(self/self)
   .def(self/=self)
+  //.def("tuple",mon2tuple)
   //.def(self+=BooleVariable())
   //.def(self*=BooleVariable())
   //.def(self* BooleVariable())

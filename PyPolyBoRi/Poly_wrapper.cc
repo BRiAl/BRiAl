@@ -33,6 +33,7 @@ void export_poly(){
   .def(init<const BoolePolynomial &>())
   .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
+  .def(init<const BooleMonomial &>())
   .def(boost::python::init<bool>())
   .def("__hash__", poly_hash)
   .def("__len__", &BoolePolynomial::length)
