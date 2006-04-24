@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/24 10:26:00  dreyer
+ * FIX CTermIter::reference (back)
+ *
  * Revision 1.4  2006/04/24 10:24:36  dreyer
  * FIX CTermIter::reference
  *
@@ -100,7 +103,7 @@ public:
   typedef typename std::iterator_traits<navigator_type>::difference_type 
   difference_type;
   typedef void pointer;
-  typedef value_type reference;
+  typedef const value_type& reference;
   //@}
 
   /// Define type for stacking
