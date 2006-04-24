@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/04/24 14:45:35  dreyer
+ * FIX CTermIter; ADD BoolePolynomial uses CTermIter
+ *
  * Revision 1.26  2006/04/24 10:23:22  dreyer
  * ADD BoolePolynomial::begin() and end()
  * FIX type reference in CCuddNavigator
@@ -179,6 +182,12 @@ public:
                     changeAssign<> >
   const_iterator;
 
+  /// Iterator type for iterating all monomials
+  typedef CTermIter<size_type, navigator, 
+                    increment_value<size_type>, 
+                    decrement_value<size_type> >
+  deg_iterator;
+
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
 
@@ -281,6 +290,12 @@ public:
   /// Finish of leading term 
   first_iterator firstEnd() const;
 
+  /// Start of degrees
+  deg_iterator degBegin() const;
+
+  /// Finish of degrees
+  deg_iterator degEnd() const;
+
   /// Navigate through structure
   navigator navigation() const;
  
@@ -290,7 +305,7 @@ public:
   /// Casting operator
   operator const dd_type&() const { return diagram(); };
 
-  int eliminationLength() const;
+  size_type eliminationLength() const;
 
   /// Get list of all terms
   void fetchTerms(termlist_type&) const;

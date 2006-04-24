@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/04/24 14:45:35  dreyer
+ * FIX CTermIter; ADD BoolePolynomial uses CTermIter
+ *
  * Revision 1.6  2006/04/24 10:23:22  dreyer
  * ADD BoolePolynomial::begin() and end()
  * FIX type reference in CCuddNavigator
@@ -44,6 +47,9 @@
 
 // get polybori definitions
 #include "pbori_defs.h"
+
+// get polybori properties
+#include "pbori_traits.h"
 
 // get standard string and string stream functionality
 #include <string>
@@ -79,24 +85,10 @@ public:
 
 };
 
-/// @class index_traits
-/// @brief Getting idx_type
-template <class IndexedType>
-class index_traits {
-public:
-  typedef typename IndexedType::idx_type type;
-};
-
-template <>
-class index_traits<void> {
-public:
-  typedef int type;
-};
-
 /// @class changeAssign
 /// @brief Accessing .change()
 template <class RhsType = void,
-          class LhsType = typename index_traits<RhsType>::type >
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
 class changeAssign;
 
 /// @class changeAssign
@@ -328,15 +320,22 @@ public:
   self& operator++(int) { return *this;}
 };
 
-template<class ValueType>
-class incremement_value {
+template <class ValueType>
+class increment_value {
 
 public:
-
-  ValueType operator()(const ValueType& val, const ValueType& ) const {
+  ValueType operator()(const ValueType& val, const ValueType&) const {
     return (val + 1);
   }
+};
 
+template <class ValueType>
+class decrement_value {
+
+public:
+  ValueType operator()(const ValueType& val, const ValueType&) const {
+    return (val - 1);
+  }
 };
 
 template<class ValueType>

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2006/04/24 14:45:36  dreyer
+ * FIX CTermIter; ADD BoolePolynomial uses CTermIter
+ *
  * Revision 1.33  2006/04/24 10:23:22  dreyer
  * ADD BoolePolynomial::begin() and end()
  * FIX type reference in CCuddNavigator
@@ -131,6 +134,7 @@
 #include <list>
 #include <iterator>
 #include <algorithm>
+#include <numeric>
 
 #include "pbori_algo.h"
 #include "CIdxPath.h"
@@ -418,16 +422,7 @@ BoolePolynomial::deg() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
   /// @todo: This is currently just brute force, efficient search needed.
-
-  size_type max_deg(0);
-
-  dd_transform( navigation(), size_type(),
-                dummy_iterator(),
-                incremement_value<size_type>(),
-                project_ith<1,2>(),
-                maximum_iteration<size_type>(max_deg) );
-
-  return max_deg;
+  return *std::max_element(degBegin(), degEnd());
 }
 
 
@@ -579,6 +574,22 @@ BoolePolynomial::firstEnd() const {
   return m_dd.firstEnd();
 }
 
+// Start of degrees
+BoolePolynomial::deg_iterator 
+BoolePolynomial::degBegin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::degBegin() const" );
+  return navigation();
+}
+
+// Finish of leading term 
+BoolePolynomial::deg_iterator 
+BoolePolynomial::degEnd() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::degEnd() const" );
+  return deg_iterator();
+}
+
 // Start of iteration over monomials
 BoolePolynomial::const_iterator 
 BoolePolynomial::begin() const {
@@ -612,9 +623,8 @@ BoolePolynomial::fetchTerms(termlist_type& theOutputList) const {
   PBORI_TRACE_FUNC("BoolePolynomial:fetchTerms(const termlist_type&)");
 
   theOutputList.resize(length());
-  dd_transform( navigation(), monom_type(),
-                theOutputList.begin(),
-                change<monom_type>() );
+
+  std::copy(begin(), end(), theOutputList.begin());
 }
 
 
@@ -665,25 +675,50 @@ public:
   }
 };
 
-int BoolePolynomial::eliminationLength() const{
+template <class SizeType>
+class AddEliminationDegree:
+public std::binary_function<SizeType, SizeType, SizeType>{
+public:
+  typedef SizeType size_type;
+  typedef std::binary_function<size_type, size_type, size_type> base;
+
+  AddEliminationDegree(size_type min): 
+    m_min(min), base() {}
+
+  size_type& operator()(size_type& rhs, size_type lhs) {
+    ++rhs;
+    if (lhs < m_min)
+      rhs += (lhs - m_min);
+    return rhs;
+  }
+
+private:
+  const size_type m_min;
+};
+
+BoolePolynomial::size_type
+BoolePolynomial::eliminationLength() const{
 
   if (isZero()) 
     return 0;
 
-  BoolePolynomial::navigator navi = navigation();
-  std::list<std::list<int>  > allLists;
+//   BoolePolynomial::navigator navi = navigation();
+//   std::list<std::list<int>  > allLists;
   
-  dd_transform( navi, std::list<int>(),
-                std::back_inserter(allLists),
-                push_back<std::list<int> >() );
+//   dd_transform( navi, std::list<int>(),
+//                 std::back_inserter(allLists),
+//                 push_back<std::list<int> >() );
   
-  int deg=(*allLists.begin()).size();
+//   int deg=(*allLists.begin()).size();
 
-  EliminationDegreeAdder<std::list<int> > sum_up(deg);
-  for_each(allLists.begin(), allLists.end(), sum_up);
+//   EliminationDegreeAdder<std::list<int> > sum_up(deg);
+//   for_each(allLists.begin(), allLists.end(), sum_up);
 
-  //return sum_up.sum;
-  return len_cheated;
+//   //return sum_up.sum;
+//   return len_cheated;
+
+  return std::accumulate( degBegin(), degEnd(), size_type(0), 
+                          AddEliminationDegree<size_type>(*degBegin()) );
 }
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/24 14:45:35  dreyer
+ * FIX CTermIter; ADD BoolePolynomial uses CTermIter
+ *
  * Revision 1.5  2006/04/24 10:26:00  dreyer
  * FIX CTermIter::reference (back)
  *
@@ -44,8 +47,11 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// include polybori functinals
+// include polybori functionals
 #include "pbori_func.h"
+
+// include polybori properties
+#include "pbori_traits.h"
 
 #ifndef CTermIter_h_
 #define CTermIter_h_
@@ -66,17 +72,17 @@ class CTermIter {
 
 public:
 
-  /// Type for indices
-  typedef typename TermType::idx_type idx_type;
-
-  /// Type for hashing
-  typedef typename TermType::hash_type hash_type;
-
-  /// Type for boolean results
-  typedef typename TermType::bool_type bool_type;
-
   /// Type for boolean results
   typedef TermType term_type;
+
+  /// Type for indices
+  typedef typename pbori_traits<term_type>::idx_type idx_type;
+
+  /// Type for hashing
+  typedef typename pbori_traits<term_type>::hash_type hash_type;
+
+  /// Type for boolean results
+  typedef typename pbori_traits<term_type>::bool_type bool_type;
 
   /// Get type of navigators
   typedef NavigatorType navigator_type;
@@ -114,7 +120,8 @@ public:
 
   /// Default constructor
   CTermIter(): 
-    m_stack(), m_value(0), forwardop(), backwardop(), termvalop() { 
+    m_stack(), m_value( termvalop_type()(false) ), 
+    forwardop(), backwardop(), termvalop() { 
     m_stack.push(navigator_type()); 
   }
 
@@ -126,16 +133,12 @@ public:
     m_stack(), m_value(),  forwardop(fop_), backwardop(bop_), 
     termvalop(tvop_)  {
 
-    while(!navi.isConstant()){
-      m_stack.push(navi);
-      forwardop(m_value, *navi);
-      navi.incrementThen();
+    if (navi.isValid()){
+      followThen(navi);
+      terminate(navi);
     }
-
-   if ( m_stack.empty() ) {
-      *this = self();
-      m_value = termvalop(navi.terminalValue());
-    }
+    else 
+      m_value = termvalop(false);
   }
 
   /// Copy Constructor
@@ -148,13 +151,13 @@ public:
   ~CTermIter() {};
 
   /// Constant dereference operator
-  const value_type& operator*() const { return m_value; }
+  reference operator*() const { return m_value; }
 
   /// Equality test
   bool_type operator==(const self& rhs) const { return top() == rhs.top(); }
 
   /// Nonequality test
-  bool_type operator!=(const self& rhs) const { return top() != rhs.top(); }
+   bool_type operator!=(const self& rhs) const { return top() != rhs.top(); }
 
   /// Get element on stack
   const top_type& top() const { return m_stack.top(); }
@@ -164,36 +167,23 @@ public:
 
   /// Prefix increment operator
   self& operator++() {
-
+   
     navigator_type navi = top();
     if ( !navi.isValid() ){     //  Case: iteration finished
       m_value = termvalop(false); // reset value
       return *this;
     }
+    nextElse(navi);
 
-    backwardop(m_value, *navi);
-    navi.incrementElse(); 
-    m_stack.pop();
-   
-    if ( m_stack.empty() ) {
-      *this = self();
-      m_value = termvalop(navi.terminalValue());
-    }
-    else{
-      while (navi.isConstant() &&  !navi.terminalValue()  ) {    
+    if( !terminate(navi) ) {
+      while( !m_stack.empty() && navi.isConstant() && !navi.terminalValue() ){
         navi = top();
-        backwardop(m_value, *navi);
-        navi.incrementElse(); 
-        m_stack.pop();
+        nextElse(navi);
       }
 
-      while(!navi.isConstant()){
-        m_stack.push(navi);
-        forwardop(m_value, *navi);
-        navi.incrementThen();
-      }
+      followThen(navi);
     }
-
+    terminate(navi);
     return *this;
   }
 
@@ -204,6 +194,30 @@ public:
     return tmp;
   };
 
+protected:
+
+  void followThen(navigator_type& navi) {
+    while(!navi.isConstant()){
+      m_stack.push(navi);
+      m_value = forwardop(m_value, *navi);
+      navi.incrementThen(); 
+    }
+  }
+
+  void nextElse(navigator_type& navi) {
+    m_value = backwardop(m_value, *navi);
+    navi.incrementElse();
+    m_stack.pop();
+  }
+
+  bool terminate(const navigator_type& navi) {
+    if ( m_stack.empty() && navi.isConstant()  ) {
+      *this = self();
+      m_value = termvalop(navi.terminalValue());
+      return true;
+    }
+    return false;
+  }
 
 private:
   stack_type m_stack;
