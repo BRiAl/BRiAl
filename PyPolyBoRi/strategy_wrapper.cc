@@ -9,7 +9,7 @@
 
 #include "strategy_wrapper.h"
 #include <boost/python.hpp>
-
+#include "nf.h"
 #include <groebner_alg.h>
 
 //#include <iostream>
@@ -26,4 +26,6 @@ void export_strategy(){
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly);
+  def("nf1",nf1);
+  def("nf2",nf2);
 }

@@ -33,15 +33,9 @@ static int select1(GroebnerStrategy& strat, const Polynomial& p){
     return strat.lm2Index[min];
   }
 }
-Polynomial nf1(GroebnerStrategy& strat, Polynomial p){
-  //parameter by value, so I can modify it
-  int index;
-  while((index=select1(strat,p))>=0){
-    p=spoly(p,strat.generators[index].p);
+Polynomial nf1(GroebnerStrategy& strat, Polynomial p);
 
-  }
- return p;
-}
+Polynomial nf2(GroebnerStrategy& strat, Polynomial p);
 
 END_NAMESPACE_PBORIGB
 #endif
