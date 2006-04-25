@@ -7,7 +7,7 @@
  *
  */
 
-
+#define HAVE_HASH_MAP 1
 
 #include <polybori.h>
 #include "groebner_defs.h"
@@ -16,7 +16,11 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#ifdef HAVE_HASH_MAP
+#include <ext/hash_map>
+#else
 #include <map>
+#endif
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
@@ -61,7 +65,17 @@ public:
   bool pairSetEmpty();
   void cleanTopByChainCriterion();
  };
-
+class MonomialHasher{
+public:
+  size_t operator() (const Monomial & m) const{
+    return m.hash();
+  }
+};
+#ifdef HAVE_HASH_MAP
+typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> lm2Index_map_type;
+#else
+typedef std::hash_map<Monomial,int> lm2Index_map_type;
+#endif
 class GroebnerStrategy{
 public:
   void addGenerator(const BoolePolynomial& p);
@@ -78,7 +92,7 @@ public:
   int extendedProductCrit;
   int averageLength;
   GroebnerStrategy():leadingTerms(Polynomial(0).copyDiagram()){}
-  std::map<Monomial,int> lm2Index;
+  lm2Index_map_type lm2Index;
   Polynomial nextSpoly(){
     pairs.nextSpoly(generators);
   }
