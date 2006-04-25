@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/04/25 10:17:39  dreyer
+ * FIX recovered template<> preceeding explicit template specialization
+ *
  * Revision 1.8  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -108,8 +111,8 @@ public:
 
 /// @class changeAssign
 /// @brief Accessing .change(); variante using member templates
-//template<>
-class change_assign<void, int> {
+template<>
+class change_assign<void, pbori_traits<void>::idx_type> {
 public:
 
   template <class RhsType, class LhsType>
