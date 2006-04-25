@@ -102,9 +102,9 @@ else:
 env = conf.Finish()
 
 
-pb_src=Split("BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc \
-CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc \
-BooleMonomial.cc BooleSet.cc")
+pb_src=Split("""BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc
+    CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc
+    BooleMonomial.cc BooleSet.cc""")
 pb_src=["./polybori/src/"+ source for source in pb_src]
 libpb=env.StaticLibrary("polybori/polybori", pb_src)
 #print "l:", l, dir(l)
@@ -114,7 +114,7 @@ if isinstance(libpb,list):
 Default(libpb)
 
 
-gb_src=Split("groebner.cc pairs.cc groebner_alg.cc")
+gb_src=Split("groebner.cc pairs.cc groebner_alg.cc nf.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
 gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 print "gb:", gb, dir(gb)
