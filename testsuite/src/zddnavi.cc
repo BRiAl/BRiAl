@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.8  2006/04/24 08:40:46  dreyer
  * FIX CTermIter<> treats o/1 Monomials correctly.
  *
@@ -86,7 +89,7 @@ find_paths(NaviType navi, const TermType& currentPath, ListType& theList ) {
       theList.push_back(currentPath);
   }
   else {
-    find_paths(navi.thenBranch(), currentPath.change(*navi), theList);
+    find_paths(navi.thenBranch(), currentPath.change_idx(*navi), theList);
     find_paths(navi.elseBranch(), currentPath, theList);
   }
 }
@@ -160,7 +163,7 @@ main(){
 
     dd_transform( navi, BoolePolyRing::ringOne(),  
                   std::back_inserter(theList),
-                  change<CDDInterface<ZDD> >() );
+                  change_idx<CDDInterface<ZDD> >() );
 
     std::copy(theList.begin(), theList.end(), 
               std::ostream_iterator<BoolePolynomial>(std::cout, "\n") );
@@ -169,7 +172,7 @@ main(){
     std::cout <<std::endl<< "Printing via dd_transform: "<<std::endl;
     dd_transform( navi, BoolePolyRing::ringOne(), 
                   std::ostream_iterator<BoolePolynomial>(std::cout, ""),
-                  change<CDDInterface<ZDD>, int> () );
+                  change_idx<CDDInterface<ZDD>, int> () );
 
     std::cout <<std::endl<< "Storing via dd_transform: "<<std::endl;
 
@@ -204,7 +207,7 @@ main(){
     std::cout <<std::endl <<std::endl<<"Test Term iteration "<<std::endl;
 
     typedef CTermIter<BooleMonomial, CCuddNavigator, 
-      changeAssign<BooleMonomial>, changeAssign<BooleMonomial> >
+      change_assign<BooleMonomial>, change_assign<BooleMonomial> >
       term_iterator;
 
        poly += x*z*w;

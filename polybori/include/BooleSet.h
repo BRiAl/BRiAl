@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.4  2006/04/21 09:31:44  dreyer
  * CHANGE reducing redundancy
  *
@@ -41,12 +44,18 @@
 // include definitions of decision diagram interfaces
 #include "CDDInterface.h"
 
+// include polybori functionals
+#include "pbori_func.h"
+// include polybori iterator
+#include "CTermIter.h"
+
+
 #ifndef BooleSet_h_
 #define BooleSet_h_
 
 BEGIN_NAMESPACE_PBORI
 
-/// Forward desclaration of monomial type
+/// Forward declaration of monomial type
 class BooleMonomial;
 
 class BooleSet:
@@ -59,11 +68,14 @@ public:
   /// Generic access to base type
   typedef CTypes::dd_type base;
 
-  /// Define type for true/false
-  typedef CTypes::bool_type bool_type;
-
   /// Type of terms
   typedef BooleMonomial term_type;
+
+  /// Iterator type for iterating all monomials
+  typedef CTermIter<term_type, navigator, 
+                    change_assign<>,
+                    change_assign<> >
+  const_iterator;
 
   /// Default constructor
   BooleSet();
@@ -76,6 +88,12 @@ public:
 
   /// Destructor
   ~BooleSet();
+
+  /// Start of iteration over terms
+  const_iterator begin() const;
+
+  /// Finish of iteration over terms
+  const_iterator end() const;
 
   /// Assignment operator
   self& operator=(const self&);
@@ -91,6 +109,9 @@ public:
 
   /// Check whether rhs is includes in *this
   bool_type owns(const term_type&) const;
+
+
+
 };
 
 

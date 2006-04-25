@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.6  2006/04/24 14:45:35  dreyer
  * FIX CTermIter; ADD BoolePolynomial uses CTermIter
  *
@@ -122,7 +125,6 @@ public:
   CTermIter(): 
     m_stack(), m_value( termvalop_type()(false) ), 
     forwardop(), backwardop(), termvalop() { 
-    m_stack.push(navigator_type()); 
   }
 
   /// Construct from initial navigator
@@ -153,11 +155,16 @@ public:
   /// Constant dereference operator
   reference operator*() const { return m_value; }
 
-  /// Equality test
-  bool_type operator==(const self& rhs) const { return top() == rhs.top(); }
+  /// Equality test (assume iterators from same instance)
+  bool_type operator==(const self& rhs) const {
+    if(empty() || rhs.empty())
+      return (empty() && rhs.empty());
+    else
+      top() == rhs.top(); 
+  }
 
   /// Nonequality test
-   bool_type operator!=(const self& rhs) const { return top() != rhs.top(); }
+  bool_type operator!=(const self& rhs) const { return !(*this == rhs);  }
 
   /// Get element on stack
   const top_type& top() const { return m_stack.top(); }
@@ -165,25 +172,34 @@ public:
   /// Get element on stack
   top_type& top() { return m_stack.top(); }
 
+  /// Check whether stack is empty
+  bool empty() const { return m_stack.empty(); }
+
   /// Prefix increment operator
   self& operator++() {
    
-    navigator_type navi = top();
-    if ( !navi.isValid() ){     //  Case: iteration finished
-      m_value = termvalop(false); // reset value
-      return *this;
-    }
-    nextElse(navi);
-
-    if( !terminate(navi) ) {
-      while( !m_stack.empty() && navi.isConstant() && !navi.terminalValue() ){
-        navi = top();
-        nextElse(navi);
+    if (!empty()){              //  Iterations not finished yet
+      navigator_type navi = top();
+      if ( !navi.isValid() ){   //  Case: final iteration
+        *this = self();         //  reset value
       }
+      else {
+        // Go back to begin of next path
+        nextElse(navi);
+      
+        if( !terminate(navi) ) {
+          while( !m_stack.empty() && navi.isConstant() && 
+                 !navi.terminalValue() ){
+            navi = top();
+            nextElse(navi);
+          }
 
-      followThen(navi);
+          // Find end of current path
+          followThen(navi);
+        }
+        terminate(navi);
+      }
     }
-    terminate(navi);
     return *this;
   }
 
@@ -211,9 +227,15 @@ protected:
   }
 
   bool terminate(const navigator_type& navi) {
-    if ( m_stack.empty() && navi.isConstant()  ) {
-      *this = self();
-      m_value = termvalop(navi.terminalValue());
+    if ( m_stack.empty() && navi.isConstant()  ) { // Constant monomial
+
+      if (navi.terminalValue()) { // Case: Monomial one
+        m_value = termvalop(true);
+        m_stack.push(navigator_type()); // One more iteration for showing 1
+      }
+      else                      // Case: Monomial zero
+        *this = self();
+
       return true;
     }
     return false;

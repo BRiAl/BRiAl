@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.5  2006/04/21 09:31:44  dreyer
  * CHANGE reducing redundancy
  *
@@ -116,6 +119,23 @@ BooleSet::owns(const term_type& rhs) const {
   PBORI_TRACE_FUNC( "BooleSet::owns(const term_type&) const" );
 
   return !(intersect(rhs.diagram()).emptiness());
+}
+
+
+// Start of iteration over monomials
+BooleSet::const_iterator 
+BooleSet::begin() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::begin() const" );
+  return navigation();
+}
+
+// Finish of iteration over monomials
+BooleSet::const_iterator 
+BooleSet::end() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::end() const" );
+  return const_iterator();
 }
 
 

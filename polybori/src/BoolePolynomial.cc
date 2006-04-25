@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.36  2006/04/24 16:58:53  bricken
  * + inverted comparison operator
  *
@@ -359,7 +362,7 @@ BoolePolynomial::lead() const {
 
     // iterator, which uses changeAssign to insert variable
     // wrt. given indices to a monomial
-    PBoRiOutIter<monom_type, idx_type, changeAssign<monom_type> >  
+    PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
       outiter(leadterm) ;
     
     // insert backward (for efficiency reasons)

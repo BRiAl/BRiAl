@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.7  2006/04/24 14:45:35  dreyer
  * FIX CTermIter; ADD BoolePolynomial uses CTermIter
  *
@@ -76,7 +79,7 @@ public:
 /// @class change
 /// @brief Accessing .change()
 template <class RhsType, class LhsType = typename RhsType::idx_type >
-class change {
+class change_idx {
 public:
 
   RhsType operator() (const RhsType& rhs, const LhsType& lhs) const {
@@ -85,16 +88,16 @@ public:
 
 };
 
-/// @class changeAssign
-/// @brief Accessing .change()
+// /// @class change_assign
+// /// @brief Accessing .changeAssign()
 template <class RhsType = void,
           class LhsType = typename pbori_traits<RhsType>::idx_type >
-class changeAssign;
+class change_assign;
 
-/// @class changeAssign
-/// @brief Accessing .change()
+/// @class change_assign
+/// @brief Accessing .changeAssign()
 template <class RhsType, class LhsType>
-class changeAssign {
+class change_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -102,10 +105,11 @@ public:
   } 
 
 };
+
 /// @class changeAssign
 /// @brief Accessing .change(); variante using member templates
-template<>
-class changeAssign<void, int> {
+//template<>
+class change_assign<void, int> {
 public:
 
   template <class RhsType, class LhsType>
@@ -115,7 +119,7 @@ public:
 
 };
 
-/// @class project_ith
+// @class project_ith
 /// @brief Accessing ith of n arguments 
 /// (ITH = 0 returns default value of first type)
 ///
@@ -198,6 +202,18 @@ public:
   ValueType& operator() (const FirstType&, const SecondType&, 
                          ValueType& value, ...) const {
     return value;
+  } 
+};
+
+/// @class set_constant
+/// @brief Generates default value for first given value type
+template <class ValueType, unsigned int CONSTVAL = 0>
+class constant_value:
+  public std::unary_function<ValueType, ValueType> {
+public:
+  /// Functional operator 
+  ValueType operator() (const ValueType &) const {
+    return CONSTVAL;
   } 
 };
 

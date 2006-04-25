@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.14  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -217,9 +220,35 @@ main(){
     std::cout << ( (x*y*z + y + x*z + v*w +x*v)*(y*z)  == 
                    (y*z + y*z*v*w + x*y*z*v) ) <<std::endl;
 
-    std::cout <<  "Degree: "<<std::endl;
+    std::cout <<  "Degree: x + y*z "<<std::endl;
     std::cout << "2? " << (x + y*z).deg() <<std::endl;
 
+    
+    std::cout <<  "All degrees: x + y*z "<<std::endl;
+    poly = x + y*z;
+
+    std::copy(poly.degBegin(), poly.degEnd(), 
+              std::ostream_iterator<unsigned>(std::cout, "\n"));
+
+    std::cout <<  "Degree: x + y*z + 1 "<<std::endl;
+    std::cout << "2? " << (x + y*z +1).deg() <<std::endl;
+
+    std::cout <<  "All degrees: x + y*z + 1"<<std::endl;
+    poly = x + y*z +1;
+
+    std::copy(poly.degBegin(), poly.degEnd(), 
+              std::ostream_iterator<unsigned>(std::cout, "\n"));
+
+
+    std::copy(poly.begin(), poly.end(), 
+              std::ostream_iterator<BooleMonomial>(std::cout, "\n"));
+  
+    poly = 1;
+    std::copy(poly.begin(), poly.end(), 
+              std::ostream_iterator<BooleMonomial>(std::cout, "\n"));
+    poly = 0;
+    std::copy(poly.begin(), poly.end(), 
+              std::ostream_iterator<BooleMonomial>(std::cout, "\n"));
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {

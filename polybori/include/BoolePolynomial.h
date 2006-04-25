@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/04/25 09:30:42  dreyer
+ * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ *
  * Revision 1.27  2006/04/24 14:45:35  dreyer
  * FIX CTermIter; ADD BoolePolynomial uses CTermIter
  *
@@ -119,9 +122,9 @@
 #include "CDDInterface.h"
 
 // include definition of sets of Boolean variables
-#include "BooleSet.h"
 #include "CTermIter.h"
 #include "pbori_func.h"
+#include "BooleSet.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -178,14 +181,15 @@ public:
 
   /// Iterator type for iterating all monomials
   typedef CTermIter<monom_type, navigator, 
-                    changeAssign<>, 
-                    changeAssign<> >
+                    change_assign<>, 
+                    change_assign<> >
   const_iterator;
 
   /// Iterator type for iterating all monomials
   typedef CTermIter<size_type, navigator, 
                     increment_value<size_type>, 
-                    decrement_value<size_type> >
+                    decrement_value<size_type>,
+                    constant_value<size_type, 0> >
   deg_iterator;
 
   /// Type for lists of terms
@@ -281,7 +285,7 @@ public:
   /// Start of iteration over monomials
   const_iterator begin() const;
 
-  /// Finish of iteration over indices
+  /// Finish of iteration over monomials
   const_iterator end() const;
 
   /// Start of leading term

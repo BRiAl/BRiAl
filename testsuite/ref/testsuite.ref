@@ -267,8 +267,21 @@ Multiplication tests:
 1
 1
 1
-Degree: 
+Degree: x + y*z 
 2? 2
+All degrees: x + y*z 
+1
+2
+Degree: x + y*z + 1 
+2? 2
+All degrees: x + y*z + 1
+1
+2
+0
+x(0) 
+x(1)*x(2) 
+1 
+1 
 
 Finished.
 ----------------------
@@ -359,5 +372,10 @@ Multiples of x(0)*x(1) wrt. x(1)*x(2)*x(4) :
 11-0- 1
 
 Finished.
+monom1
+x(0)*x(1) 
+print
+0
+1
 -------------------
 Testsuite finished.
