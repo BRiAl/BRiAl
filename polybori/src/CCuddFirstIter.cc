@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/04/25 07:05:02  dreyer
+ * FIX postfix++ of CCuddFirstIter
+ *
  * Revision 1.4  2006/04/06 13:05:54  dreyer
  * CHANGE more suitable names for CCuddNavigator functions
  *
@@ -84,7 +87,7 @@ CCuddFirstIter::operator++(int) {
   PBORI_TRACE_FUNC( "CCuddFirstIter::operator++(int)" );
 
   self tmp(*this);
-  incrementThen();
+  operator++();
 
   return tmp;
 };

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/04/25 07:05:02  dreyer
+ * FIX postfix++ of CCuddFirstIter
+ *
  * Revision 1.2  2006/04/20 08:31:22  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -201,6 +204,15 @@ main(){
     std::cout << monom1.multiples(monom2);
 
     std::cout <<std::endl << "Finished."<<std::endl;
+
+    monom1 = x*y;
+    std::cout << "monom1"<<std::endl;
+    std::cout << monom1<<std::endl;
+    std::cout << "print"<<std::endl;
+    std::copy(monom1.begin(), monom1.end(),
+              std::ostream_iterator<int>(std::cout, "\n")  );
+
+
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

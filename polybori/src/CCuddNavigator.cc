@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/04/25 07:05:02  dreyer
+ * FIX postfix++ of CCuddFirstIter
+ *
  * Revision 1.3  2006/04/06 14:10:59  dreyer
  * ADD hash_type and CCuddNavigator::hash()
  *
@@ -141,6 +144,7 @@ CCuddNavigator::bool_type
 CCuddNavigator::operator==(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::operator==(const self&) const" );
+
   return (pNode == rhs.pNode);
 };
 
