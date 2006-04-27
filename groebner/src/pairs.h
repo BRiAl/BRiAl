@@ -117,6 +117,7 @@ public:
   ///replaces less template
   bool operator() (const PairLS& l, const PairLS& r){
     if (l.sugar!=r.sugar) return l.sugar>r.sugar; //greater sugar, less importance
+    if (l.lm!=r.lm) return l.lm>r.lm;
     if (l.wlen!=r.wlen) return l.wlen>r.wlen;
     ///@todo lm comparison
     return false;
