@@ -30,7 +30,7 @@ BEGIN_NAMESPACE_PBORIGB
 class PairStatusSet{
 public:
   typedef boost::dynamic_bitset<> bitvector_type;
-  bool calculated(int ia, int ja){
+  bool hasTRep(int ia, int ja) const {
     int i,j;
     i=std::min(ia,ja);
     j=std::max(ia,ja);
@@ -64,15 +64,21 @@ public:
 protected:
 std::vector<bitvector_type> table;
 };
+class GroebnerStrategy;
 class PairManager{
 public:
   PairStatusSet status;
+  GroebnerStrategy* strat;
+  PairManager(GroebnerStrategy & strat){
+    this->strat=&strat;
+  }
   typedef std::priority_queue<Pair,std::vector<Pair>, PairLSCompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
   Polynomial nextSpoly(const PolyEntryVector& gen);
   bool pairSetEmpty();
   void cleanTopByChainCriterion();
+  
  };
 class MonomialHasher{
 public:
@@ -83,7 +89,7 @@ public:
 #ifdef HAVE_HASH_MAP
 typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> lm2Index_map_type;
 #else
-typedef std::hash_map<Monomial,int> lm2Index_map_type;
+typedef std::map<Monomial,int> lm2Index_map_type;
 #endif
 class GroebnerStrategy{
 public:
@@ -95,12 +101,13 @@ public:
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
-  
+  GroebnerStrategy():pairs(*this){
+  }
 
   int easyProductCriterions;
   int extendedProductCrit;
   int averageLength;
-  GroebnerStrategy(){}
+  
   lm2Index_map_type lm2Index;
   Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);

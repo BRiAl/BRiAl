@@ -8,6 +8,7 @@
  */
 
 #include "groebner_alg.h"
+#include <algorithm>
 BEGIN_NAMESPACE_PBORIGB
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
@@ -22,10 +23,45 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   return res;
   
 }
+
+/// assumes that divisibility condition is fullfilled
+class ChainCriterion{
+public:
+  const GroebnerStrategy* strat;
+  int i,j;
+  ChainCriterion(const GroebnerStrategy& strat, const int& i, const int& j){
+    this->strat=&strat;
+    this->i=i;
+    this->j=j;
+  }
+  bool operator() (const Monomial& lm){
+    int index=strat->lm2Index.find(lm)->second;
+    //we know such an entry exists
+    if ((index!=i)&&(index!=j)){
+      if (strat->pairs.status.hasTRep(i,index) && strat->pairs.status.hasTRep(j,index)){
+        
+        return true;
+      }
+    }
+  }
+};
 void PairManager::cleanTopByChainCriterion(){
-  const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
-  if (ij!=NULL){
+  while(!(this->pairSetEmpty())){
+    const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
+    if (ij!=NULL){
     ///@todo implement this
+      const int i=ij->i;
+      const int j=ij->j;
+      const Monomial lm=queue.top().lm;
+      const BooleSet lms=this->strat->leadingTerms.intersect(lm.divisors());
+      if (std::find_if(lms.begin(),lms.end(),ChainCriterion(*(this->strat),i,j))!=lms.end()){
+        this->queue.pop();
+        strat->pairs.status.setToHasTRep(i,j);
+      } else {
+        return;
+      }
+    } else
+      return;
   }
 }
 PolyEntry::PolyEntry(const Polynomial &p){

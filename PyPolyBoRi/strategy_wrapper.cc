@@ -25,6 +25,9 @@ static int npairs(const GroebnerStrategy& strat){
 static int nGenerators(const GroebnerStrategy& strat){
   return strat.generators.size();
 }
+static void cleanTopByChainCriterion(GroebnerStrategy & strat){
+  strat.pairs.cleanTopByChainCriterion();
+}
 void export_strategy(){
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
@@ -32,6 +35,7 @@ void export_strategy(){
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("__len__",nGenerators)
+  .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
