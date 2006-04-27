@@ -36,6 +36,7 @@ static int select1(GroebnerStrategy& strat, const Polynomial& p){
 Polynomial nf1(GroebnerStrategy& strat, Polynomial p);
 
 Polynomial nf2(GroebnerStrategy& strat, Polynomial p);
-
+Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p);
+Polynomial nf_delaying_exchanging(GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif

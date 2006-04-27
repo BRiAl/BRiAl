@@ -39,4 +39,6 @@ void export_strategy(){
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
+  def("nf_delaying",nf_delaying);
+  def("nf_delaying_exchanging", nf_delaying_exchanging);
 }

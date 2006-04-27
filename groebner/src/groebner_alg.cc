@@ -21,6 +21,22 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
   if (ij!=NULL){
     this->status.setToHasTRep(ij->i,ij->j);
+  } else{
+    const VariablePairData *vp=dynamic_cast<const VariablePairData*>(queue.top().data.get());
+    if (vp!=NULL){
+      this->strat->generators[vp->i].vPairCalculated.insert(vp->v);
+      int i=vp->i;
+      Polynomial res=Pair(queue.top()).extract(gen);
+      
+      queue.pop();
+      Polynomial lm=res.lead();
+      
+      if (lm==this->strat->generators[i].lm)
+        res+=this->strat->generators[i].p;
+      //best reductor by genesis
+      return res;
+      
+    }
   }
   Polynomial res=Pair(queue.top()).extract(gen);
   
@@ -49,8 +65,31 @@ public:
         return true;
       }
     }
+    return false;
   }
 };
+class ChainVariableCriterion{
+public:
+  const GroebnerStrategy* strat;
+  int i;
+  idx_type v;
+  ChainVariableCriterion(const GroebnerStrategy& strat, int i, idx_type v){
+    this->strat=&strat;
+    this->i=i;
+    this->v=v;
+  }
+  bool operator() (const Monomial& lm){
+    int index=strat->lm2Index.find(lm)->second;
+    //we know such an entry exists
+    if (index!=i){
+      //would be still true for i, but how should that happen
+      if ((strat->pairs.status.hasTRep(i,index)) &&(strat->generators[index].vPairCalculated.count(v)==1))
+        return true;
+    }
+   return false;
+  }
+};
+
 void PairManager::cleanTopByChainCriterion(){
   while(!(this->pairSetEmpty())){
     const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
@@ -66,8 +105,17 @@ void PairManager::cleanTopByChainCriterion(){
       } else {
         return;
       }
-    } else
-      return;
+    }else {
+        const VariablePairData *vp=dynamic_cast<const VariablePairData*>(queue.top().data.get());
+        if (vp!=NULL)
+        {
+          const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
+          if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
+            strat->generators[vp->i].vPairCalculated.insert(vp->v);
+            this->queue.pop();
+          } else return;
+        } else return;
+    }
   }
 }
 PolyEntry::PolyEntry(const Polynomial &p){
