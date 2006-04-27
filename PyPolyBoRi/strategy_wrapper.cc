@@ -22,12 +22,16 @@ USING_NAMESPACE_PBORIGB
 static int npairs(const GroebnerStrategy& strat){
   return strat.pairs.queue.size();
 }
+static int nGenerators(const GroebnerStrategy& strat){
+  return strat.generators.size();
+}
 void export_strategy(){
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
+  .def("__len__",nGenerators)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
