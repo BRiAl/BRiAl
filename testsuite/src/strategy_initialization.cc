@@ -19,7 +19,7 @@ int main(int argc, const char* argv[]){
   BoolePolyRing r(n);
   GroebnerStrategy strat;
   int i;
-#if 1
+#if 0 
   for (i=n-1;i>=0;i--){
 #else
  for (i=0;i<n;i++){
