@@ -87,7 +87,7 @@ public:
   pair_data_ptr data;
   Monomial lm; //must not be the real lm, can be lm of syzygy or something else
   Polynomial extract(const PolyEntryVector& v){
-    data->extract(v);
+    return data->extract(v);
   }
   PairLS(int i, int j, const PolyEntryVector &v):
     data(new IJPairData(i,j)),

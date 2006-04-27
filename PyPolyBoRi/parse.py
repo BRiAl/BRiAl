@@ -89,7 +89,7 @@ def parse_ideal(i, variables):
     return polys
 def translate_ideal(s,vars):
     r=Ring(len(vars))
-    var_cache=[Polynomial(Variable(i)) for i in range(r.nVars())]
+    var_cache=[Variable(i) for i in range(r.nVars())]
     trans=dict([(v,i) for (i,v) in enumerate(vars)])
     raw=parse_ideal(s,vars)
     res=[]

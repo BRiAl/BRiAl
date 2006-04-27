@@ -103,7 +103,7 @@ public:
   GroebnerStrategy(){}
   lm2Index_map_type lm2Index;
   Polynomial nextSpoly(){
-    pairs.nextSpoly(generators);
+    return pairs.nextSpoly(generators);
   }
   
 };
