@@ -36,15 +36,21 @@ public:
     j=std::max(ia,ja);
     return table[j][i];
   }
-  void setToCalculated(int ia, int ja){
+  void setToHasTRep(int ia, int ja){
     int i,j;
     i=std::min(ia,ja);
     j=std::max(ia,ja);
-    table[j][i]=1;
+    table[j][i]=HAS_T_REP;
   }
-  void prolong(){
+  void setToUncalculated(int ia, int ja){
+    int i,j;
+    i=std::min(ia,ja);
+    j=std::max(ia,ja);
+    table[j][i]=UNCALCULATED;
+  }
+  void prolong(bool value=UNCALCULATED){
     int s=table.size();
-    table.push_back(bitvector_type(s));
+    table.push_back(bitvector_type(s, value));
   }
   PairStatusSet(int size=0){
     int s=0;
@@ -52,6 +58,9 @@ public:
       prolong();
     }
   }
+  static const bool HAS_T_REP=true;
+  static const bool UNCALCULATED=false;
+
 protected:
 std::vector<bitvector_type> table;
 };
@@ -91,14 +100,14 @@ public:
   int easyProductCriterions;
   int extendedProductCrit;
   int averageLength;
-  GroebnerStrategy():leadingTerms(Polynomial(0).copyDiagram()){}
+  GroebnerStrategy(){}
   lm2Index_map_type lm2Index;
   Polynomial nextSpoly(){
     pairs.nextSpoly(generators);
   }
   
 };
-
+void groebner(GroebnerStrategy& strat);
 END_NAMESPACE_PBORIGB
 
 #endif

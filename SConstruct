@@ -27,6 +27,7 @@ except:
 	pass
 import os
 env=Environment(options=opts)
+
 if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
 
@@ -78,6 +79,11 @@ try:
 except:
     env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi --pedantic"))
 
+try:
+    env.Append(LINKFLAGS=Split(custom.LINKFLAGS))
+except:
+    pass
+
 #env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])
@@ -125,13 +131,14 @@ Default(gb)
 
 
 tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
-  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial" ]
-
+  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "strategy_initialization" ]
+CPPPATH=env['CPPPATH']+['./groebner/src']
+print env['CCFLAGS']
 for t in tests:
-    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[libpb]))
+    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[libpb, gb], CPPPATH=CPPPATH))
 
 LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
-CPPPATH=env['CPPPATH']+['./groebner/src']
+
 
 if HAVE_PYTHON_EXTENSION:
  
