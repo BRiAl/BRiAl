@@ -12,6 +12,7 @@
 #include <queue>
 #include <algorithm>
 #include <utility>
+#include <set>
 #ifndef PB_PAIR_H
 #define PB_PAIR_H
 
@@ -26,6 +27,8 @@ public:
   len_type length;
   deg_type deg;
   deg_type lmDeg;
+  ///set of variables with which pair was calculated
+  std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{
     return deg-lmDeg;
   }

@@ -18,8 +18,14 @@ bool PairManager::pairSetEmpty(){
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   assert(!(pairSetEmpty()));
+  const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
+  if (ij!=NULL){
+    this->status.setToHasTRep(ij->i,ij->j);
+  }
   Polynomial res=Pair(queue.top()).extract(gen);
+  
   queue.pop();
+  
   return res;
   
 }
