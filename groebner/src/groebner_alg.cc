@@ -37,12 +37,24 @@ PolyEntry::PolyEntry(const Polynomial &p){
 }
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
+  
+  //do this before adding leading term
+  Monomial::const_iterator it=e.lm.begin();
+  Monomial::const_iterator end=e.lm.end();
+  BooleSet intersecting_terms=this->leadingTerms;
+  while(it!=end){
+    intersecting_terms=intersecting_terms.subset0(*it);
+    it++;
+    
+  }
   leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
   
   generators.push_back(e);
   pairs.status.prolong(PairStatusSet::HAS_T_REP);
   const int s=generators.size()-1;
   lm2Index[generators[s].lm]=s;
+
+  
   int i;
   /*for(i=0;i<s;i++){
     if (GCD(this->generators[i].lm, generators[s].lm).deg()>0){
@@ -53,13 +65,13 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     }
   }*/
   
-  BooleSet intersecting_terms=this->leadingTerms;
   
-  Monomial::const_iterator it=generators[s].lm.begin();
-  Monomial::const_iterator end=generators[s].lm.end();
+  
+  
+  it=generators[s].lm.begin();
+  end=generators[s].lm.end();
   while(it!=end){
     this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
-    intersecting_terms=intersecting_terms.subset0(*it);
     it++;
     
   }
