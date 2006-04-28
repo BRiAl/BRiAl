@@ -8,6 +8,7 @@
  */
 
 #include "strategy_wrapper.h"
+#include <iostream>
 #include <boost/python.hpp>
 #include "nf.h"
 #include <groebner_alg.h>
@@ -28,6 +29,12 @@ static int nGenerators(const GroebnerStrategy& strat){
 static void cleanTopByChainCriterion(GroebnerStrategy & strat){
   strat.pairs.cleanTopByChainCriterion();
 }
+static void printGenerators(GroebnerStrategy& strat){
+  int i;
+  for (i=0;i<strat.generators.size();i++){
+    std::cout<<(strat.generators[i].p)<<std::endl;
+  }
+}
 void export_strategy(){
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
@@ -36,6 +43,7 @@ void export_strategy(){
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("__len__",nGenerators)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
+  .def("toStdOut", printGenerators)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
