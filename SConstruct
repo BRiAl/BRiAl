@@ -130,12 +130,20 @@ if isinstance(gb,list):
 Default(gb)
 
 
-tests=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
-  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "strategy_initialization" ]
+tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
+  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial"]
+tests_gb=["strategy_initialization"]
 CPPPATH=env['CPPPATH']+['./groebner/src']
 print env['CCFLAGS']
-for t in tests:
-    Default(env.Program("testsuite/"+t, ["testsuite/src/" + t +".cc"] +[libpb, gb], CPPPATH=CPPPATH))
+for t in tests_pb:
+    env.Program("testsuite/"+t, 
+        ["testsuite/src/" + t +".cc"] +[libpb], 
+        CPPPATH=CPPPATH)
+
+for t in tests_gb:
+    env.Program("testsuite/"+t, 
+        ["testsuite/src/" + t +".cc"] +[libpb, gb], 
+        CPPPATH=CPPPATH)
 
 LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
 
