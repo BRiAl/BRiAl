@@ -76,7 +76,7 @@ public:
   queue_type queue;
   void introducePair(const Pair& p);
   Polynomial nextSpoly(const PolyEntryVector& gen);
-  bool pairSetEmpty();
+  bool pairSetEmpty() const;
   void cleanTopByChainCriterion();
   
  };

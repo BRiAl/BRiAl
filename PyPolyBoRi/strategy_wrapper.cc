@@ -9,10 +9,11 @@
 
 #include "strategy_wrapper.h"
 #include <iostream>
+#include <vector>
 #include <boost/python.hpp>
 #include "nf.h"
 #include <groebner_alg.h>
-
+#include "slimgb_wrapper.h"
 //#include <iostream>
 //#include "polybori.h"
 //#include "pbori_defs.h"
@@ -35,12 +36,29 @@ static void printGenerators(GroebnerStrategy& strat){
     std::cout<<(strat.generators[i].p)<<std::endl;
   }
 }
+static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
+  vector<Polynomial> res;
+  assert(!(strat.pairs.pairSetEmpty()));
+  strat.pairs.cleanTopByChainCriterion();
+  deg_type deg=strat.pairs.queue.top().sugar;
+  
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg)){
+    
+    assert(strat.pairs.queue.top().sugar==deg);
+    res.push_back(strat.nextSpoly());
+    strat.pairs.cleanTopByChainCriterion();
+  }
+  return res;
+  
+}
 void export_strategy(){
+  export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
+  .def("allSpolysInNextDegree", nextDegreeSpolys)
   .def("__len__",nGenerators)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)

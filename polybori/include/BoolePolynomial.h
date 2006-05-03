@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/05/03 10:37:03  bricken
+ * + work on pseudo parallel reductions
+ *
  * Revision 1.28  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -310,7 +313,7 @@ public:
   operator const dd_type&() const { return diagram(); };
 
   size_type eliminationLength() const;
-
+  size_type eliminationLengthWithDegBound(size_type garantied_deg_bound) const;
   /// Get list of all terms
   void fetchTerms(termlist_type&) const;
 

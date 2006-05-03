@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2006/05/03 10:37:03  bricken
+ * + work on pseudo parallel reductions
+ *
  * Revision 1.37  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -728,6 +731,15 @@ BoolePolynomial::eliminationLength() const{
 
   return std::accumulate( degBegin(), degEnd(), size_type(0), 
                           AddEliminationDegree<size_type>(lmDeg()) );
+}
+
+BoolePolynomial::size_type
+BoolePolynomial::eliminationLengthWithDegBound(BoolePolynomial::size_type garantied_deg_bound) const{
+  assert(garantied_deg_bound<=this->deg());
+  if (this->lmDeg()==garantied_deg_bound)
+    return this->length();
+  else 
+    return this->eliminationLength();
 }
 
 END_NAMESPACE_PBORI

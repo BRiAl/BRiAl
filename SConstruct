@@ -150,7 +150,7 @@ LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
 
 if HAVE_PYTHON_EXTENSION:
  
-    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc"]]
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader /sw/bin/python",

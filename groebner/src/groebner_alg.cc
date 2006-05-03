@@ -13,7 +13,7 @@ BEGIN_NAMESPACE_PBORIGB
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
 }
-bool PairManager::pairSetEmpty(){
+bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
@@ -102,6 +102,8 @@ void PairManager::cleanTopByChainCriterion(){
       if (std::find_if(lms.begin(),lms.end(),ChainCriterion(*(this->strat),i,j))!=lms.end()){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
+        //cout<<"Chain Criterion"<<endl;
+        //cout.flush();
       } else {
         return;
       }
@@ -113,6 +115,8 @@ void PairManager::cleanTopByChainCriterion(){
           if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
             strat->generators[vp->i].vPairCalculated.insert(vp->v);
             this->queue.pop();
+            //cout<<"Variable Chain Criterion"<<endl;
+            //cout.flush();
           } else return;
         } else return;
     }
