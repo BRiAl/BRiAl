@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2006/05/05 11:28:13  bricken
+ * *bricken: improving crit, new examples
+ *
  * Revision 1.38  2006/05/03 10:37:03  bricken
  * + work on pseudo parallel reductions
  *
@@ -735,7 +738,7 @@ BoolePolynomial::eliminationLength() const{
 
 BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(BoolePolynomial::size_type garantied_deg_bound) const{
-  assert(garantied_deg_bound<=this->deg());
+  assert(garantied_deg_bound>=this->deg());
   if (this->lmDeg()==garantied_deg_bound)
     return this->length();
   else 

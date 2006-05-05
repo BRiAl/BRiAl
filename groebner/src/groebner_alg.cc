@@ -18,12 +18,17 @@ bool PairManager::pairSetEmpty() const{
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   assert(!(pairSetEmpty()));
-  const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
-  if (ij!=NULL){
+  //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
+  if (queue.top().getType()==IJ_PAIR){
+    const IJPairData* ij= (IJPairData*)(queue.top().data.get());
+    cout<<"mark1"<<endl;
     this->status.setToHasTRep(ij->i,ij->j);
   } else{
-    const VariablePairData *vp=dynamic_cast<const VariablePairData*>(queue.top().data.get());
-    if (vp!=NULL){
+    
+    //const VariablePairData *vp=dynamic_cast<VariablePairData*>(queue.top().data.get());
+    if (queue.top().getType()==VARIABLE_PAIR){
+      cout<<"mark2"<<endl;
+      const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
       this->strat->generators[vp->i].vPairCalculated.insert(vp->v);
       int i=vp->i;
       Polynomial res=Pair(queue.top()).extract(gen);
@@ -48,6 +53,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
 
 /// assumes that divisibility condition is fullfilled
 class ChainCriterion{
+  /// @todo: connect via vars
 public:
   const GroebnerStrategy* strat;
   int i,j;
@@ -60,7 +66,7 @@ public:
     int index=strat->lm2Index.find(lm)->second;
     //we know such an entry exists
     if ((index!=i)&&(index!=j)){
-      if (strat->pairs.status.hasTRep(i,index) && strat->pairs.status.hasTRep(j,index)){
+      if ((strat->pairs.status.hasTRep(i,index)) && (strat->pairs.status.hasTRep(j,index))){
         
         return true;
       }
@@ -69,6 +75,7 @@ public:
   }
 };
 class ChainVariableCriterion{
+  ///connect via pairs
 public:
   const GroebnerStrategy* strat;
   int i;
@@ -92,31 +99,41 @@ public:
 
 void PairManager::cleanTopByChainCriterion(){
   while(!(this->pairSetEmpty())){
-    const IJPairData* ij= dynamic_cast<const IJPairData*>(queue.top().data.get());
-    if (ij!=NULL){
+    cout<<"clean"<<endl;
+    
+    //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
+    if (queue.top().getType()==IJ_PAIR){
+      const IJPairData* ij= (IJPairData*)(queue.top().data.get());
+
     ///@todo implement this
       const int i=ij->i;
       const int j=ij->j;
       const Monomial lm=queue.top().lm;
+      cout<<"try chain crit"<<endl;
       const BooleSet lms=this->strat->leadingTerms.intersect(lm.divisors());
+      if (lms.length()>2)
+        cout<<"non empty"<<endl;
       if (std::find_if(lms.begin(),lms.end(),ChainCriterion(*(this->strat),i,j))!=lms.end()){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
-        //cout<<"Chain Criterion"<<endl;
-        //cout.flush();
+        cout<<"Chain Criterion"<<endl;
+        cout.flush();
+        strat->chainCriterions++;
       } else {
         return;
       }
     }else {
-        const VariablePairData *vp=dynamic_cast<const VariablePairData*>(queue.top().data.get());
-        if (vp!=NULL)
+        //const VariablePairData *vp=dynamic_cast<VariablePairData*>(queue.top().data.get());
+        if (queue.top().getType()==VARIABLE_PAIR)
         {
+          const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
           const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
           if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
             strat->generators[vp->i].vPairCalculated.insert(vp->v);
             this->queue.pop();
-            //cout<<"Variable Chain Criterion"<<endl;
-            //cout.flush();
+            cout<<"Variable Chain Criterion"<<endl;
+            cout.flush();
+            strat->variableChainCriterions++;
           } else return;
         } else return;
     }
@@ -137,6 +154,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   Monomial::const_iterator end=e.lm.end();
   BooleSet intersecting_terms=this->leadingTerms;
   while(it!=end){
+    cout<<"intersect"<<endl;
     intersecting_terms=intersecting_terms.subset0(*it);
     it++;
     
@@ -165,7 +183,10 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
   while(it!=end){
-    this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
+    if (MonomialSet(p).subset0(*it).emptiness()){
+      generators[s].vPairCalculated.insert(*it);
+    } else
+      this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
     it++;
     
   }

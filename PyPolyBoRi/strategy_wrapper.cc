@@ -51,6 +51,23 @@ static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
   return res;
   
 }
+
+static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
+  vector<Polynomial> res;
+  assert(!(strat.pairs.pairSetEmpty()));
+  strat.pairs.cleanTopByChainCriterion();
+  deg_type deg=strat.pairs.queue.top().sugar;
+  
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (res.size()<n)){
+    
+    assert(strat.pairs.queue.top().sugar==deg);
+    res.push_back(strat.nextSpoly());
+    strat.pairs.cleanTopByChainCriterion();
+  }
+  return res;
+  
+}
+
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
@@ -59,9 +76,12 @@ void export_strategy(){
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
+  .def("someSpolysInNextDegree", someNextDegreeSpolys)
   .def("__len__",nGenerators)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)
+  .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
+  .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);

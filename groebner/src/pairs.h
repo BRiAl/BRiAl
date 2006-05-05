@@ -27,6 +27,7 @@ public:
   len_type length;
   deg_type deg;
   deg_type lmDeg;
+  Monomial gcdOfTerms;
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{
@@ -39,7 +40,7 @@ typedef std::vector<PolyEntry> PolyEntryVector;
 class PairData{
 public:
   //gives back encoded
-  virtual ~PairData();
+  virtual ~PairData()=0;
   //we don't demand that the pair is in a consistent state later
   virtual Polynomial extract(const PolyEntryVector& v)=0;
 };
@@ -79,10 +80,19 @@ public:
   }
 };
 typedef boost::shared_ptr<PairData> pair_data_ptr;
-const int VARIABLE_PAIR=0;
+enum {
+  VARIABLE_PAIR,
+  IJ_PAIR,
+  DELAYED_PAIR
+};
 
 class PairLS{
+private:
+  int type;
 public:
+  int getType() const{
+    return type;
+  }
   wlen_type wlen;
   deg_type sugar;
   //three sorts of pairs
@@ -97,20 +107,26 @@ public:
     lm(v[i].lm*v[j].lm),
     wlen(v[i].weightedLength+v[j].weightedLength-2)
   {
+    type=IJ_PAIR;
     sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
   }
   PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
-    data(new VariablePairData(i,v)),sugar(gen[i].deg+1),wlen(gen[i].weightedLength),
+    data(new VariablePairData(i,v)),
+    //sugar(gen[i].deg+1),
+    sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
+    wlen(gen[i].weightedLength),
   lm(gen[i].lm)
   
   {
     assert(type==VARIABLE_PAIR);
+    this->type=type;
   }
   
   PairLS(const Polynomial& delayed):
     data(new PolyPairData(delayed)),
     lm(delayed.lead()), 
     sugar(delayed.deg()), wlen(delayed.eliminationLength()){
+      this->type=DELAYED_PAIR;
   }
   
 };

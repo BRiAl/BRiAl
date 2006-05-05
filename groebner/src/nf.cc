@@ -211,7 +211,7 @@ public:
   Polynomial value() const{
     return p;
   }
-  wlen_type eliminationLength(){
+  wlen_type eliminationLength() const{
     return p.eliminationLengthWithDegBound(sugar);
   }
   void adjustLm(){
@@ -262,6 +262,14 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       curr[i].add(curr[found].value(), curr[found].getSugar());
       ///@todo different prototpye
     }
+    
+    if (lm.deg()==strat.generators[index].lm){
+      assert(lm==strat.generators[index].lm);
+      curr[found]=PolynomialSugar(exchange_with_promise(strat, index, curr[found].value()));
+      std::cout<<"Exchange"<<endl;
+    }
+    
+    
     deg_type deg_high=strat.generators[index].ecart()+lm.deg();
     curr[found].add((lm/strat.generators[index].lm)*strat.generators[index].p, deg_high);
   } else 
@@ -270,7 +278,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
 }
 
 
-static void step_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
+static void step_T_simple(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
   int s=curr.size();
   Polynomial reductor;
   int found;
@@ -305,6 +313,61 @@ static void step_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
 
 }
 
+
+class PSCompareByEl{
+public:
+  bool operator() (const PolynomialSugar& p1, const PolynomialSugar& p2){
+    return ((p1.getSugar()<p2.getSugar()) ||((p1.getSugar()<=p2.getSugar()) && (p1.eliminationLength()<p2.eliminationLength())));
+  }
+};
+
+int sum_size(const MonomialSet& s1, const MonomialSet& s2){
+  return s1.length()+s2.length()-2*s1.intersect(s2).length();
+}
+
+
+static void step_T_complex(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
+  std::sort(curr.begin(), curr.end(), PSCompareByEl());
+  const int max_cans=3;
+  int s=curr.size();
+  Polynomial reductor;
+  int found;
+  wlen_type pivot_el;
+  
+  pivot_el=curr[0].eliminationLength();
+  
+  int i,j;
+  for (i=s-1;i>0;i--){
+    int found=0;
+    MonomialSet as_set(curr[i].value());
+    int c_size=sum_size(as_set, MonomialSet(curr[0].value()));
+    for (j=1;j<std::min(i,max_cans);j++){ 
+      int size2=sum_size(as_set, MonomialSet(curr[j].value()));
+      if (size2<c_size){
+        found=j;
+        c_size=size2;
+      }
+    }
+    curr[i].add(curr[found].value(), curr[found].getSugar());
+  }
+  reductor=curr[0].value();
+  curr.erase(curr.begin());
+  result.push_back(reductor);
+  
+  
+}
+
+static void step_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
+  int s=curr.size();
+
+  if (s>2) return step_T_complex(curr,result, lm, strat);
+  else
+    step_T_complex(curr,result, lm, strat);
+
+
+  
+  
+}
 
 
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat){

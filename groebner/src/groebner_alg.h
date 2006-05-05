@@ -34,7 +34,7 @@ public:
     int i,j;
     i=std::min(ia,ja);
     j=std::max(ia,ja);
-    return table[j][i];
+    return table[j][i]==HAS_T_REP;
   }
   void setToHasTRep(int ia, int ja){
     int i,j;
@@ -101,7 +101,11 @@ public:
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
+  int chainCriterions;
+  int variableChainCriterions;
   GroebnerStrategy():pairs(*this){
+    chainCriterions=0;
+    variableChainCriterions=0;
   }
 
   int easyProductCriterions;
