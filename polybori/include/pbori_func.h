@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/05/05 09:03:44  dreyer
+ * ADD different implementation of the addition
+ *
  * Revision 1.9  2006/04/25 10:17:39  dreyer
  * FIX recovered template<> preceeding explicit template specialization
  *
@@ -376,7 +379,18 @@ class dd_add_assign {
 public:
 
   DDType& operator()(DDType& lhs, const DDType& rhs) const {
-    return (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
+    // several possible implementations
+    return 
+#ifdef PBORI_ADD_BY_ITE
+      lhs.iteAssign(lhs.diff(rhs), rhs);
+
+# elif defined(PBORI_ADD_BY_OR)
+      (lhs = (lhs.diff(rhs)).unite(rhs.diff(lhs)));
+
+# elif defined(PBORI_ADD_BY_UNION)
+      (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
+
+#endif
   };
 
 };

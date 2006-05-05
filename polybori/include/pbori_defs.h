@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/05/05 09:03:44  dreyer
+ * ADD different implementation of the addition
+ *
  * Revision 1.15  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -349,5 +352,12 @@ END_NAMESPACE_PBORI
 #else
 # define PBORI_NOT_IMPLEMENTED 
 #endif
+
+// Set default addition method
+#if defined(PBORI_ADD_BY_ITE) || defined(PBORI_ADD_BY_OR) \
+    || defined(PBORI_ADD_BY_UNION)
+#else
+# define PBORI_ADD_BY_UNION 
+#endif 
 
 #endif // of #ifndef pbori_defs_h_

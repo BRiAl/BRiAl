@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/05/05 09:03:44  dreyer
+ * ADD different implementation of the addition
+ *
  * Revision 1.15  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -203,6 +206,16 @@ class CDDInterface<ZDD>:
   /// Set union with assignment
   self& uniteAssign(const self& rhs) {
     m_interfaced = m_interfaced.Union(rhs.m_interfaced);
+    return *this;
+  };
+  /// If-Then-Else operation
+  self ite(const self& then_dd, const self& else_dd) const {
+    return self(m_interfaced.Ite(then_dd, else_dd));
+  };
+
+  /// If-Then-Else operation with assignment
+  self& iteAssign(const self& then_dd, const self& else_dd) {
+    m_interfaced = m_interfaced.Ite(then_dd, else_dd);
     return *this;
   };
 

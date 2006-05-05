@@ -211,6 +211,9 @@ Throwing error # 6
   Caught error # 6
     which says: Sorry! Functionality not implemented yet.
 ----------------------
+Executing testsuite/strategy_initialization
+----------------------
+----------------------
 Executing testsuite/boolepoly
 ----------------------
 Testing Boolean polynomials
