@@ -112,8 +112,8 @@ public:
   }
   PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
     data(new VariablePairData(i,v)),
-    //sugar(gen[i].deg+1),
-    sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
+    sugar(gen[i].deg+1),
+   // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength),
   lm(gen[i].lm)
   

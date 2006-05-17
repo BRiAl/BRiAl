@@ -128,13 +128,22 @@ void PairManager::cleanTopByChainCriterion(){
         {
           const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
           const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
-          if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
-            strat->generators[vp->i].vPairCalculated.insert(vp->v);
-            this->queue.pop();
-            cout<<"Variable Chain Criterion"<<endl;
-            cout.flush();
+          
+          Monomial lm=strat->generators[vp->i].lm;
+          if (!(strat->leadingTerms.intersect(lm.divisors()).diff(Polynomial(lm)).emptiness())){
             strat->variableChainCriterions++;
-          } else return;
+           queue.pop();
+          } else {
+            if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
+              strat->generators[vp->i].vPairCalculated.insert(vp->v);
+              this->queue.pop();
+              cout<<"Variable Chain Criterion"<<endl;
+              cout.flush();
+              strat->variableChainCriterions++;
+            } else return;}
+          
+          
+          
         } else return;
     }
   }
@@ -183,7 +192,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
   while(it!=end){
-    if (MonomialSet(p).subset0(*it).emptiness()){
+    if (((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       generators[s].vPairCalculated.insert(*it);
     } else
       this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
