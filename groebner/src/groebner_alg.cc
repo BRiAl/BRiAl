@@ -21,13 +21,13 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
   if (queue.top().getType()==IJ_PAIR){
     const IJPairData* ij= (IJPairData*)(queue.top().data.get());
-    cout<<"mark1"<<endl;
+    //cout<<"mark1"<<endl;
     this->status.setToHasTRep(ij->i,ij->j);
   } else{
     
     //const VariablePairData *vp=dynamic_cast<VariablePairData*>(queue.top().data.get());
     if (queue.top().getType()==VARIABLE_PAIR){
-      cout<<"mark2"<<endl;
+      //cout<<"mark2"<<endl;
       const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
       this->strat->generators[vp->i].vPairCalculated.insert(vp->v);
       int i=vp->i;
@@ -99,7 +99,7 @@ public:
 
 void PairManager::cleanTopByChainCriterion(){
   while(!(this->pairSetEmpty())){
-    cout<<"clean"<<endl;
+    //cout<<"clean"<<endl;
     
     //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
     if (queue.top().getType()==IJ_PAIR){
@@ -109,15 +109,15 @@ void PairManager::cleanTopByChainCriterion(){
       const int i=ij->i;
       const int j=ij->j;
       const Monomial lm=queue.top().lm;
-      cout<<"try chain crit"<<endl;
+      //cout<<"try chain crit"<<endl;
       const BooleSet lms=this->strat->leadingTerms.intersect(lm.divisors());
-      if (lms.length()>2)
-        cout<<"non empty"<<endl;
+      //if (lms.length()>2)
+        //cout<<"non empty"<<endl;
       if (std::find_if(lms.begin(),lms.end(),ChainCriterion(*(this->strat),i,j))!=lms.end()){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
-        cout<<"Chain Criterion"<<endl;
-        cout.flush();
+        //cout<<"Chain Criterion"<<endl;
+        //cout.flush();
         strat->chainCriterions++;
       } else {
         return;
@@ -137,8 +137,8 @@ void PairManager::cleanTopByChainCriterion(){
             if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
               strat->generators[vp->i].vPairCalculated.insert(vp->v);
               this->queue.pop();
-              cout<<"Variable Chain Criterion"<<endl;
-              cout.flush();
+              //cout<<"Variable Chain Criterion"<<endl;
+              //cout.flush();
               strat->variableChainCriterions++;
             } else return;}
           
@@ -163,7 +163,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   Monomial::const_iterator end=e.lm.end();
   BooleSet intersecting_terms=this->leadingTerms;
   while(it!=end){
-    cout<<"intersect"<<endl;
+    //cout<<"intersect"<<endl;
     intersecting_terms=intersecting_terms.subset0(*it);
     it++;
     

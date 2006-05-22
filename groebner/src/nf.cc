@@ -406,7 +406,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       int i,s;
       s=curr.size();
       if (s>1){
-        step_T(curr,result,lm,strat);
+        step_T_simple(curr,result,lm,strat);
       } else{
         assert(s==1);
         result.push_back(curr[0].value());
@@ -449,5 +449,7 @@ static int select1(GroebnerStrategy& strat, const Monomial& m){
     return strat.lm2Index[min];
   }
 }
-
+static Polynomial redTail(GroebnerStrategy& strat, Polynomial tail){
+  
+}
 END_NAMESPACE_PBORIGB
