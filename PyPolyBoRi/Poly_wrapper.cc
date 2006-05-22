@@ -50,6 +50,8 @@ void export_poly(){
   .def(BooleMonomial()+self)
   .def(self+=BooleMonomial())
   .def(self*=BooleVariable())
+  .def(self+int())
+  .def(self+=int())
   //.def(self* BooleVariable())
   .def(self+BooleVariable())
   //.def(self*self)

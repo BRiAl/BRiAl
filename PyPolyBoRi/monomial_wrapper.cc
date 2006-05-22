@@ -63,6 +63,8 @@ void export_monomial(){
   .def(self!=self)
   .def(self!=bool())
   .def(self+self)
+  .def(self+int())
+  
   //.def("isOne", &BooleMonomial::isOne)
   
   .def("deg", &BooleMonomial::deg)
