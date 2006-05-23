@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.16  2006/05/05 09:03:44  dreyer
  * ADD different implementation of the addition
  *
@@ -258,6 +261,10 @@ class CDDInterface;
 template <class ManType>
 class CDDManager;
 
+template <class ManType>
+class OrderedManagerBase;
+
+
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
  *
@@ -280,11 +287,16 @@ struct CTypes {
   /// Vector of dd_type
   typedef ZDDvector ddvector_type;
 
+  /// Variables manager base type
+  typedef Cudd manager_base;
+
   /// Manage variables to be used by polynomials over Boolean ring
-  typedef CDDManager<Cudd> manager_type;
+  //  typedef CDDManager<Cudd>  manager_type;
+   typedef OrderedManagerBase<manager_base> manager_type;
 
   /// Reference to decision diagramm manager
-  typedef CDDManager<Cudd&> manager_reference;
+   typedef CDDManager<manager_base&>  manager_reference;
+  //typedef OrderedManagerBase<manager_base&> manager_reference;
 
   /// Define shared pointer to decision diagram manager
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
@@ -333,6 +345,15 @@ struct CTypes {
     less_or_equal_max = 0,
     greater_or_equal_min = 0
   };
+
+  /// Codes For orderings
+  enum ordercodes {
+    lp,
+    dp
+  };
+
+  /// Type for ordering codes
+  typedef int ordercode_type;
 
   /// Type used to store error codes
   typedef unsigned int errornum_type;

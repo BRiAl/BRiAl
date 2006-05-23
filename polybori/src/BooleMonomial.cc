@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.3  2006/04/20 16:59:47  dreyer
  * routine
  *
@@ -40,6 +43,7 @@
 
 // get ring definitions
 # include "BoolePolyRing.h"
+# include "OrderedManager.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -171,26 +175,27 @@ BooleMonomial::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::compare(const self& rhs) const" );
 
+  return BoolePolyRing::activeManager().compare(*this, rhs);
 
-  /// @todo Up to now, this is for lexicographic order only.
-  if (*this == rhs)
-    return CTypes::equality;
+//   /// @todo Up to now, this is for lexicographic order only.
+//   if (*this == rhs)
+//     return CTypes::equality;
 
-  const_iterator start(begin()), finish(end()),
-    rhs_start(rhs.begin()), rhs_finish(rhs.end());
+//   const_iterator start(begin()), finish(end()),
+//     rhs_start(rhs.begin()), rhs_finish(rhs.end());
 
-  while ( (start != finish) && (rhs_start != rhs_finish) && 
-          (*start == *rhs_start) ) {
-    ++start; ++rhs_start;
-  }
+//   while ( (start != finish) && (rhs_start != rhs_finish) && 
+//           (*start == *rhs_start) ) {
+//     ++start; ++rhs_start;
+//   }
 
-  if (start == finish)
-    return CTypes::less_than;
+//   if (start == finish)
+//     return CTypes::less_than;
 
-  if (rhs_start == rhs_finish)
-    return CTypes::greater_than;
+//   if (rhs_start == rhs_finish)
+//     return CTypes::greater_than;
 
-  return (*start < *rhs_start?  CTypes::greater_than : CTypes::less_than);
+//   return (*start < *rhs_start?  CTypes::greater_than : CTypes::less_than);
 }
 
 // Degree of the lcm

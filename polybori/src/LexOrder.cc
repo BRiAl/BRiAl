@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.1  2006/05/23 11:40:59  dreyer
  * + Initial Version
  *
@@ -29,27 +32,11 @@
 // include  definitions
 #include "LexOrder.h"
 
+#include "pbori_algo.h"
+# include "PBoRiOutIter.h"
+#include "CIdxPath.h"
+
 BEGIN_NAMESPACE_PBORI
-
-// // Default constructor
-// LexOrder::LexOrder()  {
-  
-//   PBORI_TRACE_FUNC( "LexOrder()" );
-// }
-
-
-// // Copy constructor
-// LexOrder::LexOrder(const self&) {
-  
-//   PBORI_TRACE_FUNC( "LexOrder(const self&)" );
-// }
-
-// // Destructor
-// LexOrder::~LexOrder() {
-
-//   PBORI_TRACE_FUNC( "~LexOrder()" );
-
-// }
 
 
 // Comparison of monomials
@@ -82,6 +69,28 @@ LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   return (*start < *rhs_start?  CTypes::greater_than : CTypes::less_than);
 }
 
+// Extraction of leading term
+LexOrder::monom_type 
+LexOrder::lead(const poly_type& poly) const {
 
+  monom_type leadterm;
+   
+  if (poly.isZero())
+    leadterm = 0;
+  else {
+
+    // store indices in list
+    CIdxPath<idx_type> indices(poly.lmDeg());
+
+    // iterator, which uses changeAssign to insert variable
+    // wrt. given indices to a monomial
+    PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
+      outiter(leadterm) ;
+    
+    // insert backward (for efficiency reasons)
+    reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
+  } 
+  return leadterm;
+}
 
 END_NAMESPACE_PBORI

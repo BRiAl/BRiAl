@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.20  2006/04/11 09:26:57  dreyer
  * ADD  BoolePolyRing::printInfo();
  *
@@ -95,6 +98,7 @@
 // get error types
 # include "PBoRiError.h"
 
+#include "pbori_order.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -102,8 +106,9 @@ BEGIN_NAMESPACE_PBORI
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
 // interface with cudd's variable management
-BoolePolyRing::BoolePolyRing(size_type nvars, bool_type make_active) :
-  pMgr( new manager_type(nvars) ) {
+BoolePolyRing::BoolePolyRing(size_type nvars, bool_type make_active,
+                             ordercode_type order) :
+  pMgr( get_ordered_manager(nvars, order) ) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
 

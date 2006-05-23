@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.39  2006/05/05 11:28:13  bricken
  * *bricken: improving crit, new examples
  *
@@ -178,6 +181,8 @@
 // include definition of output iterator over monomials
 //# include "OutMonomIter.h"
 # include "PBoRiOutIter.h"
+
+# include "OrderedManager.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -356,26 +361,28 @@ BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
-  // Note: implementation relying on CCuddFirstIter 
-  monom_type leadterm;
+  return BoolePolyRing::activeManager().lead(*this);
 
-  if (m_dd.emptiness())
-    leadterm = 0;
-  else {
+//   // Note: implementation relying on CCuddFirstIter 
+//   monom_type leadterm;
 
-    // store indices in list
-    CIdxPath<idx_type> indices(lmDeg());
+//   if (m_dd.emptiness())
+//     leadterm = 0;
+//   else {
 
-    // iterator, which uses changeAssign to insert variable
-    // wrt. given indices to a monomial
-    PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-      outiter(leadterm) ;
+//     // store indices in list
+//     CIdxPath<idx_type> indices(lmDeg());
+
+//     // iterator, which uses changeAssign to insert variable
+//     // wrt. given indices to a monomial
+//     PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
+//       outiter(leadterm) ;
     
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
-  }
+//     // insert backward (for efficiency reasons)
+//     reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
+//   }
 
-  return leadterm;
+//   return leadterm;
 }
 
 // all dividers

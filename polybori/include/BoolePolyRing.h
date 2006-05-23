@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/05/23 15:26:25  dreyer
+ * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
+ *
  * Revision 1.16  2006/04/11 09:26:57  dreyer
  * ADD  BoolePolyRing::printInfo();
  *
@@ -113,14 +116,17 @@ class BoolePolyRing {
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
+  typedef CTypes::ordercode_type ordercode_type;
   //@}
 
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
+  //  using CTypes::ordercodes;
 
   /// Constructor for @em nvars variables
-  BoolePolyRing(size_type nvars=100, bool_type make_active = true);
+  BoolePolyRing(size_type nvars=100, bool_type make_active = true,
+                ordercode_type order = CTypes::lp);
 
   /// Construct from manager
   BoolePolyRing(const manager_type &);
@@ -144,10 +150,13 @@ class BoolePolyRing {
   // other member functions
   //-------------------------------------------------------------------------
   /// Access to decision diagram manager
-   manager_type& manager();
+  manager_type& manager();
 
   /// Constant access to decision diagram manager
-   const manager_type& manager() const;
+  const manager_type& manager() const;
+
+  /// Constant access to decision diagram manager
+  static const manager_type& activeManager() { return *current_mgr; };
 
   /// Access nvar-th variable of decision diagram manager
   dd_type ddVariable(idx_type nvar) const;
@@ -179,6 +188,7 @@ class BoolePolyRing {
   /// Get number of ring variables the of active ring
   static size_type nRingVariables();
 
+
   /// Access current global ring setting
   static self ring();
 
@@ -187,7 +197,7 @@ class BoolePolyRing {
 
   /// Print out statistics and settings for current ring
   static void printInfo();
-protected:
+protected: public:
   /// Pointer to current global manager setting
   static manager_ptr current_mgr;
 
