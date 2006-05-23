@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/05/23 15:55:24  dreyer
+ * CHANGE order of arguments in constructor
+ *
  * Revision 1.17  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -125,8 +128,9 @@ class BoolePolyRing {
   //  using CTypes::ordercodes;
 
   /// Constructor for @em nvars variables
-  BoolePolyRing(size_type nvars=100, bool_type make_active = true,
-                ordercode_type order = CTypes::lp);
+  BoolePolyRing(size_type nvars=100, 
+                ordercode_type order = CTypes::lp,
+                bool_type make_active = true);
 
   /// Construct from manager
   BoolePolyRing(const manager_type &);

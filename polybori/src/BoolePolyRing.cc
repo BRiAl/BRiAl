@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/05/23 15:55:24  dreyer
+ * CHANGE order of arguments in constructor
+ *
  * Revision 1.21  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -106,8 +109,8 @@ BEGIN_NAMESPACE_PBORI
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
 // interface with cudd's variable management
-BoolePolyRing::BoolePolyRing(size_type nvars, bool_type make_active,
-                             ordercode_type order) :
+BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
+                             bool_type make_active) :
   pMgr( get_ordered_manager(nvars, order) ) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
