@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/05/23 09:40:39  dreyer
+ * ADD operators - and -=
+ *
  * Revision 1.29  2006/05/03 10:37:03  bricken
  * + work on pseudo parallel reductions
  *
@@ -227,6 +230,7 @@ public:
   /// @name Arithmetical operations
   //@{
   self& operator+=(const self&);
+  self& operator-=(const self& rhs) { return operator+=(rhs); }
   self& operator*=(const monom_type&);
   self& operator/=(const monom_type&);
   //@}
@@ -341,6 +345,13 @@ inline BoolePolynomial
 operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
 
   return BoolePolynomial(lhs) += rhs;
+}
+
+/// Subtraction operation 
+inline BoolePolynomial 
+operator-(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
+
+  return BoolePolynomial(lhs) -= rhs;
 }
 
 /// Multiplication with monomial
