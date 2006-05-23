@@ -449,7 +449,14 @@ static int select1(GroebnerStrategy& strat, const Monomial& m){
     return strat.lm2Index[min];
   }
 }
-static Polynomial redTail(GroebnerStrategy& strat, Polynomial tail){
-  
+Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
+  Polynomial res;
+  while(!(p.isZero())){
+    Polynomial lm=p.lead();
+    res+=lm;
+    p+=lm;
+    p=nf2(strat,p);
+  }
+  return res;
 }
 END_NAMESPACE_PBORIGB

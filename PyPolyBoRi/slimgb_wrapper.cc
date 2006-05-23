@@ -26,9 +26,10 @@ void export_slimgb(){
   .def("addPolynomial", &slimgb_reduction_type::addPolynomial)
   .def("nextResult", &slimgb_reduction_type::nextResult)
   .def_readonly("result",&slimgb_reduction_type::result)
-
+  
   .def("reduce", &slimgb_reduction_type::reduce);
   class_ <std::vector<BoolePolynomial> >("BoolePolynomialVector")
     .def(vector_indexing_suite<std::vector<BoolePolynomial> >());
   def("parallel_reduce", parallel_reduce);
+  def("redTail", redTail);
 }
