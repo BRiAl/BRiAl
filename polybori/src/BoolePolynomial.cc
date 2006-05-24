@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2006/05/24 11:57:51  dreyer
+ * CHANGE alternative modulus operation
+ *
  * Revision 1.42  2006/05/24 08:01:01  dreyer
  * ADD operator % and %=
  *
@@ -282,11 +285,9 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const monom_type&)" );
 
-  self tmp(*this);
-  tmp /= rhs;
-  tmp *= rhs;
+  m_dd.diffAssign(  rhs.diagram().support() );
 
-  return (*this -= tmp);
+  return *this;
 }
 
 // tests whether polynomial can be reduced by rhs

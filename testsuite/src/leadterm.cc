@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/05/24 11:57:51  dreyer
+ * CHANGE alternative modulus operation
+ *
  * Revision 1.4  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -123,6 +126,12 @@ main(){
     std::cout << "Checkung handling of constants: x*y + z + 0"<<std::endl;
     std::cout <<  x*y + z + 0 <<std::endl;
 
+    std::cout << "Test Modulus"<<std::endl;
+
+    std::cout << (x*y+z ) % y <<std::endl;
+    std::cout << (x*y+z ) % (x*y) <<std::endl;
+    std::cout << (x*y+z ) % (y*z) <<std::endl;
+    std::cout << (x*y*z  +x +y +z) % (x*y) <<std::endl;
 
     std::cout << "Finished."<<std::endl;
   }
