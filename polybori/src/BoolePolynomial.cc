@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2006/05/24 08:01:01  dreyer
+ * ADD operator % and %=
+ *
  * Revision 1.41  2006/05/24 06:38:22  bricken
  * + corrected type for usedVariables
  *
@@ -267,12 +270,25 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 BoolePolynomial&
 BoolePolynomial::operator/=(const monom_type& rhs) {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const monom_type&)" );
 
   m_dd.divideAssign( ( (const BoolePolynomial&)rhs).m_dd );
   return *this;
 }
- 
+
+// Modulus
+BoolePolynomial&
+BoolePolynomial::operator%=(const monom_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const monom_type&)" );
+
+  self tmp(*this);
+  tmp /= rhs;
+  tmp *= rhs;
+
+  return (*this -= tmp);
+}
+
 // tests whether polynomial can be reduced by rhs
 BoolePolynomial::bool_type
 BoolePolynomial::reducibleBy(const self& rhs) const {

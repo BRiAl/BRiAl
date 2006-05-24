@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2006/05/24 08:01:01  dreyer
+ * ADD operator % and %=
+ *
  * Revision 1.31  2006/05/24 06:38:14  bricken
  * + corrected type for usedVariables
  *
@@ -236,6 +239,7 @@ public:
   self& operator-=(const self& rhs) { return operator+=(rhs); }
   self& operator*=(const monom_type&);
   self& operator/=(const monom_type&);
+  self& operator%=(const monom_type&);
   //@}
 
   /// @name Logical operations
@@ -377,6 +381,13 @@ inline BoolePolynomial
 operator/(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
 
   return BoolePolynomial(lhs) /= rhs;
+}
+
+/// Modulus monomial (division remainder)
+inline BoolePolynomial
+operator%(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
+
+  return BoolePolynomial(lhs) %= rhs;
 }
 
 /// Compute spoly of two polynomials
