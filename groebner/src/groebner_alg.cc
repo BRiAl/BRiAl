@@ -3,7 +3,7 @@
  *  PolyBoRi
  *
  *  Created by Michael Brickenstein on 20.04.06.
- *  Copyright 2006 Matematisches Forschungsinstitut Oberwolfach. All rights reserved.
+ *  Copyright 2006 Mathematisches Forschungsinstitut Oberwolfach. All rights reserved.
  *
  */
 
@@ -173,21 +173,31 @@ void PolyEntry::recompute_information(){
   assert(this->lmDeg==p.lmDeg());
 }
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
-  Monomial::const_iterator it=m.begin();
+  
   if (m.deg()==1){
+    cout<<"branch 1\n";
+    cout.flush();
+    Monomial::const_iterator it=m.begin();
     return Polynomial(BooleSet(p).subset0(*it));
   }
-  
+  return p%m;
+  Monomial::const_iterator it=m.begin();
   Monomial::const_iterator end=m.end();
-  BooleSet dividing_terms=BooleSet(p/m); //BooleSet(p);
+  BooleSet dividing_terms
+  =BooleSet(p/m);
+  //=BooleSet(p);
   
-  //while(it!=end){
-  //  dividing_terms.subset1(*it);
-  //  it++;
-  //}
+  /*while(it!=end){
+    dividing_terms=dividing_terms.subset1(*it);
+    it++;
+  }*/
   //fast multiply back
+  cout<<"branch2\n";
+  cout.flush();
+  
   dividing_terms.unateProductAssign(m.diagram());
   return Polynomial(BooleSet(p).diff(dividing_terms));
+  //return Polynomial(BooleSet(p).diff(BooleSet(m*Polynomial(dividing_terms))));
 }
 static Polynomial cancel_monomial_in_tail(const Polynomial& p, const Monomial & m){
   Monomial lm=p.lead();

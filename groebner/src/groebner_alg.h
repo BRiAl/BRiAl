@@ -120,6 +120,7 @@ public:
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
+Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
 END_NAMESPACE_PBORIGB
 
 #endif

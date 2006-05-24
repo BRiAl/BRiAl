@@ -27,6 +27,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
   //parameter by value, so I can modify it
   int index;
   while((index=select1(strat,p))>=0){
+    assert(index<strat.generators.size());
     Polynomial* g=&strat.generators[index].p;
     if (g->nNodes()==1){
       idx_type v=*(g->navigation());
@@ -38,8 +39,21 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
         p=Polynomial(p.diagram().subset0(v))+p2;
       }
     } else {
-      p=spoly(p,*g);
-    }}
+      if (strat.generators[index].length==1){
+        assert(strat.generators[index].p.length()==1);
+        assert(strat.generators[index].lm==strat.generators[index].p.lead());
+        if (p!=strat.generators[index].lm)
+          p=reduce_by_monom(p,strat.generators[index].lm);
+        else
+          p=Polynomial(0);
+      } else{
+        assert(!(p.isZero()));
+        assert(p.reducibleBy(*g));
+        assert(!(g->isZero()));
+          p=spoly(p,*g);
+      }
+    }
+  }
   return p;
 }
 const int FARE_WORSE=10;
@@ -482,7 +496,7 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   while(!(p.isZero())){
     Polynomial lm=p.lead();
     res+=lm;
-    p+=lm;
+    p-=lm;
     p=nf2(strat,p);
   }
   return res;
