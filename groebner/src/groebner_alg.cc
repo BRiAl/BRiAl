@@ -164,7 +164,7 @@ PolyEntry::PolyEntry(const Polynomial &p){
   this->lmDeg=p.lmDeg();
 }
 void PolyEntry::recompute_information(){
-  assert(this->lm=p.lead());
+  assert(this->lm==p.lead());
   this->weightedLength=p.eliminationLength();
   this->length=p.length();
   this->usedVariables=p.usedVariables();
