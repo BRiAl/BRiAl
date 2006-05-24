@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/05/24 07:44:57  bricken
+ * + made destructor virtual
+ *
  * Revision 1.1  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -81,7 +84,7 @@ public:
     base(rhs) { }
 
   // Destructor
-  ~OrderedManagerBase() { }
+  virtual ~OrderedManagerBase() { }
 
   /// Comparison of monomials
   virtual comp_type compare(const monom_type&, const monom_type&) const = 0;
