@@ -180,17 +180,31 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
     Monomial::const_iterator it=m.begin();
     return Polynomial(BooleSet(p).subset0(*it));
   }
+#if 0
+  //buggy variant 1
   return p%m;
+#endif
+#if 1
+  //working variant
+
   Monomial::const_iterator it=m.begin();
   Monomial::const_iterator end=m.end();
   BooleSet dividing_terms
-  =BooleSet(p/m);
-  //=BooleSet(p);
+  //=BooleSet(p/m);
+  =BooleSet(p);
   
-  /*while(it!=end){
+  while(it!=end){
     dividing_terms=dividing_terms.subset1(*it);
     it++;
-  }*/
+  }
+#endif
+#if 0
+  //buggy variant 2
+
+  BooleSet dividing_terms
+    =BooleSet(p/m);
+    
+#endif
   //fast multiply back
   cout<<"branch2\n";
   cout.flush();
