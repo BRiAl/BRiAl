@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/05/24 07:46:11  bricken
+ * + added a missing return statement
+ *
  * Revision 1.7  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -160,7 +163,7 @@ public:
     if(empty() || rhs.empty())
       return (empty() && rhs.empty());
     else
-      top() == rhs.top(); 
+      return top() == rhs.top(); 
   }
 
   /// Nonequality test
