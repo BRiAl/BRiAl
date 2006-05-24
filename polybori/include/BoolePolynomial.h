@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2006/05/24 06:38:14  bricken
+ * + corrected type for usedVariables
+ *
  * Revision 1.30  2006/05/23 09:40:39  dreyer
  * ADD operators - and -=
  *
@@ -274,7 +277,7 @@ public:
   size_type nUsedVariables() const;
 
   /// Set of variables of the polynomial
-  self usedVariables() const;
+  monom_type usedVariables() const;
 
   /// Returns number of terms
   size_type length() const;

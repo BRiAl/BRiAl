@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2006/05/24 06:38:22  bricken
+ * + corrected type for usedVariables
+ *
  * Revision 1.40  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -504,12 +507,12 @@ BoolePolynomial::nUsedVariables() const {
 }
 
 // Set of variables of the polynomial
-BoolePolynomial
+BoolePolynomial::monom_type
 BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
-
-  return m_dd.support();
+  ///@todo: optimize this
+  return BoolePolynomial(m_dd.support()).lead();
 }
 
 /// Returns number of terms
