@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2006/05/24 13:29:25  dreyer
+ * FIX usedVariables corrected
+ *
  * Revision 1.43  2006/05/24 11:57:51  dreyer
  * CHANGE alternative modulus operation
  *
@@ -529,7 +532,17 @@ BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
   ///@todo: optimize this
-  return BoolePolynomial(m_dd.support()).lead();
+
+  monom_type result(true);
+
+  const_iterator start(begin()), finish(end());
+
+  while (start != finish) {
+    result *= *start;
+    ++start;
+  }
+  return result;
+
 }
 
 /// Returns number of terms
