@@ -28,11 +28,14 @@ public:
   deg_type deg;
   deg_type lmDeg;
   Monomial gcdOfTerms;
+  Monomial usedVariables;
+  Monomial tailVariables;
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{
     return deg-lmDeg;
   }
+  void recompute_information();
 };
 //using std::less;
 typedef std::vector<PolyEntry> PolyEntryVector;

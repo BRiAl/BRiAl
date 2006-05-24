@@ -236,8 +236,36 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
   deg_type deg_high=strat.generators[index].ecart()+lm.deg();
   int s=curr.size();
   assert(p_high.lead()==lm);
+  if (strat.generators[index].weightedLength>1){
   for(int i=0;i<s;i++){
+    
+      
     curr[i].add(p_high, deg_high);
+    
+  }
+  } else {
+    assert(strat.generators[index].length<=2);
+    if (strat.generators[index].length==2){
+      assert(strat.generators[index].p.length()==2);
+      for(int i=0;i<s;i++){
+        
+        //curr[i].add(p_high, deg_high);
+        Polynomial to_red=curr[i].value();
+        to_red=reduce_by_binom(to_red,strat.generators[index].p);
+        curr[i]=PolynomialSugar(to_red);
+      }
+    } else {
+      
+      assert(strat.generators[index].length==1);
+      assert(strat.generators[index].p.length()==1);
+    
+      for(int i=0;i<s;i++){
+        Polynomial to_red=curr[i].value();
+        to_red=BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
+        curr[i]=PolynomialSugar(to_red);
+      }
+      
+    }
   }
 }
 

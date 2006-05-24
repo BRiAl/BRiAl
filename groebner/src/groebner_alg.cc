@@ -127,6 +127,11 @@ void PairManager::cleanTopByChainCriterion(){
         if (queue.top().getType()==VARIABLE_PAIR)
         {
           const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
+          if (strat->generators[vp->i].length==1){
+            //has been shortened
+            queue.pop();
+            continue;
+          }
           const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
           
           Monomial lm=strat->generators[vp->i].lm;
@@ -152,12 +157,103 @@ PolyEntry::PolyEntry(const Polynomial &p){
   this->p=p;
   this->lm=p.lead();
   this->weightedLength=p.eliminationLength();
+  this->length=p.length();
+  this->usedVariables=p.usedVariables();
   this->deg=p.deg();
+  this->tailVariables=(p-lm).usedVariables();
   this->lmDeg=p.lmDeg();
+}
+void PolyEntry::recompute_information(){
+  assert(this->lm=p.lead());
+  this->weightedLength=p.eliminationLength();
+  this->length=p.length();
+  this->usedVariables=p.usedVariables();
+  this->deg=p.deg();
+  this->tailVariables=(p-lm).usedVariables();
+  assert(this->lmDeg==p.lmDeg());
+}
+Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
+  Monomial::const_iterator it=m.begin();
+  if (m.deg()==1){
+    return Polynomial(BooleSet(p).subset0(*it));
+  }
+  
+  Monomial::const_iterator end=m.end();
+  BooleSet dividing_terms=BooleSet(p/m); //BooleSet(p);
+  
+  //while(it!=end){
+  //  dividing_terms.subset1(*it);
+  //  it++;
+  //}
+  //fast multiply back
+  dividing_terms.unateProductAssign(m.diagram());
+  return Polynomial(BooleSet(p).diff(dividing_terms));
+}
+static Polynomial cancel_monomial_in_tail(const Polynomial& p, const Monomial & m){
+  Monomial lm=p.lead();
+  
+  Polynomial res=reduce_by_monom(p,m);
+  if (res.lead()==lm){
+    return res;
+  } else {
+    return res+lm;
+  }
+  /*Polynomial tail=p-lm;
+  Monomial used_var=tail.usedVariables();
+  
+  if (used_var.reducibleBy(m)){
+    tail=Polynomial(BooleSet(tail).diff(m.multiples(used_var)));
+    
+  }
+  return tail+lm;*/
+}
+
+Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
+  assert(binom.length()==2);
+  Monomial p_lead=p.lead();
+  Monomial bin_lead=binom.lead();
+  Polynomial p_reducible=BooleSet(p).intersect(bin_lead.multiples(p.usedVariables()));
+  Polynomial p_irreducible=Polynomial(BooleSet(p).diff(p_reducible));
+  Monomial bin_last=(binom-bin_lead).lead();
+  p_reducible/=bin_lead;
+  p_reducible*=bin_last;
+  return p_reducible+p_irreducible;
+}
+static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
+  assert(binom.length()==2);
+  Monomial lm=p.lead();
+  return lm+reduce_by_binom(p-lm,binom);
 }
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
-  
+  if (e.length==1){
+    assert(e.p.length()==1);
+    Monomial m=e.lm;
+    int i;
+    for(i=0;i<this->generators.size();i++){
+      if ((this->generators[i].length>1) &&(this->generators[i].tailVariables.reducibleBy(e.usedVariables))){
+        Polynomial new_p=cancel_monomial_in_tail(this->generators[i].p,m);
+        if (new_p!=this->generators[i].p){
+          this->generators[i].p=new_p;
+          this->generators[i].recompute_information();
+        }
+      }
+    }
+  }
+/*if ((e.length==2)&&(e.ecart()==0)){
+    Monomial m=e.lm;
+    int i;
+    for(i=0;i<this->generators.size();i++){
+      if ((this->generators[i].length>1)&&(this->generators[i].tailVariables.reducibleBy(e.usedVariables))){
+        Polynomial new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
+        if (new_p!=this->generators[i].p){
+          this->generators[i].p=new_p;
+          this->generators[i].recompute_information();
+        }
+      }
+    }
+  }
+  */
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();
@@ -177,22 +273,13 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
   
   int i;
-  /*for(i=0;i<s;i++){
-    if (GCD(this->generators[i].lm, generators[s].lm).deg()>0){
-      this->pairs.introducePair(Pair(i,s,generators));
-    } else{
-      //product criterion
-      this->pairs.status.calculated(i,s);
-    }
-  }*/
-  
-  
+
   
   
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
   while(it!=end){
-    if (((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+    if ((generators[s].lm.deg()==1) ||((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       generators[s].vPairCalculated.insert(*it);
     } else
       this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
@@ -205,9 +292,14 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   while(is_it!=is_end){
     int index =this->lm2Index[*is_it];
     if (index!=s){
+      
       //product criterion doesn't hold
-      this->pairs.introducePair(Pair(index,s,generators));
-      this->pairs.status.setToUncalculated(index,s);
+      //try length 1 crit
+      if (!((this->generators[index].length==1) &&(this->generators[s].length==1)))
+      {        
+        this->pairs.introducePair(Pair(index,s,generators));
+        this->pairs.status.setToUncalculated(index,s);
+      }
     }
     is_it++;
   }

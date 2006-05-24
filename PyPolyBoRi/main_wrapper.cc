@@ -39,6 +39,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
+  .def(self*self)
+    .def(self+self)
     .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();
