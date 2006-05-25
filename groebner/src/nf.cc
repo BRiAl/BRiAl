@@ -42,14 +42,17 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
       if (strat.generators[index].length==1){
         assert(strat.generators[index].p.length()==1);
         assert(strat.generators[index].lm==strat.generators[index].p.lead());
-        if (p!=strat.generators[index].lm)
+        //if (p!=strat.generators[index].lm)
           p=reduce_by_monom(p,strat.generators[index].lm);
-        else
-          p=Polynomial(0);
+        //else
+        //  p=Polynomial(0);
       } else{
         assert(!(p.isZero()));
         assert(p.reducibleBy(*g));
         assert(!(g->isZero()));
+        if (strat.generators[index].length==2)
+          p=reduce_by_binom(p,strat.generators[index].p);
+        else
           p=spoly(p,*g);
       }
     }
@@ -251,7 +254,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
   deg_type deg_high=strat.generators[index].ecart()+lm.deg();
   int s=curr.size();
   assert(p_high.lead()==lm);
-  if (strat.generators[index].weightedLength>1){
+  if (strat.generators[index].weightedLength>2){
   for(int i=0;i<s;i++){
     
       
@@ -259,7 +262,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
     
   }
   } else {
-    assert(strat.generators[index].length<=2);
+    assert(strat.generators[index].weightedLength<=2);
     if (strat.generators[index].length==2){
       assert(strat.generators[index].p.length()==2);
       for(int i=0;i<s;i++){

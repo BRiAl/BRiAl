@@ -237,12 +237,33 @@ Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
   assert(binom.length()==2);
   Monomial p_lead=p.lead();
   Monomial bin_lead=binom.lead();
-  Polynomial p_reducible=BooleSet(p).intersect(bin_lead.multiples(p.usedVariables()));
-  Polynomial p_irreducible=Polynomial(BooleSet(p).diff(p_reducible));
   Monomial bin_last=(binom-bin_lead).lead();
-  p_reducible/=bin_lead;
-  p_reducible*=bin_last;
-  return p_reducible+p_irreducible;
+  
+  //Polynomial p_reducible_base=p;
+  Monomial::const_iterator it=bin_lead.begin();
+  Monomial::const_iterator end=bin_lead.end();
+  BooleSet dividing_terms
+    //=BooleSet(p/m);
+    =BooleSet(p);
+  
+  while(it!=end){
+    dividing_terms=dividing_terms.subset1(*it);
+    it++;
+  }
+  
+  
+  
+  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.unateProduct(bin_lead.diagram())));
+  
+  Monomial b_p_gcd=bin_last.GCD(bin_lead);
+  
+  Polynomial first_mult_half=dividing_terms.unateProduct(BooleSet(Polynomial(b_p_gcd)));
+  Polynomial multiplied=(bin_last/b_p_gcd)*first_mult_half;
+  
+  Polynomial res=multiplied+canceled_lead;
+  //cout<<"p:"<<p<<endl;
+  //cout<<"res:"<<res<<endl;
+  return res;
 }
 static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
   assert(binom.length()==2);
@@ -256,7 +277,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     Monomial m=e.lm;
     int i;
     for(i=0;i<this->generators.size();i++){
-      if ((this->generators[i].length>1) &&(this->generators[i].tailVariables.reducibleBy(e.usedVariables))){
+      if ((this->generators[i].length>1) &&(this->generators[i].tailVariables.reducibleBy(m))){
         Polynomial new_p=cancel_monomial_in_tail(this->generators[i].p,m);
         if (new_p!=this->generators[i].p){
           this->generators[i].p=new_p;
@@ -269,7 +290,7 @@ if ((e.length==2)&&(e.ecart()==0)){
     Monomial m=e.lm;
     int i;
     for(i=0;i<this->generators.size();i++){
-      if ((this->generators[i].length>1)&&(this->generators[i].tailVariables.reducibleBy(e.usedVariables))){
+      if ((this->generators[i].length>1)&&(this->generators[i].tailVariables.reducibleBy(m))){
         Polynomial new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
         if (new_p!=this->generators[i].p){
           this->generators[i].p=new_p;
