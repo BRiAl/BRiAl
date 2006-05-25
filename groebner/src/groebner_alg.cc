@@ -163,7 +163,7 @@ PolyEntry::PolyEntry(const Polynomial &p){
   this->tailVariables=(p-lm).usedVariables();
   this->lmDeg=p.lmDeg();
 }
-void PolyEntry::recompute_information(){
+void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
   this->weightedLength=p.eliminationLength();
   this->length=p.length();
@@ -175,8 +175,8 @@ void PolyEntry::recompute_information(){
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
   
   if (m.deg()==1){
-    cout<<"branch 1\n";
-    cout.flush();
+    //cout<<"branch 1\n";
+    //cout.flush();
     Monomial::const_iterator it=m.begin();
     return Polynomial(BooleSet(p).subset0(*it));
   }
@@ -200,14 +200,15 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
 #endif
 #if 0
   //buggy variant 2
-
+  if (p==Polynomial(m))
+    return Polynomial(0);
   BooleSet dividing_terms
     =BooleSet(p/m);
     
 #endif
   //fast multiply back
-  cout<<"branch2\n";
-  cout.flush();
+  //cout<<"branch2\n";
+  //cout.flush();
   
   dividing_terms.unateProductAssign(m.diagram());
   return Polynomial(BooleSet(p).diff(dividing_terms));
@@ -259,12 +260,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         Polynomial new_p=cancel_monomial_in_tail(this->generators[i].p,m);
         if (new_p!=this->generators[i].p){
           this->generators[i].p=new_p;
-          this->generators[i].recompute_information();
+          this->generators[i].recomputeInformation();
         }
       }
     }
   }
-/*if ((e.length==2)&&(e.ecart()==0)){
+if ((e.length==2)&&(e.ecart()==0)){
     Monomial m=e.lm;
     int i;
     for(i=0;i<this->generators.size();i++){
@@ -272,12 +273,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         Polynomial new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
         if (new_p!=this->generators[i].p){
           this->generators[i].p=new_p;
-          this->generators[i].recompute_information();
+          this->generators[i].recomputeInformation();
         }
       }
     }
   }
-  */
+  
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();

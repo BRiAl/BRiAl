@@ -35,7 +35,7 @@ public:
   deg_type ecart() const{
     return deg-lmDeg;
   }
-  void recompute_information();
+  void recomputeInformation();
 };
 //using std::less;
 typedef std::vector<PolyEntry> PolyEntryVector;

@@ -98,10 +98,11 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
 
 static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const Polynomial & p){
   assert(p.lead()==strat.generators[i].lm);
-  PolyEntry e(p);
-  e.vPairCalculated=strat.generators[i].vPairCalculated;
+  //PolyEntry e(p);
+  //e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=strat.generators[i].p;
-  strat.generators[i]=e;
+  strat.generators[i].p=p;
+  strat.generators[i].recomputeInformation();
   return res;
 }
 
@@ -298,14 +299,15 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       pivot_el=comp;
     }
   }
-  if (pivot_el<strat.generators[index].weightedLength){
+  if (false) {//(pivot_el<strat.generators[index].weightedLength){
+    Polynomial pivot=redTail(strat,curr[found].value());
     for(int i=0;i<s;i++){
       if(i==found) continue;
       curr[i].add(curr[found].value(), curr[found].getSugar());
       ///@todo different prototpye
     }
-    
-    if (lm.deg()==strat.generators[index].lm){
+
+    if ((pivot.deg()<=strat.generators[index].deg) &&(lm.deg()==strat.generators[index].lmDeg)){
       assert(lm==strat.generators[index].lm);
       curr[found]=PolynomialSugar(exchange_with_promise(strat, index, curr[found].value()));
       std::cout<<"Exchange"<<endl;
@@ -438,7 +440,8 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     int index=select1(strat,lm);
     if (index>=0){
       if (curr.size()>1){
-        step_S_T(curr,result,lm, index,strat);
+        //step_S_T(curr,result,lm, index,strat);
+        step_S(curr,result,lm, index,strat);
       } else{
         step_S(curr,result,lm, index,strat);
       }
