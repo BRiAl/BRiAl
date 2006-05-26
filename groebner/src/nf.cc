@@ -56,7 +56,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
           if (strat.generators[index].deg==1){
             //implies lmDeg==1, ecart=0
             //cout<<"REDUCE_COMPLETE\n";
-            assert(strat.generators[index].ecart()=0);
+            assert(strat.generators[index].ecart()==0);
             assert(strat.generators[index].lmDeg==1);
             p=reduce_complete(p,strat.generators[index].p);
           }
@@ -271,7 +271,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
     if ((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
       //implies lmDeg==1, ecart=0
       //cout<<"REDUCE_COMPLETE\n";
-      assert(strat.generators[index].ecart()=0);
+      assert(strat.generators[index].ecart()==0);
       assert(strat.generators[index].lmDeg==1);
       //p=reduce_complete(p,strat.generators[index].p);
       
