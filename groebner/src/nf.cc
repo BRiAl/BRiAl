@@ -422,9 +422,13 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   int i,s;
   s=inp.size();
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
-
+  deg_type max_sugar=0;
   for(i=0;i<s;i++){
-    to_reduce.push(PolynomialSugar(inp[i]));
+    PolynomialSugar to_push=PolynomialSugar(inp[i]);
+    
+    max_sugar=std::max(max_sugar,to_push.getSugar());
+    
+    to_reduce.push(to_push);
   }
   
   while (!(to_reduce.empty())){
@@ -466,8 +470,15 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     //after each loop push back
     s=curr.size();
     for(i=0;i<s;i++){
-      if (!(curr[i].isZero()))
-        to_reduce.push(curr[i]);
+      if (!(curr[i].isZero())){
+        if (curr[i].getSugar()<=max_sugar){
+          to_reduce.push(curr[i]);
+        } else {
+          cout<<"Delaying"<<endl;
+          cout.flush();
+          strat.addGeneratorDelayed(curr[i].value());
+        }
+      }
     }
     curr.clear();
   }
