@@ -121,6 +121,7 @@ public:
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
+Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor);
 END_NAMESPACE_PBORIGB
 
 #endif

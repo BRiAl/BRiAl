@@ -265,6 +265,49 @@ Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
   //cout<<"res:"<<res<<endl;
   return res;
 }
+
+Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
+  assert(binom.length()==2);
+  Monomial p_lead=p.lead();
+  Monomial reductor_lead=reductor.lead();
+  Polynomial reductor_tail=reductor-reductor_lead;
+
+  
+  
+  //Polynomial p_reducible_base=p;
+  Monomial::const_iterator it=reductor_lead.begin();
+  Monomial::const_iterator end=reductor_lead.end();
+  
+  BooleSet dividing_terms
+    //=BooleSet(p/m);
+    =BooleSet(p);
+  
+  while(it!=end){
+    dividing_terms=dividing_terms.subset1(*it);
+    it++;
+  }
+  
+  
+  
+  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.unateProduct(reductor_lead.diagram())));
+  
+  Polynomial::const_iterator it_r=reductor_tail.begin();
+  Polynomial::const_iterator end_r=reductor_tail.end();
+  Polynomial res=canceled_lead;
+  while(it_r!=end_r){
+    Monomial m=(*it_r);
+    Monomial b_p_gcd=m.GCD(reductor_lead);
+    Polynomial first_mult_half=dividing_terms.unateProduct(BooleSet(Polynomial(b_p_gcd)));
+    Polynomial multiplied=(m/b_p_gcd)*first_mult_half;
+    res+=multiplied;
+    ++it_r;
+    
+  }
+  return res;
+}
+
+
+
 static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
   assert(binom.length()==2);
   Monomial lm=p.lead();
