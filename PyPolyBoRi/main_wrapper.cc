@@ -46,6 +46,15 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_monomial();
   export_bset();
    }
+#ifdef PB_STATIC_PROFILING_VERSION
+int main(int argc,char* argv[]){
+  Py_Initialize();
+  initPyPolyBoRi();
+  PyRun_SimpleString("import toprofile");
+  Py_Finalize();
+  return 0;
+}
+#endif
 /*
 
 

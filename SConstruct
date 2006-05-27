@@ -54,6 +54,7 @@ class PythonConfig(object):
             self.incdir=incdir
         else:
             self.incdir=self.prefix+"/include/python"+self.version
+        self.staticlibdir=self.libdir+"/python"+ version+"/config"
 
 PYTHONSEARCH=[\
     PythonConfig(version="2.4", prefix=PYPREFIX),\
@@ -67,9 +68,9 @@ env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPPATH=["./Cudd/include"])
 env.Append(LIBPATH=["polybori","groebner"])
 env['ENV']['HOME']=os.environ["HOME"]
-if env['PLATFORM']=="darwin":
-        env.Append(LIBPATH="/sw/lib")
-        env.Append(CPPPATH="/sw/include")
+#if env['PLATFORM']=="darwin":
+#        env.Append(LIBPATH="/sw/lib")
+#        env.Append(CPPPATH="/sw/include")
 #workaround for linux
 #env.Append(LIBPATH=".")
 
@@ -96,6 +97,7 @@ for c in PYTHONSEARCH:
         PYTHON_CONFIG=c
         print "Python.h found in " + c.incdir
         env.Append(CPPPATH=[c.incdir])
+        env.Append(LIBPATH=[c.staticlibdir])
         break
 
 
@@ -163,5 +165,8 @@ if HAVE_PYTHON_EXTENSION:
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
+    env.Program('PyPolyBoRi/profiled', wrapper_files,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+["python2.4"],
+            CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
 else:
     print "no python extension"

@@ -268,9 +268,7 @@ Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
 
 Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
 
-  // todo:  valid assertion?
-  // assert(binom.length()==2);
-
+  
   Monomial p_lead=p.lead();
   Monomial reductor_lead=reductor.lead();
   Polynomial reductor_tail=reductor-reductor_lead;
