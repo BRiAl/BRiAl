@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/05/27 11:04:25  bricken
+ * + optimization remark
+ *
  * Revision 1.5  2006/04/24 11:41:56  dreyer
  * FIX only necessary types are traits
  *
@@ -123,7 +126,9 @@ class BooleMonomial {
   const_iterator end() const { return m_poly.firstEnd(); }
 
   /// Degree of the monomial
-  size_type deg() const { return m_poly.nNodes(); }
+  size_type deg() const {
+    ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
+    return m_poly.nNodes(); }
 
   /// Divisors of the monomial
   set_type divisors() const { return m_poly.lmDivisors(); }
