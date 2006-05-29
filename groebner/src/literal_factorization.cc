@@ -54,7 +54,7 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
     }
   }
   if (a.rest==b.rest){
-    ++res;
+    res+=a.rest.lmDeg();
   }
   return res;
 }
