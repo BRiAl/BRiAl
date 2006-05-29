@@ -10,6 +10,15 @@
 #include "groebner_alg.h"
 #include <algorithm>
 BEGIN_NAMESPACE_PBORIGB
+static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
+  //BooleMonomial m;
+  ///@todo need GCDdeg
+  bool res=(m.lm.GCD(m2.lm).deg()==common_literal_factors_deg(m.literal_factors, m2.literal_factors));
+  if (res)
+    cout<<"EXTENDED PRODUCT_CRIT";
+  return res;
+}
+
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
 }
@@ -34,10 +43,16 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
       Polynomial res=Pair(queue.top()).extract(gen);
       
       queue.pop();
-      Polynomial lm=res.lead();
+      if (!(res.isZero())){
+        Monomial lm=res.lead();
       
-      if (lm==this->strat->generators[i].lm)
-        res+=this->strat->generators[i].p;
+        if (lm==this->strat->generators[i].lm)
+          res+=this->strat->generators[i].p;
+      }
+      /*else{
+        if (lm.reducibleBy(this->strat->generators[i].lm))
+          res=spoly(res,this->strat->generators[i].p);
+      }*/
       //best reductor by genesis
       return res;
       
@@ -108,6 +123,13 @@ void PairManager::cleanTopByChainCriterion(){
     ///@todo implement this
       const int i=ij->i;
       const int j=ij->j;
+      
+      if (extended_product_criterion(strat->generators[i], strat->generators[j])){
+        cout<<"Delayed Extended PC"<<endl;
+        this->queue.pop();
+        strat->pairs.status.setToHasTRep(i,j);
+        continue;
+      }
       const Monomial lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
       const BooleSet lms=this->strat->leadingTerms.intersect(lm.divisors());
@@ -135,6 +157,11 @@ void PairManager::cleanTopByChainCriterion(){
           const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
           
           Monomial lm=strat->generators[vp->i].lm;
+          if (strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
+            cout<<"delayed variable linear factor criterion"<<endl;
+            queue.pop();
+            continue;
+          }
           if (!(strat->leadingTerms.intersect(lm.divisors()).diff(Polynomial(lm)).emptiness())){
             strat->variableChainCriterions++;
            queue.pop();
@@ -153,8 +180,9 @@ void PairManager::cleanTopByChainCriterion(){
     }
   }
 }
-PolyEntry::PolyEntry(const Polynomial &p){
+PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
+
   this->lm=p.lead();
   this->weightedLength=p.eliminationLength();
   this->length=p.length();
@@ -170,6 +198,7 @@ void PolyEntry::recomputeInformation(){
   this->usedVariables=p.usedVariables();
   this->deg=p.deg();
   this->tailVariables=(p-lm).usedVariables();
+  this->literal_factors=LiteralFactorization(p);
   assert(this->lmDeg==p.lmDeg());
 }
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
@@ -314,6 +343,8 @@ static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial
   Monomial lm=p.lead();
   return lm+reduce_by_binom(p-lm,binom);
 }
+
+
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   if (e.length==1){
@@ -369,7 +400,7 @@ if ((e.length==2)&&(e.ecart()==0)){
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
   while(it!=end){
-    if ((generators[s].lm.deg()==1) ||((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+    if ((generators[s].lm.deg()==1) || generators[s].literal_factors.occursAsLeadOfFactor(*it)){//((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       generators[s].vPairCalculated.insert(*it);
     } else
       this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
@@ -385,7 +416,7 @@ if ((e.length==2)&&(e.ecart()==0)){
       
       //product criterion doesn't hold
       //try length 1 crit
-      if (!((this->generators[index].length==1) &&(this->generators[s].length==1)))
+      if (!(((generators[index].length==1) &&(generators[s].length==1)))||extended_product_criterion(generators[s], generators[index]))
       {        
         this->pairs.introducePair(Pair(index,s,generators));
         this->pairs.status.setToUncalculated(index,s);

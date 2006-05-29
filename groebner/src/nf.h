@@ -71,5 +71,6 @@ template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat);
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p);
+Polynomial nf3(GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif

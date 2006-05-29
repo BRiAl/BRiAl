@@ -39,6 +39,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
         p=Polynomial(p.diagram().subset0(v))+p2;
       }
     } else {
+      
       if (strat.generators[index].length==1){
         assert(strat.generators[index].p.length()==1);
         assert(strat.generators[index].lm==strat.generators[index].p.lead());
@@ -63,8 +64,24 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
           else{
             p=spoly(p,*g);
           }
+          
         }
       }
+    }
+  }
+  return p;
+}
+Polynomial nf3(GroebnerStrategy& strat, Polynomial p){
+  int index;
+  while((index=select1(strat,p))>=0){
+    assert(index<strat.generators.size());
+    Polynomial* g=&strat.generators[index].p;
+    
+    if(strat.generators[index].lm!=p.lead()){
+      p=reduce_complete(p,strat.generators[index].p);
+
+    } else{
+      p=spoly(p,*g);
     }
   }
   return p;
@@ -302,13 +319,13 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         curr[i]=PolynomialSugar(to_red);
       }
     } else {
-      
+      ///@todo: check for sugar garanties
       assert(strat.generators[index].length==1);
       assert(strat.generators[index].p.length()==1);
     
       for(int i=0;i<s;i++){
         Polynomial to_red=curr[i].value();
-        to_red=BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
+        to_red=reduce_by_monom(to_red,strat.generators[index].lm);//BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
         curr[i]=PolynomialSugar(to_red);
       }
       
@@ -543,7 +560,7 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
     Polynomial lm=p.lead();
     res+=lm;
     p-=lm;
-    p=nf2(strat,p);
+    p=nf3(strat,p);
   }
   return res;
 }

@@ -8,11 +8,13 @@
  */
 #include <functional>
 #include "groebner_defs.h"
+#include "literal_factorization.h"
 #include <boost/shared_ptr.hpp>
 #include <queue>
 #include <algorithm>
 #include <utility>
 #include <set>
+
 #ifndef PB_PAIR_H
 #define PB_PAIR_H
 
@@ -21,6 +23,7 @@
 class PolyEntry{
 public:
   PolyEntry(const Polynomial &p);
+  LiteralFactorization literal_factors;
   Polynomial p;
   Monomial lm;
   wlen_type weightedLength;
@@ -117,7 +120,7 @@ public:
     data(new VariablePairData(i,v)),
     sugar(gen[i].deg+1),
    // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
-    wlen(gen[i].weightedLength),
+    wlen(gen[i].weightedLength+gen[i].length),
   lm(gen[i].lm)
   
   {
