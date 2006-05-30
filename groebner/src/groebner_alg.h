@@ -106,10 +106,11 @@ public:
   GroebnerStrategy():pairs(*this){
     chainCriterions=0;
     variableChainCriterions=0;
+    extendedProductCriterions=0;
   }
 
   int easyProductCriterions;
-  int extendedProductCrit;
+  int extendedProductCriterions;
   int averageLength;
   
   lm2Index_map_type lm2Index;

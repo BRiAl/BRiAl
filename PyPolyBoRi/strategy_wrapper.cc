@@ -82,6 +82,8 @@ void export_strategy(){
   .def("toStdOut", printGenerators)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
+  .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
+  .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);

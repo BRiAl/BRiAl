@@ -14,8 +14,8 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
   ///@todo need GCDdeg
   bool res=(m.lm.GCD(m2.lm).deg()==common_literal_factors_deg(m.literal_factors, m2.literal_factors));
-  if (res)
-    cout<<"EXTENDED PRODUCT_CRIT";
+  //if (res)
+  //  cout<<"EXTENDED PRODUCT_CRIT";
   return res;
 }
 
@@ -123,11 +123,17 @@ void PairManager::cleanTopByChainCriterion(){
     ///@todo implement this
       const int i=ij->i;
       const int j=ij->j;
-      
-      if (extended_product_criterion(strat->generators[i], strat->generators[j])){
-        cout<<"Delayed Extended PC"<<endl;
+      if ((strat->generators[i].length==1) &&(strat->generators[j].length==1)){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
+        continue;
+        
+      }
+      if (extended_product_criterion(strat->generators[i], strat->generators[j])){
+        //cout<<"Delayed Extended PC"<<endl;
+        this->queue.pop();
+        strat->pairs.status.setToHasTRep(i,j);
+        this->strat->extendedProductCriterions++;
         continue;
       }
       const Monomial lm=queue.top().lm;
@@ -416,14 +422,15 @@ if ((e.length==2)&&(e.ecart()==0)){
       
       //product criterion doesn't hold
       //try length 1 crit
-      if (!(((generators[index].length==1) &&(generators[s].length==1)))||extended_product_criterion(generators[s], generators[index]))
+      if (!(((generators[index].length==1) &&(generators[s].length==1))||extended_product_criterion(generators[s], generators[index])))
       {        
         this->pairs.introducePair(Pair(index,s,generators));
         this->pairs.status.setToUncalculated(index,s);
-      }
+      } else this->extendedProductCriterions++;
     }
     is_it++;
   }
+  this->easyProductCriterions+=this->leadingTerms.length()-intersecting_terms.length();
 }
 
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){

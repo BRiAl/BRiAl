@@ -253,6 +253,9 @@ public:
   void adjustSugar(){
     sugar=p.deg();
   }
+  bool isOne(){
+    return p.isOne();
+  }
   Polynomial value() const{
     return p;
   }
@@ -470,6 +473,10 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
   deg_type max_sugar=0;
   for(i=0;i<s;i++){
+    if (inp[i].isOne()){
+      result.push_back(inp[i]);
+      return result;
+    }
     PolynomialSugar to_push=PolynomialSugar(inp[i]);
     
     max_sugar=std::max(max_sugar,to_push.getSugar());
@@ -517,7 +524,12 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     s=curr.size();
     for(i=0;i<s;i++){
       if (!(curr[i].isZero())){
-        if (curr[i].getSugar()<=max_sugar){
+        if ((curr[i].getSugar()<=max_sugar)||(curr[i].isOne())){
+          if (curr[i].isOne()){
+            result.clear();
+            result.push_back(curr[i].value());
+            return result;
+          }
           to_reduce.push(curr[i]);
         } else {
           cout<<"Delaying"<<endl;
