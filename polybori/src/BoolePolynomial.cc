@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2006/06/06 10:56:59  dreyer
+ * CHANGE usedVariables() more efficient now.
+ *
  * Revision 1.44  2006/05/24 13:29:25  dreyer
  * FIX usedVariables corrected
  *
@@ -162,6 +165,7 @@
 //*****************************************************************************
 
 #include <list>
+#include <set>
 #include <iterator>
 #include <algorithm>
 #include <numeric>
@@ -531,18 +535,27 @@ BoolePolynomial::monom_type
 BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
-  ///@todo: optimize this
 
+  // define iterator type for storing used variables (on forward branches)
+  typedef CTermIter< std::set<idx_type>, navigator, 
+    inserting< std::set<idx_type> >, project_ith<1>, project_ith<1> >
+  the_iterator;
+
+  // default value is the one monomial
   monom_type result(true);
 
-  const_iterator start(begin()), finish(end());
+  // initialize iteration
+  the_iterator start(navigation());
 
-  while (start != finish) {
-    result *= *start;
-    ++start;
-  }
+  // iterate while 
+  while( !start.empty() ){ ++start; }
+
+  // putting variables to result using output iterator 
+  PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
+    outiter(result);
+  copy((*start).rbegin(), (*start).rend(), outiter);
+
   return result;
-
 }
 
 /// Returns number of terms

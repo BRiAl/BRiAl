@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/06/06 10:56:59  dreyer
+ * CHANGE usedVariables() more efficient now.
+ *
  * Revision 1.8  2006/05/24 07:46:11  bricken
  * + added a missing return statement
  *
@@ -73,7 +76,7 @@ BEGIN_NAMESPACE_PBORI
 
 template <class TermType, class NavigatorType, 
           class ForwardOp, class BackwardOp, 
-          class TerminalValueOp = project_ith<1> >
+          class TerminalValueOp = project_ith<2> >
 class CTermIter {
 
 public:
@@ -126,7 +129,7 @@ public:
 
   /// Default constructor
   CTermIter(): 
-    m_stack(), m_value( termvalop_type()(false) ), 
+    m_stack(), m_value( termvalop_type()(value_type(), false) ), 
     forwardop(), backwardop(), termvalop() { 
   }
 
@@ -143,7 +146,7 @@ public:
       terminate(navi);
     }
     else 
-      m_value = termvalop(false);
+      m_value = termvalop(m_value, false);
   }
 
   /// Copy Constructor
@@ -184,7 +187,7 @@ public:
     if (!empty()){              //  Iterations not finished yet
       navigator_type navi = top();
       if ( !navi.isValid() ){   //  Case: final iteration
-        *this = self();         //  reset value
+        clear();        //  reset value
       }
       else {
         // Go back to begin of next path
@@ -230,18 +233,23 @@ protected:
   }
 
   bool terminate(const navigator_type& navi) {
-    if ( m_stack.empty() && navi.isConstant()  ) { // Constant monomial
+    if ( m_stack.empty() && navi.isConstant() ) { // Constant monomial
 
       if (navi.terminalValue()) { // Case: Monomial one
-        m_value = termvalop(true);
+        m_value = termvalop(m_value, true);
         m_stack.push(navigator_type()); // One more iteration for showing 1
       }
       else                      // Case: Monomial zero
-        *this = self();
+        clear();
 
       return true;
     }
     return false;
+  }
+
+  void clear() {
+    m_value = termvalop(m_value, false);
+    m_stack = stack_type();
   }
 
 private:

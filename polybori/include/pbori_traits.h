@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/06/06 10:56:59  dreyer
+ * CHANGE usedVariables() more efficient now.
+ *
  * Revision 1.2  2006/04/24 11:41:56  dreyer
  * FIX only necessary types are traits
  *
@@ -28,6 +31,9 @@
  * @endverbatim
 **/
 //*****************************************************************************
+
+#include <set>
+#include <vector>
 
 // include basic definitions
 #include "pbori_defs.h"
@@ -112,6 +118,16 @@ class pbori_traits<long int>:
   public CTypes {
 };
 
+
+template <class ValueType>
+class pbori_traits< std::set<ValueType> >:
+  public CTypes {
+};
+
+template <class ValueType>
+class pbori_traits< std::vector<ValueType> >:
+  public CTypes {
+};
 
 
 END_NAMESPACE_PBORI

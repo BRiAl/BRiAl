@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/06/06 10:56:59  dreyer
+ * CHANGE usedVariables() more efficient now.
+ *
  * Revision 1.10  2006/05/05 09:03:44  dreyer
  * ADD different implementation of the addition
  *
@@ -218,7 +221,7 @@ class constant_value:
   public std::unary_function<ValueType, ValueType> {
 public:
   /// Functional operator 
-  ValueType operator() (const ValueType &) const {
+  ValueType operator() (...) const {
     return CONSTVAL;
   } 
 };
@@ -426,6 +429,25 @@ public:
     lhs.uniteAssign( lhs.change(idx) );
     return lhs;
   }
+
+};
+
+/// @class inserting
+/// @brief Accessing .insert()
+template <class RhsType = void,
+          class LhsType = typename RhsType::value_type >
+class inserting;
+
+/// @class inserting
+/// @brief Accessing .insert()
+template <class RhsType, class LhsType>
+class inserting {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.insert(lhs);
+    return rhs;
+  } 
 
 };
 
