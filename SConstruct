@@ -86,6 +86,7 @@ except:
     pass
 
 #env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
+
 for l in cudd_libs:
     env.Append(LIBPATH=["./Cudd/"+l])
     env.Append(LIBS=[l])
@@ -165,7 +166,9 @@ if HAVE_PYTHON_EXTENSION:
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
-    env.Program('PyPolyBoRi/profiled', wrapper_files,
+    to_append_for_profile=[]
+    #to_append_for_profile=File('/lib/libutil.a')
+    env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+["python2.4"],
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
 else:
