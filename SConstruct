@@ -17,6 +17,8 @@ try:
         BOOST_WORKS=custom.BOOST_WORKS
     if "PYPREFIX" in dir(custom):
         PYPREFIX=custom.PYPREFIX
+    if "LIBS" in dir(custom):
+        USERLIBS=custom.LIBS
 except:
     pass
 
@@ -162,14 +164,15 @@ if HAVE_PYTHON_EXTENSION:
     else:
         #print "l:", l
         env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
     to_append_for_profile=[]
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+["python2.4"],
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", 
+            LIBS=LIBS+["python2.4"]+USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
 else:
     print "no python extension"
