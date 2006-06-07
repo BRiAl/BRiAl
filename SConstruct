@@ -5,6 +5,7 @@ BOOST_WORKS=False
 
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
+USERLIBS=[]
 PYPREFIX="/sw"
 
 try:
