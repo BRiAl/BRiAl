@@ -490,6 +490,9 @@ if ((e.length==2)&&(e.ecart()==0)){
       }
       else*/
         this->pairs.introducePair(Pair(chosen_index,s,generators));
+        //cout<<"pair with:"<<chosen_index<<endl;
+        //cout<<generators[chosen_index].p;
+        //cout<<generators[s].p;
 
     }
   }

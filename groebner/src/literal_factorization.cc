@@ -43,7 +43,7 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
   const LiteralFactorization::map_type::const_iterator end=a.factors.end();
   const LiteralFactorization::map_type::const_iterator b_end=b.factors.end();
   while(it!=end){
-    it++;
+
     int val=it->second;
     idx_type variable=it->first;
     LiteralFactorization::map_type::const_iterator found_res=b.factors.find(variable);
@@ -52,6 +52,7 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
         ++res;
       }
     }
+    it++;
   }
   if (a.rest==b.rest){
     res+=a.rest.lmDeg();
