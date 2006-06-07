@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/06/07 06:54:30  bricken
+ * + 64BIT workaround
+ *
  * Revision 1.4  2006/04/25 07:05:02  dreyer
  * FIX postfix++ of CCuddFirstIter
  *
@@ -136,7 +139,7 @@ CCuddNavigator::hash_type
 CCuddNavigator::hash() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::hash() const" );
-  return reinterpret_cast<hash_type>(pNode);
+  return reinterpret_cast<long>(pNode);
 };
 
 // equality test
