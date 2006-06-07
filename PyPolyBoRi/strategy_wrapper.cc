@@ -74,6 +74,7 @@ void export_strategy(){
   .def(init<>())
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
+  .def("implications",&GroebnerStrategy::addNonTrivialImplicationsDelayed)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
   .def("someSpolysInNextDegree", someNextDegreeSpolys)

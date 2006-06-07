@@ -117,12 +117,24 @@ public:
   Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);
   }
-  
+  void addNonTrivialImplicationsDelayed(const Polynomial& p);  
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
 Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor);
+class LessWeightedLengthInStrat{
+public:
+  GroebnerStrategy* strat;
+  LessWeightedLengthInStrat(GroebnerStrategy& strat){
+    this->strat=&strat;
+  }
+  bool operator() (const Monomial& a , const Monomial& b){
+    return strat->generators[strat->lm2Index[a]].weightedLength<strat->generators[strat->lm2Index[b]].weightedLength;
+    
+  }
+};
+
 END_NAMESPACE_PBORIGB
 
 #endif

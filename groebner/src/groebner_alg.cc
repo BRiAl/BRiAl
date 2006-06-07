@@ -350,11 +350,34 @@ static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial
   return lm+reduce_by_binom(p-lm,binom);
 }
 
+class HasTRepOrExtendedProductCriterion{
+public:
+  GroebnerStrategy* strat;
+  int j;
+  HasTRepOrExtendedProductCriterion(GroebnerStrategy& strat, int j){
+    this->strat=&strat;
+    this->j=j;
+  }
+  bool operator() (const Monomial &m){
+    int i;
+    i=strat->lm2Index[m];
+    
+    if (strat->pairs.status.hasTRep(i,j))
+      return true;
+    
+    if (extended_product_criterion(strat->generators[i],strat->generators[j])){
+      strat->pairs.status.setToHasTRep(i,j);
+      strat->extendedProductCriterions++;
+      return true;
+    }
+    return false;
+  }
 
+};
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
-  if (e.length==1){
+  if ((e.length==1) && (e.deg>0)){
     assert(e.p.length()==1);
     Monomial m=e.lm;
     int i;
@@ -395,10 +418,9 @@ if ((e.length==2)&&(e.ecart()==0)){
     
   }
   BooleSet intersecting_terms= this->leadingTerms.diff(other_terms);
+  this->easyProductCriterions+=this->leadingTerms.length()-intersecting_terms.length();
   
-  
-  //!!!!! here we add the lm !!!!
-  leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
+ 
   
   generators.push_back(e);
   pairs.status.prolong(PairStatusSet::HAS_T_REP);
@@ -440,12 +462,42 @@ if ((e.length==2)&&(e.ecart()==0)){
   Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
     
-  other_terms.unateProductAssign((crit_vars*lm).divisors());
-  
-  intersecting_terms.diffAssign(other_terms);
+  //other_terms.unateProductAssign((crit_vars*lm).divisors());
+    {
+      other_terms.unateProductAssign(lm.diagram());
+      other_terms.unateProductAssign(crit_vars.divisors());
 
-  
-  is_it=intersecting_terms.begin();
+    //crit_vars*=lm; //vars from lm are in any term in crit_terms anyway
+    BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms);
+    while(!(crit_terms.emptiness())){
+      Monomial min_crit=crit_terms.lastLexicographicalTerm();
+      crit_terms=crit_terms.diff(min_crit.multiples(crit_vars));
+      BooleSet act_l_terms=leadingTerms.intersect(min_crit.divisors());
+      assert(!(act_l_terms.emptiness()));
+      
+      
+      //extended product criterion not to forget for others
+      if (std::find_if(act_l_terms.begin(), act_l_terms.end(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.end()){
+        continue;
+      }
+      Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
+      
+      int chosen_index=lm2Index[min];
+   
+      /*if (extended_product_criterion(this->generators[chosen_index], this->generators[s])){
+        this->extendedProductCriterions++;
+        this->pairs.status.hasTRep(chosen_index,s);
+      }
+      else*/
+        this->pairs.introducePair(Pair(chosen_index,s,generators));
+
+    }
+  }
+    
+    
+    //!!!!! here we add the lm !!!!
+    leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
+ /* is_it=intersecting_terms.begin();
 
   while(is_it!=is_end){
     int index =this->lm2Index[*is_it];
@@ -467,7 +519,7 @@ if ((e.length==2)&&(e.ecart()==0)){
     }
     is_it++;
   }
-  
+  */
   
   
   /*
@@ -487,9 +539,56 @@ if ((e.length==2)&&(e.ecart()==0)){
   }
    
   */
-  this->easyProductCriterions+=this->leadingTerms.length()-intersecting_terms.length();
+  
+  //if (e.literal_factors.trivial()){
+  /*  Polynomial negation=Polynomial(true)-e.p;
+    LiteralFactorization fac_neg(negation);
+    if (!(fac_neg.trivial())){
+      cout<<"!!!!!!!!!!!!!!!!!"<<endl;
+      cout<<"found new implications"<<endl;
+      LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
+      LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
+      while(nb!=ne){
+        
+        idx_type var=nb->first;
+        bool val=(!(nb->second));
+        this->addGeneratorDelayed(Monomial(Variable(var))+Polynomial(val));
+        nb++;
+      }
+      this->addGeneratorDelayed(Polynomial(true)-fac_neg.rest);
+    }
+  //}*/
 }
+void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
+  Polynomial negation=Polynomial(true)-p;
+  LiteralFactorization fac_neg(negation);
+  if (!(fac_neg.trivial())){
+    cout<<"!!!!!!!!!!!!!!!!!"<<endl;
+    cout<<"found new implications"<<endl;
+    LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
+    LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
+    while(nb!=ne){
+      
+      idx_type var=nb->first;
+      bool val=(!(nb->second));
+      this->addGeneratorDelayed(Monomial(Variable(var))+Polynomial(val));
+      nb++;
+    }
+    this->addGeneratorDelayed(Polynomial(true)-fac_neg.rest);
+  } else {
+    
+    LiteralFactorization fac_p(p);
+    if (!(fac_p.trivial()) &&(!(fac_p.rest.isOne()))){
+      LiteralFactorization fac_res_neg(fac_p.rest+Polynomial(true));
+      if(!(fac_res_neg.trivial())){
+        cout<<"!!!!!!!!!!!!!!!!!"<<endl;
+        cout<<"found nested new implications"<<endl;
 
+      }
+    }
+  }
+  
+}
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
   this->pairs.introducePair(Pair(p));
 }

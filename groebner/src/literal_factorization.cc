@@ -59,7 +59,11 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
   return res;
 }
 
-bool LiteralFactorization::occursAsLeadOfFactor(idx_type v){
+
+bool LiteralFactorization::trivial() const{
+  return ((this->factors.size()==0) || ((this->factors.size()==1) && this->rest.isOne()));
+}
+bool LiteralFactorization::occursAsLeadOfFactor(idx_type v) const{
   if (factors.count(v)>0)
     return true;
   else{

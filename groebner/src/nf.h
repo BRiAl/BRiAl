@@ -13,17 +13,6 @@
 #ifndef PBORI_GB_NF_H
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB
-class LessWeightedLengthInStrat{
-public:
-  GroebnerStrategy* strat;
-  LessWeightedLengthInStrat(GroebnerStrategy& strat){
-    this->strat=&strat;
-  }
-  bool operator() (const Monomial& a , const Monomial& b){
-    return strat->generators[strat->lm2Index[a]].weightedLength<strat->generators[strat->lm2Index[b]].weightedLength;
-    
-  }
-};
 static int select1(GroebnerStrategy& strat, const Polynomial& p);
 static int select1(GroebnerStrategy& strat, const Monomial& m);
 

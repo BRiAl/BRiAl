@@ -20,7 +20,8 @@ public:
   typedef std::map<idx_type, int> map_type;
   map_type factors;
   Polynomial rest;
-  bool occursAsLeadOfFactor(idx_type v);
+  bool occursAsLeadOfFactor(idx_type v) const;
+  bool trivial() const;
   //Theorem: f BoolePolynomial with factor (x+b), b in 0, 1 (considered in the usual Polynomial Ring)
   //then f/(x+b) does not involve the variable x
 };
