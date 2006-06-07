@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2006/06/07 11:54:26  dreyer
+ * ADD variantes for usedVariables
+ *
  * Revision 1.45  2006/06/06 10:56:59  dreyer
  * CHANGE usedVariables() more efficient now.
  *
@@ -536,26 +539,60 @@ BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
+
+#ifdef PBORI_USEDVARS_BY_SUPPORT
+
+  BooleSet bset(diagram().support());
+  return bset.lastLexicographicalTerm();
+
+#else
+
+  // default value is the one monomial
+  monom_type result(true);
+
+# ifdef PBORI_USEDVARS_HIGHLEVEL
+
   // define iterator type for storing used variables (on forward branches)
   typedef CTermIter< std::set<idx_type>, navigator, 
     inserting< std::set<idx_type> >, project_ith<1>, project_ith<1> >
   the_iterator;
 
-  // default value is the one monomial
-  monom_type result(true);
-
   // initialize iteration
   the_iterator start(navigation());
 
-  // iterate while 
+  // collect all indices during iteration
   while( !start.empty() ){ ++start; }
 
-  // putting variables to result using output iterator 
+  the_iterator::reference indices(*start);
+
+# elif defined(PBORI_USEDVARS_BY_TRANSFORM) // variant of highlevel
+
+  typedef std::set<idx_type> path_type;
+  path_type indices;
+
+  dd_transform( navigation(), dummy_iterator(),
+                dummy_iterator(),
+                insert_second_to_list<path_type,
+                  dummy_iterator,idx_type>(indices),
+                project_ith<1, 2>(),  
+                project_ith<1>()
+                );
+
+# elif defined(PBORI_USEDVARS_BY_IDX) // using internal variant
+
+  // Get indices of used variables
+  std::vector<idx_type> indices(nUsedVariables());
+  m_dd.usedIndices(indices);
+
+# endif
+
+  // generate monomial from indices
   PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
     outiter(result);
-  copy((*start).rbegin(), (*start).rend(), outiter);
+  copy(indices.rbegin(), indices.rend(), outiter);
 
   return result;
+#endif
 }
 
 /// Returns number of terms

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/06/07 11:54:26  dreyer
+ * ADD variantes for usedVariables
+ *
  * Revision 1.17  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -379,6 +382,14 @@ END_NAMESPACE_PBORI
     || defined(PBORI_ADD_BY_UNION)
 #else
 # define PBORI_ADD_BY_UNION 
+#endif 
+
+
+// Set default method for getting all used variables
+#if defined(PBORI_USEDVARS_BY_IDX) || defined(PBORI_USEDVARS_BY_TRANSFORM) \
+  || defined(PBORI_USEDVARS_HIGHLEVEL)|| defined(PBORI_USEDVARS_BY_SUPPORT)
+#else
+# define PBORI_USEDVARS_BY_IDX
 #endif 
 
 #endif // of #ifndef pbori_defs_h_

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/06/07 11:54:26  dreyer
+ * ADD variantes for usedVariables
+ *
  * Revision 1.17  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -94,6 +97,9 @@
 
 // Getting iterator type for retrieving last term from Cudd's ZDDs
 #include "CCuddLastIter.h"
+
+// Using stl's vector
+#include <vector>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -391,13 +397,30 @@ class CDDInterface<ZDD>:
     return Cudd_SupportSize(manager().getManager(), m_interfaced.getNode());
   }
 
-  /// Get used variables
+  /// Get multiples of used variables
   self support() const {
 
     BDD supp( &manager(), 
               Cudd_Support(manager().getManager(), m_interfaced.getNode()) );
 
     return supp.PortToZdd();
+  }
+
+  /// Get used variables (assuming indices of length nSupport())
+  void usedIndices(std::vector<idx_type>& indices) const {
+
+    int* pIdx = Cudd_SupportIndex( manager().getManager(), 
+                                   m_interfaced.getNode() );
+
+    size_type nlen(nVariables());
+
+    std::vector<idx_type>::iterator iter(indices.begin());
+    for(size_type idx = 0; idx < nlen; ++idx)
+      if (pIdx[idx] == 1){
+        *iter = idx;
+        ++iter;
+      }
+        
   }
 
   /// Start of first term
@@ -432,14 +455,17 @@ class CDDInterface<ZDD>:
   /// Checks whether the decision diagram has every variable negated
   bool_type blankness() const {
     return ( m_interfaced == 
-             manager().zddOne( Cudd_ReadZddSize(manager().getManager() )) );
+             manager().zddOne( nVariables() ) );
   }
 
   /// Returns number of terms
   size_type length() const {
     return m_interfaced.Count();
   }
-
+  /// Returns number of variables in manager
+  size_type nVariables() const {
+   return Cudd_ReadZddSize(manager().getManager() );
+  }
 };
 
 /// Stream output operator

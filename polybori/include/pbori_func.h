@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/06/07 11:54:26  dreyer
+ * ADD variantes for usedVariables
+ *
  * Revision 1.11  2006/06/06 10:56:59  dreyer
  * CHANGE usedVariables() more efficient now.
  *
@@ -322,6 +325,20 @@ public:
 };
 
 
+class print_all {
+public:
+
+  print_all(std::ostream& os_):os(os_){}
+
+  template<class Type>
+  Type& operator()(Type& val){
+    std::copy(val.begin(), val.end(), 
+         std::ostream_iterator<typename  Type::value_type>(os, ", "));
+    return val;
+  }
+  std::ostream& os;
+};
+
 class print_it_plus {
 public:
   print_it_plus(std::ostream& os_):os(os_){}
@@ -449,6 +466,23 @@ public:
     return rhs;
   } 
 
+};
+/// @class inserting
+/// @brief Accessing .insert()
+template <class ListType, class RhsType, class LhsType>
+class insert_second_to_list {
+public:
+
+  insert_second_to_list(ListType& theList__):
+    theList(theList__) {};
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    theList.insert(lhs);
+    return rhs;
+  } 
+
+private:
+  ListType& theList;
 };
 
 END_NAMESPACE_PBORI
