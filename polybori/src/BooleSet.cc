@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/06/07 08:37:50  dreyer
+ * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
+ *
  * Revision 1.6  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -47,6 +50,9 @@
 # include "BooleSet.h"
 # include "BooleMonomial.h"
 # include "BoolePolyRing.h"
+# include "CIdxPath.h"
+# include "PBoRiOutIter.h"
+# include <iterator>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -137,6 +143,33 @@ BooleSet::end() const {
   PBORI_TRACE_FUNC( "BooleSet::end() const" );
   return const_iterator();
 }
+// Get last term (wrt. lexicographical order)
+BooleSet::term_type
+BooleSet::lastLexicographicalTerm() const {
 
+  PBORI_TRACE_FUNC( "BooleSet::lastTerm() const" );
+
+  term_type result(true);
+
+  if (emptiness())
+    result = false;
+  else {
+
+    size_type nlen = std::distance(base::lastBegin(), base::lastEnd());
+
+    // store indices in list
+    CIdxPath<idx_type> indices(nlen);
+
+    // iterator, which uses changeAssign to insert variable
+    // wrt. given indices to a monomial
+    PBoRiOutIter<term_type, idx_type, change_assign<term_type> >  
+      outiter(result) ;
+    
+    // insert backward (for efficiency reasons)
+    reversed_inter_copy(base::lastBegin(), base::lastEnd(), indices, outiter);
+  }
+
+  return result;
+}
 
 END_NAMESPACE_PBORI

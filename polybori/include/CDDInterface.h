@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/06/07 08:37:50  dreyer
+ * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
+ *
  * Revision 1.16  2006/05/05 09:03:44  dreyer
  * ADD different implementation of the addition
  *
@@ -88,6 +91,9 @@
 
 // Getting iterator type for retrieving first term from Cudd's ZDDs
 #include "CCuddFirstIter.h"
+
+// Getting iterator type for retrieving last term from Cudd's ZDDs
+#include "CCuddLastIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -176,6 +182,9 @@ class CDDInterface<ZDD>:
 
   /// Iterator type for retrieving first term from Cudd's ZDDs
   typedef CCuddFirstIter first_iterator;
+
+  /// Iterator type for retrieving last term from Cudd's ZDDs
+  typedef CCuddLastIter last_iterator;
 
   /// Iterator type for navigation throught Cudd's ZDDs structure
   typedef CCuddNavigator navigator;
@@ -401,6 +410,15 @@ class CDDInterface<ZDD>:
     return first_iterator();
   }
 
+  /// Start of first term
+  last_iterator lastBegin() const {
+    return last_iterator(m_interfaced.getNode());
+  }
+
+  /// Finish of first term 
+  last_iterator lastEnd() const { 
+    return last_iterator();
+  }
   /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()
   navigator navigation() const {
     return navigator(m_interfaced.getNode());

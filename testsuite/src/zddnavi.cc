@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/06/07 08:37:50  dreyer
+ * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
+ *
  * Revision 1.9  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -75,7 +78,7 @@
 
 #include "CTermIter.h"
 
-
+#include "CCuddLastIter.h"
 
 USING_NAMESPACE_PBORI
 
@@ -261,6 +264,66 @@ main(){
     ++iter;
 
     std::cout << *iter <<std::endl;
+    std::cout << std::endl<< "Testing last term" <<std::endl;
+    poly = x*y + x*w;
+
+    std::cout << "poly "<<poly <<std::endl;
+
+    CCuddLastIter start(poly.diagram().lastBegin() ), finish;
+
+    std::cout << "last term ";
+    copy(start, finish, 
+         std::ostream_iterator<BoolePolynomial::idx_type>(std::cout, ", "));
+
+    std::cout <<std::endl<<  std::endl<< "Testing last term" <<std::endl;
+    poly = x*y + y*w;
+
+    std::cout << "poly "<<poly <<std::endl;
+
+     start=(poly.diagram().lastBegin() );
+
+    std::cout << "last term ";
+    copy(start, finish, 
+         std::ostream_iterator<BoolePolynomial::idx_type>(std::cout, ", "));
+
+    std::cout << std::endl<< std::endl<< "Testing last term" <<std::endl;
+    poly = x*y + z*w;
+
+    std::cout << "poly "<<poly <<std::endl;
+
+     start=(poly.diagram().lastBegin() );
+
+    std::cout << "last term ";
+    copy(start, finish, 
+         std::ostream_iterator<BoolePolynomial::idx_type>(std::cout, ", "));
+  
+    std::cout << std::endl<< std::endl<< "Testing last term" <<std::endl;
+    poly = x*y*z*v*w + z*v*w + z*w;
+
+    std::cout << "poly "<<poly <<std::endl;
+
+     start=(poly.diagram().lastBegin() );
+
+    std::cout << "last term ";
+    copy(start, finish, 
+         std::ostream_iterator<BoolePolynomial::idx_type>(std::cout, ", "));
+
+  
+    std::cout << std::endl<< std::endl<< "Testing last term" <<std::endl;
+    poly = x*y*z*v*w + y*z*v*w +z*v*w + z*w;
+
+    std::cout << "poly "<<poly <<std::endl;
+
+     start=(poly.diagram().lastBegin() );
+
+    std::cout << "last term ";
+    copy(start, finish, 
+         std::ostream_iterator<BoolePolynomial::idx_type>(std::cout, ", "));
+
+    BooleSet bset(poly.diagram());
+
+    std::cout << "last term via BoolSet: "<< 
+      bset.lastLexicographicalTerm()<<std::endl;;
 
     std::cout <<std::endl<< "Finished."<<std::endl;
 

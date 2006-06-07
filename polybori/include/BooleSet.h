@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/06/07 08:37:50  dreyer
+ * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
+ *
  * Revision 1.5  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -110,8 +113,8 @@ public:
   /// Check whether rhs is includes in *this
   bool_type owns(const term_type&) const;
 
-
-
+  /// Get last term (wrt. lexicographical order)
+  term_type lastLexicographicalTerm() const; 
 };
 
 
