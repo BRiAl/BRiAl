@@ -353,6 +353,7 @@ static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial
 
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
+  Monomial lm=e.lm;
   if (e.length==1){
     assert(e.p.length()==1);
     Monomial m=e.lm;
@@ -384,13 +385,19 @@ if ((e.length==2)&&(e.ecart()==0)){
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();
-  BooleSet intersecting_terms=this->leadingTerms;
+  BooleSet other_terms=this->leadingTerms;
+  
+
   while(it!=end){
     //cout<<"intersect"<<endl;
-    intersecting_terms=intersecting_terms.subset0(*it);
+    other_terms=other_terms.subset0(*it);
     it++;
     
   }
+  BooleSet intersecting_terms= this->leadingTerms.diff(other_terms);
+  
+  
+  //!!!!! here we add the lm !!!!
   leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
   
   generators.push_back(e);
@@ -413,9 +420,57 @@ if ((e.length==2)&&(e.ecart()==0)){
     it++;
     
   }
-  intersecting_terms= this->leadingTerms.diff(intersecting_terms);
-  BooleSet::const_iterator is_it=intersecting_terms.begin();
+    BooleSet::const_iterator is_it=intersecting_terms.begin();
   BooleSet::const_iterator is_end=intersecting_terms.end();
+  
+  while(is_it!=is_end){
+    int index =this->lm2Index[*is_it];
+    if (index!=s){
+      
+      //product criterion doesn't hold
+      //try length 1 crit
+      if (!((generators[index].length==1) &&(generators[s].length==1)))
+      {        
+        this->pairs.status.setToUncalculated(index,s);
+      } else this->extendedProductCriterions++;
+    }
+    is_it++;
+  }
+
+  Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
+  
+    
+  other_terms.unateProductAssign((crit_vars*lm).divisors());
+  
+  intersecting_terms.diffAssign(other_terms);
+
+  
+  is_it=intersecting_terms.begin();
+
+  while(is_it!=is_end){
+    int index =this->lm2Index[*is_it];
+    if (index!=s){
+      
+      //product criterion doesn't hold
+      //try length 1 crit
+      if (!(this->pairs.status.hasTRep(index,s)))
+      { 
+        
+        if (extended_product_criterion(this->generators[index], this->generators[s])){
+          this->extendedProductCriterions++;
+          this->pairs.status.hasTRep(index,s);
+        }
+        else
+          this->pairs.introducePair(Pair(index,s,generators));
+        //this->pairs.status.setToUncalculated(index,s);
+      } 
+    }
+    is_it++;
+  }
+  
+  
+  
+  /*
   while(is_it!=is_end){
     int index =this->lm2Index[*is_it];
     if (index!=s){
@@ -430,6 +485,8 @@ if ((e.length==2)&&(e.ecart()==0)){
     }
     is_it++;
   }
+   
+  */
   this->easyProductCriterions+=this->leadingTerms.length()-intersecting_terms.length();
 }
 
