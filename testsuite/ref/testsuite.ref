@@ -57,6 +57,26 @@ x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) + 1
 0 
 0 
 
+Testing last term
+poly x(0)*x(1) + x(0)*x(4) 
+last term 0, 4, 
+
+Testing last term
+poly x(0)*x(1) + x(1)*x(4) 
+last term 1, 4, 
+
+Testing last term
+poly x(0)*x(1) + x(2)*x(4) 
+last term 2, 4, 
+
+Testing last term
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+last term 2, 4, 
+
+Testing last term
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+last term 2, 4, last term via BoolSet: x(2)*x(4) 
+
 Finished.
 ----------------------
 Executing testsuite/testring
