@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/06/08 08:54:33  dreyer
+ * FIX FREEs memory
+ *
  * Revision 1.18  2006/06/07 11:54:26  dreyer
  * ADD variantes for usedVariables
  *
@@ -420,8 +423,27 @@ class CDDInterface<ZDD>:
         *iter = idx;
         ++iter;
       }
-        
+    FREE(pIdx);
   }
+
+  /// Get used variables (assuming indices of length nSupport())
+  int* usedIndices() const {
+
+    return Cudd_SupportIndex( manager().getManager(), 
+                                   m_interfaced.getNode() );
+
+
+//     size_type nlen(nVariables());
+
+//     std::vector<idx_type>::iterator iter(indices.begin());
+//     for(size_type idx = 0; idx < nlen; ++idx)
+//       if (pIdx[idx] == 1){
+//         *iter = idx;
+//         ++iter;
+//       }
+//     FREE(pIdx);
+  }
+
 
   /// Start of first term
   first_iterator firstBegin() const {
