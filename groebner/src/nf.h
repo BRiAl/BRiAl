@@ -15,10 +15,14 @@
 BEGIN_NAMESPACE_PBORIGB
 static int select1(GroebnerStrategy& strat, const Polynomial& p);
 static int select1(GroebnerStrategy& strat, const Monomial& m);
+static int select_short(GroebnerStrategy& strat, const Polynomial& p);
+static int select_short(GroebnerStrategy& strat, const Monomial& m);
 
 Polynomial nf1(GroebnerStrategy& strat, Polynomial p);
 
 Polynomial nf2(GroebnerStrategy& strat, Polynomial p);
+Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p);
+
 Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p);
 Polynomial nf_delaying_exchanging(GroebnerStrategy& strat, Polynomial p);
 
@@ -60,6 +64,8 @@ template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat);
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p);
 Polynomial nf3(GroebnerStrategy& strat, Polynomial p);
+Polynomial nf3_short(GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif

@@ -134,6 +134,68 @@ public:
     
   }
 };
+class LessEcartThenLessWeightedLengthInStrat{
+public:
+  GroebnerStrategy* strat;
+  LessEcartThenLessWeightedLengthInStrat(GroebnerStrategy& strat){
+    this->strat=&strat;
+  }
+  bool operator() (const Monomial& a , const Monomial& b){
+    int i=strat->lm2Index[a];
+    int j=strat->lm2Index[b];
+    if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
+      if (strat->generators[i].ecart()<strat->generators[j].ecart())
+        return true;
+      else
+        return false;
+    }
+    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
+    
+  }
+};
+class LessUsedTailVariablesThenLessWeightedLengthInStrat{
+public:
+  GroebnerStrategy* strat;
+  LessUsedTailVariablesThenLessWeightedLengthInStrat(GroebnerStrategy& strat){
+    this->strat=&strat;
+  }
+  bool operator() (const Monomial& a , const Monomial& b){
+    int i=strat->lm2Index[a];
+    int j=strat->lm2Index[b];
+    deg_type d1=strat->generators[i].tailVariables.deg();
+    deg_type d2=strat->generators[j].tailVariables.deg();;
+    if (d1!=d2){
+      return (d1<d2);
+          }
+    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
+    
+  }
+};
+
+class LessCombinedManySizesInStrat{
+public:
+  GroebnerStrategy* strat;
+  LessCombinedManySizesInStrat(GroebnerStrategy& strat){
+    this->strat=&strat;
+  }
+  bool operator() (const Monomial& a , const Monomial& b){
+    int i=strat->lm2Index[a];
+    int j=strat->lm2Index[b];
+        deg_type d1=strat->generators[i].tailVariables.deg();
+    deg_type d2=strat->generators[j].tailVariables.deg();
+    wlen_type w1=d1;
+    wlen_type w2=d2;
+    w1*=strat->generators[i].length;
+    w1*=strat->generators[i].ecart();
+    w2*=strat->generators[j].length;
+    w2*=strat->generators[j].ecart();
+    return w1<w2;
+    
+        
+  }
+};
+
+
 
 END_NAMESPACE_PBORIGB
 

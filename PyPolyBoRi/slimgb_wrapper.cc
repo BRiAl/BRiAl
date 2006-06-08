@@ -31,5 +31,8 @@ void export_slimgb(){
   class_ <std::vector<BoolePolynomial> >("BoolePolynomialVector")
     .def(vector_indexing_suite<std::vector<BoolePolynomial> >());
   def("parallel_reduce", parallel_reduce);
-  def("redTail", redTail);
+  def("red_tail", redTail);
+  def("red_tail_short", red_tail_short);
+  def("nf3_short", nf3_short);
+  def("nf3", nf3);
 }

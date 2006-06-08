@@ -71,6 +71,60 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
   }
   return p;
 }
+
+
+
+Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
+  //parameter by value, so I can modify it
+  int index;
+  while((index=select_short(strat,p))>=0){
+    assert(index<strat.generators.size());
+    Polynomial* g=&strat.generators[index].p;
+    if (g->nNodes()==1){
+      idx_type v=*(g->navigation());
+      if (g->length()==1)
+      {
+        p=Polynomial(p.diagram().subset0(v));
+      } else {
+        Polynomial p2=Polynomial(p.diagram().subset1(v));
+        p=Polynomial(p.diagram().subset0(v))+p2;
+      }
+    } else {
+      
+      if (strat.generators[index].length==1){
+        assert(strat.generators[index].p.length()==1);
+        assert(strat.generators[index].lm==strat.generators[index].p.lead());
+        //if (p!=strat.generators[index].lm)
+        p=reduce_by_monom(p,strat.generators[index].lm);
+        //else
+        //  p=Polynomial(0);
+      } else{
+        assert(!(p.isZero()));
+        assert(p.reducibleBy(*g));
+        assert(!(g->isZero()));
+        if (strat.generators[index].length==2)
+          p=reduce_by_binom(p,strat.generators[index].p);
+        else{
+          if (strat.generators[index].deg==1){
+            //implies lmDeg==1, ecart=0
+            //cout<<"REDUCE_COMPLETE\n";
+            assert(strat.generators[index].ecart()==0);
+            assert(strat.generators[index].lmDeg==1);
+            p=reduce_complete(p,strat.generators[index].p);
+          }
+          else{
+            p=spoly(p,*g);
+          }
+          
+        }
+      }
+    }
+  }
+  return p;
+}
+
+
+
 Polynomial nf3(GroebnerStrategy& strat, Polynomial p){
   int index;
   while((index=select1(strat,p))>=0){
@@ -86,6 +140,22 @@ Polynomial nf3(GroebnerStrategy& strat, Polynomial p){
   }
   return p;
 }
+Polynomial nf3_short(GroebnerStrategy& strat, Polynomial p){
+  int index;
+  while((index=select_short(strat,p))>=0){
+    assert(index<strat.generators.size());
+    Polynomial* g=&strat.generators[index].p;
+    
+    if(strat.generators[index].lm!=p.lead()){
+      p=reduce_complete(p,strat.generators[index].p);
+      
+    } else{
+      p=spoly(p,*g);
+    }
+  }
+  return p;
+}
+
 const int FARE_WORSE=10;
 Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p){
   //parameter by value, so I can modify it
@@ -472,13 +542,14 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   s=inp.size();
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
   deg_type max_sugar=0;
+  unsigned int max_length=0;
   for(i=0;i<s;i++){
     if (inp[i].isOne()){
       result.push_back(inp[i]);
       return result;
     }
     PolynomialSugar to_push=PolynomialSugar(inp[i]);
-    
+    max_length=std::max(max_length,inp[i].length());
     max_sugar=std::max(max_sugar,to_push.getSugar());
     
     to_reduce.push(to_push);
@@ -524,7 +595,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     s=curr.size();
     for(i=0;i<s;i++){
       if (!(curr[i].isZero())){
-        if ((curr[i].getSugar()<=max_sugar)||(curr[i].isOne())){
+        if ((curr[i].getSugar()<=max_sugar)||(curr[i].value().length()<=3*max_length+5)||(curr[i].isOne())){
           if (curr[i].isOne()){
             result.clear();
             result.push_back(curr[i].value());
@@ -543,26 +614,63 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   return result;
   
 }
+typedef LessWeightedLengthInStrat StratComparerForSelect;
+static int select_short(GroebnerStrategy& strat, const Polynomial& p){
+  MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
+  //Polynomial workaround =Polynomial(ms);
+  
+  if (ms.emptiness())
+    return -1;
+  else {
+    
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    
+    int res=strat.lm2Index[min];
+    if ((strat.generators[res].weightedLength<=2)||(strat.generators[res].ecart()==0)) return res;
+    else return -1;
+  }
+  
+}
+static int select_short(GroebnerStrategy& strat, const Monomial& m){
+  MonomialSet ms=strat.leadingTerms.intersect(m.divisors());
+  if (ms.emptiness())
+    return -1;
+  else {
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    int res=strat.lm2Index[min];
+    if ((strat.generators[res].weightedLength<=2)||(strat.generators[res].ecart()==0)) return res;
+    else return -1;
+
+  }
+}
+
 
 
 static int select1(GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
-  Polynomial workaround =Polynomial(ms);
+  //Polynomial workaround =Polynomial(ms);
+  
   if (ms.emptiness())
     return -1;
   else {
-    Monomial min=*(std::min_element(workaround.begin(),workaround.end(), LessWeightedLengthInStrat(strat)));
     
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
+
     return strat.lm2Index[min];
+     
   }
+  
 }
 static int select1(GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.intersect(m.divisors());
   if (ms.emptiness())
     return -1;
   else {
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
     return strat.lm2Index[min];
   }
 }
@@ -576,4 +684,15 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   }
   return res;
 }
+Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p){
+  Polynomial res;
+  while(!(p.isZero())){
+    Polynomial lm=p.lead();
+    res+=lm;
+    p-=lm;
+    p=nf3_short(strat,p);
+  }
+  return res;
+}
+
 END_NAMESPACE_PBORIGB
