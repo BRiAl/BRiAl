@@ -627,7 +627,7 @@ static int select_short(GroebnerStrategy& strat, const Polynomial& p){
     Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     
     int res=strat.lm2Index[min];
-    if ((strat.generators[res].weightedLength<=2)||(strat.generators[res].ecart()==0)) return res;
+    if ((strat.generators[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
     else return -1;
   }
   
@@ -640,7 +640,7 @@ static int select_short(GroebnerStrategy& strat, const Monomial& m){
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     int res=strat.lm2Index[min];
-    if ((strat.generators[res].weightedLength<=2)||(strat.generators[res].ecart()==0)) return res;
+    if ((strat.generators[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
     else return -1;
 
   }
@@ -691,6 +691,23 @@ Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p){
     res+=lm;
     p-=lm;
     p=nf3_short(strat,p);
+  }
+  return res;
+}
+Polynomial red_tail_self_tuning(GroebnerStrategy& strat, Polynomial p){
+  Polynomial res;
+  int orig_length=p.length();
+  bool short_mode=false;
+  while(!(p.isZero())){
+    Polynomial lm=p.lead();
+    res+=lm;
+    p-=lm;
+    if (short_mode)
+      p=nf3_short(strat,p);
+    else
+      p=nf3(strat,p);
+    if ((!short_mode)&&(p.length()+res.length()>2*orig_length+5))
+      short_mode=true;
   }
   return res;
 }

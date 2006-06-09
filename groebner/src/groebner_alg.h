@@ -93,9 +93,12 @@ typedef std::map<Monomial,int> lm2Index_map_type;
 #endif
 class GroebnerStrategy{
 public:
+  GroebnerStrategy(const GroebnerStrategy& orig);
   void addGenerator(const BoolePolynomial& p);
   void addGeneratorDelayed(const BoolePolynomial & p);
-    PairManager pairs;
+  
+  bool variableHasValue(idx_type i);
+  PairManager pairs;
   PolyEntryVector generators;
   MonomialSet leadingTerms;
    unsigned int reductionSteps;
@@ -103,18 +106,19 @@ public:
   int currentDegree;
   int chainCriterions;
   int variableChainCriterions;
+  int easyProductCriterions;
+  int extendedProductCriterions;
+  int averageLength;
+  
+  lm2Index_map_type lm2Index;
+  
   GroebnerStrategy():pairs(*this){
     chainCriterions=0;
     variableChainCriterions=0;
     extendedProductCriterions=0;
   }
 
-  int easyProductCriterions;
-  int extendedProductCriterions;
-  int averageLength;
-  
-  lm2Index_map_type lm2Index;
-  Polynomial nextSpoly(){
+    Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);
   }
   void addNonTrivialImplicationsDelayed(const Polynomial& p);  

@@ -65,7 +65,20 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   return res;
   
 }
-
+GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
+:pairs(orig.pairs),generators(orig.generators),leadingTerms(orig.leadingTerms), lm2Index(orig.lm2Index)
+{
+ 
+  reductionSteps=orig.reductionSteps;
+  normalForms=orig.normalForms;
+  currentDegree=orig.currentDegree;
+  chainCriterions=orig.chainCriterions;
+  variableChainCriterions=orig.variableChainCriterions;
+  easyProductCriterions=orig.easyProductCriterions;
+  extendedProductCriterions=orig.extendedProductCriterions;
+  averageLength=orig.averageLength;
+  this->pairs.strat=this; 
+}
 /// assumes that divisibility condition is fullfilled
 class ChainCriterion{
   /// @todo: connect via vars
@@ -594,5 +607,22 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
 }
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
   this->pairs.introducePair(Pair(p));
+}
+
+
+
+
+bool GroebnerStrategy::variableHasValue(idx_type v){
+  int i;
+  int s=this->generators.size();
+  Monomial m=Variable(v);
+  for(i=0;i<s;i++){
+    if (this->generators[i].deg==1){
+      if (this->generators[i].usedVariables==m){
+        return true;
+      }
+    }
+  }
+  return false;
 }
 END_NAMESPACE_PBORIGB

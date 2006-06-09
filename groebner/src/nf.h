@@ -67,5 +67,6 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p);
 Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p);
 Polynomial nf3(GroebnerStrategy& strat, Polynomial p);
 Polynomial nf3_short(GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail_self_tuning(GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif
