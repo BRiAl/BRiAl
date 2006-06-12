@@ -78,8 +78,7 @@ public:
   Polynomial nextSpoly(const PolyEntryVector& gen);
   bool pairSetEmpty() const;
   void cleanTopByChainCriterion();
-  
- };
+   };
 class MonomialHasher{
 public:
   size_t operator() (const Monomial & m) const{
@@ -121,7 +120,9 @@ public:
     Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);
   }
-  void addNonTrivialImplicationsDelayed(const Polynomial& p);  
+  void addNonTrivialImplicationsDelayed(const Polynomial& p);
+  void propagate(const PolyEntry& e); 
+  void propagate_step(const PolyEntry& e, std::set<int> others);
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);

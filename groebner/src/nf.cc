@@ -674,6 +674,23 @@ static int select1(GroebnerStrategy& strat, const Monomial& m){
     return strat.lm2Index[min];
   }
 }
+
+static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
+  int index;
+  while((index=select1(strat,p))>=0){
+    assert(index<strat.generators.size());
+    Polynomial* g=&strat.generators[index].p;
+    
+    if((strat.generators[index].ecart()==0) && (strat.generators[index].length<=4) &&(strat.generators[index].lm!=p.lead())){
+      p=reduce_complete(p,strat.generators[index].p);
+      
+    } else{
+      p=spoly(p,*g);
+    }
+  }
+  return p;
+  
+}
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   while(!(p.isZero())){
@@ -711,5 +728,6 @@ Polynomial red_tail_self_tuning(GroebnerStrategy& strat, Polynomial p){
   }
   return res;
 }
+
 
 END_NAMESPACE_PBORIGB

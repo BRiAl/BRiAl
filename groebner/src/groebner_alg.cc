@@ -9,6 +9,7 @@
 
 #include "groebner_alg.h"
 #include <algorithm>
+#include <set>
 BEGIN_NAMESPACE_PBORIGB
 static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
@@ -387,37 +388,55 @@ public:
   }
 
 };
+
+
+bool should_propagate(const PolyEntry& e){
+ return ((((e.length==1) && (e.deg>0)))||((e.length==2)&&(e.ecart()==0)));
+
+}
+
+void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
+  
+  if (should_propagate(e)){
+    Monomial lm=e.lm;
+    int i;
+    int s=generators.size();
+    for(i=0;i<s;i++){      
+      if ((this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(lm))){
+        Polynomial new_p;
+        if (e.length==1){
+          new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
+        } else {
+          assert(e.length==2);
+          new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
+        }
+        if (generators[i].p!=new_p){
+          generators[i].p=new_p;
+          generators[i].recomputeInformation();
+          others.insert(i);
+          
+        }
+      }
+    }
+  }
+  if (!(others.empty()))
+  { ///@todo: should take the one with smallest lm
+    std::set<int>::iterator ob=others.begin();
+    int next=*ob;
+    others.erase(ob);
+    this->propagate_step(generators[next],others);
+  }
+}
+void GroebnerStrategy::propagate(const PolyEntry& e){
+  if (should_propagate(e)){
+    propagate_step(e, std::set<int>());
+  }
+}
+
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
-  if ((e.length==1) && (e.deg>0)){
-    assert(e.p.length()==1);
-    Monomial m=e.lm;
-    int i;
-    for(i=0;i<this->generators.size();i++){
-      if ((this->generators[i].length>1) &&(this->generators[i].tailVariables.reducibleBy(m))){
-        Polynomial new_p=cancel_monomial_in_tail(this->generators[i].p,m);
-        if (new_p!=this->generators[i].p){
-          this->generators[i].p=new_p;
-          this->generators[i].recomputeInformation();
-        }
-      }
-    }
-  }
-if ((e.length==2)&&(e.ecart()==0)){
-    Monomial m=e.lm;
-    int i;
-    for(i=0;i<this->generators.size();i++){
-      if ((this->generators[i].length>1)&&(this->generators[i].tailVariables.reducibleBy(m))){
-        Polynomial new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
-        if (new_p!=this->generators[i].p){
-          this->generators[i].p=new_p;
-          this->generators[i].recomputeInformation();
-        }
-      }
-    }
-  }
-  
+  this->propagate(e);
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();
