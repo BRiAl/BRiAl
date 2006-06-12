@@ -496,8 +496,8 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     
   //other_terms.unateProductAssign((crit_vars*lm).divisors());
     {
-      other_terms.unateProductAssign(lm.diagram());
-      other_terms.unateProductAssign(crit_vars.divisors());
+      //other_terms.unateProductAssign(lm.diagram());
+      //other_terms.unateProductAssign(crit_vars.divisors());
 
     //crit_vars*=lm; //vars from lm are in any term in crit_terms anyway
     BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms);
@@ -508,6 +508,14 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         crit_terms=crit_terms.diff(min_crit.diagram());
       else
         crit_terms=crit_terms.diff(min_crit.multiples(crit_vars));
+      
+      
+      //the following line can be implemented more efficiently
+      if (!(other_terms.intersect(min_crit.divisors()).emptiness())){
+        continue;
+      }
+      
+      
       BooleSet act_l_terms=leadingTerms.intersect(min_crit.divisors());
       assert(!(act_l_terms.emptiness()));
       
