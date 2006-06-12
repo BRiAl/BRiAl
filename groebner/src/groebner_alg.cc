@@ -501,9 +501,13 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
     //crit_vars*=lm; //vars from lm are in any term in crit_terms anyway
     BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms);
+    int deg=Polynomial(crit_terms).deg();
     while(!(crit_terms.emptiness())){
       Monomial min_crit=crit_terms.lastLexicographicalTerm();
-      crit_terms=crit_terms.diff(min_crit.multiples(crit_vars));
+      if (min_crit.deg()==deg)
+        crit_terms=crit_terms.diff(min_crit.diagram());
+      else
+        crit_terms=crit_terms.diff(min_crit.multiples(crit_vars));
       BooleSet act_l_terms=leadingTerms.intersect(min_crit.divisors());
       assert(!(act_l_terms.emptiness()));
       
@@ -532,67 +536,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     
     //!!!!! here we add the lm !!!!
     leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
- /* is_it=intersecting_terms.begin();
 
-  while(is_it!=is_end){
-    int index =this->lm2Index[*is_it];
-    if (index!=s){
-      
-      //product criterion doesn't hold
-      //try length 1 crit
-      if (!(this->pairs.status.hasTRep(index,s)))
-      { 
-        
-        if (extended_product_criterion(this->generators[index], this->generators[s])){
-          this->extendedProductCriterions++;
-          this->pairs.status.hasTRep(index,s);
-        }
-        else
-          this->pairs.introducePair(Pair(index,s,generators));
-        //this->pairs.status.setToUncalculated(index,s);
-      } 
-    }
-    is_it++;
-  }
-  */
-  
-  
-  /*
-  while(is_it!=is_end){
-    int index =this->lm2Index[*is_it];
-    if (index!=s){
-      
-      //product criterion doesn't hold
-      //try length 1 crit
-      if (!(((generators[index].length==1) &&(generators[s].length==1))||extended_product_criterion(generators[s], generators[index])))
-      {        
-        this->pairs.introducePair(Pair(index,s,generators));
-        this->pairs.status.setToUncalculated(index,s);
-      } else this->extendedProductCriterions++;
-    }
-    is_it++;
-  }
-   
-  */
-  
-  //if (e.literal_factors.trivial()){
-  /*  Polynomial negation=Polynomial(true)-e.p;
-    LiteralFactorization fac_neg(negation);
-    if (!(fac_neg.trivial())){
-      cout<<"!!!!!!!!!!!!!!!!!"<<endl;
-      cout<<"found new implications"<<endl;
-      LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
-      LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
-      while(nb!=ne){
-        
-        idx_type var=nb->first;
-        bool val=(!(nb->second));
-        this->addGeneratorDelayed(Monomial(Variable(var))+Polynomial(val));
-        nb++;
-      }
-      this->addGeneratorDelayed(Polynomial(true)-fac_neg.rest);
-    }
-  //}*/
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
   Polynomial negation=Polynomial(true)-p;
