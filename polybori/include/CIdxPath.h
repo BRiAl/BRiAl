@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.3  2006/04/18 07:17:24  dreyer
  * FIX bug in CIdxPath using begin() and end() from inherited template
  *
@@ -46,17 +49,22 @@
 #include "pbori_func.h"
 #include "pbori_algo.h"
 
+#include "CStringLiteral.h"
+#include "CPrintOperation.h"
+
+#include "CIdxVariable.h"
+
 #ifndef CIdxPath_h_
 #define CIdxPath_h_
 
 /** @class CIdxPath
- * @brief This template class defines a storage type for monomial indices.
- *
+ * @brief This template class defines a storage type for monomial indices
+ * and customizable "pretty" printing.
  **/
 BEGIN_NAMESPACE_PBORI
 
-template <class IdxType = CTypes::idx_type, 
-          class SeparatorType = list_separator>
+template <class IdxType = CIdxVariable<CTypes::idx_type>, 
+          class SeparatorType = CStringLiteral<CLiteralCodes::list_separator> >
 class CIdxPath:
   public std::vector<IdxType> {
 
@@ -74,7 +82,7 @@ public:
   typedef SeparatorType separator_type;
 
   /// String-like type for separator
-  typedef typename separator_type::result_type sep_value_type ;
+  // typedef typename separator_type::result_type sep_value_type ;
 
   /// Type of *this
   typedef CIdxPath<idx_type, separator_type> self;
@@ -100,17 +108,15 @@ public:
     if (base::begin() == base::end()) {
       os << 1;
     }
+
     special_first_transform( base::begin(), base::end(), 
-                             std::ostream_iterator<std::string>(os),
-                             default_varname<idx_type, std::string>(),
-                             default_varname<idx_type, 
-                             std::string>(print_separator()) );
+                             std::ostream_iterator<idx_type>(os),
+                             CPrintOperation<idx_type, separator_type>(os),
+                             project_ith<1>() );
 
     return os;
   }
 
-  /// Get printing separator
-  sep_value_type print_separator() const { return separator_type()(); }
 };
 
 /// Stream output operator

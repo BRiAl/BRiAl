@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.1  2006/04/12 16:23:54  dreyer
  * ADD template class CIDXPath<>
  *
@@ -47,7 +50,7 @@
 # include "pbori_func.h"
 
 #include "CIdxPath.h"
-
+#include "CStringLiteral.h"
 
 USING_NAMESPACE_PBORI
 
@@ -58,7 +61,7 @@ main(){
 
   try {
 
-    CIdxPath<int, list_separator> storage(5);
+    CIdxPath<CIdxVariable<int>, list_separator> storage(5);
 
     storage[1]=1;
     storage[2]=17;
@@ -66,8 +69,9 @@ main(){
     std::cout <<"Print list style: "<<std::endl;
 
     std::cout <<storage<<std::endl;
+    typedef CStringLiteral<CLiteralCodes::times> times_as_separator;
 
-    CIdxPath<int, times_as_separator> storage2(5);
+    CIdxPath<CIdxVariable<int>, times_as_separator> storage2(5);
 
     storage2[1]=1;
     storage2[2]=17;

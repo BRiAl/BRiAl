@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.12  2006/06/07 11:54:26  dreyer
  * ADD variantes for usedVariables
  *
@@ -287,7 +290,6 @@ private:
   StringType  pre_str, post_str;
 };
 
-
 class list_separator {
 
 public:
@@ -299,6 +301,7 @@ public:
 
 };
 
+/*
 class times_as_separator {
 
 public:
@@ -309,7 +312,6 @@ public:
   }
 
 };
-
 
 class print_it {
 public:
@@ -323,7 +325,7 @@ public:
   }
   std::ostream& os;
 };
-
+*/
 
 class print_all {
 public:
@@ -338,7 +340,7 @@ public:
   }
   std::ostream& os;
 };
-
+/*
 class print_it_plus {
 public:
   print_it_plus(std::ostream& os_):os(os_){}
@@ -349,6 +351,7 @@ public:
   }
   std::ostream& os;
 };
+*/
 
 class dummy_iterator {
 public:

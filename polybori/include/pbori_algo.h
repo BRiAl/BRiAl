@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.6  2006/04/21 13:13:30  dreyer
  * ADD PBoRiOutITer for more generic manipulations
  *
@@ -135,7 +138,7 @@ template <class InputIterator, class OutputIterator,
 OutputIterator 
 special_first_transform(InputIterator first, InputIterator last,
                         OutputIterator result, 
-                        FirstFunction firstop, UnaryFunction op) {
+                         UnaryFunction op, FirstFunction firstop) {
   InputIterator second(first);
   if (second != last) {
     ++second;

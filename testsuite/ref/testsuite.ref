@@ -1308,6 +1308,21 @@ x(1)*x(2)
 
 Finished.
 ----------------------
+Executing testsuite/stringlit
+----------------------
+
+ 
+""
+" "
+"+"
+" + "
+"*"
+","
+", "
+"x"
+"("
+")"
+----------------------
 Executing testsuite/leadterm
 ----------------------
 Testing leading terms

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.1  2006/04/21 13:13:30  dreyer
  * ADD PBoRiOutITer for more generic manipulations
  *
@@ -103,7 +106,7 @@ public:
   /// Postfix increment operator
   self operator++(int) { return *this; }
 
-private:
+protected:
   data_type& data;
   op_type op;
 };

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2006/07/04 14:11:03  dreyer
+ * ADD: Generic and handy treatment of string literals
+ *
  * Revision 1.46  2006/06/07 11:54:26  dreyer
  * ADD variantes for usedVariables
  *
@@ -202,6 +205,12 @@
 # include "PBoRiOutIter.h"
 
 # include "OrderedManager.h"
+
+// include definition of generic string literals
+# include "CStringLiteral.h"
+
+// include definition of generic print operation
+# include "CPrintOperation.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -630,17 +639,24 @@ BoolePolynomial::print(ostream_type& os) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::print() const" );
 
+  // defining literal variable products
+  typedef CStringLiteral<CLiteralCodes::times> times_as_separator;
 
-  typedef CIdxPath<idx_type, times_as_separator> path_type;
+  // defining path type
+  typedef CIdxPath<CIdxVariable<idx_type>, times_as_separator> path_type;
+
+  // defining literal for term separators
+  typedef CStringLiteral<CLiteralCodes::term_separator> sep_literal_type;
+
   if( isZero() )
     os << 0;
   else
     dd_transform( navigation(), path_type(),
-                  dummy_iterator(),
+                  std::ostream_iterator<path_type>(os),
                   push_back<path_type>(),
                   project_ith<1, 2>(),  
-                  print_it_plus(os),
-                  print_it(os) );
+                  CPrintOperation<path_type, sep_literal_type>(os),
+                  project_ith<1>());
   os << ' ';
   return os;
 }
