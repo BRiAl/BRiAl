@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2006/07/06 16:01:29  dreyer
+ * CHANGE: Functionals ins pbori_func.h made more consistent
+ *
  * Revision 1.32  2006/05/24 08:01:01  dreyer
  * ADD operator % and %=
  *
@@ -197,11 +200,22 @@ public:
                     change_assign<> >
   const_iterator;
 
+  /// Incrementation functional type
+  typedef 
+  binary_compose< std::plus<size_type>, 
+                  project_ith<1>, integral_constant<size_type, 1> > 
+  increment_type;
+
+  /// Decrementation functional type
+  typedef 
+  binary_compose< std::minus<size_type>, 
+                  project_ith<1>, integral_constant<size_type, 1> > 
+  decrement_type;
+
   /// Iterator type for iterating all monomials
   typedef CTermIter<size_type, navigator, 
-                    increment_value<size_type>, 
-                    decrement_value<size_type>,
-                    constant_value<size_type, 0> >
+                    increment_type, decrement_type,
+                    integral_constant<size_type, 0> >
   deg_iterator;
 
   /// Type for lists of terms

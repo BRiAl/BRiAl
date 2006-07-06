@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.48  2006/07/06 16:01:30  dreyer
+ * CHANGE: Functionals ins pbori_func.h made more consistent
+ *
  * Revision 1.47  2006/07/04 14:11:03  dreyer
  * ADD: Generic and handy treatment of string literals
  *
@@ -563,7 +566,7 @@ BoolePolynomial::usedVariables() const {
 
   // define iterator type for storing used variables (on forward branches)
   typedef CTermIter< std::set<idx_type>, navigator, 
-    inserting< std::set<idx_type> >, project_ith<1>, project_ith<1> >
+    inserts< std::set<idx_type> >, project_ith<1>, project_ith<1> >
   the_iterator;
 
   // initialize iteration
@@ -582,7 +585,7 @@ BoolePolynomial::usedVariables() const {
   dd_transform( navigation(), dummy_iterator(),
                 dummy_iterator(),
                 insert_second_to_list<path_type,
-                  dummy_iterator,idx_type>(indices),
+                   dummy_iterator,idx_type>(indices),
                 project_ith<1, 2>(),  
                 project_ith<1>()
                 );

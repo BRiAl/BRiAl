@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/07/06 16:01:29  dreyer
+ * CHANGE: Functionals ins pbori_func.h made more consistent
+ *
  * Revision 1.13  2006/07/04 14:11:03  dreyer
  * ADD: Generic and handy treatment of string literals
  *
@@ -103,8 +106,8 @@ public:
 
 };
 
-// /// @class change_assign
-// /// @brief Accessing .changeAssign()
+/// @class change_assign
+/// @brief Accessing .changeAssign()
 template <class RhsType = void,
           class LhsType = typename pbori_traits<RhsType>::idx_type >
 class change_assign;
@@ -133,6 +136,20 @@ public:
   } 
 
 };
+
+/// @class unite_assign
+/// @brief Accessing .uniteAssign()
+template <class RhsType,
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
+class unite_assign:
+  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+
+public:
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    return (rhs.uniteAssign(lhs));
+  } 
+};
+
 
 // @class project_ith
 /// @brief Accessing ith of n arguments 
@@ -220,113 +237,6 @@ public:
   } 
 };
 
-/// @class set_constant
-/// @brief Generates default value for first given value type
-template <class ValueType, unsigned int CONSTVAL = 0>
-class constant_value:
-  public std::unary_function<ValueType, ValueType> {
-public:
-  /// Functional operator 
-  ValueType operator() (...) const {
-    return CONSTVAL;
-  } 
-};
-
-
-/// @class default_varname
-/// @brief Generate variable name
-template <class IdxType, 
-          class OutType = std::string, class StringType = OutType>
-class default_varname:
-  public std::unary_function<IdxType, OutType>{
-
-public:
-
-  /// Get type of *this
-  typedef default_varname<IdxType, OutType> self;
-
-  /// Get base type
-  typedef std::unary_function<IdxType, OutType> base;
-
-  /// Default constructor
-  default_varname():
-    pre_str("x("), post_str(")"), base() {}
-
-  /// Constructor with custom pre and post strings
-  default_varname(const StringType& before):
-    pre_str(before), post_str(")"), base() {
-    pre_str.append("x(");
-  }
-
-   /// Constructor with custom before and after strings
-  default_varname(const StringType& before, const StringType& after):
-    pre_str(before), post_str(")"), base() {
-    pre_str.append("x(");
-    post_str.append(after);
-  }
-
-  /// Constructor with custom before, after, pre and post strings
-  default_varname(const StringType& before,
-                  const StringType& pre, const StringType& post, 
-                  const StringType& after):
-    pre_str(before), post_str(post), base() {
-    pre_str.append(pre);
-    post_str.append(after);
-  }
-
- /// Copy constructor 
-  default_varname(const self& rhs):
-    pre_str(rhs.pre_str), post_str(rhs.post_str), base() {}
-
-  /// Functional operator 
-  OutType operator() (IdxType idx)  {
-    std::ostringstream oss;
-    oss << pre_str << idx << post_str;
-
-    return oss.str();
-  } 
-
-private:
-  StringType  pre_str, post_str;
-};
-
-class list_separator {
-
-public:
-  typedef const char* result_type;
-
-  result_type operator()(){
-    return ", ";
-  }
-
-};
-
-/*
-class times_as_separator {
-
-public:
-  typedef const char* result_type;
-
-  result_type operator()(){
-    return "*";
-  }
-
-};
-
-class print_it {
-public:
-
-  print_it(std::ostream& os_):os(os_){}
-
-  template<class Type>
-  Type& operator()(Type& val){
-    os <<val;
-    return val;
-  }
-  std::ostream& os;
-};
-*/
-
 class print_all {
 public:
 
@@ -340,49 +250,90 @@ public:
   }
   std::ostream& os;
 };
-/*
-class print_it_plus {
-public:
-  print_it_plus(std::ostream& os_):os(os_){}
-  template<class Type>
-  Type& operator()(Type& val){
-    os <<" + "<<val;
-    return val;
-  }
-  std::ostream& os;
-};
-*/
 
+
+/// @class dummy_iterator
+/// @brief An iterator which virtually does nothing.
 class dummy_iterator {
 public:
+
+  /// Type of *this
   typedef dummy_iterator self;
 
   template <class Type>
-  self& operator=(const Type&) { return *this;}
+  const self& operator=(const Type&) const { return *this;}
 
-  self& operator*() { return *this;}
-  self& operator++() { return *this;}
-  self& operator++(int) { return *this;}
+  const self& operator*() const { return *this;}
+  const self& operator++() const { return *this;}
+  const self& operator++(int) const { return *this;}
 };
 
-template <class ValueType>
-class increment_value {
+
+/// @class integral_constant
+/// @brief integral_constant<int_type, NUM>()() returns NUM of int_type, instead
+/// of possibly arguments.
+/// integral_constant<int_type, NUM, other_type>()() returns conversion of
+/// NUM of int_type to other_type.
+template <class IntType, IntType INTCONST, class ResultType = IntType>
+struct integral_constant {
+
+  typedef ResultType result_type;
+  result_type operator()(...) const { return INTCONST; }
+};
+
+/// @class static_compose
+/// @brief Compose a binary function with two default constructable unary
+/// functions.
+template <class BinaryOp, class FirstOp, class SecondOp>
+class binary_compose:
+  public BinaryOp {
 
 public:
-  ValueType operator()(const ValueType& val, const ValueType&) const {
-    return (val + 1);
+
+  /// Define types corresponding to template arguments
+  //@{
+  typedef BinaryOp base;
+  typedef FirstOp first_op_type;
+  typedef SecondOp second_op_type;
+  //@}
+
+  // Constructor
+  binary_compose(const base& binop = base(),
+                 const first_op_type& unop1 = first_op_type(),
+                 const second_op_type& unop2 = second_op_type() ): 
+    base(binop), first_op(unop1), second_op(unop2) {}
+
+  /// Getting inherited types
+  typedef typename base::result_type result_type;
+
+  /// The composed operation for constant arguments
+  template <class FirstType, class SecondType>
+  result_type operator()(const FirstType& first, 
+                         const SecondType& second) {
+    return base::operator()(first_op(first), second_op(second));
   }
+
+  /// The composed operation for constant second argument
+  template <class FirstType, class SecondType>
+  result_type operator()(FirstType& first, 
+                         const SecondType& second) {
+    return base::operator()(first_op(first), second_op(second));
+  }
+
+  /// The composed operation for constant first argument
+  template <class FirstType, class SecondType>
+  result_type operator()(const FirstType& first, 
+                         SecondType& second) {
+    return base::operator()(first_op(first), second_op(second));
+  }
+
+protected:
+  first_op_type first_op;
+  second_op_type second_op;
 };
 
-template <class ValueType>
-class decrement_value {
-
-public:
-  ValueType operator()(const ValueType& val, const ValueType&) const {
-    return (val - 1);
-  }
-};
-
+/// @class maximum_iteration
+/// @brief Returns maximun of given argument and previous calls
 template<class ValueType>
 class maximum_iteration {
 public:
@@ -392,11 +343,12 @@ public:
     return max = std::max(max, val);
   }
 
-
 private:
   ValueType & max;
 };
 
+/// @class dd_add_assign
+/// @brief Defines addition operation with assignment for decision diagrams.
 template <class DDType>
 class dd_add_assign {
 public:
@@ -414,14 +366,14 @@ public:
       (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
 
 #endif
-  };
-
+  }
 };
 
+/// @class times_indexed_var
+/// @brief Defines multiplication operation with the idx-th variable
 template <class DDType, class IdxType = typename DDType::idx_type>
 class times_indexed_var {
 public:
-
 
   DDType& operator()(DDType& lhs, IdxType idx) const {
 
@@ -439,7 +391,8 @@ public:
 
 };
 
-
+/// @class append_indexed_divisor
+/// @brief Defines multiplication (with assignment) with the idx-th variable
 template <class DDType, class IdxType = typename DDType::idx_type>
 class append_indexed_divisor {
 public:
@@ -452,16 +405,12 @@ public:
 
 };
 
-/// @class inserting
+/// @class inserts
 /// @brief Accessing .insert()
 template <class RhsType = void,
           class LhsType = typename RhsType::value_type >
-class inserting;
-
-/// @class inserting
-/// @brief Accessing .insert()
-template <class RhsType, class LhsType>
-class inserting {
+class inserts:
+  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -470,8 +419,9 @@ public:
   } 
 
 };
-/// @class inserting
-/// @brief Accessing .insert()
+
+/// @class insert_second_to_list
+/// @brief Insert second argument to a given list
 template <class ListType, class RhsType, class LhsType>
 class insert_second_to_list {
 public:

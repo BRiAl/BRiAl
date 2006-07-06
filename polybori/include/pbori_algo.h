@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/07/06 16:01:29  dreyer
+ * CHANGE: Functionals ins pbori_func.h made more consistent
+ *
  * Revision 1.7  2006/07/04 14:11:03  dreyer
  * ADD: Generic and handy treatment of string literals
  *
@@ -145,19 +148,6 @@ special_first_transform(InputIterator first, InputIterator last,
     result = std::transform(first, second, result, firstop);
   }
   return std::transform(second, last, result, op);
-}
-
-
-/// Function templates for transforming decision diagrams 
-template< class NaviType, class TermType, class OutIterator,
-          class ThenBinaryOperator >
-void
-transform( const NaviType& navi, const TermType& init, 
-              const OutIterator& result, 
-              const ThenBinaryOperator& then_binop ) {
-
-
-
 }
 
 

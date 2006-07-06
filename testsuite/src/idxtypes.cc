@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/07/06 16:01:30  dreyer
+ * CHANGE: Functionals ins pbori_func.h made more consistent
+ *
  * Revision 1.2  2006/07/04 14:11:03  dreyer
  * ADD: Generic and handy treatment of string literals
  *
@@ -61,6 +64,7 @@ main(){
 
   try {
 
+    typedef CStringLiteral<CLiteralCodes::list_separator> list_separator;
     CIdxPath<CIdxVariable<int>, list_separator> storage(5);
 
     storage[1]=1;
