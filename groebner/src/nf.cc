@@ -595,7 +595,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     s=curr.size();
     for(i=0;i<s;i++){
       if (!(curr[i].isZero())){
-        if ((curr[i].getSugar()<=max_sugar)||(curr[i].value().length()<=2*max_length+5)||(curr[i].isOne())){
+        if (((curr[i].getSugar()<=max_sugar)&&(curr[i].value().length()<=2*max_length+5))||(curr[i].isOne())){
           if (curr[i].isOne()){
             result.clear();
             result.push_back(curr[i].value());

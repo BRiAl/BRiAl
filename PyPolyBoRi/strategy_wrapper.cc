@@ -73,6 +73,21 @@ static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   return res;
   
 }
+static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, int n){
+  vector<Polynomial> res;
+  assert(!(strat.pairs.pairSetEmpty()));
+  strat.pairs.cleanTopByChainCriterion();
+  deg_type deg=strat.pairs.queue.top().sugar;
+  wlen_type wlen=strat.pairs.queue.top().wlen*2+2;
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen)&& (res.size()<n)){
+    
+    assert(strat.pairs.queue.top().sugar==deg);
+    res.push_back(strat.nextSpoly());
+    strat.pairs.cleanTopByChainCriterion();
+  }
+  return res;
+  
+}
 bool contains_one(const GroebnerStrategy& strat){
   int s=strat.generators.size();
   int i;
@@ -94,6 +109,7 @@ void export_strategy(){
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
   .def("someSpolysInNextDegree", someNextDegreeSpolys)
+  .def("smallSpolysInNextDegree",small_next_degree_spolys)
   .def("__len__",nGenerators)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)
