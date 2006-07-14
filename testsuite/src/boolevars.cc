@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.4  2006/03/27 13:47:58  dreyer
  * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
  *
@@ -73,6 +76,12 @@ main(){
     zeroPoly += x;
     std::cout << zeroPoly <<std::endl;
 
+
+    std::cout << "var(1) > var(2)" <<std::endl;
+    std::cout << greater_variable(1, 2) <<std::endl;
+
+    std::cout << "var(2) > var(1)" <<std::endl;
+    std::cout << greater_variable(2, 1) <<std::endl;
     std::cout << "Finished."<<std::endl;
   }
   catch (PBoRiError& err) {

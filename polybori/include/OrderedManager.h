@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.2  2006/05/24 07:44:57  bricken
  * + made destructor virtual
  *
@@ -87,6 +90,8 @@ public:
   virtual ~OrderedManagerBase() { }
 
   /// Comparison of monomials
+  virtual comp_type compare(idx_type, idx_type) const = 0;
+
   virtual comp_type compare(const monom_type&, const monom_type&) const = 0;
 
   /// Get leading term
@@ -140,10 +145,17 @@ public:
   // Destructor
   ~OrderedManager() { }
 
+  /// Comparison of indices
+  comp_type compare(idx_type lhs, idx_type rhs) const {
+    return ordering.compare(lhs, rhs);
+  }
+
   /// Comparison of monomials
   comp_type compare(const monom_type& lhs, const monom_type& rhs) const {
     return ordering.compare(lhs, rhs);
   }
+
+
 
   /// Get leading term
   monom_type lead(const poly_type& rhs) const {

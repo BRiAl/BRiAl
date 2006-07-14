@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.6  2006/05/27 11:04:25  bricken
  * + optimization remark
  *
@@ -254,6 +257,11 @@ LCM(const BooleMonomial& lhs, const BooleMonomial& rhs ){
 
   return lhs.LCM(rhs);
 }
+
+/// @function greater_variable
+/// @brief Checks whether BooleVariable(lhs) > BooleVariable(rhs) 
+BooleMonomial::bool_type
+greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
 
 END_NAMESPACE_PBORI
 

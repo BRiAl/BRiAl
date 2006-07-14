@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.4  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -318,5 +321,15 @@ BooleMonomial::multiples(const self& monom) const {
   return m_poly.diagram().unateProduct(monom.divisors());
 }
 
+/// @function greater_variable
+/// @brief  
+BooleMonomial::bool_type
+greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
+
+  PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
+
+  return
+    (BoolePolyRing::activeManager().compare(lhs, rhs)==CTypes::greater_than);
+}
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.2  2006/03/20 09:52:57  dreyer
  * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
  *
@@ -65,5 +68,6 @@ BooleVariable::operator const BoolePolynomial&() const {
 
   return m_poly;
 }
+
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.2  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -66,7 +69,20 @@ LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   if (rhs_start == rhs_finish)
     return CTypes::greater_than;
 
-  return (*start < *rhs_start?  CTypes::greater_than : CTypes::less_than);
+  return compare(*start, *rhs_start);
+}
+
+// Comparison of monomials
+LexOrder::comp_type
+LexOrder::compare(idx_type lhs, idx_type rhs) const {
+  
+  PBORI_TRACE_FUNC( 
+    "LexOrder::compare(monom_type, monom_type) const)" );
+
+  if (lhs == rhs)
+    return CTypes::equality;
+
+  return (lhs < rhs?  CTypes::greater_than : CTypes::less_than);
 }
 
 // Extraction of leading term

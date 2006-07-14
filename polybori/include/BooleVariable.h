@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.3  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
  *
@@ -83,7 +86,6 @@ class BooleVariable {
 private:
   BoolePolynomial m_poly;
 };
-
 
 END_NAMESPACE_PBORI
 

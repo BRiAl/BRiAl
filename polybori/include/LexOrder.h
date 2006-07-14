@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/07/14 09:02:49  dreyer
+ * ADD: greater_variable()
+ *
  * Revision 1.1  2006/05/23 12:01:58  dreyer
  * + Initial Version
  *
@@ -76,8 +79,12 @@ class LexOrder {
   /// Destructor
   ~LexOrder() {};
 
+  /// Comparison of indices corresponding to variables
+  comp_type compare(idx_type, idx_type) const;
+
   /// Comparison of monomials
   comp_type compare(const monom_type&, const monom_type&) const;
+
 
   /// Get leading term
   monom_type lead(const poly_type&) const;
