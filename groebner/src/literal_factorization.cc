@@ -77,5 +77,7 @@ bool LiteralFactorization::occursAsLeadOfFactor(idx_type v) const{
   //return ((factors.count(v)>0)||((rest.lmDeg()==1)&& ((*(rest.lead().begin()))==v)));
 }
 
-
+LiteralFactorization::var_pair_type LiteralFactorization::constr_two_var_factor(int i, int j){
+    return var_pair_type(std::min(i,j),std::max(i,j));
+}
 END_NAMESPACE_PBORIGB
