@@ -17,6 +17,11 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
   BooleSet r(p);
   Monomial::const_iterator it=used_variables.begin();
   const Monomial::const_iterator end=used_variables.end();
+  
+  
+  
+  
+  
   while(it!=end){
     idx_type v=*it;
     BooleSet s0=r.subset0(v);
@@ -25,11 +30,15 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
       r=r.change(v);//equivalently subset(1)
       cout<<"found factor0"<<endl;
     } else {
-      BooleSet s1=r.subset1(v);
-      if (s1==s0){
-        factors[v]=1;//var(v)+1 is factor
-        r=s1;//==s0
-          cout<<"found factor1"<<endl; 
+    
+    
+      if (s0.length()*2==r.length()){
+        BooleSet s1=r.subset1(v);
+            if (s1==s0){
+                factors[v]=1;//var(v)+1 is factor
+                r=s1;//==s0
+                cout<<"found factor1"<<endl; 
+            }
       }
     }
 
