@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2006/07/17 15:32:08  dreyer
+ * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
+ *
  * Revision 1.33  2006/07/06 16:01:29  dreyer
  * CHANGE: Functionals ins pbori_func.h made more consistent
  *
@@ -264,6 +267,7 @@ public:
   bool_type operator!=(bool_type) const;
   bool_type isZero() const;
   bool_type isOne() const;
+  bool_type hasConstantPart() const;
   bool_type reducibleBy(const self&) const;
   //@}
 

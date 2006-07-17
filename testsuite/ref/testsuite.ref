@@ -1309,6 +1309,18 @@ x(0)
 x(1)*x(2) 
 1 
 1 
+x(0) + x(1)*x(2) + 1  hasConstantTerm() ?
+1
+x(0) + x(1)*x(2)  hasConstantTerm() ?
+0
+x(1)*x(2) + 1  hasConstantTerm() ?
+1
+x(1)*x(2)  hasConstantTerm() ?
+0
+1  hasConstantTerm() ?
+1
+0  hasConstantTerm() ?
+0
 
 Finished.
 ----------------------

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.49  2006/07/17 15:32:08  dreyer
+ * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
+ *
  * Revision 1.48  2006/07/06 16:01:30  dreyer
  * CHANGE: Functionals ins pbori_func.h made more consistent
  *
@@ -396,6 +399,21 @@ BoolePolynomial::isOne() const {
 
   return m_dd.blankness();
 }
+
+// Check whether polynomial own the one term
+BoolePolynomial::bool_type
+BoolePolynomial::hasConstantPart() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::hasConstantPart() const" );
+
+  navigator navi(navigation());
+
+  while (!navi.isConstant() )
+    navi.incrementElse();
+
+  return navi.terminalValue();
+}
+
 
 // Leading term
 BoolePolynomial::monom_type

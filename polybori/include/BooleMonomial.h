@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/07/17 15:32:08  dreyer
+ * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
+ *
  * Revision 1.7  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -161,6 +164,8 @@ class BooleMonomial {
   //@{
   bool_type operator==(const self& rhs) const { return m_poly == rhs.m_poly; }
   bool_type operator!=(const self& rhs) const { return m_poly != rhs.m_poly; }
+  bool_type isZero() const { return m_poly.isZero(); }
+  bool_type isOne() const { return m_poly.isOne(); }
   //@}
 
   /// Test for reducibility

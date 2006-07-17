@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/07/17 15:32:09  dreyer
+ * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
+ *
  * Revision 1.15  2006/04/25 09:30:42  dreyer
  * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
@@ -249,6 +252,31 @@ main(){
     poly = 0;
     std::copy(poly.begin(), poly.end(), 
               std::ostream_iterator<BooleMonomial>(std::cout, "\n"));
+
+    poly = x + y*z +1;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl;
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+
+    poly = x + y*z;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl; 
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+ 
+    poly =  y*z +1;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl;
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+
+    poly =  y*z;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl; 
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+
+    poly = 1;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl; 
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+
+    poly = 0;
+    std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl; 
+    std::cout <<  poly.hasConstantPart() <<std::endl;
+
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {
