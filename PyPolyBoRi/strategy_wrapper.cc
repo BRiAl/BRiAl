@@ -73,13 +73,13 @@ static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   return res;
   
 }
-static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, int n){
+static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
   vector<Polynomial> res;
   assert(!(strat.pairs.pairSetEmpty()));
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
-  wlen_type wlen=strat.pairs.queue.top().wlen*2+2;
-  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen)&& (res.size()<n)){
+  wlen_type wlen=strat.pairs.queue.top().wlen;
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
     
     assert(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());

@@ -358,7 +358,8 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
     
     
     
-    if ((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
+    (strat.generators[index].ecart()==0){
       //implies lmDeg==1, ecart=0
       //cout<<"REDUCE_COMPLETE\n";
       assert(strat.generators[index].ecart()==0);
@@ -421,8 +422,16 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       pivot_el=comp;
     }
   }
-  if (false) {//(pivot_el<strat.generators[index].weightedLength){
-    Polynomial pivot=redTail(strat,curr[found].value());
+  
+  Polynomial pivot;
+  /*if (pivot_el<strat.generators[index].weightedLength){
+      pivot=redTail(strat,curr[found].value());
+      pivot_el=pivot.eliminationLength();
+      curr[found]=pivot;
+      }
+    */  
+  if (pivot_el<strat.generators[index].weightedLength){
+    
     for(int i=0;i<s;i++){
       if(i==found) continue;
       curr[i].add(curr[found].value(), curr[found].getSugar());
@@ -536,10 +545,14 @@ static void step_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
 }
 
 
-std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat){
+std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps){
+
+  
   std::vector<Polynomial> result;
   int i,s;
   s=inp.size();
+  int max_steps=average_steps*s;
+  int steps=0;
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
   deg_type max_sugar=0;
   unsigned int max_length=0;
@@ -570,9 +583,10 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
  
     int index=select1(strat,lm);
     if (index>=0){
+      steps=steps+curr.size();
       if (curr.size()>1){
-        //step_S_T(curr,result,lm, index,strat);
-        step_S(curr,result,lm, index,strat);
+        step_S_T(curr,result,lm, index,strat);
+        //step_S(curr,result,lm, index,strat);
       } else{
         step_S(curr,result,lm, index,strat);
       }
@@ -582,6 +596,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       int i,s;
       s=curr.size();
       if (s>1){
+        steps+=curr.size()-1;
         step_T_simple(curr,result,lm,strat);
       } else{
         assert(s==1);
@@ -610,6 +625,16 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       }
     }
     curr.clear();
+    if (steps>max_steps){
+        cout<<"Too many steps\n"<<endl;
+        while (!(to_reduce.empty())){
+        
+            strat.addGeneratorDelayed(to_reduce.top().value());
+            to_reduce.pop();
+ 
+        }
+        return result;
+    }
   }
   return result;
   

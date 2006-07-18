@@ -13,6 +13,8 @@ BEGIN_NAMESPACE_PBORIGB
 
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
   Monomial used_variables=p.lead();
+  lmDeg=p.lmDeg();
+  Monomial other_variables=p.usedVariables()/used_variables;
   //only vars in the lead can factor out, independently of the order
   BooleSet r(p);
   Monomial::const_iterator it=used_variables.begin();
@@ -38,6 +40,26 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 factors[v]=1;//var(v)+1 is factor
                 r=s1;//==s0
                 cout<<"found factor1"<<endl; 
+            } else {
+                if (!(Polynomial(r.lastLexicographicalTerm()).isOne())){
+                Monomial::const_iterator other_it=other_variables.begin();
+                Monomial::const_iterator other_end=other_variables.end();
+                //++other_it;//explicit is better than implicit
+                while(other_it!=other_end){
+                    
+                    idx_type v2=*other_it;
+                    cout<<"testing var"<<v2<<endl;
+                    if (r.subset1(v2)==s1){
+                        var2var_map[v]=v2;
+                        
+                        r=s1;
+                        cout<<"found factor var2var"<<v<<":"<<v2<<endl;
+                        break;
+                    }
+                    
+                    ++other_it;
+                }
+                }
             }
       }
     }
@@ -71,22 +93,51 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
 
 
 bool LiteralFactorization::trivial() const{
-  return ((this->factors.size()==0) || ((this->factors.size()==1) && this->rest.isOne()));
+  return (((this->factors.size()==0) && 
+    (this->var2var_map.size()==0) )
+    || ((this->factors.size()==1) && (this->var2var_map.size()==0) && this->rest.isOne())
+    || ((this->factors.size()==0) && (this->var2var_map.size()==1) && this->rest.isOne()))
+    ;
 }
 bool LiteralFactorization::occursAsLeadOfFactor(idx_type v) const{
-  if (factors.count(v)>0)
+  if (factors.count(v)>0){
     return true;
+  }
   else{
     if (rest.lmDeg()==1){
       BooleMonomial m=rest.lead();
       return ((*(m.begin()))==v);
     }
+    if (var2var_map.count(v)>0) return true;
   }
   return false;
   //return ((factors.count(v)>0)||((rest.lmDeg()==1)&& ((*(rest.lead().begin()))==v)));
 }
 
-LiteralFactorization::var_pair_type LiteralFactorization::constr_two_var_factor(int i, int j){
-    return var_pair_type(std::min(i,j),std::max(i,j));
+//LiteralFactorization::var_pair_type LiteralFactorization::constr_two_var_factor(int i, int j){
+//    return var_pair_type(std::min(i,j),std::max(i,j));
+//}
+
+bool maps_to_one( const std::pair<const polybori::groebner::idx_type, int> v){
+    return (v.second==1);
+}
+bool maps_to_zero( const std::pair<const polybori::groebner::idx_type, int>  v){
+    return (v.second==0);
+}
+bool LiteralFactorization::is11Factorization(){
+    if (this->factors.size()==lmDeg){
+        if (find_if(factors.begin(),factors.end(), maps_to_zero)==factors.end()){
+            return true;
+        } else return false;
+    }
+    return false;
+}
+bool LiteralFactorization::is00Factorization(){
+    if (this->factors.size()==lmDeg){
+        if (find_if(factors.begin(),factors.end(), maps_to_one)==factors.end()){
+            return true;
+        } else return false;
+    }
+    return false;
 }
 END_NAMESPACE_PBORIGB

@@ -24,15 +24,20 @@ public:
   typedef std::map<idx_type, int> map_type;
   map_type factors;
   Polynomial rest;
+  deg_type lmDeg;
   bool occursAsLeadOfFactor(idx_type v) const;
   bool trivial() const;
+  bool is11Factorization();
+  bool is00Factorization();
   //Theorem: f BoolePolynomial with factor (x+b), b in 0, 1 (considered in the usual Polynomial Ring)
   //then f/(x+b) does not involve the variable x
-  typedef std::pair<idx_type,idx_type> var_pair_type;
-  typedef std::set<var_pair_type> two_var_factors;
+  //typedef std::pair<idx_type,idx_type> var_pair_type;
+  //typedef std::set<var_pair_type> two_var_factors;
+  typedef std::map<idx_type, idx_type> var2var_map_type;
+  var2var_map_type var2var_map;
   
   protected:
-    var_pair_type constr_two_var_factor(int i, int j);
+    
     
     
 };

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.50  2006/07/18 08:47:11  bricken
+ * tuning/optimization
+ *
  * Revision 1.49  2006/07/17 15:32:08  dreyer
  * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
  *
@@ -843,7 +846,10 @@ BoolePolynomial::eliminationLength() const{
 
   if (isZero()) 
     return 0;
-
+  size_type deg=this->deg();
+  if (deg==this->lmDeg()){
+    return this->length();
+  }
 //   BoolePolynomial::navigator navi = navigation();
 //   std::list<std::list<int>  > allLists;
   

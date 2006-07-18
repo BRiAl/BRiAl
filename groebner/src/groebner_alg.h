@@ -100,6 +100,10 @@ public:
   PairManager pairs;
   PolyEntryVector generators;
   MonomialSet leadingTerms;
+  MonomialSet minimalLeadingTerms;
+  MonomialSet leadingTerms11;
+  MonomialSet leadingTerms00;
+  
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;

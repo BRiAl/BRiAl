@@ -413,6 +413,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
+          //addNonTrivialImplicationsDelayed(generators[i].p);
           others.insert(i);
           
         }
@@ -440,17 +441,42 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();
-  BooleSet other_terms=this->leadingTerms;
-  
-
-  while(it!=end){
+  BooleSet other_terms=this->minimalLeadingTerms;
+  MonomialSet intersecting_terms;
+  bool is00=e.literal_factors.is00Factorization();
+  bool is11=e.literal_factors.is11Factorization();
+  if (!((is11 && (leadingTerms==leadingTerms00))||(is00 && (leadingTerms==leadingTerms11)))){
+    if (is11)
+        other_terms=other_terms.diff(leadingTerms11);
+    if (is00)
+        other_terms=other_terms.diff(leadingTerms00);
+    while(it!=end){
     //cout<<"intersect"<<endl;
     other_terms=other_terms.subset0(*it);
     it++;
     
+    }
+    intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
   }
-  BooleSet intersecting_terms= this->leadingTerms.diff(other_terms);
-  this->easyProductCriterions+=this->leadingTerms.length()-intersecting_terms.length();
+          
+
+     
+
+  
+  
+  
+  ///@todo: correct counting of easy/extended product crit
+  if (is00){
+
+          intersecting_terms=intersecting_terms.diff(leadingTerms00);
+      }
+  else {
+    if (is11){
+      intersecting_terms=intersecting_terms.diff(leadingTerms11);
+        cout<<"is11:"<<leadingTerms11.length()<<":"<<intersecting_terms.length();
+      }
+  }
+  this->easyProductCriterions+=this->minimalLeadingTerms.length()-intersecting_terms.length();
   
  
   
@@ -468,6 +494,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   end=generators[s].lm.end();
   while(it!=end){
     if ((generators[s].lm.deg()==1) || generators[s].literal_factors.occursAsLeadOfFactor(*it)){//((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+      cout<<"factorcrit"<<endl;
       generators[s].vPairCalculated.insert(*it);
     } else
       this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
@@ -543,7 +570,15 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     
     
     //!!!!! here we add the lm !!!!
-    leadingTerms.uniteAssign(Polynomial(e.lm).diagram());
+    //we assume that lm is minimal in leadingTerms
+    minimalLeadingTerms=leadingTerms.diff(lm.multiples(Polynomial(minimalLeadingTerms).usedVariables()));
+    leadingTerms.uniteAssign(Polynomial(lm).diagram());
+    minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
+    if (generators[s].literal_factors.is11Factorization())
+        leadingTerms11.uniteAssign(Polynomial(lm).diagram());
+    //doesn't need to be undone on simplification
+    if (generators[s].literal_factors.is00Factorization())
+        leadingTerms00.uniteAssign(Polynomial(lm).diagram());
 
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
@@ -563,7 +598,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
     }
     this->addGeneratorDelayed(Polynomial(true)-fac_neg.rest);
   } else {
-    
+    /*
     LiteralFactorization fac_p(p);
     if (!(fac_p.trivial()) &&(!(fac_p.rest.isOne()))){
       LiteralFactorization fac_res_neg(fac_p.rest+Polynomial(true));
@@ -573,6 +608,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
 
       }
     }
+    */
   }
   
 }

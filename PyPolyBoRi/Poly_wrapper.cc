@@ -37,6 +37,8 @@ void export_poly(){
   .def(boost::python::init<bool>())
   .def("__hash__", poly_hash)
   .def("__len__", &BoolePolynomial::length)
+  .def("__iter__", range(&BoolePolynomial::begin, &BoolePolynomial::end))
+
   .def(self+=self)
   //.def(self*=self)
   //.def(self/self)
