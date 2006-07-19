@@ -41,7 +41,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 r=s1;//==s0
                 cout<<"found factor1"<<endl; 
             } else {
-                if (!(Polynomial(r.lastLexicographicalTerm()).isOne())){
+                if (!(Polynomial(r).hasConstantPart())){
                 Monomial::const_iterator other_it=other_variables.begin();
                 Monomial::const_iterator other_end=other_variables.end();
                 //++other_it;//explicit is better than implicit
