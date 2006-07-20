@@ -520,13 +520,26 @@ public:
 };
 
 int sum_size(const MonomialSet& s1, const MonomialSet& s2){
-  return s1.length()+s2.length()-2*s1.intersect(s2).length();
+  MonomialSet m1=s1;
+  MonomialSet m2=s2;
+  Monomial lm=Polynomial(m1).lead();
+  int d=lm.deg()/2;
+  int i;
+  Monomial::const_iterator iter=lm.begin();
+  for(i=0;i<d;i++){
+    assert(iter!=lm.end());
+    m1=m1.subset1(*iter);
+    m2=m2.subset1(*iter);
+    iter++;
+    
+  }
+  return m1.length()+m2.length()-2*m1.intersect(m2).length();
 }
 
 
 static void step_T_complex(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
   std::sort(curr.begin(), curr.end(), PSCompareByEl());
-  const int max_cans=3;
+  const int max_cans=5;
   int s=curr.size();
   Polynomial reductor;
   int found;
@@ -620,7 +633,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       s=curr.size();
       if (s>1){
         steps+=curr.size()-1;
-        step_T_simple(curr,result,lm,strat);
+        step_T_complex(curr,result,lm,strat);
       } else{
         assert(s==1);
         result.push_back(curr[0].value());
@@ -761,15 +774,35 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   return p;
   
 }
+
+static Polynomial add_up_monomials(std::vector<Monomial>& res_vec, int start, int end){
+    int s=end-start;
+    if (s==0) return Polynomial();
+    if (s==1) return Polynomial(res_vec[start]);
+    int h=s/2;
+    return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
+}
+static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
+    int s=res_vec.size();
+    if (s==0) return Polynomial();
+    if (s==1) return Polynomial(res_vec[0]);
+    int h=s/2;
+    return add_up_monomials(res_vec,0,h)+add_up_monomials(res_vec,h,s);
+}
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
+  std::vector<Monomial> res_vec;
   while(!(p.isZero())){
-    Polynomial lm=p.lead();
-    res+=lm;
-    p-=lm;
-    p=nf3_db(strat,p,deg_bound);
+    Monomial lm=p.lead();
+    //res+=lm;
+    res_vec.push_back(lm);
+    
+    //p-=lm;
+    p=Polynomial(p.diagram().diff(lm.diagram()));
+    p=nf3(strat,p);
   }
+  res=add_up_monomials(res_vec);
   return res;
 }
 Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p){
