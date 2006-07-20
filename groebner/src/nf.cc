@@ -436,10 +436,10 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
   int found;
   wlen_type pivot_el;
   found=0;
-  pivot_el=curr[0].eliminationLength();
+  pivot_el=curr[0].value().nNodes();//curr[0].eliminationLength();
   
   for (int i=1;i<s;i++){
-    wlen_type comp=curr[i].eliminationLength();
+    wlen_type comp=curr[i].value().nNodes();//.eliminationLength();
     if (comp<pivot_el){
       found=i;
       pivot_el=comp;
@@ -447,6 +447,9 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
   }
   
   Polynomial pivot;
+  if (pivot_el<strat.generators[index].weightedLength){
+    pivot_el=curr[found].eliminationLength();
+  }
   /*if (pivot_el<strat.generators[index].weightedLength){
       pivot=redTail(strat,curr[found].value());
       pivot_el=pivot.eliminationLength();
@@ -592,13 +595,15 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
   deg_type max_sugar=0;
   unsigned int max_length=0;
+  unsigned int max_nodes=0;
   for(i=0;i<s;i++){
     if (inp[i].isOne()){
       result.push_back(inp[i]);
       return result;
     }
     PolynomialSugar to_push=PolynomialSugar(inp[i]);
-    max_length=std::max(max_length,inp[i].length());
+    //max_length=std::max(max_length,inp[i].length());
+    max_nodes=std::max(max_nodes,inp[i].length());
     max_sugar=std::max(max_sugar,to_push.getSugar());
     
     to_reduce.push(to_push);
@@ -646,7 +651,8 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     s=curr.size();
     for(i=0;i<s;i++){
       if (!(curr[i].isZero())){
-        if (((curr[i].getSugar()<=max_sugar)&&(curr[i].value().length()<=delay_f*max_length))||(curr[i].isOne())){
+        if (((curr[i].getSugar()<=max_sugar)
+        &&(curr[i].value().nNodes()<=delay_f*max_nodes))||(curr[i].isOne())){
           if (curr[i].isOne()){
             result.clear();
             result.push_back(curr[i].value());
