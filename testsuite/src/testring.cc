@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.5  2006/07/20 08:55:49  dreyer
+// ADD isOrdered() and  isLexicographical()
+//
 // Revision 1.4  2006/04/11 09:26:57  dreyer
 // ADD  BoolePolyRing::printInfo();
 //
@@ -66,8 +69,14 @@ main(){
   std::cout << "Variable 3:"<<std::endl;
   ((ZDD)ring.variable(3)).print(3, verbosity);
 
-    BoolePolyRing::printInfo();
+  BoolePolyRing::printInfo();
 
+  std::cout << "is lexicographical?" <<std::endl;
+  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+
+  std::cout << "is ordered?" <<std::endl;
+  std::cout << BoolePolyRing::isOrdered() <<std::endl;
+      
   try{
     BoolePolyRing::ring();
   }

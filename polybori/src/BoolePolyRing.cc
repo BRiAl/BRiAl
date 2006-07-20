@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/07/20 08:55:49  dreyer
+ * ADD isOrdered() and  isLexicographical()
+ *
  * Revision 1.22  2006/05/23 15:55:24  dreyer
  * CHANGE order of arguments in constructor
  *
@@ -293,4 +296,21 @@ BoolePolyRing::printInfo() {
 
   return current_mgr->printInfo();
 }
+
+// test whether current ring's ordering is lexicographical
+BoolePolyRing::bool_type 
+BoolePolyRing::isLexicographical() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isLexicographical()" );
+  return activeManager().isLexicographical() ;
+} 
+
+// test whether current ring's iterators respect the ordering 
+BoolePolyRing::bool_type 
+BoolePolyRing::isOrdered() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isOrdered()" );
+  return activeManager().isOrdered() ;
+}
+
 END_NAMESPACE_PBORI

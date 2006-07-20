@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/07/20 08:55:49  dreyer
+ * ADD isOrdered() and  isLexicographical()
+ *
  * Revision 1.3  2006/06/06 10:56:59  dreyer
  * CHANGE usedVariables() more efficient now.
  *
@@ -44,7 +47,7 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class pbori_traits 
- * @brief This classs contains property definitions to be used in polybori 
+ * @brief This class contains property definitions to be used in polybori 
  * classes
  *
  **/

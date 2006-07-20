@@ -146,6 +146,10 @@ Garbage collections so far: 0
 Time for garbage collection: 0.00 sec
 Reorderings so far: 0
 Time for reordering: 0.00 sec
+is lexicographical?
+1
+is ordered?
+1
 ----------------------
 Executing testsuite/spoly
 ----------------------

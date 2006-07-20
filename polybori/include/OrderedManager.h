@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/07/20 08:55:49  dreyer
+ * ADD isOrdered() and  isLexicographical()
+ *
  * Revision 1.3  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -41,6 +44,8 @@
 #include "BoolePolynomial.h"
 
 #include "BooleMonomial.h"
+
+#include "COrderProperties.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -97,6 +102,11 @@ public:
   /// Get leading term
   virtual monom_type lead(const poly_type&) const = 0;
 
+  /// Check whether ring is lexicographical 
+  virtual bool_type isLexicographical() const = 0;
+
+  /// Test whether iterators respect order
+  virtual bool_type isOrdered() const = 0;
 };
 
 /** @class OrderedManager
@@ -122,6 +132,9 @@ public:
 
   /// Type of *this
   typedef OrderedManager<manager_type, order_type> self;
+
+  /// Type defining order related properties
+  typedef COrderProperties<order_type> properties_type;
 
   /// @name adopt global type definitions
   //@{
@@ -161,6 +174,16 @@ public:
   monom_type lead(const poly_type& rhs) const {
 
     return ordering.lead(rhs);
+  }
+
+  /// Check whether ring is lexicographical 
+  bool_type isLexicographical() const {
+    return properties_type().isLexicographical();
+  }
+
+  /// Test whether iterators respect order
+  bool_type isOrdered() const {
+    return properties_type().isOrdered();
   }
 
 protected:

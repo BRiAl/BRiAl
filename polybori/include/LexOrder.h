@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/07/20 08:55:49  dreyer
+ * ADD isOrdered() and  isLexicographical()
+ *
  * Revision 1.2  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -32,11 +35,18 @@
 // include basic definitions
 #include "pbori_defs.h"
 
+// include basic definitions for orderings
+#include "order_tags.h"
+
 // include polynomial definitions
 #include "BoolePolynomial.h"
 
 // include monomial definitions
 #include "BooleMonomial.h"
+
+
+#ifndef LexOrder_h_
+#define LexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -70,6 +80,12 @@ class LexOrder {
   typedef CTypes::comp_type comp_type;
   //@}
 
+  /// @name define generic property markers
+  //@{
+  typedef lex_tag lex_property; 
+  typedef ordered_tag ordered_property;
+  //@}
+
   /// Default Constructor
   LexOrder() {};
 
@@ -93,3 +109,5 @@ class LexOrder {
 
 
 END_NAMESPACE_PBORI
+
+#endif // LexOrder_h_
