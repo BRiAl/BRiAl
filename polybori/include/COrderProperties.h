@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/07/20 10:13:59  dreyer
+ * CHANGE: Made COrderProperties more generic
+ *
  * Revision 1.1  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -32,8 +35,15 @@
 // include ordering tags
 #include "order_tags.h"
 
+// include polybori functionals
+#include "pbori_func.h"
+
 BEGIN_NAMESPACE_PBORI
 
+/** @class COrderProperties
+ * @brief This class determins ordering dependent properties 
+ *
+ **/
 template <class OrderType>
 class COrderProperties {
 
@@ -48,10 +58,10 @@ class COrderProperties {
   //@}
 
   /// Define test whether iterators respect the ordering
-  is_ordered_tagged<ordered_property> isOrdered;
+  is_same_type<ordered_property, ordered_tag> isOrdered;
 
   /// Define test whether ordering is lexicographical
-  is_lex_tagged<lex_property> isLexicographical;
+  is_same_type<lex_property, lex_tag> isLexicographical;
 };
 
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/07/20 10:13:59  dreyer
+ * CHANGE: Made COrderProperties more generic
+ *
  * Revision 1.14  2006/07/06 16:01:29  dreyer
  * CHANGE: Functionals ins pbori_func.h made more consistent
  *
@@ -237,6 +240,7 @@ public:
   } 
 };
 
+/*
 class print_all {
 public:
 
@@ -250,7 +254,7 @@ public:
   }
   std::ostream& os;
 };
-
+*/
 
 /// @class dummy_iterator
 /// @brief An iterator which virtually does nothing.
@@ -437,6 +441,21 @@ public:
 private:
   ListType& theList;
 };
+
+
+/** @class is_same_type
+ * @brief This class tests whether two types equal
+ **/
+template <class Type1, class Type2>
+class is_same_type;
+
+template <class Type>
+class is_same_type<Type, Type>:
+  public integral_constant<CTypes::bool_type, true> {}; 
+
+template <class Type1, class Type2>
+class is_same_type:
+  public integral_constant<CTypes::bool_type, false> {};
 
 END_NAMESPACE_PBORI
 
