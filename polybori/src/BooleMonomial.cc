@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/07/21 08:07:27  bricken
+ * + work on redTail
+ *
  * Revision 1.5  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -318,7 +321,8 @@ BooleMonomial::set_type
 BooleMonomial::multiples(const self& monom) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::multiples(const self&) const" );
-  return m_poly.diagram().unateProduct(monom.divisors());
+  //return m_poly.diagram().unateProduct((monom/((*this).GCD(monom))).divisors());
+  return monom.divisors().unateProduct(m_poly.diagram());
 }
 
 /// @function greater_variable

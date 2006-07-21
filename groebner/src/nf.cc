@@ -448,7 +448,12 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
   
   Polynomial pivot;
   if (pivot_el<strat.generators[index].weightedLength){
+    
     pivot_el=curr[found].eliminationLength();
+    if (pivot_el<strat.generators[index].weightedLength){
+        curr[found]=PolynomialSugar(redTail(strat,curr[found].value()));
+        pivot_el=curr[found].eliminationLength();
+    }
   }
   /*if (pivot_el<strat.generators[index].weightedLength){
       pivot=redTail(strat,curr[found].value());
@@ -795,17 +800,50 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
     int h=s/2;
     return add_up_monomials(res_vec,0,h)+add_up_monomials(res_vec,h,s);
 }
+
+static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
+    return strat.leadingTerms.intersect(lm.divisors()).emptiness();
+}
+
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Monomial> res_vec;
-  while(!(p.isZero())){
+  if (!(p.isZero())){
     Monomial lm=p.lead();
-    //res+=lm;
     res_vec.push_back(lm);
+    p=Polynomial(p.diagram().diff(lm.diagram()));
+  }
+  while(!(p.isZero())){
+    
+    //res+=lm;
+
     
     //p-=lm;
-    p=Polynomial(p.diagram().diff(lm.diagram()));
+    std::vector<Monomial> irr;
+    Polynomial::const_iterator it=p.begin();
+    Polynomial::const_iterator end=p.end();
+    while((it!=end)&& (irreducible_lead(*it,strat))){
+        irr.push_back(*it);
+        it++;
+    }
+    Polynomial irr_p=add_up_monomials(irr);
+    int s,i;
+    s=irr.size();
+    assert(s==irr_p.length());
+    //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    for(i=0;i<s;i++){
+        res_vec.push_back(irr[i]);
+    }
+    
+    //p=p-irr_p;
+    p=Polynomial(p.diagram().diff(irr_p.diagram()));
+    if(p.isZero()) break;
+    //Monomial lm=p.lead();
+    //res_vec.push_back(lm);
+    
+    
+    //p=Polynomial(p.diagram().diff(lm.diagram()));
     p=nf3(strat,p);
   }
   res=add_up_monomials(res_vec);
