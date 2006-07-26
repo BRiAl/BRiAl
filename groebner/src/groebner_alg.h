@@ -16,6 +16,7 @@
 #include <vector>
 #include <algorithm>
 #include <utility>
+#include <iostream>
 #ifdef HAVE_HASH_MAP
 #include <ext/hash_map>
 #else
@@ -103,7 +104,7 @@ public:
   MonomialSet minimalLeadingTerms;
   MonomialSet leadingTerms11;
   MonomialSet leadingTerms00;
-  
+  bool enabledLog;
    unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
@@ -117,6 +118,7 @@ public:
   
   GroebnerStrategy():pairs(*this){
     chainCriterions=0;
+    enabledLog=false;
     variableChainCriterions=0;
     extendedProductCriterions=0;
   }
@@ -127,6 +129,10 @@ public:
   void addNonTrivialImplicationsDelayed(const Polynomial& p);
   void propagate(const PolyEntry& e); 
   void propagate_step(const PolyEntry& e, std::set<int> others);
+  void log(const char* c){
+      if (this->enabledLog)
+          std::cout<<c<<endl;
+  }
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);

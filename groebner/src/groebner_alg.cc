@@ -67,7 +67,13 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   
 }
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
-:pairs(orig.pairs),generators(orig.generators),leadingTerms(orig.leadingTerms), lm2Index(orig.lm2Index)
+:pairs(orig.pairs),
+generators(orig.generators),
+leadingTerms(orig.leadingTerms),
+minimalLeadingTerms(orig.minimalLeadingTerms),
+  leadingTerms11(orig.leadingTerms11),
+  leadingTerms00(orig.leadingTerms00),
+  lm2Index(orig.lm2Index)
 {
  
   reductionSteps=orig.reductionSteps;
@@ -78,6 +84,8 @@ GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
   easyProductCriterions=orig.easyProductCriterions;
   extendedProductCriterions=orig.extendedProductCriterions;
   averageLength=orig.averageLength;
+  enabledLog=orig.enabledLog;
+  
   this->pairs.strat=this; 
 }
 /// assumes that divisibility condition is fullfilled
@@ -178,7 +186,7 @@ void PairManager::cleanTopByChainCriterion(){
           
           Monomial lm=strat->generators[vp->i].lm;
           if (strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
-            cout<<"delayed variable linear factor criterion"<<endl;
+            strat->log("delayed variable linear factor criterion");
             queue.pop();
             continue;
           }
@@ -473,7 +481,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   else {
     if (is11){
       intersecting_terms=intersecting_terms.diff(leadingTerms11);
-        cout<<"is11:"<<leadingTerms11.length()<<":"<<intersecting_terms.length();
+        //cout<<"is11:"<<leadingTerms11.length()<<":"<<intersecting_terms.length();
       }
   }
   this->easyProductCriterions+=this->minimalLeadingTerms.length()-intersecting_terms.length();
@@ -494,7 +502,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   end=generators[s].lm.end();
   while(it!=end){
     if ((generators[s].lm.deg()==1) || generators[s].literal_factors.occursAsLeadOfFactor(*it)){//((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
-      cout<<"factorcrit"<<endl;
+      //cout<<"factorcrit"<<endl;
       generators[s].vPairCalculated.insert(*it);
     } else
       this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
@@ -585,8 +593,8 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
   Polynomial negation=Polynomial(true)-p;
   LiteralFactorization fac_neg(negation);
   if (!(fac_neg.trivial())){
-    cout<<"!!!!!!!!!!!!!!!!!"<<endl;
-    cout<<"found new implications"<<endl;
+    this->log("!!!!!!!!!!!!!!!!!");
+    this->log("found new implications");
     LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
     LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
     while(nb!=ne){

@@ -30,7 +30,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
     if (s0.emptiness()){
       factors[v]=0;// var(v) is factor
       r=r.change(v);//equivalently subset(1)
-      cout<<"found factor0"<<endl;
+      //cout<<"found factor0"<<endl;
     } else {
     
     
@@ -39,7 +39,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
             if (s1==s0){
                 factors[v]=1;//var(v)+1 is factor
                 r=s1;//==s0
-                cout<<"found factor1"<<endl; 
+                //cout<<"found factor1"<<endl; 
             } else {
                 if (!(Polynomial(r).hasConstantPart())){
                 Monomial::const_iterator other_it=other_variables.begin();
@@ -48,12 +48,12 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 while(other_it!=other_end){
                     
                     idx_type v2=*other_it;
-                    cout<<"testing var"<<v2<<endl;
+                    //cout<<"testing var"<<v2<<endl;
                     if (r.subset1(v2)==s1){
                         var2var_map[v]=v2;
                         
                         r=s1;
-                        cout<<"found factor var2var"<<v<<":"<<v2<<endl;
+                        //cout<<"found factor var2var"<<v<<":"<<v2<<endl;
                         break;
                     }
                     

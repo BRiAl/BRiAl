@@ -199,7 +199,7 @@ Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p){
         p=spoly(p,*g);
       else {
         strat.addGeneratorDelayed(p);
-        std::cout<<"Delay"<<endl;
+        strat.log("Delay");
         return Polynomial(false);
       }
     }
@@ -246,13 +246,13 @@ Polynomial nf_delaying_exchanging(GroebnerStrategy& strat, Polynomial p){
     } else {
       if ((p.lead()==strat.generators[index].lm) && (p.eliminationLength()<strat.generators[index].weightedLength)){
         p=exchange(strat,index,p);
-        std::cout<<"Exchange"<<endl;
+        strat.log("Exchange");
       } else{
         if ((first==true) ||(strat.generators[index].weightedLength<= FARE_WORSE*initial))
           p=spoly(p,*g);
         else {
           strat.addGeneratorDelayed(p);
-          std::cout<<"Delay"<<endl;
+          strat.log("Delay");
           return Polynomial(false);
         }
       }
@@ -472,7 +472,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     if ((pivot.deg()<=strat.generators[index].deg) &&(lm.deg()==strat.generators[index].lmDeg)){
       assert(lm==strat.generators[index].lm);
       curr[found]=PolynomialSugar(exchange_with_promise(strat, index, curr[found].value()));
-      std::cout<<"Exchange"<<endl;
+      strat.log("Exchange");
     }
     
     
@@ -665,7 +665,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
           }
           to_reduce.push(curr[i]);
         } else {
-          cout<<"Delaying"<<endl;
+          strat.log("Delaying");
           cout.flush();
           strat.addGeneratorDelayed(curr[i].value());
         }
@@ -673,7 +673,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     }
     curr.clear();
     if (steps>max_steps){
-        cout<<"Too many steps\n"<<endl;
+        strat.log("Too many steps\n");
         while (!(to_reduce.empty())){
             
             Monomial lm=to_reduce.top().lead();
