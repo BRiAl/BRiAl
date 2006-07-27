@@ -83,8 +83,28 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
         ++res;
       }
     }
+    
     it++;
   }
+  
+  LiteralFactorization::var2var_map_type::const_iterator vit=a.var2var_map.begin();
+  const LiteralFactorization::var2var_map_type::const_iterator vend=a.var2var_map.end();
+  const LiteralFactorization::var2var_map_type::const_iterator vb_end=b.var2var_map.end();
+  while(vit!=vend){
+
+    idx_type val=vit->second;
+    idx_type variable=vit->first;
+    LiteralFactorization::var2var_map_type::const_iterator found_res=b.var2var_map.find(variable);
+    if (found_res!=vb_end){
+      if (val==found_res->second){
+        ++res;
+      }
+    }
+    
+    vit++;
+  }
+  
+  
   if (a.rest==b.rest){
     res+=a.rest.lmDeg();
   }
