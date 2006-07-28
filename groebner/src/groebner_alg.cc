@@ -421,7 +421,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
-          //addNonTrivialImplicationsDelayed(generators[i].p);
+          if (generators[i].length==2)
+            addNonTrivialImplicationsDelayed(generators[i].p);
           others.insert(i);
           
         }
@@ -581,7 +582,10 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     //we assume that lm is minimal in leadingTerms
     minimalLeadingTerms=leadingTerms.diff(lm.multiples(Polynomial(minimalLeadingTerms).usedVariables()));
     leadingTerms.uniteAssign(Polynomial(lm).diagram());
-    minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
+    if(minimalLeadingTerms.intersect(lm.divisors()).emptiness()){
+        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
+    }
+
     if (generators[s].literal_factors.is11Factorization())
         leadingTerms11.uniteAssign(Polynomial(lm).diagram());
     //doesn't need to be undone on simplification
@@ -590,21 +594,48 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
-  Polynomial negation=Polynomial(true)-p;
+  
+  
+  Monomial factor;
+  LiteralFactorization fac_orig(p);
+  if (fac_orig.factors.size()>0){
+    LiteralFactorization::map_type::const_iterator it=fac_orig.factors.begin();
+    LiteralFactorization::map_type::const_iterator end=fac_orig.factors.end();
+    while(it!=end){
+        if (it->second==0)
+            factor*=Variable(it->first);
+        it++;
+    }
+    
+  }
+  
+  Polynomial negation=Polynomial(true)-p/factor;
+  if (!(negation.isZero())){
   LiteralFactorization fac_neg(negation);
   if (!(fac_neg.trivial())){
     this->log("!!!!!!!!!!!!!!!!!");
     this->log("found new implications");
+
     LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
     LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
     while(nb!=ne){
       
       idx_type var=nb->first;
       bool val=(!(nb->second));
-      this->addGeneratorDelayed(Monomial(Variable(var))+Polynomial(val));
+      this->addGeneratorDelayed(factor*(Monomial(Variable(var))+Polynomial(val)));
       nb++;
     }
-    this->addGeneratorDelayed(Polynomial(true)-fac_neg.rest);
+    LiteralFactorization::var2var_map_type::const_iterator vnb= fac_neg.var2var_map.begin();
+    LiteralFactorization::var2var_map_type::const_iterator vne= fac_neg.var2var_map.end();
+    while(vnb!=vne){
+      
+      idx_type var=vnb->first;
+      idx_type val=(!(vnb->second));
+      this->addGeneratorDelayed(factor*(Monomial(Variable(var))+Variable(val)+Polynomial(true)));
+      vnb++;
+    }
+    if (!(fac_neg.rest.isOne()))
+        this->addGeneratorDelayed(factor*(Polynomial(true)-fac_neg.rest));
   } else {
     /*
     LiteralFactorization fac_p(p);
@@ -617,6 +648,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
       }
     }
     */
+  }
   }
   
 }
