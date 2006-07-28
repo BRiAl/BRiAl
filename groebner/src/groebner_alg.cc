@@ -622,7 +622,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
       
       idx_type var=nb->first;
       bool val=(!(nb->second));
-      this->addGeneratorDelayed(factor*(Monomial(Variable(var))+Polynomial(val)));
+      this->addGeneratorDelayed(factor*(Variable(var)+Polynomial(val)));
       nb++;
     }
     LiteralFactorization::var2var_map_type::const_iterator vnb= fac_neg.var2var_map.begin();
@@ -631,7 +631,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
       
       idx_type var=vnb->first;
       idx_type val=(!(vnb->second));
-      this->addGeneratorDelayed(factor*(Monomial(Variable(var))+Variable(val)+Polynomial(true)));
+      this->addGeneratorDelayed(factor*(Variable(var)+Variable(val)+Polynomial(true)));
       vnb++;
     }
     if (!(fac_neg.rest.isOne()))
