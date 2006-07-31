@@ -121,6 +121,7 @@ public:
     enabledLog=false;
     variableChainCriterions=0;
     extendedProductCriterions=0;
+    easyProductCriterions=0;
   }
 
     Polynomial nextSpoly(){
