@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/07/31 11:48:53  dreyer
+ * ADD: lowlevel implementation for multiples and lmDivisors
+ *
  * Revision 1.3  2006/04/25 07:05:02  dreyer
  * FIX postfix++ of CCuddFirstIter
  *
@@ -82,6 +85,7 @@
 // load polybori header file
 # include "polybori.h"
 
+#include "cuddInt.h"
 USING_NAMESPACE_PBORI
 
 int
@@ -203,16 +207,30 @@ main(){
     std::cout << "Multiples of "<< monom1 << "wrt. "<< monom2<<": "<<std::endl;
     std::cout << monom1.multiples(monom2);
 
-    std::cout <<std::endl << "Finished."<<std::endl;
 
     monom1 = x*y;
     std::cout << "monom1"<<std::endl;
     std::cout << monom1<<std::endl;
     std::cout << "print"<<std::endl;
     std::copy(monom1.begin(), monom1.end(),
-              std::ostream_iterator<int>(std::cout, "\n")  );
+            std::ostream_iterator<int>(std::cout, "\n")  );
 
+    std::cout <<std::endl<< "Testing lowlevel divisors"<<std::endl;
 
+    BoolePolynomial poly;
+    poly = x*z +y +1;
+
+    std::cout <<poly.diagram().firstDivisors() <<std::endl;
+
+    std::cout << "Testing lowlevel multiples"<<std::endl;
+    std::vector<int> multipliers(3);
+    multipliers[0]= 1;
+    multipliers[1]= 2;
+    multipliers[2]= 4;
+   
+    std::cout <<poly.diagram().firstMultiples(multipliers) <<std::endl;
+
+    std::cout << "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/07/31 11:48:53  dreyer
+ * ADD: lowlevel implementation for multiples and lmDivisors
+ *
  * Revision 1.6  2006/07/21 08:07:27  bricken
  * + work on redTail
  *
@@ -321,8 +324,18 @@ BooleMonomial::set_type
 BooleMonomial::multiples(const self& monom) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::multiples(const self&) const" );
-  //return m_poly.diagram().unateProduct((monom/((*this).GCD(monom))).divisors());
+
+
+#ifdef PBORI_MULTIPLES_HIGHLEVEL
+
   return monom.divisors().unateProduct(m_poly.diagram());
+#else // PBORI_MULTIPLES_LOWLEVEL
+
+  std::vector<idx_type> indices(monom.deg());
+  std::copy(monom.begin(), monom.end(), indices.begin());
+
+  return set_type(diagram().firstMultiples(indices));
+#endif
 }
 
 /// @function greater_variable

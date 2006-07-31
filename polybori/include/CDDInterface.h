@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/07/31 11:48:53  dreyer
+ * ADD: lowlevel implementation for multiples and lmDivisors
+ *
  * Revision 1.19  2006/06/08 08:54:33  dreyer
  * FIX FREEs memory
  *
@@ -101,6 +104,9 @@
 // Getting iterator type for retrieving last term from Cudd's ZDDs
 #include "CCuddLastIter.h"
 
+// Cudd's internal definitions
+#include "cuddInt.h"
+
 // Using stl's vector
 #include <vector>
 
@@ -148,7 +154,6 @@ class CDDInterfaceBase {
  protected:
   interfaced_type m_interfaced;
 };
-
 
 /** @class CDDInterface<ZDD>
  *
@@ -248,6 +253,17 @@ class CDDInterface<ZDD>:
     return *this;
   };
 
+  /// Set difference
+  self diffConst(const self& rhs) const {
+    return m_interfaced.DiffConst(rhs.m_interfaced);
+  };
+
+  /// Set difference with assignment
+  self& diffConstAssign(const self& rhs) {
+    m_interfaced = m_interfaced.DiffConst(rhs.m_interfaced);
+    return *this;
+  };
+
   /// Set intersection
   self intersect(const self& rhs) const {
     return m_interfaced.Intersect(rhs.m_interfaced);
@@ -304,7 +320,8 @@ class CDDInterface<ZDD>:
   };
 
   /// Substitute variable with index idx by its complement
-  self change(idx_type idx) const {
+  self change(idx_type idx) const {    
+
     return m_interfaced.Change(idx);
   };
 
@@ -464,6 +481,94 @@ class CDDInterface<ZDD>:
   last_iterator lastEnd() const { 
     return last_iterator();
   }
+
+  /// Get decison diagram representing the multiples of the first term
+  self firstMultiples(const std::vector<idx_type>& multipliers) const {
+
+    std::vector<idx_type> indices( std::distance(firstBegin(), firstEnd()) );
+
+    std::copy( firstBegin(), firstEnd(), indices.begin() );
+
+    DdNode* prev(DD_ONE(manager().getManager()));
+
+    DdNode* zeroNode(DD_ZERO(manager().getManager())); 
+
+
+    std::vector<idx_type>::const_reverse_iterator 
+      start(indices.rbegin()), finish(indices.rend()),
+      multStart(multipliers.rbegin()), multFinish(multipliers.rend());
+
+
+    cuddRef(prev);
+    while(start != finish) {
+
+      while((multStart != multFinish) && (*start < *multStart)) {
+
+        DdNode* result = cuddUniqueInterZdd( manager().getManager(), *multStart,
+                                             prev, prev );
+
+        cuddRef(result);
+        Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+
+        prev = result;
+        ++multStart;
+
+      };
+
+      DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
+                                           prev, zeroNode );
+
+      cuddRef(result);
+      Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+
+      prev = result;
+
+
+      if((multStart != multFinish) && (*start == *multStart))
+        ++multStart;
+
+
+      ++start;
+    }
+
+    cuddDeref(prev);
+
+
+
+    return interfaced_type(&manager(), prev);
+  }
+
+  /// Get decison diagram representing the divisors of the first term
+  self firstDivisors() const {
+
+    std::vector<idx_type> indices( std::distance(firstBegin(), firstEnd()) );
+
+    std::copy( firstBegin(), firstEnd(), indices.begin() );
+
+    DdNode* prev=DD_ONE(manager().getManager());
+
+
+    std::vector<idx_type>::const_reverse_iterator 
+      start(indices.rbegin()), finish(indices.rend());
+
+    cuddRef(prev);
+    while(start != finish) {
+
+      DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
+                                           prev, prev );
+
+      cuddRef(result);
+      Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+
+      prev = result;
+      ++start;
+    }
+
+    cuddDeref(prev);
+
+    return interfaced_type(&manager(), prev);
+  }
+
   /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()
   navigator navigation() const {
     return navigator(m_interfaced.getNode());

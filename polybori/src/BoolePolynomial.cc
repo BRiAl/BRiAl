@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.51  2006/07/31 11:48:53  dreyer
+ * ADD: lowlevel implementation for multiples and lmDivisors
+ *
  * Revision 1.50  2006/07/18 08:47:11  bricken
  * tuning/optimization
  *
@@ -454,6 +457,8 @@ BoolePolynomial::lmDivisors() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
 
+#ifdef PBORI_DIVISORS_HIGHLEVEL
+
   // Implementation relying on CCuddFirstIter (may be buggy)
   set_type terms;
 
@@ -475,6 +480,10 @@ BoolePolynomial::lmDivisors() const {
   }
 
   return terms;
+#else
+
+  return m_dd.firstDivisors();
+#endif 
 }
 
 // hash value of lm
