@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.52  2006/08/01 11:16:01  dreyer
+ * CHANGE: Bug fixed, uninitialized *min_element() (valgrind)
+ *
  * Revision 1.51  2006/07/31 11:48:53  dreyer
  * ADD: lowlevel implementation for multiples and lmDivisors
  *
@@ -516,7 +519,12 @@ BoolePolynomial::deg() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
 
   /// @todo: This is currently just brute force, efficient search needed.
-  return *std::max_element(degBegin(), degEnd());
+
+  deg_iterator start(degBegin()), finish(degEnd());
+
+  return (start == finish ? 
+          (size_type) 0 :
+          *std::max_element(start, finish));
 }
 
 
