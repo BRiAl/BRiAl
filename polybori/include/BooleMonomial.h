@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/08/01 11:12:22  dreyer
+ * CHANGE: removed ';' at end of functions (pedantic)
+ *
  * Revision 1.8  2006/07/17 15:32:08  dreyer
  * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
  *
@@ -225,28 +228,28 @@ inline BooleMonomial::bool_type
 operator<(const BooleMonomial& lhs, const BooleMonomial& rhs) {
 
   return (lhs.compare(rhs) == CTypes::less_than);
-};
+}
 
 /// Greater than comparision
 inline BooleMonomial::bool_type
 operator>(const BooleMonomial& lhs, const BooleMonomial& rhs) {
 
   return (lhs.compare(rhs) == CTypes::greater_than);
-};
+}
 
 /// Less or equal than comparision
 inline BooleMonomial::bool_type
 operator<=(const BooleMonomial& lhs, const BooleMonomial& rhs) {
 
   return (lhs.compare(rhs) <= CTypes::less_or_equal_max);
-};
+}
 
 /// Greater or equal than comparision
 inline BooleMonomial::bool_type
 operator>=(const BooleMonomial& lhs, const BooleMonomial& rhs) {
 
   return (lhs.compare(rhs) >= CTypes::greater_or_equal_min);
-};
+}
 
 
 /// Compute the greatest common divisor of two monomials

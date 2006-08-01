@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/01 11:12:22  dreyer
+ * CHANGE: removed ';' at end of functions (pedantic)
+ *
  * Revision 1.1  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -97,7 +100,7 @@ CCuddLastIter::operator++() {
     terminateConstant();
   }
   return *this;
-};
+}
 
 // postfix increment operator
 CCuddLastIter
@@ -109,7 +112,7 @@ CCuddLastIter::operator++(int) {
   operator++();
 
   return tmp;
-};
+}
 
 // go to valid node
 void
@@ -120,7 +123,7 @@ CCuddLastIter::terminateConstant() {
   if (isConstant()) 
       *this = self();           // mark end of path reached
 
-};
+}
 
 
 END_NAMESPACE_PBORI

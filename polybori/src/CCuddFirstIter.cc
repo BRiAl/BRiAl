@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/08/01 11:12:22  dreyer
+ * CHANGE: removed ';' at end of functions (pedantic)
+ *
  * Revision 1.5  2006/04/25 07:05:02  dreyer
  * FIX postfix++ of CCuddFirstIter
  *
@@ -78,7 +81,7 @@ CCuddFirstIter::operator++() {
   incrementThen();
   terminateConstant();
   return *this;
-};
+}
 
 // postfix increment operator
 CCuddFirstIter
@@ -90,7 +93,7 @@ CCuddFirstIter::operator++(int) {
   operator++();
 
   return tmp;
-};
+}
 
 // go to valid node
 void
@@ -101,7 +104,7 @@ CCuddFirstIter::terminateConstant() {
   if (isConstant()) 
       *this = self();           // mark end of path reached
 
-};
+}
 
 
 END_NAMESPACE_PBORI
