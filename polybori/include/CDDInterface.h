@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/08/01 11:14:17  dreyer
+ * CHANGE: Bug fixed, now Cudd's external ref/deref command (crashed on 64 bit)
+ *
  * Revision 1.20  2006/07/31 11:48:53  dreyer
  * ADD: lowlevel implementation for multiples and lmDivisors
  *
@@ -499,7 +502,7 @@ class CDDInterface<ZDD>:
       multStart(multipliers.rbegin()), multFinish(multipliers.rend());
 
 
-    cuddRef(prev);
+    Cudd_Ref(prev);
     while(start != finish) {
 
       while((multStart != multFinish) && (*start < *multStart)) {
@@ -507,7 +510,7 @@ class CDDInterface<ZDD>:
         DdNode* result = cuddUniqueInterZdd( manager().getManager(), *multStart,
                                              prev, prev );
 
-        cuddRef(result);
+        Cudd_Ref(result);
         Cudd_RecursiveDerefZdd(manager().getManager(), prev);
 
         prev = result;
@@ -518,7 +521,7 @@ class CDDInterface<ZDD>:
       DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
                                            prev, zeroNode );
 
-      cuddRef(result);
+      Cudd_Ref(result);
       Cudd_RecursiveDerefZdd(manager().getManager(), prev);
 
       prev = result;
@@ -531,9 +534,7 @@ class CDDInterface<ZDD>:
       ++start;
     }
 
-    cuddDeref(prev);
-
-
+    Cudd_Deref(prev);
 
     return interfaced_type(&manager(), prev);
   }
@@ -545,27 +546,27 @@ class CDDInterface<ZDD>:
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );
 
-    DdNode* prev=DD_ONE(manager().getManager());
+    DdNode* prev= DD_ONE(manager().getManager());
 
 
     std::vector<idx_type>::const_reverse_iterator 
       start(indices.rbegin()), finish(indices.rend());
 
-    cuddRef(prev);
+    Cudd_Ref(prev);
     while(start != finish) {
-
+ 
       DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
-                                           prev, prev );
+                                           prev, prev);
 
-      cuddRef(result);
+      Cudd_Ref(result);
       Cudd_RecursiveDerefZdd(manager().getManager(), prev);
-
+ 
       prev = result;
       ++start;
     }
 
-    cuddDeref(prev);
-
+    Cudd_Deref(prev);
+ 
     return interfaced_type(&manager(), prev);
   }
 
