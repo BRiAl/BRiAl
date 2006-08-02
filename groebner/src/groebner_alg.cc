@@ -421,8 +421,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
-          if (generators[i].length==2)
-            addNonTrivialImplicationsDelayed(generators[i].p);
+          //if (generators[i].length==2)
+          //  addNonTrivialImplicationsDelayed(generators[i].p);
           others.insert(i);
           
         }
@@ -443,6 +443,21 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
   }
 }
 
+MonomialSet minimal_elements(const MonomialSet& s){
+    if (s.emptiness()) return s;
+    if (Polynomial(s).isOne()) return s;
+    MonomialSet::navigator nav=s.navigation();
+    int i=*nav;
+    MonomialSet s0=minimal_elements(s.subset0(i));
+    MonomialSet s1=minimal_elements(s.subset1(i));
+    if (!(s0.emptiness())){
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        
+    }
+    return s0.unite(s1.change(i));
+
+}
+
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -454,7 +469,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
-  if (!((is11 && (leadingTerms==leadingTerms00))||(is00 && (leadingTerms==leadingTerms11)))){
+  if (!((is00 && (leadingTerms==leadingTerms00))||(is11 && (leadingTerms==leadingTerms11)))){
     if (is11)
         other_terms=other_terms.diff(leadingTerms11);
     if (is00)
@@ -465,7 +480,25 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     it++;
     
     }
+    
     intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
+    if ((is11)||(is00)){
+        MonomialSet ot2;
+        if (is00)
+            ot2=leadingTerms00;
+        else
+            ot2=leadingTerms11;
+        Monomial::const_iterator lm_start=lm.begin();
+        Monomial::const_iterator lm_end=lm.end();
+        while(lm_start!=lm_end){
+            ot2=(ot2.subset0(*lm_start).unite(ot2.subset1(*lm_start)));
+            lm_start++;
+        }
+        other_terms=other_terms.unite(ot2);
+    }
+
+
+    assert (!((!(p.isOne())) && is00 && is11));
   }
           
 
@@ -529,14 +562,14 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
   Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
-    
+  /*
   //other_terms.unateProductAssign((crit_vars*lm).divisors());
     {
       //other_terms.unateProductAssign(lm.diagram());
       //other_terms.unateProductAssign(crit_vars.divisors());
 
     //crit_vars*=lm; //vars from lm are in any term in crit_terms anyway
-    BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms);
+    BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms.unateProduct(lm.multiples(Polynomial(intersecting_terms).usedVariables())));
     int deg=Polynomial(crit_terms).deg();
     while(!(crit_terms.emptiness())){
       Monomial min_crit=crit_terms.lastLexicographicalTerm();
@@ -564,11 +597,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
       
       int chosen_index=lm2Index[min];
    
-      /*if (extended_product_criterion(this->generators[chosen_index], this->generators[s])){
-        this->extendedProductCriterions++;
-        this->pairs.status.hasTRep(chosen_index,s);
-      }
-      else*/
+      
         this->pairs.introducePair(Pair(chosen_index,s,generators));
         //cout<<"pair with:"<<chosen_index<<endl;
         //cout<<generators[chosen_index].p;
@@ -576,8 +605,51 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
     }
   }
-    
-    
+  */
+  
+   {
+        BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
+        //cout<<"orig_size"<<multiplied_terms.length()<<std::endl;
+        multiplied_terms=minimal_elements(multiplied_terms);
+        //cout<<"new_size"<<multiplied_terms.length()<<std::endl;
+        MonomialSet::const_iterator mt_start=multiplied_terms.begin();
+        MonomialSet::const_iterator mt_end=multiplied_terms.end();
+        MonomialSet already_used;
+        std::vector<Monomial> mt_vec(multiplied_terms.length());
+        int mt_i=0;
+        while(mt_start!=mt_end){
+            mt_vec[mt_i]=*mt_start;
+            mt_i++;
+            mt_start++;
+        }
+        assert(mt_i==multiplied_terms.length());
+        //MonomialSet chosen;
+        //mt_i=mt_vec.size()-1; //alternativ mt_i--, but that's very bad
+        //we assume, that iteration through polynomial corresponds to a global ordering
+        assert(mt_vec.size()==multiplied_terms.length());
+        for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
+            Monomial t=mt_vec[mt_i];
+            Monomial t_divided=t/lm;
+            assert(t.reducibleBy(lm));
+      
+            MonomialSet lm_d=t_divided.divisors();
+            if ((other_terms.intersect(lm_d).emptiness())){
+                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
+                
+                if (std::find_if(act_l_terms.begin(), act_l_terms.end(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.end()){
+                    //at this point we assume minimality of t_divided w.r.t. natural partial order
+                    //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
+                    continue;
+                }
+                //chosen=chosen.unite(t_divided.diagram());
+                Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
+                int chosen_index=lm2Index[min];
+                this->pairs.introducePair(Pair(chosen_index,s,generators));
+            }
+            //if (t.intersect())
+        }
+        
+   }
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in leadingTerms
     minimalLeadingTerms=leadingTerms.diff(lm.multiples(Polynomial(minimalLeadingTerms).usedVariables()));
