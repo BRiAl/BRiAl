@@ -595,7 +595,8 @@ cuddCacheLookup2Zdd(
     if (en->data != NULL && en->f==f && en->g==g && en->h==(ptruint)op) {
 	data = Cudd_Regular(en->data);
 	table->cacheHits++;
-	if (data->ref == 0) {
+
+	if ((en->data != DD_NON_CONSTANT) && (data->ref == 0)) {
 	    cuddReclaimZdd(table,data);
 	}
 	return(en->data);
