@@ -452,6 +452,23 @@ MonomialSet minimal_elements(const MonomialSet& s){
     if (Polynomial(s).isOne()) return s;
     MonomialSet::navigator nav=s.navigation();
     int i=*nav;
+    
+    
+    if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
+    int l=s.length();
+    if (l<=1) {
+        return s;
+    }
+    
+    if(l==2){
+        MonomialSet::const_iterator it=s.begin();
+        Monomial a=*it;
+        Monomial b=*(++it);
+        if (a.reducibleBy(b)) return MonomialSet(b.diagram());
+        else return s;
+    }
+    
+    
     MonomialSet s0=minimal_elements(s.subset0(i));
     MonomialSet s1=minimal_elements(s.subset1(i));
     if (!(s0.emptiness())){
@@ -614,7 +631,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
    {
         BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
         //cout<<"orig_size"<<multiplied_terms.length()<<std::endl;
-        multiplied_terms=minimal_elements(multiplied_terms);
+        multiplied_terms=minimal_elements(multiplied_terms.weakDivide(lm.diagram())).unateProduct(lm.diagram());
         //cout<<"new_size"<<multiplied_terms.length()<<std::endl;
         MonomialSet::const_iterator mt_start=multiplied_terms.begin();
         MonomialSet::const_iterator mt_end=multiplied_terms.end();
