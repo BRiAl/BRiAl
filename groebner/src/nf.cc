@@ -227,8 +227,8 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   strat.generators[i].recomputeInformation();
   strat.generators[i].minimal=false;
   
-  if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
-  //if ((strat.generators[i].length==2))
+  //if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
+  if ((strat.generators[i].length==2))
     strat.addNonTrivialImplicationsDelayed(strat.generators[i].p);
   if (strat.generators[i].lmDeg==1)
     strat.propagate(strat.generators[i]);
@@ -810,7 +810,7 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
 }
 
 static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
-    return strat.leadingTerms.intersect(lm.divisors()).emptiness();
+    return strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
 }
 
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
