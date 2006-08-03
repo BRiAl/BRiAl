@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/08/03 15:20:20  dreyer
+ * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
+ *
  * Revision 1.7  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -171,5 +174,28 @@ BooleSet::lastLexicographicalTerm() const {
 
   return result;
 }
+
+// compute intersection with divisors of rhs
+BooleSet
+BooleSet::divisorsOf(const term_type& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const term_type&) const" );
+
+  return intersect(rhs.divisors());
+}
+
+
+
+
+
+// check whether the intersection with divisors of rhs is non-empty
+BooleSet::bool_type
+BooleSet::hasCommonVariables(const term_type& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::EmptyDivisorsOf(const term_type&) const" );
+
+  return dd_owns_some_index(navigation(), rhs.begin(), rhs.end());
+}
+
 
 END_NAMESPACE_PBORI

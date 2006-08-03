@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/08/03 15:20:20  dreyer
+ * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
+ *
  * Revision 1.8  2006/07/06 16:01:29  dreyer
  * CHANGE: Functionals ins pbori_func.h made more consistent
  *
@@ -164,6 +167,27 @@ reversed_inter_copy( InputIterator start, InputIterator finish,
                       output );
 }
 
+
+/// Function templates for checking whether a given decision diagram contain
+/// at least one index in range [start, finish)
+template <class NaviType, class OrderedIterator>
+bool
+dd_owns_some_index(NaviType navi, 
+                   OrderedIterator start, OrderedIterator finish) {
+ 
+  if (!navi.isConstant()) {     // Not at end of path
+    bool not_at_end;
+    while( (not_at_end = (start != finish)) && (*start < *navi) )
+      ++start;
+
+    if(not_at_end) {
+      return (*start == *navi) ||
+        dd_owns_some_index(navi.thenBranch(), start, finish) ||
+        dd_owns_some_index(navi.elseBranch(), start, finish);
+    }
+  }
+  return false;
+}
 
 END_NAMESPACE_PBORI
 

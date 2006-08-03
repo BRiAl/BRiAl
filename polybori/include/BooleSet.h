@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/08/03 15:20:20  dreyer
+ * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
+ *
  * Revision 1.6  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -115,6 +118,13 @@ public:
 
   /// Get last term (wrt. lexicographical order)
   term_type lastLexicographicalTerm() const; 
+
+  /// Compute intersection with divisors of rhs
+  self divisorsOf(const term_type& rhs) const;
+
+  /// Check for empty intersection with divisors of rhs
+  bool_type hasCommonVariables(const term_type& rhs) const;
+
 };
 
 
