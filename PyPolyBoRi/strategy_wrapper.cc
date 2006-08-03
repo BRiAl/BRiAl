@@ -98,6 +98,10 @@ bool contains_one(const GroebnerStrategy& strat){
   }
   return false;
 }
+static void implications(GroebnerStrategy& strat, int i){
+    strat.addNonTrivialImplicationsDelayed(strat.generators[i]);
+    
+}
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
@@ -105,7 +109,7 @@ void export_strategy(){
   .def(init<const GroebnerStrategy&>())
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
-  .def("implications",&GroebnerStrategy::addNonTrivialImplicationsDelayed)
+  .def("implications",implications)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
   .def("someSpolysInNextDegree", someNextDegreeSpolys)

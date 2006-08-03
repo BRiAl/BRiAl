@@ -229,7 +229,7 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   
   //if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
   if ((strat.generators[i].length==2))
-    strat.addNonTrivialImplicationsDelayed(strat.generators[i].p);
+    strat.addNonTrivialImplicationsDelayed(strat.generators[i]);
   if (strat.generators[i].lmDeg==1)
     strat.propagate(strat.generators[i]);
   return res;

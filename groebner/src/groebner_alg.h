@@ -127,7 +127,7 @@ public:
     Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);
   }
-  void addNonTrivialImplicationsDelayed(const Polynomial& p);
+  void addNonTrivialImplicationsDelayed(const PolyEntry& p);
   void propagate(const PolyEntry& e); 
   void propagate_step(const PolyEntry& e, std::set<int> others);
   void log(const char* c){

@@ -426,7 +426,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
           if (generators[i].length==2)
-            addNonTrivialImplicationsDelayed(generators[i].p);
+            addNonTrivialImplicationsDelayed(generators[i]);
           others.insert(i);
           
         }
@@ -711,11 +711,11 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         leadingTerms00.uniteAssign(Polynomial(lm).diagram());
 
 }
-void GroebnerStrategy::addNonTrivialImplicationsDelayed(const Polynomial& p){
+void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   
-  
+  const Polynomial &p=e.p;
   Monomial factor;
-  LiteralFactorization fac_orig(p);
+  const LiteralFactorization& fac_orig=e.literal_factors;
   if (fac_orig.factors.size()>0){
     LiteralFactorization::map_type::const_iterator it=fac_orig.factors.begin();
     LiteralFactorization::map_type::const_iterator end=fac_orig.factors.end();
