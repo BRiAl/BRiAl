@@ -38,6 +38,7 @@ public:
   deg_type ecart() const{
     return deg-lmDeg;
   }
+  bool minimal;
   void recomputeInformation();
 };
 //using std::less;

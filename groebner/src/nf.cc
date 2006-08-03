@@ -221,11 +221,14 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   assert(p.lead()==strat.generators[i].lm);
   //PolyEntry e(p);
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
+  bool minimal=strat.generators[i].minimal;
   Polynomial res=strat.generators[i].p;
   strat.generators[i].p=p;
   strat.generators[i].recomputeInformation();
+  strat.generators[i].minimal=false;
   
-  if (strat.generators[i].length==2)
+  if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
+  //if ((strat.generators[i].length==2))
     strat.addNonTrivialImplicationsDelayed(strat.generators[i].p);
   if (strat.generators[i].lmDeg==1)
     strat.propagate(strat.generators[i]);

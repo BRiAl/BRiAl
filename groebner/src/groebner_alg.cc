@@ -218,7 +218,10 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->deg=p.deg();
   this->tailVariables=(p-lm).usedVariables();
   this->lmDeg=p.lmDeg();
+  this->minimal=true;
 }
+
+
 void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
   this->weightedLength=p.eliminationLength();
@@ -227,6 +230,7 @@ void PolyEntry::recomputeInformation(){
   this->deg=p.deg();
   this->tailVariables=(p-lm).usedVariables();
   this->literal_factors=LiteralFactorization(p);
+  //minimal keeps constant
   assert(this->lmDeg==p.lmDeg());
 }
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
@@ -410,7 +414,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
     int i;
     int s=generators.size();
     for(i=0;i<s;i++){      
-      if ((this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(lm))){
+      if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(lm))){
         Polynomial new_p;
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
@@ -421,8 +425,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
-          //if (generators[i].length==2)
-          //  addNonTrivialImplicationsDelayed(generators[i].p);
+          if (generators[i].length==2)
+            addNonTrivialImplicationsDelayed(generators[i].p);
           others.insert(i);
           
         }
@@ -652,10 +656,35 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
    }
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in leadingTerms
-    minimalLeadingTerms=leadingTerms.diff(lm.multiples(Polynomial(minimalLeadingTerms).usedVariables()));
+    
+    
+    MonomialSet lm_multiples_min=lm.multiples(Polynomial(minimalLeadingTerms).usedVariables());
+    assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
+    lm_multiples_min=lm_multiples_min.intersect(minimalLeadingTerms).diff(lm.diagram());
+    {
+        //assert(multiples_from_minimal.intersect(lm.diagram()).emptiness());
+        
+        MonomialSet::const_iterator mfm_start=lm_multiples_min.begin();
+        MonomialSet::const_iterator mfm_end=lm_multiples_min.end();
+        while(mfm_start!=mfm_end){
+            assert((*mfm_start)!=lm);
+            assert((*mfm_start).reducibleBy(lm));
+            generators[lm2Index[*mfm_start]].minimal=false;
+            mfm_start++;
+        }
+    }
+    minimalLeadingTerms=leadingTerms.diff(lm_multiples_min);
     leadingTerms.uniteAssign(Polynomial(lm).diagram());
-    if(minimalLeadingTerms.intersect(lm.divisors()).emptiness()){
+    MonomialSet divisors_from_minimal=minimalLeadingTerms.intersect(lm.divisors());
+    if(divisors_from_minimal.emptiness()){
+       
+        
+        
         minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
+    } else 
+    {
+        if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
+            this->generators[s].minimal=false;
     }
 
     if (generators[s].literal_factors.is11Factorization())
