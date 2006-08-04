@@ -112,7 +112,7 @@ public:
     DD();
     DD(const DD &from);
     Cudd *manager() const;
-    DdNode * getNode() const;
+    inline DdNode * getNode() const;
     int nodeCount() const;
     unsigned int NodeReadIndex() const;
 
@@ -773,5 +773,13 @@ extern void defaultError(string message);
 extern int NextCube(DdGen * gen, int ** cube, CUDD_VALUE_TYPE * value);
 extern int GenFree(DdGen * gen);
 extern int IsGenEmpty(DdGen * gen);
+
+// get from cuddObj.cc
+inline DdNode *
+DD::getNode() const
+{
+    return node;
+
+} // DD::getNode
 
 #endif
