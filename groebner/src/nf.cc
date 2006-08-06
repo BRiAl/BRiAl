@@ -716,7 +716,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   return result;
   
 }
-typedef LessWeightedLengthInStrat StratComparerForSelect;
+typedef LessWeightedLengthInStratModified StratComparerForSelect;
 static int select_short(GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
   //Polynomial workaround =Polynomial(ms);

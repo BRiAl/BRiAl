@@ -150,6 +150,31 @@ public:
     
   }
 };
+
+inline wlen_type wlen_literal_exceptioned(const PolyEntry& e){
+    wlen_type res=e.weightedLength;
+    if ((e.deg==1) && (e.length<=4)){
+        //if (e.length==1) return -1;
+        //if (e.p.hasConstantPart()) return 0;
+        return res-1;
+    }
+    return res;
+}
+///@todo: in many cases, indices should be precalculated
+class LessWeightedLengthInStratModified{
+public:
+  GroebnerStrategy* strat;
+  LessWeightedLengthInStratModified(GroebnerStrategy& strat){
+    this->strat=&strat;
+  }
+  bool operator() (const Monomial& a , const Monomial& b){
+    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->lm2Index[a]]);
+    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->lm2Index[b]]);
+    
+    return wa<wb;
+    
+  }
+};
 class LessEcartThenLessWeightedLengthInStrat{
 public:
   GroebnerStrategy* strat;
