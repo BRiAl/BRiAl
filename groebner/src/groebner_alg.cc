@@ -486,7 +486,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
   Monomial::const_iterator end=e.lm.end();
-  BooleSet other_terms=this->minimalLeadingTerms;
+  BooleSet other_terms=this->leadingTerms;
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
@@ -502,7 +502,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     
     }
     
-    intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
+    
     if ((is11)||(is00)){
         MonomialSet ot2;
         if (is00)
@@ -517,7 +517,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         }
         other_terms=other_terms.unite(ot2);
     }
-
+    intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
 
     assert (!((!(p.isOne())) && is00 && is11));
   }
@@ -583,50 +583,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
   Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
-  /*
-  //other_terms.unateProductAssign((crit_vars*lm).divisors());
-    {
-      //other_terms.unateProductAssign(lm.diagram());
-      //other_terms.unateProductAssign(crit_vars.divisors());
-
-    //crit_vars*=lm; //vars from lm are in any term in crit_terms anyway
-    BooleSet crit_terms=intersecting_terms.unateProduct(lm.diagram()).diff(other_terms.unateProduct(lm.multiples(Polynomial(intersecting_terms).usedVariables())));
-    int deg=Polynomial(crit_terms).deg();
-    while(!(crit_terms.emptiness())){
-      Monomial min_crit=crit_terms.lastLexicographicalTerm();
-      if (min_crit.deg()==deg)
-        crit_terms=crit_terms.diff(min_crit.diagram());
-      else
-        crit_terms=crit_terms.diff(min_crit.multiples(crit_vars));
-      
-      
-      //the following line can be implemented more efficiently
-      if (!(other_terms.intersect(min_crit.divisors()).emptiness())){
-        continue;
-      }
-      
-      
-      BooleSet act_l_terms=leadingTerms.intersect(min_crit.divisors());
-      assert(!(act_l_terms.emptiness()));
-      
-      
-      //extended product criterion not to forget for others
-      if (std::find_if(act_l_terms.begin(), act_l_terms.end(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.end()){
-        continue;
-      }
-      Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
-      
-      int chosen_index=lm2Index[min];
-   
-      
-        this->pairs.introducePair(Pair(chosen_index,s,generators));
-        //cout<<"pair with:"<<chosen_index<<endl;
-        //cout<<generators[chosen_index].p;
-        //cout<<generators[s].p;
-
-    }
-  }
-  */
+  
   
    {
         BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
