@@ -810,7 +810,8 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
 }
 
 static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
-    return strat.minimalLeadingTerms.hasCommonVariables(lm);//intersect(lm.divisors()).emptiness();
+    return //(!(strat.minimalLeadingTerms.hasCommonVariables(lm)));//
+        strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
 }
 
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
