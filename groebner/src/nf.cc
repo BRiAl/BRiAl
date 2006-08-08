@@ -751,7 +751,7 @@ static int select_short(GroebnerStrategy& strat, const Monomial& m){
 
 
 static int select1(GroebnerStrategy& strat, const Polynomial& p){
-  MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
+  MonomialSet ms=strat.leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.lmDivisors());
   //Polynomial workaround =Polynomial(ms);
   
   if (ms.emptiness())
@@ -810,7 +810,7 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
 }
 
 static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
-    return strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
+    return strat.minimalLeadingTerms.hasCommonVariables(lm);//intersect(lm.divisors()).emptiness();
 }
 
 Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
