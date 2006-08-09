@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/08/09 12:49:55  dreyer
+ * ADD preparing order edpendent operations (leadfirst())
+ *
  * Revision 1.4  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -101,6 +104,9 @@ public:
 
   /// Get leading term
   virtual monom_type lead(const poly_type&) const = 0;
+
+  /// Generates polynomial with leading term first (other terms may be skipped)
+  virtual poly_type leadFirst(const poly_type&) const = 0;
 
   /// Check whether ring is lexicographical 
   virtual bool_type isLexicographical() const = 0;
@@ -185,6 +191,15 @@ public:
   bool_type isOrdered() const {
     return properties_type().isOrdered();
   }
+  /// Generates polynomial with leading term first (other terms may be skipped)
+  poly_type leadFirst(const poly_type& poly) const {
+
+    if(isOrdered())
+      return poly;
+    else 
+      return lead(poly);
+  }
+
 
 protected:
   order_type ordering;
