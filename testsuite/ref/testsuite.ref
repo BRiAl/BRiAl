@@ -239,6 +239,29 @@ Throwing error # 6
   Caught error # 6
     which says: Sorry! Functionality not implemented yet.
 ----------------------
+Executing testsuite/booleset
+----------------------
+Testing Boolean polynomials
+
+BooleSet divisorsOf test
+: 2 nodes 4 minterms
+--000 1
+
+: 2 nodes 4 minterms
+--000 1
+
+1
+0
+1
+: 2 nodes 4 minterms
+-000- 1
+
+: 2 nodes 4 minterms
+-000- 1
+
+
+Finished.
+----------------------
 Executing testsuite/strategy_initialization
 ----------------------
 ----------------------
