@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/08/09 15:18:58  dreyer
+ * FIX: Bug in dd_intersect_some_index (didn't check valid path)
+ *
  * Revision 1.10  2006/08/09 12:52:31  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -206,13 +209,11 @@ dd_intersect_some_index(NaviType navi,
     while( (not_at_end = (start != finish)) && (*start < *navi) )
       ++start;
 
-    if(not_at_end) { 
-
       NaviType elseNode = 
         dd_intersect_some_index(navi.elseBranch(), start, finish, 
                                 newNode);
   
-      if (*start == *navi) {
+      if (not_at_end && (*start == *navi)) {
 
         NaviType thenNode = 
           dd_intersect_some_index(navi.thenBranch(), start, finish, 
@@ -222,7 +223,7 @@ dd_intersect_some_index(NaviType navi,
       }
       else
         return elseNode;
-    }
+
   }
 
   return newNode(navi);
