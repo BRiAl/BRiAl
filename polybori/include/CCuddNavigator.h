@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/08/09 12:52:31  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.6  2006/04/24 10:23:22  dreyer
  * ADD BoolePolynomial::begin() and end()
  * FIX type reference in CCuddNavigator
@@ -116,6 +119,11 @@ public:
 
   /// Constant pointer access operator
   const pointer_type operator->() const;
+
+  /// Constant pointer access operator
+  operator const pointer_type() const { 
+    return operator->(); 
+  }
 
   /// Constant pointer access operator
   hash_type hash() const;

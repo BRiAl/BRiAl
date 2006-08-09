@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/08/09 12:52:32  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.8  2006/08/03 15:20:20  dreyer
  * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
  *
@@ -56,6 +59,8 @@
 # include "CIdxPath.h"
 # include "PBoRiOutIter.h"
 # include <iterator>
+# include "pbori_algo.h"
+
 
 BEGIN_NAMESPACE_PBORI
 
@@ -181,7 +186,16 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const term_type&) const" );
 
-  return intersect(rhs.divisors());
+#ifdef PBORI_DIVISORSOF_HIGHLEVEL
+
+    return intersect(rhs.divisors());
+
+#else 
+
+    return firstDivisorsOf(rhs.diagram());
+
+#endif 
+
 }
 
 

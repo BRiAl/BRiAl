@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/08/09 12:52:31  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.6  2006/04/11 09:26:57  dreyer
  * ADD  BoolePolyRing::printInfo();
  *
@@ -138,7 +141,7 @@ class CDDManagerBase<Cudd, StorageType> {
   /// @note Set containing the empty set only (or the constant polynomial one)
   dd_type blank() const { return m_interfaced.zddOne(nVariables()); }
 
- /// Casting operator to interfaced type
+  /// Casting operator to interfaced type
   operator interfaced_type&() { return m_interfaced; }
 
   /// Constant casting operator to interfaced type

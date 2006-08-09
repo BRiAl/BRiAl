@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/08/09 12:52:31  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.15  2006/07/20 10:13:59  dreyer
  * CHANGE: Made COrderProperties more generic
  *
@@ -456,6 +459,13 @@ class is_same_type<Type, Type>:
 template <class Type1, class Type2>
 class is_same_type:
   public integral_constant<CTypes::bool_type, false> {};
+
+
+/** @class internal_tag
+ * @brief This class marks an internal part of a procedure
+ **/
+struct internal_tag {};
+
 
 END_NAMESPACE_PBORI
 

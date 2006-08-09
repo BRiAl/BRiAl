@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/09 12:52:31  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.9  2006/08/03 15:20:20  dreyer
  * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
  *
@@ -187,6 +190,67 @@ dd_owns_some_index(NaviType navi,
     }
   }
   return false;
+}
+
+/// Function templates for checking whether a given decision diagram contain
+/// at least one index in range [start, finish)
+/// Note: Returns incremented node
+template <class NaviType, class OrderedIterator, class NodeOperation>
+NaviType
+dd_intersect_some_index(NaviType navi, 
+                        OrderedIterator start, OrderedIterator finish,
+                        NodeOperation newNode ) {
+ 
+  if (!navi.isConstant()) {     // Not at end of path
+    bool not_at_end;
+    while( (not_at_end = (start != finish)) && (*start < *navi) )
+      ++start;
+
+    if(not_at_end) { 
+
+      NaviType elseNode = 
+        dd_intersect_some_index(navi.elseBranch(), start, finish, 
+                                newNode);
+  
+      if (*start == *navi) {
+
+        NaviType thenNode = 
+          dd_intersect_some_index(navi.thenBranch(), start, finish, 
+                                  newNode);
+
+        return newNode(*start, navi, thenNode, elseNode); 
+      }
+      else
+        return elseNode;
+    }
+  }
+
+  return newNode(navi);
+}
+
+
+
+/// Function templates for debugging, prints dd indices and reference counts
+template <class NaviType>
+void
+dd_print(NaviType navi) {
+ 
+  if (!navi.isConstant()) {     // Not at end of path
+ 
+    std::cout << std::endl<< "idx " << *navi <<" addr "<<
+      ((DdNode*)navi)<<" ref "<<
+      int(Cudd_Regular((DdNode*)navi)->ref) << std::endl;
+
+    dd_print(navi.thenBranch());
+    dd_print(navi.elseBranch());
+
+  }
+  else {
+    std::cout << "const isvalid? "<<navi.isValid()<<" addr "
+              <<((DdNode*)navi)<<" ref "<<
+      int(Cudd_Regular((DdNode*)navi)->ref)<<std::endl;
+
+  }
 }
 
 END_NAMESPACE_PBORI

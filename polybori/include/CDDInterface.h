@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/08/09 12:52:31  dreyer
+ * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
+ *
  * Revision 1.21  2006/08/01 11:14:17  dreyer
  * CHANGE: Bug fixed, now Cudd's external ref/deref command (crashed on 64 bit)
  *
@@ -107,8 +110,13 @@
 // Getting iterator type for retrieving last term from Cudd's ZDDs
 #include "CCuddLastIter.h"
 
+// Getting functional for generating new Cudd's ZDD nodes
+#include "CCuddGetNode.h"
+
 // Cudd's internal definitions
 #include "cuddInt.h"
+
+#include "pbori_algo.h"
 
 // Using stl's vector
 #include <vector>
@@ -223,7 +231,6 @@ class CDDInterface<ZDD>:
 
   /// Destructor
   ~CDDInterface() {}
-
   /// Set union
   self unite(const self& rhs) const {
     return self(base_type(m_interfaced.Union(rhs.m_interfaced)));
@@ -570,6 +577,19 @@ class CDDInterface<ZDD>:
     return interfaced_type(&manager(), prev);
   }
 
+  self firstDivisorsOf(const self& rhs) const {
+
+    navigator navi =
+      dd_intersect_some_index( navigation(), rhs.firstBegin(), rhs.firstEnd(), 
+                               CCuddGetNode(manager()) );
+
+    // Mark navi as unused
+    Cudd_Deref(navi);
+
+    // Generate interfaced type, which cares for reference count from now on
+    return interfaced_type(&manager(), navi);
+  }
+
   /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()
   navigator navigation() const {
     return navigator(m_interfaced.getNode());
@@ -594,6 +614,7 @@ class CDDInterface<ZDD>:
   size_type nVariables() const {
    return Cudd_ReadZddSize(manager().getManager() );
   }
+
 };
 
 /// Stream output operator
