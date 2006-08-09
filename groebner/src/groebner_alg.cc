@@ -490,7 +490,10 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
+  //cout<<"is11"<<is11<<endl;
+  //cout<<"is00"<<is00<<endl;
   if (!((is00 && (leadingTerms==leadingTerms00))||(is11 && (leadingTerms==leadingTerms11)))){
+    //cout<<"have pairs"<<endl;
     if (is11)
         other_terms=other_terms.diff(leadingTerms11);
     if (is00)
@@ -522,14 +525,14 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
-
+  //cout<<"intersect:"<<intersecting_terms.length()<<endl;
      
 
   
   
   
   ///@todo: correct counting of easy/extended product crit
-  if (is00){
+  /*if (is00){
 
           intersecting_terms=intersecting_terms.diff(leadingTerms00);
       }
@@ -538,7 +541,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
       intersecting_terms=intersecting_terms.diff(leadingTerms11);
         //cout<<"is11:"<<leadingTerms11.length()<<":"<<intersecting_terms.length();
       }
-  }
+  }*/
   this->easyProductCriterions+=this->minimalLeadingTerms.length()-intersecting_terms.length();
   
  
@@ -587,8 +590,11 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   
    {
         BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
+        //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
         //cout<<"orig_size"<<multiplied_terms.length()<<std::endl;
-        multiplied_terms=minimal_elements(multiplied_terms.weakDivide(lm.diagram())).unateProduct(lm.diagram());
+        //multiplied_terms=minimal_elements(multiplied_terms.weakDivide(lm.diagram())).unateProduct(lm.diagram());
+        multiplied_terms=minimal_elements(multiplied_terms);
+        //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
         //cout<<"new_size"<<multiplied_terms.length()<<std::endl;
         MonomialSet::const_iterator mt_start=multiplied_terms.begin();
         MonomialSet::const_iterator mt_end=multiplied_terms.end();
