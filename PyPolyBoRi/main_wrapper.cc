@@ -10,6 +10,7 @@
 #include "strategy_wrapper.h"
 #include "monomial_wrapper.h"
 #include "set_wrapper.h"
+#include "out_helper.h"
 using namespace boost::python;
 using namespace std;
 
@@ -41,6 +42,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<BooleVariable::idx_type>())
   .def(self*self)
     .def(self+self)
+    .def("__str__", streamable_as_str<BooleVariable>)
+  .def("__repr__", streamable_as_str<BooleVariable>)
     .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();

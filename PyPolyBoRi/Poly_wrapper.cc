@@ -10,6 +10,7 @@
 #include <iostream>
 #include "polybori.h"
 #include "pbori_defs.h"
+#include "out_helper.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -82,8 +83,13 @@ void export_poly(){
   .def("elength", &BoolePolynomial::eliminationLength)
   .def("plot",plot)
   .def("__len__", &BoolePolynomial::length)
+  .def("__str__", streamable_as_str<BoolePolynomial>)
+  .def("__repr__", streamable_as_str<BoolePolynomial>)
+  
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
+  implicitly_convertible<BooleVariable,BooleMonomial>();
+  implicitly_convertible<BooleVariable,BoolePolynomial>();
   
 }

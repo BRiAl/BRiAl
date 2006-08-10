@@ -16,6 +16,7 @@
 #include <vector>
 #include "polybori.h"
 #include "pbori_defs.h"
+#include "out_helper.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -72,7 +73,8 @@ void export_monomial(){
   .def("divisors", &BooleMonomial::divisors)
   .def("multiples", &BooleMonomial::multiples)
   //.def("reducibleBy", &BooleMonomial::reducibleBy)
-  
+  .def("__str__", streamable_as_str<BooleMonomial>)
+  .def("__repr__", streamable_as_str<BooleMonomial>)
   //.def("lmDeg", &BooleMonomial::lmDeg)
 
   //.def("totalDegree", &BooleMonomial::totalDeg)
