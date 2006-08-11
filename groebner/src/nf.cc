@@ -459,7 +459,8 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     
     pivot_el=curr[found].eliminationLength();
     if (pivot_el<strat.generators[index].weightedLength){
-        curr[found]=PolynomialSugar(redTail(strat,curr[found].value()));
+        if (strat.optRedTail)
+            curr[found]=PolynomialSugar(redTail(strat,curr[found].value()));
         pivot_el=curr[found].eliminationLength();
     }
   }

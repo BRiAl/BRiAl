@@ -119,7 +119,7 @@ void export_strategy(){
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
-     
+     .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
     .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
     .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
