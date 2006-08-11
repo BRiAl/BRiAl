@@ -75,7 +75,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index)
 {
- 
+  optRedTail=orig.optRedTail;
   reductionSteps=orig.reductionSteps;
   normalForms=orig.normalForms;
   currentDegree=orig.currentDegree;
@@ -590,10 +590,19 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   
    {
         BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
+        
+        
+        
+        
+        Monomial usedVMT=Polynomial(multiplied_terms).usedVariables()/lm;
         //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
         //cout<<"orig_size"<<multiplied_terms.length()<<std::endl;
         //multiplied_terms=minimal_elements(multiplied_terms.weakDivide(lm.diagram())).unateProduct(lm.diagram());
-        multiplied_terms=minimal_elements(multiplied_terms);
+        
+        if (multiplied_terms.owns(lm))
+            multiplied_terms=lm.diagram();
+        else
+             multiplied_terms=minimal_elements(multiplied_terms);
         //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
         //cout<<"new_size"<<multiplied_terms.length()<<std::endl;
         MonomialSet::const_iterator mt_start=multiplied_terms.begin();
