@@ -126,6 +126,8 @@ void export_strategy(){
   .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)
   .def("topSugar",pairs_top_sugar)
   .def("containsOne",contains_one)
+  .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
+  
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
