@@ -8,6 +8,7 @@
  */
 
 #include "groebner_alg.h"
+#include "nf.h"
 #include <algorithm>
 #include <set>
 BEGIN_NAMESPACE_PBORIGB
@@ -761,5 +762,18 @@ bool GroebnerStrategy::variableHasValue(idx_type v){
     }
   }
   return false;
+}
+std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
+    MonomialSet m=minimal_elements(this->minimalLeadingTerms);
+    std::vector<Polynomial> result;
+    MonomialSet::const_iterator it=m.begin();
+    MonomialSet::const_iterator end=m.end();
+    while(it!=end){
+        //redTail
+        result.push_back(redTail(*this,generators[lm2Index[*it]].p));
+        it++;
+    }
+    return result;
+    
 }
 END_NAMESPACE_PBORIGB

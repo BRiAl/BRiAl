@@ -93,7 +93,9 @@ typedef std::map<Monomial,int> lm2Index_map_type;
 #endif
 class GroebnerStrategy{
 public:
+  
   GroebnerStrategy(const GroebnerStrategy& orig);
+  std::vector<Polynomial>  minimalizeAndTailReduce();
   void addGenerator(const BoolePolynomial& p);
   void addGeneratorDelayed(const BoolePolynomial & p);
   
@@ -113,7 +115,7 @@ public:
   int easyProductCriterions;
   int extendedProductCriterions;
   int averageLength;
-  
+  bool optRedTail;
   lm2Index_map_type lm2Index;
   
   GroebnerStrategy():pairs(*this){
@@ -122,6 +124,7 @@ public:
     variableChainCriterions=0;
     extendedProductCriterions=0;
     easyProductCriterions=0;
+    optRedTail=true;
   }
 
     Polynomial nextSpoly(){
