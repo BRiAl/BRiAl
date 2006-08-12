@@ -768,7 +768,7 @@ static int select1(GroebnerStrategy& strat, const Polynomial& p){
   
 }
 static int select1(GroebnerStrategy& strat, const Monomial& m){
-  MonomialSet ms=strat.leadingTerms.intersect(m.divisors());
+  MonomialSet ms=strat.leadingTerms.divisorsOf(m);
   if (ms.emptiness())
     return -1;
   else {
@@ -796,18 +796,22 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
 }
 
 static Polynomial add_up_monomials(std::vector<Monomial>& res_vec, int start, int end){
+    //we assume the polynomials to be pairwise different
     int s=end-start;
     if (s==0) return Polynomial();
     if (s==1) return Polynomial(res_vec[start]);
     int h=s/2;
-    return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
+    return Polynomial(add_up_monomials(res_vec,start,start+h).diagram().unite(add_up_monomials(res_vec,start+h,end).diagram()));
+    //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
 }
 static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
+    //we assume the polynomials to be pairwise different
     int s=res_vec.size();
     if (s==0) return Polynomial();
     if (s==1) return Polynomial(res_vec[0]);
     int h=s/2;
-    return add_up_monomials(res_vec,0,h)+add_up_monomials(res_vec,h,s);
+    
+    return Polynomial(add_up_monomials(res_vec,0,h).diagram().unite(add_up_monomials(res_vec,h,s).diagram()));
 }
 
 static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
@@ -856,6 +860,8 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
     //p=Polynomial(p.diagram().diff(lm.diagram()));
     p=nf3(strat,p);
   }
+  
+  //should use already added irr_p's
   res=add_up_monomials(res_vec);
   return res;
 }

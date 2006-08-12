@@ -479,7 +479,37 @@ MonomialSet minimal_elements(const MonomialSet& s){
     return s0.unite(s1.change(i));
 
 }
-
+static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
+    std::vector<Monomial> result;
+    if (!(m.divisorsOf(lm).emptiness())){
+        result.push_back(lm);
+    } else {
+        Monomial v;
+        //lm austeilen
+        Monomial::const_iterator it_lm=lm.begin();
+        Monomial::const_iterator end_lm=lm.end();
+        while(it_lm!=end_lm){
+            idx_type i=*it_lm;
+            m=m.subset0(i).unite(m.subset1(i));
+            it_lm++;
+        }
+        
+        while((!(m.emptiness())) &&((v=m.lastLexicographicalTerm()).deg()==1)){
+            idx_type i=*v.begin();
+            m=m.subset0(i);
+            result.push_back(v.LCM(lm));
+        }
+        
+        m=minimal_elements(m);
+        if (!(m.emptiness())){
+            m=m.unateProduct(lm.diagram());
+            result.insert(result.end(), m.begin(), m.end());
+        }
+        
+        
+    }
+    return result;
+}
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -590,37 +620,17 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   
   
    {
-        BooleSet multiplied_terms=intersecting_terms.unateProduct(lm.diagram());
+
+        //MonomialSet already_used;
+        std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms, lm);
+        //(multiplied_terms.length());
         
-        
-        
-        
-        Monomial usedVMT=Polynomial(multiplied_terms).usedVariables()/lm;
-        //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
-        //cout<<"orig_size"<<multiplied_terms.length()<<std::endl;
-        //multiplied_terms=minimal_elements(multiplied_terms.weakDivide(lm.diagram())).unateProduct(lm.diagram());
-        
-        if (multiplied_terms.owns(lm))
-            multiplied_terms=lm.diagram();
-        else
-             multiplied_terms=minimal_elements(multiplied_terms);
-        //cout<<"min multiplied:"<<multiplied_terms.length()<<endl;
-        //cout<<"new_size"<<multiplied_terms.length()<<std::endl;
-        MonomialSet::const_iterator mt_start=multiplied_terms.begin();
-        MonomialSet::const_iterator mt_end=multiplied_terms.end();
-        MonomialSet already_used;
-        std::vector<Monomial> mt_vec(multiplied_terms.length());
-        int mt_i=0;
-        while(mt_start!=mt_end){
-            mt_vec[mt_i]=*mt_start;
-            mt_i++;
-            mt_start++;
-        }
-        assert(mt_i==multiplied_terms.length());
+        //assert(mt_i==multiplied_terms.length());
         //MonomialSet chosen;
         //mt_i=mt_vec.size()-1; //alternativ mt_i--, but that's very bad
         //we assume, that iteration through polynomial corresponds to a global ordering
         assert(mt_vec.size()==multiplied_terms.length());
+        int mt_i;
         for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
             Monomial t=mt_vec[mt_i];
             Monomial t_divided=t/lm;
