@@ -479,6 +479,26 @@ MonomialSet minimal_elements(const MonomialSet& s){
     return s0.unite(s1.change(i));
 
 }
+static std::vector<idx_type> contained_variables(const MonomialSet& m){
+    std::vector<idx_type> result;
+    MonomialSet::navigator nav=m.navigation();
+    while (!(nav.isConstant())){
+        idx_type v=*nav;
+        MonomialSet::navigator check_nav=nav.thenBranch();
+        while(!(check_nav.isConstant())){
+            check_nav.incrementElse();
+        }
+        if (check_nav.terminalValue()){
+            result.push_back(v);
+        }
+        nav.incrementElse();
+        
+    }
+    return result;
+}
+//static Monomial oper(int i){
+//    return Monomial(Variable(i));
+//}
 static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
     std::vector<Monomial> result;
     if (!(m.divisorsOf(lm).emptiness())){
@@ -494,12 +514,20 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
             it_lm++;
         }
         
+        
+        /*
         while((!(m.emptiness())) &&((v=m.lastLexicographicalTerm()).deg()==1)){
             idx_type i=*v.begin();
             m=m.subset0(i);
             result.push_back(v.LCM(lm));
         }
-        
+        */
+        std::vector<idx_type> cv=contained_variables(m);
+        int i;
+        for(i=0;i<cv.size();i++){
+            result.push_back(((Monomial)Variable(cv[i]))*lm);
+            m=m.subset0(cv[i]);
+        }
         m=minimal_elements(m);
         if (!(m.emptiness())){
             m=m.unateProduct(lm.diagram());
@@ -618,7 +646,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
   
-  
+  if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
    {
 
         //MonomialSet already_used;
