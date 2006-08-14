@@ -823,7 +823,7 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Monomial> res_vec;
-  Polynomial orig=p;
+  Polynomial orig_p=p;
   bool changed=false;
   if (!(p.isZero())){
     Monomial lm=p.lead();
