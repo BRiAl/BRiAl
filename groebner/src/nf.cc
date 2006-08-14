@@ -823,6 +823,8 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Monomial> res_vec;
+  Polynomial orig=p;
+  bool changed=false;
   if (!(p.isZero())){
     Monomial lm=p.lead();
     res_vec.push_back(lm);
@@ -841,6 +843,7 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
         irr.push_back(*it);
         it++;
     }
+    if ((!(changed))&& (it==end)) return orig_p;
     Polynomial irr_p=add_up_monomials(irr);
     int s,i;
     s=irr.size();
@@ -859,6 +862,7 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
     p=nf3(strat,p);
+    changed=true;
   }
   
   //should use already added irr_p's
