@@ -657,7 +657,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         //MonomialSet chosen;
         //mt_i=mt_vec.size()-1; //alternativ mt_i--, but that's very bad
         //we assume, that iteration through polynomial corresponds to a global ordering
-        assert(mt_vec.size()==multiplied_terms.length());
+        //assert(mt_vec.size()==multiplied_terms.length());
         int mt_i;
         for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
             Monomial t=mt_vec[mt_i];
