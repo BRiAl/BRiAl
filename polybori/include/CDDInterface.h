@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/08/15 14:17:29  dreyer
+ * ADD minimalElements(), hasTermOfVariables()
+ *
  * Revision 1.22  2006/08/09 12:52:31  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -615,6 +618,11 @@ class CDDInterface<ZDD>:
    return Cudd_ReadZddSize(manager().getManager() );
   }
 
+  /// Returns minimal factors of all minimal terms
+  self minimalElements() const {
+    self resultMultiples;
+    return dd_minimal_elements(navigation(), *this, resultMultiples);
+  }
 };
 
 /// Stream output operator

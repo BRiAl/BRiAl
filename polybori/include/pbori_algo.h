@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/08/15 14:17:29  dreyer
+ * ADD minimalElements(), hasTermOfVariables()
+ *
  * Revision 1.11  2006/08/09 15:18:58  dreyer
  * FIX: Bug in dd_intersect_some_index (didn't check valid path)
  *
@@ -173,30 +176,58 @@ reversed_inter_copy( InputIterator start, InputIterator finish,
                       output );
 }
 
+/// Function templates for checking whether a given decision diagram node is on
+/// path 
+template <class NaviType>
+bool
+dd_on_path(NaviType navi) {
+ 
+  if (navi.isConstant()) 
+    return navi.terminalValue();
 
-/// Function templates for checking whether a given decision diagram contain
-/// at least one index in range [start, finish)
+  return dd_on_path(navi.thenBranch()) || dd_on_path(navi.elseBranch());
+}
+
+/// Function templates for checking whether a given decision diagram contains
+/// paths with indices only in range [start, finish)
 template <class NaviType, class OrderedIterator>
 bool
-dd_owns_some_index(NaviType navi, 
-                   OrderedIterator start, OrderedIterator finish) {
+dd_owns_term_of_indices(NaviType navi, 
+                          OrderedIterator start, OrderedIterator finish) {
  
   if (!navi.isConstant()) {     // Not at end of path
     bool not_at_end;
+
     while( (not_at_end = (start != finish)) && (*start < *navi) )
       ++start;
 
-    if(not_at_end) {
-      return (*start == *navi) ||
-        dd_owns_some_index(navi.thenBranch(), start, finish) ||
-        dd_owns_some_index(navi.elseBranch(), start, finish);
+    NaviType elsenode = navi.elseBranch();
+
+    if (elsenode.isConstant() && elsenode.terminalValue())
+      return true;
+      
+
+    if (not_at_end){
+      
+      if ( (*start == *navi) && 
+           dd_owns_term_of_indices(navi.thenBranch(), start, finish))
+        return true;
+      else  
+        return dd_owns_term_of_indices(elsenode, start, finish);
     }
+    else {
+
+      while(!elsenode.isConstant()) 
+        elsenode.incrementElse();
+      return elsenode.terminalValue();
+    }
+   
   }
-  return false;
+  return navi.terminalValue();
 }
 
-/// Function templates for checking whether a given decision diagram contain
-/// at least one index in range [start, finish)
+/// Function templates extracting the terms of a given decision diagram contain
+/// which contains only indices from the range [start, finish)
 /// Note: Returns incremented node
 template <class NaviType, class OrderedIterator, class NodeOperation>
 NaviType
@@ -209,11 +240,12 @@ dd_intersect_some_index(NaviType navi,
     while( (not_at_end = (start != finish)) && (*start < *navi) )
       ++start;
 
+    if (not_at_end) {
       NaviType elseNode = 
         dd_intersect_some_index(navi.elseBranch(), start, finish, 
                                 newNode);
   
-      if (not_at_end && (*start == *navi)) {
+      if (*start == *navi) {
 
         NaviType thenNode = 
           dd_intersect_some_index(navi.thenBranch(), start, finish, 
@@ -223,6 +255,13 @@ dd_intersect_some_index(NaviType navi,
       }
       else
         return elseNode;
+    }
+    else {                      // if the start == finish, we only check 
+                                // validity of the else-only branch 
+      while(!navi.isConstant()) 
+        navi = navi.elseBranch();
+      return newNode(navi);
+    }
 
   }
 
@@ -253,6 +292,88 @@ dd_print(NaviType navi) {
 
   }
 }
+
+/// A first version
+/// Function templates extracting minimal elements of dd wrt. inclusion
+/// Assumption, navi is navigator of dd
+template <class NaviType, class DDType>
+DDType
+dd_minimal_elements(NaviType navi, DDType dd, DDType& multiples) {
+
+
+  if (!navi.isConstant()) {     // Not at end of path
+
+    DDType elsedd = dd.subset0(*navi);
+
+
+    DDType elseMultiples;
+    elsedd = dd_minimal_elements(navi.elseBranch(), elsedd, elseMultiples);
+
+    // short cut if else and then branche equal or else contains 1
+    if((navi.elseBranch() == navi.thenBranch()) || elsedd.blankness()){
+      multiples = elseMultiples;
+      return elsedd;
+    }
+
+    NaviType elseNavi = elseMultiples.navigation();
+
+    int nmax;
+    if (elseNavi.isConstant()){
+      if (elseNavi.terminalValue())
+        nmax = dd.nVariables();
+      else
+        nmax = *navi;
+    }
+    else
+      nmax = *elseNavi;
+
+
+    for(int i = nmax-1; i > *navi; --i){
+      elseMultiples.uniteAssign(elseMultiples.change(i)); 
+    }
+
+
+    DDType thendd = dd.subset1(*navi);
+    thendd = thendd.diff(elseMultiples);
+
+    DDType thenMultiples;
+    thendd = dd_minimal_elements(navi.thenBranch(), thendd, thenMultiples); 
+ 
+    NaviType thenNavi = thenMultiples.navigation();
+
+
+    if (thenNavi.isConstant()){
+      if (thenNavi.terminalValue())
+        nmax =  dd.nVariables();
+      else
+        nmax = *navi;
+    }
+    else
+      nmax = *thenNavi;
+
+
+    for(int i = nmax-1; i > *navi; --i){
+      thenMultiples.uniteAssign(thenMultiples.change(i)); 
+    }
+
+
+    thenMultiples = thenMultiples.unite(elseMultiples);
+    thenMultiples = thenMultiples.change(*navi);
+
+
+    multiples = thenMultiples.unite(elseMultiples);
+    thendd = thendd.change(*navi);
+
+    DDType result =  thendd.unite(elsedd);
+
+    return result;
+
+  }
+
+  multiples = dd;
+  return dd;
+}
+
 
 END_NAMESPACE_PBORI
 

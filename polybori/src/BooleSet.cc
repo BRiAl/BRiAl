@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/15 14:17:29  dreyer
+ * ADD minimalElements(), hasTermOfVariables()
+ *
  * Revision 1.9  2006/08/09 12:52:32  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -204,12 +207,27 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 
 // check whether the intersection with divisors of rhs is non-empty
 BooleSet::bool_type
-BooleSet::hasCommonVariables(const term_type& rhs) const {
+BooleSet::hasTermOfVariables(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::EmptyDivisorsOf(const term_type&) const" );
 
-  return dd_owns_some_index(navigation(), rhs.begin(), rhs.end());
+#ifdef PBORI_HASTERMOFVARIABLES_HIGHLEVEL
+
+  bool_type result =!divisorsOf(rhs).emptiness();
+
+#else
+
+  bool_type result = dd_owns_term_of_indices(navigation(),
+                                             rhs.begin(), rhs.end());
+
+//   if (result != !divisorsOf(rhs).emptiness())
+//     std::cerr << "Error in hasTermOfVariables!!!" <<std::endl;
+
+#endif
+  
+  return result;
 }
+
 
 
 END_NAMESPACE_PBORI

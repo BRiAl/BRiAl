@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/15 14:17:29  dreyer
+ * ADD minimalElements(), hasTermOfVariables()
+ *
  * Revision 1.1  2006/08/09 12:52:32  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -64,17 +67,63 @@ main(){
 
     std::cout <<   bset.divisorsOf((x*y*w) ) << std::endl;
     
-    std::cout <<   bset.hasCommonVariables((x*y*w) ) << std::endl;
-    std::cout <<   bset.hasCommonVariables((v*w) ) << std::endl;
-    std::cout <<   bset.hasCommonVariables((z) ) << std::endl;
+    std::cout <<   bset.hasTermOfVariables((x*y*w) ) << std::endl;
+
+    std::cout <<   "next" << std::endl;
+
+    std::cout <<   bset.hasTermOfVariables((v*w) ) << std::endl;
+
+    std::cout <<   bset.divisorsOf(v*w) << std::endl;
+
+    std::cout <<   bset.intersect((v*w).divisors()) << std::endl;
+
+    std::cout <<   bset.intersect((v*w).divisors()).emptiness() << std::endl;
+   std::cout <<   "next" << std::endl;
+
+   std::cout <<   bset.hasTermOfVariables((z) ) << std::endl;
 
 
     bset = BoolePolynomial(x*z*w).lmDivisors();
 
     std::cout <<   bset.divisorsOf((x*y*w) ) << std::endl;
     std::cout <<   bset.divisorsOf((x*y*w) ) << std::endl;
- 
-    std::cout <<std::endl<<  "Finished."<<std::endl;
+
+    std::cout <<   "testing minimal elements" << std::endl;
+//     poly = x*y + x*y*z +y*v + y*v*w;
+
+//     bset = poly.diagram();
+
+//     std::cout <<   "bset "<<  bset << std::endl;
+//     std::cout <<   bset.minimalElements() << std::endl;
+//     std::cout <<   bset.minimalElements() << std::endl;
+
+    std::cout <<   "testing next minimal elements" << std::endl;
+     poly = y + x*y*z +y*v + y*v*w;
+
+   bset = poly.diagram();
+   std::cout <<  "bset "<<  bset << std::endl;
+//     std::cout <<   bset.minimalElements() << std::endl;
+//     std::cout <<   "second" << std::endl;
+
+    std::cout <<   bset.minimalElements() << std::endl;
+     poly = y*v + x*y*z*v*w;
+
+   bset = poly.diagram();
+   std::cout <<  "bset "<<  bset << std::endl<< std::endl<< std::endl;;
+//     std::cout <<   bset.minimalElements() << std::endl;
+//     std::cout <<   "second" << std::endl;
+
+    std::cout <<   bset.minimalElements() << std::endl;
+//      std::cout <<   "testing next minimal elements" << std::endl;
+//      poly =  x*y*z*v*w + y*w*z*v;
+
+//    bset = poly.diagram();
+//     std::cout <<   "bset "<<  bset << std::endl;
+//      std::cout <<   bset.minimalElements() << std::endl;
+//      std::cout <<   "second" << std::endl;
+
+//     std::cout <<   bset.minimalElements() << std::endl;
+//     std::cout <<std::endl<<  "Finished."<<std::endl;
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

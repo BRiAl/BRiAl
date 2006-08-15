@@ -448,7 +448,9 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
   }
 }
 
-MonomialSet minimal_elements(const MonomialSet& s){
+
+
+MonomialSet minimal_elements_internal(const MonomialSet& s){
     if (s.emptiness()) return s;
     if (Polynomial(s).isOne()) return s;
     MonomialSet::navigator nav=s.navigation();
@@ -470,8 +472,8 @@ MonomialSet minimal_elements(const MonomialSet& s){
     }
     
     
-    MonomialSet s0=minimal_elements(s.subset0(i));
-    MonomialSet s1=minimal_elements(s.subset1(i));
+    MonomialSet s0=minimal_elements_internal(s.subset0(i));
+    MonomialSet s1=minimal_elements_internal(s.subset1(i));
     if (!(s0.emptiness())){
         s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
         
@@ -479,6 +481,29 @@ MonomialSet minimal_elements(const MonomialSet& s){
     return s0.unite(s1.change(i));
 
 }
+
+MonomialSet minimal_elements(const MonomialSet& s){
+
+#if 1
+  return s.minimalElements();
+#else
+  MonomialSet minElts = minimal_elements_internal(s);
+
+  if (minElts!=s.minimalElements()){
+
+    std::cout <<"ERROR minimalElements"<<std::endl;
+    std::cout <<"orig "<<s<< std::endl;
+    std::cout <<"correct "<<minElts<< std::endl;
+    std::cout <<"wrong "<<s.minimalElements()<< std::endl;
+  }
+
+
+  return minElts;
+#endif
+}
+
+
+
 static std::vector<idx_type> contained_variables(const MonomialSet& m){
     std::vector<idx_type> result;
     MonomialSet::navigator nav=m.navigation();
@@ -538,6 +563,7 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
     }
     return result;
 }
+
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;

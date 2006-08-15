@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/08/15 14:17:29  dreyer
+ * ADD minimalElements(), hasTermOfVariables()
+ *
  * Revision 1.7  2006/08/03 15:20:20  dreyer
  * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
  *
@@ -123,8 +126,10 @@ public:
   self divisorsOf(const term_type& rhs) const;
 
   /// Check for empty intersection with divisors of rhs
-  bool_type hasCommonVariables(const term_type& rhs) const;
+  bool_type hasTermOfVariables(const term_type& rhs) const;
 
+  /// Get minimal elements wrt. inclusion
+  self minimalElements() const { return base::minimalElements(); };
 };
 
 
