@@ -482,8 +482,42 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
 
 }
 
-MonomialSet minimal_elements(const MonomialSet& s){
+MonomialSet minimal_elements_internal2(const MonomialSet& s){
+    if (s.emptiness()) return s;
+    if (Polynomial(s).isOne()) return s;
+    MonomialSet::navigator nav=s.navigation();
+    int i=*nav;
+    
+    
+    if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
+    int l=s.length();
+    if (l<=1) {
+        return s;
+    }
+    
+    if(l==2){
+        MonomialSet::const_iterator it=s.begin();
+        Monomial a=*it;
+        Monomial b=*(++it);
+        if (a.reducibleBy(b)) return MonomialSet(b.diagram());
+        else return s;
+    }
+    
+    
+    MonomialSet s0=minimal_elements_internal2(s.subset0(i));
+    MonomialSet s1=minimal_elements_internal2(s.subset1(i));
+    if (!(s0.emptiness())){
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        
+    }
+    return s0.unite(s1.change(i));
 
+}
+
+MonomialSet minimal_elements(const MonomialSet& s){
+#if 0
+    return minimal_elements_internal(s);
+#else
 #if 1
   return s.minimalElements();
 #else
@@ -499,6 +533,7 @@ MonomialSet minimal_elements(const MonomialSet& s){
 
 
   return minElts;
+#endif
 #endif
 }
 
@@ -524,6 +559,30 @@ static std::vector<idx_type> contained_variables(const MonomialSet& m){
 //static Monomial oper(int i){
 //    return Monomial(Variable(i));
 //}
+static MonomialSet divide_monomial_divisors_out_old(const MonomialSet& s, const Monomial& lm){
+    MonomialSet m=s;
+    Monomial::const_iterator it_lm=lm.begin();
+        Monomial::const_iterator end_lm=lm.end();
+        while(it_lm!=end_lm){
+            idx_type i=*it_lm;
+            m=m.subset0(i).unite(m.subset1(i));
+            it_lm++;
+        }
+   return m;
+}
+static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomial::const_iterator it, Monomial::const_iterator end){
+    if(it==end) return s;
+    if (s.emptiness()) return s;
+    
+    Monomial::const_iterator itpp=it;
+    itpp++;
+    return (do_divide_monomial_divisors_out(s.subset0(*it),itpp,end).unite(do_divide_monomial_divisors_out(s.subset1(*it),itpp,end)));
+    
+}
+static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm){
+    return do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
+}
+
 static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
     std::vector<Monomial> result;
     if (!(m.divisorsOf(lm).emptiness())){
@@ -531,13 +590,15 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
     } else {
         Monomial v;
         //lm austeilen
-        Monomial::const_iterator it_lm=lm.begin();
+        m=divide_monomial_divisors_out(m,lm);
+        /*Monomial::const_iterator it_lm=lm.begin();
         Monomial::const_iterator end_lm=lm.end();
         while(it_lm!=end_lm){
             idx_type i=*it_lm;
             m=m.subset0(i).unite(m.subset1(i));
             it_lm++;
-        }
+        }*/
+        //m=divide_monomial_divisors_out(m,lm);
         
         
         /*
