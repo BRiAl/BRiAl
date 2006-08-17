@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/17 15:39:16  bricken
+ * + reference type is now equal to value type, as references would lie in the iterator and not in the polynomial
+ *
  * Revision 1.9  2006/06/06 10:56:59  dreyer
  * CHANGE usedVariables() more efficient now.
  *
@@ -118,7 +121,7 @@ public:
   typedef typename std::iterator_traits<navigator_type>::difference_type 
   difference_type;
   typedef void pointer;
-  typedef const value_type& reference;
+  typedef const value_type reference;
   //@}
 
   /// Define type for stacking
