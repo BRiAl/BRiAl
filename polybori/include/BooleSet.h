@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/08/17 15:35:30  dreyer
+ * ADD: extended and activated low-level version of dd_minimal_elements
+ *
  * Revision 1.8  2006/08/15 14:17:29  dreyer
  * ADD minimalElements(), hasTermOfVariables()
  *
@@ -129,7 +132,7 @@ public:
   bool_type hasTermOfVariables(const term_type& rhs) const;
 
   /// Get minimal elements wrt. inclusion
-  self minimalElements() const { return base::minimalElements(); };
+  self minimalElements() const;// { return base::minimalElements(); };
 };
 
 

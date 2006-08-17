@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/08/17 15:35:30  dreyer
+ * ADD: extended and activated low-level version of dd_minimal_elements
+ *
  * Revision 1.10  2006/08/15 14:17:29  dreyer
  * ADD minimalElements(), hasTermOfVariables()
  *
@@ -65,6 +68,7 @@
 # include "pbori_algo.h"
 
 
+#include "pbori_algo_int.h"
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -201,10 +205,6 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 
 }
 
-
-
-
-
 // check whether the intersection with divisors of rhs is non-empty
 BooleSet::bool_type
 BooleSet::hasTermOfVariables(const term_type& rhs) const {
@@ -229,5 +229,32 @@ BooleSet::hasTermOfVariables(const term_type& rhs) const {
 }
 
 
+
+
+
+BooleSet
+BooleSet::minimalElements() const { 
+
+  //  return base::minimalElements(); 
+  // base 
+
+  navigator  resultMultiples;
+  std::vector<idx_type> indices(nSupport());
+
+  usedIndices(indices);
+  dd_operations<navigator> apply(manager().getManager());
+
+  navigator result= dd_minimal_elements(navigation(),
+  resultMultiples, indices.rbegin(), indices.rend(),  
+                                        apply);
+
+base res = ZDD( &manager(), result );
+
+
+ Cudd_Deref(result);
+  Cudd_RecursiveDerefZdd(manager().getManager(), resultMultiples);
+  return res;
+
+};
 
 END_NAMESPACE_PBORI

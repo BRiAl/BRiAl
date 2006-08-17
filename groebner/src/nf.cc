@@ -815,8 +815,6 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
 }
 
 static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
-  //  return //(!(strat.minimalLeadingTerms.hasCommonVariables(lm)));//
-  //     strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
   //        strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
