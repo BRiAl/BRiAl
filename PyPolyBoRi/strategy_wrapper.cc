@@ -102,6 +102,12 @@ static void implications(GroebnerStrategy& strat, int i){
     strat.addNonTrivialImplicationsDelayed(strat.generators[i]);
     
 }
+int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
+    return select1(strat,m);
+}
+static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
+    return strat.generators[i].p;
+}
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
@@ -115,6 +121,7 @@ void export_strategy(){
   .def("someSpolysInNextDegree", someNextDegreeSpolys)
   .def("smallSpolysInNextDegree",small_next_degree_spolys)
   .def("__len__",nGenerators)
+  .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
@@ -127,6 +134,7 @@ void export_strategy(){
   .def("topSugar",pairs_top_sugar)
   .def("containsOne",contains_one)
   .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
+  .def("select", select_wrapped)
   
   .def("npairs", npairs);
   def("nf1",nf1);
