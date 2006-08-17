@@ -166,13 +166,13 @@ inline wlen_type wlen_literal_exceptioned(const PolyEntry& e){
 ///@todo: in many cases, indices should be precalculated
 class LessWeightedLengthInStratModified{
 public:
-  GroebnerStrategy* strat;
-  LessWeightedLengthInStratModified(GroebnerStrategy& strat){
+  const GroebnerStrategy* strat;
+  LessWeightedLengthInStratModified(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->lm2Index[a]]);
-    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->lm2Index[b]]);
+    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->lm2Index.find(a)->second]);
+    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->lm2Index.find(b)->second]);
     
     return wa<wb;
     
@@ -180,13 +180,13 @@ public:
 };
 class LessEcartThenLessWeightedLengthInStrat{
 public:
-  GroebnerStrategy* strat;
-  LessEcartThenLessWeightedLengthInStrat(GroebnerStrategy& strat){
+  const GroebnerStrategy* strat;
+  LessEcartThenLessWeightedLengthInStrat(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->lm2Index[a];
-    int j=strat->lm2Index[b];
+    int i=strat->lm2Index.find(a)->second;
+    int j=strat->lm2Index.find(b)->second;
     if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
       if (strat->generators[i].ecart()<strat->generators[j].ecart())
         return true;
@@ -199,13 +199,13 @@ public:
 };
 class LessUsedTailVariablesThenLessWeightedLengthInStrat{
 public:
-  GroebnerStrategy* strat;
-  LessUsedTailVariablesThenLessWeightedLengthInStrat(GroebnerStrategy& strat){
+  const GroebnerStrategy* strat;
+  LessUsedTailVariablesThenLessWeightedLengthInStrat(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
-  bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->lm2Index[a];
-    int j=strat->lm2Index[b];
+  bool operator() (const Monomial& a , const Monomial& b) const{
+    int i=strat->lm2Index.find(a)->second;
+    int j=strat->lm2Index.find(b)->second;
     deg_type d1=strat->generators[i].tailVariables.deg();
     deg_type d2=strat->generators[j].tailVariables.deg();;
     if (d1!=d2){

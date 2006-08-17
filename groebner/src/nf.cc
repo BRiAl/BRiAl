@@ -751,7 +751,7 @@ static int select_short(GroebnerStrategy& strat, const Monomial& m){
 
 
 
-static int select1(GroebnerStrategy& strat, const Polynomial& p){
+int select1(const GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.lmDivisors());
   //Polynomial workaround =Polynomial(ms);
   
@@ -762,19 +762,19 @@ static int select1(GroebnerStrategy& strat, const Polynomial& p){
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
 
-    return strat.lm2Index[min];
+    return strat.lm2Index.find(min)->second;
      
   }
   
 }
-static int select1(GroebnerStrategy& strat, const Monomial& m){
+int select1(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
   if (ms.emptiness())
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
-    return strat.lm2Index[min];
+    return strat.lm2Index.find(min)->second;
   }
 }
 

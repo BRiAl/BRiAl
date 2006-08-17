@@ -471,9 +471,9 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
         else return s;
     }
     
-    
-    MonomialSet s0=minimal_elements_internal(s.subset0(i));
-    MonomialSet s1=minimal_elements_internal(s.subset1(i));
+    MonomialSet s0_raw=s.subset0(i);
+    MonomialSet s0=minimal_elements_internal(s0_raw);
+    MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
         s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
         
@@ -490,26 +490,14 @@ MonomialSet minimal_elements_internal2(const MonomialSet& s){
     
     
     if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
-    int l=s.length();
-    if (l<=1) {
-        return s;
-    }
     
-    if(l==2){
-        MonomialSet::const_iterator it=s.begin();
-        Monomial a=*it;
-        Monomial b=*(++it);
-        if (a.reducibleBy(b)) return MonomialSet(b.diagram());
-        else return s;
-    }
     
     
     MonomialSet s0=minimal_elements_internal2(s.subset0(i));
-    MonomialSet s1=minimal_elements_internal2(s.subset1(i));
-    if (!(s0.emptiness())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
-        
-    }
+    MonomialSet s1=s.subset1(i);
+    if ((s0!=s1)&&(!(s1.diff(s0).emptiness()))){
+        s1=minimal_elements_internal2(s1.unite(s0)).diff(s0);
+    } else return s0;
     return s0.unite(s1.change(i));
 
 }

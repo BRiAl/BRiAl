@@ -13,8 +13,12 @@
 #ifndef PBORI_GB_NF_H
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB
-static int select1(GroebnerStrategy& strat, const Polynomial& p);
-static int select1(GroebnerStrategy& strat, const Monomial& m);
+
+int select1(const GroebnerStrategy& strat, const Polynomial& p);
+int select1(const GroebnerStrategy& strat, const Monomial& m);
+
+
+
 static int select_short(GroebnerStrategy& strat, const Polynomial& p);
 static int select_short(GroebnerStrategy& strat, const Monomial& m);
 
