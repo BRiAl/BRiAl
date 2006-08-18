@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/08/18 19:47:15  dreyer
+ * change finished low-level variant of minimal_elements also for lnegth()==2
+ *
  * Revision 1.11  2006/08/17 15:35:30  dreyer
  * ADD: extended and activated low-level version of dd_minimal_elements
  *
@@ -243,15 +246,15 @@ BooleSet::minimalElements() const {
 
   usedIndices(indices);
   dd_operations<navigator> apply(manager().getManager());
-
+  //  std::cerr<< "b4"<<std::endl;
   navigator result= dd_minimal_elements(navigation(),
   resultMultiples, indices.rbegin(), indices.rend(),  
                                         apply);
-
+  // std::cerr<< "aft"<<std::endl;
 base res = ZDD( &manager(), result );
 
 
- Cudd_Deref(result);
+  Cudd_Deref(result);
   Cudd_RecursiveDerefZdd(manager().getManager(), resultMultiples);
   return res;
 

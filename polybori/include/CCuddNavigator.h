@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/08/18 19:47:15  dreyer
+ * change finished low-level variant of minimal_elements also for lnegth()==2
+ *
  * Revision 1.7  2006/08/09 12:52:31  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -142,6 +145,12 @@ public:
 
   /// Check whether *this is not the default iterator self() (NULL pointer)
   bool_type isValid() const;
+
+  /// Check whether end of path was reached
+  bool_type isTerminated() const { return isConstant() && terminalValue(); }
+
+  /// Check whether dead end was reached
+  bool_type isEmpty() const { return isConstant() && !terminalValue(); }
 
 private:
   pointer_type pNode;

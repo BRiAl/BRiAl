@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/08/18 19:47:15  dreyer
+ * change finished low-level variant of minimal_elements also for lnegth()==2
+ *
  * Revision 1.4  2006/08/17 15:35:30  dreyer
  * ADD: extended and activated low-level version of dd_minimal_elements
  *
@@ -41,7 +44,7 @@
 
 // get polybori's functionals
 #include "pbori_func.h"
-
+#include "CCuddNavigator.h"
 #ifndef pbori_algo_int_h_
 #define pbori_algo_int_h_
 
@@ -103,9 +106,13 @@ indexed_term_multiples(NaviType navi,
                        ReverseIterator idxStart, ReverseIterator idxFinish,
                        const DDOperations& apply){
 
-  std::vector<int> indices (apply.nSupport(navi));
+  typedef typename NaviType::value_type idx_type;
+  typedef typename std::vector<idx_type> vector_type;
+  typedef typename vector_type::iterator iterator;
+  typedef typename vector_type::const_reverse_iterator const_reverse_iterator;
 
-  std::vector<int>::iterator iter(indices.begin());
+  vector_type indices(apply.nSupport(navi));
+  iterator iter(indices.begin());
 
   NaviType multiples = navi;
 
@@ -115,7 +122,7 @@ indexed_term_multiples(NaviType navi,
         ++iter;
       }
 
-      std::vector<int>::const_reverse_iterator start(indices.rbegin()),
+      const_reverse_iterator start(indices.rbegin()),
         finish(indices.rend());
 
 
@@ -152,6 +159,259 @@ is_reducible_by(NaviType first, NaviType second){
   return true;
 }
 
+template<class NaviType, class ReverseIterator, class DDOperations>
+NaviType
+minimal_of_two_terms(NaviType navi, NaviType& multiples,
+                       ReverseIterator idxStart, ReverseIterator idxFinish,
+                       const DDOperations& apply){
+
+  typedef typename NaviType::value_type idx_type;
+  typedef typename std::vector<idx_type> vector_type;
+  typedef typename vector_type::iterator iterator;
+  typedef typename vector_type::size_type size_type;
+  typedef typename vector_type::const_reverse_iterator const_reverse_iterator;
+
+  //  std::cout <<"2s ";
+
+
+  size_type nmax = apply.nSupport(navi);
+  vector_type thenIdx(nmax), elseIdx(nmax);
+
+  thenIdx.resize(0);
+  elseIdx.resize(0);
+
+  NaviType thenNavi = navi;
+  NaviType elseNavi = navi;
+
+  // See CCuddLastIterator
+  NaviType tmp(elseNavi);
+  elseNavi.incrementElse();
+
+  while(!elseNavi.isConstant()){
+    tmp = elseNavi;
+    elseNavi.incrementElse();
+  }
+  if(elseNavi.isEmpty())
+    elseNavi = tmp;
+
+  //    std::cout <<"TH "<<*thenNavi <<" "<<*elseNavi<< ":";
+
+  bool isReducible = true;
+  while (isReducible && !thenNavi.isConstant() && !elseNavi.isConstant()){
+
+    while( !thenNavi.isConstant() && (*thenNavi < *elseNavi)) {
+      //     std::cout <<"th "<<*thenNavi <<" "<<*elseNavi<< ":";
+
+//   apply.print(thenNavi);
+//   apply.print(elseNavi);
+      thenIdx.push_back(*thenNavi);
+      thenNavi.incrementThen();
+    }
+
+    if(!thenNavi.isConstant() && (*thenNavi == *elseNavi) ){
+      thenIdx.push_back(*thenNavi);
+      thenNavi.incrementThen();
+    }
+    else 
+      isReducible = false;
+    //   std::cout <<""<<isReducible << thenNavi.isConstant()<<std::endl;
+
+    elseIdx.push_back(*elseNavi);
+
+    // next on last path
+    elseNavi.incrementThen();
+    if( !elseNavi.isConstant() ) {       // if still in interior of a path
+      
+      tmp = elseNavi;         // store copy of *this
+      elseNavi.incrementElse();   // go in direction of last term, if possible
+
+      // restore previous value, of else branch was invalid
+      if( elseNavi.isEmpty() )
+        elseNavi = tmp;
+
+    }
+  }
+
+
+  NaviType elseTail, elseMult;
+  apply.assign(elseTail, elseNavi);/// !!!!!!!!!!!!
+   ///  elseTail = elseNavi;
+
+    // int initref = ((DdNode*)elseNavi)->ref;
+    //    std::cout << ((DdNode*)elseNavi)->ref <<std::endl;
+  if (!elseNavi.isConstant()) {
+        isReducible = false;
+    elseMult = 
+      indexed_term_multiples(elseTail, idxStart, idxFinish, apply);
+//       if(elseMult==elseTail)
+//         Cudd_Deref(elseMult);
+  }
+  else {
+    ///   Cudd_Ref(elseTail);
+    ///!1  elseMult =  elseTail;
+       apply.assign(elseMult, elseTail);///
+  }
+
+NaviType tmp2 = prepend_multiples_wrt_indices(elseMult, *navi, 
+                                           idxStart, idxFinish, apply);
+
+Cudd_Ref(tmp2);
+Cudd_Deref(elseMult);
+ elseMult = tmp2;
+    // std::cerr<< "h1"<<std::endl;
+
+  NaviType thenTail, thenMult;
+
+  if(!isReducible){
+
+//     if(!thenNavi.isConstant())
+//       std::cout << "   "<<(*thenNavi)<< " "<< *idxStart<<std::endl;
+    apply.assign(thenTail, thenNavi);
+    ///!2    thenTail = thenNavi;
+
+    if (!thenNavi.isConstant()){
+
+     thenMult = 
+        indexed_term_multiples(thenTail, idxStart, idxFinish, apply);
+//       if(thenMult==thenTail)
+//         Cudd_Deref(thenMult);
+//Cudd_Deref(thenTail);///
+      ////////   Cudd_Ref(thenMult);///
+    }
+    else{
+      ///!1 thenMult= thenTail;
+          apply.assign(thenMult, thenTail);////
+    }
+  }
+    // std::cerr<< "h2"<<std::endl;
+  // generating elsePath and multiples
+  ReverseIterator idxIter = idxStart;
+  const_reverse_iterator start(elseIdx.rbegin()), finish(elseIdx.rend());
+  
+  //  Cudd_Ref(elseMult);
+  // std::cout << "isRed"<< isReducible <<std::endl;
+
+  if(!elseMult.isConstant())
+    while((idxIter != idxFinish) && (*idxIter >= *elseMult) ) 
+      ++idxIter;
+
+  while(start != finish){
+    
+    while((idxIter != idxFinish) && (*idxIter > *start) ) {
+      
+      apply.multiplesAssign(elseMult, *idxIter);
+      ++idxIter;
+    }
+    apply.productAssign(elseMult, *start);
+
+    if (isReducible)
+      apply.productAssign(elseTail, *start); 
+      
+    if(idxIter != idxFinish)
+      ++idxIter;
+    ++start;
+  }
+    // std::cerr<< "h3"<<std::endl;
+  if (isReducible){
+    multiples = elseMult;
+
+
+    ///////   Cudd_Ref(multiples); ///////
+    //  Cudd_Ref(elseTail); 
+    //Cudd_Deref(thenTail); 
+    //Cudd_Deref(thenMult); 
+ 
+    // std::cerr<< "h4"<<std::endl;
+    return elseTail;
+  }
+  else {
+
+    // std::cerr<< "h5"<<std::endl;
+    const_reverse_iterator start2(thenIdx.rbegin()), finish2(thenIdx.rend());
+    ReverseIterator idxIter = idxStart;
+
+    //  Cudd_Ref(thenMult);
+//     NaviType printer = thenMult;    std::cout<< "thenMult"<<std::endl;
+//     while(!printer.isConstant()){
+//       std::cout<< *printer <<" & ";
+//       printer.incrementThen();
+//     }
+    if(!thenMult.isConstant())
+      while((idxIter != idxFinish) && (*idxIter >= *thenMult) ) 
+        ++idxIter;
+
+
+    // std::cerr<< "h6"<<std::endl;
+
+
+    while(start2 != finish2){
+         
+      while((idxIter != idxFinish) && (*idxIter > *start2) ) {
+        //   std::cout<< *idxIter <<" ? ";
+        apply.multiplesAssign(thenMult, *idxIter);
+        ++idxIter;
+      }
+      apply.productAssign(thenMult, *start2);
+      //     apply.productAssign(thenTail, *start);   
+      if(idxIter != idxFinish)
+        ++idxIter;
+      ++start2;
+    }
+
+
+    apply.replacingUnite(multiples, elseMult, thenMult);
+
+
+
+    // std::cerr<< "h7"<<std::endl;
+//     printer = multiples;    std::cout<< "mu"<<std::endl;
+//     while(!printer.isConstant()){
+//       //   std::cout<< *printer <<" & ";
+//       printer.incrementThen();
+//     }
+    //  std::cout<< std::endl;
+    //////////  Cudd_Ref(multiples);
+    // return apply.newNode(navi);
+    //  std::cout << " "<<((DdNode*)thenTail)->ref<<std::endl;
+    // std::cerr<< "h8"<<std::endl;
+
+   apply.kill(elseTail);
+   apply.kill(thenTail);
+
+
+    return apply.newNode(navi);
+  }
+
+
+
+//   // remainder of first term
+//   while (!thenNavi.isConstant() ){
+//     thenIdx.push_back(*thenNavi);
+//     thenIdx.incrementThen();
+//   }
+
+//   // remainder of last term
+//   while (!elseNavi.isConstant()){
+//     elseIdx.push_back(*elseNavi);
+
+//     elseIdx.incrementThen();
+//     if( !elseIdx.isConstant() ) {       // if still in interior of a path
+
+//       tmp = elseNavi;         // store copy of *this
+//       elseNavi.incrementElse();   // go in direction of last term, if possible
+
+//       // restore previous value, of else branch was invalid
+//       if( elseNavi.isEmpty() )
+//         elseNavi = tmp;
+//     }
+//     isReducible = false;
+//   }
+
+
+
+}
+
+
 template <class NaviType, class SizeType, class ReverseIterator, 
           class DDOperations>
 NaviType
@@ -187,6 +447,17 @@ void apply_assign_cudd_function(FunctionType func, ManagerType& mgr,
 }
 
 template<class FunctionType, class ManagerType, class NodeType>
+void apply_replacing_cudd_function(FunctionType func, ManagerType& mgr,
+                                   NodeType& newNode,
+                                   NodeType& first, NodeType& second) {
+
+    newNode = func(mgr, first, second);
+    Cudd_Ref(newNode);
+    Cudd_RecursiveDerefZdd(mgr, first);
+    Cudd_RecursiveDerefZdd(mgr, second);
+}
+
+template<class FunctionType, class ManagerType, class NodeType>
 NodeType apply_cudd_function(FunctionType func, ManagerType& mgr,
                              const NodeType& first, const NodeType& second) {
 
@@ -208,6 +479,12 @@ public:
   typedef CDDInterface<ZDD>::size_type size_type;
 
   dd_operations(manager_type man): mgr(man) {}
+  void replacingUnite(node_type& newNode,
+                      node_type& first, node_type& second) const {
+
+    apply_replacing_cudd_function(Cudd_zddUnion, mgr,
+                                  newNode, first, second);
+  }
 
   void uniteAssign(node_type& first, const node_type& second) const {
     apply_assign_cudd_function(Cudd_zddUnion, mgr, first, second);
@@ -228,11 +505,12 @@ public:
   }
  
   void newNodeAssign(idx_type idx, 
-                     node_type& elseNode, const node_type& thenNode) const {
-    node_type newNode = cuddZddGetNode(mgr, idx, elseNode, thenNode);
+                     node_type& thenNode, const node_type& elseNode) const {
+    node_type newNode = cuddZddGetNode(mgr, idx, thenNode, elseNode);
     Cudd_Ref(newNode);
-    Cudd_Deref(elseNode);
-    elseNode = newNode;
+    //Cudd_Deref(thenNode);   
+    Cudd_RecursiveDerefZdd(mgr, thenNode);
+    thenNode = newNode;
   }
 
   void multiplesAssign(node_type& node, idx_type idx) const {
@@ -265,6 +543,10 @@ public:
     Cudd_Ref(node);
     return node;
   }
+
+  void kill(node_type& node) const {
+    Cudd_RecursiveDerefZdd(mgr, node);
+  }
 protected:
   manager_type mgr;
 };
@@ -286,8 +568,16 @@ dd_minimal_elements(NaviType navi,DDType2& multiples,
 
     int nlen = apply.length(navi);
 
-    if((nlen == 2)) {
-      multiples = navi;
+    if(false&&(nlen == 2)) {
+
+      //      std::cerr << "hier"<<std::endl;
+      navi = minimal_of_two_terms(navi, multiples,idxStart, idxEnd, apply);
+  
+      //     std::cerr << "danach"<<std::endl;
+      return navi;
+
+#if 0
+    multiples = navi;
 
 
       std::vector<int> indices (apply.nSupport(navi));
@@ -372,6 +662,7 @@ dd_minimal_elements(NaviType navi,DDType2& multiples,
 //         elseBr = indexed_term_multiples(elseBr, idxStart, idxEnd, apply);
 
 //       }
+#endif
     }
 
 
