@@ -448,7 +448,23 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
   }
 }
 
-
+static std::vector<idx_type> contained_variables(const MonomialSet& m){
+    std::vector<idx_type> result;
+    MonomialSet::navigator nav=m.navigation();
+    while (!(nav.isConstant())){
+        idx_type v=*nav;
+        MonomialSet::navigator check_nav=nav.thenBranch();
+        while(!(check_nav.isConstant())){
+            check_nav.incrementElse();
+        }
+        if (check_nav.terminalValue()){
+            result.push_back(v);
+        }
+        nav.incrementElse();
+        
+    }
+    return result;
+}
 
 MonomialSet minimal_elements_internal(const MonomialSet& s){
     if (s.emptiness()) return s;
@@ -482,29 +498,58 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
 
 }
 
-MonomialSet minimal_elements_internal2(const MonomialSet& s){
+MonomialSet minimal_elements_internal2(MonomialSet s){
     if (s.emptiness()) return s;
     if (Polynomial(s).isOne()) return s;
     MonomialSet::navigator nav=s.navigation();
-    int i=*nav;
+    
     
     
     if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
+    MonomialSet result;
+    std::vector<idx_type> cv=contained_variables(s);
+    if ((cv.size()>0) && (s.length()==cv.size())){
+        return s;
+    } else {
+    
+        int z;
+        MonomialSet cv_set;
+        for(z=cv.size()-1;z>=0;z--){
+            Monomial mv=Variable(cv[z]);
+            cv_set=cv_set.unite(mv.diagram());
+        }
+        for(z=0;z<cv.size();z++){
+            s=s.subset0(cv[z]);
+        }
+        result=cv_set;
+    }
+    
+    if (s.emptiness()) return result;
+    assert(!(s.hasConstantPart()));
+    idx_type i=*nav;
     
     
-    
-    MonomialSet s0=minimal_elements_internal2(s.subset0(i));
+    /*MonomialSet s0=minimal_elements_internal2(s.subset0(i));
     MonomialSet s1=s.subset1(i);
     if ((s0!=s1)&&(!(s1.diff(s0).emptiness()))){
         s1=minimal_elements_internal2(s1.unite(s0)).diff(s0);
     } else return s0;
-    return s0.unite(s1.change(i));
+    return s0.unite(s1.change(i));*/
+    
+    MonomialSet s0_raw=s.subset0(i);
+    MonomialSet s0=minimal_elements_internal(s0_raw);
+    MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
+    if (!(s0.emptiness())){
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        
+    }
+    return s0.unite(s1.change(i)).unite(result);
 
 }
 
 MonomialSet minimal_elements(const MonomialSet& s){
-#if 0
-    return minimal_elements_internal(s);
+#if 1
+    return minimal_elements_internal2(s);
 #else
 #if 1
   return s.minimalElements();
@@ -527,23 +572,7 @@ MonomialSet minimal_elements(const MonomialSet& s){
 
 
 
-static std::vector<idx_type> contained_variables(const MonomialSet& m){
-    std::vector<idx_type> result;
-    MonomialSet::navigator nav=m.navigation();
-    while (!(nav.isConstant())){
-        idx_type v=*nav;
-        MonomialSet::navigator check_nav=nav.thenBranch();
-        while(!(check_nav.isConstant())){
-            check_nav.incrementElse();
-        }
-        if (check_nav.terminalValue()){
-            result.push_back(v);
-        }
-        nav.incrementElse();
-        
-    }
-    return result;
-}
+
 //static Monomial oper(int i){
 //    return Monomial(Variable(i));
 //}
@@ -579,29 +608,13 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
         Monomial v;
         //lm austeilen
         m=divide_monomial_divisors_out(m,lm);
-        /*Monomial::const_iterator it_lm=lm.begin();
-        Monomial::const_iterator end_lm=lm.end();
-        while(it_lm!=end_lm){
-            idx_type i=*it_lm;
-            m=m.subset0(i).unite(m.subset1(i));
-            it_lm++;
-        }*/
-        //m=divide_monomial_divisors_out(m,lm);
         
-        
-        /*
-        while((!(m.emptiness())) &&((v=m.lastLexicographicalTerm()).deg()==1)){
-            idx_type i=*v.begin();
-            m=m.subset0(i);
-            result.push_back(v.LCM(lm));
-        }
-        */
         std::vector<idx_type> cv=contained_variables(m);
         int i;
-        for(i=0;i<cv.size();i++){
+        /*for(i=0;i<cv.size();i++){
             result.push_back(((Monomial)Variable(cv[i]))*lm);
             m=m.subset0(cv[i]);
-        }
+        }*/
         m=minimal_elements(m);
         if (!(m.emptiness())){
             m=m.unateProduct(lm.diagram());
