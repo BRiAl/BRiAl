@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.9  2006/08/17 15:35:30  dreyer
  * ADD: extended and activated low-level version of dd_minimal_elements
  *
@@ -127,6 +130,12 @@ public:
 
   /// Compute intersection with divisors of rhs
   self divisorsOf(const term_type& rhs) const;
+
+  /// Division by given term
+  self divide(const term_type& rhs) const;
+
+  /// Division with assignment by given term
+  self& divideAssign(const term_type& rhs);
 
   /// Check for empty intersection with divisors of rhs
   bool_type hasTermOfVariables(const term_type& rhs) const;

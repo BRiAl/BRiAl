@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.16  2006/08/09 12:52:31  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -143,6 +146,28 @@ public:
 
 };
 
+/// @class subset1_assign
+/// @brief Accessing .subset1Assign()
+template <class RhsType, class LhsType = typename RhsType::idx_type>
+class subset1_assign {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    (rhs.subset1Assign(lhs));
+    return rhs;
+  } 
+};
+
+/// @class subset1_assign
+/// @brief Accessing .subset1Assign()
+template <class RhsType, class LhsType>
+class subset0_assign {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    return (rhs.subset0Assign(lhs));
+  } 
+};
 /// @class unite_assign
 /// @brief Accessing .uniteAssign()
 template <class RhsType,
@@ -275,6 +300,10 @@ public:
   const self& operator++(int) const { return *this;}
 };
 
+template <>
+class pbori_traits<dummy_iterator>:
+  public CTypes {
+};
 
 /// @class integral_constant
 /// @brief integral_constant<int_type, NUM>()() returns NUM of int_type, instead

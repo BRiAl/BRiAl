@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.23  2006/08/15 14:17:29  dreyer
  * ADD minimalElements(), hasTermOfVariables()
  *
@@ -115,6 +118,9 @@
 
 // Getting functional for generating new Cudd's ZDD nodes
 #include "CCuddGetNode.h"
+
+// Getting output iterator functionality
+#include "PBoRiOutIter.h"
 
 // Cudd's internal definitions
 #include "cuddInt.h"
@@ -345,12 +351,12 @@ class CDDInterface<ZDD>:
   };
 
   /// Division
-  self divide(const self& rhs) const {
+  self ddDivide(const self& rhs) const {
     return m_interfaced.Divide(rhs);
   };
 
   /// Division with assignment
-  self& divideAssign(const self& rhs) {
+  self& ddDivideAssign(const self& rhs) {
     m_interfaced = m_interfaced.Divide(rhs);
     return *this;
   };
@@ -364,6 +370,25 @@ class CDDInterface<ZDD>:
     m_interfaced = m_interfaced.WeakDiv(rhs);
     return *this;
   };
+
+  /// Division with first term of right-hand side and assignment
+  self& divideFirstAssign(const self& rhs) {
+
+    PBoRiOutIter<self, idx_type, subset1_assign<self> >  outiter(*this);
+    std::copy(rhs.firstBegin(), rhs.firstEnd(), outiter);
+
+    return *this;
+  }
+
+  /// Division with first term of right-hand side
+  self divideFirst(const self& rhs) const {
+
+    self result(*this);
+    result.divideFirstAssign(rhs);
+
+    return result;
+  }
+
 
   /// Get number of nodes in decision diagram
   size_type nNodes() const {

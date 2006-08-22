@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/08/22 16:06:23  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.12  2006/08/18 19:47:15  dreyer
  * change finished low-level variant of minimal_elements also for lnegth()==2
  *
@@ -259,5 +262,20 @@ base res = ZDD( &manager(), result );
   return res;
 
 };
+
+
+// Division by given term
+BooleSet
+BooleSet::divide(const term_type& rhs) const {
+  return self(base::divideFirst(rhs.diagram()));
+};
+
+// Division with assignment by given term
+BooleSet& 
+BooleSet::divideAssign(const term_type& rhs)  {
+  base::divideFirstAssign(rhs.diagram());
+  return *this;
+};
+
 
 END_NAMESPACE_PBORI

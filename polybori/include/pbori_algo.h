@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.12  2006/08/15 14:17:29  dreyer
  * ADD minimalElements(), hasTermOfVariables()
  *
@@ -293,6 +296,36 @@ dd_print(NaviType navi) {
   }
 }
 
+// Determinine the minimum of the distance between two iterators and limit
+template <class IteratorType, class SizeType>
+SizeType
+limited_distance(IteratorType start, IteratorType finish, SizeType limit) {
+
+  SizeType result = 0;
+
+  while ((result < limit) && (start != finish)) {
+    ++start, ++result;
+  }
+
+  return result;
+}
+
+// Forward declaration of CTermIter template
+template <class T1, class T2, class T3, class T4, class T5> class CTermIter;
+
+// Determinine the minimum of the number of terms and limit
+template <class NaviType, class SizeType>
+SizeType
+limited_length(NaviType navi, SizeType limit) {
+
+
+  typedef CTermIter<dummy_iterator, NaviType, 
+                    project_ith<1>, project_ith<1>, project_ith<1, 2> >
+  iterator;
+
+  return limited_distance(iterator(navi), iterator(), limit);
+}
+
 /// A first version
 /// Function templates extracting minimal elements of dd wrt. inclusion
 /// Assumption, navi is navigator of dd
@@ -373,6 +406,8 @@ dd_minimal_elements(NaviType navi, DDType dd, DDType& multiples) {
   multiples = dd;
   return dd;
 }
+
+
 
 
 END_NAMESPACE_PBORI

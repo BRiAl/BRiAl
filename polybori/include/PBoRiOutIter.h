@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.2  2006/07/04 14:11:03  dreyer
  * ADD: Generic and handy treatment of string literals
  *
@@ -31,9 +34,6 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-
-// get BooleMonomial's definition
-#include "BooleMonomial.h"
 
 #ifndef PBoRiOutIter_h_
 #define PBoRiOutIter_h_

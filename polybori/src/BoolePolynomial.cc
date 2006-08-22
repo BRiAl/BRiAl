@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.53  2006/08/22 16:06:22  dreyer
+ * + Added highlevel division
+ *
  * Revision 1.52  2006/08/01 11:16:01  dreyer
  * CHANGE: Bug fixed, uninitialized *min_element() (valgrind)
  *
@@ -309,7 +312,8 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const monom_type&)" );
 
-  m_dd.divideAssign( ( (const BoolePolynomial&)rhs).m_dd );
+  m_dd.divideFirstAssign(rhs.diagram());
+
   return *this;
 }
 
