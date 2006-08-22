@@ -45,6 +45,7 @@ void export_bset(){
   //.def("printToStdout", &BooleSet::print)
   //.def("count", &BooleSet::count)
   .def("__len__", &BooleSet::length)
+  .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("product", &BooleSet::product)
   .def("unateProduct", &BooleSet::unateProduct)
   //.def("weakDiv", &BooleSet::weakDiv)
