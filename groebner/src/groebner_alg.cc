@@ -842,14 +842,14 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     }
     
   }
-  Polynomial p_divided=p;
+  /*Polynomial p_divided=p;
   Monomial::const_iterator m_b=factor.begin();
   Monomial::const_iterator m_e=factor.end();
   while(m_b!=m_e){
     p_divided=((BooleSet)p_divided).subset1(*m_b);
     m_b++;
-  }
-  Polynomial negation=Polynomial(true)-p_divided;//p/factor;
+  }*/
+  Polynomial negation=Polynomial(true)-p/factor;
   if (!(negation.isZero())){
   LiteralFactorization fac_neg(negation);
   if (!(fac_neg.trivial())){
