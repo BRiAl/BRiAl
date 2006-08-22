@@ -501,7 +501,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
 MonomialSet minimal_elements_internal2(MonomialSet s){
     if (s.emptiness()) return s;
     if (Polynomial(s).isOne()) return s;
-    MonomialSet::navigator nav=s.navigation();
+    
     
     
     
@@ -526,7 +526,24 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     
     if (s.emptiness()) return result;
     assert(!(s.hasConstantPart()));
-    idx_type i=*nav;
+    
+    
+    
+    MonomialSet::navigator nav=s.navigation();
+    idx_type i;
+    #if 1
+    
+    //first index of ZDD
+    i=*nav;
+    #else
+    
+    //first index of least lex. term
+    while(!(nav.isConstant())){
+        i=*nav;
+        nav.incrementElse();
+    }
+    #endif
+    
     
     
     /*MonomialSet s0=minimal_elements_internal2(s.subset0(i));
@@ -609,8 +626,8 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
         //lm austeilen
         m=divide_monomial_divisors_out(m,lm);
         
-        std::vector<idx_type> cv=contained_variables(m);
-        int i;
+        //std::vector<idx_type> cv=contained_variables(m);
+        //int i;
         /*for(i=0;i<cv.size();i++){
             result.push_back(((Monomial)Variable(cv[i]))*lm);
             m=m.subset0(cv[i]);
@@ -825,8 +842,14 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     }
     
   }
-  
-  Polynomial negation=Polynomial(true)-p/factor;
+  Polynomial p_divided=p;
+  Monomial::const_iterator m_b=factor.begin();
+  Monomial::const_iterator m_e=factor.end();
+  while(m_b!=m_e){
+    p_divided=((BooleSet)p_divided).subset1(*m_b);
+    m_b++;
+  }
+  Polynomial negation=Polynomial(true)-p_divided;//p/factor;
   if (!(negation.isZero())){
   LiteralFactorization fac_neg(negation);
   if (!(fac_neg.trivial())){
@@ -838,7 +861,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     while(nb!=ne){
       
       idx_type var=nb->first;
-      bool val=(!(nb->second));
+      bool val=1-nb->second;
       this->addGeneratorDelayed(factor*(Variable(var)+Polynomial(val)));
       nb++;
     }
@@ -847,7 +870,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     while(vnb!=vne){
       
       idx_type var=vnb->first;
-      idx_type val=(!(vnb->second));
+      idx_type val=vnb->second;
       this->addGeneratorDelayed(factor*(Variable(var)+Variable(val)+Polynomial(true)));
       vnb++;
     }
