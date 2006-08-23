@@ -525,7 +525,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     }
     
     if (s.emptiness()) return result;
-    assert(!(s.hasConstantPart()));
+    assert(!(Polynomial(s).hasConstantPart()));
     
     
     
