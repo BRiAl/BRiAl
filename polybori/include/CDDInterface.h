@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/08/23 14:24:53  dreyer
+ * ADD: BooleSet::usedVariables and infrastructure
+ *
  * Revision 1.24  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *
@@ -635,9 +638,15 @@ class CDDInterface<ZDD>:
   }
 
   /// Returns number of terms
-  size_type length() const {
+  size_type size() const {
     return m_interfaced.Count();
   }
+
+  /// Returns number of terms (deprecated)
+  size_type length() const {
+    return size();
+  }
+
   /// Returns number of variables in manager
   size_type nVariables() const {
    return Cudd_ReadZddSize(manager().getManager() );

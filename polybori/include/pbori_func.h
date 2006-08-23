@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/08/23 14:24:53  dreyer
+ * ADD: BooleSet::usedVariables and infrastructure
+ *
  * Revision 1.17  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *
@@ -495,6 +498,11 @@ class is_same_type:
  **/
 struct internal_tag {};
 
+/** @class type_tag
+ * @brief This class marks a given type
+ **/
+template<class Type>
+struct type_tag {};
 
 END_NAMESPACE_PBORI
 

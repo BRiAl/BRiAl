@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/08/23 14:24:53  dreyer
+ * ADD: BooleSet::usedVariables and infrastructure
+ *
  * Revision 1.10  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *
@@ -115,6 +118,9 @@ public:
 
   /// Use assignment operator of base element
   using base::operator=;
+
+  /// Set of variables of the whole set
+  term_type usedVariables() const;
 
   /// Add given monomial to sets and assign
   self& addAssign(const term_type&);

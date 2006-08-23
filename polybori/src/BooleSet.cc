@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/08/23 14:24:54  dreyer
+ * ADD: BooleSet::usedVariables and infrastructure
+ *
  * Revision 1.13  2006/08/22 16:06:23  dreyer
  * + Added highlevel division
  *
@@ -75,6 +78,11 @@
 
 
 #include "pbori_algo_int.h"
+
+
+// get internal routines
+# include "pbori_routines.h"
+
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -169,6 +177,8 @@ BooleSet::term_type
 BooleSet::lastLexicographicalTerm() const {
 
   PBORI_TRACE_FUNC( "BooleSet::lastTerm() const" );
+
+  return dd_last_lexicographical_term(*this, type_tag<term_type>());
 
   term_type result(true);
 
@@ -277,5 +287,14 @@ BooleSet::divideAssign(const term_type& rhs)  {
   return *this;
 };
 
+// Set of variables of the polynomial
+BooleSet::term_type
+BooleSet::usedVariables() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::usedVariables() const" );
+
+
+  return dd_used_variables(*this, type_tag<term_type>());
+}
 
 END_NAMESPACE_PBORI

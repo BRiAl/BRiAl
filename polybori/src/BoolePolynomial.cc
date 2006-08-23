@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.54  2006/08/23 14:24:54  dreyer
+ * ADD: BooleSet::usedVariables and infrastructure
+ *
  * Revision 1.53  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *
@@ -229,6 +232,9 @@
 
 // include definition of generic print operation
 # include "CPrintOperation.h"
+
+// get internal routines
+# include "pbori_routines.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -594,6 +600,10 @@ BoolePolynomial::usedVariables() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
 
+  return dd_used_variables(diagram(), type_tag<monom_type>());
+
+#if 0
+
 #ifdef PBORI_USEDVARS_BY_SUPPORT
 
   BooleSet bset(diagram().support());
@@ -646,6 +656,8 @@ BoolePolynomial::usedVariables() const {
   copy(indices.rbegin(), indices.rend(), outiter);
 
   return result;
+#endif
+
 #endif
 }
 
