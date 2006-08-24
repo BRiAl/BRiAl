@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/08/24 16:09:33  bricken
+ * + removed typo
+ *
  * Revision 1.2  2006/08/24 14:47:49  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -251,7 +254,7 @@ protected:
 template <class RHSType>
 inline BooleExponent
 operator*(const BooleExponent& lhs, const RHSType& rhs) {
-  return lhs.multipy(rhs);
+  return lhs.multiply(rhs);
 }
 
 /// Division of monomials
