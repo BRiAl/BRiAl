@@ -19,8 +19,8 @@ int select1(const GroebnerStrategy& strat, const Monomial& m);
 
 
 
-static int select_short(GroebnerStrategy& strat, const Polynomial& p);
-static int select_short(GroebnerStrategy& strat, const Monomial& m);
+static int select_short(const GroebnerStrategy& strat, const Polynomial& p);
+static int select_short(const GroebnerStrategy& strat, const Monomial& m);
 
 Polynomial nf1(GroebnerStrategy& strat, Polynomial p);
 
@@ -67,10 +67,10 @@ template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
 }
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps, double delay_f);
-Polynomial redTail(GroebnerStrategy& strat, Polynomial p);
-Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p);
-Polynomial nf3(GroebnerStrategy& strat, Polynomial p);
-Polynomial nf3_short(GroebnerStrategy& strat, Polynomial p);
-Polynomial red_tail_self_tuning(GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail_short(const GroebnerStrategy& strat, Polynomial p);
+Polynomial nf3(const GroebnerStrategy& strat, Polynomial p);
+Polynomial nf3_short(const GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif

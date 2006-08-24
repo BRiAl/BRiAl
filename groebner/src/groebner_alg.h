@@ -101,6 +101,7 @@ public:
   
   bool variableHasValue(idx_type i);
   PairManager pairs;
+  bool reduceByTailReduced;
   PolyEntryVector generators;
   MonomialSet leadingTerms;
   MonomialSet minimalLeadingTerms;
@@ -125,6 +126,7 @@ public:
     extendedProductCriterions=0;
     easyProductCriterions=0;
     optRedTail=true;
+    reduceByTailReduced=false;
   }
 
     Polynomial nextSpoly(){
@@ -144,12 +146,12 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
 Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor);
 class LessWeightedLengthInStrat{
 public:
-  GroebnerStrategy* strat;
-  LessWeightedLengthInStrat(GroebnerStrategy& strat){
+  const GroebnerStrategy* strat;
+  LessWeightedLengthInStrat(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    return strat->generators[strat->lm2Index[a]].weightedLength<strat->generators[strat->lm2Index[b]].weightedLength;
+    return strat->generators[strat->lm2Index.find(a)->second].weightedLength<strat->generators[strat->lm2Index.find(b)->second].weightedLength;
     
   }
 };

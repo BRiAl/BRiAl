@@ -125,12 +125,12 @@ Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
 
 
 
-Polynomial nf3(GroebnerStrategy& strat, Polynomial p){
+Polynomial nf3(const GroebnerStrategy& strat, Polynomial p){
   int index;
   while((index=select1(strat,p))>=0){
     assert(index<strat.generators.size());
   
-    Polynomial* g=&strat.generators[index].p;
+    const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
     ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (p.lead()!=strat.generators[index].lm)){
@@ -160,11 +160,11 @@ Polynomial nf3_db(GroebnerStrategy& strat, Polynomial p, int deg_bound){
   }
   return p;
 }
-Polynomial nf3_short(GroebnerStrategy& strat, Polynomial p){
+Polynomial nf3_short(const GroebnerStrategy& strat, Polynomial p){
   int index;
   while((index=select_short(strat,p))>=0){
     assert(index<strat.generators.size());
-    Polynomial* g=&strat.generators[index].p;
+    const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
     ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (p.lead()!=strat.generators[index].lm)){
@@ -379,8 +379,10 @@ public:
 
 
 static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result, const BooleMonomial& lm, int index, GroebnerStrategy& strat){
-
+  
   int s=curr.size();
+  
+  
   
   if ((strat.generators[index].length>2)||(lm==strat.generators[index].lm)){
     
@@ -406,9 +408,13 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
     }
     else{
       Polynomial p_high=(lm/strat.generators[index].lm)*strat.generators[index].p;
+      if ((strat.reduceByTailReduced) && (p_high!=strat.generators[index].p)){
+          p_high=red_tail(strat, p_high);
+        }
   deg_type deg_high=strat.generators[index].ecart()+lm.deg();
   assert(p_high.lead()==lm);
       for(int i=0;i<s;i++){
+        
         curr[i].add(p_high, deg_high);
       }
     }
@@ -460,7 +466,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     pivot_el=curr[found].eliminationLength();
     if (pivot_el<strat.generators[index].weightedLength){
         if (strat.optRedTail)
-            curr[found]=PolynomialSugar(redTail(strat,curr[found].value()));
+            curr[found]=PolynomialSugar(red_tail(strat,curr[found].value()));
         pivot_el=curr[found].eliminationLength();
     }
   }
@@ -718,7 +724,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   
 }
 typedef LessWeightedLengthInStratModified StratComparerForSelect;
-static int select_short(GroebnerStrategy& strat, const Polynomial& p){
+static int select_short(const GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
   //Polynomial workaround =Polynomial(ms);
   
@@ -729,20 +735,20 @@ static int select_short(GroebnerStrategy& strat, const Polynomial& p){
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     
-    int res=strat.lm2Index[min];
+    int res=strat.lm2Index.find(min)->second;
     if ((strat.generators[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
     else return -1;
   }
   
 }
-static int select_short(GroebnerStrategy& strat, const Monomial& m){
+static int select_short(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.intersect(m.divisors());
   if (ms.emptiness())
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    int res=strat.lm2Index[min];
+    int res=strat.lm2Index.find(min)->second;
     if ((strat.generators[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
     else return -1;
 
@@ -814,13 +820,33 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
     return Polynomial(add_up_monomials(res_vec,0,h).diagram().unite(add_up_monomials(res_vec,h,s).diagram()));
 }
 
-static bool irreducible_lead(Monomial lm, GroebnerStrategy& strat){
+
+static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec, int start, int end){
+    //we assume the polynomials to be pairwise different
+    int s=end-start;
+    if (s==0) return Polynomial();
+    if (s==1) return res_vec[start];
+    int h=s/2;
+    return Polynomial(unite_polynomials(res_vec,start,start+h).diagram().unite(unite_polynomials(res_vec,start+h,end).diagram()));
+    //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
+}
+static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec){
+    //we assume the polynomials to be pairwise different
+    int s=res_vec.size();
+    if (s==0) return Polynomial();
+    if (s==1) return res_vec[0];
+    int h=s/2;
+    
+    return Polynomial(unite_polynomials(res_vec,0,h).diagram().unite(unite_polynomials(res_vec,h,s).diagram()));
+}
+
+static bool irreducible_lead(Monomial lm, const GroebnerStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
   //        strat.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
 }
-
-Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
+#if 0
+Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Monomial> res_vec;
@@ -870,7 +896,59 @@ Polynomial redTail(GroebnerStrategy& strat, Polynomial p){
   res=add_up_monomials(res_vec);
   return res;
 }
-Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p){
+#else
+Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
+  Polynomial res;
+  int deg_bound=p.deg();
+  std::vector<Polynomial> res_vec;
+  Polynomial orig_p=p;
+  bool changed=false;
+  if (!(p.isZero())){
+    Monomial lm=p.lead();
+    res_vec.push_back(lm);
+    p=Polynomial(p.diagram().diff(lm.diagram()));
+  }
+  while(!(p.isZero())){
+    
+    //res+=lm;
+
+    
+    //p-=lm;
+    std::vector<Monomial> irr;
+    Polynomial::const_iterator it=p.begin();
+    Polynomial::const_iterator end=p.end();
+    while((it!=end)&& (irreducible_lead(*it,strat))){
+        irr.push_back(*it);
+        it++;
+    }
+    if ((!(changed))&& (it==end)) return orig_p;
+    Polynomial irr_p=add_up_monomials(irr);
+    int s,i;
+    s=irr.size();
+    assert(s==irr_p.length());
+    //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    //for(i=0;i<s;i++){
+    //    res_vec.push_back(irr[i]);
+    //}
+    res_vec.push_back(irr_p);
+    //p=p-irr_p;
+    p=Polynomial(p.diagram().diff(irr_p.diagram()));
+    if(p.isZero()) break;
+    //Monomial lm=p.lead();
+    //res_vec.push_back(lm);
+    
+    
+    //p=Polynomial(p.diagram().diff(lm.diagram()));
+    p=nf3(strat,p);
+    changed=true;
+  }
+  
+  //should use already added irr_p's
+  res=unite_polynomials(res_vec);
+  return res;
+}
+#endif
+Polynomial red_tail_short(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   while(!(p.isZero())){
     Polynomial lm=p.lead();
@@ -880,7 +958,7 @@ Polynomial red_tail_short(GroebnerStrategy& strat, Polynomial p){
   }
   return res;
 }
-Polynomial red_tail_self_tuning(GroebnerStrategy& strat, Polynomial p){
+Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int orig_length=p.length();
   bool short_mode=false;

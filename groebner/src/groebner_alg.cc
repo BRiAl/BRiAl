@@ -86,7 +86,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   extendedProductCriterions=orig.extendedProductCriterions;
   averageLength=orig.averageLength;
   enabledLog=orig.enabledLog;
-  
+  reduceByTailReduced=orig.reduceByTailReduced;
   this->pairs.strat=this; 
 }
 /// assumes that divisibility condition is fullfilled
@@ -554,8 +554,8 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     return s0.unite(s1.change(i));*/
     
     MonomialSet s0_raw=s.subset0(i);
-    MonomialSet s0=minimal_elements_internal(s0_raw);
-    MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
+    MonomialSet s0=minimal_elements_internal2(s0_raw);
+    MonomialSet s1=minimal_elements_internal2(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
         s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
         
@@ -919,7 +919,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     MonomialSet::const_iterator end=m.end();
     while(it!=end){
         //redTail
-        result.push_back(redTail(*this,generators[lm2Index[*it]].p));
+        result.push_back(red_tail(*this,generators[lm2Index[*it]].p));
         it++;
     }
     return result;
