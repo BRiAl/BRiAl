@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2006/08/24 14:47:49  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.34  2006/07/17 15:32:08  dreyer
  * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
  *
@@ -147,6 +150,7 @@
 BEGIN_NAMESPACE_PBORI
 
 class BooleMonomial;
+class BooleExponent;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -197,11 +201,20 @@ public:
   /// Fix type for treatment of monomials
   typedef BooleMonomial monom_type; 
 
+  /// Fix type for treatment of exponent vectors
+  typedef BooleExponent exp_type; 
+
   /// Iterator type for iterating all monomials
   typedef CTermIter<monom_type, navigator, 
                     change_assign<>, 
                     change_assign<> >
   const_iterator;
+
+  /// Iterator type for iterating all exponent vectors 
+  typedef CTermIter<exp_type, navigator, 
+                    insert_assign<>, 
+                    remove_assign<>, project_ith<1> >
+  exp_iterator;
 
   /// Incrementation functional type
   typedef 
@@ -239,6 +252,9 @@ public:
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
+
+  /// Construct polynomial from exponent vector
+  BoolePolynomial(const exp_type&);
 
   /// Copy constructor
   BoolePolynomial(const self&);
@@ -304,8 +320,7 @@ public:
   /// Returns number of terms
   size_type length() const;
 
-  /// Print current polynomial to cout
-  /// @todo Cudd provides only cout functionality, iostream needed.
+  /// Print current polynomial to output stream
   ostream_type& print(ostream_type&) const;
 
   /// Pretty print to stdout
@@ -319,6 +334,12 @@ public:
 
   /// Finish of iteration over monomials
   const_iterator end() const;
+
+  /// Start of iteration over exponent vectors
+  exp_iterator expBegin() const;
+
+  /// Finish of iteration over exponent vectors
+  exp_iterator expEnd() const;
 
   /// Start of leading term
   first_iterator firstBegin() const;

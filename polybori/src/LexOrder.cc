@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.3  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -41,22 +44,12 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
-// Comparison of monomials
-LexOrder::comp_type
-LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
-  
-  PBORI_TRACE_FUNC( 
-    "LexOrder::compare(const monom_type&, const monom_type&) const)" );
-
-
-  if (lhs == rhs)
-    return CTypes::equality;
-
-  typedef monom_type::const_iterator const_iterator;
-
-  const_iterator start(lhs.begin()), finish(lhs.end()),
-    rhs_start(rhs.begin()), rhs_finish(rhs.end());
+// todo: move to some header
+template<class Order, class FirstIterator, class SecondIterator>
+typename Order::comp_type
+lex_compare(FirstIterator start, FirstIterator finish, 
+            SecondIterator rhs_start, SecondIterator rhs_finish,
+            Order order) {
 
   while ( (start != finish) && (rhs_start != rhs_finish) && 
           (*start == *rhs_start) ) {
@@ -69,7 +62,39 @@ LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   if (rhs_start == rhs_finish)
     return CTypes::greater_than;
 
-  return compare(*start, *rhs_start);
+  return order.compare(*start, *rhs_start);
+}
+
+// todo: move to some header
+template<class Order, class LhsType, class RhsType>
+typename Order::comp_type
+lex_compare(const LhsType& lhs, const RhsType& rhs, Order order) {
+
+  if (lhs == rhs)
+    return CTypes::equality;
+
+  return lex_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), order);
+}
+
+// Comparison of monomials
+LexOrder::comp_type
+LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
+  
+  PBORI_TRACE_FUNC( 
+    "LexOrder::compare(const monom_type&, const monom_type&) const)" );
+
+  return lex_compare(lhs, rhs, *this);
+}
+
+// Comparison of monomials
+LexOrder::comp_type
+LexOrder::compare(const exp_type& lhs, const exp_type& rhs) const {
+  
+  PBORI_TRACE_FUNC( 
+    "LexOrder::compare(const exp_type&, const exp_type&) const)" );
+
+  return lex_compare(lhs, rhs, *this);
+
 }
 
 // Comparison of monomials

@@ -50,7 +50,7 @@ RANLIB	= ranlib
 # These four are typical settings for optimized code with gcc.  The
 # last two also work with icc/ecc.
 #ICFLAGS	= -g -O6 -Wall
-ICFLAGS	= -g -O6
+ICFLAGS	= -g -O6 -pg
 #ICFLAGS	= -g -O3 -Wall
 #ICFLAGS	= -g -O3
 

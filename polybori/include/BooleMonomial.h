@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/24 14:47:49  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.9  2006/08/01 11:12:22  dreyer
  * CHANGE: removed ';' at end of functions (pedantic)
  *
@@ -65,6 +68,8 @@
 BEGIN_NAMESPACE_PBORI
 
 class BooleVariable;
+class BooleExponent;
+
 /** @class BooleMonomial
  * @brief This class is just a wrapper for using variables from @c cudd's
  * decicion diagram. 
@@ -104,8 +109,14 @@ class BooleMonomial {
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;
 
+  /// Type of exponent vector
+  typedef BooleExponent exp_type;
+
   /// Access to iterator type of leading terms
   typedef poly_type::first_iterator const_iterator;
+
+  /// Type for index maps
+  typedef generate_index_map<self>::type idx_map_type;
 
   /// Default Constructor (Constructs monomial one of the active ring)
   BooleMonomial();
@@ -116,6 +127,9 @@ class BooleMonomial {
   /// Construct from Boolean variable
   BooleMonomial(const var_type&);
 
+  /// Construct from exponent vector
+  BooleMonomial(const exp_type&);
+
   /// Construct from Boolean constant
   BooleMonomial(bool_type);
 
@@ -124,7 +138,10 @@ class BooleMonomial {
 
   /// Casting operator
   operator const BoolePolynomial&() const;
- 
+
+  /// Get exponent vector
+  exp_type exp() const;
+
   /// Casting operator
 //  operator const dd_type&() const { return m_poly.diagram(); };
 
@@ -138,6 +155,9 @@ class BooleMonomial {
   size_type deg() const {
     ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
     return m_poly.nNodes(); }
+
+  /// Size of the exponents
+  size_type size() const { return deg(); }
 
   /// Divisors of the monomial
   set_type divisors() const { return m_poly.lmDivisors(); }

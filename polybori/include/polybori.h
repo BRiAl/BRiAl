@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.5  2006/04/20 08:31:21  dreyer
  * ADD BooleMonomial::mulples(...)
  *
@@ -47,8 +50,8 @@
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
 #include "BooleVariable.h"
+#include "BooleExponent.h"
 #include "PBoRiError.h"
-
 
 
 #endif // of #ifndef polybori_h_

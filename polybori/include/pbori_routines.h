@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.1  2006/08/23 14:24:54  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -43,5 +46,8 @@
 
 // Get routines, which add features related to Cudd library
 #include "pbori_routines_cuddext.h"
+
+// Get additional routines
+#include "pbori_routines_misc.h"
 
 #endif

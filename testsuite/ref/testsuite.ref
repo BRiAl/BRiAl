@@ -251,7 +251,16 @@ BooleSet divisorsOf test
 --000 1
 
 1
+next
+1
+: 0 nodes 1 minterms
+00000 1
+
+: 0 nodes 1 minterms
+00000 1
+
 0
+next
 1
 : 2 nodes 4 minterms
 -000- 1
@@ -259,8 +268,27 @@ BooleSet divisorsOf test
 : 2 nodes 4 minterms
 -000- 1
 
+testing minimal elements
+testing next minimal elements
+bset : 6 nodes 4 minterms
+11100 1
+0101- 1
+01000 1
 
-Finished.
+: 1 nodes 1 minterms
+01000 1
+
+bset : 7 nodes 2 minterms
+11111 1
+01010 1
+
+
+
+: 2 nodes 1 minterms
+01010 1
+
+Test exponents of x(0)*x(1) + x(1)*x(2)*x(3) + x(1)*x(2)*x(4) + x(2)*x(4) 
+(0, 1), (1, 2, 3), (1, 2, 4), (2, 4), 
 ----------------------
 Executing testsuite/strategy_initialization
 ----------------------

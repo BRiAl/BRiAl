@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.13  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *
@@ -68,6 +71,9 @@
 
 // get polybori's functionals
 #include "pbori_func.h"
+
+// temporarily
+#include "cudd.h"
 
 #ifndef pbori_algo_h_
 #define pbori_algo_h_
@@ -405,6 +411,96 @@ dd_minimal_elements(NaviType navi, DDType dd, DDType& multiples) {
 
   multiples = dd;
   return dd;
+}
+
+/// temporarily (needs to be more generic)
+template<class ManagerType, class ReverseIterator, class MultReverseIterator>
+ZDD
+cudd_generate_multiples(ManagerType& mgr, 
+                        ReverseIterator start, ReverseIterator finish,
+                        MultReverseIterator multStart, 
+                        MultReverseIterator multFinish) {
+
+    DdNode* prev( (mgr.getManager())->one );
+
+    DdNode* zeroNode( (mgr.getManager())->zero ); 
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+
+      while((multStart != multFinish) && (*start < *multStart)) {
+
+        DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *multStart,
+                                             prev, prev );
+
+        Cudd_Ref(result);
+        Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+
+        prev = result;
+        ++multStart;
+
+      };
+
+      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *start,
+                                           prev, zeroNode );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+
+      prev = result;
+
+
+      if((multStart != multFinish) && (*start == *multStart))
+        ++multStart;
+
+
+      ++start;
+    }
+
+    while(multStart != multFinish) {
+
+      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *multStart,
+                                           prev, prev );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+
+      prev = result;
+      ++multStart;
+
+    };
+
+    Cudd_Deref(prev);
+
+    return ZDD(&mgr, prev);
+  }
+
+/// temporarily (needs to be more generic)
+template<class ManagerType, class ReverseIterator>
+ZDD
+cudd_generate_divisors(ManagerType& mgr, 
+                       ReverseIterator start, ReverseIterator finish) {
+
+
+    DdNode* prev= (mgr.getManager())->one;
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+ 
+      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *start,
+                                           prev, prev);
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+ 
+      prev = result;
+      ++start;
+    }
+
+    Cudd_Deref(prev);
+ 
+    return ZDD(&mgr, prev);
+
 }
 
 

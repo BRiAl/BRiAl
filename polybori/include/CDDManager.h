@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.7  2006/08/09 12:52:31  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -146,6 +149,12 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Constant casting operator to interfaced type
   operator const interfaced_type&() const { return m_interfaced; }
+
+  /// Get interfaced type
+  interfaced_type& manager() { return m_interfaced; }
+
+  /// Get interfaced type
+  const interfaced_type& manager() const { return m_interfaced; }
 
   /// Print out statistics and settings for a decision diagram manager
   void printInfo() const { m_interfaced.info(); }

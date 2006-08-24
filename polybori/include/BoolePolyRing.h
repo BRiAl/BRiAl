@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/08/24 14:47:49  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.19  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -163,7 +166,7 @@ class BoolePolyRing {
   const manager_type& manager() const;
 
   /// Constant access to decision diagram manager
-  static const manager_type& activeManager() { return *current_mgr; };
+  static manager_type& activeManager() { return *current_mgr; };
 
   /// Access nvar-th variable of decision diagram manager
   dd_type ddVariable(idx_type nvar) const;

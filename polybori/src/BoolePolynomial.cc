@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.55  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.54  2006/08/23 14:24:54  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -205,6 +208,7 @@
 // load header file
 # include "BoolePolynomial.h"
 # include "BooleMonomial.h"
+# include "BooleExponent.h"
 
 // get polynomial riung definition
 # include "BoolePolyRing.h"
@@ -261,6 +265,20 @@ BoolePolynomial::BoolePolynomial(const dd_type& rhs):
   m_dd(rhs)  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(const dd_type&)" );
+}
+
+// Constructor polynomial from exponent vector
+BoolePolynomial::BoolePolynomial(const exp_type& rhs):
+  m_dd( BoolePolyRing::ringOne() )  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(const exp_type&)" );
+
+  exp_type::const_reverse_iterator start(rhs.rbegin()), finish(rhs.rend());
+
+  while(start != finish) {
+    m_dd.changeAssign(*start);
+    ++start;
+  }
 }
 
 // Copy constructor
@@ -508,16 +526,17 @@ BoolePolynomial::lmHash() const {
   if (m_dd.emptiness())
     return 0;
   else {
-  
-    dd_type::first_iterator start(firstBegin()), finish(firstEnd());
-    int vars=0;
-    int sum=0;
-    while (start != finish){
-      vars++;
-      sum+=((*start)+1)*((*start)+1);
-      ++start;
-    }
-    return sum*vars;
+    return index_vector_hash(firstBegin(), firstEnd());
+
+//     dd_type::first_iterator start(firstBegin()), finish(firstEnd());
+//     int vars=0;
+//     int sum=0;
+//     while (start != finish){
+//       vars++;
+//       sum+=((*start)+1)*((*start)+1);
+//       ++start;
+//     }
+//     return sum*vars;
   }
     
 }
@@ -690,7 +709,7 @@ BoolePolynomial::diagram() const {
 }
 
 
-// Print current polynomial to cout
+// Print current polynomial to output stream
 BoolePolynomial::ostream_type&
 BoolePolynomial::print(ostream_type& os) const {
 
@@ -785,6 +804,21 @@ BoolePolynomial::end() const {
 }
 
 
+// Start of iteration over exponent vectors
+BoolePolynomial::exp_iterator 
+BoolePolynomial::expBegin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::exp_begin() const" );
+  return navigation();
+}
+
+// Finish of iteration over monomials
+BoolePolynomial::exp_iterator 
+BoolePolynomial::expEnd() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::exp_end() const" );
+  return exp_iterator();
+}
 // Navigate through diagram structure
 BoolePolynomial::navigator 
 BoolePolynomial::navigation() const {

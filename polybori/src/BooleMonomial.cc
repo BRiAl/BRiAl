@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.7  2006/07/31 11:48:53  dreyer
  * ADD: lowlevel implementation for multiples and lmDivisors
  *
@@ -49,6 +52,7 @@
 // load header files
 # include "BooleMonomial.h"
 # include "BooleVariable.h"
+# include "BooleExponent.h"
 
 // get ring definitions
 # include "BoolePolyRing.h"
@@ -80,6 +84,14 @@ BooleMonomial::BooleMonomial(const var_type& rhs) :
   m_poly(rhs) {
   
   PBORI_TRACE_FUNC( "BooleMonomial(const var_type&)" );
+}
+
+//  Construct from Exponent vector
+BooleMonomial::BooleMonomial(const exp_type& rhs) :
+  m_poly(rhs) {
+  
+  PBORI_TRACE_FUNC( "BooleMonomial(const exp_type&)" );
+
 }
 
 //  Construct from Boolean constant
@@ -347,6 +359,15 @@ greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
 
   return
     (BoolePolyRing::activeManager().compare(lhs, rhs)==CTypes::greater_than);
+}
+
+// Get exponent vector
+BooleMonomial::exp_type
+BooleMonomial::exp() const {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::exp() const" );
+
+  return  exp_type().get(*this);
 }
 
 END_NAMESPACE_PBORI

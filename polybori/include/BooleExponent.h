@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/24 14:47:49  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.1  2006/08/23 17:00:01  dreyer
  * ADD: initial version
  *
@@ -33,9 +36,9 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// get definition of BoolePolynomial and BooleVariable
+// get definition of BoolePolynomial, BooleMonomial, and BooleVariable
 #include "BooleMonomial.h"
-
+#include "BooleVariable.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -47,6 +50,7 @@ BEGIN_NAMESPACE_PBORI
 class BooleExponent {
 
  public:
+
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
@@ -86,18 +90,23 @@ class BooleExponent {
   /// Type of Boolean variables
   typedef BooleVariable var_type;
 
+  /// Type of Boolean variables
+  typedef BooleMonomial monom_type;
+
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;
 
+  /// Type for index maps
+  typedef generate_index_map<self>::type idx_map_type;
 
-  /// Default Constructor (Constructs monomial one of the active ring)
+  /// Default Constructor
   BooleExponent();
 
   /// Copy constructor
   BooleExponent(const self&);
 
-//   /// Construct from Boolean variable
-//   BooleExponent(const var_type&);
+  /// Construct from Boolean monomial
+  self& get(const monom_type&);
 
 //   /// Construct from Boolean constant
 //   BooleExponent(bool_type);
@@ -139,11 +148,32 @@ class BooleExponent {
   /// Substitute variable with index idx by its complement
   self change(idx_type) const;
 
-  /// Division operation
-  self divide(const self&) const;
+  /// Insert variable with index idx in exponent vector
+  self& insertAssign(idx_type);
 
-  /// Division operation
+  /// Insert variable with index idx in exponent vector
+  self insert(idx_type) const;
+
+  /// Remove variable with index idx in exponent vector
+  self& removeAssign(idx_type);
+
+  /// Remove variable with index idx in exponent vector
+  self remove(idx_type) const;
+
+  /// Corresponds to division of monomials
+  self divide(const self&) const;
+  self divide(const idx_type& rhs) const { 
+    return (reducibleBy(rhs)? remove(rhs) : self() ); }
+
+  self divide(const var_type& rhs) const { return divide(rhs.index()); }
+  self divide(const monom_type&) const;
+
+  /// Corresponds to multiplication of monomials
   self multiply(const self&) const;
+
+  self multiply(const idx_type& rhs) const { return insert(rhs); }
+  self multiply(const var_type& rhs) const { return multiply(rhs.index()); }
+  self multiply(const monom_type&) const;
 
 //   /// @name Arithmetical operations
 //   //@{
@@ -159,8 +189,21 @@ class BooleExponent {
   bool_type operator!=(const self& rhs) const { return m_data != rhs.m_data; }
   //@}
 
+  /// Assignment operation
+  self& operator=(const self& rhs) { m_data = rhs.m_data; return *this; }
+  self& operator=(const monom_type& rhs) {
+    m_data.resize(rhs.size());
+    std::copy(rhs.begin(), rhs.end(), begin());
+    return *this;
+  }
+
   /// Test for reducibility
   bool_type reducibleBy(const self& rhs) const;
+  bool_type reducibleBy(const monom_type& rhs) const;
+  bool_type reducibleBy(const idx_type& rhs) const;
+  bool_type reducibleBy(const var_type& rhs) const { 
+    return reducibleBy(rhs.index()); }
+
 
 //   /// Test for reducibility wrt. to a given variable
 //   bool_type reducibleBy(const var_type& rhs) const;
@@ -182,6 +225,9 @@ class BooleExponent {
 
   /// Compute the greatest common divisor
   self GCD(const self&) const;
+
+  /// Print current polynomial to output stream
+  ostream_type& print(ostream_type&) const;
  
 protected:
   /// Start iteration over indices (constant access)
@@ -200,19 +246,19 @@ protected:
   data_type m_data;
 };
 
-/*
+
 /// Multiplication of monomials
 template <class RHSType>
 inline BooleExponent
 operator*(const BooleExponent& lhs, const RHSType& rhs) {
-  return BooleExponent(lhs) *= rhs;
+  return lhs.multipy(rhs);
 }
 
 /// Division of monomials
 template <class RHSType>
 inline BooleExponent
 operator/(const BooleExponent& lhs, const RHSType& rhs) {
-  return BooleExponent(lhs) /= rhs;
+  return lhs.divide(rhs);
 }
 
 
@@ -258,7 +304,13 @@ LCM(const BooleExponent& lhs, const BooleExponent& rhs ){
 
   return lhs.LCM(rhs);
 }
-*/
+
+
+/// Stream output operator
+inline BooleExponent::ostream_type& 
+operator<<(BooleExponent::ostream_type& os, const BooleExponent& rhs) {
+  return rhs.print(os);
+}
 
 END_NAMESPACE_PBORI
 

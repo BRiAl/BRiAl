@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.3  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -44,6 +47,8 @@
 // include monomial definitions
 #include "BooleMonomial.h"
 
+// include exponent vector definitions
+#include "BooleExponent.h"
 
 #ifndef LexOrder_h_
 #define LexOrder_h_
@@ -70,6 +75,9 @@ class LexOrder {
 
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
+
+  /// Type of Boolean monomials
+  typedef BooleExponent exp_type;
 
   /// @name adopt global type definitions
   //@{
@@ -101,6 +109,8 @@ class LexOrder {
   /// Comparison of monomials
   comp_type compare(const monom_type&, const monom_type&) const;
 
+  /// Comparison of exponent vectors
+  comp_type compare(const exp_type&, const exp_type&) const;
 
   /// Get leading term
   monom_type lead(const poly_type&) const;

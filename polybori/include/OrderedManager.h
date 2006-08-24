@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.5  2006/08/09 12:49:55  dreyer
  * ADD preparing order edpendent operations (leadfirst())
  *
@@ -47,6 +50,8 @@
 #include "BoolePolynomial.h"
 
 #include "BooleMonomial.h"
+
+#include "BooleExponent.h"
 
 #include "COrderProperties.h"
 
@@ -82,6 +87,7 @@ public:
   typedef CTypes::comp_type comp_type;
   typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
+  typedef BooleExponent exp_type;
   //@}
 
   /// Construct new decision diagramm manager
@@ -150,6 +156,7 @@ public:
   typedef typename base::comp_type comp_type;
   typedef typename base::monom_type monom_type;
   typedef typename base::poly_type poly_type;
+  typedef typename base::exp_type exp_type;
   //@}
 
   /// Construct new decision diagramm manager
@@ -174,7 +181,9 @@ public:
     return ordering.compare(lhs, rhs);
   }
 
-
+  comp_type compare(const exp_type& lhs, const exp_type& rhs) const {
+    return ordering.compare(lhs, rhs);
+  }
 
   /// Get leading term
   monom_type lead(const poly_type& rhs) const {

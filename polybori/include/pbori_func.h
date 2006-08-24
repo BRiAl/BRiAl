@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.18  2006/08/23 14:24:53  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -87,6 +90,13 @@
 // get standard string and string stream functionality
 #include <string>
 #include <sstream>
+
+// get map/hash_map functionality from stl/stl-ext
+#ifdef HAVE_HASH_MAP
+#  include <ext/hash_map>
+#else
+#  include <map>
+#endif
 
 #ifndef pbori_func_h_
 #define pbori_func_h_
@@ -459,6 +469,64 @@ public:
 
 };
 
+/// @class insert_assign
+/// @brief Accessing .insertAssign()
+template <class RhsType = void,
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
+class insert_assign;
+
+template <class RhsType, class LhsType>
+class insert_assign:
+  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.insertAssign(lhs);
+    return rhs;
+  } 
+};
+
+template <>
+class insert_assign<void,  pbori_traits<void>::idx_type> {
+public:
+template <class RhsType, class LhsType>
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.insertAssign(lhs);
+    return rhs;
+  } 
+};
+
+
+/// @class remove_assign
+/// @brief Accessing .removeAssign()
+template <class RhsType = void,
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
+class remove_assign;
+
+
+template <class RhsType, class LhsType>
+class remove_assign:
+  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.removeAssign(lhs);
+    return rhs;
+  } 
+};
+
+
+template <>
+class remove_assign<void,  pbori_traits<void>::idx_type> {
+public:
+
+  template <class RhsType, class LhsType>
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.removeAssign(lhs);
+    return rhs;
+  } 
+};
+
 /// @class insert_second_to_list
 /// @brief Insert second argument to a given list
 template <class ListType, class RhsType, class LhsType>
@@ -503,6 +571,42 @@ struct internal_tag {};
  **/
 template<class Type>
 struct type_tag {};
+
+template <class Type>
+class hashes {
+public:
+
+  typedef typename Type::hash_type hash_type;
+
+  hash_type operator() (const Type& rhs) const{
+    return rhs.hash();
+  }
+};
+
+template <class Type>
+class lm_hashes {
+public:
+
+  typedef typename Type::hash_type hash_type;
+
+  hash_type operator() (const Type& rhs) const{
+    return rhs.lmHash();
+  }
+};
+
+template <class Type>
+class generate_index_map {
+
+  typedef typename Type::idx_type idx_type;
+public:
+  /// Type for index maps
+#ifdef HAVE_HASH_MAP
+  typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
+#else
+  typedef std::map<Type, idx_type> type;
+#endif
+};
+
 
 END_NAMESPACE_PBORI
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/08/24 14:47:51  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.2  2006/08/15 14:17:29  dreyer
  * ADD minimalElements(), hasTermOfVariables()
  *
@@ -37,6 +40,7 @@
 # include "polybori.h"
 
 USING_NAMESPACE_PBORI
+
 
 int
 main(){
@@ -124,6 +128,53 @@ main(){
 
 //     std::cout <<   bset.minimalElements() << std::endl;
 //     std::cout <<std::endl<<  "Finished."<<std::endl;
+
+    BooleMonomial rhs;
+
+    poly =  x*y + y*z*v + z*w + y*z*w;
+    std::cout <<  "Test exponents of " << poly <<std::endl;
+
+    copy(poly.expBegin(), poly.expEnd(), 
+         std::ostream_iterator<BooleExponent>(std::cout, ", "));
+ std::cout << std::endl;
+    poly =  y*z*v;
+    rhs = z;
+
+    std::cout  << "divide " << (poly / rhs) <<" == " <<std::endl;
+
+    std::cout  << (poly.lead().exp().divide(rhs) )<<" ? " <<std::endl;
+
+    std::cout  <<(poly.lead().exp().divide(rhs.exp())) <<" ? "<<std::endl;
+
+    std::cout  << "multiply " << (poly * rhs) <<" == " <<std::endl;
+
+    std::cout  << (poly.lead().exp().multiply(rhs)) <<" ? " <<std::endl;
+
+    std::cout <<(poly.lead().exp().multiply(rhs.exp()) )<<" ? "<<std::endl;
+    rhs = w;
+    std::cout  << "multiply " << (poly * rhs) <<" == " <<std::endl;
+
+    std::cout  << (poly.lead().exp().multiply(rhs) )<<" ? " <<std::endl;
+    
+    std::cout <<(poly.lead().exp().multiply(rhs.exp()) )<<" ? "<<std::endl; 
+    
+    poly =  z*v;
+    rhs = x*w;
+    
+    std::cout  << "multiples " << poly <<" wrt. "<< rhs<<std::endl;
+    
+    std::cout <<(poly.lead().exp().multiples(rhs.exp()) )<<std::endl; 
+    
+       
+    std::cout <<(poly.lead().multiples(rhs) )<<std::endl; 
+    
+    std::cout  << "divisors " << poly <<std::endl;
+      
+
+    std::cout <<(poly.lead().exp().divisors() )<<std::endl; 
+
+    std::cout << std::endl;
+               
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

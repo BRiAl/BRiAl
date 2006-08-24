@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/24 14:47:50  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.1  2006/08/23 17:00:02  dreyer
  * ADD: initial version
  *
@@ -37,6 +40,10 @@
 # include "OrderedManager.h"
 # include "PBoRiError.h"
 
+#include "pbori_routines.h"
+
+#include <functional>
+
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -51,6 +58,18 @@ BooleExponent::BooleExponent():
 
 }
 
+// Default constructor
+BooleExponent&
+BooleExponent::get(const monom_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BooleExponent::get(const monom_type&)" );
+
+  m_data.resize(rhs.size());  
+  std::copy(rhs.begin(), rhs.end(), m_data.begin());
+
+  return *this;
+}
+
 // Copy constructor
 BooleExponent::BooleExponent(const self& rhs) :
   m_data(rhs.m_data) {
@@ -58,24 +77,26 @@ BooleExponent::BooleExponent(const self& rhs) :
   PBORI_TRACE_FUNC( "BooleExponent(const self&)" );
 }
 
-// //  Construct from Boolean variable
-// BooleExponent::BooleExponent(const var_type& rhs) :
-//   m_data(rhs) {
-  
-//   PBORI_TRACE_FUNC( "BooleExponent(const var_type&)" );
-// }
-
-// //  Construct from Boolean constant
-// BooleExponent::BooleExponent(bool_type val) :
-//   m_data(val) {
-  
-//   PBORI_TRACE_FUNC( "BooleExponent(bool_type)" );
-// }
-
 // Destructor
 BooleExponent::~BooleExponent() {
 
   PBORI_TRACE_FUNC( "~BooleExponent()" );
+}
+
+template<class ExpType, class RhsType>
+typename ExpType::bool_type
+exp_reducible_by(const ExpType& lhs, const RhsType& rhs) {
+
+  return std::includes(lhs.begin(), lhs.end(), 
+                       rhs.begin(), rhs.end());
+}
+
+// Hashing
+BooleExponent::hash_type
+BooleExponent::hash() const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::hash() const" );
+  return index_vector_hash(begin(), end());
 }
 
 
@@ -84,18 +105,26 @@ BooleExponent::bool_type
 BooleExponent::reducibleBy(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::reducibleBy(const self&) const" );
+  return exp_reducible_by(*this, rhs);
+  // return std::includes(begin(), end(), rhs.m_data.begin(), rhs.m_data.end());
+}
+// Reducibility test
+BooleExponent::bool_type
+BooleExponent::reducibleBy(const monom_type& rhs) const {
 
-  return std::includes(begin(), end(), rhs.m_data.begin(), rhs.m_data.end());
+  PBORI_TRACE_FUNC( "BooleExponent::reducibleBy(const monom_type&) const" );
+  return exp_reducible_by(*this, rhs);
 }
 
 
-// // Casting operator
-// BooleExponent::operator const BoolePolynomial&() const {
+// Reducibility test
+BooleExponent::bool_type
+BooleExponent::reducibleBy(const idx_type& rhs) const {
 
-//   PBORI_TRACE_FUNC( "BooleExponent::operator const BoolePolynomial&() const" );
+  PBORI_TRACE_FUNC( "BooleExponent::reducibleBy(const idx_type&) const" );
 
-//   return m_data;
-// }
+  return (std::find(begin(), end(), rhs) != end());
+}
 
 //  Substitute variable with index idx by its complement and assign
 BooleExponent&
@@ -103,7 +132,12 @@ BooleExponent::changeAssign(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::changeAssign(idx_type)" );
 
-  PBORI_NOT_IMPLEMENTED;
+  iterator pos = std::find(begin(), end(), idx);
+
+  if (pos == end())
+    insertAssign(idx);
+  else
+    removeAssign(idx);
 
   return *this;
 }
@@ -114,9 +148,115 @@ BooleExponent::change(idx_type idx) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::change(idx_type) const " );
 
-  PBORI_NOT_IMPLEMENTED;
+  const_iterator pos = std::find(begin(), end(), idx);
 
-  return self();
+  if (pos == end())
+    return insert(idx);
+  else
+    return remove(idx);
+}
+
+//  Insert variable with index idx in exponent vector
+BooleExponent
+BooleExponent::insert(idx_type idx) const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::insert(idx_type) const " );
+
+  const_iterator pos =
+    std::find_if(begin(), end(), bind2nd(std::greater_equal<idx_type>(), idx));
+
+  self result;
+  result.m_data.resize(size() + 1);
+
+  data_type::iterator result_pos = 
+    std::copy(begin(), pos, result.m_data.begin());
+
+
+  if (pos == end())
+    *result_pos = idx;
+  else if (*pos != idx) {
+    *result_pos = idx;
+    ++result_pos;
+  }
+  else
+    result.m_data.pop_back();
+
+  std::copy(pos, end(), result_pos);
+
+  return result;
+}
+
+//  Insert variable with index idx in exponent vector
+BooleExponent&
+BooleExponent::insertAssign(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "BooleExponent::insertAssign(idx_type) " );
+
+  iterator pos = 
+    std::find_if(begin(), end(), bind2nd(std::greater_equal<idx_type>(), idx));
+
+  if (pos == end())
+    m_data.push_back(idx);
+  else if (*pos != idx)
+    m_data.insert(pos, idx);
+
+  return *this;
+}
+
+//  Remove variable with index idx in exponent vector
+BooleExponent
+BooleExponent::remove(idx_type idx) const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::delete(idx_type) const " );
+
+  const_iterator pos = std::find(begin(), end(), idx);
+
+  self result;
+  result.m_data.resize(size());
+
+  data_type::iterator result_pos = 
+    std::copy(begin(), pos, result.m_data.begin());
+
+  if(pos != end()){
+    ++pos;
+    std::copy(pos, end(), result_pos);
+    result.m_data.pop_back();
+  }
+
+  return result;
+}
+
+//  Remove variable with index idx in exponent vector
+BooleExponent&
+BooleExponent::removeAssign(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "BooleExponent::deleteAssign(idx_type) " );
+
+  iterator pos = std::find(begin(), end(), idx);
+
+  if (pos != end())
+    m_data.erase(pos);
+
+  return *this;
+}
+
+template<class ExpType, class RhsType, class ResultType>
+void
+exp_divide(const ExpType& lhs, const RhsType& rhs, ResultType& result) {
+
+  typedef ExpType self; 
+  typedef ResultType data_type; 
+
+  if (lhs.reducibleBy(rhs)) {
+
+    result.reserve(lhs.size());
+    std::back_insert_iterator<data_type> outiter(result);
+  
+    std::set_difference(lhs.begin(), lhs.end(), 
+                        rhs.begin(), rhs.end(), outiter);
+
+
+  }
 }
 
 //  Division
@@ -125,74 +265,32 @@ BooleExponent::divide(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::divide(const self&) const " );
 
-  if (reducibleBy(rhs)) {
+  self result;
+  exp_divide(*this, rhs, result.m_data);
 
-    self result;
-    std::back_insert_iterator<data_type> outiter(result.m_data);
-  
-    result.m_data.reserve(size());
-    std::set_difference(begin(), end(), rhs.begin(), rhs.end(), outiter);
-
-    return result;
-  }
-  else
-    return self();
+  return result;
 }
 
+//  Division
+BooleExponent
+BooleExponent::divide(const monom_type& rhs) const {
 
-// //  Multiplication with assignment
-// BooleExponent&
-// BooleExponent::operator*=(const self& rhs) {
+  PBORI_TRACE_FUNC( "BooleExponent::divide(const monom_type&) const " );
 
-//   PBORI_TRACE_FUNC( "BooleExponent::operator*=(const self&)" );
 
-//   m_data.diagram().unateProductAssign(rhs.m_data.diagram());
+  self result;
+  exp_divide(*this, rhs, result.m_data);
 
-//   return *this;
-// }
+  return result;
+}
 
-// //  Division with assignment
-// BooleExponent&
-// BooleExponent::operator/=(const self& rhs) {
-
-//   PBORI_TRACE_FUNC( "BooleExponent::operator*=(const self&)" );
-
-//   m_data /= rhs;//.m_data;
-
-//   return *this;
-// }
-
-// //  Multiplication with assignment (with variable)
-// BooleExponent&
-// BooleExponent::operator*=(const var_type& rhs) {
-
-//   PBORI_TRACE_FUNC( "BooleExponent::operator*=(const var_type&)" );
-
-//   if (!reducibleBy(rhs))
-//     changeAssign(rhs.index());
-
-//   return *this;
-// }
-
-// // Division with assignment (with variable)
-// BooleExponent&
-// BooleExponent::operator/=(const var_type& rhs) {
-
-//   PBORI_TRACE_FUNC( "BooleExponent::operator/=(const var_type&)" );
-
-//   m_data.diagram().subset1Assign(rhs.index());
-
-//   return *this;
-// }
 // Comparision
 BooleExponent::comp_type
 BooleExponent::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::compare(const self& rhs) const" );
 
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
+  return BoolePolyRing::activeManager().compare(*this, rhs);
 }
 
 // Degree of the lcm
@@ -201,46 +299,8 @@ BooleExponent::LCMDeg(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::LCMDeg(const self&) const" );
 
-  PBORI_NOT_IMPLEMENTED;
-
-  return 0;
-//   if ( m_data.isZero() || ( (const BoolePolynomial&)rhs).isZero() )
-//     return 0;
-
-//   if ( (*this == rhs) || ( (const BoolePolynomial&)rhs).isOne() )
-//     return deg();
-  
-//   if ( m_data.isOne() )
-//     return rhs.deg();
-
-//   size_type result = 0;
-//   const_iterator start(begin()), finish(end()),
-//     rhs_start(rhs.begin()), rhs_finish(rhs.end());
-
-//   while ( (start != finish) && (rhs_start != rhs_finish) ) {
-
-//     idx_type last_idx(*start);
-
-//     if (last_idx <= *rhs_start) 
-//       ++start;
-
-//     if (last_idx >= *rhs_start) 
-//       ++rhs_start;
-
-//     ++result;
-//   }
-
-//   while (start != finish) {
-//     ++start;
-//     ++result;
-//   }
-
-//   while (rhs_start != rhs_finish) {
-//     ++rhs_start;
-//     ++result;
-//   }
-
-//   return result;
+  // temporary definition
+  return LCM(rhs).size();
 }
 
 // gcd
@@ -250,57 +310,14 @@ BooleExponent::GCD(const self& rhs) const {
   PBORI_TRACE_FUNC( "BooleExponent::GCD(const self&) const" );
 
   self result;
+  result.m_data.reserve(std::min(size(), rhs.size()));
   std::back_insert_iterator<data_type> outiter(result.m_data);
 
-  result.m_data.reserve(std::min(size(), rhs.size()));
+
   std::set_intersection(begin(), end(), rhs.begin(), rhs.end(), outiter);
 
   return result;
 }
-
-// gcd with assignment
-// BooleExponent&
-// BooleExponent::GCDAssign(const self& rhs) {
-
-//   PBORI_TRACE_FUNC( "BooleExponent::GCDAssign(const self&)" );
-//   PBORI_NOT_IMPLEMENTED;
-
-//   return *this;
-//   if ((*this == rhs) || m_data.isZero() || m_data.isOne() )
-//     return *this;
-
-//   if ( ( (const BoolePolynomial&)rhs).isOne() || 
-//        ( (const BoolePolynomial&)rhs).isZero() )
-//     return (*this = rhs);
-
-//   const_iterator start(begin()), finish(end()),
-//     rhs_start(rhs.begin()), rhs_finish(rhs.end());
-
-//   while ( (start != finish) && (rhs_start != rhs_finish) ) {
-
-//     // delete variable not on rhs
-//     if (*start < *rhs_start) {
-//       changeAssign(*start);
-//       ++start;
-//     }
-//     else {
-//       // keep common variables
-//       if (*start == *rhs_start) 
-//         ++start;
-
-//       // proceed with next rhs
-//       ++rhs_start;
-//     }
-//   }
-
-//   // delete remaining variables in *this
-//   while (start != finish) {
-//     changeAssign(*start);
-//     ++start;
-//   }
-
-//   return *this;
-//  }
 
 // lcm
 BooleExponent
@@ -311,6 +328,19 @@ BooleExponent::LCM(const self& rhs) const {
   return multiply(rhs);
 }
 
+template<class ExpType, class RhsType, class ResultType>
+void
+exp_multiply(const ExpType& lhs, const RhsType& rhs, ResultType& result) {
+
+  typedef ExpType self; 
+  typedef ResultType data_type; 
+
+  result.reserve(lhs.size() + rhs.size());
+  std::back_insert_iterator<data_type> outiter(result);
+
+  std::set_union(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), outiter);
+}
+
 // multiplication
 BooleExponent
 BooleExponent::multiply(const self& rhs) const {
@@ -318,45 +348,69 @@ BooleExponent::multiply(const self& rhs) const {
   PBORI_TRACE_FUNC( "BooleExponent::multiply(const self&) const" );
 
   self result;
-  std::back_insert_iterator<data_type> outiter(result.m_data);
-
-  result.m_data.reserve(size() + rhs.size());
-  std::set_union(begin(), end(), rhs.begin(), rhs.end(), outiter);
+  exp_multiply(*this, rhs, result.m_data);
 
   return result;
 }
 
-// lcm with assignment
-// BooleExponent&
-// BooleExponent::LCMAssign(const self& rhs) {
+// multiplication
+BooleExponent
+BooleExponent::multiply(const monom_type& rhs) const {
 
-//   PBORI_TRACE_FUNC( "BooleExponent::GCDAssign(const self&)" );
+  PBORI_TRACE_FUNC( "BooleExponent::multiply(const monom_type&) const" );
 
-//   PBORI_NOT_IMPLEMENTED;
+  self result;
+  exp_multiply(*this, rhs, result.m_data);
 
-//   return *this;
-// }
+  return result;
+}
 
 // Multiples wrt. given monom
 BooleExponent::set_type
-BooleExponent::multiples(const self& monom) const {
+BooleExponent::multiples(const self& multipliers) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::multiples(const self&) const" );
 
-  PBORI_NOT_IMPLEMENTED;
 
-  return set_type();
+  poly_type theZero(false);
+  dd_type result = cudd_generate_multiples( BoolePolyRing::activeManager().manager() , //theZero.diagram().manager(),
+                                            m_data.rbegin(), m_data.rend(),
+                                            multipliers.rbegin(),
+                                            multipliers.rend() );
+
+
+   return result;
 }
 
-// /// @function greater_variable
-// /// @brief  
-// BooleExponent::bool_type
-// greater_variable(BooleExponent::idx_type lhs, BooleExponent::idx_type rhs){
+// Divisors
+BooleExponent::set_type
+BooleExponent::divisors() const {
 
-//   PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
+  PBORI_TRACE_FUNC( "BooleExponent::divisors() const" );
 
-//   return
-//     (BoolePolyRing::activeManager().compare(lhs, rhs)==CTypes::greater_than);
-// }
+  poly_type theZero(false);
+  dd_type result = cudd_generate_divisors(theZero.diagram().manager(),
+                                           m_data.rbegin(), m_data.rend() );
+  return result;
+}
+
+// Print current polynomial to output stream
+BooleExponent::ostream_type&
+BooleExponent::print(ostream_type& os) const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::print(ostream_type&) const" );
+
+  const_iterator start(begin()), finish(end());
+
+  os << '(';
+  
+  if (start != finish) {
+    --finish;
+    std::copy(start, finish, std::ostream_iterator<idx_type>(os, ", "));
+    os << *finish;
+  }
+  os <<')';
+  return os;
+}
 
 END_NAMESPACE_PBORI

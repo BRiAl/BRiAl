@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/08/24 14:47:49  dreyer
+ * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
+ *
  * Revision 1.25  2006/08/23 14:24:53  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -530,51 +533,54 @@ class CDDInterface<ZDD>:
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );
 
-    DdNode* prev(DD_ONE(manager().getManager()));
+//     DdNode* prev(DD_ONE(manager().getManager()));
 
-    DdNode* zeroNode(DD_ZERO(manager().getManager())); 
-
-
-    std::vector<idx_type>::const_reverse_iterator 
-      start(indices.rbegin()), finish(indices.rend()),
-      multStart(multipliers.rbegin()), multFinish(multipliers.rend());
+//     DdNode* zeroNode(DD_ZERO(manager().getManager())); 
 
 
-    Cudd_Ref(prev);
-    while(start != finish) {
+//     std::vector<idx_type>::const_reverse_iterator 
+//       start(indices.rbegin()), finish(indices.rend()),
+//       multStart(multipliers.rbegin()), multFinish(multipliers.rend());
 
-      while((multStart != multFinish) && (*start < *multStart)) {
+    return cudd_generate_multiples( manager(),
+                                    indices.rbegin(), indices.rend(),
+                                    multipliers.rbegin(),
+                                    multipliers.rend() );
+//     Cudd_Ref(prev);
+//     while(start != finish) {
 
-        DdNode* result = cuddUniqueInterZdd( manager().getManager(), *multStart,
-                                             prev, prev );
+//       while((multStart != multFinish) && (*start < *multStart)) {
 
-        Cudd_Ref(result);
-        Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+//         DdNode* result = cuddUniqueInterZdd( manager().getManager(), *multStart,
+//                                              prev, prev );
 
-        prev = result;
-        ++multStart;
+//         Cudd_Ref(result);
+//         Cudd_RecursiveDerefZdd(manager().getManager(), prev);
 
-      };
+//         prev = result;
+//         ++multStart;
 
-      DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
-                                           prev, zeroNode );
+//       };
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+//       DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
+//                                            prev, zeroNode );
 
-      prev = result;
+//       Cudd_Ref(result);
+//       Cudd_RecursiveDerefZdd(manager().getManager(), prev);
 
-
-      if((multStart != multFinish) && (*start == *multStart))
-        ++multStart;
+//       prev = result;
 
 
-      ++start;
-    }
+//       if((multStart != multFinish) && (*start == *multStart))
+//         ++multStart;
 
-    Cudd_Deref(prev);
 
-    return interfaced_type(&manager(), prev);
+//       ++start;
+//     }
+
+//     Cudd_Deref(prev);
+
+//     return interfaced_type(&manager(), prev);
   }
 
   /// Get decison diagram representing the divisors of the first term
@@ -584,28 +590,29 @@ class CDDInterface<ZDD>:
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );
 
-    DdNode* prev= DD_ONE(manager().getManager());
+    return cudd_generate_divisors(manager(), indices.rbegin(), indices.rend());
+//     DdNode* prev= DD_ONE(manager().getManager());
 
 
-    std::vector<idx_type>::const_reverse_iterator 
-      start(indices.rbegin()), finish(indices.rend());
+//     std::vector<idx_type>::const_reverse_iterator 
+//       start(indices.rbegin()), finish(indices.rend());
 
-    Cudd_Ref(prev);
-    while(start != finish) {
+//     Cudd_Ref(prev);
+//     while(start != finish) {
  
-      DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
-                                           prev, prev);
+//       DdNode* result = cuddUniqueInterZdd( manager().getManager(), *start,
+//                                            prev, prev);
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(manager().getManager(), prev);
+//       Cudd_Ref(result);
+//       Cudd_RecursiveDerefZdd(manager().getManager(), prev);
  
-      prev = result;
-      ++start;
-    }
+//       prev = result;
+//       ++start;
+//     }
 
-    Cudd_Deref(prev);
+//     Cudd_Deref(prev);
  
-    return interfaced_type(&manager(), prev);
+//     return interfaced_type(&manager(), prev);
   }
 
   self firstDivisorsOf(const self& rhs) const {
