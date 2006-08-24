@@ -49,12 +49,11 @@ class SatTestCase(unittest.TestCase):
 class UnSatTestCase(unittest.TestCase):
     pass
 
-for i in xrange(1,30):
-    add_sat_test_case(SatTestCase,"uf20_04"+str(i))
-for i in xrange(1,8):
-    add_unsat_test_case(UnSatTestCase,"uuf50_0"+str(i))
-
+#for i in xrange(1,30):
+#    add_sat_test_case(SatTestCase,"uf20_04"+str(i))
+#for i in xrange(1,8):
+#    add_unsat_test_case(UnSatTestCase,"uuf50_0"+str(i))
+add_unsat_test_case(UnSatTestCase,"uuf75_08")
 suite = unittest.makeSuite(UnSatTestCase,'test')
 runner = unittest.TextTestRunner()
 runner.run(suite)
-unittest.main()

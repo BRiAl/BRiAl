@@ -126,16 +126,16 @@ void export_strategy(){
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
-     .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
-    .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
-    .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
+  .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
+  .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
+  .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
   .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)
   .def("topSugar",pairs_top_sugar)
   .def("containsOne",contains_one)
   .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
   .def("select", select_wrapped)
-  
+  .def_readwrite("optRedByReduced",&GroebnerStrategy::reduceByTailReduced)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);

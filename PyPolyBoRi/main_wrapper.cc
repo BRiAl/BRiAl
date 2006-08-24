@@ -55,6 +55,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 int main(int argc,char* argv[]){
   Py_Initialize();
   initPyPolyBoRi();
+  PyRun_SimpleString("from sys import path");
+  PyRun_SimpleString("path.append('.')");
+  PyRun_SimpleString("path.append('../testsuite/py')");
   PyRun_SimpleString("import toprofile");
   Py_Finalize();
   return 0;
