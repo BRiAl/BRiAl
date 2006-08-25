@@ -401,6 +401,20 @@ public:
     }
     return false;
   }
+  bool operator() (const Exponent &m){
+    int i;
+    i=strat->exp2Index[m];
+    
+    if (strat->pairs.status.hasTRep(i,j))
+      return true;
+    
+    if (extended_product_criterion(strat->generators[i],strat->generators[j])){
+      strat->pairs.status.setToHasTRep(i,j);
+      strat->extendedProductCriterions++;
+      return true;
+    }
+    return false;
+  }
 
 };
 
@@ -618,7 +632,8 @@ static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomia
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm){
     return do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
 }
-
+#define EXP_FOR_PAIRS
+#ifndef EXP_FOR_PAIRS
 static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
     std::vector<Monomial> result;
     if (!(m.divisorsOf(lm).emptiness())){
@@ -644,7 +659,39 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
     }
     return result;
 }
-
+#else
+static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
+    std::vector<Exponent> result;
+    Exponent exp=lm.exp();
+    if (!(m.divisorsOf(lm).emptiness())){
+        result.push_back(exp);
+    } else {
+        Monomial v;
+        //lm austeilen
+        m=divide_monomial_divisors_out(m,lm);
+        
+        //std::vector<idx_type> cv=contained_variables(m);
+        //int i;
+        /*for(i=0;i<cv.size();i++){
+            result.push_back(((Monomial)Variable(cv[i]))*lm);
+            m=m.subset0(cv[i]);
+        }*/
+        m=minimal_elements(m);
+        Polynomial p=Polynomial(m);
+        if (!(m.emptiness())){
+            //m=m.unateProduct(lm.diagram());
+            result.insert(result.end(), p.expBegin(), p.expEnd());
+           /* int i;
+            for(i=0;i<result.size();i++){
+                result[i]=result[i].multiply(exp);
+            }*/
+        }
+        
+        
+    }
+    return result;
+}
+#endif
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -760,8 +807,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
    {
 
+#ifndef EXP_FOR_PAIRS
         //MonomialSet already_used;
         std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms, lm);
+#else
+        std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms, lm);
+#endif
         //(multiplied_terms.length());
         
         //assert(mt_i==multiplied_terms.length());
@@ -771,21 +822,34 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         //assert(mt_vec.size()==multiplied_terms.length());
         int mt_i;
         for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
+#ifndef EXP_FOR_PAIRS
             Monomial t=mt_vec[mt_i];
             Monomial t_divided=t/lm;
             assert(t.reducibleBy(lm));
-      
+#else
+            Exponent t_divided=mt_vec[mt_i];
+            Exponent t=t_divided*e.lmExp;
+#endif
             MonomialSet lm_d=t_divided.divisors();
             if ((other_terms.intersect(lm_d).emptiness())){
-                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
-                
-                if (std::find_if(act_l_terms.begin(), act_l_terms.end(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.end()){
+           // #ifndef EXP_FOR_PAIRS
+           //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
+            //#else
+                Polynomial act_l_terms=leadingTerms.intersect(t.divisors());
+            //#endif
+                if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
                     //at this point we assume minimality of t_divided w.r.t. natural partial order
                     //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
                     continue;
                 }
                 //chosen=chosen.unite(t_divided.diagram());
+                #ifndef EXP_FOR_PAIRS
+                
                 Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
+                #else
+                
+                Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(*this)));
+                #endif
                 int chosen_index=lm2Index[min];
                 this->pairs.introducePair(Pair(chosen_index,s,generators));
             }

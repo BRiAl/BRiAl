@@ -160,6 +160,10 @@ public:
     return strat->generators[strat->lm2Index.find(a)->second].weightedLength<strat->generators[strat->lm2Index.find(b)->second].weightedLength;
     
   }
+  bool operator() (const Exponent& a , const Exponent& b){
+    return strat->generators[strat->lm2Index.find(a)->second].weightedLength<strat->generators[strat->lm2Index.find(b)->second].weightedLength;
+    
+  }
 };
 
 inline wlen_type wlen_literal_exceptioned(const PolyEntry& e){
@@ -185,6 +189,13 @@ public:
     return wa<wb;
     
   }
+  bool operator() (const Exponent& a , const Exponent& b){
+    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->exp2Index.find(a)->second]);
+    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->exp2Index.find(b)->second]);
+    
+    return wa<wb;
+    
+  }
 };
 class LessEcartThenLessWeightedLengthInStrat{
 public:
@@ -195,6 +206,19 @@ public:
   bool operator() (const Monomial& a , const Monomial& b){
     int i=strat->lm2Index.find(a)->second;
     int j=strat->lm2Index.find(b)->second;
+    if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
+      if (strat->generators[i].ecart()<strat->generators[j].ecart())
+        return true;
+      else
+        return false;
+    }
+    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
+    
+  }
+  
+  bool operator() (const Exponent& a , const Exponent& b){
+    int i=strat->exp2Index.find(a)->second;
+    int j=strat->exp2Index.find(b)->second;
     if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
       if (strat->generators[i].ecart()<strat->generators[j].ecart())
         return true;
