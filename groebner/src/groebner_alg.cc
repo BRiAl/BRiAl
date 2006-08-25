@@ -213,6 +213,7 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
 
   this->lm=p.lead();
+  this->lmExp=lm.exp();
   this->weightedLength=p.eliminationLength();
   this->length=p.length();
   this->usedVariables=p.usedVariables();
@@ -225,6 +226,7 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
 
 void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
+  //so also lmExp keeps constant
   this->weightedLength=p.eliminationLength();
   this->length=p.length();
   this->usedVariables=p.usedVariables();
@@ -714,7 +716,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   pairs.status.prolong(PairStatusSet::HAS_T_REP);
   const int s=generators.size()-1;
   lm2Index[generators[s].lm]=s;
-
+  exp2Index[generators[s].lmExp]=s;
   
   int i;
 
@@ -731,11 +733,15 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     it++;
     
   }
-    BooleSet::const_iterator is_it=intersecting_terms.begin();
-  BooleSet::const_iterator is_end=intersecting_terms.end();
   
+  //workaround
+  Polynomial inter_as_poly=intersecting_terms;
+  //BooleSet::const_iterator is_it=intersecting_terms.begin();
+  //BooleSet::const_iterator is_end=intersecting_terms.end();
+  Polynomial::exp_iterator is_it=inter_as_poly.expBegin();
+  Polynomial::exp_iterator is_end=inter_as_poly.expEnd();
   while(is_it!=is_end){
-    int index =this->lm2Index[*is_it];
+    int index =this->exp2Index[*is_it];
     if (index!=s){
       
       //product criterion doesn't hold

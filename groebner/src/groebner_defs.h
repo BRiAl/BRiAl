@@ -28,7 +28,7 @@ class CTypes{
 typedef polybori::BoolePolynomial Polynomial;
 typedef polybori::BooleMonomial Monomial;
 typedef polybori::BooleVariable Variable;
-//typedef polybori::BooleExponent Exponent;
+typedef polybori::BooleExponent Exponent;
 /*typedef boost::int_fast_t<64> wlen_type;
 typedef boost::int_fast_t<32> len_type;
 typedef boost::int_fast_t<16> deg_type;*/

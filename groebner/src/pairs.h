@@ -30,6 +30,7 @@ public:
   len_type length;
   deg_type deg;
   deg_type lmDeg;
+  Exponent lmExp;
   Monomial gcdOfTerms;
   Monomial usedVariables;
   Monomial tailVariables;

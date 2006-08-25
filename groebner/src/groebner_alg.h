@@ -86,11 +86,17 @@ public:
     return m.hash();
   }
 };
+/*
 #ifdef HAVE_HASH_MAP
 typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> lm2Index_map_type;
 #else
 typedef std::map<Monomial,int> lm2Index_map_type;
 #endif
+*/
+
+
+typedef Monomial::idx_map_type lm2Index_map_type;
+typedef Exponent::idx_map_type exp2Index_map_type;
 class GroebnerStrategy{
 public:
   
@@ -118,7 +124,7 @@ public:
   int averageLength;
   bool optRedTail;
   lm2Index_map_type lm2Index;
-  
+  exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this){
     chainCriterions=0;
     enabledLog=false;
