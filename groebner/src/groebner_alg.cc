@@ -733,7 +733,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         }
         other_terms=other_terms.unite(ot2);
     }
-    intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
+    intersecting_terms=this->leadingTerms.diff(other_terms);
 
     assert (!((!(p.isOne())) && is00 && is11));
   }
@@ -809,9 +809,9 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
 
 #ifndef EXP_FOR_PAIRS
         //MonomialSet already_used;
-        std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms, lm);
+        std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(minimalLeadingTerms), lm);
 #else
-        std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms, lm);
+        std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(minimalLeadingTerms), lm);
 #endif
         //(multiplied_terms.length());
         
