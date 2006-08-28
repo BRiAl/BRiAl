@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/08/28 07:25:07  dreyer
+ * CHANGE: BooleExponent nomenclatur
+ *
  * Revision 1.3  2006/08/24 16:09:33  bricken
  * + removed typo
  *
@@ -152,21 +155,21 @@ class BooleExponent {
   self change(idx_type) const;
 
   /// Insert variable with index idx in exponent vector
-  self& insertAssign(idx_type);
+  self& insert(idx_type);
+
+  /// Remove variable with index idx in exponent vector
+  self& remove(idx_type);
 
   /// Insert variable with index idx in exponent vector
-  self insert(idx_type) const;
+  self insertConst(idx_type) const;
 
   /// Remove variable with index idx in exponent vector
-  self& removeAssign(idx_type);
-
-  /// Remove variable with index idx in exponent vector
-  self remove(idx_type) const;
+  self removeConst(idx_type) const;
 
   /// Corresponds to division of monomials
   self divide(const self&) const;
   self divide(const idx_type& rhs) const { 
-    return (reducibleBy(rhs)? remove(rhs) : self() ); }
+    return (reducibleBy(rhs)? removeConst(rhs) : self() ); }
 
   self divide(const var_type& rhs) const { return divide(rhs.index()); }
   self divide(const monom_type&) const;
@@ -174,7 +177,7 @@ class BooleExponent {
   /// Corresponds to multiplication of monomials
   self multiply(const self&) const;
 
-  self multiply(const idx_type& rhs) const { return insert(rhs); }
+  self multiply(const idx_type& rhs) const { return insertConst(rhs); }
   self multiply(const var_type& rhs) const { return multiply(rhs.index()); }
   self multiply(const monom_type&) const;
 

@@ -591,7 +591,7 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
     for(i=0;i<cv.size();i++){
             s=s.subset0(cv[i]);
             Exponent t;
-            t.insertAssign(cv[i]);
+            t.insert(cv[i]);
             result.push_back(t);
     }
     

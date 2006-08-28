@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/08/28 07:25:08  dreyer
+ * CHANGE: BooleExponent nomenclatur
+ *
  * Revision 1.19  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -456,8 +459,27 @@ public:
 
 /// @class inserts
 /// @brief Accessing .insert()
+// template <class RhsType = void,
+//           class LhsType = typename RhsType::value_type >
+// class inserts:
+//   public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+// public:
+
+//   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+//     rhs.insert(lhs);
+//     return rhs;
+//   } 
+
+// };
+
+
+/// @class insert
+/// @brief Accessing .insert()
 template <class RhsType = void,
-          class LhsType = typename RhsType::value_type >
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
+class inserts;
+
+template <class RhsType, class LhsType>
 class inserts:
   public std::binary_function<RhsType&, const LhsType&, RhsType&> {
 public:
@@ -466,8 +488,18 @@ public:
     rhs.insert(lhs);
     return rhs;
   } 
-
 };
+
+template <>
+class inserts<void,  pbori_traits<void>::idx_type> {
+public:
+template <class RhsType, class LhsType>
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.insert(lhs);
+    return rhs;
+  } 
+};
+
 
 /// @class insert_assign
 /// @brief Accessing .insertAssign()
@@ -496,6 +528,37 @@ template <class RhsType, class LhsType>
   } 
 };
 
+
+
+/// @class removes
+/// @brief Accessing .remove()
+template <class RhsType = void,
+          class LhsType = typename pbori_traits<RhsType>::idx_type >
+class removes;
+
+
+template <class RhsType, class LhsType>
+class removes:
+  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+public:
+
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.remove(lhs);
+    return rhs;
+  } 
+};
+
+
+template <>
+class removes<void,  pbori_traits<void>::idx_type> {
+public:
+
+  template <class RhsType, class LhsType>
+  RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+    rhs.remove(lhs);
+    return rhs;
+  } 
+};
 
 /// @class remove_assign
 /// @brief Accessing .removeAssign()

@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2006/08/28 07:25:07  dreyer
+ * CHANGE: BooleExponent nomenclatur
+ *
  * Revision 1.35  2006/08/24 14:47:49  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -212,8 +215,8 @@ public:
 
   /// Iterator type for iterating all exponent vectors 
   typedef CTermIter<exp_type, navigator, 
-                    insert_assign<>, 
-                    remove_assign<>, project_ith<1> >
+                    inserts<>, 
+                    removes<>, project_ith<1> >
   exp_iterator;
 
   /// Incrementation functional type

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/08/28 07:25:08  dreyer
+ * CHANGE: BooleExponent nomenclatur
+ *
  * Revision 1.2  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -135,9 +138,9 @@ BooleExponent::changeAssign(idx_type idx) {
   iterator pos = std::find(begin(), end(), idx);
 
   if (pos == end())
-    insertAssign(idx);
+    insert(idx);
   else
-    removeAssign(idx);
+    remove(idx);
 
   return *this;
 }
@@ -150,17 +153,14 @@ BooleExponent::change(idx_type idx) const {
 
   const_iterator pos = std::find(begin(), end(), idx);
 
-  if (pos == end())
-    return insert(idx);
-  else
-    return remove(idx);
+  return self(*this).changeAssign(idx);
 }
 
 //  Insert variable with index idx in exponent vector
 BooleExponent
-BooleExponent::insert(idx_type idx) const {
+BooleExponent::insertConst(idx_type idx) const {
 
-  PBORI_TRACE_FUNC( "BooleExponent::insert(idx_type) const " );
+  PBORI_TRACE_FUNC( "BooleExponent::insertConst(idx_type) const " );
 
   const_iterator pos =
     std::find_if(begin(), end(), bind2nd(std::greater_equal<idx_type>(), idx));
@@ -188,7 +188,7 @@ BooleExponent::insert(idx_type idx) const {
 
 //  Insert variable with index idx in exponent vector
 BooleExponent&
-BooleExponent::insertAssign(idx_type idx) {
+BooleExponent::insert(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::insertAssign(idx_type) " );
 
@@ -205,9 +205,9 @@ BooleExponent::insertAssign(idx_type idx) {
 
 //  Remove variable with index idx in exponent vector
 BooleExponent
-BooleExponent::remove(idx_type idx) const {
+BooleExponent::removeConst(idx_type idx) const {
 
-  PBORI_TRACE_FUNC( "BooleExponent::delete(idx_type) const " );
+  PBORI_TRACE_FUNC( "BooleExponent::removeConst(idx_type) const " );
 
   const_iterator pos = std::find(begin(), end(), idx);
 
@@ -228,7 +228,7 @@ BooleExponent::remove(idx_type idx) const {
 
 //  Remove variable with index idx in exponent vector
 BooleExponent&
-BooleExponent::removeAssign(idx_type idx) {
+BooleExponent::remove(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::deleteAssign(idx_type) " );
 
