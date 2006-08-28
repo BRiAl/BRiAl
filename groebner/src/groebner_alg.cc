@@ -579,7 +579,98 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     return s0.unite(s1.change(i)).unite(result);
 
 }
-
+std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
+    std::vector<Exponent> result;
+    if (s.emptiness()) return result;
+    if ((Polynomial(s).isOne()) || (Polynomial(s).hasConstantPart())){
+        result.push_back(Exponent());
+        return result;
+    }
+    std::vector<idx_type> cv=contained_variables(s);
+    int i;
+    for(i=0;i<cv.size();i++){
+            s=s.subset0(cv[i]);
+            Exponent t;
+            t.insertAssign(cv[i]);
+            result.push_back(t);
+    }
+    
+    if (s.emptiness()){
+        return result;
+    } else {
+        std::vector<Exponent> exponents;
+        Polynomial sp=s;
+        exponents.insert(exponents.end(), sp.expBegin(),sp.expEnd());
+        int nvars=BoolePolyRing::nRingVariables();
+        std::vector<std::vector<int> > occ_vecs(nvars);
+        for(i=0;i<exponents.size()-1;i++){
+            Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
+            Exponent::const_iterator end=((const Exponent&) exponents[i]).end();
+            while(it!=end){
+                occ_vecs[*it].push_back(i);
+                it++;
+            }
+        }
+        //now exponents are ordered
+        /*std::vector<std::set<int> > occ_sets(nvars);
+        for(i=occ_sets.size()-1;i>=0;i--){
+            occ_sets[i].insert(occ_vecs[i].begin(),occ_vecs[i].end());
+        }*/
+        std::vector<bool> still_minimal(exponents.size());
+        for(i=exponents.size()-1;i>=0;i--){
+            still_minimal[i]=true;
+        }
+        int result_orig=result.size();
+        //cout<<"orig:"<<exponents.size()<<endl;
+        //lex smalles is last so backwards
+        for(i=exponents.size()-1;i>=0;i--){
+            if (still_minimal[i]){
+                //we assume, that each exponents has deg>0
+                Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
+                Exponent::const_iterator end=((const Exponent&) exponents[i]).end();
+                int first_index=*it;
+                std::vector<int> occ_set=occ_vecs[first_index];
+                it++;
+                while(it!=end){
+                    
+                    std::vector<int> occ_set_next;
+                    set_intersection(
+                        occ_set.begin(),
+                        occ_set.end(),
+                        occ_vecs[*it].begin(), 
+                        occ_vecs[*it].end(),
+                        std::back_insert_iterator<std::vector<int> >(occ_set_next));
+                    occ_set=occ_set_next;
+                    it++;
+                }
+                
+                std::vector<int>::const_iterator oc_it= occ_set.begin();
+                std::vector<int>::const_iterator  oc_end= occ_set.end();
+                while(oc_it!=oc_end){
+                    still_minimal[*oc_it]=false;
+                    oc_it++;
+                }
+                
+                it=((const Exponent&) exponents[i]).begin();
+                while(it!=end){
+                    std::vector<int> occ_set_difference;
+                    set_difference(
+                        occ_vecs[*it].begin(),
+                        occ_vecs[*it].end(),
+                        occ_set.begin(),
+                        occ_set.end(),
+                        std::back_insert_iterator<std::vector<int> >(occ_set_difference));
+                    occ_vecs[*it]=occ_set_difference;
+                    it++;
+                }
+                result.push_back(exponents[i]);
+            }
+        }
+        //cout<<"after:"<<result.size()-result_orig<<endl;
+        
+    }
+    return result;
+}
 MonomialSet minimal_elements(const MonomialSet& s){
 #if 1
     return minimal_elements_internal2(s);
@@ -676,16 +767,11 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
             result.push_back(((Monomial)Variable(cv[i]))*lm);
             m=m.subset0(cv[i]);
         }*/
-        m=minimal_elements(m);
-        Polynomial p=Polynomial(m);
-        if (!(m.emptiness())){
-            //m=m.unateProduct(lm.diagram());
-            result.insert(result.end(), p.expBegin(), p.expEnd());
-           /* int i;
-            for(i=0;i<result.size();i++){
-                result[i]=result[i].multiply(exp);
-            }*/
-        }
+        return minimal_elements_internal3(m);
+        
+        
+        
+        
         
         
     }
