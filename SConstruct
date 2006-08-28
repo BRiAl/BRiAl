@@ -77,7 +77,7 @@ env['ENV']['HOME']=os.environ["HOME"]
 #workaround for linux
 #env.Append(LIBPATH=".")
 
-env.Append(LIBS=["m"])
+env.Append(LIBS=["m","extra"])
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:

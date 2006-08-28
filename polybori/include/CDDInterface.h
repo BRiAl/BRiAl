@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/08/28 09:00:46  bricken
+ * *bricken: integrated extra functions
+ *
  * Revision 1.27  2006/08/24 15:45:31  dreyer
  * CHANGE: deactivated code really deleted
  *
@@ -112,9 +115,11 @@
 
 #ifndef CDDInterface_h_
 #define CDDInterface_h_
-
+#include "extrafwd.h"
 // load basic definitions
 #include "pbori_defs.h"
+
+
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
 #include "CCuddNavigator.h"
@@ -133,6 +138,9 @@
 
 // Cudd's internal definitions
 #include "cuddInt.h"
+
+
+
 
 #include "pbori_algo.h"
 
@@ -318,6 +326,26 @@ class CDDInterface<ZDD>:
   self unateProduct(const self& rhs) const {
     return m_interfaced.UnateProduct(rhs.m_interfaced);
   };
+
+
+
+   /// Returns dot Product
+  self dotProduct(const self& rhs) const {
+        return interfaced_type(&manager(),
+            Extra_zddDotProduct(
+                manager().getManager(),
+                m_interfaced.getNode(),
+                rhs.m_interfaced.getNode()));
+  }
+  
+  self& dotProductAssign(const self& rhs){
+        m_interfaced=interfaced_type(&manager(),
+            Extra_zddDotProduct(
+                manager().getManager(),
+                m_interfaced.getNode(),
+                rhs.m_interfaced.getNode()));
+        return *this;
+  }
 
   /// Unate product with assignment
   self& unateProductAssign(const self& rhs) {
@@ -591,8 +619,10 @@ class CDDInterface<ZDD>:
 
   /// Returns minimal factors of all minimal terms
   self minimalElements() const {
-    self resultMultiples;
-    return dd_minimal_elements(navigation(), *this, resultMultiples);
+        return interfaced_type(&manager(),
+            Extra_zddMinimal(manager().getManager(),m_interfaced.getNode()));
+    //self resultMultiples;
+    //return dd_minimal_elements(navigation(), *this, resultMultiples);
   }
 };
 

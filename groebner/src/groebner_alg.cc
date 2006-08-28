@@ -274,7 +274,7 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
   //cout<<"branch2\n";
   //cout.flush();
   
-  dividing_terms.unateProductAssign(m.diagram());
+  dividing_terms.dotProductAssign(m.diagram());
   return Polynomial(BooleSet(p).diff(dividing_terms));
   //return Polynomial(BooleSet(p).diff(BooleSet(m*Polynomial(dividing_terms))));
 }
@@ -317,11 +317,11 @@ Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
   
   
   
-  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.unateProduct(bin_lead.diagram())));
+  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.dotProduct(bin_lead.diagram())));
   
   Monomial b_p_gcd=bin_last.GCD(bin_lead);
   
-  Polynomial first_mult_half=dividing_terms.unateProduct(BooleSet(Polynomial(b_p_gcd)));
+  Polynomial first_mult_half=dividing_terms.dotProduct(BooleSet(Polynomial(b_p_gcd)));
   Polynomial multiplied=(bin_last/b_p_gcd)*first_mult_half;
   
   Polynomial res=multiplied+canceled_lead;
@@ -354,7 +354,7 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
   
   
   
-  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.unateProduct(reductor_lead.diagram())));
+  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.dotProduct(reductor_lead.diagram())));
   
   Polynomial::const_iterator it_r=reductor_tail.begin();
   Polynomial::const_iterator end_r=reductor_tail.end();
@@ -362,7 +362,7 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
   while(it_r!=end_r){
     Monomial m=(*it_r);
     Monomial b_p_gcd=m.GCD(reductor_lead);
-    Polynomial first_mult_half=dividing_terms.unateProduct(BooleSet(Polynomial(b_p_gcd)));
+    Polynomial first_mult_half=dividing_terms.dotProduct(BooleSet(Polynomial(b_p_gcd)));
     Polynomial multiplied=(m/b_p_gcd)*first_mult_half;
     res+=multiplied;
     ++it_r;
@@ -507,7 +507,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
     MonomialSet s0=minimal_elements_internal(s0_raw);
     MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        s1=s1.diff(s0.dotProduct(Polynomial(s1).usedVariables().divisors()));
         
     }
     return s0.unite(s1.change(i));
@@ -573,7 +573,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     MonomialSet s0=minimal_elements_internal2(s0_raw);
     MonomialSet s1=minimal_elements_internal2(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        s1=s1.diff(s0.dotProduct(Polynomial(s1).usedVariables().divisors()));
         
     }
     return s0.unite(s1.change(i)).unite(result);
@@ -742,7 +742,7 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
         }*/
         m=minimal_elements(m);
         if (!(m.emptiness())){
-            m=m.unateProduct(lm.diagram());
+            m=m.dotProduct(lm.diagram());
             result.insert(result.end(), m.begin(), m.end());
         }
         
