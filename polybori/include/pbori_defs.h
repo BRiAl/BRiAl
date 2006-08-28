@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/08/28 09:26:58  bricken
+ * + case file  name sensitivity , defs
+ *
  * Revision 1.19  2006/08/28 09:21:12  bricken
  * + extra xor for addition
  *
@@ -382,7 +385,7 @@ END_NAMESPACE_PBORI
 
 // Set default addition method
 #if defined(PBORI_ADD_BY_ITE) || defined(PBORI_ADD_BY_OR) \
-    || defined(PBORI_ADD_BY_UNION)
+    || defined(PBORI_ADD_BY_UNION) || defined(PBORI_ADD_BY_EXTRA_XOR)
 #else
 # define PBORI_ADD_BY_EXTRA_XOR
 #endif 

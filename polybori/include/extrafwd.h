@@ -1,6 +1,6 @@
 #ifndef EXTRA_FWD_HEADER
 #define EXTRA_FWD_HEADER
-#include <Cudd.h>
+#include <cudd.h>
 
 extern "C"{
 /* the result of this operation is primes contained in the product of cubes */
