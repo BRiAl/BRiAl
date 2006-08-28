@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/08/28 15:08:19  bricken
+ * + define HAVE_HASH_MAP
+ *
  * Revision 1.21  2006/08/28 09:21:12  bricken
  * + extra xor for addition
  *
@@ -97,7 +100,9 @@
 #include <string>
 #include <sstream>
 
+
 // get map/hash_map functionality from stl/stl-ext
+#define HAVE_HASH_MAP 1
 #ifdef HAVE_HASH_MAP
 #  include <ext/hash_map>
 #else
