@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/08/28 09:21:12  bricken
+ * + extra xor for addition
+ *
  * Revision 1.18  2006/06/07 11:54:26  dreyer
  * ADD variantes for usedVariables
  *
@@ -381,7 +384,7 @@ END_NAMESPACE_PBORI
 #if defined(PBORI_ADD_BY_ITE) || defined(PBORI_ADD_BY_OR) \
     || defined(PBORI_ADD_BY_UNION)
 #else
-# define PBORI_ADD_BY_UNION 
+# define PBORI_ADD_BY_EXTRA_XOR
 #endif 
 
 

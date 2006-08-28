@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/08/28 09:21:12  bricken
+ * + extra xor for addition
+ *
  * Revision 1.20  2006/08/28 07:25:08  dreyer
  * CHANGE: BooleExponent nomenclatur
  *
@@ -416,7 +419,8 @@ public:
 
 # elif defined(PBORI_ADD_BY_UNION)
       (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
-
+# elif defined(PBORI_ADD_BY_EXTRA_XOR)
+      (lhs = lhs.Xor(rhs));
 #endif
   }
 };

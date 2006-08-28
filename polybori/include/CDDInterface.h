@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/08/28 09:21:12  bricken
+ * + extra xor for addition
+ *
  * Revision 1.28  2006/08/28 09:00:46  bricken
  * *bricken: integrated extra functions
  *
@@ -347,6 +350,16 @@ class CDDInterface<ZDD>:
         return *this;
   }
 
+
+  self Xor(const self& rhs) const {
+        return interfaced_type(&manager(),
+            Extra_zddUnionExor(
+                manager().getManager(),
+                m_interfaced.getNode(),
+                rhs.m_interfaced.getNode()));
+  }
+
+  
   /// Unate product with assignment
   self& unateProductAssign(const self& rhs) {
     m_interfaced = m_interfaced.UnateProduct(rhs.m_interfaced);
