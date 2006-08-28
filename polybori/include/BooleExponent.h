@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/08/28 14:03:05  dreyer
+ * CHANGE operator* to + etc.
+ *
  * Revision 1.4  2006/08/28 07:25:07  dreyer
  * CHANGE: BooleExponent nomenclatur
  *
@@ -199,7 +202,7 @@ class BooleExponent {
   self& operator=(const self& rhs) { m_data = rhs.m_data; return *this; }
   self& operator=(const monom_type& rhs) {
     m_data.resize(rhs.size());
-    std::copy(rhs.begin(), rhs.end(), begin());
+    std::copy(rhs.begin(), rhs.end(), internalBegin());
     return *this;
   }
 
@@ -237,16 +240,16 @@ class BooleExponent {
  
 protected:
   /// Start iteration over indices (constant access)
-  iterator begin() { return m_data.begin(); }
+  iterator internalBegin() { return m_data.begin(); }
 
   /// Finish iteration over indices (constant access)
-  iterator end() { return m_data.end(); }
+  iterator internalEnd() { return m_data.end(); }
 
    /// Start reverse iteration over indices (constant access)
-  reverse_iterator rbegin() { return m_data.rbegin(); }
+  reverse_iterator rInternalBegin() { return m_data.rbegin(); }
 
   /// Finish reverse iteration over indices (constant access)
-  reverse_iterator rend() { return m_data.rend(); }
+  reverse_iterator rInternalEnd() { return m_data.rend(); }
 
   /// The actual exponent indices
   data_type m_data;
@@ -256,14 +259,14 @@ protected:
 /// Multiplication of monomials
 template <class RHSType>
 inline BooleExponent
-operator*(const BooleExponent& lhs, const RHSType& rhs) {
+operator+(const BooleExponent& lhs, const RHSType& rhs) {
   return lhs.multiply(rhs);
 }
 
 /// Division of monomials
 template <class RHSType>
 inline BooleExponent
-operator/(const BooleExponent& lhs, const RHSType& rhs) {
+operator-(const BooleExponent& lhs, const RHSType& rhs) {
   return lhs.divide(rhs);
 }
 

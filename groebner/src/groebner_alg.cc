@@ -914,7 +914,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
             assert(t.reducibleBy(lm));
 #else
             Exponent t_divided=mt_vec[mt_i];
-            Exponent t=t_divided*e.lmExp;
+            Exponent t=t_divided+e.lmExp;
 #endif
             MonomialSet lm_d=t_divided.divisors();
             if ((other_terms.intersect(lm_d).emptiness())){
