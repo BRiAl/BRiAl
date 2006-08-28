@@ -68,8 +68,8 @@ conf = Configure(env)
 env.Append(CPPPATH=USER_CPPPATH)
 env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
-env.Append(CPPPATH=["./Cudd/include"])
-env.Append(LIBPATH=["polybori","groebner"])
+env.Append(CPPPATH=["./Cudd/include","extra"])
+env.Append(LIBPATH=["polybori","groebner","extra"])
 env['ENV']['HOME']=os.environ["HOME"]
 #if env['PLATFORM']=="darwin":
 #        env.Append(LIBPATH="/sw/lib")
@@ -153,7 +153,7 @@ for t in tests_gb:
         ["testsuite/src/" + t +".cc"] +[libpb, gb], 
         CPPPATH=CPPPATH)
 
-LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
+LIBS=env['LIBS']+['boost_python',"polybori", "groebner","extra"]
 
 
 if HAVE_PYTHON_EXTENSION:
