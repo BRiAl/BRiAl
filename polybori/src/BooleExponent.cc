@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/08/28 14:31:06  dreyer
+ * FIX: using now correct const/nonconst iterators
+ *
  * Revision 1.3  2006/08/28 07:25:08  dreyer
  * CHANGE: BooleExponent nomenclatur
  *
@@ -135,7 +138,7 @@ BooleExponent::changeAssign(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::changeAssign(idx_type)" );
 
-  iterator pos = std::find(begin(), end(), idx);
+  const_iterator pos = std::find(begin(), end(), idx);
 
   if (pos == end())
     insert(idx);
@@ -193,7 +196,8 @@ BooleExponent::insert(idx_type idx) {
   PBORI_TRACE_FUNC( "BooleExponent::insertAssign(idx_type) " );
 
   iterator pos = 
-    std::find_if(begin(), end(), bind2nd(std::greater_equal<idx_type>(), idx));
+    std::find_if(internalBegin(), internalEnd(), 
+                 bind2nd(std::greater_equal<idx_type>(), idx));
 
   if (pos == end())
     m_data.push_back(idx);
@@ -232,7 +236,7 @@ BooleExponent::remove(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::deleteAssign(idx_type) " );
 
-  iterator pos = std::find(begin(), end(), idx);
+  iterator pos = std::find(internalBegin(), internalEnd(), idx);
 
   if (pos != end())
     m_data.erase(pos);
