@@ -178,7 +178,7 @@ public:
   PairE(const Polynomial& delayed):
     data(new PolyPairData(delayed)),
     //lm(delayed.lead()),
-    lm(*(delayed.expBegin())),
+    lm(delayed.leadExp()),
     sugar(delayed.deg()), wlen(delayed.eliminationLength()){
       this->type=DELAYED_PAIR;
   }

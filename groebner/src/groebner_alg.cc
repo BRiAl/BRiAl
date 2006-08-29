@@ -159,7 +159,7 @@ void PairManager::cleanTopByChainCriterion(){
         this->strat->extendedProductCriterions++;
         continue;
       }
-      const Monomial lm=queue.top().lm;
+      const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
       const MonomialSet lms=this->strat->leadingTerms.intersect(lm.divisors());
       //should be set
@@ -765,7 +765,7 @@ static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent 
         unsigned int impl_code=lp4var_data[p_code][i];
         if (p_code!=impl_code){
             Polynomial p_i=code_2_poly_4lp(impl_code, back_2_ring);
-            Exponent e_i=*(p_i.expBegin());
+            Exponent e_i=p_i.leadExp();
             //cout<<"pre"<<endl;
             if (e_i!=e){
                 strat.addGeneratorDelayed(p_i);
@@ -1042,7 +1042,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
                 
                 Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(*this)));
                 #endif
-                int chosen_index=lm2Index[min];
+                int chosen_index=exp2Index[min];
                 this->pairs.introducePair(Pair(chosen_index,s,generators));
             }
             //if (t.intersect())
