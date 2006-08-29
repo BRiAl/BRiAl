@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/08/29 10:37:56  dreyer
+ * CHANGE: non-const version of diagram() now internalDiagram()
+ *
  * Revision 1.8  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -132,7 +135,7 @@ BooleMonomial::changeAssign(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::changeAssign(idx_type)" );
 
-  m_poly.diagram().changeAssign(idx);
+  m_poly.internalDiagram().changeAssign(idx);
 
   return *this;
 }
@@ -152,7 +155,7 @@ BooleMonomial::operator*=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator*=(const self&)" );
 
-  m_poly.diagram().unateProductAssign(rhs.m_poly.diagram());
+  m_poly.internalDiagram().unateProductAssign(rhs.m_poly.diagram());
 
   return *this;
 }
@@ -186,7 +189,7 @@ BooleMonomial::operator/=(const var_type& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator/=(const var_type&)" );
 
-  m_poly.diagram().subset1Assign(rhs.index());
+  m_poly.internalDiagram().subset1Assign(rhs.index());
 
   return *this;
 }

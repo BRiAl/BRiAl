@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.57  2006/08/29 10:37:56  dreyer
+ * CHANGE: non-const version of diagram() now internalDiagram()
+ *
  * Revision 1.56  2006/08/29 09:02:36  dreyer
  * ADD: leadExp()
  *
@@ -702,23 +705,23 @@ BoolePolynomial::length() const {
 }
 
 
-// Access to internal decision diagramm structure
-BoolePolynomial::dd_type&
-BoolePolynomial::diagram() {
+// // Access to internal decision diagramm structure
+// BoolePolynomial::dd_type&
+// BoolePolynomial::internalDiagram() {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::diagram()" );
+//   PBORI_TRACE_FUNC( "BoolePolynomial::internalDiagram()" );
 
-  return m_dd;
-}
+//   return m_dd;
+// }
 
-// Access to internal decision diagramm structure
-const BoolePolynomial::dd_type&
-BoolePolynomial::diagram() const {
+// // Access to internal decision diagramm structure
+// const BoolePolynomial::dd_type&
+// BoolePolynomial::diagram() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::diagram() const" );
+//   PBORI_TRACE_FUNC( "BoolePolynomial::diagram() const" );
 
-  return m_dd;
-}
+//   return m_dd;
+// }
 
 
 // Print current polynomial to output stream

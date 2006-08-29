@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2006/08/29 10:37:56  dreyer
+ * CHANGE: non-const version of diagram() now internalDiagram()
+ *
  * Revision 1.37  2006/08/29 09:02:36  dreyer
  * ADD: leadExp()
  *
@@ -380,14 +383,12 @@ public:
   termlist_type terms() const;
 
   /// Read-only access to internal decision diagramm structure
-  const dd_type& diagram() const;
+  const dd_type& diagram() const { return m_dd; }
 
-#ifndef PBORI_DEVELOPER
 protected:
-#endif
 
   /// Access to internal decision diagramm structure
-  dd_type& diagram();
+  dd_type& internalDiagram() { return m_dd; }
 
 private:
   /// The actual decision diagramm

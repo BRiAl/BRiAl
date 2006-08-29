@@ -28,7 +28,7 @@ static void plot(const BoolePolynomial& p, const char* c){
 
 void export_poly(){
 
-  BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) = &BoolePolynomial::diagram;
+const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &BoolePolynomial::diagram;
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())

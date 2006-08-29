@@ -1,12 +1,11 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_routines_cuddext.h
+/** @file CDDOperations.h
  *
  * @author Alexander Dreyer
- * @date 2006-08-23
+ * @date 2006-08-29
  *
- * This file includes files, which define function templates related to
- * decision diagrams. It should be loaded from pbori_routines.h only
+ * This file implements an internal template class for geenric CDDOperations;
  *
  * @par Copyright:
  *   (c) 2006 by
@@ -20,11 +19,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.2  2006/08/29 10:37:56  dreyer
+ * Revision 1.1  2006/08/29 10:37:56  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
- *
- * Revision 1.1  2006/08/23 14:24:54  dreyer
- * ADD: BooleSet::usedVariables and infrastructure
  *
  * @endverbatim
 **/
@@ -33,58 +29,31 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// get addition definitions
-#include "CTermIter.h"
-#include "PBoRiOutIter.h"
-#include <set>
-#include <vector>
+// Get Cudd definitions
+#include "cudd.h"
+#include "extrafw.h"
 
+#ifndef CDDOperations_h_
+#define CDDOperations_h_
 
 BEGIN_NAMESPACE_PBORI
 
-/// @func dd_last_lexicographical_term
-/// @brief Get last term (wrt. lexicographical order).
-template<class DDType, class OutputType>
-OutputType
-dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
+/// @class CDDOperation
+/// @brief Generic class containing decision diagram operations
+template <class DDType, class MonomType>
+class CDDOperations {
+public:
 
-  typedef typename DDType::idx_type idx_type;
-  typedef typename DDType::size_type size_type;
-  typedef OutputType term_type;
 
-  term_type result(true);
-
-  if (dd.emptiness())
-    result = false;
-  else {
-
-    size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());
-
-    // store indices in list
-    std::vector<idx_type> indices(nlen);
-
-    // iterator, which uses changeAssign to insert variable
-    // wrt. given indices to a monomial
-    PBoRiOutIter<term_type, idx_type, change_assign<term_type> >  
-      outiter(result);
-    
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(dd.lastBegin(), dd.lastEnd(), indices, outiter);
-  }
-
-  return result;
-}
-
-/// @func dd_used_variables
-/// @brief Extract used variables from a decision diagram.
-template<class DDType, class OutputType>
-OutputType
-dd_used_variables(const DDType& dd, type_tag<OutputType>){
+  MonomType usedVariables(const DDType& dd){
 
   // get type definitions from DDType
   typedef typename DDType::idx_type idx_type;
   typedef typename DDType::navigator navigator;
-  typedef OutputType monom_type;
+  typedef MonomType monom_type;
+
+
+
 
 #ifdef PBORI_USEDVARS_BY_SUPPORT
 
@@ -137,9 +106,23 @@ dd_used_variables(const DDType& dd, type_tag<OutputType>){
     outiter(result);
   copy(indices.rbegin(), indices.rend(), outiter);
 
+  int* pIdx = Cudd_SupportIndex( dd.manager().getManager(), 
+                                  ((const ZDD &) dd).getNode() );
+  std::cerr <<pIdx<<std::endl;
+  result0 = (DDType)ZDD( &dd.manager(),
+                Extra_zddCombination( dd.manager().getManager(), 
+                                      pIdx, dd.nVariables()) );
+
+
+
   return result;
 #endif
 }
 
+};
+
+
 
 END_NAMESPACE_PBORI
+
+#endif

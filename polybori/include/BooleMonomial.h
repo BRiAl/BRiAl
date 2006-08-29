@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/08/29 10:37:55  dreyer
+ * CHANGE: non-const version of diagram() now internalDiagram()
+ *
  * Revision 1.11  2006/08/29 10:19:43  bricken
  * + removed implicit casts exp to mon
  *
@@ -220,12 +223,13 @@ class BooleMonomial {
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_poly.diagram(); }
 
-#ifndef PBORI_DEVELOPER
+  /// Save getting of decision diagram representing 
+  // self& get(const dd_type&) { if () }
+
 protected:
-#endif
 
   /// Access to internal decision diagramm structure
-  dd_type& diagram() { return m_poly.diagram(); }
+  dd_type& internalDiagram() { return m_poly.internalDiagram(); }
 
 private:
   BoolePolynomial m_poly;

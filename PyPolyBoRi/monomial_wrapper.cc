@@ -34,7 +34,7 @@ static boost::python::tuple mon2tuple(const BooleMonomial& m ){
   return tuple(m);
 }
 void export_monomial(){
-  BooleMonomial::dd_type&  (BooleMonomial::*diagram)(void) = &BooleMonomial::diagram;
+  const BooleMonomial::dd_type&  (BooleMonomial::*diagram)(void) const = &BooleMonomial::diagram;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
    
     
