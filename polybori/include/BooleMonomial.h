@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/08/29 10:19:43  bricken
+ * + removed implicit casts exp to mon
+ *
  * Revision 1.10  2006/08/24 14:47:49  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -128,7 +131,7 @@ class BooleMonomial {
   BooleMonomial(const var_type&);
 
   /// Construct from exponent vector
-  BooleMonomial(const exp_type&);
+  explicit BooleMonomial(const exp_type&);
 
   /// Construct from Boolean constant
   BooleMonomial(bool_type);
