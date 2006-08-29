@@ -694,7 +694,84 @@ MonomialSet minimal_elements(const MonomialSet& s){
 #endif
 }
 
-
+static unsigned int p2code_lp4(Polynomial p, const std::vector<char> & ring_2_0123){
+    Polynomial::exp_iterator it_p=p.expBegin();
+    Polynomial::exp_iterator end_p=p.expEnd();
+    unsigned int p_code=0;
+    while(it_p!=end_p){
+        Exponent curr_exp=*it_p;
+        Exponent::const_iterator it_v=curr_exp.begin();
+        Exponent::const_iterator end_v=curr_exp.end();
+        unsigned int exp_code=0;
+        //exp code is int between 0 and 15
+        while(it_v!=end_v){
+            //cout<<"table value:"<<(int)ring_2_0123[(*it_v)]<<endl;
+            exp_code|=(1<<ring_2_0123[(*it_v)]);
+            //cout<<"exp_code:"<<exp_code<<endl;
+            it_v++;
+        }
+        //cout<<"exp_code final:"<<exp_code<<endl;
+        p_code|=(1<<exp_code);
+        //so p code is 16-bit unsigned int
+        //int is fastest
+        it_p++;
+    }
+    return p_code;
+}
+static Monomial code_2_m_4lp(unsigned int code, std::vector<idx_type> back_2_ring){
+    int i;
+    Monomial res;
+    //cout<<"m_code:"<<code<<endl;
+    for(i=0;i<4;i++){
+        if ((code & (1<<i))!=0){
+            res*=Variable(back_2_ring[i]);
+        }
+    }
+    //cout<<"m:"<<res<<endl;
+    return res;
+}
+static Polynomial code_2_poly_4lp(unsigned int code, std::vector<idx_type> back_2_ring){
+    int i;
+    Polynomial p;
+    //unsigned int m_code;
+    for(i=0;i<16;i++){
+        if ((code & (1<<i))!=0){
+            Monomial m=code_2_m_4lp(i,back_2_ring);
+            p+=m;
+        }
+    }
+    //cout<<"p input code"<<code<<"p out:"<<p<<endl;
+    return p;
+}
+static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
+    Exponent::const_iterator it=used_variables.begin();
+    Exponent::const_iterator end=used_variables.end();
+    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
+    std::vector<idx_type> back_2_ring(4);
+    char idx_0123=0;
+    while(it!=end){
+        ring_2_0123[*it]=idx_0123;
+        back_2_ring[idx_0123]=*it;
+        idx_0123++;
+        it++;
+    }
+    
+    unsigned int p_code=p2code_lp4(p, ring_2_0123);
+    int i;
+    //cout<<"p:"<<p<<"pcode:"<<p_code<<endl;
+    for(i=0;lp4var_data[p_code][i]!=0;i++){
+        unsigned int impl_code=lp4var_data[p_code][i];
+        if (p_code!=impl_code){
+            Polynomial p_i=code_2_poly_4lp(impl_code, back_2_ring);
+            Exponent e_i=*(p_i.expBegin());
+            //cout<<"pre"<<endl;
+            if (e_i!=e){
+                strat.addGeneratorDelayed(p_i);
+            }
+        }
+    }
+    //cout<<"---------------"<<endl;
+}
 
 
 //static Monomial oper(int i){
@@ -853,20 +930,47 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   
   int i;
 
-  
-  
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
-  while(it!=end){
-    if ((generators[s].lm.deg()==1) || generators[s].literal_factors.occursAsLeadOfFactor(*it)){//((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+  if ((e.usedVariables.deg()>4)||(!(BoolePolyRing::isLexicographical()))){
+     
+     while(it!=end){
+         if ((generators[s].lm.deg()==1) ||
+            generators[s].literal_factors.occursAsLeadOfFactor(*it))
+         {
+              //((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       //cout<<"factorcrit"<<endl;
-      generators[s].vPairCalculated.insert(*it);
-    } else
-      this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
-    it++;
+             generators[s].vPairCalculated.insert(*it);
+          } else
+            this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
+          it++;
+    
+    } 
+  } else {
+    //is lex and deg <=4
+    
+    //use char as 0,1,2,3 are very short
+    add4lp_impl_delayed(*this,p,e.usedVariables.exp(),e.lmExp);/*{
+    std::vector<char> ring_2_0123(BoolePolyRing.nVars());
+    std::vector<idx_type> back_2_ring(4);
+    idx_0123=0;
+    while(it!=end){
+        ring_2_0123[*it]=idx_0123;
+        back_2_ring[idx_0123]=*it;
+        idx_0123++;
+        it++;
+    }
+    Polynomial::exp_iterator it_e=p.expBegin();
+    Polynomial::exp_iterator end_e=p.expEnd();
+    while(it_e!=end_e){
+        Exponent p_exp=*it_e;
+        Exponent::const_iterator it_v=p_exp.begin();
+        Exponent::const_iterator it_
+        it_e++;
+    }
+    }*/
     
   }
-  
   //workaround
   Polynomial inter_as_poly=intersecting_terms;
   //BooleSet::const_iterator is_it=intersecting_terms.begin();
@@ -1081,4 +1185,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     return result;
     
 }
+
+const short a[][2]={{2,3},
+    {1,0}};
 END_NAMESPACE_PBORIGB

@@ -7,7 +7,7 @@
  *
  */
 
-#define HAVE_HASH_MAP 1
+
 
 #include <polybori.h>
 #include "groebner_defs.h"
@@ -22,6 +22,7 @@
 #else
 #include <map>
 #endif
+#include "lp4data.h"
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
