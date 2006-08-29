@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/08/29 08:49:03  dreyer
+ * FIX: compare(const exp_type&, const exp_type&) missing in OrderedManagerBase
+ *
  * Revision 1.6  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -108,8 +111,13 @@ public:
 
   virtual comp_type compare(const monom_type&, const monom_type&) const = 0;
 
+  virtual comp_type compare(const exp_type&, const exp_type&) const = 0;
+
   /// Get leading term
   virtual monom_type lead(const poly_type&) const = 0;
+
+  /// Get leading exponent
+  virtual exp_type leadExp(const poly_type&) const = 0;
 
   /// Generates polynomial with leading term first (other terms may be skipped)
   virtual poly_type leadFirst(const poly_type&) const = 0;
@@ -190,6 +198,13 @@ public:
 
     return ordering.lead(rhs);
   }
+
+  /// Get leading exponent
+  exp_type leadExp(const poly_type& rhs) const {
+
+    return ordering.leadExp(rhs);
+  }
+
 
   /// Check whether ring is lexicographical 
   bool_type isLexicographical() const {
