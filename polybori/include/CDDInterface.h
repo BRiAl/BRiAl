@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/08/29 14:23:19  dreyer
+ * ADD: Functions from cudd/extra
+ *
  * Revision 1.29  2006/08/28 09:21:12  bricken
  * + extra xor for addition
  *
@@ -636,6 +639,30 @@ class CDDInterface<ZDD>:
             Extra_zddMinimal(manager().getManager(),m_interfaced.getNode()));
     //self resultMultiples;
     //return dd_minimal_elements(navigation(), *this, resultMultiples);
+  }
+
+  self existAbstract(const self& rhs) const {
+
+    return interfaced_type(&manager(),
+            Extra_zddExistAbstract(manager().getManager(), 
+                                   m_interfaced.getNode(), 
+                                   rhs.m_interfaced.getNode()) );
+  }
+  self cofactor0(const self& rhs) const {
+
+    return interfaced_type(&manager(),
+            Extra_zddCofactor0(manager().getManager(), 
+                               m_interfaced.getNode(), 
+                               rhs.m_interfaced.getNode()) );
+  }
+
+  self cofactor1(const self& rhs, idx_type includeVars) const {
+
+    return interfaced_type(&manager(),
+            Extra_zddCofactor1(manager().getManager(), 
+                               m_interfaced.getNode(), 
+                               rhs.m_interfaced.getNode(),
+                               includeVars) );
   }
 };
 
