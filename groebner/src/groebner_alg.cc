@@ -100,8 +100,8 @@ public:
     this->i=i;
     this->j=j;
   }
-  bool operator() (const Monomial& lm){
-    int index=strat->lm2Index.find(lm)->second;
+  bool operator() (const Exponent& lmExp){
+    int index=strat->exp2Index.find(lmExp)->second;
     //we know such an entry exists
     if ((index!=i)&&(index!=j)){
       if ((strat->pairs.status.hasTRep(i,index)) && (strat->pairs.status.hasTRep(j,index))){
@@ -123,8 +123,8 @@ public:
     this->i=i;
     this->v=v;
   }
-  bool operator() (const Monomial& lm){
-    int index=strat->lm2Index.find(lm)->second;
+  bool operator() (const Exponent& lmExp){
+    int index=strat->exp2Index.find(lmExp)->second;
     //we know such an entry exists
     if (index!=i){
       //would be still true for i, but how should that happen
@@ -161,10 +161,11 @@ void PairManager::cleanTopByChainCriterion(){
       }
       const Monomial lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
-      const BooleSet lms=this->strat->leadingTerms.intersect(lm.divisors());
+      const MonomialSet lms=this->strat->leadingTerms.intersect(lm.divisors());
+      //should be set
       //if (lms.length()>2)
         //cout<<"non empty"<<endl;
-      if (std::find_if(lms.begin(),lms.end(),ChainCriterion(*(this->strat),i,j))!=lms.end()){
+      if (std::find_if(lms.expBegin(),lms.expEnd(),ChainCriterion(*(this->strat),i,j))!=lms.expEnd()){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
         //cout<<"Chain Criterion"<<endl;
@@ -183,19 +184,20 @@ void PairManager::cleanTopByChainCriterion(){
             queue.pop();
             continue;
           }
-          const BooleSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
+          const MonomialSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
           
           Monomial lm=strat->generators[vp->i].lm;
+          Exponent lmExp=strat->generators[vp->i].lmExp;
           if (strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
             strat->log("delayed variable linear factor criterion");
             queue.pop();
             continue;
           }
-          if (!(strat->leadingTerms.intersect(lm.divisors()).diff(Polynomial(lm)).emptiness())){
+          if (!(strat->leadingTerms.intersect(lmExp.divisors()).diff(Polynomial(lm)).emptiness())){
             strat->variableChainCriterions++;
            queue.pop();
           } else {
-            if (std::find_if(lms.begin(),lms.end(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.end()){
+            if (std::find_if(lms.expBegin(),lms.expEnd(),ChainVariableCriterion(*(this->strat),vp->i,vp->v))!=lms.expEnd()){
               strat->generators[vp->i].vPairCalculated.insert(vp->v);
               this->queue.pop();
               //cout<<"Variable Chain Criterion"<<endl;
@@ -599,8 +601,8 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
         return result;
     } else {
         std::vector<Exponent> exponents;
-        Polynomial sp=s;
-        exponents.insert(exponents.end(), sp.expBegin(),sp.expEnd());
+        //Pol sp=s;
+        exponents.insert(exponents.end(), s.expBegin(),s.expEnd());
         int nvars=BoolePolyRing::nRingVariables();
         std::vector<std::vector<int> > occ_vecs(nvars);
         for(i=0;i<exponents.size()-1;i++){
@@ -1025,7 +1027,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
            // #ifndef EXP_FOR_PAIRS
            //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
             //#else
-                Polynomial act_l_terms=leadingTerms.intersect(t.divisors());
+                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
             //#endif
                 if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
                     //at this point we assume minimality of t_divided w.r.t. natural partial order

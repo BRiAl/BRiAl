@@ -74,7 +74,7 @@ public:
   PairManager(GroebnerStrategy & strat){
     this->strat=&strat;
   }
-  typedef std::priority_queue<Pair,std::vector<Pair>, PairLSCompare> queue_type;
+  typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
   Polynomial nextSpoly(const PolyEntryVector& gen);
@@ -162,7 +162,7 @@ public:
     
   }
   bool operator() (const Exponent& a , const Exponent& b){
-    return strat->generators[strat->lm2Index.find(a)->second].weightedLength<strat->generators[strat->lm2Index.find(b)->second].weightedLength;
+    return strat->generators[strat->exp2Index.find(a)->second].weightedLength<strat->generators[strat->exp2Index.find(b)->second].weightedLength;
     
   }
 };
