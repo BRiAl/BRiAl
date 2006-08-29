@@ -780,6 +780,8 @@ static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent 
 //    return Monomial(Variable(i));
 //}
 static MonomialSet divide_monomial_divisors_out_old(const MonomialSet& s, const Monomial& lm){
+    return s.existAbstract(lm.diagram());
+    /*
     MonomialSet m=s;
     Monomial::const_iterator it_lm=lm.begin();
         Monomial::const_iterator end_lm=lm.end();
@@ -788,7 +790,7 @@ static MonomialSet divide_monomial_divisors_out_old(const MonomialSet& s, const 
             m=m.subset0(i).unite(m.subset1(i));
             it_lm++;
         }
-   return m;
+   return m;*/
 }
 static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomial::const_iterator it, Monomial::const_iterator end){
     if(it==end) return s;
@@ -890,12 +892,15 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
             ot2=leadingTerms00;
         else
             ot2=leadingTerms11;
+        
+        /*
         Monomial::const_iterator lm_start=lm.begin();
         Monomial::const_iterator lm_end=lm.end();
         while(lm_start!=lm_end){
             ot2=(ot2.subset0(*lm_start).unite(ot2.subset1(*lm_start)));
             lm_start++;
-        }
+        }*/
+        ot2=ot2.existAbstract(lm.diagram());
         other_terms=other_terms.unite(ot2);
     }
     intersecting_terms=this->leadingTerms.diff(other_terms);
