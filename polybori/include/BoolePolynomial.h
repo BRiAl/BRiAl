@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2006/08/29 09:02:36  dreyer
+ * ADD: leadExp()
+ *
  * Revision 1.36  2006/08/28 07:25:07  dreyer
  * CHANGE: BooleExponent nomenclatur
  *
@@ -293,6 +296,9 @@ public:
   /// Get leading term
   monom_type lead() const;
 
+  /// Get leading term
+  exp_type leadExp() const;
+
   /// Get all divisors of the leading term
   set_type lmDivisors() const;
   
@@ -393,7 +399,10 @@ private:
 inline BoolePolynomial 
 operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
 
-  return BoolePolynomial(lhs) += rhs;
+   BoolePolynomial result(lhs);
+   result += rhs;
+
+   return result;
 }
 
 /// Subtraction operation 

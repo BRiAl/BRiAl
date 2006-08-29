@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/08/29 09:02:36  dreyer
+ * ADD: leadExp()
+ *
  * Revision 1.4  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -130,6 +133,25 @@ LexOrder::lead(const poly_type& poly) const {
     
     // insert backward (for efficiency reasons)
     reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
+  } 
+  return leadterm;
+}
+
+// maybe common template here
+// Extraction of leading exponent
+LexOrder::exp_type 
+LexOrder::leadExp(const poly_type& poly) const {
+
+  exp_type leadterm;
+   
+  if (!poly.isZero()) {
+
+    leadterm.reserve(poly.lmDeg());
+    // wrt. given indices to a monomial
+    PBoRiOutIter<exp_type, idx_type, inserts<exp_type> >  
+      outiter(leadterm) ;
+    
+    std::copy(poly.firstBegin(), poly.firstEnd(), outiter);
   } 
   return leadterm;
 }

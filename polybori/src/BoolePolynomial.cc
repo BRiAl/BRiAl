@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.56  2006/08/29 09:02:36  dreyer
+ * ADD: leadExp()
+ *
  * Revision 1.55  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -480,6 +483,15 @@ BoolePolynomial::lead() const {
 //   }
 
 //   return leadterm;
+}
+
+// Leading exponent
+BoolePolynomial::exp_type
+BoolePolynomial::leadExp() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadExp() const" );
+
+  return BoolePolyRing::activeManager().leadExp(*this);
 }
 
 // all dividers

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/08/29 09:02:36  dreyer
+ * ADD: leadExp()
+ *
  * Revision 1.4  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -115,6 +118,8 @@ class LexOrder {
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
+  /// Get leading exponent
+  exp_type leadExp(const poly_type&) const;
 };
 
 
