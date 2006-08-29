@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/08/29 09:19:07  dreyer
+ * ADD: reserve()
+ *
  * Revision 1.5  2006/08/28 14:03:05  dreyer
  * CHANGE operator* to + etc.
  *
@@ -138,6 +141,8 @@ class BooleExponent {
   /// Degree of the corresponding monomial
   size_type size() const { return m_data.size(); }
 
+  /// Prepare memory for exponents
+  void reserve(size_type nsize) { m_data.reserve(nsize); }
 
   /// Degree of the corresponding monomial
   size_type deg() const { return size(); }
