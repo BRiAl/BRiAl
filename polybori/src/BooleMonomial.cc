@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/08/29 12:09:27  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.9  2006/08/29 10:37:56  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
  *
@@ -94,6 +97,14 @@ BooleMonomial::BooleMonomial(const exp_type& rhs) :
   m_poly(rhs) {
   
   PBORI_TRACE_FUNC( "BooleMonomial(const exp_type&)" );
+
+}
+
+//  Construct from decision diagram (protected, for internal use only)
+BooleMonomial::BooleMonomial(const dd_type& rhs) :
+  m_poly(rhs) {
+  
+  PBORI_TRACE_FUNC( "BooleMonomial(const dd_type&)" );
 
 }
 

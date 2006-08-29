@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/08/29 12:09:26  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.1  2006/08/29 10:37:56  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
  *
@@ -31,7 +34,7 @@
 
 // Get Cudd definitions
 #include "cudd.h"
-#include "extrafw.h"
+#include "extrafwd.h"
 
 #ifndef CDDOperations_h_
 #define CDDOperations_h_
@@ -44,7 +47,7 @@ template <class DDType, class MonomType>
 class CDDOperations {
 public:
 
-
+  
   MonomType usedVariables(const DDType& dd){
 
   // get type definitions from DDType
@@ -52,8 +55,25 @@ public:
   typedef typename DDType::navigator navigator;
   typedef MonomType monom_type;
 
+#ifdef PBORI_USEDVARS_EXTRA
+
+  /// using cudd/extra
+
+    //  monom_type result;
+    
+    int* pIdx = Cudd_SupportIndex( dd.manager().getManager(), 
+                                  ((const ZDD &) dd).getNode() );
+
+    monom_type result( (DDType)ZDD( &dd.manager(),
+                Extra_zddCombination( dd.manager().getManager(), 
+                                      pIdx, dd.nVariables()) ));
 
 
+    FREE(pIdx);
+
+    return result;
+
+#else 
 
 #ifdef PBORI_USEDVARS_BY_SUPPORT
 
@@ -106,17 +126,11 @@ public:
     outiter(result);
   copy(indices.rbegin(), indices.rend(), outiter);
 
-  int* pIdx = Cudd_SupportIndex( dd.manager().getManager(), 
-                                  ((const ZDD &) dd).getNode() );
-  std::cerr <<pIdx<<std::endl;
-  result0 = (DDType)ZDD( &dd.manager(),
-                Extra_zddCombination( dd.manager().getManager(), 
-                                      pIdx, dd.nVariables()) );
-
-
-
   return result;
 #endif
+
+#endif
+
 }
 
 };

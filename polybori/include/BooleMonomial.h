@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/08/29 12:09:26  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.12  2006/08/29 10:37:55  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
  *
@@ -75,6 +78,7 @@ BEGIN_NAMESPACE_PBORI
 
 class BooleVariable;
 class BooleExponent;
+template <class DDType, class MonomType> class CDDOperations;
 
 /** @class BooleMonomial
  * @brief This class is just a wrapper for using variables from @c cudd's
@@ -87,6 +91,8 @@ class BooleExponent;
 class BooleMonomial {
 
  public:
+  template <class, class> friend class CDDOperations;
+
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
@@ -230,6 +236,9 @@ protected:
 
   /// Access to internal decision diagramm structure
   dd_type& internalDiagram() { return m_poly.internalDiagram(); }
+
+  /// Construct from decision diagram
+  BooleMonomial(const dd_type&);
 
 private:
   BoolePolynomial m_poly;

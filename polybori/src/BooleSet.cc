@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/08/29 12:09:27  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.15  2006/08/29 08:02:08  dreyer
  * ADD: BooleSet::expBegin() and expEnd()
  *
@@ -86,6 +89,7 @@
 
 // get internal routines
 # include "pbori_routines.h"
+# include "CDDOperations.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -316,7 +320,8 @@ BooleSet::usedVariables() const {
   PBORI_TRACE_FUNC( "BooleSet::usedVariables() const" );
 
 
-  return dd_used_variables(*this, type_tag<term_type>());
+  //  return dd_used_variables(*this, type_tag<term_type>());
+  return CDDOperations<self, term_type>().usedVariables(*this);
 }
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.58  2006/08/29 12:09:27  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.57  2006/08/29 10:37:56  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
  *
@@ -245,7 +248,7 @@
 
 // get internal routines
 # include "pbori_routines.h"
-
+# include "CDDOperations.h"
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -634,7 +637,9 @@ BoolePolynomial::usedVariables() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
 
-  return dd_used_variables(diagram(), type_tag<monom_type>());
+  //  return dd_used_variables(diagram(), type_tag<monom_type>());
+
+  return CDDOperations<dd_type, monom_type>().usedVariables(diagram());
 
 #if 0
 

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/08/29 12:09:26  dreyer
+ * using CDDOperations for generic dd functions
+ *
  * Revision 1.20  2006/08/28 09:26:58  bricken
  * + case file  name sensitivity , defs
  *
@@ -393,9 +396,10 @@ END_NAMESPACE_PBORI
 
 // Set default method for getting all used variables
 #if defined(PBORI_USEDVARS_BY_IDX) || defined(PBORI_USEDVARS_BY_TRANSFORM) \
-  || defined(PBORI_USEDVARS_HIGHLEVEL)|| defined(PBORI_USEDVARS_BY_SUPPORT)
+  || defined(PBORI_USEDVARS_HIGHLEVEL)|| defined(PBORI_USEDVARS_BY_SUPPORT)\
+  || defined(PBORI_USEDVARS_EXTRA)
 #else
-# define PBORI_USEDVARS_BY_IDX
+# define PBORI_USEDVARS_EXTRA
 #endif 
 
 #endif // of #ifndef pbori_defs_h_
