@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/08/29 08:02:08  dreyer
+ * ADD: BooleSet::expBegin() and expEnd()
+ *
  * Revision 1.11  2006/08/23 14:24:53  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -75,6 +78,7 @@ BEGIN_NAMESPACE_PBORI
 
 /// Forward declaration of monomial type
 class BooleMonomial;
+class BooleExponent;
 
 class BooleSet:
   public CTypes::dd_type {
@@ -89,11 +93,20 @@ public:
   /// Type of terms
   typedef BooleMonomial term_type;
 
+  /// Fix type for treatment of exponent vectors
+  typedef BooleExponent exp_type; 
+
   /// Iterator type for iterating all monomials
   typedef CTermIter<term_type, navigator, 
                     change_assign<>,
                     change_assign<> >
   const_iterator;
+
+  /// Iterator type for iterating all exponent vectors 
+  typedef CTermIter<exp_type, navigator, 
+                    inserts<>, 
+                    removes<>, project_ith<1> >
+  exp_iterator;
 
   /// Default constructor
   BooleSet();
@@ -112,6 +125,12 @@ public:
 
   /// Finish of iteration over terms
   const_iterator end() const;
+
+  /// Start of iteration over exponent vectors
+  exp_iterator expBegin() const;
+
+  /// Finish of iteration over exponent vectors
+  exp_iterator expEnd() const;
 
   /// Assignment operator
   self& operator=(const self&);

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/08/29 08:02:08  dreyer
+ * ADD: BooleSet::expBegin() and expEnd()
+ *
  * Revision 1.14  2006/08/23 14:24:54  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -70,6 +73,7 @@
 // load header files
 # include "BooleSet.h"
 # include "BooleMonomial.h"
+# include "BooleExponent.h"
 # include "BoolePolyRing.h"
 # include "CIdxPath.h"
 # include "PBoRiOutIter.h"
@@ -172,6 +176,24 @@ BooleSet::end() const {
   PBORI_TRACE_FUNC( "BooleSet::end() const" );
   return const_iterator();
 }
+
+// Start of iteration over exponent vectors
+BooleSet::exp_iterator 
+BooleSet::expBegin() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::exp_begin() const" );
+  return base::navigation();
+}
+
+// Finish of iteration over monomials
+BooleSet::exp_iterator 
+BooleSet::expEnd() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::exp_end() const" );
+  return exp_iterator();
+}
+
+
 // Get last term (wrt. lexicographical order)
 BooleSet::term_type
 BooleSet::lastLexicographicalTerm() const {
