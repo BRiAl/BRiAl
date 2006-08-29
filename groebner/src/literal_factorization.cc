@@ -20,7 +20,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
   Monomial::const_iterator it=used_variables.begin();
   const Monomial::const_iterator end=used_variables.end();
   
-  
+  int len_r=r.length();
   
   
   
@@ -32,13 +32,14 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
       r=r.change(v);//equivalently subset(1)
       //cout<<"found factor0"<<endl;
     } else {
+      
     
-    
-      if (s0.length()*2==r.length()){
+      if ((len_r%2==0)&&(s0.length()*2==len_r)){
         BooleSet s1=r.subset1(v);
             if (s1==s0){
                 factors[v]=1;//var(v)+1 is factor
                 r=s1;//==s0
+                len_r/=2;
                 //cout<<"found factor1"<<endl; 
             } else {
                 if (!(Polynomial(r).hasConstantPart())){
@@ -49,10 +50,12 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                     
                     idx_type v2=*other_it;
                     //cout<<"testing var"<<v2<<endl;
+                    //v occurs in the lead, v2 not
                     if (r.subset1(v2)==s1){
                         var2var_map[v]=v2;
                         
                         r=s1;
+                        len_r/=2;
                         //cout<<"found factor var2var"<<v<<":"<<v2<<endl;
                         break;
                     }
