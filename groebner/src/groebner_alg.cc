@@ -724,9 +724,10 @@ static Monomial code_2_m_4lp(unsigned int code, std::vector<idx_type> back_2_rin
     int i;
     Monomial res;
     //cout<<"m_code:"<<code<<endl;
-    for(i=0;i<4;i++){
+    for(i=3;i>=0;i--){
         if ((code & (1<<i))!=0){
             res*=Variable(back_2_ring[i]);
+            //res=res.diagram().change(back_2_ring[i]);
         }
     }
     //cout<<"m:"<<res<<endl;
@@ -736,7 +737,7 @@ static Polynomial code_2_poly_4lp(unsigned int code, std::vector<idx_type> back_
     int i;
     Polynomial p;
     //unsigned int m_code;
-    for(i=0;i<16;i++){
+    for(i=15;i>=0;i--){
         if ((code & (1<<i))!=0){
             Monomial m=code_2_m_4lp(i,back_2_ring);
             p+=m;
@@ -1098,7 +1099,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
            // #ifndef EXP_FOR_PAIRS
            //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
             //#else
-                MonomialSet act_l_terms=leadingTerms.divisorsOf((Monomial)t);//.intersect(t.divisors());
+                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
             //#endif
                 if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
                     //at this point we assume minimality of t_divided w.r.t. natural partial order
