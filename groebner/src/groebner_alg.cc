@@ -808,6 +808,10 @@ void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     unsigned int p_code=p2code_lp4(p, ring_2_0123);
     int i;
+    if ((lp4var_data[p_code][0]==p_code) && (lp4var_data[p_code][1]==0)){
+        mark_all_variable_pairs_as_calculated(*this, s);
+        return;
+    }
     for(i=0;lp4var_data[p_code][i]!=0;i++){
         unsigned int impl_code=lp4var_data[p_code][i];
         if (p_code!=impl_code){
@@ -839,6 +843,10 @@ void GroebnerStrategy::add4lpImplDelayed(int s){
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
     unsigned int p_code=p2code_lp4(p, ring_2_0123);
+    if ((lp4var_data[p_code][0]==p_code) && (lp4var_data[p_code][1]==0)){
+        mark_all_variable_pairs_as_calculated(*this, s);
+        return;
+    }
     int i;
     //cout<<"p:"<<p<<"pcode:"<<p_code<<endl;
     for(i=0;lp4var_data[p_code][i]!=0;i++){
@@ -1114,12 +1122,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     {
         //assert(multiples_from_minimal.intersect(lm.diagram()).emptiness());
         
-        MonomialSet::const_iterator mfm_start=lm_multiples_min.begin();
-        MonomialSet::const_iterator mfm_end=lm_multiples_min.end();
+        MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
+        MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
         while(mfm_start!=mfm_end){
-            assert((*mfm_start)!=lm);
-            assert((*mfm_start).reducibleBy(lm));
-            generators[lm2Index[*mfm_start]].minimal=false;
+            assert((*mfm_start)!=e.lmExp);
+            assert((*mfm_start).reducibleBy(e.lmExp));
+            generators[exp2Index[*mfm_start]].minimal=false;
             mfm_start++;
         }
     }
