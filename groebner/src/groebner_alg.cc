@@ -756,6 +756,75 @@ void set_up_translation_vectors(std::vector<char>& ring_2_0123, std::vector<idx_
         it++;
     }
 }
+
+static void mark_all_variable_pairs_as_calculated(GroebnerStrategy& strat, int s){
+    BooleExponent::const_iterator it=strat.generators[s].lmExp.begin();
+    BooleExponent::const_iterator end=strat.generators[s].lmExp.end();
+     while(it!=end){
+          strat.generators[s].vPairCalculated.insert(*it);
+          it++;
+    } 
+}
+
+static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, Polynomial p){
+    LiteralFactorization::map_type::const_iterator it=lf.factors.begin();
+    LiteralFactorization::map_type::const_iterator end=lf.factors.end();
+    LiteralFactorization::var2var_map_type::const_iterator it_v=lf.var2var_map.begin();
+    LiteralFactorization::var2var_map_type::const_iterator end_v=lf.var2var_map.end();
+    while(it!=end){
+        idx_type var=it->first;
+        int val=it->second;
+        if (val==0){
+            p=p.diagram().change(var);
+        } else {
+            p=p.diagram().change(var).unite(p.diagram());
+        }
+        it++;
+    }
+    while(it_v!=end_v){
+        idx_type var=it_v->first;
+        idx_type var2=it_v->second;
+        p=p.diagram().change(var).unite(p.diagram().change(var2));
+        it_v++;
+    }
+    return p;
+}
+void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
+    if (generators[s].literal_factors.rest.isOne()){
+        mark_all_variable_pairs_as_calculated(*this, s);
+        return;
+    }
+    Polynomial p=generators[s].literal_factors.rest;
+    
+   
+    Monomial used_variables_m=p.usedVariables();
+    Exponent used_variables=used_variables_m.exp();
+    Exponent e=generators[s].literal_factors.rest.leadExp();
+    if (e.size()>4) cout<<"too many variables for table"<<endl;
+    
+    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
+    std::vector<idx_type> back_2_ring(4);
+    set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
+    unsigned int p_code=p2code_lp4(p, ring_2_0123);
+    int i;
+    for(i=0;lp4var_data[p_code][i]!=0;i++){
+        unsigned int impl_code=lp4var_data[p_code][i];
+        if (p_code!=impl_code){
+            Polynomial p_i=code_2_poly_4lp(impl_code, back_2_ring);
+            Exponent e_i=p_i.leadExp();
+            if (e_i!=e){
+                addGeneratorDelayed(
+                    multiply_with_literal_factors(
+                        generators[s].literal_factors,
+                        p_i));
+            }
+        }
+    }
+    
+    
+    
+     mark_all_variable_pairs_as_calculated(*this, s);
+}
 void GroebnerStrategy::add4lpImplDelayed(int s){
 //(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
     Polynomial p=generators[s].p;
@@ -784,14 +853,15 @@ void GroebnerStrategy::add4lpImplDelayed(int s){
     }
     
     
-    BooleExponent::const_iterator it=generators[s].lmExp.begin();
+    /*BooleExponent::const_iterator it=generators[s].lmExp.begin();
     BooleExponent::const_iterator end=generators[s].lmExp.end();
      while(it!=end){
          
           generators[s].vPairCalculated.insert(*it);
           it++;
     
-    } 
+    }*/
+     mark_all_variable_pairs_as_calculated(*this, s);
     
     
     //cout<<"---------------"<<endl;
@@ -877,21 +947,11 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         result.push_back(exp);
     } else {
         Monomial v;
-        //lm austeilen
+        
         m=divide_monomial_divisors_out(m,lm);
         
-        //std::vector<idx_type> cv=contained_variables(m);
-        //int i;
-        /*for(i=0;i<cv.size();i++){
-            result.push_back(((Monomial)Variable(cv[i]))*lm);
-            m=m.subset0(cv[i]);
-        }*/
+        
         return minimal_elements_internal3(m);
-        
-        
-        
-        
-        
         
     }
     return result;
@@ -909,16 +969,15 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
-  //cout<<"is11"<<is11<<endl;
-  //cout<<"is00"<<is00<<endl;
+  
   if (!((is00 && (leadingTerms==leadingTerms00))||(is11 && (leadingTerms==leadingTerms11)))){
-    //cout<<"have pairs"<<endl;
+    
     if (is11)
         other_terms=other_terms.diff(leadingTerms11);
     if (is00)
         other_terms=other_terms.diff(leadingTerms00);
     while(it!=end){
-    //cout<<"intersect"<<endl;
+    
     other_terms=other_terms.subset0(*it);
     it++;
     
@@ -931,21 +990,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
             ot2=leadingTerms00;
         else
             ot2=leadingTerms11;
-          /// deactivated, because sigfaults on SatTestCase, AD
+          /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
             ot2=ot2.unite(divide_monomial_divisors_out(ot2,lm));
         }
-        /**/
-        /*
-        Monomial::const_iterator lm_start=lm.begin();
-        Monomial::const_iterator lm_end=lm.end();
-        while(lm_start!=lm_end){
-            ot2=(ot2.subset0(*lm_start).unite(ot2.subset1(*lm_start)));
-            lm_start++;
-        }/**/
-        //        ot2=ot2.existAbstract(lm.diagram());
-        //TODO: also unite orig ot2
+       
         other_terms=other_terms.unite(ot2);
     }
     intersecting_terms=this->leadingTerms.diff(other_terms);
@@ -953,23 +1003,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
-  //cout<<"intersect:"<<intersecting_terms.length()<<endl;
-     
-
   
-  
-  
-  ///@todo: correct counting of easy/extended product crit
-  /*if (is00){
-
-          intersecting_terms=intersecting_terms.diff(leadingTerms00);
-      }
-  else {
-    if (is11){
-      intersecting_terms=intersecting_terms.diff(leadingTerms11);
-        //cout<<"is11:"<<leadingTerms11.length()<<":"<<intersecting_terms.length();
-      }
-  }*/
   this->easyProductCriterions+=this->minimalLeadingTerms.length()-intersecting_terms.length();
   
  
@@ -982,22 +1016,38 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   
   int i;
 
-  it=generators[s].lm.begin();
-  end=generators[s].lm.end();
-  if ((e.usedVariables.deg()>4)||(!(BoolePolyRing::isLexicographical()))){
-      addVariablePairs(s);
-   
+  //it=generators[s].lm.begin();
+  //end=generators[s].lm.end();
+  //if ((e.usedVariables.deg()>4)||(!(BoolePolyRing::isLexicographical()))){
+  //  if (
+  //    addVariablePairs(s);
+  // 
+  //} else {
+  //  
+  //  add4lpImplDelayed(s);
+    
+  //}
+  if (BoolePolyRing::isLexicographical()){
+    int uv=e.usedVariables.deg();
+    if (uv<=4){
+        add4lpImplDelayed(s);
+    } else {
+    
+        int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
+        ////should also be proofable for var2var factors
+        assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
+        if (uv_opt<=4){
+            addHigherImplDelayedUsing4lp(s);
+        } else {
+            addVariablePairs(s);
+        }
+    }
   } else {
-    //is lex and deg <=4
-    
-    //use char as 0,1,2,3 are very short
-    add4lpImplDelayed(s);
-    
+     addVariablePairs(s);
   }
   //workaround
   Polynomial inter_as_poly=intersecting_terms;
-  //BooleSet::const_iterator is_it=intersecting_terms.begin();
-  //BooleSet::const_iterator is_end=intersecting_terms.end();
+  
   Polynomial::exp_iterator is_it=inter_as_poly.expBegin();
   Polynomial::exp_iterator is_end=inter_as_poly.expEnd();
   while(is_it!=is_end){

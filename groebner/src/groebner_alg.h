@@ -150,6 +150,7 @@ public:
   protected:
       void addVariablePairs(int s);
       void add4lpImplDelayed(int s);
+      void addHigherImplDelayedUsing4lp(int s);
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
