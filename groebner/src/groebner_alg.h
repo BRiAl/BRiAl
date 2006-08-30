@@ -74,6 +74,7 @@ public:
   PairManager(GroebnerStrategy & strat){
     this->strat=&strat;
   }
+
   typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
@@ -146,6 +147,9 @@ public:
       if (this->enabledLog)
           std::cout<<c<<endl;
   }
+  protected:
+      void addVariablePairs(int s);
+      void add4lpImplDelayed(int s);
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);

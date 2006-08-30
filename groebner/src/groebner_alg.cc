@@ -745,11 +745,9 @@ static Polynomial code_2_poly_4lp(unsigned int code, std::vector<idx_type> back_
     //cout<<"p input code"<<code<<"p out:"<<p<<endl;
     return p;
 }
-static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
-    Exponent::const_iterator it=used_variables.begin();
-    Exponent::const_iterator end=used_variables.end();
-    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
-    std::vector<idx_type> back_2_ring(4);
+void set_up_translation_vectors(std::vector<char>& ring_2_0123, std::vector<idx_type>& back_2_ring, const Exponent& used_variables){
+    BooleExponent::const_iterator it=used_variables.begin();
+    BooleExponent::const_iterator end=used_variables.end();
     char idx_0123=0;
     while(it!=end){
         ring_2_0123[*it]=idx_0123;
@@ -757,6 +755,18 @@ static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent 
         idx_0123++;
         it++;
     }
+}
+void GroebnerStrategy::add4lpImplDelayed(int s){
+//(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
+    Polynomial p=generators[s].p;
+    Exponent used_variables=generators[s].usedVariables.exp();
+    Exponent e=generators[s].lmExp;
+    
+    //Exponent::const_iterator it=used_variables.begin();
+    //Exponent::const_iterator end=used_variables.end();
+    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
+    std::vector<idx_type> back_2_ring(4);
+    set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
     unsigned int p_code=p2code_lp4(p, ring_2_0123);
     int i;
@@ -768,13 +778,40 @@ static void add4lp_impl_delayed(GroebnerStrategy& strat, Polynomial p, Exponent 
             Exponent e_i=p_i.leadExp();
             //cout<<"pre"<<endl;
             if (e_i!=e){
-                strat.addGeneratorDelayed(p_i);
+                addGeneratorDelayed(p_i);
             }
         }
     }
+    
+    
+    BooleExponent::const_iterator it=generators[s].lmExp.begin();
+    BooleExponent::const_iterator end=generators[s].lmExp.end();
+     while(it!=end){
+         
+          generators[s].vPairCalculated.insert(*it);
+          it++;
+    
+    } 
+    
+    
     //cout<<"---------------"<<endl;
 }
-
+void GroebnerStrategy::addVariablePairs(int s){
+     Exponent::const_iterator it=generators[s].lmExp.begin();
+     Exponent::const_iterator end=generators[s].lmExp.end();
+     while(it!=end){
+         if ((generators[s].lm.deg()==1) ||
+            generators[s].literal_factors.occursAsLeadOfFactor(*it))
+         {
+              //((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+      //cout<<"factorcrit"<<endl;
+             generators[s].vPairCalculated.insert(*it);
+          } else
+            this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
+          it++;
+    
+    } 
+}
 
 //static Monomial oper(int i){
 //    return Monomial(Variable(i));
@@ -860,6 +897,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     return result;
 }
 #endif
+
 void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -894,7 +932,12 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         else
             ot2=leadingTerms11;
           /// deactivated, because sigfaults on SatTestCase, AD
+          
+        if (!(ot2.emptiness())){
+            ot2=ot2.unite(divide_monomial_divisors_out(ot2,lm));
+        }
         /**/
+        /*
         Monomial::const_iterator lm_start=lm.begin();
         Monomial::const_iterator lm_end=lm.end();
         while(lm_start!=lm_end){
@@ -902,6 +945,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
             lm_start++;
         }/**/
         //        ot2=ot2.existAbstract(lm.diagram());
+        //TODO: also unite orig ot2
         other_terms=other_terms.unite(ot2);
     }
     intersecting_terms=this->leadingTerms.diff(other_terms);
@@ -941,42 +985,13 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   it=generators[s].lm.begin();
   end=generators[s].lm.end();
   if ((e.usedVariables.deg()>4)||(!(BoolePolyRing::isLexicographical()))){
-     
-     while(it!=end){
-         if ((generators[s].lm.deg()==1) ||
-            generators[s].literal_factors.occursAsLeadOfFactor(*it))
-         {
-              //((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
-      //cout<<"factorcrit"<<endl;
-             generators[s].vPairCalculated.insert(*it);
-          } else
-            this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
-          it++;
-    
-    } 
+      addVariablePairs(s);
+   
   } else {
     //is lex and deg <=4
     
     //use char as 0,1,2,3 are very short
-    add4lp_impl_delayed(*this,p,e.usedVariables.exp(),e.lmExp);/*{
-    std::vector<char> ring_2_0123(BoolePolyRing.nVars());
-    std::vector<idx_type> back_2_ring(4);
-    idx_0123=0;
-    while(it!=end){
-        ring_2_0123[*it]=idx_0123;
-        back_2_ring[idx_0123]=*it;
-        idx_0123++;
-        it++;
-    }
-    Polynomial::exp_iterator it_e=p.expBegin();
-    Polynomial::exp_iterator end_e=p.expEnd();
-    while(it_e!=end_e){
-        Exponent p_exp=*it_e;
-        Exponent::const_iterator it_v=p_exp.begin();
-        Exponent::const_iterator it_
-        it_e++;
-    }
-    }*/
+    add4lpImplDelayed(s);
     
   }
   //workaround
@@ -1033,7 +1048,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
            // #ifndef EXP_FOR_PAIRS
            //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
             //#else
-                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
+                MonomialSet act_l_terms=leadingTerms.divisorsOf((Monomial)t);//.intersect(t.divisors());
             //#endif
                 if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
                     //at this point we assume minimality of t_divided w.r.t. natural partial order
