@@ -1028,24 +1028,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   //  add4lpImplDelayed(s);
     
   //}
-  if (BoolePolyRing::isLexicographical()){
-    int uv=e.usedVariables.deg();
-    if (uv<=4){
-        add4lpImplDelayed(s);
-    } else {
-    
-        int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
-        ////should also be proofable for var2var factors
-        assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
-        if (uv_opt<=4){
-            addHigherImplDelayedUsing4lp(s);
-        } else {
-            addVariablePairs(s);
-        }
-    }
-  } else {
-     addVariablePairs(s);
-  }
+  
   //workaround
   Polynomial inter_as_poly=intersecting_terms;
   
@@ -1145,6 +1128,26 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     MonomialSet divisors_from_minimal=minimalLeadingTerms.intersect(lm.divisors());
     if(divisors_from_minimal.emptiness()){
        
+        
+        if (BoolePolyRing::isLexicographical()){
+        int uv=e.usedVariables.deg();
+        if (uv<=4){
+            add4lpImplDelayed(s);
+        } else {
+        
+            int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
+            ////should also be proofable for var2var factors
+            assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
+            if (uv_opt<=4){
+                addHigherImplDelayedUsing4lp(s);
+            } else {
+                addVariablePairs(s);
+            }
+         }
+        } else {
+          addVariablePairs(s);
+        }
+        
         
         
         minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
