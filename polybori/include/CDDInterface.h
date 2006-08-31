@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2006/08/31 08:42:54  bricken
+ * + subSet, supSet from extra
+ *
  * Revision 1.30  2006/08/29 14:23:19  dreyer
  * ADD: Functions from cudd/extra
  *
@@ -578,6 +581,23 @@ class CDDInterface<ZDD>:
 
   }
 
+
+
+  self subSet(const self& rhs) const {
+
+    return interfaced_type(&manager(),
+            Extra_zddSubSet(manager().getManager(), 
+                                   m_interfaced.getNode(), 
+                                   rhs.m_interfaced.getNode()) );
+  }
+  
+  self supSet(const self& rhs) const {
+
+    return interfaced_type(&manager(),
+            Extra_zddSupSet(manager().getManager(), 
+                                   m_interfaced.getNode(), 
+                                   rhs.m_interfaced.getNode()) );
+  }
   /// Get decison diagram representing the divisors of the first term
   self firstDivisors() const {
 
