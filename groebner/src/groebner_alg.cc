@@ -924,7 +924,7 @@ static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomia
     
 }
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm){
-    return divide_monomial_divisors_out_old(s,lm);//do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
+    return do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
 }
 #define EXP_FOR_PAIRS
 #ifndef EXP_FOR_PAIRS
@@ -1128,6 +1128,32 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     if(divisors_from_minimal.emptiness()){
        
         
+        
+        MonomialSet lm_multiples_min=minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
+        lm_multiples_min=lm_multiples_min.diff(lm.diagram());
+        //(lm.diagram()).diff(lm.diagram());
+    
+        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
+
+        {
+        
+        
+            MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
+            MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
+            while(mfm_start!=mfm_end){
+                assert((*mfm_start)!=e.lmExp);
+                assert((*mfm_start).reducibleBy(e.lmExp));
+                generators[exp2Index[*mfm_start]].minimal=false;
+                mfm_start++;
+            }
+        }
+        minimalLeadingTerms=minimalLeadingTerms.diff(lm_multiples_min);
+        
+        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
+        
+        
+        
+        
         if (BoolePolyRing::isLexicographical()){
         int uv=e.usedVariables.deg();
         if (uv<=4){
@@ -1146,25 +1172,6 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         } else {
           addVariablePairs(s);
         }
-        MonomialSet lm_multiples_min=minimalLeadingTerms.supSet(lm.diagram()).diff(lm.diagram());
-        //MonomialSet lm_multiples_min=lm.multiples(Polynomial(minimalLeadingTerms).usedVariables());
-        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
-        //lm_multiples_min=lm_multiples_min.intersect(minimalLeadingTerms).diff(lm.diagram());
-        {
-        //assert(multiples_from_minimal.intersect(lm.diagram()).emptiness());
-        
-            MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
-            MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
-            while(mfm_start!=mfm_end){
-                assert((*mfm_start)!=e.lmExp);
-                assert((*mfm_start).reducibleBy(e.lmExp));
-                generators[exp2Index[*mfm_start]].minimal=false;
-                mfm_start++;
-            }
-        }
-        minimalLeadingTerms=minimalLeadingTerms.diff(lm_multiples_min);
-        
-        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
     } else 
     {
         if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
