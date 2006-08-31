@@ -184,16 +184,16 @@ void PairManager::cleanTopByChainCriterion(){
             queue.pop();
             continue;
           }
-          const MonomialSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
+          //const MonomialSet lms=this->strat->leadingTerms.intersect(strat->generators[vp->i].lm.divisors());
           
-          Monomial lm=strat->generators[vp->i].lm;
-          Exponent lmExp=strat->generators[vp->i].lmExp;
+          //Monomial lm=strat->generators[vp->i].lm;
+          //Exponent lmExp=strat->generators[vp->i].lmExp;
           if (strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
             strat->log("delayed variable linear factor criterion");
             queue.pop();
             continue;
           }
-          if (!(strat->leadingTerms.intersect(lmExp.divisors()).diff(Polynomial(lm)).emptiness())){
+          /*if (!(strat->leadingTerms.intersect(lmExp.divisors()).diff(Polynomial(lm)).emptiness())){
             strat->variableChainCriterions++;
            queue.pop();
           } else {
@@ -205,8 +205,13 @@ void PairManager::cleanTopByChainCriterion(){
               strat->variableChainCriterions++;
             } else return;}
           
-          
-          
+          */
+          if (!(strat->generators[vp->i].minimal)){
+             this->queue.pop();
+             strat->variableChainCriterions++;
+             continue;
+          }
+          return;
         } else return;
     }
   }
@@ -919,7 +924,7 @@ static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomia
     
 }
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm){
-    return do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
+    return divide_monomial_divisors_out_old(s,lm);//do_divide_monomial_divisors_out(s,lm.begin(),lm.end());
 }
 #define EXP_FOR_PAIRS
 #ifndef EXP_FOR_PAIRS
@@ -992,9 +997,9 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     
     }
     
-    
+    MonomialSet ot2;
     if ((is11)||(is00)){
-        MonomialSet ot2;
+        
         if (is00)
             ot2=leadingTerms00;
         else
@@ -1002,13 +1007,13 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
-            ot2=ot2.unite(divide_monomial_divisors_out(ot2,lm));
+            other_terms=other_terms.unite(divide_monomial_divisors_out(ot2,lm));
         }
        
-        other_terms=other_terms.unite(ot2);
+        //other_terms=other_terms.unite(ot2);
     }
     intersecting_terms=this->leadingTerms.diff(other_terms);
-
+    intersecting_terms=intersecting_terms.diff(ot2);
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
@@ -1116,24 +1121,10 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     //we assume that lm is minimal in leadingTerms
     
     
-    MonomialSet lm_multiples_min=lm.multiples(Polynomial(minimalLeadingTerms).usedVariables());
-    assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
-    lm_multiples_min=lm_multiples_min.intersect(minimalLeadingTerms).diff(lm.diagram());
-    {
-        //assert(multiples_from_minimal.intersect(lm.diagram()).emptiness());
-        
-        MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
-        MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
-        while(mfm_start!=mfm_end){
-            assert((*mfm_start)!=e.lmExp);
-            assert((*mfm_start).reducibleBy(e.lmExp));
-            generators[exp2Index[*mfm_start]].minimal=false;
-            mfm_start++;
-        }
-    }
-    minimalLeadingTerms=leadingTerms.diff(lm_multiples_min);
-    leadingTerms.uniteAssign(Polynomial(lm).diagram());
-    MonomialSet divisors_from_minimal=minimalLeadingTerms.intersect(lm.divisors());
+    
+    
+    
+    MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
     if(divisors_from_minimal.emptiness()){
        
         
@@ -1155,8 +1146,23 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         } else {
           addVariablePairs(s);
         }
+        MonomialSet lm_multiples_min=minimalLeadingTerms.supSet(lm.diagram()).diff(lm.diagram());
+        //MonomialSet lm_multiples_min=lm.multiples(Polynomial(minimalLeadingTerms).usedVariables());
+        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
+        //lm_multiples_min=lm_multiples_min.intersect(minimalLeadingTerms).diff(lm.diagram());
+        {
+        //assert(multiples_from_minimal.intersect(lm.diagram()).emptiness());
         
-        
+            MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
+            MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
+            while(mfm_start!=mfm_end){
+                assert((*mfm_start)!=e.lmExp);
+                assert((*mfm_start).reducibleBy(e.lmExp));
+                generators[exp2Index[*mfm_start]].minimal=false;
+                mfm_start++;
+            }
+        }
+        minimalLeadingTerms=minimalLeadingTerms.diff(lm_multiples_min);
         
         minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
     } else 
@@ -1164,7 +1170,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
             this->generators[s].minimal=false;
     }
-
+    leadingTerms.uniteAssign(Polynomial(lm).diagram());
     if (generators[s].literal_factors.is11Factorization())
         leadingTerms11.uniteAssign(Polynomial(lm).diagram());
     //doesn't need to be undone on simplification
