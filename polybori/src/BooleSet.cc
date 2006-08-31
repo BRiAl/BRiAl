@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/08/31 08:44:16  bricken
+ * + variant using subset for divisorsOf
+ *
  * Revision 1.16  2006/08/29 12:09:27  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -241,8 +244,11 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 
 #else 
 
+#ifdef PBORI_DIVISORSOF_EXTRA
+    return subSet(rhs.diagram());
+#else
     return firstDivisorsOf(rhs.diagram());
-
+#endif
 #endif 
 
 }
