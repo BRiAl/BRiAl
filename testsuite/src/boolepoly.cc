@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/09/01 10:35:26  dreyer
+ * ADD: Multiplication poly * poly, poly * exponent
+ *
  * Revision 1.16  2006/07/17 15:32:09  dreyer
  * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
  *
@@ -276,6 +279,14 @@ main(){
     poly = 0;
     std::cout <<  poly <<" hasConstantTerm() ?"<<std::endl; 
     std::cout <<  poly.hasConstantPart() <<std::endl;
+
+    poly  = x*y + y*z;
+
+    poly2 = z*w +v*w;
+
+    std::cout <<  poly <<" * " << poly2 <<std::endl; 
+    std::cout << poly * poly2 <<std::endl;
+
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
  }

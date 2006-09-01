@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2006/09/01 10:35:25  dreyer
+ * ADD: Multiplication poly * poly, poly * exponent
+ *
  * Revision 1.38  2006/08/29 10:37:56  dreyer
  * CHANGE: non-const version of diagram() now internalDiagram()
  *
@@ -280,6 +283,8 @@ public:
   self& operator+=(const self&);
   self& operator-=(const self& rhs) { return operator+=(rhs); }
   self& operator*=(const monom_type&);
+  self& operator*=(const exp_type&);
+  self& operator*=(const self&);
   self& operator/=(const monom_type&);
   self& operator%=(const monom_type&);
   //@}
@@ -426,6 +431,28 @@ operator*(const BoolePolynomial::monom_type& lhs,
           const BoolePolynomial& rhs){
 
   return BoolePolynomial(rhs) *= lhs;
+}
+
+/// Multiplication with monomial
+inline BoolePolynomial
+operator*(const BoolePolynomial& lhs, const BoolePolynomial::exp_type& rhs){
+
+  return BoolePolynomial(lhs) *= rhs;
+}
+
+/// Multiplication of monomials by a polynomial
+inline BoolePolynomial
+operator*(const BoolePolynomial::exp_type& lhs, 
+          const BoolePolynomial& rhs){
+
+  return BoolePolynomial(rhs) *= lhs;
+}
+
+/// Multiplication with monomial
+inline BoolePolynomial
+operator*(const BoolePolynomial& lhs, const BoolePolynomial& rhs){
+
+  return BoolePolynomial(lhs) *= rhs;
 }
 
 /// Division by monomial (skipping remainder)

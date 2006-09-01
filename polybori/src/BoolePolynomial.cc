@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.59  2006/09/01 10:35:26  dreyer
+ * ADD: Multiplication poly * poly, poly * exponent
+ *
  * Revision 1.58  2006/08/29 12:09:27  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -338,6 +341,48 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   return *this;
 }
+
+// Multiplication
+BoolePolynomial&
+BoolePolynomial::operator*=(const exp_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const exp_type&)" );
+
+  // iterator, which generates m_dd *= var(idx) for given index idx
+  // on assignment of dereferenced object
+  PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
+    outiter(m_dd) ;
+  
+  // insert backward (for efficiency reasons)
+  std::copy(rhs.rbegin(), rhs.rend(), outiter);
+
+  return *this;
+}
+
+// Multiplication
+BoolePolynomial&
+BoolePolynomial::operator*=(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const self&)" );
+
+  self result(0);
+
+  exp_iterator start(rhs.expBegin()), finish(rhs.expEnd());
+
+  while (start != finish) {
+
+    exp_iterator myStart(expBegin()), myFinish(expEnd());
+
+    while(myStart != myFinish) {
+      result += ( (*myStart).multiply(*start) );
+      ++myStart;
+    }
+    ++start;
+  }
+
+  return (*this = result);
+}
+
 
 // Division
 BoolePolynomial&
