@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/09/01 11:02:48  dreyer
+ * ADD: OrderedManager::isSymmetric()
+ *
  * Revision 1.5  2006/08/29 09:02:36  dreyer
  * ADD: leadExp()
  *
@@ -95,6 +98,7 @@ class LexOrder {
   //@{
   typedef lex_tag lex_property; 
   typedef ordered_tag ordered_property;
+  typedef symmetric_tag symmetry_property;
   //@}
 
   /// Default Constructor

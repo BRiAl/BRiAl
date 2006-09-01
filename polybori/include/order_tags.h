@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/01 11:02:48  dreyer
+ * ADD: OrderedManager::isSymmetric()
+ *
  * Revision 1.2  2006/07/20 10:13:59  dreyer
  * CHANGE: Made COrderProperties more generic
  *
@@ -78,6 +81,18 @@ struct ordered_tag {};
  * @brief This class shows, whether iterators respect the order
  **/
 struct nonordered_tag {};
+
+/** @class symmetric_tag
+ * @brief This class shows, that an order is symmetric wrt. reorderung
+ * variables.
+ **/
+struct symmetric_tag {};
+
+/** @class nonsymmetric_tag
+ * @brief This class shows, that an order is not symmetric wrt. reorderung
+ * variables.
+ **/
+struct nonsymmetric_tag {};
 
 END_NAMESPACE_PBORI
 

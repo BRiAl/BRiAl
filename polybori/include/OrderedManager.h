@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/09/01 11:02:48  dreyer
+ * ADD: OrderedManager::isSymmetric()
+ *
  * Revision 1.7  2006/08/29 08:49:03  dreyer
  * FIX: compare(const exp_type&, const exp_type&) missing in OrderedManagerBase
  *
@@ -127,6 +130,9 @@ public:
 
   /// Test whether iterators respect order
   virtual bool_type isOrdered() const = 0;
+
+  /// Test whether variable pertubation do not change the order
+  virtual bool_type isSymmetric() const = 0;
 };
 
 /** @class OrderedManager
@@ -215,6 +221,12 @@ public:
   bool_type isOrdered() const {
     return properties_type().isOrdered();
   }
+
+  /// Test whether variable pertubation do not change the order
+  bool_type isSymmetric() const {
+    return properties_type().isSymmetric();
+  }
+
   /// Generates polynomial with leading term first (other terms may be skipped)
   poly_type leadFirst(const poly_type& poly) const {
 

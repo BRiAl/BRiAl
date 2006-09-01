@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/01 11:02:48  dreyer
+ * ADD: OrderedManager::isSymmetric()
+ *
  * Revision 1.2  2006/07/20 10:13:59  dreyer
  * CHANGE: Made COrderProperties more generic
  *
@@ -55,6 +58,7 @@ class COrderProperties {
   //@{
   typedef typename order_type::lex_property lex_property; 
   typedef typename order_type::ordered_property ordered_property;
+  typedef typename order_type::symmetry_property symmetry_property;
   //@}
 
   /// Define test whether iterators respect the ordering
@@ -62,6 +66,9 @@ class COrderProperties {
 
   /// Define test whether ordering is lexicographical
   is_same_type<lex_property, lex_tag> isLexicographical;
+
+  /// Define test whether ordering is lexicographical
+  is_same_type<symmetry_property, symmetric_tag> isSymmetric;
 };
 
 
