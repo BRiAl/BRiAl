@@ -197,7 +197,7 @@ if HAVE_PYTHON_EXTENSION:
         clauses=gen_clauses(inp)#StringIO(source.read())))
         
         
-        
+        print target.name, source.name
         out=open(target.path,"w")
         convert_file_PB(clauses,source.name,False, out)
         #out.close()
@@ -208,6 +208,6 @@ if HAVE_PYTHON_EXTENSION:
                      src_suffix = '.cnf')
     env.Append(BUILDERS={'CNF' : bld})
     for i in xrange(1,1001):
-        env.CNF("testsuite/py/data/uf20/uf20_"+str(i),["testsuite/py/data/uf20/uf20_1"])
+        env.CNF("testsuite/py/data/uf20/uf20_"+str(i))
 else:
     print "no python extension"
