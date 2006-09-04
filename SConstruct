@@ -1,7 +1,7 @@
 #$Id$
 opts = Options('custom.py')
 BOOST_WORKS=False
-
+import sys
 
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
@@ -29,6 +29,9 @@ try:
 except:
 	pass
 import os
+
+
+
 env=Environment(options=opts)
 
 if (env['PLATFORM']=="darwin"):
@@ -177,5 +180,34 @@ if HAVE_PYTHON_EXTENSION:
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
             LIBS=LIBS+["python2.4"]+USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
+    sys.path.append("testsuite/py")
+    from StringIO import StringIO
+    from cnf2ideal import gen_clauses, process_input,convert_file_PB
+    def cnf2py_build_function(target,source,env):
+        #print target, source
+        #assert len(source)==1
+        #assert len(target)==1
+        target=target[0]
+        source=source[0]
+        #print dir(source)
+        #print source.path
+        #print dir(source.dir)
+        inp=process_input(open(source.path))
+        
+        clauses=gen_clauses(inp)#StringIO(source.read())))
+        
+        
+        
+        out=open(target.path,"w")
+        convert_file_PB(clauses,source.name,False, out)
+        #out.close()
+        
+        return None
+    bld = Builder(action = cnf2py_build_function,
+                     suffix = '.py',
+                     src_suffix = '.cnf')
+    env.Append(BUILDERS={'CNF' : bld})
+    for i in xrange(1,1001):
+        env.CNF("testsuite/py/data/uf20/uf20_"+str(i),["testsuite/py/data/uf20/uf20_1"])
 else:
     print "no python extension"
