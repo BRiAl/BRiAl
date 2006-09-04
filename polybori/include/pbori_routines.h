@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/04 15:58:43  dreyer
+ * ADD: DegLexOrder and preparations
+ *
  * Revision 1.2  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -49,5 +52,8 @@
 
 // Get additional routines
 #include "pbori_routines_misc.h"
+
+// Get order-related routines
+#include "pbori_routines_order.h"
 
 #endif

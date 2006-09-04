@@ -120,7 +120,7 @@ env = conf.Finish()
 pb_src=Split("""BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc
     CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc
     BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
-    CCuddGetNode.cc BooleExponent.cc """)
+    CCuddGetNode.cc BooleExponent.cc DegLexOrder.cc """)
 pb_src=["./polybori/src/"+ source for source in pb_src]
 libpb=env.StaticLibrary("polybori/polybori", pb_src)
 #print "l:", l, dir(l)

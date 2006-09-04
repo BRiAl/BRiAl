@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/09/04 15:58:43  dreyer
+ * ADD: DegLexOrder and preparations
+ *
  * Revision 1.5  2006/08/29 09:02:36  dreyer
  * ADD: leadExp()
  *
@@ -45,39 +48,42 @@
 # include "PBoRiOutIter.h"
 #include "CIdxPath.h"
 
+// get internal routines
+#include "pbori_routines.h"
+
 BEGIN_NAMESPACE_PBORI
 
-// todo: move to some header
-template<class Order, class FirstIterator, class SecondIterator>
-typename Order::comp_type
-lex_compare(FirstIterator start, FirstIterator finish, 
-            SecondIterator rhs_start, SecondIterator rhs_finish,
-            Order order) {
+// // todo: move to some header
+// template<class Order, class FirstIterator, class SecondIterator>
+// typename Order::comp_type
+// lex_compare(FirstIterator start, FirstIterator finish, 
+//             SecondIterator rhs_start, SecondIterator rhs_finish,
+//             Order order) {
 
-  while ( (start != finish) && (rhs_start != rhs_finish) && 
-          (*start == *rhs_start) ) {
-    ++start; ++rhs_start;
-  }
+//   while ( (start != finish) && (rhs_start != rhs_finish) && 
+//           (*start == *rhs_start) ) {
+//     ++start; ++rhs_start;
+//   }
 
-  if (start == finish)
-    return CTypes::less_than;
+//   if (start == finish)
+//     return CTypes::less_than;
 
-  if (rhs_start == rhs_finish)
-    return CTypes::greater_than;
+//   if (rhs_start == rhs_finish)
+//     return CTypes::greater_than;
 
-  return order.compare(*start, *rhs_start);
-}
+//   return order.compare(*start, *rhs_start);
+// }
 
-// todo: move to some header
-template<class Order, class LhsType, class RhsType>
-typename Order::comp_type
-lex_compare(const LhsType& lhs, const RhsType& rhs, Order order) {
+// // todo: move to some header
+// template<class Order, class LhsType, class RhsType>
+// typename Order::comp_type
+// lex_compare(const LhsType& lhs, const RhsType& rhs, Order order) {
 
-  if (lhs == rhs)
-    return CTypes::equality;
+//   if (lhs == rhs)
+//     return CTypes::equality;
 
-  return lex_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), order);
-}
+//   return lex_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), order);
+// }
 
 // Comparison of monomials
 LexOrder::comp_type
@@ -86,7 +92,7 @@ LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(const monom_type&, const monom_type&) const)" );
 
-  return lex_compare(lhs, rhs, *this);
+  return lex_compare(lhs, rhs);
 }
 
 // Comparison of monomials
@@ -96,7 +102,7 @@ LexOrder::compare(const exp_type& lhs, const exp_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(const exp_type&, const exp_type&) const)" );
 
-  return lex_compare(lhs, rhs, *this);
+  return lex_compare(lhs, rhs);
 
 }
 
@@ -107,10 +113,7 @@ LexOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(monom_type, monom_type) const)" );
 
-  if (lhs == rhs)
-    return CTypes::equality;
-
-  return (lhs < rhs?  CTypes::greater_than : CTypes::less_than);
+  return lex_compare_indices(lhs, rhs);
 }
 
 // Extraction of leading term
@@ -144,7 +147,7 @@ LexOrder::leadExp(const poly_type& poly) const {
 
   exp_type leadterm;
    
-  if (!poly.isZero()) {
+  if (!poly.isZero() && !poly.isOne()) {
 
     leadterm.reserve(poly.lmDeg());
     // wrt. given indices to a monomial

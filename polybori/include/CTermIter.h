@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/09/04 15:58:42  dreyer
+ * ADD: DegLexOrder and preparations
+ *
  * Revision 1.10  2006/08/17 15:39:16  bricken
  * + reference type is now equal to value type, as references would lie in the iterator and not in the polynomial
  *
@@ -254,6 +257,8 @@ protected:
     m_value = termvalop(m_value, false);
     m_stack = stack_type();
   }
+
+  const stack_type& getStack() const { return m_stack; }
 
 private:
   stack_type m_stack;

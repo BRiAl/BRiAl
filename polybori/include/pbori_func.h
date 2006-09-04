@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/09/04 15:58:43  dreyer
+ * ADD: DegLexOrder and preparations
+ *
  * Revision 1.22  2006/08/28 15:08:19  bricken
  * + define HAVE_HASH_MAP
  *
@@ -679,6 +682,18 @@ public:
 #endif
 };
 
+/** @class sizes_less
+ * @brief A functional for size comparisons.
+ **/
+template <class ListType>
+class sizes_less:
+  public std::binary_function<const ListType&, const ListType&, bool> {
+
+public:
+  bool operator()(const ListType& lhs, const ListType& rhs) const {
+    return (lhs.size() < rhs.size());
+  }    
+};
 
 END_NAMESPACE_PBORI
 
