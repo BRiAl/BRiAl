@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/09/04 09:55:05  bricken
+ * + avoid bad templates
+ *
  * Revision 1.13  2006/08/29 12:09:26  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -245,12 +248,15 @@ private:
 };
 
 /// Multiplication of monomials
-template <class RHSType>
+//template <class RHSType>
 inline BooleMonomial
-operator*(const BooleMonomial& lhs, const RHSType& rhs) {
+operator*(const BooleMonomial& lhs, const BooleMonomial& rhs) {
   return BooleMonomial(lhs) *= rhs;
 }
-
+inline BooleMonomial
+operator*(const BooleMonomial& lhs, const BooleVariable& rhs) {
+  return BooleMonomial(lhs) *= rhs;
+}
 /// Division of monomials
 template <class RHSType>
 inline BooleMonomial
