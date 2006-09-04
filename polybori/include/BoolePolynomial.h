@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2006/09/04 11:33:57  dreyer
+ * CHANGE: lm*() use leadFirst()
+ *
  * Revision 1.39  2006/09/01 10:35:25  dreyer
  * ADD: Multiplication poly * poly, poly * exponent
  *
@@ -308,7 +311,7 @@ public:
   exp_type leadExp() const;
 
   /// Get all divisors of the leading term
-  set_type lmDivisors() const;
+  set_type lmDivisors() const { return leadFirst().firstDivisors(); };
   
   /// Hash value of the leading term
   hash_type lmHash() const;
@@ -394,6 +397,12 @@ protected:
 
   /// Access to internal decision diagramm structure
   dd_type& internalDiagram() { return m_dd; }
+
+  /// Generate a polynomial, whose first term is the leading term
+  self leadFirst() const;
+
+  /// Get all divisors of the first term
+  set_type firstDivisors() const;
 
 private:
   /// The actual decision diagramm

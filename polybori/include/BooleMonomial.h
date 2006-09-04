@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/09/04 11:33:57  dreyer
+ * CHANGE: lm*() use leadFirst()
+ *
  * Revision 1.14  2006/09/04 09:55:05  bricken
  * + avoid bad templates
  *
@@ -248,7 +251,6 @@ private:
 };
 
 /// Multiplication of monomials
-//template <class RHSType>
 inline BooleMonomial
 operator*(const BooleMonomial& lhs, const BooleMonomial& rhs) {
   return BooleMonomial(lhs) *= rhs;

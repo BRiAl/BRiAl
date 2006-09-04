@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.60  2006/09/04 11:33:57  dreyer
+ * CHANGE: lm*() use leadFirst()
+ *
  * Revision 1.59  2006/09/01 10:35:26  dreyer
  * ADD: Multiplication poly * poly, poly * exponent
  *
@@ -547,7 +550,7 @@ BoolePolynomial::leadExp() const {
 
 // all dividers
 BoolePolynomial::set_type
-BoolePolynomial::lmDivisors() const {
+BoolePolynomial::firstDivisors() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
 
@@ -589,7 +592,8 @@ BoolePolynomial::lmHash() const {
   if (m_dd.emptiness())
     return 0;
   else {
-    return index_vector_hash(firstBegin(), firstEnd());
+    self ld1st(leadFirst());
+    return index_vector_hash(ld1st.firstBegin(), ld1st.firstEnd());
 
 //     dd_type::first_iterator start(firstBegin()), finish(firstEnd());
 //     int vars=0;
@@ -631,8 +635,8 @@ BoolePolynomial::lmDeg() const {
   return lead().nNodes();
 
 #else
-
-  return std::distance(firstBegin(), firstEnd());
+  self ld1st(leadFirst());
+  return std::distance(ld1st.firstBegin(), ld1st.firstEnd());
 #endif
 }
 
@@ -914,6 +918,15 @@ BoolePolynomial::terms() const {
   fetchTerms(theList);
 
   return theList;
+}
+
+// generate a polynomial, whose first term is the leading term
+BoolePolynomial
+BoolePolynomial::leadFirst() const {
+
+  PBORI_TRACE_FUNC("BoolePolynomial::leadFirst() const" ); 
+
+  return BoolePolyRing::activeManager().leadFirst(*this);
 }
 
 /// Compute spoly of two polynomials
