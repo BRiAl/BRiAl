@@ -2,7 +2,7 @@
 opts = Options('custom.py')
 BOOST_WORKS=False
 import sys
-
+from glob import glob
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
 USERLIBS=[]
@@ -219,5 +219,9 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF("testsuite/py/data/phole/hole"+str(i))
     for i in xrange(4,6):
         env.CNF("testsuite/py/data/hanoi/hanoi"+str(i))
+
+    for f in glob("testsuite/py/data/blocksworld/*.cnf"):
+        env.CNF(f[:-4])
+    
 else:
     print "no python extension"
