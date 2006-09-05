@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.62  2006/09/05 14:59:07  dreyer
+ * CHANGE Code cleanup
+ *
  * Revision 1.61  2006/09/05 14:39:39  dreyer
  * CHANGE: enum sp now called dp_asc, BoolePolynomial::reducbileBy() generic
  *
@@ -427,24 +430,6 @@ BoolePolynomial::reducibleBy(const self& rhs) const {
   return std::includes(firstBegin(), firstEnd(), 
                        rhs.firstBegin(), rhs.firstEnd());
 
-
-//   first_iterator start(firstBegin()), finish(firstEnd()),
-//     rhs_start(rhs.firstBegin()), rhs_finish(rhs.firstEnd());
-
-
-//   bool_type is_reducible = true;
-  
-//   while (is_reducible && (rhs_start != rhs_finish) ) {
-//     idx_type rhs_idx(*rhs_start); 
-
-//     while( (start != finish) && (*start < rhs_idx)  ) 
-//       ++start;
-
-//     is_reducible = (start != finish) && (*start == rhs_idx);
-//     ++rhs_start;
-//   }
-
-//   return is_reducible;
 }
 
 // Equality
