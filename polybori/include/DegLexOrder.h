@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.1  2006/09/04 15:58:43  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -81,9 +84,11 @@ class DegLexOrder {
 
   /// @name define generic property markers
   //@{
-  typedef nonlex_tag lex_property; 
-  typedef nonordered_tag ordered_property;
-  typedef symmetric_tag symmetry_property;
+  typedef invalid_tag lex_property; 
+  typedef invalid_tag ordered_property;
+  typedef valid_tag symmetry_property;
+  typedef valid_tag degorder_property;
+  typedef valid_tag totaldegorder_property;
   //@}
 
   /// Default Constructor

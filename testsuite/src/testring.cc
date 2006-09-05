@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.6  2006/09/05 08:48:34  dreyer
+// ADD: BoolePolyRing::is(Total)DegreeOrder()
+//
 // Revision 1.5  2006/07/20 08:55:49  dreyer
 // ADD isOrdered() and  isLexicographical()
 //
@@ -76,7 +79,55 @@ main(){
 
   std::cout << "is ordered?" <<std::endl;
   std::cout << BoolePolyRing::isOrdered() <<std::endl;
-      
+
+  std::cout << "is symmetric?" <<std::endl;
+  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+
+  std::cout << "is degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << "is total degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+
+ try{
+    BoolePolyRing::ring();
+  }
+  catch(PBoRiError err){
+    std::cout << "Warning! Accessing global ring failed. ";
+    std::cout << "Unexpected exception occured: ";
+    std::cout <<err.text() <<std::endl;
+  }
+
+  BoolePolyRing ring2(5, CTypes::dlex);
+  std::cout << "Testing DegLex ring... "<<std::endl;;
+
+  std::cout << "is lexicographical?" <<std::endl;
+  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+
+  std::cout << "is ordered?" <<std::endl;
+  std::cout << BoolePolyRing::isOrdered() <<std::endl;
+
+  std::cout << "is symmetric?" <<std::endl;
+  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << "is degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << "is total degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+
+  BooleMonomial x = BooleVariable(0);
+  BooleMonomial y = BooleVariable(1);
+  BooleMonomial z = BooleVariable(2);
+  BooleMonomial v = BooleVariable(3);
+  BooleMonomial w = BooleVariable(4);
+
+  BoolePolynomial poly =  x*y + z + z*v*w;
+
+  std::cout << "poly " << poly <<std::endl;
+
+  std::cout << "lead() " << poly.lead() <<std::endl;
+  std::cout << "leadExp() " << poly.leadExp() <<std::endl;
+  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
+  std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
+
   try{
     BoolePolyRing::ring();
   }
@@ -85,6 +136,7 @@ main(){
     std::cout << "Unexpected exception occured: ";
     std::cout <<err.text() <<std::endl;
   }
+
   return 0;
 }
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.6  2006/09/01 11:02:48  dreyer
  * ADD: OrderedManager::isSymmetric()
  *
@@ -96,9 +99,11 @@ class LexOrder {
 
   /// @name define generic property markers
   //@{
-  typedef lex_tag lex_property; 
-  typedef ordered_tag ordered_property;
-  typedef symmetric_tag symmetry_property;
+  typedef valid_tag lex_property; 
+  typedef valid_tag ordered_property;
+  typedef valid_tag symmetry_property;
+  typedef invalid_tag degorder_property;
+  typedef invalid_tag totaldegorder_property;
   //@}
 
   /// Default Constructor

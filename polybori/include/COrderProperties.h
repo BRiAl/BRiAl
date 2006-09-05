@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.3  2006/09/01 11:02:48  dreyer
  * ADD: OrderedManager::isSymmetric()
  *
@@ -59,16 +62,25 @@ class COrderProperties {
   typedef typename order_type::lex_property lex_property; 
   typedef typename order_type::ordered_property ordered_property;
   typedef typename order_type::symmetry_property symmetry_property;
+  typedef typename order_type::degorder_property degorder_property;
+  typedef typename order_type::totaldegorder_property totaldegorder_property;
   //@}
 
   /// Define test whether iterators respect the ordering
-  is_same_type<ordered_property, ordered_tag> isOrdered;
+  is_same_type<ordered_property, valid_tag> isOrdered;
 
   /// Define test whether ordering is lexicographical
-  is_same_type<lex_property, lex_tag> isLexicographical;
+  is_same_type<lex_property, valid_tag> isLexicographical;
 
-  /// Define test whether ordering is lexicographical
-  is_same_type<symmetry_property, symmetric_tag> isSymmetric;
+  /// Define test whether ordering is symmetric
+  is_same_type<symmetry_property, valid_tag> isSymmetric;
+
+  /// Define test whether ordering is a degree-ordering
+  is_same_type<degorder_property, valid_tag> isDegreeOrder;
+
+  /// Define test whether ordering is a total degree-ordering
+  is_same_type<totaldegorder_property, valid_tag> isTotalDegreeOrder;
+
 };
 
 

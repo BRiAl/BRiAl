@@ -150,6 +150,30 @@ is lexicographical?
 1
 is ordered?
 1
+is symmetric?
+1
+is degree ordering?
+0
+is total degree ordering?
+0
+Testing DegLex ring... 
+is lexicographical?
+0
+is ordered?
+0
+is symmetric?
+1
+is degree ordering?
+1
+is total degree ordering?
+1
+poly x(0)*x(1) + x(2)*x(3)*x(4) + x(2) 
+lead() x(2)*x(3)*x(4) 
+leadExp() (2, 3, 4)
+lmDeg() 3
+lmDivisors() : 3 nodes 8 minterms
+00--- 1
+
 ----------------------
 Executing testsuite/spoly
 ----------------------

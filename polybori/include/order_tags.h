@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.3  2006/09/01 11:02:48  dreyer
  * ADD: OrderedManager::isSymmetric()
  *
@@ -41,58 +44,15 @@
 BEGIN_NAMESPACE_PBORI
 
 
-/** @class same_property
- * @brief This classgenerate
+/** @class invalid_tag
+ * @brief This class shows, whether a property of an order is invalid.
  **/
-template <bool Value>
-class property_holds {
-public:
-  /// Type for booleans
-  typedef CTypes::bool_type bool_type;  
-  enum { value = Value };
+struct invalid_tag {};
 
-  /// Return given value
-  bool_type operator()() const {
-    return value;
-  }
-};
-
-
-
-
-
-/** @class lex_tag
- * @brief This class marks an ordering as being lexicographical
+/** @class valid_tag
+ * @brief This class shows, whether a property of an order is valid.
  **/
-struct lex_tag {};
-
-
-/** @class lex_tag
- * @brief This class marks an ordering as being non-lexicographical
- **/
-struct nonlex_tag {};
-
-/** @class ordered_tag
- * @brief This class shows, whether iterators respect the order
- **/
-struct ordered_tag {};
-
-/** @class ordered_tag
- * @brief This class shows, whether iterators respect the order
- **/
-struct nonordered_tag {};
-
-/** @class symmetric_tag
- * @brief This class shows, that an order is symmetric wrt. reorderung
- * variables.
- **/
-struct symmetric_tag {};
-
-/** @class nonsymmetric_tag
- * @brief This class shows, that an order is not symmetric wrt. reorderung
- * variables.
- **/
-struct nonsymmetric_tag {};
+struct valid_tag {};
 
 END_NAMESPACE_PBORI
 

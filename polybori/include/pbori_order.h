@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/05 08:48:33  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.1  2006/05/23 15:26:25  dreyer
  * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
  *
@@ -33,6 +36,7 @@
 
 // get all available orderings
 #include "LexOrder.h"
+#include "DegLexOrder.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -42,7 +46,10 @@ get_ordered_manager(CTypes::size_type nvars, CTypes::ordercode_type order) {
   if(order == CTypes::lp)
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );
-  else                          // default is lex order
+  else if(order == CTypes::dlex)
+    return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
+    DegLexOrder>(nvars) );
+  else                        // default is lex order
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );
 }

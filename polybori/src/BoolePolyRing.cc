@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/09/05 08:48:33  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.23  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -113,7 +116,7 @@ BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
-                             bool_type make_active) :
+                             bool_type make_active) : base(),
   pMgr( get_ordered_manager(nvars, order) ) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
@@ -123,7 +126,7 @@ BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
 }
 
 // copy constructor (shallow copy)
-BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) :
+BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) : base(),
   pMgr(rhs.pMgr) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
@@ -131,7 +134,7 @@ BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) :
 }
 
 // construct from pointer to manager
-BoolePolyRing::BoolePolyRing(manager_ptr pRhs) :
+BoolePolyRing::BoolePolyRing(manager_ptr pRhs) : base(),
   pMgr(pRhs) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
@@ -311,6 +314,29 @@ BoolePolyRing::isOrdered() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isOrdered()" );
   return activeManager().isOrdered() ;
+}
+
+// test whether variable pertubation do not change the order
+BoolePolyRing::bool_type 
+BoolePolyRing::isSymmetric() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isSymmetric()" );
+  return activeManager().isSymmetric() ;
+}
+// test whether we deal with a degree-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::isDegreeOrder() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isDegreeOrder()" );
+  return activeManager().isDegreeOrder() ;
+}
+
+// test whether we deal with a degree-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::isTotalDegreeOrder() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
+  return activeManager().isTotalDegreeOrder() ;
 }
 
 END_NAMESPACE_PBORI

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.21  2006/08/29 12:09:26  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -276,6 +279,96 @@ class CDDManager;
 template <class ManType>
 class OrderedManagerBase;
 
+/** @class COrderEnums
+ * @brief This struct contains type definitions and enumerations to be used for
+ * order codes.
+ * 
+ **/
+struct COrderEnums {
+  /// Codes For orderings
+  enum ordercodes {
+    lp,
+    dlex,
+    dp
+  };
+
+  /// Type for ordering codes
+  typedef int ordercode_type;
+};
+
+/** @class CErrorEnums
+ * @brief This struct contains type definitions and enumerations to be used for
+ * error codes.
+ * 
+ **/
+struct CErrorEnums {
+  /// Error codes enumeration
+  enum errorcodes {
+    alright = 0,
+    failed,
+    no_ring,
+    invalid,
+    out_of_bounds,
+    io_error,
+#ifdef PBORI_DEVELOPER
+   not_implemented,
+#endif
+    last_error
+  };
+
+  /// Type used to store error codes
+  typedef unsigned int errornum_type;
+};
+
+/** @class CCompareEnums
+ * @brief This struct contains type definitions and enumerations to be used for
+ * comparisons.
+ * 
+ **/
+struct CCompareEnums {
+  /// Comparision codes enumeration
+  enum comparecodes {
+    less_than = -1,
+    equality = 0,
+    greater_than = +1,
+    less_or_equal_max = 0,
+    greater_or_equal_min = 0
+  };
+
+  /// Type for comparisons
+  typedef int comp_type;
+};
+
+/** @class CAuxTypes
+ * @brief This struct contains auxiliary type definitions.
+ * 
+ **/
+struct CAuxTypes {
+  //-------------------------------------------------------------------------
+  // types for several purposes
+  //-------------------------------------------------------------------------
+
+  /// Type for standard true/false statements
+  typedef bool bool_type;
+
+  /// Type for lengths, dimensions, etc.
+  typedef unsigned int size_type;
+
+  /// Type for integer numbers
+  typedef int integer_type;
+
+  /// Type for indices
+  typedef int idx_type;
+
+  /// Type for hashing
+  typedef int hash_type;
+
+  /// Type used to verbose error information
+  typedef const char* errortext_type;
+
+  /// Type for out-stream
+  typedef PBORI_OSTREAM ostream_type;
+};
 
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
@@ -285,10 +378,19 @@ class OrderedManagerBase;
  * - built-in types to be used consistently all over the library
  * 
  **/
-struct CTypes {
+struct CTypes: 
+  public COrderEnums, public CErrorEnums, public CCompareEnums,
+  public CAuxTypes {
   //-------------------------------------------------------------------------
   // types for treatment of decision diagrams
   //-------------------------------------------------------------------------
+
+  /// @name get enumeration base definitions
+  //@{
+  typedef COrderEnums orderenums_type;
+  typedef CErrorEnums errorenums_type;
+  typedef CCompareEnums compenums_type;
+  //@}
 
   /// Type of underlying binary decicion diagrams 
   typedef ZDD dd_base;
@@ -313,68 +415,7 @@ struct CTypes {
   /// Define shared pointer to decision diagram manager
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
 
-  //-------------------------------------------------------------------------
-  // types for several purposes
-  //-------------------------------------------------------------------------
 
-  /// Type for standard true/false statements
-  typedef bool bool_type;
-
-  /// Type for lengths, dimensions, etc.
-  typedef unsigned int size_type;
-
-  /// Type for integer numbers
-  typedef int integer_type;
-
-  /// Type for indices
-  typedef int idx_type;
-
-  /// Type for comparisons
-  typedef int comp_type;
-
-  /// Type for hashing
-  typedef int hash_type;
-
-  /// Error codes enumeration
-  enum errorcodes {
-    alright = 0,
-    failed,
-    no_ring,
-    invalid,
-    out_of_bounds,
-    io_error,
-#ifdef PBORI_DEVELOPER
-   not_implemented,
-#endif
-    last_error
-  };
-
-  /// Comparision codes enumeration
-  enum comparecodes {
-    less_than = -1,
-    equality = 0,
-    greater_than = +1,
-    less_or_equal_max = 0,
-    greater_or_equal_min = 0
-  };
-
-  /// Codes For orderings
-  enum ordercodes {
-    lp,
-    dp
-  };
-
-  /// Type for ordering codes
-  typedef int ordercode_type;
-
-  /// Type used to store error codes
-  typedef unsigned int errornum_type;
-
-  /// Type used to verbose error information
-  typedef const char* errortext_type;
-
-  /// Type for out-stream
-  typedef PBORI_OSTREAM ostream_type;
 };
 
 END_NAMESPACE_PBORI

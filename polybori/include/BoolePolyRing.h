@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/09/05 08:48:32  dreyer
+ * ADD: BoolePolyRing::is(Total)DegreeOrder()
+ *
  * Revision 1.20  2006/08/24 14:47:49  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -106,7 +109,8 @@ BEGIN_NAMESPACE_PBORI
  * structure, even if switched to a different type of binary decision diagram.
  *
  **/
-class BoolePolyRing {
+class BoolePolyRing: 
+  public CTypes::orderenums_type {
 
  public:
   //-------------------------------------------------------------------------
@@ -115,6 +119,9 @@ class BoolePolyRing {
 
   /// generic access to current type
   typedef BoolePolyRing self;
+
+  /// generic access to base type
+  typedef CTypes::orderenums_type base;
 
   /// @name adopt global type definitions
   //@{
@@ -131,11 +138,13 @@ class BoolePolyRing {
   //-------------------------------------------------------------------------
   // constructors and destructor
   //-------------------------------------------------------------------------
-  //  using CTypes::ordercodes;
+
+  /// Explicitely mention ordercodes' enumeration
+  using base::ordercodes;
 
   /// Constructor for @em nvars variables
   BoolePolyRing(size_type nvars=100, 
-                ordercode_type order = CTypes::lp,
+                ordercode_type order = lp,
                 bool_type make_active = true);
 
   /// Construct from manager
@@ -214,6 +223,14 @@ class BoolePolyRing {
   /// Test whether current ring's iterators respect the ordering 
   static bool_type isOrdered();
 
+  ///  Test whether variable pertubation do not change the order
+  static bool_type isSymmetric();
+
+  /// Test whether we deal with a degree-ordering
+  static bool_type isDegreeOrder();
+
+  /// Test whether we deal with a total degree-ordering
+  static bool_type isTotalDegreeOrder();
 
 protected: public:
   /// Pointer to current global manager setting
