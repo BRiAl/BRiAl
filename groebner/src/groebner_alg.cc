@@ -1293,7 +1293,7 @@ class ShorterEliminationLength{
     this->strat=&strat;
     }
     bool operator() (const Exponent& e){
-        assert(strat->exp2Index.find(e)!=strat.exp2Index.end());
+        assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
         return (strat->generators[strat->exp2Index.find(e)->second].weightedLength<=el);
     }
 };
