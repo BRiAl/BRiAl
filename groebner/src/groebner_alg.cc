@@ -1284,6 +1284,25 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     
 }
 
-const short a[][2]={{2,3},
-    {1,0}};
+class ShorterEliminationLength{
+  public:
+    const GroebnerStrategy* strat;
+    wlen_type el;
+    ShorterEliminationLength(const GroebnerStrategy& strat,wlen_type el){
+    this->el=el;
+    this->strat=&strat;
+    }
+    bool operator() (const Exponent& e){
+        assert(strat->exp2Index.find(e)!=strat.exp2Index.end());
+        return (strat->generators[strat->exp2Index.find(e)->second].weightedLength<=el);
+    }
+};
+void GroebnerStrategy::addAsYouWish(const Polynomial& p){
+    MonomialSet divisors=this->leadingTerms.divisorsOf(p.lead());
+    wlen_type el=p.eliminationLength();
+    if (std::find_if(divisors.expBegin(),divisors.expEnd(),ShorterEliminationLength(*this,el))!=divisors.expEnd()){
+        this->addGeneratorDelayed(p);
+    } else
+    this->addGenerator(p);
+}
 END_NAMESPACE_PBORIGB

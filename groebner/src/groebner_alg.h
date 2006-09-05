@@ -106,7 +106,7 @@ public:
   std::vector<Polynomial>  minimalizeAndTailReduce();
   void addGenerator(const BoolePolynomial& p);
   void addGeneratorDelayed(const BoolePolynomial & p);
-  
+  void addAsYouWish(const Polynomial& p);
   bool variableHasValue(idx_type i);
   PairManager pairs;
   bool reduceByTailReduced;

@@ -115,6 +115,7 @@ void export_strategy(){
   .def(init<const GroebnerStrategy&>())
   .def("addGenerator", &GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
+  .def("addAsYouWish",&GroebnerStrategy::addAsYouWish)
   .def("implications",implications)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
