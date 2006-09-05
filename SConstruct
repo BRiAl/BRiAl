@@ -211,5 +211,9 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF("testsuite/py/data/uf20/uf20_"+str(i))
     for i in xrange(1,101):
         env.CNF("testsuite/py/data/flat30_60/flat30_"+str(i))
+    for i in xrange(1,101):
+        env.CNF("testsuite/py/data/uuf50/uuf50_"+str(i))
+    for i in xrange(1,11):
+        env.CNF("testsuite/py/data/uuf75/uuf75_"+str(i))
 else:
     print "no python extension"
