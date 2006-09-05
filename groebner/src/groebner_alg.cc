@@ -74,7 +74,7 @@ leadingTerms(orig.leadingTerms),
 minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms11(orig.leadingTerms11),
   leadingTerms00(orig.leadingTerms00),
-  lm2Index(orig.lm2Index)
+  lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
   optRedTail=orig.optRedTail;
   reductionSteps=orig.reductionSteps;
@@ -218,26 +218,36 @@ void PairManager::cleanTopByChainCriterion(){
 }
 PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
-
+  this->deg=p.deg();
   this->lm=p.lead();
   this->lmExp=lm.exp();
-  this->weightedLength=p.eliminationLength();
+  this->lmDeg=lmExp.deg();
   this->length=p.length();
+  if(lmDeg==deg)
+    this->weightedLength=this->length;
+  else
+    this->weightedLength=p.eliminationLength();
+  
   this->usedVariables=p.usedVariables();
-  this->deg=p.deg();
+  
   this->tailVariables=(p-lm).usedVariables().exp();
-  this->lmDeg=p.lmDeg();
+  
   this->minimal=true;
 }
 
 
 void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
-  //so also lmExp keeps constant
-  this->weightedLength=p.eliminationLength();
-  this->length=p.length();
-  this->usedVariables=p.usedVariables();
   this->deg=p.deg();
+  //so also lmExp keeps constant
+  this->length=p.length();
+  if (lmDeg==deg)
+    this->weightedLength=this->length;
+  else
+    this->weightedLength=p.eliminationLength();
+  
+  this->usedVariables=p.usedVariables();
+  
   this->tailVariables=(p-lm).usedVariables().exp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
