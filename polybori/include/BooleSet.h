@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/09/05 14:21:01  bricken
+ * +multiplesOf, tailVariables to Exponent
+ *
  * Revision 1.12  2006/08/29 08:02:08  dreyer
  * ADD: BooleSet::expBegin() and expEnd()
  *
@@ -155,7 +158,10 @@ public:
 
   /// Compute intersection with divisors of rhs
   self divisorsOf(const term_type& rhs) const;
-
+  
+  /// Compute intersection with multiples of rhs
+  self multiplesOf(const term_type& rhs) const;
+  
   /// Division by given term
   self divide(const term_type& rhs) const;
 

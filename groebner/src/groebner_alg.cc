@@ -225,7 +225,7 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->length=p.length();
   this->usedVariables=p.usedVariables();
   this->deg=p.deg();
-  this->tailVariables=(p-lm).usedVariables();
+  this->tailVariables=(p-lm).usedVariables().exp();
   this->lmDeg=p.lmDeg();
   this->minimal=true;
 }
@@ -238,7 +238,7 @@ void PolyEntry::recomputeInformation(){
   this->length=p.length();
   this->usedVariables=p.usedVariables();
   this->deg=p.deg();
-  this->tailVariables=(p-lm).usedVariables();
+  this->tailVariables=(p-lm).usedVariables().exp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
   assert(this->lmDeg==p.lmDeg());
@@ -435,10 +435,11 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
   
   if (should_propagate(e)){
     Monomial lm=e.lm;
+    Exponent exp=e.lmExp;
     int i;
     int s=generators.size();
     for(i=0;i<s;i++){      
-      if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(lm))){
+      if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
         Polynomial new_p;
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
@@ -1129,7 +1130,8 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
        
         
         
-        MonomialSet lm_multiples_min=minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
+        MonomialSet lm_multiples_min=minimalLeadingTerms.multiplesOf(lm);
+        //minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
         lm_multiples_min=lm_multiples_min.diff(lm.diagram());
         //(lm.diagram()).diff(lm.diagram());
     

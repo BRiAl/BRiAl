@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/09/05 14:21:01  bricken
+ * +multiplesOf, tailVariables to Exponent
+ *
  * Revision 1.17  2006/08/31 08:44:16  bricken
  * + variant using subset for divisorsOf
  *
@@ -253,6 +256,21 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 
 }
 
+BooleSet BooleSet::multiplesOf(const term_type& t) const{
+    BooleSet acc=*this;
+    term_type::const_iterator it=t.begin();
+    term_type::const_iterator end=t.end();
+    while((it!=end) &&(!(acc.emptiness()))){
+        acc=acc.subset1(*it);
+        it++;
+    }
+    
+    if(!(acc.emptiness()))
+        return acc.unateProduct(t.diagram());
+    else
+        //is empty
+        return acc;
+}
 // check whether the intersection with divisors of rhs is non-empty
 BooleSet::bool_type
 BooleSet::hasTermOfVariables(const term_type& rhs) const {

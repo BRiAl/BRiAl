@@ -33,7 +33,7 @@ public:
   Exponent lmExp;
   Monomial gcdOfTerms;
   Monomial usedVariables;
-  Monomial tailVariables;
+  Exponent tailVariables;
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{
