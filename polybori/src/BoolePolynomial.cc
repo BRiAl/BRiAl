@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.61  2006/09/05 14:39:39  dreyer
+ * CHANGE: enum sp now called dp_asc, BoolePolynomial::reducbileBy() generic
+ *
  * Revision 1.60  2006/09/04 11:33:57  dreyer
  * CHANGE: lm*() use leadFirst()
  *
@@ -421,23 +424,27 @@ BoolePolynomial::reducibleBy(const self& rhs) const {
   if( isZero() )
     return rhs.isZero();
 
+  return std::includes(firstBegin(), firstEnd(), 
+                       rhs.firstBegin(), rhs.firstEnd());
 
-  first_iterator start(firstBegin()), finish(firstEnd()),
-    rhs_start(rhs.firstBegin()), rhs_finish(rhs.firstEnd());
-    
-  bool_type is_reducible = true;
+
+//   first_iterator start(firstBegin()), finish(firstEnd()),
+//     rhs_start(rhs.firstBegin()), rhs_finish(rhs.firstEnd());
+
+
+//   bool_type is_reducible = true;
   
-  while (is_reducible && (rhs_start != rhs_finish) ) {
-    idx_type rhs_idx(*rhs_start); 
+//   while (is_reducible && (rhs_start != rhs_finish) ) {
+//     idx_type rhs_idx(*rhs_start); 
 
-    while( (start != finish) && (*start < rhs_idx)  ) 
-      ++start;
+//     while( (start != finish) && (*start < rhs_idx)  ) 
+//       ++start;
 
-    is_reducible = (start != finish) && (*start == rhs_idx);
-    ++rhs_start;
-  }
+//     is_reducible = (start != finish) && (*start == rhs_idx);
+//     ++rhs_start;
+//   }
 
-  return is_reducible;
+//   return is_reducible;
 }
 
 // Equality

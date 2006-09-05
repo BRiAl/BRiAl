@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/09/05 14:39:39  dreyer
+ * CHANGE: enum sp now called dp_asc, BoolePolynomial::reducbileBy() generic
+ *
  * Revision 1.23  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -292,7 +295,7 @@ struct COrderEnums {
   enum ordercodes {
     lp,
     dlex,
-    dp
+    dp_asc
   };
 };
 

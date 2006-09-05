@@ -156,6 +156,10 @@ is degree ordering?
 0
 is total degree ordering?
 0
+has descending variables?
+1
+has ascending variables?
+0
 Testing DegLex ring... 
 is lexicographical?
 0
@@ -167,6 +171,10 @@ is degree ordering?
 1
 is total degree ordering?
 1
+has descending variables?
+1
+has ascending variables?
+0
 poly x(0)*x(1) + x(2)*x(3)*x(4) + x(2) 
 lead() x(2)*x(3)*x(4) 
 leadExp() (2, 3, 4)
