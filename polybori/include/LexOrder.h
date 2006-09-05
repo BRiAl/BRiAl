@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.7  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -47,17 +50,11 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// include basic definitions for orderings
+// include basic definitions for ordeings
 #include "order_tags.h"
 
-// include polynomial definitions
-#include "BoolePolynomial.h"
-
-// include monomial definitions
-#include "BooleMonomial.h"
-
-// include exponent vector definitions
-#include "BooleExponent.h"
+// include base order definitions
+#include "COrderBase.h"
 
 #ifndef LexOrder_h_
 #define LexOrder_h_
@@ -69,7 +66,8 @@ BEGIN_NAMESPACE_PBORI
  *
  *
  **/
-class LexOrder {
+class LexOrder:
+  public COrderBase {
 
  public:
   //-------------------------------------------------------------------------
@@ -79,38 +77,19 @@ class LexOrder {
   /// generic access to current type
   typedef LexOrder self;
 
-  /// Type of Boolean polynomials
-  typedef BoolePolynomial poly_type;
-
-  /// Type of Boolean monomials
-  typedef BooleMonomial monom_type;
-
-  /// Type of Boolean monomials
-  typedef BooleExponent exp_type;
-
-  /// @name adopt global type definitions
-  //@{
-  typedef CTypes::bool_type bool_type;
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::comp_type comp_type;
-  //@}
-
   /// @name define generic property markers
   //@{
   typedef valid_tag lex_property; 
   typedef valid_tag ordered_property;
   typedef valid_tag symmetry_property;
-  typedef invalid_tag degorder_property;
-  typedef invalid_tag totaldegorder_property;
+  typedef valid_tag descending_property;
   //@}
 
   /// Default Constructor
-  LexOrder() {};
+  LexOrder(): base() {};
 
   /// Copy Constructor
-  LexOrder(const self&) {};
+  LexOrder(const self& rhs): base(rhs) {};
 
   /// Destructor
   ~LexOrder() {};

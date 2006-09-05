@@ -52,7 +52,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                     //cout<<"testing var"<<v2<<endl;
                     //v occurs in the lead, v2 not
                     if (r.subset1(v2)==s1){
-                        assert(BoolePolyRing::activeManager().compare(v, v2)==CTypes::greater_than);
+                        assert(BoolePolyRing::compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
                         r=s1;
                         len_r/=2;

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.9  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -132,7 +135,7 @@ public:
   virtual bool_type isLexicographical() const = 0;
 
   /// Test whether iterators respect order
-  virtual bool_type isOrdered() const = 0;
+  virtual bool_type orderedStandardIteration() const = 0;
 
   /// Test whether variable pertubation do not change the order
   virtual bool_type isSymmetric() const = 0;
@@ -142,6 +145,12 @@ public:
 
   /// Test whether we deal with a total degree-ordering
   virtual bool_type isTotalDegreeOrder() const = 0;
+
+  /// Test whether variables are in ascending order
+  virtual bool_type ascendingVariables() const = 0;
+
+  /// Test whether variables are in descending order
+  virtual bool_type descendingVariables() const = 0;
 };
 
 /** @class OrderedManager
@@ -220,6 +229,14 @@ public:
     return ordering.leadExp(rhs);
   }
 
+  /// Generates polynomial with leading term first (other terms may be skipped)
+  poly_type leadFirst(const poly_type& poly) const {
+
+    if(orderedStandardIteration())
+      return poly;
+    else 
+      return lead(poly);
+  }
 
   /// Check whether ring is lexicographical 
   bool_type isLexicographical() const {
@@ -227,8 +244,8 @@ public:
   }
 
   /// Test whether iterators respect order
-  bool_type isOrdered() const {
-    return properties_type().isOrdered();
+  bool_type orderedStandardIteration() const {
+    return properties_type().orderedStandardIteration();
   }
 
   /// Test whether variable pertubation do not change the order
@@ -246,14 +263,14 @@ public:
     return properties_type().isTotalDegreeOrder();
   }
 
+  /// Test whether variables are in ascending order
+  bool_type ascendingVariables() const {
+    return properties_type().ascendingVariables();
+  }
 
-  /// Generates polynomial with leading term first (other terms may be skipped)
-  poly_type leadFirst(const poly_type& poly) const {
-
-    if(isOrdered())
-      return poly;
-    else 
-      return lead(poly);
+  /// Test whether variables are in descending order
+  bool_type descendingVariables() const {
+    return properties_type().descendingVariables();
   }
 
 

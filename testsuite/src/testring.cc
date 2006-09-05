@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.7  2006/09/05 11:10:45  dreyer
+// ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+//
 // Revision 1.6  2006/09/05 08:48:34  dreyer
 // ADD: BoolePolyRing::is(Total)DegreeOrder()
 //
@@ -78,7 +81,7 @@ main(){
   std::cout << BoolePolyRing::isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::isOrdered() <<std::endl;
+  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
   std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
@@ -87,8 +90,12 @@ main(){
   std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
   std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << "has descending variables?" <<std::endl;
+  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << "has ascending variables?" <<std::endl;
+  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
 
- try{
+  try{
     BoolePolyRing::ring();
   }
   catch(PBoRiError err){
@@ -104,7 +111,7 @@ main(){
   std::cout << BoolePolyRing::isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::isOrdered() <<std::endl;
+  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
   std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
@@ -112,6 +119,10 @@ main(){
   std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
   std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << "has descending variables?" <<std::endl;
+  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << "has ascending variables?" <<std::endl;
+  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
 
   BooleMonomial x = BooleVariable(0);
   BooleMonomial y = BooleVariable(1);

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/09/05 11:10:45  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.24  2006/09/05 08:48:33  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -108,6 +111,9 @@
 # include "PBoRiError.h"
 
 #include "pbori_order.h"
+
+#include "BooleExponent.h"
+#include "BooleMonomial.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -310,10 +316,10 @@ BoolePolyRing::isLexicographical() {
 
 // test whether current ring's iterators respect the ordering 
 BoolePolyRing::bool_type 
-BoolePolyRing::isOrdered() {
+BoolePolyRing::orderedStandardIteration() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isOrdered()" );
-  return activeManager().isOrdered() ;
+  return activeManager().orderedStandardIteration() ;
 }
 
 // test whether variable pertubation do not change the order
@@ -339,4 +345,41 @@ BoolePolyRing::isTotalDegreeOrder() {
   return activeManager().isTotalDegreeOrder() ;
 }
 
+// test whether we deal with a degree-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::ascendingVariables() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
+  return activeManager().ascendingVariables() ;
+}
+
+// test whether we deal with a degree-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::descendingVariables() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
+  return activeManager().descendingVariables() ;
+}
+
+// order-dependent comparison
+BoolePolyRing::comp_type 
+BoolePolyRing::compare(idx_type lhs, idx_type rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::compare(idx_type, idx_type)" );
+  return activeManager().compare(lhs, rhs);
+}
+
+BoolePolyRing::comp_type 
+BoolePolyRing::compare(const monom_type& lhs, const monom_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::compare(const monom_type&, const monom_type&)" );
+  return activeManager().compare(lhs, rhs);
+}
+
+BoolePolyRing::comp_type 
+BoolePolyRing::compare(const exp_type& lhs, const exp_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::compare(const exp_type&, const exp_type&)");
+  return activeManager().compare(lhs, rhs);
+}
 END_NAMESPACE_PBORI

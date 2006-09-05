@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.2  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -35,14 +38,8 @@
 // include basic definitions for orderings
 #include "order_tags.h"
 
-// include polynomial definitions
-#include "BoolePolynomial.h"
-
-// include monomial definitions
-#include "BooleMonomial.h"
-
-// include exponent vector definitions
-#include "BooleExponent.h"
+// include base order definitions
+#include "COrderBase.h"
 
 #ifndef DegLexOrder_h_
 #define DegLexOrder_h_
@@ -54,7 +51,8 @@ BEGIN_NAMESPACE_PBORI
  *
  *
  **/
-class DegLexOrder {
+class DegLexOrder:
+  public COrderBase {
 
  public:
   //-------------------------------------------------------------------------
@@ -64,38 +62,19 @@ class DegLexOrder {
   /// generic access to current type
   typedef DegLexOrder self;
 
-  /// Type of Boolean polynomials
-  typedef BoolePolynomial poly_type;
-
-  /// Type of Boolean monomials
-  typedef BooleMonomial monom_type;
-
-  /// Type of Boolean monomials
-  typedef BooleExponent exp_type;
-
-  /// @name adopt global type definitions
-  //@{
-  typedef CTypes::bool_type bool_type;
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::comp_type comp_type;
-  //@}
-
   /// @name define generic property markers
   //@{
-  typedef invalid_tag lex_property; 
-  typedef invalid_tag ordered_property;
   typedef valid_tag symmetry_property;
   typedef valid_tag degorder_property;
   typedef valid_tag totaldegorder_property;
+  typedef valid_tag descending_property;
   //@}
 
   /// Default Constructor
-  DegLexOrder() {};
+  DegLexOrder(): base() {};
 
   /// Copy Constructor
-  DegLexOrder(const self&) {};
+  DegLexOrder(const self& rhs): base(rhs) {};
 
   /// Destructor
   ~DegLexOrder() {};

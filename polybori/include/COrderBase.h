@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.1  2006/09/05 10:21:39  dreyer
  * + Initial Version
  *
@@ -79,6 +82,8 @@ class COrderBase:
   typedef invalid_tag symmetry_property;
   typedef invalid_tag degorder_property;
   typedef invalid_tag totaldegorder_property;
+  typedef invalid_tag ascending_property;
+  typedef invalid_tag descending_property;
   //@}
 
   /// Default Constructor

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.4  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -64,10 +67,12 @@ class COrderProperties {
   typedef typename order_type::symmetry_property symmetry_property;
   typedef typename order_type::degorder_property degorder_property;
   typedef typename order_type::totaldegorder_property totaldegorder_property;
+  typedef typename order_type::ascending_property ascending_property;
+  typedef typename order_type::descending_property descending_property;
   //@}
 
   /// Define test whether iterators respect the ordering
-  is_same_type<ordered_property, valid_tag> isOrdered;
+  is_same_type<ordered_property, valid_tag> orderedStandardIteration;
 
   /// Define test whether ordering is lexicographical
   is_same_type<lex_property, valid_tag> isLexicographical;
@@ -81,6 +86,11 @@ class COrderProperties {
   /// Define test whether ordering is a total degree-ordering
   is_same_type<totaldegorder_property, valid_tag> isTotalDegreeOrder;
 
+  /// Define test whether ordering is symmetric
+  is_same_type<ascending_property, valid_tag> ascendingVariables;
+
+  /// Define test whether ordering is symmetric
+  is_same_type<descending_property, valid_tag> descendingVariables;
 };
 
 

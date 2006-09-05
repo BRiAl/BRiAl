@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.21  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -101,6 +104,9 @@
 
 BEGIN_NAMESPACE_PBORI
 
+class BooleExponent;
+class BooleMonomial;
+
 /** @class BoolePolyRing
  * @brief This class is just a wrapper for using @c cudd's decicion diagram
  * manager as Boolean polynomial rings.
@@ -110,7 +116,8 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BoolePolyRing: 
-  public CTypes::orderenums_type {
+  public CTypes::orderenums_type, public CTypes::compenums_type, 
+  public CTypes::auxtypes_type {
 
  public:
   //-------------------------------------------------------------------------
@@ -128,12 +135,14 @@ class BoolePolyRing:
   typedef CTypes::manager_type manager_type;
   typedef CTypes::manager_reference manager_reference;
   typedef CTypes::manager_ptr manager_ptr;
-  typedef CTypes::bool_type bool_type;
   typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::ordercode_type ordercode_type;
   //@}
+
+  /// define exponent type
+  typedef BooleExponent exp_type;
+
+  /// set monomial type
+  typedef BooleMonomial monom_type;
 
   //-------------------------------------------------------------------------
   // constructors and destructor
@@ -221,7 +230,7 @@ class BoolePolyRing:
   static bool_type isLexicographical();
 
   /// Test whether current ring's iterators respect the ordering 
-  static bool_type isOrdered();
+  static bool_type orderedStandardIteration();
 
   ///  Test whether variable pertubation do not change the order
   static bool_type isSymmetric();
@@ -231,6 +240,19 @@ class BoolePolyRing:
 
   /// Test whether we deal with a total degree-ordering
   static bool_type isTotalDegreeOrder();
+
+  /// Test whether variables are in ascending order
+  static bool_type ascendingVariables();
+
+  /// Test whether variables are in descending order
+  static bool_type descendingVariables();
+
+  /// @name Comparison of monomials-like types
+  //@{
+  static comp_type compare(idx_type, idx_type);
+  static comp_type compare(const monom_type&, const monom_type&);
+  static comp_type compare(const exp_type&, const exp_type&);
+  //@}
 
 protected: public:
   /// Pointer to current global manager setting

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/09/05 11:10:44  dreyer
+ * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
+ *
  * Revision 1.22  2006/09/05 08:48:32  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -291,9 +294,6 @@ struct COrderEnums {
     dlex,
     dp
   };
-
-  /// Type for ordering codes
-  typedef int ordercode_type;
 };
 
 /** @class CErrorEnums
@@ -315,9 +315,6 @@ struct CErrorEnums {
 #endif
     last_error
   };
-
-  /// Type used to store error codes
-  typedef unsigned int errornum_type;
 };
 
 /** @class CCompareEnums
@@ -334,9 +331,6 @@ struct CCompareEnums {
     less_or_equal_max = 0,
     greater_or_equal_min = 0
   };
-
-  /// Type for comparisons
-  typedef int comp_type;
 };
 
 /** @class CAuxTypes
@@ -362,6 +356,15 @@ struct CAuxTypes {
 
   /// Type for hashing
   typedef int hash_type;
+
+   /// Type used to store error codes
+  typedef unsigned int errornum_type;
+
+  /// Type for comparisons
+  typedef int comp_type;
+
+  /// Type for ordering codes
+  typedef int ordercode_type;
 
   /// Type used to verbose error information
   typedef const char* errortext_type;
@@ -390,6 +393,7 @@ struct CTypes:
   typedef COrderEnums orderenums_type;
   typedef CErrorEnums errorenums_type;
   typedef CCompareEnums compenums_type;
+  typedef CAuxTypes auxtypes_type;
   //@}
 
   /// Type of underlying binary decicion diagrams 
