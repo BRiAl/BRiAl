@@ -12,13 +12,13 @@
 BEGIN_NAMESPACE_PBORIGB
 
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
-  Monomial used_variables=p.lead();
+  Exponent lead_variables=p.lead().exp();
   lmDeg=p.lmDeg();
-  Monomial other_variables=p.usedVariables()/used_variables;
+  Exponent other_variables=p.usedVariables().exp()-lead_variables;
   //only vars in the lead can factor out, independently of the order
   BooleSet r(p);
-  Monomial::const_iterator it=used_variables.begin();
-  const Monomial::const_iterator end=used_variables.end();
+  Exponent::const_iterator it=lead_variables.begin();
+  const Exponent::const_iterator end=lead_variables.end();
   
   int len_r=r.length();
   
@@ -43,8 +43,8 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 //cout<<"found factor1"<<endl; 
             } else {
                 if (!(Polynomial(r).hasConstantPart())){
-                Monomial::const_iterator other_it=other_variables.begin();
-                Monomial::const_iterator other_end=other_variables.end();
+                Exponent::const_iterator other_it=other_variables.begin();
+                Exponent::const_iterator other_end=other_variables.end();
                 //++other_it;//explicit is better than implicit
                 while(other_it!=other_end){
                     
@@ -128,7 +128,7 @@ bool LiteralFactorization::occursAsLeadOfFactor(idx_type v) const{
   }
   else{
     if (rest.lmDeg()==1){
-      BooleMonomial m=rest.lead();
+      Exponent m=rest.leadExp();
       return ((*(m.begin()))==v);
     }
     if (var2var_map.count(v)>0) return true;
