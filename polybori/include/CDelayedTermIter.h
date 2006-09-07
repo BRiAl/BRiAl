@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/07 16:04:32  dreyer
+ * ADD: CDegLexIter.h
+ *
  * Revision 1.1  2006/09/04 15:58:42  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -32,6 +35,9 @@
 
 // include CTermIter definitions
 #include "CTermIter.h"
+
+#ifndef CDelayedTermIter_h_
+#define CDelayedTermIter_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -75,8 +81,8 @@ public:
     result = terminalop_type()(result, true);
 
     appendop_type do_append;
-    while(!the_stack.empty()) {
 
+    while(!the_stack.empty() && the_stack.top().isValid()) {
       result =  do_append(result, *the_stack.top() );
       the_stack.pop();
     }
@@ -87,3 +93,5 @@ public:
 
 
 END_NAMESPACE_PBORI
+
+#endif

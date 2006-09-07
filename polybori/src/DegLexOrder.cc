@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/07 16:04:32  dreyer
+ * ADD: CDegLexIter.h
+ *
  * Revision 1.1  2006/09/04 15:58:43  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -39,7 +42,7 @@
 // get internal routines
 #include "pbori_routines.h"
 
-
+#include "CDegLexIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -91,8 +94,8 @@ DegLexOrder::lead(const poly_type& poly) const {
   else if (poly.isOne())
     leadterm = 1;
   else
-    leadterm =  std::max_element( degree_term_iterator(poly.degBegin()), 
-                                  degree_term_iterator(poly.degEnd()) ).term();
+    leadterm =  degree_term_iterator(std::max_element( poly.degBegin(), 
+                                                       poly.degEnd() )).term();
 
   return leadterm;
 }

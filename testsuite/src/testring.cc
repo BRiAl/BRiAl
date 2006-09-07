@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.8  2006/09/07 16:04:32  dreyer
+// ADD: CDegLexIter.h
+//
 // Revision 1.7  2006/09/05 11:10:45  dreyer
 // ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
 //
@@ -47,6 +50,8 @@
 
 // load polybori header file
 # include "polybori.h"
+
+#include "CDegLexIter.h"
 
 USING_NAMESPACE_PBORI
 
@@ -130,7 +135,7 @@ main(){
   BooleMonomial v = BooleVariable(3);
   BooleMonomial w = BooleVariable(4);
 
-  BoolePolynomial poly =  x*y + z + z*v*w;
+  BoolePolynomial poly =  x*y + z + z*v*w+ w +1;
 
   std::cout << "poly " << poly <<std::endl;
 
@@ -138,6 +143,34 @@ main(){
   std::cout << "leadExp() " << poly.leadExp() <<std::endl;
   std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
   std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
+
+  CDegLexIter<BoolePolynomial> iter(poly.degBegin(), poly.degEnd()),
+    finish;
+
+
+  while (iter != finish){
+    std::cout << *iter << ", ";std::cout.flush();
+    ++iter;
+  }
+  std::cout <<  std::endl;
+
+  BoolePolynomial::deg_iterator start(poly.degBegin()), end(poly.degEnd());
+
+  while ((start != end)){
+    std::cout << *start << ", ";
+    ++start;
+
+  }
+
+  std::cout <<  std::endl;
+
+
+  std::cout << "max "<<*std::max_element(poly.degBegin(), poly.degEnd()) <<std::endl;
+  std::cout << "min "<<*std::max_element(poly.degBegin(), poly.degEnd(), std::greater<unsigned>())
+  <<std::endl;
+
+  std::cout << "Finished." <<std::endl;
+
 
   try{
     BoolePolyRing::ring();

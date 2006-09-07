@@ -175,13 +175,18 @@ has descending variables?
 1
 has ascending variables?
 0
-poly x(0)*x(1) + x(2)*x(3)*x(4) + x(2) 
+poly x(0)*x(1) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
 lead() x(2)*x(3)*x(4) 
 leadExp() (2, 3, 4)
 lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 00--- 1
 
+x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+2, 3, 1, 1, 0, 
+max 3
+min 0
+Finished.
 ----------------------
 Executing testsuite/spoly
 ----------------------
