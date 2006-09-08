@@ -766,9 +766,9 @@ int select1(const GroebnerStrategy& strat, const Polynomial& p){
   else {
     
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
+    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(strat)));
 
-    return strat.lm2Index.find(min)->second;
+    return strat.exp2Index.find(min)->second;
      
   }
   
@@ -779,8 +779,8 @@ int select1(const GroebnerStrategy& strat, const Monomial& m){
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), StratComparerForSelect(strat)));
-    return strat.lm2Index.find(min)->second;
+    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(strat)));
+    return strat.exp2Index.find(min)->second;
   }
 }
 
