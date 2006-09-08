@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.63  2006/09/08 16:15:28  dreyer
+ * ADD: Added ordering-dependent term iteration
+ *
  * Revision 1.62  2006/09/05 14:59:07  dreyer
  * CHANGE Code cleanup
  *
@@ -251,6 +254,8 @@
 # include "PBoRiOutIter.h"
 
 # include "OrderedManager.h"
+
+# include "COrderedIter.h"
 
 // include definition of generic string literals
 # include "CStringLiteral.h"
@@ -846,6 +851,22 @@ BoolePolynomial::degEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::degEnd() const" );
   return deg_iterator();
+}
+
+// Start of degrees
+BoolePolynomial::ordered_iterator 
+BoolePolynomial::orderedBegin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::orderedBegin() const" );
+  return *this;
+}
+
+// Finish of leading term 
+BoolePolynomial::ordered_iterator 
+BoolePolynomial::orderedEnd() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::orderedEnd() const" );
+  return ordered_iterator();
 }
 
 // Start of iteration over monomials

@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.10  2006/09/08 16:15:28  dreyer
+// ADD: Added ordering-dependent term iteration
+//
 // Revision 1.9  2006/09/08 14:31:39  dreyer
 // ADD: COrderedIter and infrastructure for order-dependent iterator
 //
@@ -183,15 +186,30 @@ main(){
     ++oStart;
   }
 
+
+
+  BoolePolynomial::ordered_iterator ordStart(poly.orderedBegin());
+  BoolePolynomial::ordered_iterator ordFinish(poly.orderedEnd());
+
+  std::cout << "ordered_ Iter"<< std::endl;
+
+  while ((ordStart != ordFinish)){
+    std::cout << *ordStart << ", ";
+    ++ordStart;
+  }
+
+
+
   BoolePolyRing ring3(4);
   COrderedIter oStart2(poly);
 
-  std::cout << "ordered Iter"<< std::endl;
+  std::cout << "lex-ordered Iter"<< std::endl;
 
   while ((oStart2 != oFinish)){
     std::cout << *oStart2 << ", ";
     ++oStart2;
   }
+
 
   std::cout << "Finished." <<std::endl;
 

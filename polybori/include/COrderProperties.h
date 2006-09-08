@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/09/08 16:15:27  dreyer
+ * ADD: Added ordering-dependent term iteration
+ *
  * Revision 1.5  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -46,6 +49,9 @@
 
 // include polybori functionals
 #include "pbori_func.h"
+
+#ifndef COrderProperties_h_
+#define COrderProperties_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -95,3 +101,5 @@ class COrderProperties {
 
 
 END_NAMESPACE_PBORI
+
+#endif

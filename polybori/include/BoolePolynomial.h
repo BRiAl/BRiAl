@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2006/09/08 16:15:27  dreyer
+ * ADD: Added ordering-dependent term iteration
+ *
  * Revision 1.40  2006/09/04 11:33:57  dreyer
  * CHANGE: lm*() use leadFirst()
  *
@@ -162,10 +165,12 @@
 #include "pbori_func.h"
 #include "BooleSet.h"
 
+
 BEGIN_NAMESPACE_PBORI
 
 class BooleMonomial;
 class BooleExponent;
+class COrderedIter;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -219,7 +224,10 @@ public:
   /// Fix type for treatment of exponent vectors
   typedef BooleExponent exp_type; 
 
-  /// Iterator type for iterating all monomials
+  /// Iterator type for iterating over all monomials in ordering order
+  typedef COrderedIter ordered_iterator;
+
+  /// Iterator type for iterating over all monomials
   typedef CTermIter<monom_type, navigator, 
                     change_assign<>, 
                     change_assign<> >
@@ -372,6 +380,12 @@ public:
 
   /// Finish of degrees
   deg_iterator degEnd() const;
+
+  /// Start of ordering respecting iterator
+  ordered_iterator orderedBegin() const;
+
+  /// Finish of ordering respecting iterator
+  ordered_iterator orderedEnd() const;
 
   /// Navigate through structure
   navigator navigation() const;

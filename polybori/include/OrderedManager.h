@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/09/08 16:15:27  dreyer
+ * ADD: Added ordering-dependent term iteration
+ *
  * Revision 1.11  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -69,6 +72,9 @@
 #include "BooleExponent.h"
 
 #include "COrderProperties.h"
+
+#ifndef OrderedManager_h_
+#define OrderedManager_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -300,3 +306,5 @@ protected:
 };
 
 END_NAMESPACE_PBORI
+
+#endif

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/08 16:15:27  dreyer
+ * ADD: Added ordering-dependent term iteration
+ *
  * Revision 1.1  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -34,7 +37,7 @@
 #include "BoolePolynomial.h"
 #include "BoolePolyRing.h"
 #include "OrderedManager.h"
-
+#include "CDelayedTermIter.h"
 #include <algorithm>
 
 #ifndef COrderedIter_h_
