@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/08 10:22:59  dreyer
+ * FIX: Gcc 4 ist more pedantic
+ *
  * Revision 1.1  2006/09/07 16:04:32  dreyer
  * ADD: CDegLexIter.h
  *
@@ -205,7 +208,7 @@ public:
   }
 
   bool inRange() const {
-    return m_in_range(operator*());
+    return m_in_range(base::operator*());
   }
 
 private:
@@ -232,7 +235,6 @@ public:
 
   /// Set type for terms
   typedef monom_type term_type;
-  typedef monom_type value_type;
 
   /// Fix type for polynomials
   typedef typename poly_type::deg_iterator deg_iterator;

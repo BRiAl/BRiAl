@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/09/08 10:22:59  dreyer
+ * FIX: Gcc 4 ist more pedantic
+ *
  * Revision 1.18  2006/09/05 14:21:01  bricken
  * +multiplesOf, tailVariables to Exponent
  *
@@ -321,21 +324,21 @@ base res = ZDD( &manager(), result );
   Cudd_RecursiveDerefZdd(manager().getManager(), resultMultiples);
   return res;
 
-};
+}
 
 
 // Division by given term
 BooleSet
 BooleSet::divide(const term_type& rhs) const {
   return self(base::divideFirst(rhs.diagram()));
-};
+}
 
 // Division with assignment by given term
 BooleSet& 
 BooleSet::divideAssign(const term_type& rhs)  {
   base::divideFirstAssign(rhs.diagram());
   return *this;
-};
+}
 
 // Set of variables of the polynomial
 BooleSet::term_type
