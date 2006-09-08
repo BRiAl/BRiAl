@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/09/08 14:31:39  dreyer
+ * ADD: COrderedIter and infrastructure for order-dependent iterator
+ *
  * Revision 1.8  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -108,6 +111,12 @@ class LexOrder:
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
+
+  /// Initialize iterator corresponding to leading term
+  iterator leadIterator(const poly_type&) const;
+
+  /// Find next term (after iter) in polynomial according to current order
+  iterator incrementIterator(iterator iter, const poly_type&) const;
 };
 
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/08 14:31:39  dreyer
+ * ADD: COrderedIter and infrastructure for order-dependent iterator
+ *
  * Revision 1.2  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -69,6 +72,9 @@ class COrderBase:
   /// Type of Boolean polynomials
   typedef BoolePolynomial poly_type;
 
+  /// Type of degree iterator
+  typedef poly_type::deg_iterator iterator;
+
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
 
@@ -109,6 +115,12 @@ class COrderBase:
 
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
+
+  /// Initialize iterator corresponding to leading term
+  virtual iterator leadIterator(const poly_type&) const = 0;
+
+  /// Find next term (after iter) in polynomial according to current order
+  virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
 };
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/09/08 14:31:39  dreyer
+ * ADD: COrderedIter and infrastructure for order-dependent iterator
+ *
  * Revision 1.10  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -100,6 +103,7 @@ public:
   typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
   typedef BooleExponent exp_type;
+  typedef poly_type::deg_iterator iterator;
   //@}
 
   /// Construct new decision diagramm manager
@@ -151,6 +155,13 @@ public:
 
   /// Test whether variables are in descending order
   virtual bool_type descendingVariables() const = 0;
+
+  /// Initialize iterator corresponding to leading term
+  virtual iterator leadIterator(const poly_type&) const = 0;
+
+  /// Find next term (after iter) in polynomial according to current order
+  virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
+
 };
 
 /** @class OrderedManager
@@ -189,6 +200,7 @@ public:
   typedef typename base::monom_type monom_type;
   typedef typename base::poly_type poly_type;
   typedef typename base::exp_type exp_type;
+  typedef typename base::iterator iterator;
   //@}
 
   /// Construct new decision diagramm manager
@@ -273,6 +285,15 @@ public:
     return properties_type().descendingVariables();
   }
 
+  /// Initialize iterator corresponding to leading term
+  iterator leadIterator(const poly_type& poly) const {
+    return ordering.leadIterator(poly);
+  }
+
+  /// Find next term (after iter) in polynomial according to current order
+  iterator incrementIterator(iterator iter, const poly_type& poly) const {
+    return ordering.incrementIterator(iter, poly);
+  };
 
 protected:
   order_type ordering;

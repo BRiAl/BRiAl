@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.9  2006/09/08 14:31:39  dreyer
+// ADD: COrderedIter and infrastructure for order-dependent iterator
+//
 // Revision 1.8  2006/09/07 16:04:32  dreyer
 // ADD: CDegLexIter.h
 //
@@ -52,6 +55,8 @@
 # include "polybori.h"
 
 #include "CDegLexIter.h"
+#include "COrderedIter.h"
+
 
 USING_NAMESPACE_PBORI
 
@@ -168,6 +173,25 @@ main(){
   std::cout << "max "<<*std::max_element(poly.degBegin(), poly.degEnd()) <<std::endl;
   std::cout << "min "<<*std::max_element(poly.degBegin(), poly.degEnd(), std::greater<unsigned>())
   <<std::endl;
+
+  COrderedIter oStart(poly), oFinish;
+
+  std::cout << "ordered Iter"<< std::endl;
+
+  while ((oStart != oFinish)){
+    std::cout << *oStart << ", ";
+    ++oStart;
+  }
+
+  BoolePolyRing ring3(4);
+  COrderedIter oStart2(poly);
+
+  std::cout << "ordered Iter"<< std::endl;
+
+  while ((oStart2 != oFinish)){
+    std::cout << *oStart2 << ", ";
+    ++oStart2;
+  }
 
   std::cout << "Finished." <<std::endl;
 

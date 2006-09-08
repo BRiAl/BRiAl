@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2006-09-06
  *
- * This file defines a degree lexicographic iterator.
+ * This file defines an iterator, which respects the current ordering.
  *
  * @par Copyright:
  *   (c) 2006 by
@@ -19,14 +19,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.3  2006/09/08 14:31:38  dreyer
+ * Revision 1.1  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
- *
- * Revision 1.2  2006/09/08 10:22:59  dreyer
- * FIX: Gcc 4 ist more pedantic
- *
- * Revision 1.1  2006/09/07 16:04:32  dreyer
- * ADD: CDegLexIter.h
  *
  * @endverbatim
 **/
@@ -38,44 +32,46 @@
 
 
 #include "BoolePolynomial.h"
-#include "CDelayedTermIter.h"
-#include "CRestrictedIter.h"
+#include "BoolePolyRing.h"
+#include "OrderedManager.h"
 
 #include <algorithm>
 
-#ifndef CDegLexIter_h_
-#define CDegLexIter_h_
+#ifndef COrderedIter_h_
+#define COrderedIter_h_
 
 BEGIN_NAMESPACE_PBORI
 
-template<class PolyType, class PolyDegIter = typename PolyType::deg_iterator>
-class CDegLexIter {
+class COrderedIter {
 
 public:
+  //  typedef BoolePolyRing::manager_type 
+
+  typedef OrderedManagerBase<Cudd> manager_type;
 
   /// Fix type for polynomials
-  typedef PolyType poly_type;
+  typedef BoolePolynomial poly_type;
 
   /// Fix type for sizes
-  typedef typename poly_type::size_type size_type;
+  typedef  poly_type::size_type size_type;
 
   /// Fix type for Boolean values
-  typedef typename poly_type::bool_type bool_type;
+  typedef  poly_type::bool_type bool_type;
 
   /// Fix type for monomials
-  typedef typename poly_type::monom_type monom_type;
+  typedef  poly_type::monom_type monom_type;
 
   /// Set type for terms
   typedef monom_type term_type;
 
   /// Fix type for polynomials
-  typedef typename poly_type::deg_iterator deg_iterator;
+  typedef  poly_type::deg_iterator iterator;
 
   /// @name Interface types for standard iterator access
   //@{
   typedef term_type value_type;
   typedef std::forward_iterator_tag iterator_category;
-  typedef typename deg_iterator::difference_type difference_type;
+  typedef  iterator::difference_type difference_type;
   typedef void pointer;
   typedef value_type reference;
   //@}
@@ -83,41 +79,32 @@ public:
   /// Get type, this is inherited from
   typedef CDelayedTermIter<monom_type, 
                            change_assign<monom_type>, project_ith<2>, 
-                           deg_iterator> delayed_term_iterator;
-
-  typedef CRestrictedIter<delayed_term_iterator> bounded_iterator;
+                           iterator> delayed_term_iterator;
 
   /// Generic access to type of *this
-  typedef CDegLexIter self;
+  typedef COrderedIter self;
 
   // Constructor
-  CDegLexIter(const delayed_term_iterator& start, 
-              const delayed_term_iterator& finish ): 
-    m_iter(std::max_element(start, finish)), m_start(start), m_finish(finish) {
+  COrderedIter(const poly_type& poly): 
+    m_mgr(BoolePolyRing::activeManager()),
+    m_iter(BoolePolyRing::activeManager().leadIterator(poly)), 
+    m_poly(poly) {
 
   }
-  // Default Constructor
-  CDegLexIter():  m_iter(), m_start(), m_finish() {}
+  // Constructor
+  COrderedIter(): 
+    m_mgr(BoolePolyRing::activeManager()),
+    m_iter(), m_poly() {
 
+  }
   /// Constant dereference operator
   reference operator*() const {
-    return m_iter.term();
+    return delayed_term_iterator(m_iter).term();
   }
 
   /// Prefix increment operator
   self& operator++() {
-    if (m_iter != m_finish) {
-      size_type deg = *m_iter;
-      ++m_iter;
-      m_iter = std::find(m_iter, m_finish, deg);
-      
-      if(m_iter == m_finish) {
-        m_iter = std::max_element( bounded_iterator(m_start, deg),
-                                   bounded_iterator(m_finish, deg) );
-
-      }
-    }
-
+    m_iter = m_mgr.incrementIterator(m_iter, m_poly);
     return *this; 
   }
 
@@ -137,7 +124,9 @@ public:
   }
 
 private:
-  delayed_term_iterator m_iter, m_start, m_finish;
+  iterator m_iter;
+  poly_type m_poly;
+  const manager_type& m_mgr;
 };
 
 

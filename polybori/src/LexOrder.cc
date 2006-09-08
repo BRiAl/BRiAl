@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/09/08 14:31:39  dreyer
+ * ADD: COrderedIter and infrastructure for order-dependent iterator
+ *
  * Revision 1.6  2006/09/04 15:58:43  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -120,6 +123,9 @@ LexOrder::compare(idx_type lhs, idx_type rhs) const {
 LexOrder::monom_type 
 LexOrder::lead(const poly_type& poly) const {
 
+
+  PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
+
   monom_type leadterm;
    
   if (poly.isZero())
@@ -145,6 +151,8 @@ LexOrder::lead(const poly_type& poly) const {
 LexOrder::exp_type 
 LexOrder::leadExp(const poly_type& poly) const {
 
+  PBORI_TRACE_FUNC( "LexOrder::leadExp(const poly_type& poly) const" );
+
   exp_type leadterm;
    
   if (!poly.isZero() && !poly.isOne()) {
@@ -158,5 +166,26 @@ LexOrder::leadExp(const poly_type& poly) const {
   } 
   return leadterm;
 }
+
+// Initialize iterator corresponding to leading term
+LexOrder::iterator
+LexOrder::leadIterator(const poly_type& poly) const {
+
+  PBORI_TRACE_FUNC( "LexOrder::leadIterator(const poly_type& poly) const" );
+
+  return poly.degBegin();
+
+}
+
+// Find next term (after iter) in polynomial according to current order
+LexOrder::iterator
+LexOrder::incrementIterator(iterator iter, const poly_type&) const {
+
+  PBORI_TRACE_FUNC(
+    "LexOrder::incrementIterator(iterator, const poly_type&) const" );
+
+  return ++iter;
+}
+
 
 END_NAMESPACE_PBORI

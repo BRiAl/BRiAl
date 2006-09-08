@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/08 14:31:39  dreyer
+ * ADD: COrderedIter and infrastructure for order-dependent iterator
+ *
  * Revision 1.2  2006/09/07 16:04:32  dreyer
  * ADD: CDegLexIter.h
  *
@@ -115,6 +118,44 @@ DegLexOrder::leadExp(const poly_type& poly) const {
                              degree_term_iterator(poly.degEnd()) ).term();
   else 
     return exp_type();
+}
+
+// Initialize iterator corresponding to leading term
+DegLexOrder::iterator
+DegLexOrder::leadIterator(const poly_type& poly) const {
+
+  PBORI_TRACE_FUNC( "DegLexOrder::leadIterator(const poly_type& poly) const" );
+
+  return std::max_element(poly.degBegin(), poly.degEnd());
+}
+
+// Find next term (after iter) in polynomial according to current order
+DegLexOrder::iterator
+DegLexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
+
+  PBORI_TRACE_FUNC(
+    "DegLexOrder::incrementIterator(iterator, const poly_type&) const" );
+  typedef CDelayedTermIter<monom_type, 
+                           change_assign<monom_type>, project_ith<2>, 
+                           iterator> delayed_term_iterator;
+
+  typedef CRestrictedIter<delayed_term_iterator> bounded_iterator;
+
+  iterator m_start(poly.degBegin());
+  iterator m_finish(poly.degEnd());
+
+  if (iter != m_finish) {
+    size_type deg = *iter;
+    ++iter;
+    iter = std::find(iter, m_finish, deg);
+      
+    if(iter == m_finish) {
+      iter = std::max_element( bounded_iterator(m_start, deg),
+                               bounded_iterator(m_finish, deg) );
+
+    }
+  }
+  return iter;
 }
 
 END_NAMESPACE_PBORI
