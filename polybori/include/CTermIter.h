@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/09/12 13:48:18  dreyer
+ * ADD Preparations for bidirectional iterator
+ *
  * Revision 1.11  2006/09/04 15:58:42  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -82,7 +85,8 @@ BEGIN_NAMESPACE_PBORI
 
 template <class TermType, class NavigatorType, 
           class ForwardOp, class BackwardOp, 
-          class TerminalValueOp = project_ith<2> >
+          class TerminalValueOp = project_ith<2>,
+          class ElseHandler = project_ith<1> >
 class CTermIter {
 
 public:
@@ -111,12 +115,18 @@ public:
   /// Get operational, which generates terminal value corresponding to Boolean
   typedef TerminalValueOp termvalop_type;
 
+  /// Get operational, which handles else branches (ignored by default)
+  typedef ElseHandler elsehandle_type;
+
   /// Return type of dereferencing operator
   typedef term_type value_type;
 
   /// Get type of *this
   typedef CTermIter<term_type, navigator_type, 
-                    forwardop_type, backwardop_type, termvalop_type> self;
+                    forwardop_type, backwardop_type, termvalop_type,
+                    elsehandle_type> self;
+
+  typedef typename navigator_type::value_type  idx_type;
 
   /// @name Interface types for standard iterator access
   //@{
@@ -136,7 +146,7 @@ public:
   /// Default constructor
   CTermIter(): 
     m_stack(), m_value( termvalop_type()(value_type(), false) ), 
-    forwardop(), backwardop(), termvalop() { 
+    forwardop(), backwardop(), termvalop(), handleElse() { 
   }
 
   /// Construct from initial navigator
@@ -145,7 +155,7 @@ public:
             backwardop_type bop_ = backwardop_type(), 
             termvalop_type tvop_ = termvalop_type() ):
     m_stack(), m_value(),  forwardop(fop_), backwardop(bop_), 
-    termvalop(tvop_)  {
+    termvalop(tvop_), handleElse()   {
 
     if (navi.isValid()){
       followThen(navi);
@@ -159,7 +169,7 @@ public:
   CTermIter(const self& rhs):
     m_stack(rhs.m_stack), m_value(rhs.m_value),  
     forwardop(rhs.forwardop), backwardop(rhs.backwardop),
-    termvalop(rhs.termvalop) {};
+    termvalop(rhs.termvalop), handleElse(rhs.handleElse)  {};
 
   /// Destructor
   ~CTermIter() {};
@@ -234,8 +244,17 @@ protected:
 
   void nextElse(navigator_type& navi) {
     m_value = backwardop(m_value, *navi);
-    navi.incrementElse();
+
+    handleElse(navi);
+
     m_stack.pop();
+    navi.incrementElse();
+  }
+
+  void nextThen(navigator_type& navi) {
+    m_stack.push(navi);
+    m_value = forwardop(m_value, *navi);
+    navi.incrementThen();
   }
 
   bool terminate(const navigator_type& navi) {
@@ -256,9 +275,24 @@ protected:
   void clear() {
     m_value = termvalop(m_value, false);
     m_stack = stack_type();
+    handleElse = elsehandle_type();
   }
 
   const stack_type& getStack() const { return m_stack; }
+
+  void popToIndex(idx_type idx) {
+
+    if(top().isValid())
+      while(!m_stack.empty() && (*m_stack.top() >=  idx) ) {
+        m_value = backwardop(m_value, *m_stack.top());
+        m_stack.pop();
+      }
+    else
+      m_stack.pop(); 
+  }
+
+  /// Handle else-branches (for bidirectional iterators; ignored by default)
+  elsehandle_type handleElse;
 
 private:
   stack_type m_stack;
