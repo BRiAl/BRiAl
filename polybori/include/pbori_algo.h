@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/09/12 14:56:19  dreyer
+ * ADD Preparations for bidirectional iterator
+ *
  * Revision 1.14  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -317,7 +320,7 @@ limited_distance(IteratorType start, IteratorType finish, SizeType limit) {
 }
 
 // Forward declaration of CTermIter template
-template <class T1, class T2, class T3, class T4, class T5> class CTermIter;
+template <class, class, class, class, class, class> class CTermIter;
 
 // Determinine the minimum of the number of terms and limit
 template <class NaviType, class SizeType>
@@ -326,7 +329,8 @@ limited_length(NaviType navi, SizeType limit) {
 
 
   typedef CTermIter<dummy_iterator, NaviType, 
-                    project_ith<1>, project_ith<1>, project_ith<1, 2> >
+                    project_ith<1>, project_ith<1>, project_ith<1, 2>, 
+    project_ith<1> >
   iterator;
 
   return limited_distance(iterator(navi), iterator(), limit);
