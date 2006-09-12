@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.12  2006/09/08 16:15:27  dreyer
  * ADD: Added ordering-dependent term iteration
  *
@@ -109,7 +112,7 @@ public:
   typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
   typedef BooleExponent exp_type;
-  typedef poly_type::deg_iterator iterator;
+  typedef poly_type::bidirectional_iterator iterator;
   //@}
 
   /// Construct new decision diagramm manager

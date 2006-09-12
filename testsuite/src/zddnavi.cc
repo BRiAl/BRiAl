@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/09/12 14:56:56  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.10  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -135,6 +138,81 @@ operator<<(std::ostream& os, const variables_list& varlist) {
 
   return os;
 }
+
+#include "CBidirectTermIter.h"
+
+void testiter(const BoolePolynomial& poly) {
+
+
+  typedef CBidirectTermIter<BoolePolynomial::monom_type, 
+    BoolePolynomial::navigator, 
+                    change_assign<>, 
+                    change_assign<> >
+  const_iterator;
+
+    const_iterator start(poly.navigation()), finish;
+
+    std::cout << "*iter "<< *start<<std::endl;
+
+    ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+
+    ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+
+
+    --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+   ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+     --start;
+    std::cout << "-- "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+
+    ++start;
+    std::cout << "++ "<<std::endl;
+    std::cout << "*iter "<< *start<<std::endl;
+}
+
+
+
 
 
 int
@@ -325,7 +403,15 @@ main(){
     std::cout << "last term via BoolSet: "<< 
       bset.lastLexicographicalTerm()<<std::endl;;
 
-    std::cout <<std::endl<< "Finished."<<std::endl;
+    std::cout <<std::endl;
+
+    std::cout <<" Testing decrement..." <<std::endl;
+    std::cout << "poly "<<poly <<std::endl;
+
+
+    testiter(poly+1);
+
+    std::cout << "Finished."<<std::endl;
 
   }
   catch (PBoRiError& err) {

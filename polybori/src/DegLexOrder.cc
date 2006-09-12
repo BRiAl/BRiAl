@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.3  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -126,7 +129,7 @@ DegLexOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegLexOrder::leadIterator(const poly_type& poly) const" );
 
-  return std::max_element(poly.degBegin(), poly.degEnd());
+  return std::max_element(poly.biDegBegin(), poly.biDegEnd());
 }
 
 // Find next term (after iter) in polynomial according to current order
@@ -135,14 +138,11 @@ DegLexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
 
   PBORI_TRACE_FUNC(
     "DegLexOrder::incrementIterator(iterator, const poly_type&) const" );
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<monom_type>, project_ith<2>, 
-                           iterator> delayed_term_iterator;
 
-  typedef CRestrictedIter<delayed_term_iterator> bounded_iterator;
+  typedef CRestrictedIter<iterator> bounded_iterator;
 
-  iterator m_start(poly.degBegin());
-  iterator m_finish(poly.degEnd());
+  iterator m_start(poly.biDegBegin());
+  iterator m_finish(poly.biDegEnd());
 
   if (iter != m_finish) {
     size_type deg = *iter;

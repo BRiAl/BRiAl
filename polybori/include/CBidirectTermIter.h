@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.1  2006/09/12 13:48:41  dreyer
  * + Initial Version
  *
@@ -131,6 +134,17 @@ public:
 
   /// Destructor
   ~CBidirectTermIter() {};
+
+  /// Prefix increment operator
+  self& operator++() {
+    base::operator++();
+    return *this;
+  }
+
+  /// Postfix increment operator
+  self operator++(int dummy) { 
+    return base::operator++(dummy);
+  };
 
   /// Prefix decrement operator
   self& operator--() {

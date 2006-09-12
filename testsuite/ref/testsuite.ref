@@ -77,6 +77,43 @@ Testing last term
 poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
 last term 2, 4, last term via BoolSet: x(2)*x(4) 
 
+ Testing decrement...
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(3)*x(4) 
+-- 
+*iter x(1)*x(2)*x(3)*x(4) 
+-- 
+*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(4) 
+-- 
+*iter x(2)*x(3)*x(4) 
+-- 
+*iter x(1)*x(2)*x(3)*x(4) 
+-- 
+*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(1)*x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(4) 
+++ 
+*iter 1 
+-- 
+*iter x(2)*x(4) 
+-- 
+*iter x(2)*x(3)*x(4) 
+++ 
+*iter x(2)*x(4) 
 Finished.
 ----------------------
 Executing testsuite/testring
@@ -186,7 +223,10 @@ x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 ,
 2, 3, 1, 1, 0, 
 max 3
 min 0
-Finished.
+ordered Iter
+x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , ordered_ Iter
+x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , lex-ordered Iter
+x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , Finished.
 ----------------------
 Executing testsuite/spoly
 ----------------------

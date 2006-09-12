@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/09/12 14:56:56  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.7  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -173,7 +176,7 @@ LexOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIterator(const poly_type& poly) const" );
 
-  return poly.degBegin();
+  return poly.biDegBegin();
 
 }
 

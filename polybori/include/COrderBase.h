@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.3  2006/09/08 14:31:39  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -73,7 +76,7 @@ class COrderBase:
   typedef BoolePolynomial poly_type;
 
   /// Type of degree iterator
-  typedef poly_type::deg_iterator iterator;
+  typedef poly_type::bidirectional_iterator iterator;
 
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;

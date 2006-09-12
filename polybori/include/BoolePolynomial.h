@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.41  2006/09/08 16:15:27  dreyer
  * ADD: Added ordering-dependent term iteration
  *
@@ -162,6 +165,8 @@
 
 // include definition of sets of Boolean variables
 #include "CTermIter.h"
+#include "CBidirectTermIter.h"
+
 #include "pbori_func.h"
 #include "BooleSet.h"
 
@@ -251,11 +256,17 @@ public:
                   project_ith<1>, integral_constant<size_type, 1> > 
   decrement_type;
 
-  /// Iterator type for iterating all monomials
+  /// Iterator type for iterating all monomials (dereferencing to degree)
   typedef CTermIter<size_type, navigator, 
                     increment_type, decrement_type,
                     integral_constant<size_type, 0> >
   deg_iterator;
+
+  /// Bidirectional iterator type (dereferencing to degree)
+  typedef CBidirectTermIter<size_type, navigator, 
+                            increment_type, decrement_type,
+                            integral_constant<size_type, 0> >
+  bidirectional_iterator;
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
@@ -369,10 +380,10 @@ public:
   /// Finish of iteration over exponent vectors
   exp_iterator expEnd() const;
 
-  /// Start of leading term
+  /// Start of first term
   first_iterator firstBegin() const;
 
-  /// Finish of leading term 
+  /// Finish of first term 
   first_iterator firstEnd() const;
 
   /// Start of degrees
@@ -381,8 +392,14 @@ public:
   /// Finish of degrees
   deg_iterator degEnd() const;
 
+  /// Start of degrees (using bidirectional iterator)
+  bidirectional_iterator biDegBegin() const { return navigation(); }
+
+  /// Finish of degrees (using bidirectional iterator)
+  bidirectional_iterator biDegEnd() const { return bidirectional_iterator(); }
+
   /// Start of ordering respecting iterator
-  ordered_iterator orderedBegin() const;
+  ordered_iterator orderedBegin() const; 
 
   /// Finish of ordering respecting iterator
   ordered_iterator orderedEnd() const;

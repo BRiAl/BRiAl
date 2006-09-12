@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/12 14:56:55  dreyer
+ * ADD bidirectional term iterator template
+ *
  * Revision 1.2  2006/09/08 16:15:27  dreyer
  * ADD: Added ordering-dependent term iteration
  *
@@ -38,6 +41,7 @@
 #include "BoolePolyRing.h"
 #include "OrderedManager.h"
 #include "CDelayedTermIter.h"
+#include "CBidirectTermIter.h"
 #include <algorithm>
 
 #ifndef COrderedIter_h_
@@ -61,14 +65,17 @@ public:
   /// Fix type for Boolean values
   typedef  poly_type::bool_type bool_type;
 
+  /// Fix type for decision diagram navigations
+  typedef  poly_type::navigator navigator;
+
   /// Fix type for monomials
   typedef  poly_type::monom_type monom_type;
 
   /// Set type for terms
   typedef monom_type term_type;
 
-  /// Fix type for polynomials
-  typedef  poly_type::deg_iterator iterator;
+  /// Fix type for (bidirectional) iterating over terms
+  typedef poly_type::bidirectional_iterator iterator;
 
   /// @name Interface types for standard iterator access
   //@{
