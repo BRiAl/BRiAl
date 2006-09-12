@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/09/12 15:44:42  dreyer
+ * FIX: accidently untested project<0> caused error.
+ *
  * Revision 1.24  2006/09/12 15:33:16  dreyer
  * CHANGE: project_ith<0> corresponds to do-nothing (void return_type)
  *
@@ -229,7 +232,8 @@ class project_ith<0, NLEN> {
 
 public:
   /// Functional operator
-  void operator() (...) const { } 
+  template <class ValueType>
+  void operator() (const ValueType&, ...) const { } 
 };
 
 /// @class project_ith<1, NLEN>
