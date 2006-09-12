@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/09/12 15:11:14  dreyer
+ * FIX: Stricter syntax of gcc 4
+ *
  * Revision 1.12  2006/09/12 13:48:18  dreyer
  * ADD Preparations for bidirectional iterator
  *
@@ -125,8 +128,6 @@ public:
   typedef CTermIter<term_type, navigator_type, 
                     forwardop_type, backwardop_type, termvalop_type,
                     elsehandle_type> self;
-
-  typedef typename navigator_type::value_type  idx_type;
 
   /// @name Interface types for standard iterator access
   //@{
