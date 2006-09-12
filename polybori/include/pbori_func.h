@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/09/12 15:33:16  dreyer
+ * CHANGE: project_ith<0> corresponds to do-nothing (void return_type)
+ *
  * Revision 1.23  2006/09/04 15:58:43  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -220,16 +223,13 @@ template <unsigned int ITH, unsigned int NLEN = ITH>
 class project_ith;
 
 /// @class project_ith<0, NLEN>
-/// @brief Generates default value for first given value type
+/// @brief Virtually does nothing with the given arguments
 template <unsigned int NLEN>
 class project_ith<0, NLEN> {
 
 public:
-  /// Functional operator template
-  template <class ValueType>
-  ValueType operator() (const ValueType&, ...) const {
-    return ValueType();
-  } 
+  /// Functional operator
+  void operator() (...) const { } 
 };
 
 /// @class project_ith<1, NLEN>
@@ -238,13 +238,13 @@ template <unsigned int NLEN>
 class project_ith<1, NLEN> {
 
 public:
-  /// Functional operator template
+  /// Constant functional operator template
   template <class ValueType>
   const ValueType& operator() (const ValueType& value, ...) const {
     return value;
   } 
 
-  /// Constant functional operator template
+  /// Functional operator template
   template <class ValueType>
   ValueType& operator() (ValueType& value, ...) const {
     return value;
@@ -258,14 +258,14 @@ template <unsigned int NLEN>
 class project_ith<2, NLEN> {
 
 public:
-  /// Functional operator template
+  /// Constant functional operator template
   template <class FirstType, class ValueType>
   const ValueType& 
   operator() (const FirstType&, const ValueType& value, ...) const {
     return value;
   } 
 
-  /// Constant functional operator template
+  /// Functional operator template
   template <class FirstType, class ValueType>
   ValueType& operator() (const FirstType&, ValueType& value, ...) const {
     return value;

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/09/12 15:33:16  dreyer
+ * CHANGE: project_ith<0> corresponds to do-nothing (void return_type)
+ *
  * Revision 1.13  2006/09/12 15:11:14  dreyer
  * FIX: Stricter syntax of gcc 4
  *
@@ -89,7 +92,7 @@ BEGIN_NAMESPACE_PBORI
 template <class TermType, class NavigatorType, 
           class ForwardOp, class BackwardOp, 
           class TerminalValueOp = project_ith<2>,
-          class ElseHandler = project_ith<1> >
+          class ElseHandler = project_ith<0> >
 class CTermIter {
 
 public:
