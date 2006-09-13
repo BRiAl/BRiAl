@@ -20,6 +20,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.64  2006/09/13 09:05:44  dreyer
+ * ADD: dp_asc/DegRevLexAscOrder
+ * ADD: BoolePolynomial::endOfNavigation()
+ * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+ *   generated more generically using navigation() and endOfNavigation().
+ *
  * Revision 1.63  2006/09/08 16:15:28  dreyer
  * ADD: Added ordering-dependent term iteration
  *
@@ -908,7 +914,13 @@ BoolePolynomial::navigation() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::navigation() const" );
   return m_dd.navigation();
 }
+// End marker
+BoolePolynomial::navigator 
+BoolePolynomial::endOfNavigation() const {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::nendOfNavigation() const" );
+  return navigator();
+}
 
 // fetch list of terms
 void

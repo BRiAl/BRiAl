@@ -226,7 +226,57 @@ min 0
 ordered Iter
 x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , ordered_ Iter
 x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , lex-ordered Iter
-x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , Finished.
+x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+Testing dlex
+is lexicographical?
+0
+is ordered?
+0
+is symmetric?
+1
+is degree ordering?
+1
+is total degree ordering?
+1
+has descending variables?
+1
+has ascending variables?
+0
+poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+lead() x(1)*x(3)*x(4) 
+leadExp() (1, 3, 4)
+lmDeg() 3
+lmDivisors() : 3 nodes 8 minterms
+0-0-- 1
+
+ordered iteration... 
+x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+
+Testing dp_asc
+is lexicographical?
+0
+is ordered?
+0
+is symmetric?
+1
+is degree ordering?
+1
+is total degree ordering?
+1
+has descending variables?
+0
+has ascending variables?
+1
+poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+lead() x(2)*x(3)*x(4) 
+leadExp() (2, 3, 4)
+lmDeg() 3
+lmDivisors() : 3 nodes 8 minterms
+00--- 1
+
+ordered iteration... 
+x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+Finished.
 ----------------------
 Executing testsuite/spoly
 ----------------------

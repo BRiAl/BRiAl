@@ -19,6 +19,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/09/13 09:05:44  dreyer
+ * ADD: dp_asc/DegRevLexAscOrder
+ * ADD: BoolePolynomial::endOfNavigation()
+ * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+ *   generated more generically using navigation() and endOfNavigation().
+ *
  * Revision 1.8  2006/09/12 14:56:56  dreyer
  * ADD bidirectional term iterator template
  *
@@ -176,7 +182,7 @@ LexOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIterator(const poly_type& poly) const" );
 
-  return poly.biDegBegin();
+  return poly.navigation();
 
 }
 

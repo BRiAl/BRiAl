@@ -21,6 +21,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2006/09/13 09:05:43  dreyer
+ * ADD: dp_asc/DegRevLexAscOrder
+ * ADD: BoolePolynomial::endOfNavigation()
+ * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+ *   generated more generically using navigation() and endOfNavigation().
+ *
  * Revision 1.42  2006/09/12 14:56:55  dreyer
  * ADD bidirectional term iterator template
  *
@@ -392,12 +398,6 @@ public:
   /// Finish of degrees
   deg_iterator degEnd() const;
 
-  /// Start of degrees (using bidirectional iterator)
-  bidirectional_iterator biDegBegin() const { return navigation(); }
-
-  /// Finish of degrees (using bidirectional iterator)
-  bidirectional_iterator biDegEnd() const { return bidirectional_iterator(); }
-
   /// Start of ordering respecting iterator
   ordered_iterator orderedBegin() const; 
 
@@ -407,6 +407,9 @@ public:
   /// Navigate through structure
   navigator navigation() const;
  
+  /// End of navigation marker
+  navigator endOfNavigation() const;
+  
   /// gives a copy of the diagram
   dd_type copyDiagram(){   return diagram();  }
 

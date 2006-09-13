@@ -20,6 +20,12 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.11  2006/09/13 09:05:44  dreyer
+// ADD: dp_asc/DegRevLexAscOrder
+// ADD: BoolePolynomial::endOfNavigation()
+// CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+//   generated more generically using navigation() and endOfNavigation().
+//
 // Revision 1.10  2006/09/08 16:15:28  dreyer
 // ADD: Added ordering-dependent term iteration
 //
@@ -62,6 +68,56 @@
 
 
 USING_NAMESPACE_PBORI
+
+
+void test_ordered(CTypes::ordercode_type order_marker) {
+
+  BoolePolyRing ring(5, order_marker);
+
+  std::cout << "is lexicographical?" <<std::endl;
+  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+
+  std::cout << "is ordered?" <<std::endl;
+  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+
+  std::cout << "is symmetric?" <<std::endl;
+  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << "is degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << "is total degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << "has descending variables?" <<std::endl;
+  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << "has ascending variables?" <<std::endl;
+  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+
+  BooleMonomial x = BooleVariable(0);
+  BooleMonomial y = BooleVariable(1);
+  BooleMonomial z = BooleVariable(2);
+  BooleMonomial v = BooleVariable(3);
+  BooleMonomial w = BooleVariable(4);
+
+  BoolePolynomial poly =  x*y + z + z*v*w+ y*v*w+ w +1;
+
+  std::cout << "poly " << poly <<std::endl;
+
+  std::cout << "lead() " << poly.lead() <<std::endl;
+  std::cout << "leadExp() " << poly.leadExp() <<std::endl;
+  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
+  std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
+
+
+  BoolePolynomial::ordered_iterator ordStart(poly.orderedBegin());
+  BoolePolynomial::ordered_iterator ordFinish(poly.orderedEnd());
+
+  std::cout << "ordered iteration... "<< std::endl;
+
+  while ((ordStart != ordFinish)){
+    std::cout << *ordStart << ", ";
+    ++ordStart;
+  }
+  std::cout << std::endl;
+}
 
 int
 main(){
@@ -209,8 +265,13 @@ main(){
     std::cout << *oStart2 << ", ";
     ++oStart2;
   }
+   std::cout<< std::endl << "Testing dlex"<< std::endl;
 
+  test_ordered(CTypes::dlex); 
 
+ std::cout<< std::endl << "Testing dp_asc"<< std::endl;
+
+  test_ordered(CTypes::dp_asc); 
   std::cout << "Finished." <<std::endl;
 
 

@@ -19,6 +19,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/13 09:05:44  dreyer
+ * ADD: dp_asc/DegRevLexAscOrder
+ * ADD: BoolePolynomial::endOfNavigation()
+ * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+ *   generated more generically using navigation() and endOfNavigation().
+ *
  * Revision 1.2  2006/09/05 08:48:33  dreyer
  * ADD: BoolePolyRing::is(Total)DegreeOrder()
  *
@@ -37,6 +43,7 @@
 // get all available orderings
 #include "LexOrder.h"
 #include "DegLexOrder.h"
+#include "DegRevLexAscOrder.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -49,6 +56,9 @@ get_ordered_manager(CTypes::size_type nvars, CTypes::ordercode_type order) {
   else if(order == CTypes::dlex)
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     DegLexOrder>(nvars) );
+  else if(order == CTypes::dp_asc)
+    return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
+    DegRevLexAscOrder>(nvars) );
   else                        // default is lex order
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );

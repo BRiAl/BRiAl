@@ -19,6 +19,12 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/09/13 09:05:44  dreyer
+ * ADD: dp_asc/DegRevLexAscOrder
+ * ADD: BoolePolynomial::endOfNavigation()
+ * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
+ *   generated more generically using navigation() and endOfNavigation().
+ *
  * Revision 1.25  2006/09/12 15:44:42  dreyer
  * FIX: accidently untested project<0> caused error.
  *
@@ -698,6 +704,66 @@ public:
     return (lhs.size() < rhs.size());
   }    
 };
+
+/** @class reversed_iteration
+ * @brief Interchanges operator++ and operator-- of a given iterator.
+ **/
+template <class BiIterator>
+class reversed_iteration_adaptor {
+public:
+
+  /// The iterator type to be reversed
+  typedef BiIterator iterator;
+
+  /// Generic access to type of *this
+  typedef reversed_iteration_adaptor<iterator> self;
+  /// @name Interface types for standard iterator access
+  //@{
+  typedef std::bidirectional_iterator_tag iterator_category;
+  typedef typename std::iterator_traits<iterator>::difference_type 
+  difference_type;
+  typedef typename std::iterator_traits<iterator>::pointer  pointer;
+  typedef typename std::iterator_traits<iterator>::reference  reference;
+  typedef typename std::iterator_traits<iterator>::value_type value_type;
+  //@}
+
+  /// Constructor
+  reversed_iteration_adaptor(iterator& iter):
+    m_iter(iter) {}
+
+  /// Dereferecing operation
+
+  reference operator*() const {
+    return *m_iter;
+  }
+
+  /// Prefix increment operator  
+  self& operator++() {
+    --m_iter;
+    return *this;
+  }
+
+  /// Prefix decrement operator  
+  self& operator--() {
+    ++m_iter;
+    return *this;
+  }
+
+  bool operator==(const self& rhs) const {
+    return m_iter == rhs.m_iter;
+  }
+
+  bool operator!=(const self& rhs) const {
+    return m_iter != rhs.m_iter;
+  }
+  iterator get() const {
+    return m_iter;
+  }
+
+protected:
+  iterator m_iter;
+};
+
 
 END_NAMESPACE_PBORI
 
