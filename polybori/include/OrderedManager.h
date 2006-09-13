@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.13  2006/09/12 14:56:55  dreyer
  * ADD bidirectional term iterator template
  *
@@ -138,8 +141,14 @@ public:
   /// Get leading term
   virtual monom_type lead(const poly_type&) const = 0;
 
+  /// Get leading term (using upper bound)
+  virtual monom_type lead(const poly_type&, size_type) const = 0;
+
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
+
+  /// Get leading exponent (using upper bound)
+  virtual exp_type leadExp(const poly_type&, size_type) const = 0;
 
   /// Generates polynomial with leading term first (other terms may be skipped)
   virtual poly_type leadFirst(const poly_type&) const = 0;
@@ -243,11 +252,22 @@ public:
 
     return ordering.lead(rhs);
   }
+  /// Get leading term (using upper bound)
+  monom_type lead(const poly_type& rhs, size_type bound) const {
+
+    return ordering.lead(rhs, bound);
+  }
 
   /// Get leading exponent
   exp_type leadExp(const poly_type& rhs) const {
 
     return ordering.leadExp(rhs);
+  }
+
+  /// Get leading exponent (using upper bound)
+  exp_type leadExp(const poly_type& rhs, size_type bound) const {
+
+    return ordering.leadExp(rhs, bound);
   }
 
   /// Generates polynomial with leading term first (other terms may be skipped)

@@ -81,8 +81,14 @@ class DegRevLexAscOrder:
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
+  /// Get leading term (using upper bound)
+  monom_type lead(const poly_type& poly, size_type) const;
+
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
+
+  /// Get leading exponent (using an upper bound)
+  exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
   iterator leadIterator(const poly_type&) const;

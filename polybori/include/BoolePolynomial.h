@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.43  2006/09/13 09:05:43  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -332,8 +335,14 @@ public:
   /// Get leading term
   monom_type lead() const;
 
+  /// Get leading term (using upper bound)
+  monom_type boundedLead(size_type bound) const;
+
   /// Get leading term
   exp_type leadExp() const;
+
+  /// Get leading term (using upper bound)
+  exp_type boundedLeadExp(size_type bound) const;
 
   /// Get all divisors of the leading term
   set_type lmDivisors() const { return leadFirst().firstDivisors(); };

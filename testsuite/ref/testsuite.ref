@@ -244,7 +244,10 @@ has ascending variables?
 0
 poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
 lead() x(1)*x(3)*x(4) 
+boundedLead(deg()) x(1)*x(3)*x(4) 
 leadExp() (1, 3, 4)
+boundedLeadExp(deg()) (1, 3, 4)
+deg() 3
 lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 0-0-- 1
@@ -269,7 +272,10 @@ has ascending variables?
 1
 poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
 lead() x(2)*x(3)*x(4) 
+boundedLead(deg()) x(2)*x(3)*x(4) 
 leadExp() (2, 3, 4)
+boundedLeadExp(deg()) (2, 3, 4)
+deg() 3
 lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 00--- 1

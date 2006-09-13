@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.26  2006/09/13 09:05:44  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -728,7 +731,7 @@ public:
   //@}
 
   /// Constructor
-  reversed_iteration_adaptor(iterator& iter):
+  reversed_iteration_adaptor(const iterator& iter):
     m_iter(iter) {}
 
   /// Dereferecing operation

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/09/13 15:07:05  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.5  2006/09/13 09:05:44  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -112,6 +115,28 @@ DegLexOrder::lead(const poly_type& poly) const {
   return leadterm;
 }
 
+// Extraction of leading term
+DegLexOrder::monom_type 
+DegLexOrder::lead(const poly_type& poly, size_type bound) const {
+
+  typedef CDelayedTermIter<monom_type, 
+    change_assign<>, project_ith<2>, poly_type::deg_iterator >
+    degree_term_iterator;
+
+  monom_type leadterm;
+   
+  if (poly.isZero())
+    leadterm = 0;
+  else if (poly.isOne())
+    leadterm = 1;
+  else
+    leadterm = degree_term_iterator(bounded_max_element(poly.degBegin(), 
+                                                        poly.degEnd(),
+                                                        bound)).term();
+
+  return leadterm;
+}
+
 
 // maybe common template here
 // Extraction of leading exponent
@@ -128,6 +153,24 @@ DegLexOrder::leadExp(const poly_type& poly) const {
   else 
     return exp_type();
 }
+
+// maybe common template here
+// Extraction of leading exponent
+DegLexOrder::exp_type 
+DegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
+
+  typedef CDelayedTermIter<exp_type, 
+    inserts<>, project_ith<1>, poly_type::deg_iterator >
+    degree_term_iterator;
+
+  if (!poly.isZero() && !poly.isOne())
+    return degree_term_iterator(bounded_max_element(poly.degBegin(), 
+                                                    poly.degEnd(), 
+                                                    bound)).term();
+  else 
+    return exp_type();
+}
+
 
 // Initialize iterator corresponding to leading term
 DegLexOrder::iterator

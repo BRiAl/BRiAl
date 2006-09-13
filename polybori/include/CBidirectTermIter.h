@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.2  2006/09/12 14:56:55  dreyer
  * ADD bidirectional term iterator template
  *
@@ -128,6 +131,15 @@ public:
             termvalop_type tvop_ = termvalop_type() ):
     base(navi, fop_, bop_, tvop_) {}
 
+  /// Construct last term from initial navigator
+  CBidirectTermIter(navigator_type navi, dummy_iterator):
+    base() { 
+    if(navi.isValid()) {
+      followElse(navi); 
+      terminate(navi);
+    }
+ }
+  
   /// Copy Constructor
   CBidirectTermIter(const self& rhs):
     base(rhs) {};
@@ -156,7 +168,7 @@ public:
 
       handleElse.pop();
       base::nextThen(navi);
- 
+
       followElse(navi);
     }
     else

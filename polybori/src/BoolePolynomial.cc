@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.65  2006/09/13 15:07:05  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.64  2006/09/13 09:05:44  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -541,6 +544,14 @@ BoolePolynomial::lead() const {
 
 //   return leadterm;
 }
+// Leading term (bound)
+BoolePolynomial::monom_type
+BoolePolynomial::boundedLead(size_type bound) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::lead(size_type) const" );
+
+  return BoolePolyRing::activeManager().lead(*this, bound);
+}
 
 // Leading exponent
 BoolePolynomial::exp_type
@@ -550,6 +561,16 @@ BoolePolynomial::leadExp() const {
 
   return BoolePolyRing::activeManager().leadExp(*this);
 }
+
+// Leading exponent (bound)
+BoolePolynomial::exp_type
+BoolePolynomial::boundedLeadExp(size_type bound) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(size_type) const" );
+
+  return BoolePolyRing::activeManager().leadExp(*this, bound);
+}
+
 
 // all dividers
 BoolePolynomial::set_type

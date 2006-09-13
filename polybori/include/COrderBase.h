@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.4  2006/09/12 14:56:55  dreyer
  * ADD bidirectional term iterator template
  *
@@ -78,6 +81,10 @@ class COrderBase:
   /// Type of degree iterator
   typedef poly_type::bidirectional_iterator iterator;
 
+
+  /// Type of degree iterator
+  typedef poly_type::size_type size_type;
+
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
 
@@ -116,8 +123,14 @@ class COrderBase:
   /// Get leading term
   virtual monom_type lead(const poly_type&) const = 0;
 
+   /// Get leading term (using an upper bound)
+  virtual monom_type lead(const poly_type&, size_type) const = 0;
+
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
+
+  /// Get leading exponent (using an upper bound)
+  virtual exp_type leadExp(const poly_type&, size_type) const = 0;
 
   /// Initialize iterator corresponding to leading term
   virtual iterator leadIterator(const poly_type&) const = 0;

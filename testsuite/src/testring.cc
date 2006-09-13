@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.12  2006/09/13 15:07:05  dreyer
+// ADD: lead(sugar) and infrastructure
+//
 // Revision 1.11  2006/09/13 09:05:44  dreyer
 // ADD: dp_asc/DegRevLexAscOrder
 // ADD: BoolePolynomial::endOfNavigation()
@@ -102,7 +105,15 @@ void test_ordered(CTypes::ordercode_type order_marker) {
   std::cout << "poly " << poly <<std::endl;
 
   std::cout << "lead() " << poly.lead() <<std::endl;
+
+
+  std::cout << "boundedLead(deg()) " << poly.boundedLead(poly.deg())
+            <<std::endl;
   std::cout << "leadExp() " << poly.leadExp() <<std::endl;
+  std::cout << "boundedLeadExp(deg()) " << poly.boundedLeadExp(poly.deg())
+            <<std::endl;
+
+  std::cout << "deg() " << poly.deg() <<std::endl;
   std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
   std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
 

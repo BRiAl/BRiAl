@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/09/13 15:07:04  dreyer
+ * ADD: lead(sugar) and infrastructure
+ *
  * Revision 1.15  2006/09/12 14:56:19  dreyer
  * ADD Preparations for bidirectional iterator
  *
@@ -508,7 +511,27 @@ cudd_generate_divisors(ManagerType& mgr,
 }
 
 
+template<class Iterator, class SizeType>
+Iterator
+bounded_max_element(Iterator start, Iterator finish, SizeType bound){
 
+  if (*start >= bound)
+    return start;
+
+  Iterator result(start);
+  if (start != finish)
+    ++start;
+
+  while (start != finish) {
+    if(*start >= bound)
+      return start;
+    if(*start > *result)
+      result = start;
+    ++start;
+  }
+
+  return result;
+}
 
 END_NAMESPACE_PBORI
 
