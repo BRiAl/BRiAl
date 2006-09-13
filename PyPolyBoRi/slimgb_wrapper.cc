@@ -7,11 +7,12 @@
  *
  */
 
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "slimgb_wrapper.h"
 #include <iostream>
 #include <vector>
-#include <boost/python.hpp>
-#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+
 #include <nf.h>
 
 #include <groebner_alg.h>

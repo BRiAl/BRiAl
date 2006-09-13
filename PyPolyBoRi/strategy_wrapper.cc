@@ -6,11 +6,10 @@
  *  Copyright 2006 __MyCompanyName__. All rights reserved.
  *
  */
-
+#include <boost/python.hpp>
 #include "strategy_wrapper.h"
 #include <iostream>
 #include <vector>
-#include <boost/python.hpp>
 #include "nf.h"
 #include <groebner_alg.h>
 #include "slimgb_wrapper.h"

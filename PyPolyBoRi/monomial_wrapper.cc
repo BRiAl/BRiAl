@@ -7,9 +7,11 @@
  *
  */
 
+#include <boost/python.hpp>
+
 #include "monomial_wrapper.h"
 
-#include <boost/python.hpp>
+
 #include <boost/python/tuple.hpp>
 #include <boost/python/iterator.hpp>
 #include <iostream>
