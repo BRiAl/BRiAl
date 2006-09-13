@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/09/13 16:00:55  dreyer
+ * CHANGE: Experimenting with hash()
+ *
  * Revision 1.15  2006/09/04 11:33:57  dreyer
  * CHANGE: lm*() use leadFirst()
  *
@@ -184,7 +187,9 @@ class BooleMonomial {
   set_type multiples(const self&) const; 
 
   /// Hash value of the monomial
-  hash_type hash() const { return m_poly.lmHash(); }
+  //  hash_type hash() const { return m_poly.lmHash(); }
+  hash_type hash() const { 
+    return reinterpret_cast<hash_type>(m_poly.navigation().operator->()); }
 
   /// Substitute variable with index idx by its complement and assign
   self& changeAssign(idx_type);
