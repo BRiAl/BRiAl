@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/09/14 10:56:49  dreyer
+ * ADD: generic hash
+ *
  * Revision 1.3  2006/09/04 15:58:43  dreyer
  * ADD: DegLexOrder and preparations
  *
@@ -56,4 +59,13 @@
 // Get order-related routines
 #include "pbori_routines_order.h"
 
+
+// The following may be used without polybori. Hence, macros habe to be used
+// outside the files.
+BEGIN_NAMESPACE_PBORI
+
+// Get generic hash functions
+#include "generic_hash.h"
+
+END_NAMESPACE_PBORI
 #endif
