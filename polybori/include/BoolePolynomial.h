@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2006/09/14 10:57:25  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.44  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -370,6 +373,9 @@ public:
 
   /// Set of variables of the polynomial
   monom_type usedVariables() const;
+
+  /// Exponent vector of all of variables of the polynomial
+  exp_type usedVariablesExp() const;
 
   /// Returns number of terms
   size_type length() const;

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/09/14 10:57:26  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.4  2006/08/28 14:31:06  dreyer
  * FIX: using now correct const/nonconst iterators
  *
@@ -203,6 +206,26 @@ BooleExponent::insert(idx_type idx) {
     m_data.push_back(idx);
   else if (*pos != idx)
     m_data.insert(pos, idx);
+
+  return *this;
+}
+//  Insert variable with index idx in exponent vector (checking end first)
+BooleExponent&
+BooleExponent::push_back(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "BooleExponent::push_back(idx_type) " );
+
+  idx_type lastIdx = m_data.back();
+
+  if (lastIdx < idx)
+    m_data.push_back(idx);
+  else if (lastIdx > idx) {
+    iterator pos = 
+      std::find_if(internalBegin(), internalEnd(), 
+                   bind2nd(std::greater_equal<idx_type>(), idx));
+    if (*pos != idx)
+      m_data.insert(pos, idx);
+  }
 
   return *this;
 }

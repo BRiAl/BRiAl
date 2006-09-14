@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.66  2006/09/14 10:57:26  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.65  2006/09/13 15:07:05  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -709,69 +712,20 @@ BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
 
-
-  //  return dd_used_variables(diagram(), type_tag<monom_type>());
-
   return CDDOperations<dd_type, monom_type>().usedVariables(diagram());
 
-#if 0
-
-#ifdef PBORI_USEDVARS_BY_SUPPORT
-
-  BooleSet bset(diagram().support());
-  return bset.lastLexicographicalTerm();
-
-#else
-
-  // default value is the one monomial
-  monom_type result(true);
-
-# ifdef PBORI_USEDVARS_HIGHLEVEL
-
-  // define iterator type for storing used variables (on forward branches)
-  typedef CTermIter< std::set<idx_type>, navigator, 
-    inserts< std::set<idx_type> >, project_ith<1>, project_ith<1> >
-  the_iterator;
-
-  // initialize iteration
-  the_iterator start(navigation());
-
-  // collect all indices during iteration
-  while( !start.empty() ){ ++start; }
-
-  the_iterator::reference indices(*start);
-
-# elif defined(PBORI_USEDVARS_BY_TRANSFORM) // variant of highlevel
-
-  typedef std::set<idx_type> path_type;
-  path_type indices;
-
-  dd_transform( navigation(), dummy_iterator(),
-                dummy_iterator(),
-                insert_second_to_list<path_type,
-                   dummy_iterator,idx_type>(indices),
-                project_ith<1, 2>(),  
-                project_ith<1>()
-                );
-
-# elif defined(PBORI_USEDVARS_BY_IDX) // using internal variant
-
-  // Get indices of used variables
-  std::vector<idx_type> indices(nUsedVariables());
-  m_dd.usedIndices(indices);
-
-# endif
-
-  // generate monomial from indices
-  PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-    outiter(result);
-  copy(indices.rbegin(), indices.rend(), outiter);
-
-  return result;
-#endif
-
-#endif
 }
+// Exponent vector of variables of the polynomial
+BoolePolynomial::exp_type
+BoolePolynomial::usedVariablesExp() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::usedVariablesExp() const" );
+
+  exp_type result;
+  m_dd.usedIndices(result);
+  return result;
+}
+
 
 /// Returns number of terms
 BoolePolynomial::size_type

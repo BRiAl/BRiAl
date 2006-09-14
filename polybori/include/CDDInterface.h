@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2006/09/14 10:57:25  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.31  2006/08/31 08:42:54  bricken
  * + subSet, supSet from extra
  *
@@ -520,19 +523,18 @@ class CDDInterface<ZDD>:
     return supp.PortToZdd();
   }
 
-  /// Get used variables (assuming indices of length nSupport())
-  void usedIndices(std::vector<idx_type>& indices) const {
+  /// Get used variables (assuming indices of zero length)
+  template<class VectorLikeType>
+  void usedIndices(VectorLikeType& indices) const {
 
     int* pIdx = Cudd_SupportIndex( manager().getManager(), 
                                    m_interfaced.getNode() );
 
     size_type nlen(nVariables());
 
-    std::vector<idx_type>::iterator iter(indices.begin());
     for(size_type idx = 0; idx < nlen; ++idx)
       if (pIdx[idx] == 1){
-        *iter = idx;
-        ++iter;
+        indices.push_back(idx);
       }
     FREE(pIdx);
   }

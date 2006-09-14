@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/09/14 10:57:25  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.13  2006/09/05 14:21:01  bricken
  * +multiplesOf, tailVariables to Exponent
  *
@@ -143,6 +146,9 @@ public:
 
   /// Set of variables of the whole set
   term_type usedVariables() const;
+
+  /// Exponent vector of variables of the whole set
+  exp_type usedVariablesExp() const;
 
   /// Add given monomial to sets and assign
   self& addAssign(const term_type&);

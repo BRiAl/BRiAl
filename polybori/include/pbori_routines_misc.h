@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/14 10:57:26  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.1  2006/08/24 14:52:15  dreyer
  * + Initial Version
  *
@@ -51,5 +54,6 @@ index_vector_hash(Iterator start, Iterator finish){
   }
   return sum * vars;
 }
+
 
 END_NAMESPACE_PBORI

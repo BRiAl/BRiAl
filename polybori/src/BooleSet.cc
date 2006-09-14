@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/09/14 10:57:26  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.19  2006/09/08 10:22:59  dreyer
  * FIX: Gcc 4 ist more pedantic
  *
@@ -308,7 +311,7 @@ BooleSet::minimalElements() const {
   // base 
 
   navigator  resultMultiples;
-  std::vector<idx_type> indices(nSupport());
+  std::vector<idx_type> indices(0);
 
   usedIndices(indices);
   dd_operations<navigator> apply(manager().getManager());
@@ -340,7 +343,7 @@ BooleSet::divideAssign(const term_type& rhs)  {
   return *this;
 }
 
-// Set of variables of the polynomial
+// Set of variables of the set
 BooleSet::term_type
 BooleSet::usedVariables() const {
 
@@ -350,5 +353,17 @@ BooleSet::usedVariables() const {
   //  return dd_used_variables(*this, type_tag<term_type>());
   return CDDOperations<self, term_type>().usedVariables(*this);
 }
+
+// Exponent vector of variables of the set
+BooleSet::exp_type
+BooleSet::usedVariablesExp() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::usedVariablesExp() const" );
+
+  exp_type result;
+  usedIndices(result);
+  return result;
+}
+
 
 END_NAMESPACE_PBORI

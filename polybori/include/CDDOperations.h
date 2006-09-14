@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/14 10:57:26  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.2  2006/08/29 12:09:26  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -116,7 +119,7 @@ public:
 # elif defined(PBORI_USEDVARS_BY_IDX) // using internal variant
 
   // Get indices of used variables
-  std::vector<idx_type> indices(dd.nSupport());
+  std::vector<idx_type> indices(0);
   dd.usedIndices(indices);
 
 # endif

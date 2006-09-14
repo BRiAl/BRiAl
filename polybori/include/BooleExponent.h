@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/09/14 10:57:25  dreyer
+ * ADD: usedVariablesExp()
+ *
  * Revision 1.6  2006/08/29 09:19:07  dreyer
  * ADD: reserve()
  *
@@ -164,6 +167,9 @@ class BooleExponent {
 
   /// Insert variable with index idx in exponent vector
   self& insert(idx_type);
+
+   /// Insert variable with index idx in exponent vector (trying end first)
+  self& push_back(idx_type idx);
 
   /// Remove variable with index idx in exponent vector
   self& remove(idx_type);
