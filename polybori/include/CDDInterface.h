@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2006/09/15 07:04:35  dreyer
+ * CHANGE: reserve memory for usedIndices
+ *
  * Revision 1.32  2006/09/14 10:57:25  dreyer
  * ADD: usedVariablesExp()
  *
@@ -158,7 +161,7 @@
 
 // Using stl's vector
 #include <vector>
-
+#include <numeric>
 BEGIN_NAMESPACE_PBORI
 
 /** @class CDDInterfaceBase
@@ -530,7 +533,11 @@ class CDDInterface<ZDD>:
     int* pIdx = Cudd_SupportIndex( manager().getManager(), 
                                    m_interfaced.getNode() );
 
+
+
     size_type nlen(nVariables());
+
+    indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
 
     for(size_type idx = 0; idx < nlen; ++idx)
       if (pIdx[idx] == 1){
