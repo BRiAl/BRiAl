@@ -28,6 +28,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/15 16:21:03  dreyer
+ * CHANGE: testing more sophisticated hash fucntion for BooleExponent
+ *
  * Revision 1.1  2006/09/14 10:55:03  dreyer
  * + Initial Version
  *
@@ -47,6 +50,7 @@
 
 class generic_hash_tags {
 public:
+  struct simple_tag {};
   struct rs_tag {};
   struct js_tag {};
   struct pjw_tag {};
@@ -57,8 +61,25 @@ public:
   struct dek_tag {};
   typedef dek_tag knuth_tag;
   struct ap_tag {};
+
+  typedef simple_tag default_tag;
 }; 
 
+template <class Iterator, class HashType>
+HashType
+generic_hash_function(Iterator start, Iterator finish, HashType sum,
+                      generic_hash_tags::simple_tag) {
+
+  HashType  vars = 0;
+  sum = 0;
+ 
+  while (start != finish){
+    vars++;
+    sum += ((*start)+1) * ((*start)+1);
+    ++start;
+  }
+  return sum * vars;
+}
 
 
 template <class Iterator, class HashType>
@@ -210,9 +231,12 @@ generic_hash_function(Iterator start, Iterator finish, HashType hash,
 
   hash = 0;
   
+  bool isEven = true;
   while (start != finish) {
-       hash ^= ((i & 1) == 0) ? (  (hash <<  7) ^ *start ^ (hash >> 3)) :
-                               (~((hash << 11) ^ *start ^ (hash >> 5)));
+       hash ^= ( isEven ? (  (hash <<  7) ^ *start ^ (hash >> 3)) :
+                               (~((hash << 11) ^ *start ^ (hash >> 5))));
+
+       isEven = !isEven;
     ++start;
   }
 

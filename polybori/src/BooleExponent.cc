@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/09/15 16:21:04  dreyer
+ * CHANGE: testing more sophisticated hash fucntion for BooleExponent
+ *
  * Revision 1.5  2006/09/14 10:57:26  dreyer
  * ADD: usedVariablesExp()
  *
@@ -105,7 +108,9 @@ BooleExponent::hash_type
 BooleExponent::hash() const {
 
   PBORI_TRACE_FUNC( "BooleExponent::hash() const" );
-  return index_vector_hash(begin(), end());
+  //  return index_vector_hash(begin(), end());
+  return generic_hash<data_type, hash_type, 
+    generic_hash_tags::ap_tag>()(m_data);
 }
 
 
