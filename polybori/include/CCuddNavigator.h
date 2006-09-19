@@ -22,6 +22,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/09/19 09:46:05  dreyer
+ * CHANGE: binary_compose to binary_composition
+ * CHANGE: BooleMonomial::idx_map_type
+ * ADD: symmetric_composition<>, navigates<>
+ *
  * Revision 1.8  2006/08/18 19:47:15  dreyer
  * change finished low-level variant of minimal_elements also for lnegth()==2
  *
@@ -73,6 +78,9 @@ public:
   /// Cudd's node pointer
   typedef DdNode* pointer_type;
 
+  /// Type for accessing node pointer
+  typedef const pointer_type access_type;
+
   /// Type for indices
   typedef CTypes::idx_type idx_type;
 
@@ -121,10 +129,10 @@ public:
   reference operator*() const;
 
   /// Constant pointer access operator
-  const pointer_type operator->() const;
+  access_type operator->() const;
 
   /// Constant pointer access operator
-  operator const pointer_type() const { 
+  operator access_type() const { 
     return operator->(); 
   }
 

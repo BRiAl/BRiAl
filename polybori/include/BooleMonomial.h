@@ -21,6 +21,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/09/19 09:46:05  dreyer
+ * CHANGE: binary_compose to binary_composition
+ * CHANGE: BooleMonomial::idx_map_type
+ * ADD: symmetric_composition<>, navigates<>
+ *
  * Revision 1.16  2006/09/13 16:00:55  dreyer
  * CHANGE: Experimenting with hash()
  *
@@ -82,6 +87,8 @@
 // get definition of BoolePolynomial and BooleVariable
 #include "BoolePolynomial.h"
 
+// get standard map functionality
+#include <map>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -137,7 +144,11 @@ class BooleMonomial {
   typedef poly_type::first_iterator const_iterator;
 
   /// Type for index maps
-  typedef generate_index_map<self>::type idx_map_type;
+  //  typedef generate_index_map<self>::type idx_map_type;
+
+  typedef std::map<self, idx_type, symmetric_composition<
+    std::less<poly_type::navigator::access_type>, 
+    navigates<poly_type> > > idx_map_type;
 
   /// Default Constructor (Constructs monomial one of the active ring)
   BooleMonomial();

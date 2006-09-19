@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/09/19 09:46:05  dreyer
+ * CHANGE: binary_compose to binary_composition
+ * CHANGE: BooleMonomial::idx_map_type
+ * ADD: symmetric_composition<>, navigates<>
+ *
  * Revision 1.27  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -357,11 +362,11 @@ struct integral_constant {
   result_type operator()(...) const { return INTCONST; }
 };
 
-/// @class static_compose
+/// @class binary_composition
 /// @brief Compose a binary function with two default constructable unary
 /// functions.
 template <class BinaryOp, class FirstOp, class SecondOp>
-class binary_compose:
+class binary_composition:
   public BinaryOp {
 
 public:
@@ -374,9 +379,9 @@ public:
   //@}
 
   // Constructor
-  binary_compose(const base& binop = base(),
-                 const first_op_type& unop1 = first_op_type(),
-                 const second_op_type& unop2 = second_op_type() ): 
+  binary_composition(const base& binop = base(),
+                     const first_op_type& unop1 = first_op_type(),
+                     const second_op_type& unop2 = second_op_type() ): 
     base(binop), first_op(unop1), second_op(unop2) {}
 
   /// Getting inherited types
@@ -385,27 +390,50 @@ public:
   /// The composed operation for constant arguments
   template <class FirstType, class SecondType>
   result_type operator()(const FirstType& first, 
-                         const SecondType& second) {
+                         const SecondType& second) const {
     return base::operator()(first_op(first), second_op(second));
   }
 
   /// The composed operation for constant second argument
   template <class FirstType, class SecondType>
   result_type operator()(FirstType& first, 
-                         const SecondType& second) {
+                         const SecondType& second) const {
     return base::operator()(first_op(first), second_op(second));
   }
 
   /// The composed operation for constant first argument
   template <class FirstType, class SecondType>
   result_type operator()(const FirstType& first, 
-                         SecondType& second) {
+                         SecondType& second) const {
     return base::operator()(first_op(first), second_op(second));
   }
 
 protected:
   first_op_type first_op;
   second_op_type second_op;
+};
+
+/// @class symmetric_composition
+/// @brief Compose a binary function with a default constructable unary
+/// function for both arguments.
+template <class BinaryOp, class UnaryOperation>
+class symmetric_composition:
+  public binary_composition<BinaryOp, UnaryOperation, UnaryOperation>  {
+
+public:
+
+  /// Define types corresponding to template arguments
+  //@{
+  typedef BinaryOp binary_op_type;
+  typedef UnaryOperation unary_op_type;
+  typedef binary_composition<binary_op_type, unary_op_type, unary_op_type>
+  base;
+  //@}
+
+  // Constructor
+  symmetric_composition(const binary_op_type& binop = binary_op_type(),
+                     const unary_op_type& unop = unary_op_type() ): 
+    base(binop, unop, unop) {}
 };
 
 /// @class maximum_iteration
@@ -767,6 +795,26 @@ protected:
   iterator m_iter;
 };
 
+
+template <class DDType>
+class navigates:
+  public std::unary_function<DDType, typename DDType::navigator> {
+public:
+  /// Type of decision diagram
+  typedef DDType dd_type;
+
+  /// Type for navigation through diagram
+  typedef typename DDType::navigator navigator;
+
+  /// Generic access to base type
+  typedef std::unary_function<dd_type, navigator> base;
+
+  /// The actual operation
+  typename base::result_type operator()(const dd_type& rhs) const{
+    return rhs.navigation();
+  }
+
+};
 
 END_NAMESPACE_PBORI
 

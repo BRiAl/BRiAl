@@ -21,6 +21,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2006/09/19 09:46:05  dreyer
+ * CHANGE: binary_compose to binary_composition
+ * CHANGE: BooleMonomial::idx_map_type
+ * ADD: symmetric_composition<>, navigates<>
+ *
  * Revision 1.45  2006/09/14 10:57:25  dreyer
  * ADD: usedVariablesExp()
  *
@@ -258,14 +263,14 @@ public:
 
   /// Incrementation functional type
   typedef 
-  binary_compose< std::plus<size_type>, 
-                  project_ith<1>, integral_constant<size_type, 1> > 
+  binary_composition< std::plus<size_type>, 
+                      project_ith<1>, integral_constant<size_type, 1> > 
   increment_type;
 
   /// Decrementation functional type
   typedef 
-  binary_compose< std::minus<size_type>, 
-                  project_ith<1>, integral_constant<size_type, 1> > 
+  binary_composition< std::minus<size_type>, 
+                      project_ith<1>, integral_constant<size_type, 1> > 
   decrement_type;
 
   /// Iterator type for iterating all monomials (dereferencing to degree)
