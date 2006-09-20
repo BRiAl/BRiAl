@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/09/20 14:30:33  dreyer
+ * ADD: persistentVariable(idx)
+ *
  * Revision 1.8  2006/08/24 14:47:50  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -61,6 +64,9 @@
 
 // get decision diagram definitions.
 #include "CDDInterface.h"
+
+// get standard map functionality
+#include <map>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -102,17 +108,20 @@ class CDDManagerBase<Cudd, StorageType> {
   /// Define type for decision diagrams
   typedef CDDInterface<dd_base> dd_type;
 
+  /// Define type for caching persistent variables
+  typedef std::map<idx_type, dd_base> persistent_cache_type;
+
   /// Default constructor
    CDDManagerBase(size_type nvars = 0): 
-     m_interfaced(0, nvars) { }
+     m_interfaced(0, nvars), m_variables() { }
 
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
-    m_interfaced(rhs.m_interfaced) { }
+    m_interfaced(rhs.m_interfaced), m_variables(rhs.m_variables) { }
 
   /// Constructor from given ring
   CDDManagerBase(interfaced_type& rhs): 
-    m_interfaced(rhs) { }
+    m_interfaced(rhs), m_variables() { }
 
   /// Extract manager from given decision diagram
   CDDManagerBase(const dd_type& dd): 
@@ -129,6 +138,16 @@ class CDDManagerBase<Cudd, StorageType> {
   /// Access nvar-th managed variable
   dd_base variable(idx_type nvar) const {  
     return blank().change(nvar); 
+  }
+
+  /// Access nvar-th managed variable
+  dd_base persistentVariable(idx_type nvar) {
+    persistent_cache_type::iterator iter = m_variables.find(nvar);
+
+    if (iter != m_variables.end())
+      return (*iter).second;
+    else
+      return m_variables[nvar] = variable(nvar);
   }
 
   /// Get number of managed variables
@@ -162,6 +181,9 @@ class CDDManagerBase<Cudd, StorageType> {
 private:
   /// Actual decision diagram manager
   mutable interfaced_store m_interfaced;
+
+  /// Store values of Boolean Variables
+  persistent_cache_type m_variables;
 };
 
 /** @class CDDManager<Cudd&>
