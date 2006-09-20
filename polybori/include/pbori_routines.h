@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/09/20 07:06:39  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.4  2006/09/14 10:56:49  dreyer
  * ADD: generic hash
  *
@@ -59,13 +62,7 @@
 // Get order-related routines
 #include "pbori_routines_order.h"
 
+// Get hash-related routines
+#include "pbori_routines_hash.h"
 
-// The following may be used without polybori. Hence, macros habe to be used
-// outside the files.
-BEGIN_NAMESPACE_PBORI
-
-// Get generic hash functions
-#include "generic_hash.h"
-
-END_NAMESPACE_PBORI
 #endif

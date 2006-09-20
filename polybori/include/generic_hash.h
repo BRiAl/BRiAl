@@ -28,6 +28,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/20 07:06:39  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.2  2006/09/15 16:21:03  dreyer
  * CHANGE: testing more sophisticated hash fucntion for BooleExponent
  *
@@ -243,21 +246,41 @@ generic_hash_function(Iterator start, Iterator finish, HashType hash,
   return hash;
 }
 
+
+template <class Iterator, class HashType, 
+          class AlgTag, HashType BitMask = 0x7FFFFFFF>
+class generic_sequence_hash:
+  public generic_hash_tags {
+
+public:
+  typedef Iterator iterator_type;
+  typedef HashType hash_type;
+  typedef AlgTag alg_tag;
+  enum { mask = BitMask };
+
+  hash_type operator()(iterator_type start, iterator_type finish) const {
+    hash_type hash;
+    hash = generic_hash_function(start, finish, hash, alg_tag() );
+    return (hash & mask);
+  }
+};
+
 template <class VectorType, class HashType, 
           class AlgTag, HashType BitMask = 0x7FFFFFFF>
 class generic_hash:
   public generic_hash_tags {
 public:
   typedef VectorType vector_type;
+  typedef typename vector_type::const_iterator const_iterator;
   typedef HashType hash_type;
   typedef AlgTag alg_tag;
   enum { mask = BitMask };
 
   hash_type operator()(const vector_type& vec) const {
-    hash_type hash;
-    hash = generic_hash_function(vec.begin(), vec.end(), hash, alg_tag() );
-    return (hash & mask);
-  };
+    return hash_op(vec.begin(), vec.end());
+  }
+protected:
+  generic_sequence_hash<const_iterator, hash_type, alg_tag, mask> hash_op;
 };
 
 #endif

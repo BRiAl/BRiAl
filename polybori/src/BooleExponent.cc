@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/09/20 07:06:39  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.6  2006/09/15 16:21:04  dreyer
  * CHANGE: testing more sophisticated hash fucntion for BooleExponent
  *
@@ -95,22 +98,13 @@ BooleExponent::~BooleExponent() {
   PBORI_TRACE_FUNC( "~BooleExponent()" );
 }
 
-template<class ExpType, class RhsType>
-typename ExpType::bool_type
-exp_reducible_by(const ExpType& lhs, const RhsType& rhs) {
-
-  return std::includes(lhs.begin(), lhs.end(), 
-                       rhs.begin(), rhs.end());
-}
-
 // Hashing
 BooleExponent::hash_type
 BooleExponent::hash() const {
 
   PBORI_TRACE_FUNC( "BooleExponent::hash() const" );
-  //  return index_vector_hash(begin(), end());
-  return generic_hash<data_type, hash_type, 
-    generic_hash_tags::ap_tag>()(m_data);
+
+  return generic_hash<self, hash_type, pbori_hash_tag>()(*this);
 }
 
 
@@ -119,15 +113,14 @@ BooleExponent::bool_type
 BooleExponent::reducibleBy(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::reducibleBy(const self&) const" );
-  return exp_reducible_by(*this, rhs);
-  // return std::includes(begin(), end(), rhs.m_data.begin(), rhs.m_data.end());
+  return std::includes(begin(), end(), rhs.begin(), rhs.end());
 }
 // Reducibility test
 BooleExponent::bool_type
 BooleExponent::reducibleBy(const monom_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::reducibleBy(const monom_type&) const" );
-  return exp_reducible_by(*this, rhs);
+  return std::includes(begin(), end(), rhs.begin(), rhs.end());
 }
 
 

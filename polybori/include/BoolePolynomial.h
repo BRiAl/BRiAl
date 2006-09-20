@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2006/09/20 07:06:39  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.46  2006/09/19 09:46:05  dreyer
  * CHANGE: binary_compose to binary_composition
  * CHANGE: BooleMonomial::idx_map_type
@@ -336,6 +339,7 @@ public:
   bool_type operator!=(bool_type) const;
   bool_type isZero() const;
   bool_type isOne() const;
+  bool_type isConstant() const;
   bool_type hasConstantPart() const;
   bool_type reducibleBy(const self&) const;
   //@}

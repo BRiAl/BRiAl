@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.67  2006/09/20 07:06:40  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.66  2006/09/14 10:57:26  dreyer
  * ADD: usedVariablesExp()
  *
@@ -503,6 +506,15 @@ BoolePolynomial::isOne() const {
   return m_dd.blankness();
 }
 
+// Check whether polynomial is zero or one
+BoolePolynomial::bool_type
+BoolePolynomial::isConstant() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isConstant() const" );
+
+  return m_dd.isConstant();
+}
+
 // Check whether polynomial own the one term
 BoolePolynomial::bool_type
 BoolePolynomial::hasConstantPart() const {
@@ -620,17 +632,8 @@ BoolePolynomial::lmHash() const {
     return 0;
   else {
     self ld1st(leadFirst());
-    return index_vector_hash(ld1st.firstBegin(), ld1st.firstEnd());
-
-//     dd_type::first_iterator start(firstBegin()), finish(firstEnd());
-//     int vars=0;
-//     int sum=0;
-//     while (start != finish){
-//       vars++;
-//       sum+=((*start)+1)*((*start)+1);
-//       ++start;
-//     }
-//     return sum*vars;
+    return generic_sequence_hash<first_iterator, hash_type, 
+      pbori_hash_tag>()( ld1st.firstBegin(), ld1st.firstEnd() );
   }
     
 }
@@ -643,11 +646,9 @@ BoolePolynomial::deg() const {
 
   /// @todo: This is currently just brute force, efficient search needed.
 
-  deg_iterator start(degBegin()), finish(degEnd());
-
-  return (start == finish ? 
+  return ( isConstant() ? 
           (size_type) 0 :
-          *std::max_element(start, finish));
+          *std::max_element(degBegin(), degEnd()) );
 }
 
 

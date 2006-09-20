@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2006/09/20 07:06:39  dreyer
+ * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
+ *
  * Revision 1.33  2006/09/15 07:04:35  dreyer
  * CHANGE: reserve memory for usedIndices
  *
@@ -645,6 +648,10 @@ class CDDInterface<ZDD>:
   bool_type blankness() const {
     return ( m_interfaced == 
              manager().zddOne( nVariables() ) );
+  }
+
+  bool_type isConstant() const {
+    return (m_interfaced.getNode()) && Cudd_IsConstant(m_interfaced.getNode());
   }
 
   /// Returns number of terms
