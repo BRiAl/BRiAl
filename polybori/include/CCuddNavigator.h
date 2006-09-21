@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/09/21 16:09:59  dreyer
+ * ADD: caching mechanism for BoolePolynomial::deg()
+ *
  * Revision 1.9  2006/09/19 09:46:05  dreyer
  * CHANGE: binary_compose to binary_composition
  * CHANGE: BooleMonomial::idx_map_type
@@ -83,6 +86,9 @@ public:
 
   /// Type for indices
   typedef CTypes::idx_type idx_type;
+
+  /// Type for indices
+  typedef CTypes::size_type size_type;
 
   /// Type for hashing
   typedef CTypes::hash_type hash_type;

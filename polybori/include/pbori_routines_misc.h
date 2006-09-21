@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/09/21 16:09:59  dreyer
+ * ADD: caching mechanism for BoolePolynomial::deg()
+ *
  * Revision 1.2  2006/09/14 10:57:26  dreyer
  * ADD: usedVariablesExp()
  *
@@ -53,6 +56,34 @@ index_vector_hash(Iterator start, Iterator finish){
     ++start;
   }
   return sum * vars;
+}
+
+/// Function templates for determining the degree of a decision diagram
+/// with the help of cache (e. g. CDegreeCache)
+template <class DegreeCacher, class NaviType>
+typename NaviType::size_type
+dd_cached_degree(DegreeCacher cache, NaviType navi) {
+
+  typedef typename NaviType::size_type size_type;
+
+  if (navi.isConstant()) // No need for caching of constant nodes' degrees
+    return 0;
+ 
+  // Look whether result was cached before
+  NaviType result = cache.find(navi);
+  if (result.isValid())
+    return cache.convert(result);
+
+  // Get degree of then branch (contains at least one valid path)...
+  size_type deg = dd_cached_degree(cache, navi.thenBranch()) + 1;
+ 
+  // ... combine with degree of else branch
+  deg = std::max(deg,  dd_cached_degree(cache, navi.elseBranch()) );
+
+  // Write result to cache
+  cache.insert(navi, deg);
+ 
+  return deg;
 }
 
 

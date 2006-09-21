@@ -5,7 +5,8 @@
  * @author Alexander Dreyer
  * @date 2006-09-21
  *
- * 
+ * This file contains declaration and template specilizations for the class
+ * template CDegreeCache.
  *
  * @par Copyright:
  *   (c) 2006 by
@@ -19,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/21 16:09:59  dreyer
+ * ADD: caching mechanism for BoolePolynomial::deg()
+ *
  * Revision 1.1  2006/09/21 15:47:14  dreyer
  * + Initial Version
  *

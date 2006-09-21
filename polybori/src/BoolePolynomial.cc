@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.68  2006/09/21 16:09:59  dreyer
+ * ADD: caching mechanism for BoolePolynomial::deg()
+ *
  * Revision 1.67  2006/09/20 07:06:40  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -281,6 +284,8 @@
 // get internal routines
 # include "pbori_routines.h"
 # include "CDDOperations.h"
+# include "CDegreeCache.h"
+
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
@@ -638,17 +643,26 @@ BoolePolynomial::lmHash() const {
     
 }
 
+
+
+
+
 // Maximal degree of the polynomial
 BoolePolynomial::size_type
 BoolePolynomial::deg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
+  
+  /// @todo: This is currently just brute force + caching, 
+  /// more efficient search may be needed.
 
-  /// @todo: This is currently just brute force, efficient search needed.
-
+#ifndef PBORI_NO_DEGCACHE
+  return dd_cached_degree(CDegreeCache<dd_type>(m_dd), navigation());
+#else
   return ( isConstant() ? 
-          (size_type) 0 :
-          *std::max_element(degBegin(), degEnd()) );
+           (size_type) 0 :
+           *std::max_element(degBegin(), degEnd()) );
+#endif           
 }
 
 
