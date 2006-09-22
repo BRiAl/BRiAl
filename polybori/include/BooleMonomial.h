@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/09/22 06:19:12  dreyer
+ * CHANGE: deactivated the use of pointer in hash()
+ *
  * Revision 1.17  2006/09/19 09:46:05  dreyer
  * CHANGE: binary_compose to binary_composition
  * CHANGE: BooleMonomial::idx_map_type
@@ -198,9 +201,9 @@ class BooleMonomial {
   set_type multiples(const self&) const; 
 
   /// Hash value of the monomial
-  //  hash_type hash() const { return m_poly.lmHash(); }
-  hash_type hash() const { 
-    return reinterpret_cast<hash_type>(m_poly.navigation().operator->()); }
+  hash_type hash() const { return m_poly.lmHash(); }
+//   hash_type hash() const { 
+//     return reinterpret_cast<hash_type>(m_poly.navigation().operator->()); }
 
   /// Substitute variable with index idx by its complement and assign
   self& changeAssign(idx_type);
