@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/09/22 16:05:17  dreyer
+ * ADD: switch PBORI_HASH_TAG
+ *
  * Revision 1.1  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -38,6 +41,11 @@ BEGIN_NAMESPACE_PBORI
 // Get generic hash functions
 #include "generic_hash.h"
 
-typedef generic_hash_tags::pjw_tag pbori_hash_tag;
+#ifndef PBORI_HASH_TAG
+#define PBORI_HASH_TAG elf_tag
+#endif
+
+
+typedef generic_hash_tags::PBORI_HASH_TAG pbori_hash_tag;
 
 END_NAMESPACE_PBORI
