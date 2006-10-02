@@ -84,6 +84,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("lmDeg", &BoolePolynomial::lmDeg)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("nVars", &BoolePolynomial::nUsedVariables)
+  .def("vars",&BoolePolynomial::usedVariables)
   .def("totalDegree", &BoolePolynomial::totalDeg)
   .def("diagram", diagram, return_internal_reference<1>())
   .def("navigation", &BoolePolynomial::navigation)

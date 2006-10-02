@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.69  2006/10/02 07:41:28  bricken
+ * + adjustments to deg order
+ *
  * Revision 1.68  2006/09/21 16:09:59  dreyer
  * ADD: caching mechanism for BoolePolynomial::deg()
  *
@@ -1006,6 +1009,8 @@ BoolePolynomial::eliminationLength() const{
 
   if (isZero()) 
     return 0;
+  if (BoolePolyRing::isTotalDegreeOrder())
+    return this->length();
   size_type deg=this->deg();
   if (deg==this->lmDeg()){
     return this->length();
@@ -1032,6 +1037,8 @@ BoolePolynomial::eliminationLength() const{
 BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(BoolePolynomial::size_type garantied_deg_bound) const{
   assert(garantied_deg_bound>=this->deg());
+  if (BoolePolyRing::isTotalDegreeOrder())
+    return this->length();
   if (this->lmDeg()==garantied_deg_bound)
     return this->length();
   else 

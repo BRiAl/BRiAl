@@ -9,7 +9,7 @@
 
 #include "nf.h"
 #include <iostream>
-
+#include <COrderedIter.h>
 using std::cout;
 using std::endl;
 
@@ -332,7 +332,7 @@ public:
   PolynomialSugar(const Polynomial& p){
     this->p=p;
     sugar=p.deg();
-    this->lm=p.lead();
+    this->lm=p.boundedLead(sugar);
   }
   const BooleMonomial& lead() const{
     return this->lm;
@@ -346,7 +346,8 @@ public:
   void add(const Polynomial p2, deg_type sugar2){
     this->p=p+p2;
     this->sugar=std::max(sugar2,this->sugar);
-    this->lm=this->p.lead();
+    this->lm=this->p.boundedLead(sugar);
+    if (BoolePolyRing::isTotalDegreeOrder()) this->sugar=this->lm.deg();
     
   }
   void adjustSugar(){
@@ -898,6 +899,80 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
 }
 #else
 Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
+  Polynomial res;
+  int deg_bound=p.deg();
+  std::vector<Polynomial> res_vec;
+  Polynomial orig_p=p;
+  bool changed=false;
+  if (!(p.isZero())){
+    Monomial lm=p.lead();
+    res_vec.push_back(lm);
+    p=Polynomial(p.diagram().diff(lm.diagram()));
+  }
+  while(!(p.isZero())){
+    
+    //res+=lm;
+
+    
+    //p-=lm;
+    std::vector<Monomial> irr;
+    Polynomial::ordered_iterator it=p.orderedBegin();
+    Polynomial::ordered_iterator end=p.orderedEnd();
+    while((it!=end)&& (irreducible_lead(*it,strat))){
+        irr.push_back(*it);
+        it++;
+    }
+    if ((!(changed))&& (it==end)) return orig_p;
+    //@todo: if it==end irr_p=p, p=Polnomial(0)
+    Polynomial irr_p;
+    if (it!=end)
+        irr_p=add_up_monomials(irr);
+    else irr_p=p;
+    int s,i;
+    s=irr.size();
+    assert(s==irr_p.length());
+    //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
+    //for(i=0;i<s;i++){
+    //    res_vec.push_back(irr[i]);
+    //}
+    res_vec.push_back(irr_p);
+    //p=p-irr_p;
+    p=Polynomial(p.diagram().diff(irr_p.diagram()));
+    if(p.isZero()) break;
+    //Monomial lm=p.lead();
+    //res_vec.push_back(lm);
+    
+    
+    //p=Polynomial(p.diagram().diff(lm.diagram()));
+    p=nf3(strat,p);
+    changed=true;
+  }
+  
+  //should use already added irr_p's
+  res=unite_polynomials(res_vec);
+  return res;
+}
+
+
+class LexHelper{
+    static Polynomial::const_iterator begin(const Polynomial & p){
+        return p.begin();
+    }
+    static Polynomial::const_iterator end(const Polynomial & p){
+        return p.end();
+    }
+};
+
+class DLexHelper{
+    static Polynomial::const_iterator begin(const Polynomial & p){
+        return p.begin();
+    }
+    static Polynomial::const_iterator end(const Polynomial & p){
+        return p.end();
+    }
+};
+
+Polynomial red_tail_lex(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Polynomial> res_vec;
