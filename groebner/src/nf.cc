@@ -125,20 +125,52 @@ Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
 
 
 
-Polynomial nf3(const GroebnerStrategy& strat, Polynomial p){
+Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead){
   int index;
-  while((index=select1(strat,p))>=0){
+  while((index=select1(strat,rest_lead))>=0){
     assert(index<strat.generators.size());
   
     const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (p.lead()!=strat.generators[index].lm)){
+    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (rest_lead!=strat.generators[index].lm)){
       p=reduce_complete(p,strat.generators[index].p);
 
     } else{
-      p=spoly(p,*g);
+      //p=spoly(p,*g);
+      Exponent exp=rest_lead.exp();
+      p+=(exp-strat.generators[index].lmExp)*(*g);
     }
+    if (p.isZero())
+        return p;
+    else
+        rest_lead=p.lead();
+  }
+  return p;
+}
+Polynomial nf3_degree_order(const GroebnerStrategy& strat, Polynomial p, Monomial lead){
+    int index;
+    int deg=p.deg();
+    //Monomial lead=p.boundedLead(deg);
+    Exponent exp=lead.exp();
+    while((index=select1(strat,lead))>=0){
+    assert(index<strat.generators.size());
+  
+    const Polynomial* g=&strat.generators[index].p;
+    
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
+    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (lead!=strat.generators[index].lm)){
+      p=reduce_complete(p,strat.generators[index].p);
+
+    } else{
+      p+=(exp-strat.generators[index].lmExp)*(*g);
+      //p=spoly(p,*g);
+    }
+    if (!(p.isZero())){
+        lead=p.boundedLead(deg);
+        exp=lead.exp();
+        deg=exp.deg();
+    } else return p;
   }
   return p;
 }
@@ -947,11 +979,15 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
         irr.push_back(*it);
         it++;
     }
+    Monomial rest_lead;
+    
     if ((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
-    if (it!=end)
+    if (it!=end) {
         irr_p=add_up_monomials(irr);
+        rest_lead=*it;
+        }
     else irr_p=p;
     int s,i;
     s=irr.size();
@@ -969,7 +1005,11 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
     
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
-    p=nf3(strat,p);
+    if (!(BoolePolyRing::isDegreeOrder()))
+        p=nf3(strat,p, rest_lead);
+    else{
+        p=nf3_degree_order(strat,p,rest_lead);
+    }
     changed=true;
   }
   
@@ -1043,7 +1083,7 @@ Polynomial red_tail_lex(const GroebnerStrategy& strat, Polynomial p){
     
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
-    p=nf3(strat,p);
+    p=nf3(strat,p, p.lead());
     changed=true;
   }
   
@@ -1073,7 +1113,7 @@ Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p){
     if (short_mode)
       p=nf3_short(strat,p);
     else
-      p=nf3(strat,p);
+      p=nf3(strat,p, p.lead());
     if ((!short_mode)&&(p.length()+res.length()>2*orig_length+5))
       short_mode=true;
   }

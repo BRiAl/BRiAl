@@ -69,7 +69,7 @@ typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps, double delay_f);
 Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p);
 Polynomial red_tail_short(const GroebnerStrategy& strat, Polynomial p);
-Polynomial nf3(const GroebnerStrategy& strat, Polynomial p);
+Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead);
 Polynomial nf3_short(const GroebnerStrategy& strat, Polynomial p);
 Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
