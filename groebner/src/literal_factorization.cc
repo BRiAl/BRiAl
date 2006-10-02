@@ -14,7 +14,7 @@ BEGIN_NAMESPACE_PBORIGB
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
   Exponent lead_variables=p.lead().exp();
   lmDeg=p.lmDeg();
-  Exponent other_variables=p.usedVariables().exp()-lead_variables;
+  Exponent other_variables=p.usedVariablesExp()-lead_variables;
   //only vars in the lead can factor out, independently of the order
   BooleSet r(p);
   Exponent::const_iterator it=lead_variables.begin();

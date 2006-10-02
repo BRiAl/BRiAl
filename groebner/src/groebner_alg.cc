@@ -229,9 +229,9 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   else
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
-  this->usedVariables=p.usedVariables();
+  this->usedVariables=p.usedVariablesExp();
   
-  this->tailVariables=(p-lm).usedVariables().exp();
+  this->tailVariables=(p-lm).usedVariablesExp();
   
   this->minimal=true;
 }
@@ -248,9 +248,9 @@ void PolyEntry::recomputeInformation(){
   else
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
-  this->usedVariables=p.usedVariables();
+  this->usedVariables=p.usedVariablesExp();
   
-  this->tailVariables=(p-lm).usedVariables().exp();
+  this->tailVariables=(p-lm).usedVariablesExp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
   assert(this->lmDeg==p.lmDeg());
@@ -527,7 +527,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
     MonomialSet s0=minimal_elements_internal(s0_raw);
     MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
         
     }
     return s0.unite(s1.change(i));
@@ -593,7 +593,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     MonomialSet s0=minimal_elements_internal2(s0_raw);
     MonomialSet s1=minimal_elements_internal2(s.subset1(i).diff(s0_raw));
     if (!(s0.emptiness())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
         
     }
     return s0.unite(s1.change(i)).unite(result);
@@ -816,8 +816,8 @@ void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
     Polynomial p=generators[s].literal_factors.rest;
     
    
-    Monomial used_variables_m=p.usedVariables();
-    Exponent used_variables=used_variables_m.exp();
+    //Monomial used_variables_m=p.usedVariables();
+    Exponent used_variables=p.usedVariablesExp();
     Exponent e=generators[s].literal_factors.rest.leadExp();
     if (e.size()>4) cout<<"too many variables for table"<<endl;
     
@@ -851,9 +851,13 @@ void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
 void GroebnerStrategy::add4lpImplDelayed(int s){
 //(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
     Polynomial p=generators[s].p;
-    Exponent used_variables=generators[s].usedVariables.exp();
+    Exponent used_variables=generators[s].usedVariables;
+    //cout<<"I am here"<<endl;
+    //if (p.usedVariables().exp()!=p.usedVariablesExp())
+    //    cout<<"Betrug"<<endl;
     Exponent e=generators[s].lmExp;
-    
+    //cout<<"poly"<<p<<endl;
+    //cout<<"UV"<<Monomial(used_variables)<<endl;
     //Exponent::const_iterator it=used_variables.begin();
     //Exponent::const_iterator end=used_variables.end();
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
@@ -861,10 +865,13 @@ void GroebnerStrategy::add4lpImplDelayed(int s){
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
     unsigned int p_code=p2code_lp4(p, ring_2_0123);
+    //cout<<"code:"<<p_code<<endl;
     if ((lp4var_data[p_code][0]==p_code) && (lp4var_data[p_code][1]==0)){
         mark_all_variable_pairs_as_calculated(*this, s);
+        //cout<<"i am done"<<endl;
         return;
     }
+    
     int i;
     //cout<<"p:"<<p<<"pcode:"<<p_code<<endl;
     for(i=0;lp4var_data[p_code][i]!=0;i++){
@@ -874,6 +881,7 @@ void GroebnerStrategy::add4lpImplDelayed(int s){
             Exponent e_i=p_i.leadExp();
             //cout<<"pre"<<endl;
             if (e_i!=e){
+                //cout<<"ADD this"<<endl;
                 addGeneratorDelayed(p_i);
             }
         }
@@ -1074,7 +1082,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     is_it++;
   }
 
-  Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
+  //Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
   
   if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
@@ -1274,10 +1282,10 @@ void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
 bool GroebnerStrategy::variableHasValue(idx_type v){
   int i;
   int s=this->generators.size();
-  Monomial m=Variable(v);
+  //Monomial m=Variable(v);
   for(i=0;i<s;i++){
-    if (this->generators[i].deg==1){
-      if (this->generators[i].usedVariables==m){
+    if (this->generators[i].usedVariables.deg()==1){
+      if ((*(this->generators[i].usedVariables.begin()))==v){
         return true;
       }
     }
