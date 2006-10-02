@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/10/02 09:28:37  dreyer
+ * ADD BoolePolyRing::changeOrdering and infrastructure
+ *
  * Revision 1.22  2006/09/05 11:10:44  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -253,6 +256,9 @@ class BoolePolyRing:
   static comp_type compare(const monom_type&, const monom_type&);
   static comp_type compare(const exp_type&, const exp_type&);
   //@}
+
+  /// Change order of current ring
+  static void changeOrdering(ordercode_type);
 
 protected: public:
   /// Pointer to current global manager setting

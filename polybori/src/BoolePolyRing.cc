@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/10/02 09:28:38  dreyer
+ * ADD BoolePolyRing::changeOrdering and infrastructure
+ *
  * Revision 1.25  2006/09/05 11:10:45  dreyer
  * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
  *
@@ -130,6 +133,15 @@ BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
   if(make_active)
     activate();
 }
+
+void
+BoolePolyRing::changeOrdering(ordercode_type order) {
+
+  PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
+
+  current_mgr = get_ordered_manager(activeManager(), order);
+}
+
 
 // copy constructor (shallow copy)
 BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) : base(),

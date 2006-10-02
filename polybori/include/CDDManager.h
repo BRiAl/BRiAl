@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/10/02 09:28:37  dreyer
+ * ADD BoolePolyRing::changeOrdering and infrastructure
+ *
  * Revision 1.9  2006/09/20 14:30:33  dreyer
  * ADD: persistentVariable(idx)
  *
@@ -125,7 +128,7 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Extract manager from given decision diagram
   CDDManagerBase(const dd_type& dd): 
-    m_interfaced(dd.manager()) { }
+    m_interfaced(dd.manager()), m_variables()  { }
 
   /// Destructor
   ~CDDManagerBase() { }

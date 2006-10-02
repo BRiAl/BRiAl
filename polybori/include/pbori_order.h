@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/10/02 09:28:38  dreyer
+ * ADD BoolePolyRing::changeOrdering and infrastructure
+ *
  * Revision 1.3  2006/09/13 09:05:44  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -47,8 +50,9 @@
 
 BEGIN_NAMESPACE_PBORI
 
+template <class ConstructorType>
 CTypes::manager_ptr
-get_ordered_manager(CTypes::size_type nvars, CTypes::ordercode_type order) {
+get_ordered_manager(ConstructorType& nvars, CTypes::ordercode_type order) {
 
   if(order == CTypes::lp)
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,

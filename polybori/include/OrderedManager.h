@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/10/02 09:28:38  dreyer
+ * ADD BoolePolyRing::changeOrdering and infrastructure
+ *
  * Revision 1.14  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -229,6 +232,10 @@ public:
   /// Construct new decision diagramm manager
   OrderedManager(const self& rhs): 
     base(rhs), ordering(rhs.ordering) { }
+
+  /// Construct from given manager
+  OrderedManager(base& rhs, const order_type& theOrder = order_type()  ): 
+    base(rhs), ordering(theOrder) { }
 
   // Destructor
   ~OrderedManager() { }

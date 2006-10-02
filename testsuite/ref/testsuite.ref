@@ -282,6 +282,82 @@ lmDivisors() : 3 nodes 8 minterms
 
 ordered iteration... 
 x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+
+Testing changing from lex to dlex
+is lexicographical?
+1
+is ordered?
+1
+is symmetric?
+1
+is degree ordering?
+0
+is total degree ordering?
+0
+has descending variables?
+1
+has ascending variables?
+0
+poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+lead() x(0)*x(1) 
+boundedLead(deg()) x(0)*x(1) 
+leadExp() (0, 1)
+boundedLeadExp(deg()) (0, 1)
+deg() 3
+lmDeg() 2
+lmDivisors() : 2 nodes 4 minterms
+--000 1
+ordered iteration... 
+x(0)*x(1) , x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+
+CHANGE ordering!
+boundedLead(deg()) x(1)*x(3)*x(4) 
+leadExp() (1, 3, 4)
+boundedLeadExp(deg()) (1, 3, 4)
+deg() 3
+lmDeg() 3
+lmDivisors() : 3 nodes 8 minterms
+0-0-- 1
+ordered iteration... 
+x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+
+Testing changing from dp to lex
+is lexicographical?
+0
+is ordered?
+0
+is symmetric?
+1
+is degree ordering?
+1
+is total degree ordering?
+1
+has descending variables?
+0
+has ascending variables?
+1
+poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+lead() x(2)*x(3)*x(4) 
+boundedLead(deg()) x(2)*x(3)*x(4) 
+leadExp() (2, 3, 4)
+boundedLeadExp(deg()) (2, 3, 4)
+deg() 3
+lmDeg() 3
+lmDivisors() : 3 nodes 8 minterms
+00--- 1
+ordered iteration... 
+x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+
+CHANGE ordering!
+boundedLead(deg()) x(0)*x(1) 
+leadExp() (0, 1)
+boundedLeadExp(deg()) (0, 1)
+deg() 3
+lmDeg() 2
+lmDivisors() : 2 nodes 4 minterms
+--000 1
+ordered iteration... 
+x(0)*x(1) , x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
 Finished.
 ----------------------
 Executing testsuite/spoly

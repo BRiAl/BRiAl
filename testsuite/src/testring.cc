@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.13  2006/10/02 09:28:38  dreyer
+// ADD BoolePolyRing::changeOrdering and infrastructure
+//
 // Revision 1.12  2006/09/13 15:07:05  dreyer
 // ADD: lead(sugar) and infrastructure
 //
@@ -129,6 +132,95 @@ void test_ordered(CTypes::ordercode_type order_marker) {
   }
   std::cout << std::endl;
 }
+
+void test_ordered_changed(CTypes::ordercode_type order_marker, 
+                          CTypes::ordercode_type changed_order) {
+
+  BoolePolyRing ring(5, order_marker);
+
+  std::cout << "is lexicographical?" <<std::endl;
+  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+
+  std::cout << "is ordered?" <<std::endl;
+  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+
+  std::cout << "is symmetric?" <<std::endl;
+  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << "is degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << "is total degree ordering?" <<std::endl;
+  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << "has descending variables?" <<std::endl;
+  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << "has ascending variables?" <<std::endl;
+  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+
+  BooleMonomial x = BooleVariable(0);
+  BooleMonomial y = BooleVariable(1);
+  BooleMonomial z = BooleVariable(2);
+  BooleMonomial v = BooleVariable(3);
+  BooleMonomial w = BooleVariable(4);
+
+  BoolePolynomial poly =  x*y + z + z*v*w+ y*v*w+ w +1;
+
+  std::cout << "poly " << poly <<std::endl;
+
+  std::cout << "lead() " << poly.lead() <<std::endl;
+
+
+  std::cout << "boundedLead(deg()) " << poly.boundedLead(poly.deg())
+            <<std::endl;
+  std::cout << "leadExp() " << poly.leadExp() <<std::endl;
+  std::cout << "boundedLeadExp(deg()) " << poly.boundedLeadExp(poly.deg())
+            <<std::endl;
+
+  std::cout << "deg() " << poly.deg() <<std::endl;
+  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
+  std::cout << "lmDivisors() " << poly.lmDivisors();
+
+
+  BoolePolynomial::ordered_iterator ordStart(poly.orderedBegin());
+  BoolePolynomial::ordered_iterator ordFinish(poly.orderedEnd());
+
+  std::cout << "ordered iteration... "<< std::endl;
+
+  while ((ordStart != ordFinish)){
+    std::cout << *ordStart << ", ";
+    ++ordStart;
+  }
+  std::cout << std::endl;
+
+  std::cout <<std::endl<< "CHANGE ordering!"<<std::endl;
+
+  BoolePolyRing::changeOrdering(changed_order);
+
+ std::cout << "boundedLead(deg()) " << poly.boundedLead(poly.deg())
+            <<std::endl;
+  std::cout << "leadExp() " << poly.leadExp() <<std::endl;
+  std::cout << "boundedLeadExp(deg()) " << poly.boundedLeadExp(poly.deg())
+            <<std::endl;
+
+  std::cout << "deg() " << poly.deg() <<std::endl;
+  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
+  std::cout << "lmDivisors() " << poly.lmDivisors();
+
+
+  BoolePolynomial::ordered_iterator ordStart2(poly.orderedBegin());
+  BoolePolynomial::ordered_iterator ordFinish2(poly.orderedEnd());
+
+  std::cout << "ordered iteration... "<< std::endl;
+
+  while ((ordStart2 != ordFinish2)){
+    std::cout << *ordStart2 << ", ";
+    ++ordStart2;
+  }
+  std::cout << std::endl;
+
+
+
+
+}
+
 
 int
 main(){
@@ -276,13 +368,20 @@ main(){
     std::cout << *oStart2 << ", ";
     ++oStart2;
   }
-   std::cout<< std::endl << "Testing dlex"<< std::endl;
 
+  std::cout<< std::endl << "Testing dlex"<< std::endl;
   test_ordered(CTypes::dlex); 
-
- std::cout<< std::endl << "Testing dp_asc"<< std::endl;
-
+  
+  std::cout<< std::endl << "Testing dp_asc"<< std::endl;
   test_ordered(CTypes::dp_asc); 
+
+
+  std::cout<< std::endl << "Testing changing from lex to dlex"<< std::endl;
+  test_ordered_changed(CTypes::lp, CTypes::dlex); 
+
+  std::cout<< std::endl << "Testing changing from dp to lex"<< std::endl;
+  test_ordered_changed(CTypes::dp_asc, CTypes::lp); 
+
   std::cout << "Finished." <<std::endl;
 
 
