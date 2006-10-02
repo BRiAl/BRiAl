@@ -333,9 +333,13 @@ public:
     this->p=p;
     sugar=p.deg();
     this->lm=p.boundedLead(sugar);
+    this->exp=lm.exp();
   }
   const BooleMonomial& lead() const{
     return this->lm;
+  }
+  const Exponent& leadExp() const{
+    return this->exp;
   }
   deg_type getSugar() const{
     return sugar;
@@ -347,6 +351,7 @@ public:
     this->p=p+p2;
     this->sugar=std::max(sugar2,this->sugar);
     this->lm=this->p.boundedLead(sugar);
+    this->exp=this->lm.exp();
     if (BoolePolyRing::isTotalDegreeOrder()) this->sugar=this->lm.deg();
     
   }
@@ -364,17 +369,19 @@ public:
   }
   void adjustLm(){
     this->lm=this->p.lead();
+    exp=lm.exp();
   }
 protected:
   Monomial lm;
   deg_type sugar;
   Polynomial p;
+  Exponent exp;
 };
 
 class LMLessComparePS{
 public:
   bool operator() (const PolynomialSugar& p1, const PolynomialSugar& p2){
-    return p1.lead()<p2.lead();
+    return p1.leadExp()<p2.leadExp();
   }
 };
 
@@ -672,8 +679,8 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     s=curr.size();
     for(i=0;i<s;i++){
       if (!(curr[i].isZero())){
-        if (((curr[i].getSugar()<=max_sugar)
-        &&(curr[i].value().nNodes()<=delay_f*max_nodes))||(curr[i].isOne())){
+        if (((!strat.optLazy) ||((curr[i].getSugar()<=max_sugar)
+        &&(curr[i].value().nNodes()<=delay_f*max_nodes)))||(curr[i].isOne())){
           if (curr[i].isOne()){
             result.clear();
             result.push_back(curr[i].value());
@@ -688,7 +695,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       }
     }
     curr.clear();
-    if (steps>max_steps){
+    if ((strat.optLazy) &&(steps>max_steps)){
         strat.log("Too many steps\n");
         while (!(to_reduce.empty())){
             

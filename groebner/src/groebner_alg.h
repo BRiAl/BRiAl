@@ -125,6 +125,7 @@ public:
   int extendedProductCriterions;
   int averageLength;
   bool optRedTail;
+  bool optLazy;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this){
@@ -134,6 +135,10 @@ public:
     extendedProductCriterions=0;
     easyProductCriterions=0;
     optRedTail=true;
+    if (BoolePolyRing::isDegreeOrder())
+        optLazy=false;
+    else
+        optLazy=true;
     reduceByTailReduced=false;
   }
 

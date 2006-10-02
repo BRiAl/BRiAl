@@ -76,6 +76,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
   reductionSteps=orig.reductionSteps;
   normalForms=orig.normalForms;
@@ -219,14 +220,14 @@ void PairManager::cleanTopByChainCriterion(){
 PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
   this->deg=p.deg();
-  this->lm=p.lead();
+  this->lm=p.boundedLead(deg);
   this->lmExp=lm.exp();
   this->lmDeg=lmExp.deg();
   this->length=p.length();
   if(lmDeg==deg)
     this->weightedLength=this->length;
   else
-    this->weightedLength=p.eliminationLength();
+    this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariables();
   
@@ -238,13 +239,14 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
 
 void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
-  this->deg=p.deg();
+  if (!(BoolePolyRing::isDegreeOrder()))
+      this->deg=p.deg();
   //so also lmExp keeps constant
   this->length=p.length();
   if (lmDeg==deg)
     this->weightedLength=this->length;
   else
-    this->weightedLength=p.eliminationLength();
+    this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariables();
   
