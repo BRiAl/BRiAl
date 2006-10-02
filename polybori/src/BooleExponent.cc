@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/10/02 15:39:36  dreyer
+ * FIX: BooleExponent::push_back() (empty exponent)
+ *
  * Revision 1.7  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -213,18 +216,21 @@ BooleExponent::push_back(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleExponent::push_back(idx_type) " );
 
-  idx_type lastIdx = m_data.back();
-
-  if (lastIdx < idx)
+  if(m_data.empty())
     m_data.push_back(idx);
-  else if (lastIdx > idx) {
-    iterator pos = 
-      std::find_if(internalBegin(), internalEnd(), 
-                   bind2nd(std::greater_equal<idx_type>(), idx));
-    if (*pos != idx)
-      m_data.insert(pos, idx);
+  else {
+    idx_type lastIdx = m_data.back();
+    
+    if (lastIdx < idx)
+      m_data.push_back(idx);
+    else if (lastIdx > idx) {
+      iterator pos = 
+        std::find_if(internalBegin(), internalEnd(), 
+                     bind2nd(std::greater_equal<idx_type>(), idx));
+      if (*pos != idx)
+        m_data.insert(pos, idx);
+    }
   }
-
   return *this;
 }
 
