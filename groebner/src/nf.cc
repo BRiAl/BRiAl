@@ -335,6 +335,13 @@ public:
     this->lm=p.boundedLead(sugar);
     this->exp=lm.exp();
   }
+  PolynomialSugar(const Polynomial& p, int sugar){
+    this->p=p;
+    //sugar=p.deg();
+    this->sugar=sugar;
+    this->lm=p.boundedLead(sugar);
+    this->exp=lm.exp();
+  }
   const BooleMonomial& lead() const{
     return this->lm;
   }
@@ -409,7 +416,10 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         //curr[i].add(p_high, deg_high);
         Polynomial to_red=curr[i].value();
         to_red=reduce_complete(to_red,strat.generators[index].p);
-        curr[i]=PolynomialSugar(to_red);
+        if (BoolePolyRing::isTotalDegreeOrder())
+            curr[i]=PolynomialSugar(to_red,curr[i].getSugar());
+        else
+            curr[i]=PolynomialSugar(to_red);
       }
       
       
@@ -435,7 +445,11 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         //curr[i].add(p_high, deg_high);
         Polynomial to_red=curr[i].value();
         to_red=reduce_by_binom(to_red,strat.generators[index].p);
-        curr[i]=PolynomialSugar(to_red);
+        //curr[i]=PolynomialSugar(to_red);
+        if (BoolePolyRing::isTotalDegreeOrder())
+            curr[i]=PolynomialSugar(to_red,curr[i].getSugar());
+        else
+            curr[i]=PolynomialSugar(to_red);
       }
     } else {
       ///@todo: check for sugar garanties
@@ -445,7 +459,11 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
       for(int i=0;i<s;i++){
         Polynomial to_red=curr[i].value();
         to_red=reduce_by_monom(to_red,strat.generators[index].lm);//BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
-        curr[i]=PolynomialSugar(to_red);
+        //curr[i]=PolynomialSugar(to_red);
+        if (BoolePolyRing::isTotalDegreeOrder())
+            curr[i]=PolynomialSugar(to_red,curr[i].getSugar());
+        else
+            curr[i]=PolynomialSugar(to_red);
       }
       
     }
