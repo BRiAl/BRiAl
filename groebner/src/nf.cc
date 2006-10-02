@@ -922,7 +922,11 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
         it++;
     }
     if ((!(changed))&& (it==end)) return orig_p;
-    Polynomial irr_p=add_up_monomials(irr);
+    //@todo: if it==end irr_p=p, p=Polnomial(0)
+    Polynomial irr_p;
+    if (it!=end)
+        irr_p=add_up_monomials(irr);
+    else irr_p=p;
     int s,i;
     s=irr.size();
     assert(s==irr_p.length());
