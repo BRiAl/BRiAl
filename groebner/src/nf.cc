@@ -365,14 +365,20 @@ public:
     this->p=p;
     sugar=p.deg();
     this->lm=p.boundedLead(sugar);
+    
     this->exp=lm.exp();
+    assert(lm==p.lead());
+    assert(exp==p.leadExp());
   }
   PolynomialSugar(const Polynomial& p, int sugar){
     this->p=p;
     //sugar=p.deg();
     this->sugar=sugar;
+    assert(sugar<=p.deg());
     this->lm=p.boundedLead(sugar);
     this->exp=lm.exp();
+    assert(lm==p.lead());
+    assert(exp==p.leadExp());
   }
   const BooleMonomial& lead() const{
     return this->lm;
@@ -392,7 +398,8 @@ public:
     this->lm=this->p.boundedLead(sugar);
     this->exp=this->lm.exp();
     if (BoolePolyRing::isTotalDegreeOrder()) this->sugar=this->lm.deg();
-    
+    assert(lm==p.lead());
+    assert(exp==p.leadExp());
   }
   void adjustSugar(){
     sugar=p.deg();
@@ -409,6 +416,8 @@ public:
   void adjustLm(){
     this->lm=this->p.lead();
     exp=lm.exp();
+    assert(lm==p.lead());
+    assert(exp==p.leadExp());
   }
 protected:
   Monomial lm;
@@ -955,7 +964,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
   return res;
 }
 #else
-Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
+Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Polynomial> res_vec;
@@ -1018,26 +1027,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
   return res;
 }
 
-
-class LexHelper{
-    static Polynomial::const_iterator begin(const Polynomial & p){
-        return p.begin();
-    }
-    static Polynomial::const_iterator end(const Polynomial & p){
-        return p.end();
-    }
-};
-
-class DLexHelper{
-    static Polynomial::const_iterator begin(const Polynomial & p){
-        return p.begin();
-    }
-    static Polynomial::const_iterator end(const Polynomial & p){
-        return p.end();
-    }
-};
-
-Polynomial red_tail_lex(const GroebnerStrategy& strat, Polynomial p){
+template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
   std::vector<Polynomial> res_vec;
@@ -1055,17 +1045,21 @@ Polynomial red_tail_lex(const GroebnerStrategy& strat, Polynomial p){
     
     //p-=lm;
     std::vector<Monomial> irr;
-    Polynomial::const_iterator it=p.begin();
-    Polynomial::const_iterator end=p.end();
+    typename Helper::iterator_type it=Helper::begin(p);
+    typename Helper::iterator_type end=Helper::end(p);
     while((it!=end)&& (irreducible_lead(*it,strat))){
         irr.push_back(*it);
         it++;
     }
+    Monomial rest_lead;
+    
     if ((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
-    if (it!=end)
+    if (it!=end) {
         irr_p=add_up_monomials(irr);
+        rest_lead=*it;
+        }
     else irr_p=p;
     int s,i;
     s=irr.size();
@@ -1083,13 +1077,50 @@ Polynomial red_tail_lex(const GroebnerStrategy& strat, Polynomial p){
     
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
-    p=nf3(strat,p, p.lead());
+    if (!(Helper::isDegreeOrder))
+        p=nf3(strat,p, rest_lead);
+    else{
+        p=nf3_degree_order(strat,p,rest_lead);
+    }
     changed=true;
   }
   
   //should use already added irr_p's
   res=unite_polynomials(res_vec);
   return res;
+}
+
+
+class LexHelper{
+    public:
+    static Polynomial::const_iterator begin(const Polynomial & p){
+        return p.begin();
+    }
+    static Polynomial::const_iterator end(const Polynomial & p){
+        return p.end();
+    }
+    typedef Polynomial::const_iterator iterator_type;
+    const static bool isDegreeOrder=false;
+};
+
+class DegOrderHelper{
+    public:
+    static Polynomial::ordered_iterator begin(const Polynomial & p){
+        return p.orderedBegin();
+    }
+    static Polynomial::ordered_iterator end(const Polynomial & p){
+        return p.orderedEnd();
+    }
+    typedef Polynomial::ordered_iterator iterator_type;
+    const static bool isDegreeOrder=true;
+};
+
+Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
+    if (BoolePolyRing::isLexicographical())
+        return red_tail_generic<LexHelper>(strat,p);
+    if (BoolePolyRing::isDegreeOrder())
+        return red_tail_generic<DegOrderHelper>(strat,p);
+    return red_tail_general(strat,p);
 }
 #endif
 Polynomial red_tail_short(const GroebnerStrategy& strat, Polynomial p){

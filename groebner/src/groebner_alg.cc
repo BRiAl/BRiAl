@@ -1046,8 +1046,7 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
   generators.push_back(e);
   pairs.status.prolong(PairStatusSet::HAS_T_REP);
   const int s=generators.size()-1;
-  lm2Index[generators[s].lm]=s;
-  exp2Index[generators[s].lmExp]=s;
+  
   
   int i;
 
@@ -1205,7 +1204,8 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
     //doesn't need to be undone on simplification
     if (generators[s].literal_factors.is00Factorization())
         leadingTerms00.uniteAssign(Polynomial(lm).diagram());
-
+    lm2Index[generators[s].lm]=s;
+    exp2Index[generators[s].lmExp]=s;
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   
