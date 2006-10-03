@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/10/03 18:17:21  bricken
+ * + removed minus sign again
+ *
  * Revision 1.4  2006/10/03 11:36:36  bricken
  * + a minus sign
  *
@@ -85,7 +88,7 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(monom_type, monom_type) const)" );
 
-  return -lex_compare_indices(rhs, lhs);
+  return lex_compare_indices(rhs, lhs);
 }
 
 // Extraction of leading term
