@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/03 09:55:26  dreyer
+ * FIX: monomial comparison broken on dp_asc
+ *
  * Revision 1.2  2006/09/13 15:07:05  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -58,7 +61,7 @@ DegRevLexAscOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(const monom_type&, const monom_type&) const)" );
 
-  return deg_lex_compare(lhs, rhs);
+  return deg_rev_lex_asc_compare(lhs, rhs);
 }
 
 // Comparison of monomials
@@ -68,7 +71,7 @@ DegRevLexAscOrder::compare(const exp_type& lhs, const exp_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(const exp_type&, const exp_type&) const)" );
 
-  return deg_lex_compare(lhs, rhs);
+  return deg_rev_lex_asc_compare(lhs, rhs);
 
 }
 
@@ -79,7 +82,7 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(monom_type, monom_type) const)" );
 
-  return lex_compare_indices(lhs, rhs);
+  return lex_compare_indices(rhs, lhs);
 }
 
 // Extraction of leading term
@@ -181,9 +184,7 @@ DegRevLexAscOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadIterator(const poly_type&) const" );
 
-  return std::max_element(iterator(poly.navigation()), 
-                          iterator(poly.endOfNavigation()),
-                          std::less_equal<size_type>() );
+  return generic_iteration<self, iterator>().leadIterator(poly);
 }
 
 // Find next term (after iter) in polynomial according to current order
@@ -194,28 +195,7 @@ DegRevLexAscOrder::incrementIterator(iterator iter,
   PBORI_TRACE_FUNC(
     "DegRevLexAscOrder::incrementIterator(iterator, const poly_type&) const" );
 
-  typedef CRestrictedIter<iterator> bounded_iterator;
-
-  iterator m_start(poly.navigation());
-  iterator m_finish(poly.endOfNavigation());
-
-  // reversed_iteration_adaptor<iterator> riter(iter), rfinish(m_finish);
-
-  if (iter != m_finish) {
-
-    size_type deg = *iter;
-    --iter;
-    iter = std::find(reversed_iteration_adaptor<iterator>(iter), 
-                     reversed_iteration_adaptor<iterator>(m_finish), deg).get();
-      
-    if(iter == m_finish) {
-      iter = std::max_element( bounded_iterator(m_start, deg),
-                               bounded_iterator(m_finish, deg), 
-                               std::less_equal<size_type>() );
-
-    }
-  }
-  return iter;
+  return generic_iteration<self, iterator>().incrementIterator(iter, poly);
 }
 
 END_NAMESPACE_PBORI
