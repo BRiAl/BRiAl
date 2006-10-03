@@ -1322,9 +1322,27 @@ class ShorterEliminationLength{
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     MonomialSet divisors=this->leadingTerms.divisorsOf(p.lead());
     wlen_type el=p.eliminationLength();
-    if (std::find_if(divisors.expBegin(),divisors.expEnd(),ShorterEliminationLength(*this,el))!=divisors.expEnd()){
+    if (std::find_if(
+            divisors.expBegin(),
+            divisors.expEnd(),
+            ShorterEliminationLength(*this,el))!=divisors.expEnd()){
         this->addGeneratorDelayed(p);
-    } else
-    this->addGenerator(p);
+    } else {
+        Polynomial pr;
+        if (optRedTail)
+            pr=red_tail(*this,p);
+        else 
+            pr=p;
+        if (pr!=p){
+            el=pr.eliminationLength();
+            if (std::find_if(
+                    divisors.expBegin(),
+                    divisors.expEnd(),
+                    ShorterEliminationLength(*this,el))!=divisors.expEnd()){
+                this->addGeneratorDelayed(pr);
+            } else this->addGenerator(pr);
+        } else
+            this->addGenerator(p);
+    }
 }
 END_NAMESPACE_PBORIGB
