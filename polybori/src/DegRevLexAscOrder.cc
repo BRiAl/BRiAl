@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/10/03 11:36:36  bricken
+ * + a minus sign
+ *
  * Revision 1.3  2006/10/03 09:55:26  dreyer
  * FIX: monomial comparison broken on dp_asc
  *
@@ -82,7 +85,7 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(monom_type, monom_type) const)" );
 
-  return lex_compare_indices(rhs, lhs);
+  return -lex_compare_indices(rhs, lhs);
 }
 
 // Extraction of leading term
