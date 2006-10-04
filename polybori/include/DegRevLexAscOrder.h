@@ -59,7 +59,11 @@ class DegRevLexAscOrder:
   typedef valid_tag totaldegorder_property;
   typedef valid_tag ascending_property;
   typedef valid_tag degrevlexorder_property;
+  typedef dp_asc_tag order_tag;
   //@}
+
+  /// Get order code
+  enum { order_code = CTypes::dp_asc  };
 
   /// Default Constructor
   DegRevLexAscOrder(): base() {};

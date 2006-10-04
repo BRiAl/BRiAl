@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/10/04 12:22:32  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.26  2006/10/02 09:28:38  dreyer
  * ADD BoolePolyRing::changeOrdering and infrastructure
  *
@@ -139,7 +142,10 @@ BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
 
-  current_mgr = get_ordered_manager(activeManager(), order);
+  BoolePolyRing the_ring(get_ordered_manager(activeManager(), order));
+
+  the_ring.activate();
+
 }
 
 
@@ -355,6 +361,22 @@ BoolePolyRing::isTotalDegreeOrder() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
   return activeManager().isTotalDegreeOrder() ;
+}
+
+// test whether we deal with a degree-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::isDegreeReverseLexicograpical() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isDegreeReverseLexicograpical()" );
+  return activeManager().isDegreeReverseLexicograpical() ;
+}
+
+// test whether we deal with a degree-ordering
+BoolePolyRing::ordercode_type
+BoolePolyRing::getOrderCode() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::getOrderCode()" );
+  return activeManager().getOrderCode() ;
 }
 
 // test whether we deal with a degree-ordering

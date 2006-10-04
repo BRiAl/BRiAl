@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/10/04 12:22:32  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.24  2006/10/04 11:48:28  dreyer
  * ADD: isDegreeReverseLexicograpical()
  *
@@ -138,6 +141,7 @@ class BoolePolyRing:
 
   /// @name adopt global type definitions
   //@{
+  typedef CTypes::ordercode_type ordercode_type;
   typedef CTypes::manager_type manager_type;
   typedef CTypes::manager_reference manager_reference;
   typedef CTypes::manager_ptr manager_ptr;
@@ -222,7 +226,6 @@ class BoolePolyRing:
   /// Get number of ring variables the of active ring
   static size_type nRingVariables();
 
-
   /// Access current global ring setting
   static self ring();
 
@@ -256,6 +259,8 @@ class BoolePolyRing:
   /// Test whether variables are in descending order
   static bool_type descendingVariables();
 
+  ///  Get numerical code for current ordering
+  static ordercode_type getOrderCode();
 
   /// @name Comparison of monomials-like types
   //@{

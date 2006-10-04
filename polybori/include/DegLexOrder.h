@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/10/04 12:22:32  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.5  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -74,7 +77,11 @@ class DegLexOrder:
   typedef valid_tag degorder_property;
   typedef valid_tag totaldegorder_property;
   typedef valid_tag descending_property;
+  typedef dlex_tag order_tag;
   //@}
+
+  /// Get order code
+  enum { order_code = CTypes::dlex };
 
   /// Default Constructor
   DegLexOrder(): base() {};

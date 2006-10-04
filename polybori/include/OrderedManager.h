@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/10/04 12:22:32  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.16  2006/10/04 11:48:29  dreyer
  * ADD: isDegreeReverseLexicograpical()
  *
@@ -118,6 +121,7 @@ public:
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
   typedef CTypes::comp_type comp_type;
+  typedef CTypes::ordercode_type ordercode_type;
   typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
   typedef BooleExponent exp_type;
@@ -192,6 +196,8 @@ public:
   /// Find next term (after iter) in polynomial according to current order
   virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
 
+  /// Get numerical code for ordering
+  virtual ordercode_type getOrderCode() const = 0;
 };
 
 /** @class OrderedManager
@@ -231,6 +237,7 @@ public:
   typedef typename base::poly_type poly_type;
   typedef typename base::exp_type exp_type;
   typedef typename base::iterator iterator;
+  typedef typename base::ordercode_type ordercode_type;
   //@}
 
   /// Construct new decision diagramm manager
@@ -343,7 +350,12 @@ public:
   /// Find next term (after iter) in polynomial according to current order
   iterator incrementIterator(iterator iter, const poly_type& poly) const {
     return ordering.incrementIterator(iter, poly);
-  };
+  }
+
+  /// Get numerical code for ordering
+  ordercode_type getOrderCode() const {
+    return order_type::order_code;
+  }
 
 protected:
   order_type ordering;

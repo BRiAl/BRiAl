@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/10/04 12:22:31  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.10  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -89,7 +92,11 @@ class LexOrder:
   typedef valid_tag ordered_property;
   typedef valid_tag symmetry_property;
   typedef valid_tag descending_property;
+  typedef lex_tag order_tag;
   //@}
+
+  /// Get order code
+  enum { order_code = CTypes::lp  };
 
   /// Default Constructor
   LexOrder(): base() {};
