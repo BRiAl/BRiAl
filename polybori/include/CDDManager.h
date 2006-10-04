@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/10/04 12:49:04  dreyer
+ * FIX: Persistent variables need reference of new manager wrapper
+ *
  * Revision 1.10  2006/10/02 09:28:37  dreyer
  * ADD BoolePolyRing::changeOrdering and infrastructure
  *
@@ -120,7 +123,17 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
-    m_interfaced(rhs.m_interfaced), m_variables(rhs.m_variables) { }
+    m_interfaced(rhs.m_interfaced), m_variables() {
+    
+    persistent_cache_type::const_iterator start(rhs.m_variables.begin()),
+      finish(rhs.m_variables.end());
+
+    // explicit copy, since pointer to manager in dd_base has to be consistent
+    while (start != finish) {
+      m_variables[start->first] = fetchDiagram(start->second);
+      ++start;
+    }
+  }
 
   /// Constructor from given ring
   CDDManagerBase(interfaced_type& rhs): 
@@ -132,6 +145,11 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Destructor
   ~CDDManagerBase() { }
+
+  /// Get decision diagram, from the same manager, but different wrapper 
+  dd_base fetchDiagram(const dd_base& rhs) const {
+    return dd_base(&m_interfaced, rhs.getNode());
+  }
 
   /// Access nvar-th managed variable
   dd_base ddVariable(idx_type nvar) const {  
