@@ -19,6 +19,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.3  2006/09/12 14:56:55  dreyer
  * ADD bidirectional term iterator template
  *
@@ -49,6 +53,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
+template<class MonomType>
 class COrderedIter {
 
 public:
@@ -60,16 +65,17 @@ public:
   typedef BoolePolynomial poly_type;
 
   /// Fix type for sizes
-  typedef  poly_type::size_type size_type;
+  typedef typename poly_type::size_type size_type;
 
   /// Fix type for Boolean values
-  typedef  poly_type::bool_type bool_type;
+  typedef typename poly_type::bool_type bool_type;
 
   /// Fix type for decision diagram navigations
-  typedef  poly_type::navigator navigator;
+  typedef typename poly_type::navigator navigator;
 
   /// Fix type for monomials
-  typedef  poly_type::monom_type monom_type;
+  // typedef  poly_type::monom_type monom_type;
+  typedef MonomType monom_type;
 
   /// Set type for terms
   typedef monom_type term_type;
@@ -81,7 +87,7 @@ public:
   //@{
   typedef term_type value_type;
   typedef std::forward_iterator_tag iterator_category;
-  typedef  iterator::difference_type difference_type;
+  typedef typename iterator::difference_type difference_type;
   typedef void pointer;
   typedef value_type reference;
   //@}

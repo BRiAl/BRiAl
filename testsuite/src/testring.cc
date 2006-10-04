@@ -20,6 +20,10 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.15  2006/10/04 15:46:50  dreyer
+// ADD: divisorsOf(exp_type), orderedExpBegin/End;
+// CHANGE: Polynomials printing respects ordering
+//
 // Revision 1.14  2006/10/04 13:09:57  dreyer
 // ADD: added compile-time optimied iterators and genericBegin/genericEnd
 //
@@ -224,6 +228,17 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
   }
   std::cout << std::endl;
 
+  BoolePolynomial::ordered_exp_iterator expStart(poly.orderedExpBegin());
+  BoolePolynomial::ordered_exp_iterator expFinish(poly.orderedExpEnd());
+
+  std::cout << "ordered exponent iteration... "<< std::endl;
+
+  while ((expStart != expFinish)){
+    std::cout << *expStart << ", ";
+    ++expStart;
+  }
+  std::cout << std::endl;
+
 }
 
 template<class Iterator>
@@ -351,7 +366,7 @@ main(){
   std::cout << "min "<<*std::max_element(poly.degBegin(), poly.degEnd(), std::greater<unsigned>())
   <<std::endl;
 
-  COrderedIter oStart(poly), oFinish;
+  COrderedIter<BooleMonomial> oStart(poly), oFinish;
 
   std::cout << "ordered Iter"<< std::endl;
 
@@ -375,7 +390,7 @@ main(){
 
 
   BoolePolyRing ring3(4);
-  COrderedIter oStart2(poly);
+  COrderedIter<BooleMonomial> oStart2(poly);
 
   std::cout << "lex-ordered Iter"<< std::endl;
 

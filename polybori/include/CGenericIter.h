@@ -19,6 +19,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.1  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -95,6 +99,9 @@ public:
   CGenericIter(const poly_type& poly, int): 
     m_iter(poly.endOfNavigation()),  m_data(poly) {
   }
+
+  // (for end-of-path marker)
+  CGenericIter(): m_iter(),  m_data() { }
 
   /// Constant dereference operator
   reference operator*() const {

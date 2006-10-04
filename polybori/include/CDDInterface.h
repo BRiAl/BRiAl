@@ -22,6 +22,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.34  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -623,8 +627,14 @@ class CDDInterface<ZDD>:
 
   self firstDivisorsOf(const self& rhs) const {
 
+    return firstDivisorsOf(rhs.firstBegin(), rhs.firstEnd());
+  }
+
+  template <class Iterator>
+  self firstDivisorsOf(const Iterator& start, const Iterator& finish) const {
+
     navigator navi =
-      dd_intersect_some_index( navigation(), rhs.firstBegin(), rhs.firstEnd(), 
+      dd_intersect_some_index( navigation(), start, finish, 
                                CCuddGetNode(manager()) );
 
     // Mark navi as unused

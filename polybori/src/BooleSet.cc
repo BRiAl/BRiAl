@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/10/04 15:46:50  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.20  2006/09/14 10:57:26  dreyer
  * ADD: usedVariablesExp()
  *
@@ -260,6 +264,15 @@ BooleSet::divisorsOf(const term_type& rhs) const {
 #endif
 #endif 
 
+}
+
+// compute intersection with divisors of rhs
+BooleSet
+BooleSet::divisorsOf(const exp_type& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const exp_type&) const" );
+
+  return firstDivisorsOf(rhs.begin(), rhs.end());
 }
 
 BooleSet BooleSet::multiplesOf(const term_type& t) const{

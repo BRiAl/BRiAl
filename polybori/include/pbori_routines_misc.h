@@ -19,6 +19,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.3  2006/09/21 16:09:59  dreyer
  * ADD: caching mechanism for BoolePolynomial::deg()
  *
@@ -38,6 +42,8 @@
 // include basic definitions
 #include "pbori_defs.h"
 
+// temprarily
+#include "CIdxVariable.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -86,5 +92,54 @@ dd_cached_degree(DegreeCacher cache, NaviType navi) {
   return deg;
 }
 
+template <class Iterator, class Separator, class EmptySetType, 
+          class OStreamType>
+void 
+dd_print_term(Iterator start, Iterator finish, 
+              const Separator& sep, const EmptySetType& emptyset, 
+              OStreamType& os){
+
+  if (start != finish){
+    os << CIdxVariable<CTypes::idx_type>(*start);
+    ++start;
+  }
+  else
+    os << emptyset();
+
+  while (start != finish){
+    os << sep() << CIdxVariable<CTypes::idx_type>(*start);
+    ++start;
+  }
+}
+
+template <class TermType, class Separator, class EmptySetType,
+          class OStreamType>
+void 
+dd_print_term(const TermType& term, 
+              const Separator& sep, const EmptySetType& emptyset, 
+              OStreamType& os){
+  dd_print_term(term.begin(), term.end(), sep, emptyset, os);
+}
+
+
+template <class Iterator, class Separator, class InnerSeparator, 
+          class EmptySetType, class OStreamType>
+void 
+dd_print_terms(Iterator start, Iterator finish, 
+               const Separator& sep, const InnerSeparator& innersep,
+               const EmptySetType& emptyset, OStreamType& os) {
+
+  if (start != finish){
+    dd_print_term(*start, innersep, emptyset, os);
+    ++start;
+  }
+
+  while (start != finish){
+    os << sep(); 
+    dd_print_term(*start, innersep, emptyset, os);
+    ++start;
+  }
+
+}
 
 END_NAMESPACE_PBORI

@@ -21,6 +21,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.49  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.48  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -202,7 +206,7 @@ class DegLexOrder;
 class DegRevLexAscOrder;
 class BooleMonomial;
 class BooleExponent;
-class COrderedIter;
+template<class> class COrderedIter;
 template<class, class, class> class CGenericIter;
 template<class, class, class, class> class CDelayedTermIter;
 
@@ -259,7 +263,10 @@ public:
   typedef BooleExponent exp_type; 
 
   /// Iterator type for iterating over all monomials in ordering order
-  typedef COrderedIter ordered_iterator;
+  typedef COrderedIter<monom_type> ordered_iterator;
+
+  /// Iterator type for iterating over all exponents in ordering order
+  typedef COrderedIter<exp_type> ordered_exp_iterator;
 
   /// Iterator type for iterating over all monomials
   typedef CTermIter<monom_type, navigator, 
@@ -452,6 +459,12 @@ public:
 
   /// Finish of ordering respecting iterator
   ordered_iterator orderedEnd() const;
+
+   /// Start of ordering respecting exponent iterator
+  ordered_exp_iterator orderedExpBegin() const; 
+
+  /// Finish of ordering respecting exponent iterator
+  ordered_exp_iterator orderedExpEnd() const;
 
   /// @name Compile-time access to generic iterators
   //@{

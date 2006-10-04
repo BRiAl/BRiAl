@@ -20,6 +20,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.71  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.70  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -780,6 +784,8 @@ BoolePolynomial::length() const {
 // }
 
 
+
+
 // Print current polynomial to output stream
 BoolePolynomial::ostream_type&
 BoolePolynomial::print(ostream_type& os) const {
@@ -798,13 +804,12 @@ BoolePolynomial::print(ostream_type& os) const {
   if( isZero() )
     os << 0;
   else
-    dd_transform( navigation(), path_type(),
-                  std::ostream_iterator<path_type>(os),
-                  push_back<path_type>(),
-                  project_ith<1, 2>(),  
-                  CPrintOperation<path_type, sep_literal_type>(os),
-                  project_ith<1>());
+    dd_print_terms(orderedExpBegin(), orderedExpEnd(), 
+                   sep_literal_type(), times_as_separator(), 
+                   integral_constant<unsigned, 1>(), os);
+
   os << ' ';
+
   return os;
 }
 
@@ -874,6 +879,22 @@ BoolePolynomial::orderedEnd() const {
   return ordered_iterator();
 }
 
+// Start of degrees
+BoolePolynomial::ordered_exp_iterator 
+BoolePolynomial::orderedExpBegin() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpBegin() const" );
+  return *this;
+}
+
+// Finish of leading term 
+BoolePolynomial::ordered_exp_iterator 
+BoolePolynomial::orderedExpEnd() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpEnd() const" );
+  return ordered_exp_iterator();
+}
+
 // Start of iteration over monomials
 BoolePolynomial::const_iterator 
 BoolePolynomial::begin() const {
@@ -935,7 +956,7 @@ BoolePolynomial::lex_iterator
 BoolePolynomial::genericEnd(lex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(lex_tag) const" );
-  return lex_iterator(*this, 1);
+  return lex_iterator();
 }
 
 // Start of iteration over monomials in deg-lex ordering
@@ -951,7 +972,7 @@ BoolePolynomial::dlex_iterator
 BoolePolynomial::genericEnd(dlex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(dlex_tag) const" );
-  return dlex_iterator(*this, 1);
+  return dlex_iterator();
 }
 
 // Start of iteration over monomials in ascending deg-rev-lex ordering
@@ -967,7 +988,7 @@ BoolePolynomial::dp_asc_iterator
 BoolePolynomial::genericEnd(dp_asc_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(dp_asc_tag) const" );
-  return dp_asc_iterator(*this, 1);
+  return dp_asc_iterator();
 }
 
 // fetch list of terms

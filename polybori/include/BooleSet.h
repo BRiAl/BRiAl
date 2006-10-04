@@ -19,6 +19,10 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/10/04 15:46:49  dreyer
+ * ADD: divisorsOf(exp_type), orderedExpBegin/End;
+ * CHANGE: Polynomials printing respects ordering
+ *
  * Revision 1.14  2006/09/14 10:57:25  dreyer
  * ADD: usedVariablesExp()
  *
@@ -165,7 +169,10 @@ public:
   /// Compute intersection with divisors of rhs
   self divisorsOf(const term_type& rhs) const;
   
-  /// Compute intersection with multiples of rhs
+   /// Compute intersection with divisors of rhs
+  self divisorsOf(const exp_type& rhs) const;
+
+ /// Compute intersection with multiples of rhs
   self multiplesOf(const term_type& rhs) const;
   
   /// Division by given term
