@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/10/04 11:48:28  dreyer
+ * ADD: isDegreeReverseLexicograpical()
+ *
  * Revision 1.23  2006/10/02 09:28:37  dreyer
  * ADD BoolePolyRing::changeOrdering and infrastructure
  *
@@ -244,11 +247,15 @@ class BoolePolyRing:
   /// Test whether we deal with a total degree-ordering
   static bool_type isTotalDegreeOrder();
 
+  /// Test whether ordering is deg-rev-lex ordering
+  static bool_type isDegreeReverseLexicograpical();
+
   /// Test whether variables are in ascending order
   static bool_type ascendingVariables();
 
   /// Test whether variables are in descending order
   static bool_type descendingVariables();
+
 
   /// @name Comparison of monomials-like types
   //@{

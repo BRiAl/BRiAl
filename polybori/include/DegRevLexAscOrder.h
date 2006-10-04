@@ -58,6 +58,7 @@ class DegRevLexAscOrder:
   typedef valid_tag degorder_property;
   typedef valid_tag totaldegorder_property;
   typedef valid_tag ascending_property;
+  typedef valid_tag degrevlexorder_property;
   //@}
 
   /// Default Constructor

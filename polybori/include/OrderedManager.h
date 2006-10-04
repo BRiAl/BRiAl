@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/10/04 11:48:29  dreyer
+ * ADD: isDegreeReverseLexicograpical()
+ *
  * Revision 1.15  2006/10/02 09:28:38  dreyer
  * ADD BoolePolyRing::changeOrdering and infrastructure
  *
@@ -125,6 +128,9 @@ public:
   OrderedManagerBase(size_type nvars = 0): 
     base(nvars) { }
 
+  /// Construct old decision diagramm manager
+  OrderedManagerBase(const base& rhs): 
+    base(rhs) { }
 
 
   /// Construct new decision diagramm manager
@@ -176,6 +182,9 @@ public:
 
   /// Test whether variables are in descending order
   virtual bool_type descendingVariables() const = 0;
+
+  /// Test whether ordering is deg-rev-lex ordering
+  virtual bool_type isDegreeReverseLexicograpical() const = 0;
 
   /// Initialize iterator corresponding to leading term
   virtual iterator leadIterator(const poly_type&) const = 0;
@@ -234,7 +243,7 @@ public:
     base(rhs), ordering(rhs.ordering) { }
 
   /// Construct from given manager
-  OrderedManager(base& rhs, const order_type& theOrder = order_type()  ): 
+  OrderedManager(const base& rhs, const order_type& theOrder = order_type()  ): 
     base(rhs), ordering(theOrder) { }
 
   // Destructor
@@ -309,6 +318,11 @@ public:
   /// Test whether we deal with a total degree-ordering
   bool_type isTotalDegreeOrder() const {
     return properties_type().isTotalDegreeOrder();
+  }
+
+  /// Test whether ordering is deg-rev-lex ordering
+  bool_type isDegreeReverseLexicograpical() const {
+    return properties_type().isDegreeReverseLexicograpical();
   }
 
   /// Test whether variables are in ascending order

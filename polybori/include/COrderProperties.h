@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/10/04 11:48:28  dreyer
+ * ADD: isDegreeReverseLexicograpical()
+ *
  * Revision 1.6  2006/09/08 16:15:27  dreyer
  * ADD: Added ordering-dependent term iteration
  *
@@ -75,6 +78,7 @@ class COrderProperties {
   typedef typename order_type::totaldegorder_property totaldegorder_property;
   typedef typename order_type::ascending_property ascending_property;
   typedef typename order_type::descending_property descending_property;
+  typedef typename order_type::degrevlexorder_property degrevlexorder_property;
   //@}
 
   /// Define test whether iterators respect the ordering
@@ -97,6 +101,10 @@ class COrderProperties {
 
   /// Define test whether ordering is symmetric
   is_same_type<descending_property, valid_tag> descendingVariables;
+
+  /// Define test whether ordering is deg-rev-lex ordering
+  is_same_type<degrevlexorder_property, valid_tag> 
+  isDegreeReverseLexicograpical;
 };
 
 

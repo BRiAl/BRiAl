@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/10/04 11:48:28  dreyer
+ * ADD: isDegreeReverseLexicograpical()
+ *
  * Revision 1.5  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -97,6 +100,7 @@ class COrderBase:
   typedef invalid_tag ordered_property;
   typedef invalid_tag symmetry_property;
   typedef invalid_tag degorder_property;
+  typedef invalid_tag degrevlexorder_property; 
   typedef invalid_tag totaldegorder_property;
   typedef invalid_tag ascending_property;
   typedef invalid_tag descending_property;
