@@ -374,7 +374,7 @@ public:
     this->p=p;
     //sugar=p.deg();
     this->sugar=sugar;
-    assert(sugar<=p.deg());
+    assert(sugar>=p.deg());
     this->lm=p.boundedLead(sugar);
     this->exp=lm.exp();
     assert(lm==p.lead());
