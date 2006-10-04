@@ -22,7 +22,7 @@
 #else
 #include <map>
 #endif
-#include "lp4data.h"
+
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
@@ -154,8 +154,8 @@ public:
   }
   protected:
       void addVariablePairs(int s);
-      void add4lpImplDelayed(int s);
-      void addHigherImplDelayedUsing4lp(int s);
+      void add4ImplDelayed(int s);
+      void addHigherImplDelayedUsing4(int s);
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);

@@ -11,7 +11,26 @@
 #include "nf.h"
 #include <algorithm>
 #include <set>
+
+#define HAVE_DLEX4_DATA 1
+
+#ifdef HAVE_DLEX4_DATA
+#include "dlex4data.h"
+#endif
+
+#define HAVE_LP4_DATA 1
+
+#ifdef HAVE_LP4_DATA
+#include "lp4data.h"
+#endif
+
+#define HAVE_DP_ASC4_DATA 1
+
+#ifdef HAVE_DP_ASC4_DATA
+#include "dp_asc4data.h"
+#endif
 BEGIN_NAMESPACE_PBORIGB
+
 static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
   ///@todo need GCDdeg
@@ -714,7 +733,7 @@ MonomialSet minimal_elements(const MonomialSet& s){
 #endif
 }
 
-static unsigned int p2code_lp4(Polynomial p, const std::vector<char> & ring_2_0123){
+static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
     Polynomial::exp_iterator it_p=p.expBegin();
     Polynomial::exp_iterator end_p=p.expEnd();
     unsigned int p_code=0;
@@ -738,7 +757,7 @@ static unsigned int p2code_lp4(Polynomial p, const std::vector<char> & ring_2_01
     }
     return p_code;
 }
-static Monomial code_2_m_4lp(unsigned int code, std::vector<idx_type> back_2_ring){
+static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring){
     int i;
     Monomial res;
     //cout<<"m_code:"<<code<<endl;
@@ -751,13 +770,13 @@ static Monomial code_2_m_4lp(unsigned int code, std::vector<idx_type> back_2_rin
     //cout<<"m:"<<res<<endl;
     return res;
 }
-static Polynomial code_2_poly_4lp(unsigned int code, std::vector<idx_type> back_2_ring){
+static Polynomial code_2_poly_4(unsigned int code, std::vector<idx_type> back_2_ring){
     int i;
     Polynomial p;
     //unsigned int m_code;
     for(i=15;i>=0;i--){
         if ((code & (1<<i))!=0){
-            Monomial m=code_2_m_4lp(i,back_2_ring);
+            Monomial m=code_2_m_4(i,back_2_ring);
             p+=m;
         }
     }
@@ -808,7 +827,21 @@ static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, 
     }
     return p;
 }
-void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
+static int get_table_entry4(int p_code, int pos){
+    switch(BoolePolyRing::getOrderCode()){
+        case COrderEnums::lp:
+            return lp4var_data[p_code][pos];
+        case COrderEnums::dlex:
+            return dlex4var_data[p_code][pos];
+        #ifdef HAVE_DP_ASC4_DATA
+        case COrderEnums::dp_asc:
+            return dp_asc4var_data[p_code][pos];
+        #endif
+        default:
+            cerr<<"using tables with forbidden order"<<endl;
+    }
+}
+void GroebnerStrategy::addHigherImplDelayedUsing4(int s){
     if (generators[s].literal_factors.rest.isOne()){
         mark_all_variable_pairs_as_calculated(*this, s);
         return;
@@ -824,16 +857,16 @@ void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
-    unsigned int p_code=p2code_lp4(p, ring_2_0123);
+    unsigned int p_code=p2code_4(p, ring_2_0123);
     int i;
-    if ((lp4var_data[p_code][0]==p_code) && (lp4var_data[p_code][1]==0)){
+    if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
         mark_all_variable_pairs_as_calculated(*this, s);
         return;
     }
-    for(i=0;lp4var_data[p_code][i]!=0;i++){
-        unsigned int impl_code=lp4var_data[p_code][i];
+    for(i=0;get_table_entry4(p_code,i)!=0;i++){
+        unsigned int impl_code=get_table_entry4(p_code,i);
         if (p_code!=impl_code){
-            Polynomial p_i=code_2_poly_4lp(impl_code, back_2_ring);
+            Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
             if (e_i!=e){
                 addGeneratorDelayed(
@@ -848,58 +881,48 @@ void GroebnerStrategy::addHigherImplDelayedUsing4lp(int s){
     
      mark_all_variable_pairs_as_calculated(*this, s);
 }
-void GroebnerStrategy::add4lpImplDelayed(int s){
-//(GroebnerStrategy& strat, Polynomial p, Exponent used_variables,Exponent e){
+
+void GroebnerStrategy::add4ImplDelayed(int s){
+    //cout<<"I am here";
     Polynomial p=generators[s].p;
     Exponent used_variables=generators[s].usedVariables;
-    //cout<<"I am here"<<endl;
-    //if (p.usedVariables().exp()!=p.usedVariablesExp())
-    //    cout<<"Betrug"<<endl;
+
     Exponent e=generators[s].lmExp;
-    //cout<<"poly"<<p<<endl;
-    //cout<<"UV"<<Monomial(used_variables)<<endl;
-    //Exponent::const_iterator it=used_variables.begin();
-    //Exponent::const_iterator end=used_variables.end();
+
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
-    unsigned int p_code=p2code_lp4(p, ring_2_0123);
-    //cout<<"code:"<<p_code<<endl;
-    if ((lp4var_data[p_code][0]==p_code) && (lp4var_data[p_code][1]==0)){
+    unsigned int p_code=p2code_4(p, ring_2_0123);
+
+    if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
         mark_all_variable_pairs_as_calculated(*this, s);
-        //cout<<"i am done"<<endl;
+
         return;
     }
     
     int i;
-    //cout<<"p:"<<p<<"pcode:"<<p_code<<endl;
-    for(i=0;lp4var_data[p_code][i]!=0;i++){
-        unsigned int impl_code=lp4var_data[p_code][i];
+    
+    
+    for(i=0;get_table_entry4(p_code,i)!=0;i++){
+        unsigned int impl_code=get_table_entry4(p_code,i);
         if (p_code!=impl_code){
-            Polynomial p_i=code_2_poly_4lp(impl_code, back_2_ring);
+            Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
-            //cout<<"pre"<<endl;
+
             if (e_i!=e){
-                //cout<<"ADD this"<<endl;
+
                 addGeneratorDelayed(p_i);
             }
         }
     }
     
     
-    /*BooleExponent::const_iterator it=generators[s].lmExp.begin();
-    BooleExponent::const_iterator end=generators[s].lmExp.end();
-     while(it!=end){
-         
-          generators[s].vPairCalculated.insert(*it);
-          it++;
-    
-    }*/
+   
      mark_all_variable_pairs_as_calculated(*this, s);
     
     
-    //cout<<"---------------"<<endl;
+    
 }
 void GroebnerStrategy::addVariablePairs(int s){
      Exponent::const_iterator it=generators[s].lmExp.begin();
@@ -1175,26 +1198,54 @@ void GroebnerStrategy::addGenerator(const BoolePolynomial& p){
         
         
         
-        if (BoolePolyRing::isLexicographical()){
+        
+        bool have_ordering_for_tables=false;
+        
+      
+        const int order_code=BoolePolyRing::getOrderCode();
+    #ifdef HAVE_DLEX4_DATA
+        if (order_code==COrderEnums::dlex)
+           have_ordering_for_tables=true;
+    #endif
+
+
+
+    #ifdef HAVE_LP4_DATA
+        if (order_code==COrderEnums::lp)
+           have_ordering_for_tables=true;
+    #endif
+
+    
+
+    #ifdef HAVE_DP_ASC4_DATA
+        if (order_code==COrderEnums::dp_asc)
+           have_ordering_for_tables=true;
+    #endif
+        
+        if (have_ordering_for_tables){
         int uv=e.usedVariables.deg();
         if (uv<=4){
-            add4lpImplDelayed(s);
+            add4ImplDelayed(s);
         } else {
         
             int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
             ////should also be proofable for var2var factors
             assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
             if (uv_opt<=4){
-                addHigherImplDelayedUsing4lp(s);
+                addHigherImplDelayedUsing4(s);
             } else {
                 addVariablePairs(s);
             }
          }
         } else {
+#ifdef HAVE_DLEX4_DATA
+        
+#endif
           addVariablePairs(s);
         }
     } else 
     {
+       
         if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
             this->generators[s].minimal=false;
     }

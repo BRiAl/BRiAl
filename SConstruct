@@ -130,7 +130,7 @@ if isinstance(libpb,list):
 Default(libpb)
 
 
-gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lp4data.cc nf.cc")
+gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
 gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 print "gb:", gb, dir(gb)
@@ -221,6 +221,9 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF("testsuite/py/data/hanoi/hanoi"+str(i))
 
     for f in glob("testsuite/py/data/blocksworld/*.cnf"):
+        env.CNF(f[:-4])
+        
+    for f in glob("testsuite/py/data/qg/*.cnf"):
         env.CNF(f[:-4])
     
 else:
