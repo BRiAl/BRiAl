@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.48  2006/10/04 13:09:56  dreyer
+ * ADD: added compile-time optimied iterators and genericBegin/genericEnd
+ *
  * Revision 1.47  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -193,9 +196,15 @@
 
 BEGIN_NAMESPACE_PBORI
 
+// forward declarations
+class LexOrder;
+class DegLexOrder;
+class DegRevLexAscOrder;
 class BooleMonomial;
 class BooleExponent;
 class COrderedIter;
+template<class, class, class> class CGenericIter;
+template<class, class, class, class> class CDelayedTermIter;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -282,11 +291,27 @@ public:
                     integral_constant<size_type, 0> >
   deg_iterator;
 
+  /// Iterator type, which extends deg_iterator with function term()
+  typedef CDelayedTermIter<monom_type, 
+                           change_assign<>, project_ith<2>, 
+                           deg_iterator> delayed_iterator;
+
+
   /// Bidirectional iterator type (dereferencing to degree)
   typedef CBidirectTermIter<size_type, navigator, 
                             increment_type, decrement_type,
                             integral_constant<size_type, 0> >
   bidirectional_iterator;
+
+  /// @name Generic iterators for various orderings
+  //@{
+  typedef CGenericIter<LexOrder, self, deg_iterator> lex_iterator;
+  typedef CGenericIter<DegLexOrder, self, deg_iterator> dlex_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, self, bidirectional_iterator> 
+  dp_asc_iterator;
+  //@}
+
+
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
@@ -427,6 +452,16 @@ public:
 
   /// Finish of ordering respecting iterator
   ordered_iterator orderedEnd() const;
+
+  /// @name Compile-time access to generic iterators
+  //@{
+  lex_iterator genericBegin(lex_tag) const;
+  lex_iterator genericEnd(lex_tag) const;
+  dlex_iterator genericBegin(dlex_tag) const;
+  dlex_iterator genericEnd(dlex_tag) const;
+  dp_asc_iterator genericBegin(dp_asc_tag) const;
+  dp_asc_iterator genericEnd(dp_asc_tag) const;
+  //@}
 
   /// Navigate through structure
   navigator navigation() const;

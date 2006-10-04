@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.70  2006/10/04 13:09:56  dreyer
+ * ADD: added compile-time optimied iterators and genericBegin/genericEnd
+ *
  * Revision 1.69  2006/10/02 07:41:28  bricken
  * + adjustments to deg order
  *
@@ -288,6 +291,9 @@
 # include "pbori_routines.h"
 # include "CDDOperations.h"
 # include "CDegreeCache.h"
+
+#include "CDelayedTermIter.h"
+#include "CGenericIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -913,6 +919,55 @@ BoolePolynomial::endOfNavigation() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nendOfNavigation() const" );
   return navigator();
+}
+
+
+// Start of iteration over monomials in lex ordering
+BoolePolynomial::lex_iterator 
+BoolePolynomial::genericBegin(lex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(lex_tag) const" );
+  return lex_iterator(*this);
+}
+
+// Finish of iteration over monomials in lex ordering
+BoolePolynomial::lex_iterator
+BoolePolynomial::genericEnd(lex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(lex_tag) const" );
+  return lex_iterator(*this, 1);
+}
+
+// Start of iteration over monomials in deg-lex ordering
+BoolePolynomial::dlex_iterator 
+BoolePolynomial::genericBegin(dlex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(dlex_tag) const" );
+  return dlex_iterator(*this);
+}
+
+// Finish of iteration over monomials in deg-lex ordering
+BoolePolynomial::dlex_iterator
+BoolePolynomial::genericEnd(dlex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(dlex_tag) const" );
+  return dlex_iterator(*this, 1);
+}
+
+// Start of iteration over monomials in ascending deg-rev-lex ordering
+BoolePolynomial::dp_asc_iterator 
+BoolePolynomial::genericBegin(dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(sd_asc_tag) const" );
+  return dp_asc_iterator(*this);
+}
+
+// Finish of iteration over monomials in ascending deg-rev-lex ordering
+BoolePolynomial::dp_asc_iterator
+BoolePolynomial::genericEnd(dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(dp_asc_tag) const" );
+  return dp_asc_iterator(*this, 1);
 }
 
 // fetch list of terms

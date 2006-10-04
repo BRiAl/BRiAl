@@ -228,6 +228,8 @@ x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , ordered_ Iter
 x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , lex-ordered Iter
 x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
 Testing dlex
+order code?
+1 (should be: 1)
 is lexicographical?
 0
 is ordered?
@@ -256,6 +258,8 @@ ordered iteration...
 x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
 
 Testing dp_asc
+order code?
+2 (should be: 2)
 is lexicographical?
 0
 is ordered?
@@ -358,6 +362,20 @@ lmDivisors() : 2 nodes 4 minterms
 --000 1
 ordered iteration... 
 x(0)*x(1) , x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+
+Testing hard-coded iteration for x(0)*x(1) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+lex
+x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+dlex
+x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+dp_asc
+x(2)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+
+bug?
+polyx(0)*x(1)*x(2)*x(3) + x(0)*x(1)*x(3) + x(0)*x(1) + x(0)*x(2) + x(0) 
+usedVariablesx(0)*x(1)*x(2)*x(3) 
+usedVariablesExp(0, 1, 2, 3)
+usedVariables.Exp(0, 1, 2, 3)
 Finished.
 ----------------------
 Executing testsuite/spoly

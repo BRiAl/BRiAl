@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.14  2006/10/04 13:09:57  dreyer
+// ADD: added compile-time optimied iterators and genericBegin/genericEnd
+//
 // Revision 1.13  2006/10/02 09:28:38  dreyer
 // ADD BoolePolyRing::changeOrdering and infrastructure
 //
@@ -79,6 +82,11 @@ USING_NAMESPACE_PBORI
 void test_ordered(CTypes::ordercode_type order_marker) {
 
   BoolePolyRing ring(5, order_marker);
+
+  std::cout << "order code?" <<std::endl;
+  std::cout << BoolePolyRing::getOrderCode() <<" (should be: "<< order_marker<<")"
+  <<std::endl;
+
 
   std::cout << "is lexicographical?" <<std::endl;
   std::cout << BoolePolyRing::isLexicographical() <<std::endl;
@@ -216,11 +224,18 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
   }
   std::cout << std::endl;
 
-
-
-
 }
 
+template<class Iterator>
+void print_iter(Iterator start, Iterator end) {
+  int i = 0;
+  while ((start != end)&& (i < 10)){
+    std::cout << *start << ", ";
+    ++start;
+    ++i;
+  }
+  std::cout <<  std::endl;
+}
 
 int
 main(){
@@ -382,6 +397,27 @@ main(){
   std::cout<< std::endl << "Testing changing from dp to lex"<< std::endl;
   test_ordered_changed(CTypes::dp_asc, CTypes::lp); 
 
+  std::cout<< std::endl << "Testing hard-coded iteration for " <<poly<<
+  std::endl; 
+  std::cout<< "lex"<<std::endl;
+  print_iter(poly.genericBegin(lex_tag()), poly.genericEnd(lex_tag()) );
+  
+  std::cout<< "dlex"<<std::endl;
+  print_iter(poly.genericBegin(dlex_tag()), poly.genericEnd(dlex_tag()) );
+
+  std::cout<< "dp_asc"<<std::endl;
+  print_iter(poly.genericBegin(dp_asc_tag()), poly.genericEnd(dp_asc_tag()) );
+
+  std::cout<< std::endl << "bug?"<< std::endl;
+
+   poly =  x*y*z*v + x*y*v + x*y + x*z +x;
+
+     std::cout<<  "poly"<<poly<< std::endl;
+
+
+     std::cout<<  "usedVariables"<<poly.usedVariables()<<   std::endl;
+    std::cout<<  "usedVariablesExp"<<poly.usedVariablesExp()<<   std::endl;
+      std::cout<<  "usedVariables.Exp"<<poly.usedVariables().exp()<<   std::endl;
   std::cout << "Finished." <<std::endl;
 
 

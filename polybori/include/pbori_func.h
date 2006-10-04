@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/10/04 13:09:56  dreyer
+ * ADD: added compile-time optimied iterators and genericBegin/genericEnd
+ *
  * Revision 1.28  2006/09/19 09:46:05  dreyer
  * CHANGE: binary_compose to binary_composition
  * CHANGE: BooleMonomial::idx_map_type
@@ -815,6 +818,80 @@ public:
   }
 
 };
+
+
+template <class ValueType>
+class default_value {
+public:
+  typedef ValueType value_type;
+
+  value_type operator()(...) const{
+    return value_type();
+  }
+
+};
+
+template <template<class> class BindType, class BinaryFunction, 
+          class ValueType, class ConstantOp>
+class constant_binder_base :
+  public BindType<BinaryFunction>{
+public:
+  typedef BinaryFunction bin_op; 
+  typedef ConstantOp const_type;
+  typedef BindType<bin_op> base;
+
+  typedef ValueType value_type;
+
+  constant_binder_base(const bin_op& op = bin_op()): base(op, const_type()()) {}
+};
+
+template <class BinaryFunction, class ConstantOp>
+class constant_binder2nd :
+  public constant_binder_base<std::binder2nd, BinaryFunction,
+                              typename BinaryFunction::second_argument_type,
+                              ConstantOp> {
+};
+
+
+template <class BinaryFunction, class ConstantOp>
+class constant_binder1st :
+  public constant_binder_base<std::binder1st, BinaryFunction,
+                              typename BinaryFunction::first_argument_type,
+                              ConstantOp> {
+};
+
+template <template<class> class BindType,
+          class BinaryFunction, class ValueType>
+class default_binder_base :
+  public BindType<BinaryFunction>{
+public:
+  typedef BinaryFunction bin_op; 
+  typedef BindType<bin_op> base;
+
+  typedef ValueType value_type;
+
+  default_binder_base(const value_type&  val): base(bin_op(), val) {}
+};
+
+template <class BinaryFunction>
+class default_binder2nd :
+  public default_binder_base<std::binder2nd, BinaryFunction,
+                              typename BinaryFunction::second_argument_type> {
+public:
+  typedef default_binder_base<std::binder2nd, BinaryFunction,
+                              typename BinaryFunction::second_argument_type>
+  base;
+
+  default_binder2nd(const typename base::value_type&  val): base(val) {}
+};
+
+
+template <class BinaryFunction>
+class default_binder1st :
+  public default_binder_base<std::binder1st, BinaryFunction,
+                              typename BinaryFunction::first_argument_type> {
+};
+
 
 END_NAMESPACE_PBORI
 

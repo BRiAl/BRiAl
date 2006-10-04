@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2006-07-20
  *
- * Decribes properties of polybori ordering classes
+ * File retired, but kept for future use.
  *
  * @par Copyright:
  *   (c) 2006 by
@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/10/04 13:09:56  dreyer
+ * ADD: added compile-time optimied iterators and genericBegin/genericEnd
+ *
  * Revision 1.1  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -31,33 +34,15 @@
 
 // include orderings
 #include "LexOrder.h"
+#include "DegLexOrder.h"
+#include "DegRevLexAscOrder.h"
 
 #ifndef order_traits_h_
 #define order_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class lex_tag
- * @brief This class marks an ordering lexicographical
- **/
-struct lex_tag {};
-
-
-struct 
-
-/** @class order_traits 
- * @brief This class contains properties of polybori ordering classes
- *
- **/
-template <class OrderType>
-class order_traits {
- public:
-  typedef CTypes::bool_type bool_type;
-
-  bool_type isLexicographical() const { return false; }
-  bool_type isLexicographical() const { return false; }
-};
-
+// Retired, but kept for future use
 
 END_NAMESPACE_PBORI
 
