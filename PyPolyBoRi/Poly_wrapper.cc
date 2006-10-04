@@ -97,7 +97,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
-  implicitly_convertible<BooleVariable,BooleMonomial>();
-  implicitly_convertible<BooleVariable,BoolePolynomial>();
+  //implicitly_convertible<BooleVariable,BooleMonomial>();
+  //implicitly_convertible<BooleVariable,BoolePolynomial>();
   
 }

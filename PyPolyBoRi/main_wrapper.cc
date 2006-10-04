@@ -24,9 +24,26 @@ void print_variable(const BooleVariable & p){
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   BoolePolyRing r; //workaround for having a current_ring
+  implicitly_convertible<BooleVariable,BooleMonomial>();
+  implicitly_convertible<BooleVariable,BoolePolynomial>();
+  def("change_ordering",&BoolePolyRing::changeOrdering);
   export_dd();
   export_poly();
   export_nav();
+  enum_<COrderEnums::ordercodes>("OrderCode")
+    .value("lp", COrderEnums::lp)
+    .value("dlex", COrderEnums::dlex)
+    .value("dp_asc",COrderEnums::dp_asc)
+    ;
+    
+    struct COrderEnums {
+  /// Codes For orderings
+  enum ordercodes {
+    lp,
+    dlex,
+    dp_asc
+  };
+};
   def("print_ring_info", &BoolePolyRing::printInfo);
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
