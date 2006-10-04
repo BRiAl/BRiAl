@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/10/04 12:28:05  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.24  2006/09/05 14:39:39  dreyer
  * CHANGE: enum sp now called dp_asc, BoolePolynomial::reducbileBy() generic
  *
@@ -336,6 +339,21 @@ struct CCompareEnums {
   };
 };
 
+/**@class lex_tag
+ * @brief Marker for lex ordering.
+ **/
+struct lex_tag {};
+
+/**@class dlex_tag
+ * @brief Marker for deg-lex ordering.
+ **/
+struct dlex_tag {};
+
+/**@class dp_asc_tag
+ * @brief Marker for ascending deg-rev-lex ordering.
+ **/
+struct dp_asc_tag {};
+
 /** @class CAuxTypes
  * @brief This struct contains auxiliary type definitions.
  * 
@@ -374,6 +392,13 @@ struct CAuxTypes {
 
   /// Type for out-stream
   typedef PBORI_OSTREAM ostream_type;
+
+//   /// @name Markers for orderings
+//   //@{
+//   typedef lex_tag lex_tag;
+//   typedef dlex_tag dlex_tag;
+//   typedef dp_asc_tag dp_asc_tag;
+//   //@}
 };
 
 /** @class CTypes

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/10/04 12:28:05  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.6  2006/09/13 15:07:05  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -178,8 +181,7 @@ DegLexOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegLexOrder::leadIterator(const poly_type& poly) const" );
 
-  return std::max_element(iterator(poly.navigation()), 
-                          iterator(poly.endOfNavigation()) );
+  return generic_iteration<self, iterator>().leadIterator(poly);
 }
 
 // Find next term (after iter) in polynomial according to current order
@@ -189,23 +191,7 @@ DegLexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
   PBORI_TRACE_FUNC(
     "DegLexOrder::incrementIterator(iterator, const poly_type&) const" );
 
-  typedef CRestrictedIter<iterator> bounded_iterator;
-
-  iterator m_start(poly.navigation());
-  iterator m_finish(poly.endOfNavigation());
-
-  if (iter != m_finish) {
-    size_type deg = *iter;
-    ++iter;
-    iter = std::find(iter, m_finish, deg);
-      
-    if(iter == m_finish) {
-      iter = std::max_element( bounded_iterator(m_start, deg),
-                               bounded_iterator(m_finish, deg) );
-
-    }
-  }
-  return iter;
+  return generic_iteration<self, iterator>().incrementIterator(iter, poly);
 }
 
 END_NAMESPACE_PBORI

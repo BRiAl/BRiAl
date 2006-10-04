@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/10/04 12:28:05  dreyer
+ * ADD: getOrderCode()
+ *
  * Revision 1.9  2006/09/13 09:05:44  dreyer
  * ADD: dp_asc/DegRevLexAscOrder
  * ADD: BoolePolynomial::endOfNavigation()
@@ -182,18 +185,19 @@ LexOrder::leadIterator(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIterator(const poly_type& poly) const" );
 
-  return poly.navigation();
+  return generic_iteration<self, iterator>().leadIterator(poly);
 
 }
 
 // Find next term (after iter) in polynomial according to current order
 LexOrder::iterator
-LexOrder::incrementIterator(iterator iter, const poly_type&) const {
+LexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
 
   PBORI_TRACE_FUNC(
     "LexOrder::incrementIterator(iterator, const poly_type&) const" );
 
-  return ++iter;
+  //  return ++iter;
+  return generic_iteration<self, iterator>().incrementIterator(iter, poly);
 }
 
 
