@@ -104,7 +104,7 @@ public:
   
   GroebnerStrategy(const GroebnerStrategy& orig);
   std::vector<Polynomial>  minimalizeAndTailReduce();
-  void addGenerator(const BoolePolynomial& p);
+  int addGenerator(const BoolePolynomial& p, bool is_impl=false, std::vector<int>* impl_v=NULL);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);
   bool variableHasValue(idx_type i);
@@ -154,8 +154,8 @@ public:
   }
   protected:
       void addVariablePairs(int s);
-      void add4ImplDelayed(int s);
-      void addHigherImplDelayedUsing4(int s);
+      std::vector<Polynomial> add4ImplDelayed(int s);
+      std::vector<Polynomial> addHigherImplDelayedUsing4(int s);
 };
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
