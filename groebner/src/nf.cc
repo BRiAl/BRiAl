@@ -257,7 +257,7 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   Polynomial res=strat.generators[i].p;
   strat.generators[i].p=p;
   strat.generators[i].recomputeInformation();
-  strat.generators[i].minimal=false;
+  //strat.generators[i].minimal=false;
   
   if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
   //if ((strat.generators[i].length==2))
@@ -550,16 +550,19 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       curr[i].add(curr[found].value(), curr[found].getSugar());
       ///@todo different prototpye
     }
-
+    #if 1
     if ((pivot.deg()<=strat.generators[index].deg) &&(lm.deg()==strat.generators[index].lmDeg)){
       assert(lm==strat.generators[index].lm);
+      assert(curr[found].getSugar()>=curr[found].value().deg());
+      assert(curr[found].value().lead()==lm);
       curr[found]=PolynomialSugar(exchange_with_promise(strat, index, curr[found].value()));
       strat.log("Exchange");
     }
-    
+    #endif
     
     deg_type deg_high=strat.generators[index].ecart()+lm.deg();
     curr[found].add((lm/strat.generators[index].lm)*strat.generators[index].p, deg_high);
+    assert(!(curr[found].value().isZero()));
   } else 
     step_S(curr,result,lm, index,strat);
   

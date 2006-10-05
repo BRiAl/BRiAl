@@ -34,6 +34,7 @@ BEGIN_NAMESPACE_PBORIGB
 static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
   ///@todo need GCDdeg
+  
   bool res=(m.lm.GCD(m2.lm).deg()==common_literal_factors_deg(m.literal_factors, m2.literal_factors));
   //if (res)
   //  cout<<"EXTENDED PRODUCT_CRIT";

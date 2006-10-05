@@ -12,7 +12,7 @@
 BEGIN_NAMESPACE_PBORIGB
 
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
-  Exponent lead_variables=p.lead().exp();
+  Exponent lead_variables=p.leadExp();
   lmDeg=p.lmDeg();
   Exponent other_variables=p.usedVariablesExp()-lead_variables;
   //only vars in the lead can factor out, independently of the order
@@ -25,10 +25,12 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
   
   
   while(it!=end){
+    assert(len_r==r.length());
     idx_type v=*it;
     BooleSet s0=r.subset0(v);
     if (s0.emptiness()){
       factors[v]=0;// var(v) is factor
+      assert(r.change(v)==r.subset1(v));
       r=r.change(v);//equivalently subset(1)
       //cout<<"found factor0"<<endl;
     } else {
@@ -51,11 +53,16 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                     idx_type v2=*other_it;
                     //cout<<"testing var"<<v2<<endl;
                     //v occurs in the lead, v2 not
+                    assert(v2!=v);
                     if (r.subset1(v2)==s1){
                         assert(BoolePolyRing::compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
+                        assert(r.subset1(v2).change(v2)==r.subset0(v));
+                        assert(r.subset1(v2).subset1(v).emptiness());
+                        assert(r.subset0(v).subset0(v2).emptiness());
                         r=s1;
                         len_r/=2;
+
                         //cout<<"found factor var2var"<<v<<":"<<v2<<endl;
                         break;
                     }
@@ -70,9 +77,12 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
     it++;
   }
   rest=r;
+  assert((!(rest.isZero())));
 }
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b){
   deg_type res=0;
+  
+  {
   LiteralFactorization::map_type::const_iterator it=a.factors.begin();
   const LiteralFactorization::map_type::const_iterator end=a.factors.end();
   const LiteralFactorization::map_type::const_iterator b_end=b.factors.end();
@@ -89,7 +99,9 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
     
     it++;
   }
+  }
   
+  {
   LiteralFactorization::var2var_map_type::const_iterator vit=a.var2var_map.begin();
   const LiteralFactorization::var2var_map_type::const_iterator vend=a.var2var_map.end();
   const LiteralFactorization::var2var_map_type::const_iterator vb_end=b.var2var_map.end();
@@ -106,11 +118,12 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
     
     vit++;
   }
-  
+  }
   
   if (a.rest==b.rest){
     res+=a.rest.lmDeg();
   }
+  
   return res;
 }
 
