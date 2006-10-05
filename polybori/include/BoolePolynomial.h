@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.51  2006/10/05 09:03:34  bricken
+ * + uncommented duplicate typedef
+ *
  * Revision 1.50  2006/10/05 07:33:58  dreyer
  * ADD: BoolePolynomial::genericExpBegin()/End()
  *
@@ -313,9 +316,9 @@ public:
                             integral_constant<size_type, 0> >
   bidirectional_iterator;
 
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<>, project_ith<2>, 
-                           deg_iterator> delayed_iterator;
+  //typedef CDelayedTermIter<monom_type, 
+  //                         change_assign<>, project_ith<2>, 
+  //                         deg_iterator> delayed_iterator;
 
   typedef CDelayedTermIter<monom_type, 
                            change_assign<>, project_ith<2>, 
