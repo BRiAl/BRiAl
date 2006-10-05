@@ -562,7 +562,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     
     deg_type deg_high=strat.generators[index].ecart()+lm.deg();
     curr[found].add((lm/strat.generators[index].lm)*strat.generators[index].p, deg_high);
-    assert(!(curr[found].value().isZero()));
+    //assert(!(curr[found].value().isZero()));
   } else 
     step_S(curr,result,lm, index,strat);
   
