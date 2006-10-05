@@ -107,12 +107,15 @@ int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
     return strat.generators[i].p;
 }
+static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
+    strat.addGenerator(p);
+}
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
   .def(init<const GroebnerStrategy&>())
-  .def("addGenerator", &GroebnerStrategy::addGenerator)
+  .def("addGenerator", add_generator)//&GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("addAsYouWish",&GroebnerStrategy::addAsYouWish)
   .def("implications",implications)
