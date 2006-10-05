@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.50  2006/10/05 07:33:58  dreyer
+ * ADD: BoolePolynomial::genericExpBegin()/End()
+ *
  * Revision 1.49  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -207,7 +210,7 @@ class DegRevLexAscOrder;
 class BooleMonomial;
 class BooleExponent;
 template<class> class COrderedIter;
-template<class, class, class> class CGenericIter;
+template<class, class, class, class> class CGenericIter;
 template<class, class, class, class> class CDelayedTermIter;
 
 /** @class BoolePolynomial
@@ -310,14 +313,25 @@ public:
                             integral_constant<size_type, 0> >
   bidirectional_iterator;
 
+  typedef CDelayedTermIter<monom_type, 
+                           change_assign<>, project_ith<2>, 
+                           deg_iterator> delayed_iterator;
+
+  typedef CDelayedTermIter<monom_type, 
+                           change_assign<>, project_ith<2>, 
+                           bidirectional_iterator> delayed_bi_iterator;
+
   /// @name Generic iterators for various orderings
   //@{
-  typedef CGenericIter<LexOrder, self, deg_iterator> lex_iterator;
-  typedef CGenericIter<DegLexOrder, self, deg_iterator> dlex_iterator;
-  typedef CGenericIter<DegRevLexAscOrder, self, bidirectional_iterator> 
+  typedef CGenericIter<LexOrder, self, monom_type, deg_iterator> lex_iterator;
+  typedef CGenericIter<DegLexOrder, self, monom_type, deg_iterator> dlex_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, self, monom_type, bidirectional_iterator> 
   dp_asc_iterator;
+  typedef CGenericIter<LexOrder, self, exp_type, deg_iterator> lex_exp_iterator;
+  typedef CGenericIter<DegLexOrder, self, exp_type, deg_iterator> dlex_exp_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, self, exp_type, bidirectional_iterator> 
+  dp_asc_exp_iterator;
   //@}
-
 
 
   /// Type for lists of terms
@@ -474,6 +488,13 @@ public:
   dlex_iterator genericEnd(dlex_tag) const;
   dp_asc_iterator genericBegin(dp_asc_tag) const;
   dp_asc_iterator genericEnd(dp_asc_tag) const;
+
+  lex_exp_iterator genericExpBegin(lex_tag) const;
+  lex_exp_iterator genericExpEnd(lex_tag) const;
+  dlex_exp_iterator genericExpBegin(dlex_tag) const;
+  dlex_exp_iterator genericExpEnd(dlex_tag) const;
+  dp_asc_exp_iterator genericExpBegin(dp_asc_tag) const;
+  dp_asc_exp_iterator genericExpEnd(dp_asc_tag) const;
   //@}
 
   /// Navigate through structure

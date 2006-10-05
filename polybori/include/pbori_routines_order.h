@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/05 07:33:58  dreyer
+ * ADD: BoolePolynomial::genericExpBegin()/End()
+ *
  * Revision 1.2  2006/10/03 09:55:26  dreyer
  * FIX: monomial comparison broken on dp_asc
  *
@@ -141,11 +144,11 @@ public:
 
   /// Define initial iterator generation for this ordering
   iterator leadIterator(const poly_type& poly) const {
-    return poly.navigation();
+    return iterator(poly.navigation());
   }
 
   /// Define iterator incrementation for this ordering
-  iterator& incrementIterator(iterator& iter, const data_type&) const {
+  iterator incrementIterator(iterator& iter, const data_type&) const {
     return ++iter;
   }
 };

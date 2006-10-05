@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/05 07:33:58  dreyer
+ * ADD: BoolePolynomial::genericExpBegin()/End()
+ *
  * Revision 1.2  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -44,7 +47,8 @@
 
 BEGIN_NAMESPACE_PBORI
 
-template<class OrderType, class PolyType, class DelayedIterType>
+template<class OrderType, class PolyType, class MonomType, 
+         class DelayedIterType>
 class CGenericIter {
 
 public:
@@ -82,12 +86,13 @@ public:
   typedef term_type reference;
   //@}
 
+  /// Add capability of generating term
   typedef CDelayedTermIter<monom_type, 
                            change_assign<>, project_ith<2>, 
                            iterator> delayed_iterator;
 
   /// Generic access to type of *this
-  typedef CGenericIter<order_type, poly_type, iterator> self;
+  typedef CGenericIter<order_type, poly_type, monom_type, iterator> self;
 
   // Constructor
   CGenericIter(const poly_type& poly): 
@@ -100,7 +105,7 @@ public:
     m_iter(poly.endOfNavigation()),  m_data(poly) {
   }
 
-  // (for end-of-path marker)
+  // Default (for end-of-path marker)
   CGenericIter(): m_iter(),  m_data() { }
 
   /// Constant dereference operator
@@ -114,23 +119,28 @@ public:
     return *this;
   }
 
+  /// Postfix increment operator
   self operator++(int) {
     self result(*this);
     operator++();
     return result;
   }
 
-
+  /// Unequality check
   bool_type operator!=(const self& rhs) const {
     return (m_iter != rhs.m_iter);
   }
 
+  /// Equality check
   bool_type operator==(const self& rhs) const {
     return (m_iter == rhs.m_iter);
   }
 
 private:
+  /// Current iteration
   delayed_iterator m_iter; 
+
+  /// Polynomial data
   data_type m_data;
 };
 

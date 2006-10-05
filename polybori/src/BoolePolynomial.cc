@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.72  2006/10/05 07:33:58  dreyer
+ * ADD: BoolePolynomial::genericExpBegin()/End()
+ *
  * Revision 1.71  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -989,6 +992,54 @@ BoolePolynomial::genericEnd(dp_asc_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(dp_asc_tag) const" );
   return dp_asc_iterator();
+}
+
+// Start of iteration over monomials in lex ordering
+BoolePolynomial::lex_exp_iterator 
+BoolePolynomial::genericExpBegin(lex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpBegin(lex_tag) const" );
+  return lex_exp_iterator(*this);
+}
+
+// Finish of iteration over monomials in lex ordering
+BoolePolynomial::lex_exp_iterator
+BoolePolynomial::genericExpEnd(lex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(lex_tag) const" );
+  return lex_exp_iterator();
+}
+
+// Start of iteration over monomials in deg-lex ordering
+BoolePolynomial::dlex_exp_iterator 
+BoolePolynomial::genericExpBegin(dlex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpBegin(dlex_tag) const" );
+  return dlex_exp_iterator(*this);
+}
+
+// Finish of iteration over monomials in deg-lex ordering
+BoolePolynomial::dlex_exp_iterator
+BoolePolynomial::genericExpEnd(dlex_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(dlex_tag) const" );
+  return dlex_exp_iterator();
+}
+
+// Start of iteration over monomials in ascending deg-rev-lex ordering
+BoolePolynomial::dp_asc_exp_iterator 
+BoolePolynomial::genericExpBegin(dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpBegin(sd_asc_tag) const" );
+  return dp_asc_exp_iterator(*this);
+}
+
+// Finish of iteration over monomials in ascending deg-rev-lex ordering
+BoolePolynomial::dp_asc_exp_iterator
+BoolePolynomial::genericExpEnd(dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(dp_asc_tag) const" );
+  return dp_asc_exp_iterator();
 }
 
 // fetch list of terms
