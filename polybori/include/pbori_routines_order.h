@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.3  2006/10/05 07:33:58  dreyer
  * ADD: BoolePolynomial::genericExpBegin()/End()
  *
@@ -35,88 +38,36 @@
 // include basic definitions
 #include "pbori_defs.h"
 #include "pbori_order.h"
+#include "pbori_algo.h"
+
 #include "CRestrictedIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
-/// @func lex_compare_indices
-/// @brief defines lexicographic comparison for variable indices
-template<class IdxType>
-CTypes::comp_type
-lex_compare_indices(IdxType lhs, IdxType rhs) {
-
-  if (lhs == rhs)
-    return CTypes::equality;
-
-  return (lhs < rhs?  CTypes::greater_than : CTypes::less_than);
-}
-
-/// @func lex_compare
-/// @brief defines lexicographic comparison for ranges (defined by iterators)
-template<class FirstIterator, class SecondIterator>
-CTypes::comp_type
-lex_compare(FirstIterator start, FirstIterator finish, 
-            SecondIterator rhs_start, SecondIterator rhs_finish) {
-
-  while ( (start != finish) && (rhs_start != rhs_finish) && 
-          (*start == *rhs_start) ) {
-    ++start; ++rhs_start;
-  }
-
-  if (start == finish)
-    return CTypes::less_than;
-
-  if (rhs_start == rhs_finish)
-    return CTypes::greater_than;
-
-  return lex_compare_indices(*start, *rhs_start);
-}
 
 /// @func lex_compare
 /// @brief defines lexicographic comparison
-template<class LhsType, class RhsType>
+template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
-lex_compare(const LhsType& lhs, const RhsType& rhs) {
+lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
 
-  if (lhs == rhs)
-    return CTypes::equality;
-
-  return lex_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+  typedef lex_compare_predicate<LhsType, RhsType, BinaryPredicate> comp_type;
+  return generic_compare_3way(lhs, rhs, comp_type(idx_comp));
 }
 
 /// @func deg_lex_compare
 /// @brief defines degree-lexicographic comparison
-template<class LhsType, class RhsType>
+template<class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
-deg_lex_compare(const LhsType& lhs, const RhsType& rhs) {
+deg_lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
 
-  if (lhs == rhs)
-    return CTypes::equality;
+  typedef typename LhsType::size_type size_type;
+  CTypes::comp_type result = generic_compare_3way( lhs.size(), rhs.size(), 
+                                                   std::greater<size_type>() );
 
-  typename CTypes::size_type llen(lhs.size()), rlen(rhs.size());
-
-  if (llen == rlen)
-    return lex_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end() );
-  else  
-    return (llen > rlen?  CTypes::greater_than : CTypes::less_than);
+  return (result == CTypes::equality? lex_compare(lhs, rhs, idx_comp): result);
 }
 
-/// @func deg_rev_lex_asc_compare
-/// @brief defines degree-lexicographic comparison
-template<class LhsType, class RhsType>
-CTypes::comp_type
-deg_rev_lex_asc_compare(const LhsType& lhs, const RhsType& rhs) {
-
-  if (lhs == rhs)
-    return CTypes::equality;
-
-  typename CTypes::size_type llen(lhs.size()), rlen(rhs.size());
-
-  if (llen == rlen)
-    return lex_compare(rhs.begin(), rhs.end(), lhs.begin(), lhs.end() );
-  else  
-    return (llen > rlen?  CTypes::greater_than : CTypes::less_than);
-}
 
 template <class OrderType, class Iterator>
 class generic_iteration;

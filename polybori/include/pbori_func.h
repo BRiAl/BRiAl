@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.29  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -678,6 +681,25 @@ class is_same_type<Type, Type>:
 template <class Type1, class Type2>
 class is_same_type:
   public integral_constant<CTypes::bool_type, false> {};
+
+
+/** @class on_same_type
+ * @brief This class switches betweem two types, depending on equality of types
+ **/
+template <class Type1, class Type2, class ThenType, class ElseType>
+class on_same_type;
+
+template <class Type, class ThenType, class ElseType>
+class on_same_type<Type, Type, ThenType, ElseType> {
+public:
+  typedef ThenType type;
+};
+
+template <class Type1, class Type2, class ThenType, class ElseType>
+class on_same_type {
+public:
+  typedef ElseType type;
+};
 
 
 /** @class internal_tag

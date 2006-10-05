@@ -256,6 +256,12 @@ lmDivisors() : 3 nodes 8 minterms
 
 ordered iteration... 
 x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+Comparision x(1)*x(4) < x(0)*x(2) 
+ 1
+Comparision x(1)*x(2) < x(0)*x(4) 
+ 1
+Comparision x(1) < x(0)*x(4) 
+ 1
 
 Testing dp_asc
 order code?
@@ -286,6 +292,12 @@ lmDivisors() : 3 nodes 8 minterms
 
 ordered iteration... 
 x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+Comparision x(1)*x(4) < x(0)*x(2) 
+ 0
+Comparision x(1)*x(2) < x(0)*x(4) 
+ 0
+Comparision x(1) < x(0)*x(4) 
+ 1
 
 Testing changing from lex to dlex
 is lexicographical?

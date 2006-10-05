@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.2  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -37,12 +40,20 @@
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"
 
+#include <functional>
+
 #ifndef order_traits_h_
 #define order_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 
-// Retired, but kept for future use
+
+
+template <class OrderType>
+class order_traits {
+
+
+};
 
 END_NAMESPACE_PBORI
 

@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.16  2006/10/05 12:51:32  dreyer
+// CHANGE: Made lex-based comparisions more generic.
+//
 // Revision 1.15  2006/10/04 15:46:50  dreyer
 // ADD: divisorsOf(exp_type), orderedExpBegin/End;
 // CHANGE: Polynomials printing respects ordering
@@ -88,8 +91,8 @@ void test_ordered(CTypes::ordercode_type order_marker) {
   BoolePolyRing ring(5, order_marker);
 
   std::cout << "order code?" <<std::endl;
-  std::cout << BoolePolyRing::getOrderCode() <<" (should be: "<< order_marker<<")"
-  <<std::endl;
+  std::cout << BoolePolyRing::getOrderCode();
+  std::cout<<" (should be: "<< order_marker<<")" <<std::endl;
 
 
   std::cout << "is lexicographical?" <<std::endl;
@@ -143,6 +146,16 @@ void test_ordered(CTypes::ordercode_type order_marker) {
     ++ordStart;
   }
   std::cout << std::endl;
+
+  std::cout << "Comparision "<< (y*w) << "< " << (x*z) <<std::endl;
+  std::cout << " "<< ((y*w)  < (x*z)) <<std::endl;
+
+  std::cout << "Comparision "<< (y*z) << "< " << (x*w) <<std::endl;
+  std::cout << " "<< ((y*z)  < (x*w)) <<std::endl;
+
+  std::cout << "Comparision "<< (y) << "< " << (x*w) <<std::endl;
+  std::cout << " "<< ((y)  < (x*w)) <<std::endl;
+
 }
 
 void test_ordered_changed(CTypes::ordercode_type order_marker, 

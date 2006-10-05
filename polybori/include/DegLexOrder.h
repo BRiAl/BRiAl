@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/10/05 12:51:31  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.6  2006/10/04 12:22:32  dreyer
  * ADD: getOrderCode()
  *
@@ -79,6 +82,9 @@ class DegLexOrder:
   typedef valid_tag descending_property;
   typedef dlex_tag order_tag;
   //@}
+
+  /// Define binary predicate for index comparision
+  typedef std::less<idx_type> idx_comparer_type;
 
   /// Get order code
   enum { order_code = CTypes::dlex };

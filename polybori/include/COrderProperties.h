@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/10/05 12:51:31  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.7  2006/10/04 11:48:28  dreyer
  * ADD: isDegreeReverseLexicograpical()
  *
@@ -81,6 +84,21 @@ class COrderProperties {
   typedef typename order_type::degrevlexorder_property degrevlexorder_property;
   //@}
 
+   /// @name Adopt auxiliary type definitions
+  //@{
+  typedef typename order_type::size_type size_type;
+  typedef typename order_type::idx_type idx_type;
+  typedef typename order_type::bool_type bool_type;
+  typedef typename order_type::ostream_type ostream_type;
+  typedef typename order_type::hash_type hash_type;
+  //@}
+
+  /// Get order code
+  enum { order_code = order_type::order_code };
+
+  /// Get binary predicate for index comparision
+  typedef typename order_type::idx_comparer_type idx_comparer_type;
+  
   /// Define test whether iterators respect the ordering
   is_same_type<ordered_property, valid_tag> orderedStandardIteration;
 

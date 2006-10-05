@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.4  2006/10/02 09:28:38  dreyer
  * ADD BoolePolyRing::changeOrdering and infrastructure
  *
@@ -67,4 +70,26 @@ get_ordered_manager(ConstructorType& nvars, CTypes::ordercode_type order) {
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );
 }
+
+/// @class lex_compare_predicate
+/// @brief defines lexicographic comparison functor
+template <class LhsType, class RhsType, class BinaryPredicate>
+class lex_compare_predicate:
+  public std::binary_function<LhsType, RhsType, bool> {
+public:
+
+  /// Constructor
+  lex_compare_predicate(const BinaryPredicate& comp):
+    m_comp(comp) {}
+
+  /// Functor operation
+  bool operator()(const LhsType& lhs, const RhsType& rhs) const {
+    return std::lexicographical_compare(lhs.begin(), lhs.end(), 
+                                        rhs.begin(), rhs.end(), m_comp);
+  }
+
+private:
+  BinaryPredicate m_comp;
+};
+
 END_NAMESPACE_PBORI

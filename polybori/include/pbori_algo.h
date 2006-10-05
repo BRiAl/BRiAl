@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.16  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -532,6 +535,19 @@ bounded_max_element(Iterator start, Iterator finish, SizeType bound){
 
   return result;
 }
+
+/// @func lex_compare_indices
+/// @brief defines lexicographic comparison for variable indices
+template <class LhsType, class RhsType, class BinaryPredicate>
+CTypes::comp_type
+generic_compare_3way(const LhsType& lhs, const RhsType& rhs, BinaryPredicate comp) {
+
+  if (lhs == rhs)
+    return CTypes::equality;
+
+  return (comp(lhs, rhs)?  CTypes::greater_than: CTypes::less_than);
+}
+
 
 END_NAMESPACE_PBORI
 

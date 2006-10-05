@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.5  2006/10/03 18:17:21  bricken
  * + removed minus sign again
  *
@@ -67,7 +70,7 @@ DegRevLexAscOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(const monom_type&, const monom_type&) const)" );
 
-  return deg_rev_lex_asc_compare(lhs, rhs);
+  return deg_lex_compare(lhs, rhs, idx_comparer_type());
 }
 
 // Comparison of monomials
@@ -77,7 +80,7 @@ DegRevLexAscOrder::compare(const exp_type& lhs, const exp_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(const exp_type&, const exp_type&) const)" );
 
-  return deg_rev_lex_asc_compare(lhs, rhs);
+  return deg_lex_compare(lhs, rhs, idx_comparer_type());
 
 }
 
@@ -88,7 +91,7 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "DegRevLexAscOrder::compare(monom_type, monom_type) const)" );
 
-  return lex_compare_indices(rhs, lhs);
+  return generic_compare_3way(lhs, rhs, idx_comparer_type());
 }
 
 // Extraction of leading term

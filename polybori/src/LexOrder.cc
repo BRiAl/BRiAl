@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.10  2006/10/04 12:28:05  dreyer
  * ADD: getOrderCode()
  *
@@ -107,7 +110,7 @@ LexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(const monom_type&, const monom_type&) const)" );
 
-  return lex_compare(lhs, rhs);
+  return lex_compare(lhs, rhs, idx_comparer_type());
 }
 
 // Comparison of monomials
@@ -117,8 +120,7 @@ LexOrder::compare(const exp_type& lhs, const exp_type& rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(const exp_type&, const exp_type&) const)" );
 
-  return lex_compare(lhs, rhs);
-
+  return lex_compare(lhs, rhs, idx_comparer_type());
 }
 
 // Comparison of monomials
@@ -128,7 +130,7 @@ LexOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "LexOrder::compare(monom_type, monom_type) const)" );
 
-  return lex_compare_indices(lhs, rhs);
+  return generic_compare_3way(lhs, rhs, idx_comparer_type());
 }
 
 // Extraction of leading term

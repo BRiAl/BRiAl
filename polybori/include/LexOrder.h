@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/10/05 12:51:32  dreyer
+ * CHANGE: Made lex-based comparisions more generic.
+ *
  * Revision 1.11  2006/10/04 12:22:31  dreyer
  * ADD: getOrderCode()
  *
@@ -97,6 +100,9 @@ class LexOrder:
 
   /// Get order code
   enum { order_code = CTypes::lp  };
+
+  /// Define binary predicate for index comparision
+  typedef std::less<idx_type> idx_comparer_type;
 
   /// Default Constructor
   LexOrder(): base() {};
