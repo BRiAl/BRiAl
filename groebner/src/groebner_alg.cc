@@ -1507,4 +1507,45 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     }
     #endif
 }
+static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
+  std::vector<Polynomial> res;
+  assert(!(strat.pairs.pairSetEmpty()));
+  strat.pairs.cleanTopByChainCriterion();
+  deg_type deg=strat.pairs.queue.top().sugar;
+  wlen_type wlen=strat.pairs.queue.top().wlen;
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
+    
+    assert(strat.pairs.queue.top().sugar==deg);
+    res.push_back(strat.nextSpoly());
+    strat.pairs.cleanTopByChainCriterion();
+  }
+  return res;
+  
+}
+void GroebnerStrategy::symmGB_F2(){
+    const double max_growth=2.0;
+    const int selection_size=1000;
+    const double pair_size_factor=2.0;
+    while(pairs.queue.size()>0){
+        std::vector<Polynomial> next=small_next_degree_spolys(*this,pair_size_factor,selection_size);
+        std::vector<Polynomial> res;
+        if (next.size()>100)
+           res=parallel_reduce(next,*this,10,max_growth);
+        else{
+           if (next.size()>10)
+              res=parallel_reduce(next,*this,30,max_growth);
+           else
+              res=parallel_reduce(next,*this,100, max_growth);}
+        int s=res.size();
+        int i;
+        for(i=s-1;i>=0;i--){
+            Polynomial p=res[i];
+            addAsYouWish(res[i]);
+            if (p.isOne())
+                return;
+        }
+        
+    }
+}
+
 END_NAMESPACE_PBORIGB
