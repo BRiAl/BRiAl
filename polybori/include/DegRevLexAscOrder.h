@@ -25,9 +25,6 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// include basic definitions for orderings
-#include "order_tags.h"
-
 // include base order definitions
 #include "COrderBase.h"
 

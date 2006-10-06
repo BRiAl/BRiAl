@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/10/06 12:52:00  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.6  2006/10/04 11:48:28  dreyer
  * ADD: isDegreeReverseLexicograpical()
  *
@@ -45,7 +48,7 @@
 #include "pbori_defs.h"
 
 // include basic definitions for orderings
-#include "order_tags.h"
+#include "pbori_tags.h"
 
 // include polynomial definitions
 #include "BoolePolynomial.h"

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2006/10/06 12:52:01  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.30  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -914,6 +917,20 @@ class default_binder1st :
                               typename BinaryFunction::first_argument_type> {
 };
 
+// /** @class property_owner
+//  *  @brief defines generic base for properties
+//  **/
+// template <class ValidityTag>
+// class property_owner {
+// public:
+
+//   /// Set marker for validity
+//   typedef typename 
+//   on_same_type<ValidityTag, valid_tag, valid_tag, invalid_tag>::type property;
+
+//   /// Generate Boolean member function
+//   is_same_type<property, valid_tag> hasProperty;
+// };
 
 END_NAMESPACE_PBORI
 

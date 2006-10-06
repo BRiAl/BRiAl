@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/10/06 12:52:01  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.4  2006/07/20 08:55:49  dreyer
  * ADD isOrdered() and  isLexicographical()
  *
@@ -40,6 +43,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
+#include "pbori_tags.h"
 
 #ifndef pbori_traits_h_
 #define pbori_traits_h_
@@ -97,39 +101,60 @@ public:
   /// Type for out-stream
   typedef typename value_type::ostream_type ostream_type;
 
-
+  /// The property whether the equality check is easy
+  typedef typename value_type::easy_equality_property easy_equality_property;
 };
 
 // Built-in types inherit global definitions
 template <>
 class pbori_traits<void>:
-  public CTypes {
+  public CTypes, public equality_property<valid_tag> {
 };
 
 template <>
 class pbori_traits<int>:
-  public CTypes {
+  public CTypes, public equality_property<valid_tag> {
 };
 
 template <>
 class pbori_traits<unsigned int>:
-  public CTypes {
+  public CTypes, public equality_property<valid_tag> {
 };
 
 template <>
 class pbori_traits<long int>:
-  public CTypes {
+  public CTypes, public equality_property<valid_tag> {
 };
 
 
 template <class ValueType>
 class pbori_traits< std::set<ValueType> >:
-  public CTypes {
+  public CTypes, public equality_property<invalid_tag> {
 };
 
 template <class ValueType>
 class pbori_traits< std::vector<ValueType> >:
-  public CTypes {
+  public CTypes, public equality_property<invalid_tag> {
+};
+
+
+/** @class pbori_binary_traits 
+ * @brief This class contains property definitions related to two types
+ *  to be used in polybori classes.
+ *
+ **/
+template <class FirstType, class SecondType>
+class pbori_binary_traits;
+
+template <class OnlyType>
+class pbori_binary_traits<OnlyType, OnlyType> {
+public:
+  typedef typename OnlyType::easy_equality_property easy_equality_property;
+};
+
+template <class FirstType, class SecondType>
+class pbori_binary_traits:
+  public equality_property<invalid_tag>{
 };
 
 

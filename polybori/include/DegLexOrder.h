@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/10/06 12:52:01  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.7  2006/10/05 12:51:31  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -46,9 +49,6 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-
-// include basic definitions for orderings
-#include "order_tags.h"
 
 // include base order definitions
 #include "COrderBase.h"

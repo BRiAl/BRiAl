@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.52  2006/10/06 12:52:00  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.51  2006/10/05 09:03:34  bricken
  * + uncommented duplicate typedef
  *
@@ -201,6 +204,7 @@
 #include "CBidirectTermIter.h"
 
 #include "pbori_func.h"
+#include "pbori_tags.h"
 #include "BooleSet.h"
 
 
@@ -339,6 +343,9 @@ public:
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
+
+  /// The property whether the equality check is easy is inherited from dd_type
+  typedef dd_type::easy_equality_property easy_equality_property;
 
   /// Type for sets of Boolean variables
   typedef BooleSet set_type;

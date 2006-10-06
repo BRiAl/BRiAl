@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/10/06 12:52:00  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.18  2006/09/22 06:19:12  dreyer
  * CHANGE: deactivated the use of pointer in hash()
  *
@@ -152,6 +155,9 @@ class BooleMonomial {
   typedef std::map<self, idx_type, symmetric_composition<
     std::less<poly_type::navigator::access_type>, 
     navigates<poly_type> > > idx_map_type;
+
+  /// The property whether the equality check is easy is inherited from dd_type
+  typedef dd_type::easy_equality_property easy_equality_property;
 
   /// Default Constructor (Constructs monomial one of the active ring)
   BooleMonomial();

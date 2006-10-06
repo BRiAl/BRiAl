@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/10/06 12:52:01  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.4  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -39,6 +42,7 @@
 #include "pbori_defs.h"
 #include "pbori_order.h"
 #include "pbori_algo.h"
+#include "pbori_traits.h"
 
 #include "CRestrictedIter.h"
 
@@ -49,17 +53,68 @@ BEGIN_NAMESPACE_PBORI
 /// @brief defines lexicographic comparison
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
-lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
+lex_compare(const LhsType& lhs, const RhsType& rhs, 
+            BinaryPredicate idx_comp, valid_tag has_easy_equality_test) {
 
   typedef lex_compare_predicate<LhsType, RhsType, BinaryPredicate> comp_type;
   return generic_compare_3way(lhs, rhs, comp_type(idx_comp));
+}
+
+template <class FirstIterator, class SecondIterator, class BinaryPredicate>
+CTypes::comp_type
+lex_compare_3way(FirstIterator start, FirstIterator finish, 
+              SecondIterator rhs_start, SecondIterator rhs_finish, 
+              BinaryPredicate idx_comp) {
+
+   while ( (start != finish) && (rhs_start != rhs_finish) &&
+           (*start == *rhs_start) ) {
+     ++start; ++rhs_start;
+   }
+
+   if (start == finish) {
+     if (rhs_start == rhs_finish)
+       return CTypes::equality;
+
+     return CTypes::less_than;
+   }
+   
+   if (rhs_start == rhs_finish)
+     return CTypes::greater_than;
+
+   return (idx_comp(*start, *rhs_start)? 
+           CTypes::greater_than: CTypes::less_than);
+}
+
+
+/// @func lex_compare
+/// @brief defines lexicographic comparison
+template <class LhsType, class RhsType, class BinaryPredicate>
+CTypes::comp_type
+lex_compare(const LhsType& lhs, const RhsType& rhs, 
+            BinaryPredicate idx_comp, invalid_tag has_no_easy_equality_test) {
+
+  return lex_compare_3way(lhs.begin(), lhs.end(), 
+                          rhs.begin(), rhs.end(), idx_comp);
+}
+
+/// @func lex_compare
+/// @brief defines lexicographic comparison
+template <class LhsType, class RhsType, class BinaryPredicate>
+CTypes::comp_type
+lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
+
+  typedef typename pbori_binary_traits<LhsType, RhsType>::easy_equality_property
+    equality_property;
+
+  return lex_compare(lhs, rhs, idx_comp, equality_property());
 }
 
 /// @func deg_lex_compare
 /// @brief defines degree-lexicographic comparison
 template<class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
-deg_lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
+deg_lex_compare(const LhsType& lhs, const RhsType& rhs, 
+                BinaryPredicate idx_comp) {
 
   typedef typename LhsType::size_type size_type;
   CTypes::comp_type result = generic_compare_3way( lhs.size(), rhs.size(), 

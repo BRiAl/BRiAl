@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/10/06 12:52:01  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.17  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -536,7 +539,7 @@ bounded_max_element(Iterator start, Iterator finish, SizeType bound){
   return result;
 }
 
-/// @func lex_compare_indices
+/// @func generic_compare_3way
 /// @brief defines lexicographic comparison for variable indices
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type

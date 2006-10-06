@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2006/10/06 12:52:00  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.35  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -166,6 +169,8 @@
 
 #include "pbori_algo.h"
 
+#include "pbori_tags.h"
+
 // Using stl's vector
 #include <vector>
 #include <numeric>
@@ -267,6 +272,9 @@ class CDDInterface<ZDD>:
 
   /// Type for file name of pretty print output
   typedef const char* filename_type;
+
+  /// This type has an easy equality check
+  typedef valid_tag easy_equality_property;
 
   /// Default constructor
   CDDInterface(): base_type() {}

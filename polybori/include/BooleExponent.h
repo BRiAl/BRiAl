@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/10/06 12:52:00  dreyer
+ * ADD easy_equility_property and used in lex_compare
+ *
  * Revision 1.7  2006/09/14 10:57:25  dreyer
  * ADD: usedVariablesExp()
  *
@@ -113,6 +116,9 @@ class BooleExponent {
 
   /// Type for index maps
   typedef generate_index_map<self>::type idx_map_type;
+
+  /// This type has no easy equality check
+  typedef invalid_tag easy_equality_property;
 
   /// Default Constructor
   BooleExponent();
