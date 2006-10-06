@@ -139,6 +139,7 @@ void export_strategy(){
   .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
   .def("select", select_wrapped)
   .def_readwrite("optRedByReduced",&GroebnerStrategy::reduceByTailReduced)
+  .def("symmGB_F2",&GroebnerStrategy::symmGB_F2)
   .def("npairs", npairs);
   def("nf1",nf1);
   def("nf2",nf2);
