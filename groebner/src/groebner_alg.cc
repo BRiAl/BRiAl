@@ -30,7 +30,31 @@
 #include "dp_asc4data.h"
 #endif
 BEGIN_NAMESPACE_PBORIGB
+static bool have_ordering_for_tables(){
+        
+        
+      
+    const int order_code=BoolePolyRing::getOrderCode();
+    #ifdef HAVE_DLEX4_DATA
+        if (order_code==COrderEnums::dlex)
+           return true;
+    #endif
 
+
+
+    #ifdef HAVE_LP4_DATA
+        if (order_code==COrderEnums::lp)
+           return true;
+    #endif
+
+    
+
+    #ifdef HAVE_DP_ASC4_DATA
+        if (order_code==COrderEnums::dp_asc)
+           return true;
+    #endif
+    return false;
+}
 static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
   ///@todo need GCDdeg
@@ -842,17 +866,18 @@ static int get_table_entry4(int p_code, int pos){
             cerr<<"using tables with forbidden order"<<endl;
     }
 }
-std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s){
-    if (generators[s].literal_factors.rest.isOne()){
-        mark_all_variable_pairs_as_calculated(*this, s);
+std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
+    if (literal_factors.rest.isOne()){
+        if(s>=0)
+            mark_all_variable_pairs_as_calculated(*this, s);
         return std::vector<Polynomial>();
     }
-    Polynomial p=generators[s].literal_factors.rest;
+    Polynomial p=literal_factors.rest;
     
    
     //Monomial used_variables_m=p.usedVariables();
     Exponent used_variables=p.usedVariablesExp();
-    Exponent e=generators[s].literal_factors.rest.leadExp();
+    Exponent e=literal_factors.rest.leadExp();
     if (e.size()>4) cout<<"too many variables for table"<<endl;
     
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
@@ -861,7 +886,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s){
     unsigned int p_code=p2code_4(p, ring_2_0123);
     int i;
     if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
-        mark_all_variable_pairs_as_calculated(*this, s);
+        if (s>=0)
+            mark_all_variable_pairs_as_calculated(*this, s);
         return std::vector<Polynomial>();
     }
     bool can_add_directly=true;
@@ -871,42 +897,45 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s){
         if (p_code!=impl_code){
             Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
-            if (e_i!=e){
+            if ((include_orig)||(e_i!=e)){
                 p_i=
                     multiply_with_literal_factors(
-                        generators[s].literal_factors,
+                        literal_factors,
                         p_i);
                impl.push_back(p_i);
-                if ((can_add_directly) &&(!(this->minimalLeadingTerms.divisorsOf(p_i.leadExp()).emptiness())))
+                if ((can_add_directly) &&(!(this->minimalLeadingTerms.divisorsOf(e_i).emptiness())))
                     can_add_directly=false;
             }
         }
     }
     
     
-    
-     mark_all_variable_pairs_as_calculated(*this, s);
+     if (s>=0)
+         mark_all_variable_pairs_as_calculated(*this, s);
      
       if (can_add_directly){
         return impl;
     } else {
-        std::vector<Polynomial>::iterator it=impl.begin();
-        std::vector<Polynomial>::iterator end=impl.end();
-        while(it!=end){
-            addGeneratorDelayed(*it);
-            it++;
+        if (!(include_orig)){
+            std::vector<Polynomial>::iterator it=impl.begin();
+            std::vector<Polynomial>::iterator end=impl.end();
+        
+            while(it!=end){
+                addGeneratorDelayed(*it);
+                it++;
 
+            }
         }
         return std::vector<Polynomial>();
     }
 }
 
-std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(int s){
+std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, const Exponent& used_variables,int s, bool include_orig){
     //cout<<"I am here";
-    Polynomial p=generators[s].p;
-    Exponent used_variables=generators[s].usedVariables;
+    //Polynomial p=generators[s].p;
+    //Exponent used_variables=generatusedVariables;
 
-    Exponent e=generators[s].lmExp;
+    Exponent e=lm_exp;//generators[s].lmExp;
 
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
     std::vector<idx_type> back_2_ring(4);
@@ -915,7 +944,8 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(int s){
     unsigned int p_code=p2code_4(p, ring_2_0123);
 
     if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
-        mark_all_variable_pairs_as_calculated(*this, s);
+        if(s>=0)
+            mark_all_variable_pairs_as_calculated(*this, s);
 
         return std::vector<Polynomial>();
     }
@@ -929,7 +959,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(int s){
             Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
 
-            if (e_i!=e){
+            if ((include_orig) ||(e_i!=e)){
                 impl.push_back(p_i);
                 if ((can_add_directly)&&(!(this->minimalLeadingTerms.divisorsOf(e_i).emptiness())))
                     can_add_directly=false;
@@ -940,18 +970,20 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(int s){
     }
     
     
-   
-     mark_all_variable_pairs_as_calculated(*this, s);
+     if (s>=0)
+         mark_all_variable_pairs_as_calculated(*this, s);
     
     if (can_add_directly){
         return impl;
     } else {
         std::vector<Polynomial>::iterator it=impl.begin();
         std::vector<Polynomial>::iterator end=impl.end();
-        while(it!=end){
-            addGeneratorDelayed(*it);
-            it++;
-
+        if (!(include_orig)){
+            while(it!=end){
+             addGeneratorDelayed(*it);
+             it++;
+            
+            }
         }
         return std::vector<Polynomial>();
     }
@@ -1241,40 +1273,19 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
         
         
         if (!(is_impl)){
-        bool have_ordering_for_tables=false;
+
         
-      
-        const int order_code=BoolePolyRing::getOrderCode();
-    #ifdef HAVE_DLEX4_DATA
-        if (order_code==COrderEnums::dlex)
-           have_ordering_for_tables=true;
-    #endif
-
-
-
-    #ifdef HAVE_LP4_DATA
-        if (order_code==COrderEnums::lp)
-           have_ordering_for_tables=true;
-    #endif
-
-    
-
-    #ifdef HAVE_DP_ASC4_DATA
-        if (order_code==COrderEnums::dp_asc)
-           have_ordering_for_tables=true;
-    #endif
-        
-        if (have_ordering_for_tables){
+        if (have_ordering_for_tables()){
         int uv=e.usedVariables.deg();
         if (uv<=4){
-            impl=add4ImplDelayed(s);
+            impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
         } else {
         
             int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
             ////should also be proofable for var2var factors
             assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
             if (uv_opt<=4){
-                impl=addHigherImplDelayedUsing4(s);
+                impl=addHigherImplDelayedUsing4(s, e.literal_factors,false);
             } else {
                 addVariablePairs(s);
             }
@@ -1284,7 +1295,8 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
           addVariablePairs(s);
         }
         } else {
-            mark_all_variable_pairs_as_calculated(*this, s);
+
+             mark_all_variable_pairs_as_calculated(*this, s);
         }
     } else 
     {
@@ -1426,6 +1438,35 @@ class ShorterEliminationLength{
         return (strat->generators[strat->exp2Index.find(e)->second].weightedLength<=el);
     }
 };
+void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
+    std::vector<Polynomial> impl;
+    if (have_ordering_for_tables()){
+        
+        int u_v=p.usedVariablesExp().deg();
+        if  (u_v<=4) {
+            impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
+        } else {
+            if (u_v<=7){
+                LiteralFactorization f(p);
+                if (f.rest.usedVariablesExp().deg()<=4){
+                    impl=addHigherImplDelayedUsing4(-1,f,true);
+                }
+            }
+        }
+        
+    } 
+    if (impl.size()==0)
+        addGenerator(p);
+    else{
+        int s=impl.size();
+        int i;
+        std::vector<int> implication_indices;
+        for(i=0;i<s;i++){
+            
+            implication_indices.push_back(addGenerator(impl[i],true,&implication_indices));
+        }
+    }
+}
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     MonomialSet divisors=this->leadingTerms.divisorsOf(p.lead());
     #if 0
@@ -1452,9 +1493,17 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
                     divisors.expEnd(),
                     ShorterEliminationLength(*this,el))!=divisors.expEnd()){
                 this->addGeneratorDelayed(pr);
-            } else this->addGenerator(pr);
+            } else {
+                if (divisors.emptiness())
+                    this->addGeneratorTrySplit(pr);
+                else
+                    addGenerator(pr);
+            }
         } else
-            this->addGenerator(p);
+            if (divisors.emptiness())
+                this->addGeneratorTrySplit(p);
+            else
+                addGenerator(p);
     }
     #endif
 }
