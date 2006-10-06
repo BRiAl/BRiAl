@@ -1494,15 +1494,15 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
                     ShorterEliminationLength(*this,el))!=divisors.expEnd()){
                 this->addGeneratorDelayed(pr);
             } else {
-                if (divisors.emptiness())
+                /*if (divisors.emptiness())
                     this->addGeneratorTrySplit(pr);
-                else
+                else*/
                     addGenerator(pr);
             }
         } else
-            if (divisors.emptiness())
+            /*if (divisors.emptiness())
                 this->addGeneratorTrySplit(p);
-            else
+            else*/
                 addGenerator(p);
     }
     #endif
