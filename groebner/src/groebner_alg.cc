@@ -854,10 +854,14 @@ static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, 
 }
 static int get_table_entry4(int p_code, int pos){
     switch(BoolePolyRing::getOrderCode()){
+        #ifdef HAVE_LP4_DATA
         case COrderEnums::lp:
             return lp4var_data[p_code][pos];
+        #endif
+        #ifdef  HAVE_DLEX4_DATA
         case COrderEnums::dlex:
             return dlex4var_data[p_code][pos];
+        #endif
         #ifdef HAVE_DP_ASC4_DATA
         case COrderEnums::dp_asc:
             return dp_asc4var_data[p_code][pos];
@@ -877,8 +881,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
    
     //Monomial used_variables_m=p.usedVariables();
     Exponent used_variables=p.usedVariablesExp();
-    Exponent e=literal_factors.rest.leadExp();
-    if (e.size()>4) cout<<"too many variables for table"<<endl;
+    Exponent e=p.leadExp();
+    if (e.size()>4) cerr<<"too many variables for table"<<endl;
     
     std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
     std::vector<idx_type> back_2_ring(4);
@@ -890,6 +894,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
             mark_all_variable_pairs_as_calculated(*this, s);
         return std::vector<Polynomial>();
     }
+    
+    //Exponent e_i_high=multiply_with_literal_factor(literal_factors,Polynomial(Monomial(e_i)).lead());
     bool can_add_directly=true;
     std::vector<Polynomial> impl;
     for(i=0;get_table_entry4(p_code,i)!=0;i++){
@@ -903,7 +909,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
                         literal_factors,
                         p_i);
                impl.push_back(p_i);
-                if ((can_add_directly) &&(!(this->minimalLeadingTerms.divisorsOf(e_i).emptiness())))
+                if ((can_add_directly) &&(!(this->minimalLeadingTerms.divisorsOf(p_i.leadExp()).emptiness())))
+                //e_i is wrong here, have to multiply
                     can_add_directly=false;
             }
         }
@@ -1323,6 +1330,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
             
         implication_indices.push_back(
             addGenerator(implication,true,&implication_indices));
+        //addGeneratorDelayed(implication);
     }
     return s;
 }
@@ -1440,19 +1448,28 @@ class ShorterEliminationLength{
 };
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
     std::vector<Polynomial> impl;
+    int way=0;
     if (have_ordering_for_tables()){
         
         int u_v=p.usedVariablesExp().deg();
         if  (u_v<=4) {
+            way=1;
             impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
         } else {
-            if (u_v<=7){
+           way=2;
+           if (u_v<=7){
+                way=3;
                 LiteralFactorization f(p);
                 if (f.rest.usedVariablesExp().deg()<=4){
+                    way=4;
                     impl=addHigherImplDelayedUsing4(-1,f,true);
                 }
+                
+                
             }
+            
         }
+        
         
     } 
     if (impl.size()==0)
@@ -1464,7 +1481,9 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
         for(i=0;i<s;i++){
             
             implication_indices.push_back(addGenerator(impl[i],true,&implication_indices));
+            
         }
+        assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
     }
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
@@ -1494,15 +1513,15 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
                     ShorterEliminationLength(*this,el))!=divisors.expEnd()){
                 this->addGeneratorDelayed(pr);
             } else {
-                /*if (divisors.emptiness())
+                if (divisors.emptiness())
                     this->addGeneratorTrySplit(pr);
-                else*/
+                else
                     addGenerator(pr);
             }
         } else
-            /*if (divisors.emptiness())
+            if (divisors.emptiness())
                 this->addGeneratorTrySplit(p);
-            else*/
+            else
                 addGenerator(p);
     }
     #endif
