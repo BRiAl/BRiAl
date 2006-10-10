@@ -1638,5 +1638,48 @@ void GroebnerStrategy::symmGB_F2(){
         
     }
 }
-
+static int get_first_variable_index(const Polynomial& p){
+    return *(p.navigation());
+}
+Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
+    std::vector<Polynomial> new_vec;
+    
+    int i;
+    int s=vec.size();
+    int index=-1;
+    for(i=0;i<s;i++){
+        if (vec[i].isZero()) return Polynomial(0);
+        if (!(vec[i].isOne())){
+    
+            new_vec.push_back(vec[i]);
+    
+            if (index<0){
+                index=*(vec[i].navigation());
+    
+                }
+            else {
+    
+                //int a_i=*p.navigation();
+                index=std::min(index,*(vec[i].navigation()));
+            }
+        }
+    }
+    
+    
+    
+    if (new_vec.size()==0) return Polynomial(1);
+    if (new_vec.size()==1) return new_vec[0];
+    s=new_vec.size();
+    std::vector<Polynomial> s0_vec(s);
+    std::vector<Polynomial> s1_vec(s);
+    for(i=0;i<s;i++){
+        s0_vec[i]=new_vec[i].diagram().subset0(index);
+        s1_vec[i]=new_vec[i].diagram().subset1(index).Xor(new_vec[i].diagram().subset0(index));
+    }
+    
+    Polynomial s0=mult_fast_sim(s0_vec);
+    Polynomial s1=mult_fast_sim(s1_vec);
+    
+    return ((Monomial) Variable(index))*(s1+s0)+s0;
+}
 END_NAMESPACE_PBORIGB

@@ -124,7 +124,7 @@ void export_strategy(){
   .def("someSpolysInNextDegree", someNextDegreeSpolys)
   .def("smallSpolysInNextDegree",small_next_degree_spolys)
   .def("__len__",nGenerators)
-  .def("translate_indices",translate_indices)
+  
   .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)
@@ -148,4 +148,6 @@ void export_strategy(){
   def("nf_delaying",nf_delaying);
   def("nf_delaying_exchanging", nf_delaying_exchanging);
   def("red_tail_self_tuning", red_tail_self_tuning);
+  def("translate_indices",translate_indices);
+  def("mult_fast_sim_C",mult_fast_sim);
 }

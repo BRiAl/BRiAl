@@ -286,7 +286,7 @@ public:
 };
 
 Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table);
-
+Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
 END_NAMESPACE_PBORIGB
 
 #endif
