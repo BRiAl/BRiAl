@@ -758,8 +758,57 @@ MonomialSet minimal_elements(const MonomialSet& s){
 #endif
 }
 
-static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
+class SetBitUInt{
+    public:
+        void operator() (unsigned int& vec, int index){
+            vec|=(1<<index);
+        }
+};
+class ZeroFunction{
+    public:
+        unsigned int operator() (unsigned int val){
+            return 0;
+        }
+};
+template<class value_type, class initializer, class set_bit> value_type p2code(Polynomial p, const std::vector<char> & ring_2_0123, int max_vars){
     Polynomial::exp_iterator it_p=p.expBegin();
+    Polynomial::exp_iterator end_p=p.expEnd();
+    initializer init;
+    value_type p_code=init(max_vars);
+    assert(max_vars<sizeof(unsigned int)*8);
+    set_bit bit_setter;
+    while(it_p!=end_p){
+        Exponent curr_exp=*it_p;
+        Exponent::const_iterator it_v=curr_exp.begin();
+        Exponent::const_iterator end_v=curr_exp.end();
+        unsigned int exp_code=0;
+        //exp code is int between 0 and 15
+        while(it_v!=end_v){
+            //cout<<"table value:"<<(int)ring_2_0123[(*it_v)]<<endl;
+            exp_code|=(1<<ring_2_0123[(*it_v)]);
+            //cout<<"exp_code:"<<exp_code<<endl;
+            it_v++;
+        }
+        //cout<<"exp_code final:"<<exp_code<<endl;
+        //p_code|=(1<<exp_code);
+        bit_setter(p_code,exp_code);
+        //so p code is 16-bit unsigned int
+        //int is fastest
+        it_p++;
+    }
+    return p_code;
+}
+Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table){
+    if (p.isConstant()) return p;
+    int index=*(p.navigation());
+    int index_mapped=table[index];
+    return ((Monomial) Variable(index_mapped))*translate_indices(p.diagram().subset1(index),table)
+    
+    +translate_indices(p.diagram().subset0(index), table);
+}
+static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
+    return p2code<unsigned int, ZeroFunction, SetBitUInt>(p,ring_2_0123, 4);
+    /*Polynomial::exp_iterator it_p=p.expBegin();
     Polynomial::exp_iterator end_p=p.expEnd();
     unsigned int p_code=0;
     while(it_p!=end_p){
@@ -781,7 +830,10 @@ static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123
         it_p++;
     }
     return p_code;
+    */
 }
+
+
 static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring){
     int i;
     Monomial res;

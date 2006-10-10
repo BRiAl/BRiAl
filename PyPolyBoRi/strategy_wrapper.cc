@@ -124,6 +124,7 @@ void export_strategy(){
   .def("someSpolysInNextDegree", someNextDegreeSpolys)
   .def("smallSpolysInNextDegree",small_next_degree_spolys)
   .def("__len__",nGenerators)
+  .def("translate_indices",translate_indices)
   .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("toStdOut", printGenerators)

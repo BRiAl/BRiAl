@@ -173,6 +173,10 @@ public:
   {
     assert(type==VARIABLE_PAIR);
     this->type=type;
+    if (gen[i].lmExp==gen[i].usedVariables)
+        sugar=gen[i].deg;
+    if (gen[i].tailVariables.deg()<gen[i].deg)
+        sugar=gen[i].deg;
   }
   
   PairE(const Polynomial& delayed):

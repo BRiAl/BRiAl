@@ -285,7 +285,7 @@ public:
   }
 };
 
-
+Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table);
 
 END_NAMESPACE_PBORIGB
 
