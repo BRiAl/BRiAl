@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/10/10 16:12:28  bricken
+ * + try this deg function
+ *
  * Revision 1.19  2006/10/06 12:52:00  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -195,7 +198,12 @@ class BooleMonomial {
   /// Degree of the monomial
   size_type deg() const {
     ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
-    return m_poly.nNodes(); }
+    #if 0
+    return m_poly.nNodes(); 
+    #else
+    return std::distance(m_poly.firstBegin(),m_poly.firstEnd());
+    #endif
+    }
 
   /// Size of the exponents
   size_type size() const { return deg(); }
