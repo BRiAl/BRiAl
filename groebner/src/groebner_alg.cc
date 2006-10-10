@@ -1498,6 +1498,25 @@ class ShorterEliminationLength{
         return (strat->generators[strat->exp2Index.find(e)->second].weightedLength<=el);
     }
 };
+
+class ShorterEliminationLengthModified{
+  public:
+    const GroebnerStrategy* strat;
+    wlen_type el;
+    deg_type lm_deg;
+    ShorterEliminationLengthModified(const GroebnerStrategy& strat,wlen_type el, deg_type  lm_deg){
+    this->el=el;
+    this->strat=&strat;
+    this->lm_deg=lm_deg;
+    }
+    bool operator() (const Exponent& e){
+        assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
+        assert(e.deg()<lm_deg);
+        
+        const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
+        return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
+    }
+};
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
     std::vector<Polynomial> impl;
     int way=0;
@@ -1539,7 +1558,8 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
     }
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
-    MonomialSet divisors=this->leadingTerms.divisorsOf(p.lead());
+    Exponent lm_exp=p.leadExp();
+    MonomialSet divisors=this->leadingTerms.divisorsOf(lm_exp);
     #if 0
     if (divisors.emptiness())
         addGenerator(p);
@@ -1549,7 +1569,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     if (std::find_if(
             divisors.expBegin(),
             divisors.expEnd(),
-            ShorterEliminationLength(*this,el))!=divisors.expEnd()){
+            ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
         this->addGeneratorDelayed(p);
     } else {
         Polynomial pr;
@@ -1562,7 +1582,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
             if (std::find_if(
                     divisors.expBegin(),
                     divisors.expEnd(),
-                    ShorterEliminationLength(*this,el))!=divisors.expEnd()){
+                    ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
                 this->addGeneratorDelayed(pr);
             } else {
                 if (divisors.emptiness())
