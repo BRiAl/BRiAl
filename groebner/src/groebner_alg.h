@@ -107,7 +107,7 @@ public:
   int addGenerator(const BoolePolynomial& p, bool is_impl=false, std::vector<int>* impl_v=NULL);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);
-  void addGeneratorTrySplit(const Polynomial& p);
+  void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
   bool variableHasValue(idx_type i);
   PairManager pairs;
   bool reduceByTailReduced;
@@ -127,6 +127,7 @@ public:
   int averageLength;
   bool optRedTail;
   bool optLazy;
+  bool optExchange;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this){
@@ -136,6 +137,7 @@ public:
     extendedProductCriterions=0;
     easyProductCriterions=0;
     optRedTail=true;
+    optExchange=true;
     if (BoolePolyRing::isDegreeOrder())
         optLazy=false;
     else
@@ -287,6 +289,7 @@ public:
 
 Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table);
 Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
+std::vector<Polynomial> full_implication_gb(const Polynomial & p);
 END_NAMESPACE_PBORIGB
 
 #endif

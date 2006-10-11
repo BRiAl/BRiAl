@@ -132,6 +132,7 @@ void export_strategy(){
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
   .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
+  .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
   .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
   .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)

@@ -122,6 +122,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
 {
   optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
+  optExchange=orig.optExchange;
   reductionSteps=orig.reductionSteps;
   normalForms=orig.normalForms;
   currentDegree=orig.currentDegree;
@@ -1517,7 +1518,7 @@ class ShorterEliminationLengthModified{
         return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
     }
 };
-void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
+void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
     std::vector<Polynomial> impl;
     int way=0;
     if (have_ordering_for_tables()){
@@ -1528,14 +1529,24 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
             impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
         } else {
            way=2;
-           if (u_v<=7){
+           if (u_v<=10){
                 way=3;
                 LiteralFactorization f(p);
                 if (f.rest.usedVariablesExp().deg()<=4){
                     way=4;
                     impl=addHigherImplDelayedUsing4(-1,f,true);
+                } else {
+                    /*if ((is_minimal) && (f.rest.usedVariablesExp().deg()<=f.rest.leadExp().deg()+2)){
+                        impl=full_implication_gb(f.rest);
+                        int i;
+                        int s=impl.size();
+                        for(i=0;i<s;i++){
+                            impl[i]=multiply_with_literal_factors(f,impl[i]);
+                        }
+                   }*/
                 }
                 
+            } else {
                 
             }
             
@@ -1551,7 +1562,11 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p){
         std::vector<int> implication_indices;
         for(i=0;i<s;i++){
             
-            implication_indices.push_back(addGenerator(impl[i],true,&implication_indices));
+            if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness())     
+                 implication_indices.push_back(
+                     addGenerator(impl[i],true,&implication_indices));
+            else
+                addGeneratorDelayed(impl[i]);
             
         }
         assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
@@ -1586,13 +1601,13 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
                 this->addGeneratorDelayed(pr);
             } else {
                 if (divisors.emptiness())
-                    this->addGeneratorTrySplit(pr);
+                    this->addGeneratorTrySplit(pr, true);
                 else
                     addGenerator(pr);
             }
         } else
             if (divisors.emptiness())
-                this->addGeneratorTrySplit(p);
+                this->addGeneratorTrySplit(p, true);
             else
                 addGenerator(p);
     }
@@ -1681,5 +1696,12 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     Polynomial s1=mult_fast_sim(s1_vec);
     
     return ((Monomial) Variable(index))*(s1+s0)+s0;
+}
+std::vector<Polynomial> full_implication_gb(const Polynomial & p){
+    cout<<"Recursive call"<<endl;
+    GroebnerStrategy strat;
+    strat.addGenerator(p);
+    strat.symmGB_F2();
+    return strat.minimalizeAndTailReduce();
 }
 END_NAMESPACE_PBORIGB

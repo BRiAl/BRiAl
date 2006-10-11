@@ -715,7 +715,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     int index=select1(strat,lm);
     if (index>=0){
       steps=steps+curr.size();
-      if (curr.size()>1){
+      if ((strat.optExchange) && (curr.size()>1)){
         step_S_T(curr,result,lm, index,strat);
         //step_S(curr,result,lm, index,strat);
       } else{
