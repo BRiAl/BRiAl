@@ -128,6 +128,7 @@ public:
   bool optRedTail;
   bool optLazy;
   bool optExchange;
+  bool optAllowRecursion;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this){
@@ -138,6 +139,7 @@ public:
     easyProductCriterions=0;
     optRedTail=true;
     optExchange=true;
+    optAllowRecursion=true;
     if (BoolePolyRing::isDegreeOrder())
         optLazy=false;
     else

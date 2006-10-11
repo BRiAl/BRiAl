@@ -120,6 +120,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  optAllowRecursion=orig.optAllowRecursion;
   optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
   optExchange=orig.optExchange;
@@ -1529,21 +1530,22 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
             impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
         } else {
            way=2;
-           if (u_v<=10){
+           if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
                 way=3;
                 LiteralFactorization f(p);
                 if (f.rest.usedVariablesExp().deg()<=4){
                     way=4;
                     impl=addHigherImplDelayedUsing4(-1,f,true);
                 } else {
-                    /*if ((is_minimal) && (f.rest.usedVariablesExp().deg()<=f.rest.leadExp().deg()+2)){
+                    if ((optAllowRecursion) &&(is_minimal) && (f.rest.usedVariablesExp().deg()<=f.rest.leadExp().deg()+2)){
+                        log("Recursive call");
                         impl=full_implication_gb(f.rest);
                         int i;
                         int s=impl.size();
                         for(i=0;i<s;i++){
                             impl[i]=multiply_with_literal_factors(f,impl[i]);
                         }
-                   }*/
+                   }
                 }
                 
             } else {
@@ -1698,8 +1700,10 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     return ((Monomial) Variable(index))*(s1+s0)+s0;
 }
 std::vector<Polynomial> full_implication_gb(const Polynomial & p){
-    cout<<"Recursive call"<<endl;
+    
     GroebnerStrategy strat;
+    //strat.log("Recursive call");
+    strat.optAllowRecursion=false;
     strat.addGenerator(p);
     strat.symmGB_F2();
     return strat.minimalizeAndTailReduce();
