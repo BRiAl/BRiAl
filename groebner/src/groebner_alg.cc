@@ -954,7 +954,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     std::vector<Polynomial> impl;
     for(i=0;get_table_entry4(p_code,i)!=0;i++){
         unsigned int impl_code=get_table_entry4(p_code,i);
-        if (p_code!=impl_code){
+        if ((include_orig) ||(p_code!=impl_code)){
             Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
             if ((include_orig)||(e_i!=e)){
@@ -1016,7 +1016,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     std::vector<Polynomial> impl;
     for(i=0;get_table_entry4(p_code,i)!=0;i++){
         unsigned int impl_code=get_table_entry4(p_code,i);
-        if (p_code!=impl_code){
+        if ((include_orig) ||(p_code!=impl_code)){
             Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
 
@@ -1513,7 +1513,7 @@ class ShorterEliminationLengthModified{
     }
     bool operator() (const Exponent& e){
         assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
-        assert(e.deg()<lm_deg);
+        assert(e.deg()<=lm_deg);
         
         const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
         return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
@@ -1582,6 +1582,10 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
         addGenerator(p);
     else addGeneratorDelayed(p);
     #else
+    if (divisors.owns(Monomial(lm_exp))){
+        addGeneratorDelayed(p);
+        return;
+    }
     wlen_type el=p.eliminationLength();
     if (std::find_if(
             divisors.expBegin(),
