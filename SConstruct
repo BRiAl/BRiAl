@@ -63,6 +63,7 @@ class PythonConfig(object):
         self.staticlibdir=self.libdir+"/python"+ version+"/config"
 
 PYTHONSEARCH=[\
+    PythonConfig(version="2.5", prefix=PYPREFIX),\
     PythonConfig(version="2.4", prefix=PYPREFIX),\
     PythonConfig(version="2.4"),\
     PythonConfig(version="2.3"),]
@@ -178,7 +179,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS=LIBS+["python2.4"]+USERLIBS,
+            LIBS=LIBS+["python"+c.version]+USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
     sys.path.append("testsuite/py")
     from StringIO import StringIO
