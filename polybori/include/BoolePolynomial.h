@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.54  2006/10/16 15:13:10  bricken
+ * + new map type
+ *
  * Revision 1.53  2006/10/16 10:54:29  dreyer
  * ADD: idx_map_type to BoolePolynomial
  *
@@ -359,7 +362,8 @@ public:
   /// Type for index maps
   typedef std::map<self, idx_type, symmetric_composition<
     std::less<navigator::access_type>, navigates<self> > > idx_map_type;
-
+  typedef std::map<self, std::vector<self>, symmetric_composition<
+    std::less<navigator::access_type>, navigates<self> > > poly_vec_map_type;
 
   //-------------------------------------------------------------------------
   // constructors and destructor
