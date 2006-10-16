@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
+#include "cache_manager.h"
 #ifdef HAVE_HASH_MAP
 #include <ext/hash_map>
 #else
@@ -116,6 +117,7 @@ public:
   MonomialSet minimalLeadingTerms;
   MonomialSet leadingTerms11;
   MonomialSet leadingTerms00;
+  boost::shared_ptr<CacheManager> cache;
   bool enabledLog;
    unsigned int reductionSteps;
   int normalForms;
@@ -129,9 +131,11 @@ public:
   bool optLazy;
   bool optExchange;
   bool optAllowRecursion;
+  
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
-  GroebnerStrategy():pairs(*this){
+  GroebnerStrategy():pairs(*this),cache(new CacheManager()){
+    
     chainCriterions=0;
     enabledLog=false;
     variableChainCriterions=0;
@@ -289,9 +293,10 @@ public:
   }
 };
 
-Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table);
+
 Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
-std::vector<Polynomial> full_implication_gb(const Polynomial & p);
+std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
+
 END_NAMESPACE_PBORIGB
 
 #endif

@@ -120,6 +120,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  cache=orig.cache;
   optAllowRecursion=orig.optAllowRecursion;
   optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
@@ -800,7 +801,7 @@ template<class value_type, class initializer, class set_bit> value_type p2code(P
     }
     return p_code;
 }
-Polynomial translate_indices(const Polynomial& p, const std::vector<int>& table){
+Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& table){
     if (p.isConstant()) return p;
     int index=*(p.navigation());
     int index_mapped=table[index];
@@ -862,17 +863,7 @@ static Polynomial code_2_poly_4(unsigned int code, std::vector<idx_type> back_2_
     //cout<<"p input code"<<code<<"p out:"<<p<<endl;
     return p;
 }
-void set_up_translation_vectors(std::vector<char>& ring_2_0123, std::vector<idx_type>& back_2_ring, const Exponent& used_variables){
-    BooleExponent::const_iterator it=used_variables.begin();
-    BooleExponent::const_iterator end=used_variables.end();
-    char idx_0123=0;
-    while(it!=end){
-        ring_2_0123[*it]=idx_0123;
-        back_2_ring[idx_0123]=*it;
-        idx_0123++;
-        it++;
-    }
-}
+
 
 static void mark_all_variable_pairs_as_calculated(GroebnerStrategy& strat, int s){
     BooleExponent::const_iterator it=strat.generators[s].lmExp.begin();
@@ -1537,9 +1528,22 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
                     way=4;
                     impl=addHigherImplDelayedUsing4(-1,f,true);
                 } else {
-                    if ((optAllowRecursion) &&(is_minimal) && (f.rest.usedVariablesExp().deg()<=f.rest.leadExp().deg()+2)){
+                    deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
+                    deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
+                    if ((optAllowRecursion) &&(is_minimal) && 
+                    
+                    (
+                    (rest_used_variables_deg<=rest_lead_exp_deg+2)||
+                    ((rest_lead_exp_deg<=4)
+                        &&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
+                    ((rest_lead_exp_deg<=3)
+                        &&(rest_used_variables_deg<=rest_lead_exp_deg+5))||
+                    ((rest_lead_exp_deg<=2)
+                        &&(rest_used_variables_deg<=rest_lead_exp_deg+7))))
+                    {
+                        //orig +2
                         log("Recursive call");
-                        impl=full_implication_gb(f.rest);
+                        impl=full_implication_gb(f.rest,*cache,*this);
                         int i;
                         int s=impl.size();
                         for(i=0;i<s;i++){
@@ -1703,13 +1707,24 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     
     return ((Monomial) Variable(index))*(s1+s0)+s0;
 }
-std::vector<Polynomial> full_implication_gb(const Polynomial & p){
-    
+std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& cache, GroebnerStrategy& strat_param){
+    bool succ;
+    CacheManager::res_type cache_res=cache.lookup(p,succ);
+    if (!(succ)){
     GroebnerStrategy strat;
+    strat.cache=strat_param.cache;
     //strat.log("Recursive call");
-    strat.optAllowRecursion=false;
+    strat.optAllowRecursion=true;
     strat.addGenerator(p);
     strat.symmGB_F2();
-    return strat.minimalizeAndTailReduce();
+    std::vector<Polynomial> res=strat.minimalizeAndTailReduce();
+    cache.insert(p,res);
+    return res;
+    } else
+    {   
+        strat_param.log("used dynamic cache");
+        std::vector<Polynomial> res(*cache_res);
+        return res;
+    }
 }
 END_NAMESPACE_PBORIGB
