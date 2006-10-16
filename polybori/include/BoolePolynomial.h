@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.53  2006/10/16 10:54:29  dreyer
+ * ADD: idx_map_type to BoolePolynomial
+ *
  * Revision 1.52  2006/10/06 12:52:00  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -196,6 +199,9 @@
 // include standard definitions
 #include <vector>
 
+// get standard map functionality
+#include <map>
+
 // include basic definitions and decision diagram interface
 #include "CDDInterface.h"
 
@@ -349,6 +355,11 @@ public:
 
   /// Type for sets of Boolean variables
   typedef BooleSet set_type;
+
+  /// Type for index maps
+  typedef std::map<self, idx_type, symmetric_composition<
+    std::less<navigator::access_type>, navigates<self> > > idx_map_type;
+
 
   //-------------------------------------------------------------------------
   // constructors and destructor
