@@ -1534,6 +1534,8 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
                     
                     (
                     (rest_used_variables_deg<=rest_lead_exp_deg+2)||
+                    ((rest_lead_exp_deg<=6)
+                        &&(rest_used_variables_deg<=rest_lead_exp_deg+3))||
                     ((rest_lead_exp_deg<=4)
                         &&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
                     ((rest_lead_exp_deg<=3)
