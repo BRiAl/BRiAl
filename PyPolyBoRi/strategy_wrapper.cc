@@ -115,6 +115,7 @@ void export_strategy(){
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
   .def(init<const GroebnerStrategy&>())
+  .def("suggestPluginVariable",&GroebnerStrategy::suggestPluginVariable)
   .def("addGenerator", add_generator)//&GroebnerStrategy::addGenerator)
   .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
   .def("addAsYouWish",&GroebnerStrategy::addAsYouWish)

@@ -1729,4 +1729,33 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& 
         return res;
     }
 }
+int GroebnerStrategy::suggestPluginVariable(){
+    std::vector<int> ranking(BoolePolyRing::nRingVariables());
+    int s=ranking.size();
+    int i;
+    for(i=0;i<s;i++){ ranking[i]=0;}
+    int result=-1;
+    int most_occ=0;
+    MonomialSet::exp_iterator it=minimalLeadingTerms.expBegin();
+    MonomialSet::exp_iterator end=minimalLeadingTerms.expEnd();
+    while(it!=end){
+        Exponent curr=*it;
+        if (curr.deg()>=2){
+        Exponent::const_iterator curr_it=curr.begin();
+        Exponent::const_iterator curr_end=curr.end();
+        while(curr_it!=curr_end){
+            ranking[*curr_it]++;
+        }}
+        it++;
+    }
+    
+    for(i=0;i<ranking.size();i++){
+        if (most_occ<ranking[i])
+        {
+            most_occ=ranking[i];
+            result=i;
+        }
+    }
+    return result;
+}
 END_NAMESPACE_PBORIGB

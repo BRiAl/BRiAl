@@ -162,10 +162,12 @@ public:
           std::cout<<c<<endl;
   }
   void symmGB_F2();
+  int suggestPluginVariable();
   protected:
       void addVariablePairs(int s);
       std::vector<Polynomial> add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, const Exponent& used_variables,int s, bool include_orig);
       std::vector<Polynomial> addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig);
+      
       
 };
 void groebner(GroebnerStrategy& strat);
