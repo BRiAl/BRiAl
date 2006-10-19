@@ -122,6 +122,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
 {
   cache=orig.cache;
   optAllowRecursion=orig.optAllowRecursion;
+  optRedTailDegGrowth=orig.optRedTailDegGrowth;
   optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
   optExchange=orig.optExchange;
@@ -1467,6 +1468,8 @@ bool GroebnerStrategy::variableHasValue(idx_type v){
 std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     MonomialSet m=minimal_elements(this->minimalLeadingTerms);
     std::vector<Polynomial> result;
+    bool tail_growth_bak=optRedTailDegGrowth;
+    optRedTailDegGrowth=true;
     MonomialSet::const_iterator it=m.begin();
     MonomialSet::const_iterator end=m.end();
     while(it!=end){
@@ -1474,6 +1477,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
         result.push_back(red_tail(*this,generators[lm2Index[*it]].p));
         it++;
     }
+    optRedTailDegGrowth=tail_growth_bak;
     return result;
     
 }
@@ -1745,6 +1749,7 @@ int GroebnerStrategy::suggestPluginVariable(){
         Exponent::const_iterator curr_end=curr.end();
         while(curr_it!=curr_end){
             ranking[*curr_it]++;
+            curr_it++;
         }}
         it++;
     }

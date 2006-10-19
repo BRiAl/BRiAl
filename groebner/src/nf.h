@@ -17,7 +17,7 @@ BEGIN_NAMESPACE_PBORIGB
 int select1(const GroebnerStrategy& strat, const Polynomial& p);
 int select1(const GroebnerStrategy& strat, const Monomial& m);
 
-
+int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m);
 
 static int select_short(const GroebnerStrategy& strat, const Polynomial& p);
 static int select_short(const GroebnerStrategy& strat, const Monomial& m);

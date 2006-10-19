@@ -136,6 +136,7 @@ void export_strategy(){
   .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
   .def_readwrite("optAllowRecursion",&GroebnerStrategy::optAllowRecursion)
   .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
+  .def_readwrite("optRedTailDegGrowth",&GroebnerStrategy::optRedTailDegGrowth)
   .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
   .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)

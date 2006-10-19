@@ -131,11 +131,11 @@ public:
   bool optLazy;
   bool optExchange;
   bool optAllowRecursion;
-  
+  bool optRedTailDegGrowth;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this),cache(new CacheManager()){
-    
+    optRedTailDegGrowth=true;
     chainCriterions=0;
     enabledLog=false;
     variableChainCriterions=0;
