@@ -1497,92 +1497,99 @@ class ShorterEliminationLength{
 };
 
 class ShorterEliminationLengthModified{
-  public:
-    const GroebnerStrategy* strat;
-    wlen_type el;
-    deg_type lm_deg;
-    ShorterEliminationLengthModified(const GroebnerStrategy& strat,wlen_type el, deg_type  lm_deg){
-    this->el=el;
-    this->strat=&strat;
-    this->lm_deg=lm_deg;
-    }
-    bool operator() (const Exponent& e){
-        assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
-        assert(e.deg()<=lm_deg);
-        
-        const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
-        return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
-    }
+	public:
+		const GroebnerStrategy* strat;
+	wlen_type el;
+	deg_type lm_deg;
+	ShorterEliminationLengthModified(const GroebnerStrategy& strat,wlen_type el, deg_type  lm_deg){
+		this->el=el;
+		this->strat=&strat;
+		this->lm_deg=lm_deg;
+	}
+	bool operator() (const Exponent& e){
+		assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
+		assert(e.deg()<=lm_deg);
+
+		const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
+		return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
+	}
 };
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
-    std::vector<Polynomial> impl;
-    int way=0;
-    if (have_ordering_for_tables()){
-        
-        int u_v=p.usedVariablesExp().deg();
-        if  (u_v<=4) {
-            way=1;
-            impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
-        } else {
-           way=2;
-           if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
-                way=3;
-                LiteralFactorization f(p);
-                if (f.rest.usedVariablesExp().deg()<=4){
-                    way=4;
-                    impl=addHigherImplDelayedUsing4(-1,f,true);
-                } else {
-                    deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
-                    deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
-                    if ((optAllowRecursion) &&(is_minimal) && 
-                    
-                    (
-                    (rest_used_variables_deg<=rest_lead_exp_deg+2)||
-                    ((rest_lead_exp_deg<=6)
-                        &&(rest_used_variables_deg<=rest_lead_exp_deg+3))||
-                    ((rest_lead_exp_deg<=4)
-                        &&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
-                    ((rest_lead_exp_deg<=3)
-                        &&(rest_used_variables_deg<=rest_lead_exp_deg+5))||
-                    ((rest_lead_exp_deg<=2)
-                        &&(rest_used_variables_deg<=rest_lead_exp_deg+7))))
-                    {
-                        //orig +2
-                        log("Recursive call");
-                        impl=full_implication_gb(f.rest,*cache,*this);
-                        int i;
-                        int s=impl.size();
-                        for(i=0;i<s;i++){
-                            impl[i]=multiply_with_literal_factors(f,impl[i]);
-                        }
-                   }
-                }
-                
-            } else {
-                
-            }
-            
-        }
-        
-        
-    } 
-    if (impl.size()==0)
-        addGenerator(p);
-    else{
-        int s=impl.size();
-        int i;
-        std::vector<int> implication_indices;
-        for(i=0;i<s;i++){
-            
-            if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness())     
-                 implication_indices.push_back(
-                     addGenerator(impl[i],true,&implication_indices));
-            else
-                addGeneratorDelayed(impl[i]);
-            
-        }
-        assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
-    }
+	std::vector<Polynomial> impl;
+	int way=0;
+	if (have_ordering_for_tables()){
+
+		int u_v=p.usedVariablesExp().deg();
+		if  (u_v<=4) {
+			way=1;
+			impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
+		} else {
+			way=2;
+			if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
+				way=3;
+				LiteralFactorization f(p);
+				if (f.rest.usedVariablesExp().deg()<=4){
+					way=4;
+					impl=addHigherImplDelayedUsing4(-1,f,true);
+				} else {
+					deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
+					deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
+					if ((optAllowRecursion) &&(is_minimal) && 
+
+						(
+						(rest_used_variables_deg<=rest_lead_exp_deg+2)||
+						((rest_lead_exp_deg<=6)
+						&&(rest_used_variables_deg<=rest_lead_exp_deg+3))||
+						((rest_lead_exp_deg<=4)
+						&&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
+						((rest_lead_exp_deg<=3)
+						&&(rest_used_variables_deg<=rest_lead_exp_deg+5))||
+						((rest_lead_exp_deg<=2)
+						&&(rest_used_variables_deg<=rest_lead_exp_deg+7))))
+					{
+												//orig +2
+						log("Recursive call");
+						impl=full_implication_gb(f.rest,*cache,*this);
+						int i;
+						int s=impl.size();
+						for(i=0;i<s;i++){
+							impl[i]=multiply_with_literal_factors(f,impl[i]);
+						}
+					}
+				}
+
+			} else {
+
+			}
+
+		}
+
+
+	} 
+	if (impl.size()==0)
+		addGenerator(p);
+	else{
+		int s=impl.size();
+		int i;
+		std::vector<int> implication_indices;
+		for(i=0;i<s;i++){
+
+			if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness()){
+
+
+				Polynomial p_impl=impl[i];
+				if(optRedTail) p_impl=red_tail(*this,p_impl);
+				implication_indices.push_back(
+					addGenerator(p_impl,true,&implication_indices));
+			}
+			else {
+				addGeneratorDelayed(impl[i]);
+								//assert(impl[i]!=)
+			}
+
+		}
+		assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
+	}
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     Exponent lm_exp=p.leadExp();
