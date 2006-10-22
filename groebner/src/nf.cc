@@ -786,7 +786,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       }
     }
     curr.clear();
-    if ((strat.optLazy) &&(steps>max_steps)){
+    if ((strat.optStepBounded) &&(steps>max_steps)){
         strat.log("Too many steps\n");
         while (!(to_reduce.empty())){
             

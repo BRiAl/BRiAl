@@ -65,6 +65,7 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   return res;
 }
 
+
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
 }
@@ -120,23 +121,26 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
-  cache=orig.cache;
-  optAllowRecursion=orig.optAllowRecursion;
-  optRedTailDegGrowth=orig.optRedTailDegGrowth;
-  optLazy=orig.optLazy;
-  optRedTail=orig.optRedTail;
-  optExchange=orig.optExchange;
-  reductionSteps=orig.reductionSteps;
-  normalForms=orig.normalForms;
-  currentDegree=orig.currentDegree;
-  chainCriterions=orig.chainCriterions;
-  variableChainCriterions=orig.variableChainCriterions;
-  easyProductCriterions=orig.easyProductCriterions;
-  extendedProductCriterions=orig.extendedProductCriterions;
-  averageLength=orig.averageLength;
-  enabledLog=orig.enabledLog;
-  reduceByTailReduced=orig.reduceByTailReduced;
-  this->pairs.strat=this; 
+	cache=orig.cache;
+	optStepBounded=orig.optStepBounded;
+
+	optAllowRecursion=orig.optAllowRecursion;
+	
+	optRedTailDegGrowth=orig.optRedTailDegGrowth;
+	optLazy=orig.optLazy;
+	optRedTail=orig.optRedTail;
+	optExchange=orig.optExchange;
+	reductionSteps=orig.reductionSteps;
+	normalForms=orig.normalForms;
+	currentDegree=orig.currentDegree;
+	chainCriterions=orig.chainCriterions;
+	variableChainCriterions=orig.variableChainCriterions;
+	easyProductCriterions=orig.easyProductCriterions;
+	extendedProductCriterions=orig.extendedProductCriterions;
+	averageLength=orig.averageLength;
+	enabledLog=orig.enabledLog;
+	reduceByTailReduced=orig.reduceByTailReduced;
+	this->pairs.strat=this; 
 }
 /// assumes that divisibility condition is fullfilled
 class ChainCriterion{
@@ -1505,6 +1509,7 @@ class ShorterEliminationLengthModified{
 		this->el=el;
 		this->strat=&strat;
 		this->lm_deg=lm_deg;
+		
 	}
 	bool operator() (const Exponent& e){
 		assert(strat->exp2Index.find(e)!=strat->exp2Index.end());

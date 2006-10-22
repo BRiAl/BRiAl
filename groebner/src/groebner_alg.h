@@ -132,6 +132,7 @@ public:
   bool optExchange;
   bool optAllowRecursion;
   bool optRedTailDegGrowth;
+  bool optStepBounded;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
   GroebnerStrategy():pairs(*this),cache(new CacheManager()){
@@ -143,6 +144,7 @@ public:
     easyProductCriterions=0;
     optRedTail=true;
     optExchange=true;
+		optStepBounded=false;
     optAllowRecursion=true;
     if (BoolePolyRing::isDegreeOrder())
         optLazy=false;
