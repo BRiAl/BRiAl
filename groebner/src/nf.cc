@@ -729,6 +729,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
       result.push_back(inp[i]);
       return result;
     }
+		if (inp[i].isZero()) continue;
     PolynomialSugar to_push=PolynomialSugar(inp[i]);
     //max_length=std::max(max_length,inp[i].length());
     max_nodes=std::max(max_nodes,inp[i].length());
@@ -769,7 +770,8 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
         step_T_complex(curr,result,lm,strat);
       } else{
         assert(s==1);
-        result.push_back(curr[0].value());
+				if (!(curr[0].isZero()))
+        	result.push_back(curr[0].value());
         curr.clear();
       }
       
@@ -798,7 +800,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     if ((strat.optStepBounded) &&(steps>max_steps)){
         strat.log("Too many steps\n");
         while (!(to_reduce.empty())){
-            
+            assert(!(to_reduce.top().isZero()));
             Monomial lm=to_reduce.top().lead();
             if (select1(strat,lm)>=0){
                 while((!(to_reduce.empty()))&&(to_reduce.top().lead()==lm)){

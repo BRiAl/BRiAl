@@ -1648,7 +1648,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 	}
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
-		if (p.isZero()) return;
+		//if (p.isZero()) return;
     Exponent lm_exp=p.leadExp();
     MonomialSet divisors=this->leadingTerms.divisorsOf(lm_exp);
     #if 0
