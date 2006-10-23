@@ -1628,12 +1628,13 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 		int i;
 		std::vector<int> implication_indices;
 		for(i=0;i<s;i++){
-
+			assert(!(impl[i].isZero()));
 			if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness()){
 
-
+				
 				Polynomial p_impl=impl[i];
 				if(optRedTail) p_impl=red_tail(*this,p_impl);
+				assert(!(p_impl.isZero()));
 				implication_indices.push_back(
 					addGenerator(p_impl,true,&implication_indices));
 			}
@@ -1647,6 +1648,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 	}
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
+		if (p.isZero()) return;
     Exponent lm_exp=p.leadExp();
     MonomialSet divisors=this->leadingTerms.divisorsOf(lm_exp);
     #if 0
