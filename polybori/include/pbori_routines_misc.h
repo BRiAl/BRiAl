@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/10/23 16:05:55  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.4  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -44,6 +47,8 @@
 
 // temprarily
 #include "CIdxVariable.h"
+// temprarily
+#include "BoolePolyRing.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -100,14 +105,16 @@ dd_print_term(Iterator start, Iterator finish,
               OStreamType& os){
 
   if (start != finish){
-    os << CIdxVariable<CTypes::idx_type>(*start);
+    os << BoolePolyRing::getRingVariableName(*start);
+    //CIdxVariable<CTypes::idx_type>(*start);
     ++start;
   }
   else
     os << emptyset();
 
   while (start != finish){
-    os << sep() << CIdxVariable<CTypes::idx_type>(*start);
+    os << sep() << BoolePolyRing::getRingVariableName(*start);
+    //CIdxVariable<CTypes::idx_type>(*start);
     ++start;
   }
 }

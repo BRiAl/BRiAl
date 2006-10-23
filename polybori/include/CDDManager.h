@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/10/23 16:05:54  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.11  2006/10/04 12:49:04  dreyer
  * FIX: Persistent variables need reference of new manager wrapper
  *
@@ -74,6 +77,13 @@
 // get standard map functionality
 #include <map>
 
+// get standard vector functionality
+#include <vector>
+
+// get standard string functionality
+#include <string>
+#include <sstream>
+
 BEGIN_NAMESPACE_PBORI
 
 
@@ -117,13 +127,24 @@ class CDDManagerBase<Cudd, StorageType> {
   /// Define type for caching persistent variables
   typedef std::map<idx_type, dd_base> persistent_cache_type;
 
+  /// Define type for setting/getting names of variables
+  typedef CTypes::vartext_type vartext_type;
+
+  /// Define type for storing names of variables
+  typedef std::string varname_type;
+
+  /// Define type for storing names of variables
+  typedef std::vector<varname_type> variable_names_type;
+
   /// Default constructor
    CDDManagerBase(size_type nvars = 0): 
-     m_interfaced(0, nvars), m_variables() { }
+     m_interfaced(0, nvars), m_variables(), m_names(nvars) { 
+     setDefaultVariableNames();
+   }
 
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
-    m_interfaced(rhs.m_interfaced), m_variables() {
+    m_interfaced(rhs.m_interfaced), m_variables(), m_names(rhs.m_names) {
     
     persistent_cache_type::const_iterator start(rhs.m_variables.begin()),
       finish(rhs.m_variables.end());
@@ -137,11 +158,17 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Constructor from given ring
   CDDManagerBase(interfaced_type& rhs): 
-    m_interfaced(rhs), m_variables() { }
+    m_interfaced(rhs), m_variables(), m_names() {
+    m_names.resize(nVariables());
+    setDefaultVariableNames();
+  }
 
   /// Extract manager from given decision diagram
   CDDManagerBase(const dd_type& dd): 
-    m_interfaced(dd.manager()), m_variables()  { }
+    m_interfaced(dd.manager()), m_variables(), m_names()  {
+    m_names.resize(nVariables());
+    setDefaultVariableNames();
+  }
 
   /// Destructor
   ~CDDManagerBase() { }
@@ -199,12 +226,39 @@ class CDDManagerBase<Cudd, StorageType> {
   /// Print out statistics and settings for a decision diagram manager
   void printInfo() const { m_interfaced.info(); }
 
+    /// Set name of variable with index idx
+  void setVariableName(idx_type idx, const vartext_type& varname) {
+    m_names[idx] = varname;
+  }
+
+  /// Get name of variable with index idx
+  vartext_type getVariableName(idx_type idx) { 
+    if (idx >= m_names.size())
+      return "UNDEF";
+    return m_names[idx].c_str(); 
+  }
+
+
+  void setDefaultVariableNames() {
+
+    idx_type nlen = m_names.size();
+    for (idx_type idx = 0; idx < nlen; ++idx){
+      std::ostringstream sstrg; 
+      sstrg << "x(" << idx << ')';
+      m_names[idx] = sstrg.str();
+    }
+
+  }
+
 private:
   /// Actual decision diagram manager
   mutable interfaced_store m_interfaced;
 
-  /// Store values of Boolean Variables
+  /// Store values of Boolean variables
   persistent_cache_type m_variables;
+
+  /// Stores names of variables
+  variable_names_type m_names;
 };
 
 /** @class CDDManager<Cudd&>

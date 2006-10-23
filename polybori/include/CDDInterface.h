@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2006/10/23 16:05:54  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.36  2006/10/06 12:52:00  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -163,9 +166,6 @@
 
 // Cudd's internal definitions
 #include "cuddInt.h"
-
-
-
 
 #include "pbori_algo.h"
 

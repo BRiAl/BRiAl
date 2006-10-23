@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/10/23 16:05:54  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.25  2006/10/04 12:22:32  dreyer
  * ADD: getOrderCode()
  *
@@ -146,6 +149,7 @@ class BoolePolyRing:
   typedef CTypes::manager_reference manager_reference;
   typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::dd_type dd_type;
+  typedef CTypes::vartext_type vartext_type;
   //@}
 
   /// define exponent type
@@ -271,6 +275,18 @@ class BoolePolyRing:
 
   /// Change order of current ring
   static void changeOrdering(ordercode_type);
+
+  /// Get name of variable with index idx
+  void setVariableName(idx_type idx, const vartext_type& varname);
+
+  /// Get name of variable with index idx
+  vartext_type getVariableName(idx_type idx);
+
+  /// Get name of variable with index idx
+  static void setRingVariableName(idx_type idx, const vartext_type& varname);
+
+  /// Get name of variable with index idx
+  static vartext_type getRingVariableName(idx_type idx);
 
 protected: public:
   /// Pointer to current global manager setting

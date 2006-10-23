@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.73  2006/10/23 16:05:55  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.72  2006/10/05 07:33:58  dreyer
  * ADD: BoolePolynomial::genericExpBegin()/End()
  *
@@ -301,6 +304,8 @@
 
 #include "CDelayedTermIter.h"
 #include "CGenericIter.h"
+
+
 
 BEGIN_NAMESPACE_PBORI
 

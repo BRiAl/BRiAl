@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/10/23 16:05:54  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.26  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -380,6 +383,9 @@ struct CAuxTypes {
 
   /// Type for out-stream
   typedef PBORI_OSTREAM ostream_type;
+
+  /// Type for setting/getting names of variables
+  typedef const char* vartext_type;
 };
 
 /** @class CTypes

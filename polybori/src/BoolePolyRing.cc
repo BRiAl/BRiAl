@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/10/23 16:05:55  dreyer
+ * ADD: BoolePolyRing::set/get(Ring)VariableName()
+ *
  * Revision 1.27  2006/10/04 12:22:32  dreyer
  * ADD: getOrderCode()
  *
@@ -416,4 +419,36 @@ BoolePolyRing::compare(const exp_type& lhs, const exp_type& rhs) {
   PBORI_TRACE_FUNC( "BoolePolyRing::compare(const exp_type&, const exp_type&)");
   return activeManager().compare(lhs, rhs);
 }
+
+void
+BoolePolyRing::setVariableName(idx_type idx, const vartext_type& varname) {
+
+  PBORI_TRACE_FUNC( "setVariableName(idx_typ, const vartext_type&)");
+  pMgr->setVariableName(idx, varname);
+}
+
+
+void
+BoolePolyRing::setRingVariableName(idx_type idx, const vartext_type& varname) {
+
+  PBORI_TRACE_FUNC( "setRingVariableName(idx_typ, const vartext_type&)");
+  activeManager().setVariableName(idx, varname);
+}
+
+
+BoolePolyRing::vartext_type
+BoolePolyRing::getVariableName(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "getVariableName(idx_typ)");
+  return pMgr->getVariableName(idx);
+}
+
+
+BoolePolyRing::vartext_type
+BoolePolyRing::getRingVariableName(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "getRingVariableName(idx_typ)");
+  return activeManager().getVariableName(idx);
+}
+
 END_NAMESPACE_PBORI
