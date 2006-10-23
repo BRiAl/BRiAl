@@ -129,29 +129,32 @@ public:
   int averageLength;
   bool optRedTail;
   bool optLazy;
+  bool optBrutalReductions;
   bool optExchange;
   bool optAllowRecursion;
   bool optRedTailDegGrowth;
   bool optStepBounded;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
-  GroebnerStrategy():pairs(*this),cache(new CacheManager()){
-    optRedTailDegGrowth=true;
-    chainCriterions=0;
-    enabledLog=false;
-    variableChainCriterions=0;
-    extendedProductCriterions=0;
-    easyProductCriterions=0;
-    optRedTail=true;
-    optExchange=true;
+
+	GroebnerStrategy():pairs(*this),cache(new CacheManager()){
+		optRedTailDegGrowth=true;
+		chainCriterions=0;
+		enabledLog=false;
+		optBrutalReductions=true;
+		variableChainCriterions=0;
+		extendedProductCriterions=0;
+		easyProductCriterions=0;
+		optRedTail=true;
+		optExchange=true;
 		optStepBounded=false;
-    optAllowRecursion=true;
-    if (BoolePolyRing::isDegreeOrder())
-        optLazy=false;
-    else
-        optLazy=true;
-    reduceByTailReduced=false;
-  }
+		optAllowRecursion=true;
+		if (BoolePolyRing::isDegreeOrder())
+			optLazy=false;
+		else
+			optLazy=true;
+		reduceByTailReduced=false;
+	}
 
     Polynomial nextSpoly(){
     return pairs.nextSpoly(generators);
@@ -300,7 +303,7 @@ public:
 
 Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
 std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
-
+Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor);
 END_NAMESPACE_PBORIGB
 
 #endif

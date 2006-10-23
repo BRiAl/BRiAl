@@ -64,7 +64,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
             //cout<<"REDUCE_COMPLETE\n";
             assert(strat.generators[index].ecart()==0);
             assert(strat.generators[index].lmDeg==1);
-            p=reduce_complete(p,strat.generators[index].p);
+            p=reduce_complete(p,strat.generators[index]);
           }
           else{
             p=spoly(p,*g);
@@ -115,7 +115,7 @@ Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
             //cout<<"REDUCE_COMPLETE\n";
             assert(strat.generators[index].ecart()==0);
             assert(strat.generators[index].lmDeg==1);
-            p=reduce_complete(p,strat.generators[index].p);
+            p=reduce_complete(p,strat.generators[index]);
           }
           else{
             p=spoly(p,*g);
@@ -138,8 +138,9 @@ Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead){
     const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (rest_lead!=strat.generators[index].lm)){
-      p=reduce_complete(p,strat.generators[index].p);
+    (((strat.optBrutalReductions) && (rest_lead!=strat.generators[index].lm))||((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
+    && (rest_lead!=strat.generators[index].lm))){
+      p=reduce_complete(p,strat.generators[index]);
 
     } else{
       //p=spoly(p,*g);
@@ -162,8 +163,10 @@ Polynomial nf3_no_deg_growth(const GroebnerStrategy& strat, Polynomial p, Monomi
     const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (rest_lead!=strat.generators[index].lm)){
-      p=reduce_complete(p,strat.generators[index].p);
+    (((strat.optBrutalReductions) && (rest_lead!=strat.generators[index].lm))|| 
+			((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && 
+			(rest_lead!=strat.generators[index].lm))){
+      p=reduce_complete(p,strat.generators[index]);
 
     } else{
       //p=spoly(p,*g);
@@ -188,8 +191,12 @@ Polynomial nf3_degree_order(const GroebnerStrategy& strat, Polynomial p, Monomia
     const Polynomial* g=&strat.generators[index].p;
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (lead!=strat.generators[index].lm)){
-      p=reduce_complete(p,strat.generators[index].p);
+    (((strat.optBrutalReductions) && (lead!=strat.generators[index].lm))||
+			((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0)
+ 			&& (lead!=strat.generators[index].lm)))
+
+{
+      p=reduce_complete(p,strat.generators[index]);
 
     } else{
       p+=(exp-strat.generators[index].lmExp)*(*g);
@@ -213,7 +220,7 @@ Polynomial nf3_db(GroebnerStrategy& strat, Polynomial p, int deg_bound){
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
     ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (p.lead()!=strat.generators[index].lm)){
-      p=reduce_complete(p,strat.generators[index].p);
+      p=reduce_complete(p,strat.generators[index]);
 
     } else{
       p=spoly(p,*g);
@@ -474,7 +481,9 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
     
     
     if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) && (lm!=strat.generators[index].lm)){
+	  (((strat.optBrutalReductions) && (lm!=strat.generators[index].lm)) ||
+    ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
+		&& (lm!=strat.generators[index].lm))){
       //implies lmDeg==1, ecart=0
       //cout<<"REDUCE_COMPLETE\n";
       //assert(strat.generators[index].ecart()==0);
@@ -485,7 +494,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         
         //curr[i].add(p_high, deg_high);
         Polynomial to_red=curr[i].value();
-        to_red=reduce_complete(to_red,strat.generators[index].p);
+        to_red=reduce_complete(to_red,strat.generators[index]);
         if (BoolePolyRing::isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar());
         else
@@ -981,7 +990,7 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
     Polynomial* g=&strat.generators[index].p;
     
     if((strat.generators[index].ecart()==0) && (strat.generators[index].length<=4) &&(strat.generators[index].lm!=p.lead())){
-      p=reduce_complete(p,strat.generators[index].p);
+      p=reduce_complete(p,strat.generators[index]);
       
     } else{
       p=spoly(p,*g);

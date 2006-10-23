@@ -34,6 +34,7 @@ public:
   Monomial gcdOfTerms;
   Exponent usedVariables;
   Exponent tailVariables;
+  Polynomial tail;
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{

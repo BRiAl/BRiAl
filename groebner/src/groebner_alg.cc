@@ -30,6 +30,7 @@
 #include "dp_asc4data.h"
 #endif
 BEGIN_NAMESPACE_PBORIGB
+static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 static bool have_ordering_for_tables(){
         
         
@@ -121,6 +122,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+	optBrutalReductions=orig.optBrutalReductions;
 	cache=orig.cache;
 	optStepBounded=orig.optStepBounded;
 
@@ -282,8 +284,8 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariablesExp();
-  
-  this->tailVariables=(p-lm).usedVariablesExp();
+  tail=p-lm;
+  this->tailVariables=tail.usedVariablesExp();
   
   this->minimal=true;
 }
@@ -301,8 +303,8 @@ void PolyEntry::recomputeInformation(){
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariablesExp();
-  
-  this->tailVariables=(p-lm).usedVariablesExp();
+  tail=p-lm;
+  this->tailVariables=tail.usedVariablesExp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
   assert(this->lmDeg==p.lmDeg());
@@ -401,6 +403,7 @@ Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
   return res;
 }
 
+
 Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
 
   
@@ -442,6 +445,53 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
   return res;
 }
 
+static Polynomial multiply_recursively(Polynomial a,Polynomial b){
+	if (a.isZero()) return Polynomial(0);
+	if (a.isOne()) return b;
+	if (b.isZero()) return Polynomial(0);
+	if (b.isOne()) return a;
+	int index=*(a.navigation());
+	Polynomial as0=a.diagram().subset0(index);
+	Polynomial as1=a.diagram().subset1(index);
+	if (as0==as1){
+		b=b.diagram().subset0(index);
+	}
+	if (b.isZero()) return Polynomial(0);
+	if (b.isOne()) return a;
+	as0=multiply_recursively(as0,b);
+	as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
+	return as0+as1;
+}
+static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_b){
+	if (len_a>len_b) std::swap(a,b);
+	return multiply_recursively(a,b);
+}
+
+
+Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor){
+  //cout<<"red complete"<<endl;
+	MonomialSet rewriteable_terms_divided=p.diagram();
+	Exponent::const_iterator it=reductor.lmExp.begin();
+	Exponent::const_iterator end=reductor.lmExp.end();
+	while (it!=end){
+		rewriteable_terms_divided=rewriteable_terms_divided.subset1(*it);
+		it++;
+	}
+	//divide_monomial_divisors_out(p.diagram(),reductor.lm);
+	//Polynomial res=p-reductor.lm*(Polynomial)rewriteable_terms_divided;
+	Polynomial factor_reductor=reductor.p;//tail;
+	size_t factor_reductor_len=reductor.length;//factor_reductor.length();
+	size_t rewriteable_terms_len=rewriteable_terms_divided.length();
+	Polynomial product=multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
+	/*if (factor_reductor_len<rewriteable_terms_len){
+		product=factor_reductor*((Polynomial)rewriteable_terms_divided);
+	
+	} else {
+		product=((Polynomial)rewriteable_terms_divided)*((Polynomial) factor_reductor);
+	}*/
+	//res=res+product;
+	return p+product;
+}
 
 
 static Polynomial reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
