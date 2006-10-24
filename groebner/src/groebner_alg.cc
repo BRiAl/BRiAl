@@ -67,7 +67,7 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
 }
 
 void PairManager::replacePair(int& i, int& j){
-	MonomialSet m=strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.GCD(strat->generators[j].lmExp));
+	MonomialSet m=strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
 	MonomialSet::exp_iterator it=m.expBegin();
 	MonomialSet::exp_iterator end=m.expEnd();
 	int i_n=i;
@@ -105,16 +105,26 @@ bool PairManager::pairSetEmpty() const{
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   assert(!(pairSetEmpty()));
+  bool replaced_used=false;
+  
 	Polynomial replaced;
 	Pair act_pair(queue.top());
 	queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
   if (act_pair.getType()==IJ_PAIR){
     IJPairData* ij= (IJPairData*)(act_pair.data.get());
-		//int i=ij->i;
-		//int j=ij->j;
+		int i=ij->i;
+		int j=ij->j;
 		
-		replacePair(ij->i,ij->j);
+		replacePair(i,j);
+		if ((i!=ij->i)||(ij->j!=j)){
+			replaced=spoly(strat->generators[i].p,strat->generators[j].p);
+			replaced_used=true;
+			this->status.setToHasTRep(i,j);
+			this->status.setToHasTRep(ij->i,j);
+			this->status.setToHasTRep(i,ij->j);
+		}
+		
 		//ij->i=i;
 		//ac->j;
     //cout<<"mark1"<<endl;
@@ -141,6 +151,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
       
     }
   }
+  if (replaced_used) return replaced;
   Polynomial res=act_pair.extract(gen);
   
   
@@ -253,6 +264,8 @@ void PairManager::cleanTopByChainCriterion(){
       const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
       const MonomialSet lms=this->strat->leadingTerms.intersect(lm.divisors());
+      assert(lm==strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
+      //assert(strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
       //should be set
       //if (lms.length()>2)
         //cout<<"non empty"<<endl;
@@ -262,6 +275,7 @@ void PairManager::cleanTopByChainCriterion(){
         //cout<<"Chain Criterion"<<endl;
         //cout.flush();
         strat->chainCriterions++;
+        continue;
       } else {
         return;
       }
