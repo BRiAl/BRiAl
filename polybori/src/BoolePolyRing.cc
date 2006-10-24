@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/10/24 06:39:38  dreyer
+ * CHANGE: changed interface type
+ *
  * Revision 1.28  2006/10/23 16:05:55  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -421,15 +424,15 @@ BoolePolyRing::compare(const exp_type& lhs, const exp_type& rhs) {
 }
 
 void
-BoolePolyRing::setVariableName(idx_type idx, const vartext_type& varname) {
+BoolePolyRing::setVariableName(idx_type idx, vartext_type varname) {
 
-  PBORI_TRACE_FUNC( "setVariableName(idx_typ, const vartext_type&)");
+  PBORI_TRACE_FUNC( "setVariableName(idx_typ, vartext_type)");
   pMgr->setVariableName(idx, varname);
 }
 
 
 void
-BoolePolyRing::setRingVariableName(idx_type idx, const vartext_type& varname) {
+BoolePolyRing::setRingVariableName(idx_type idx, vartext_type varname) {
 
   PBORI_TRACE_FUNC( "setRingVariableName(idx_typ, const vartext_type&)");
   activeManager().setVariableName(idx, varname);

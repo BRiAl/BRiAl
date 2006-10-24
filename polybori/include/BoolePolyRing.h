@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/10/24 06:39:38  dreyer
+ * CHANGE: changed interface type
+ *
  * Revision 1.26  2006/10/23 16:05:54  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -277,13 +280,13 @@ class BoolePolyRing:
   static void changeOrdering(ordercode_type);
 
   /// Get name of variable with index idx
-  void setVariableName(idx_type idx, const vartext_type& varname);
+  void setVariableName(idx_type idx, vartext_type varname);
 
   /// Get name of variable with index idx
   vartext_type getVariableName(idx_type idx);
 
   /// Get name of variable with index idx
-  static void setRingVariableName(idx_type idx, const vartext_type& varname);
+  static void setRingVariableName(idx_type idx, vartext_type varname);
 
   /// Get name of variable with index idx
   static vartext_type getRingVariableName(idx_type idx);
