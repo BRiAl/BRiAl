@@ -12,6 +12,7 @@
 #include <vector>
 #include "nf.h"
 #include <groebner_alg.h>
+#include <BoolePolyRing.h>
 #include "slimgb_wrapper.h"
 //#include <iostream>
 //#include "polybori.h"
@@ -20,6 +21,7 @@ using namespace boost::python;
 using namespace std;
 
 USING_NAMESPACE_PBORIGB
+USING_NAMESPACE_PBORI
 static int npairs(const GroebnerStrategy& strat){
   return strat.pairs.queue.size();
 }
@@ -132,6 +134,7 @@ void export_strategy(){
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
+  .def_readwrite("optBrutalReductions",&GroebnerStrategy::optBrutalReductions)
   .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
   .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
   .def_readwrite("optAllowRecursion",&GroebnerStrategy::optAllowRecursion)
@@ -154,4 +157,5 @@ void export_strategy(){
   def("red_tail_self_tuning", red_tail_self_tuning);
   def("translate_indices",translate_indices);
   def("mult_fast_sim_C",mult_fast_sim);
+  def("set_variable_name",&BoolePolyRing::setRingVariableName);
 }
