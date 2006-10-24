@@ -76,10 +76,15 @@ void PairManager::replacePair(int& i, int& j){
 		Exponent curr=*it;
 		int index=strat->exp2Index[curr];
 		wlen_type curr_wl=strat->generators[index].weightedLength;
-		if ((status.hasTRep(index,i)) &&(strat->generators[i_n].weightedLength>curr_wl)){
+		if ((status.hasTRep(index,i)) &&
+			(strat->generators[i_n].weightedLength>curr_wl) &&
+			(strat->generators[index].ecart()<=strat->generators[i].ecart())){
 			i_n=index;
 		}
-		if ((status.hasTRep(index,j)) &&(strat->generators[j_n].weightedLength>curr_wl)){
+		if ((status.hasTRep(index,j)) &&
+			(strat->generators[j_n].weightedLength>curr_wl) &&
+			(strat->generators[index].ecart()<=strat->generators[j].ecart())
+			){
 			j_n=index;
 		}
 		
