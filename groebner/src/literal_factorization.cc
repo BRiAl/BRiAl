@@ -12,6 +12,7 @@
 BEGIN_NAMESPACE_PBORIGB
 
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
+  assert(!(p.isZero()));
   Exponent lead_variables=p.leadExp();
   lmDeg=p.lmDeg();
   Exponent other_variables=p.usedVariablesExp()-lead_variables;

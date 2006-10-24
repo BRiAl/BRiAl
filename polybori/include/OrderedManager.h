@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/10/24 08:44:04  dreyer
+ * CHANGE: Added CVariableNames; variable names handled by OrderedManager
+ *
  * Revision 1.17  2006/10/04 12:22:32  dreyer
  * ADD: getOrderCode()
  *
@@ -87,6 +90,7 @@
 #include "BooleExponent.h"
 
 #include "COrderProperties.h"
+#include "CVariableNames.h"
 
 #ifndef OrderedManager_h_
 #define OrderedManager_h_
@@ -128,18 +132,24 @@ public:
   typedef poly_type::bidirectional_iterator iterator;
   //@}
 
+  /// Define type for storing names of variables
+  typedef CVariableNames variable_names_type;
+
+  /// Define type for getting names of variables
+  typedef variable_names_type::const_reference const_varname_reference;
+
   /// Construct new decision diagramm manager
   OrderedManagerBase(size_type nvars = 0): 
-    base(nvars) { }
+    base(nvars), m_names(nvars)  { }
 
   /// Construct old decision diagramm manager
   OrderedManagerBase(const base& rhs): 
-    base(rhs) { }
+    base(rhs), m_names(rhs.nVariables()) { }
 
 
   /// Construct new decision diagramm manager
   OrderedManagerBase(const self& rhs): 
-    base(rhs) { }
+    base(rhs), m_names(rhs.m_names) { }
 
   // Destructor
   virtual ~OrderedManagerBase() { }
@@ -198,6 +208,20 @@ public:
 
   /// Get numerical code for ordering
   virtual ordercode_type getOrderCode() const = 0;
+
+  /// Set name of variable with index idx
+  void setVariableName(idx_type idx, const_varname_reference varname) {
+    m_names[idx] = varname;
+  }
+
+  /// Get name of variable with index idx
+  const_varname_reference getVariableName(idx_type idx) const { 
+    return m_names[idx];
+  }
+
+private:
+  /// Stores names of variables
+  variable_names_type m_names;
 };
 
 /** @class OrderedManager

@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.17  2006/10/24 08:44:05  dreyer
+// CHANGE: Added CVariableNames; variable names handled by OrderedManager
+//
 // Revision 1.16  2006/10/05 12:51:32  dreyer
 // CHANGE: Made lex-based comparisions more generic.
 //
@@ -402,7 +405,7 @@ main(){
 
 
 
-  BoolePolyRing ring3(4);
+  BoolePolyRing ring3(5);
   COrderedIter<BooleMonomial> oStart2(poly);
 
   std::cout << "lex-ordered Iter"<< std::endl;
@@ -445,7 +448,19 @@ main(){
 
      std::cout<<  "usedVariables"<<poly.usedVariables()<<   std::endl;
     std::cout<<  "usedVariablesExp"<<poly.usedVariablesExp()<<   std::endl;
-      std::cout<<  "usedVariables.Exp"<<poly.usedVariables().exp()<<   std::endl;
+      std::cout<<  "usedVariables.Exp"<<poly.usedVariables().exp()<<
+      std::endl;
+
+
+      std::cout<<  "Test Variablenames"<< std::endl;
+
+      std::cout <<"x(0)? "<<
+        BoolePolyRing::getRingVariableName(0) <<std::endl;
+      std::cout.flush();
+      BoolePolyRing::setRingVariableName(0, "X");
+      std::cout <<"X? "<<
+        BoolePolyRing::activeManager().getVariableName(0) <<std::endl;
+
   std::cout << "Finished." <<std::endl;
 
 
