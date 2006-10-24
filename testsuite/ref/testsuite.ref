@@ -392,6 +392,9 @@ polyx(0)*x(1)*x(2)*x(3) + x(0)*x(1)*x(3) + x(0)*x(1) + x(0)*x(2) + x(0)
 usedVariablesx(0)*x(1)*x(2)*x(3) 
 usedVariablesExp(0, 1, 2, 3)
 usedVariables.Exp(0, 1, 2, 3)
+Test Variablenames
+x(0)? x(0)
+X? X
 Finished.
 ----------------------
 Executing testsuite/spoly
