@@ -66,7 +66,31 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   return res;
 }
 
-
+void PairManager::replacePair(int& i, int& j){
+	MonomialSet m=strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.GCD(strat->generators[j].lmExp));
+	MonomialSet::exp_iterator it=m.expBegin();
+	MonomialSet::exp_iterator end=m.expEnd();
+	int i_n=i;
+	int j_n=j;
+	while(it!=end){
+		Exponent curr=*it;
+		int index=strat->exp2Index[curr];
+		wlen_type curr_wl=strat->generators[index].weightedLength;
+		if ((status.hasTRep(index,i)) &&(strat->generators[i_n].weightedLength>curr_wl)){
+			i_n=index;
+		}
+		if ((status.hasTRep(index,j)) &&(strat->generators[j_n].weightedLength>curr_wl)){
+			j_n=index;
+		}
+		
+		it++;
+	}
+	assert(i_n!=j_n);
+	if (i_n!=j_n){
+		i=i_n;
+		j=j_n;
+	}
+}
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
 }
@@ -75,40 +99,45 @@ bool PairManager::pairSetEmpty() const{
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   assert(!(pairSetEmpty()));
+	Polynomial replaced;
+	Pair act_pair(queue.top());
+	queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
-  if (queue.top().getType()==IJ_PAIR){
-    const IJPairData* ij= (IJPairData*)(queue.top().data.get());
+  if (act_pair.getType()==IJ_PAIR){
+    IJPairData* ij= (IJPairData*)(act_pair.data.get());
+		//int i=ij->i;
+		//int j=ij->j;
+		
+		replacePair(ij->i,ij->j);
+		//ij->i=i;
+		//ac->j;
     //cout<<"mark1"<<endl;
     this->status.setToHasTRep(ij->i,ij->j);
   } else{
     
-    //const VariablePairData *vp=dynamic_cast<VariablePairData*>(queue.top().data.get());
-    if (queue.top().getType()==VARIABLE_PAIR){
-      //cout<<"mark2"<<endl;
-      const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
+    
+    if (act_pair.getType()==VARIABLE_PAIR){
+      
+      const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
       this->strat->generators[vp->i].vPairCalculated.insert(vp->v);
       int i=vp->i;
-      Polynomial res=Pair(queue.top()).extract(gen);
+      Polynomial res=act_pair.extract(gen);
       
-      queue.pop();
+      
       if (!(res.isZero())){
         Monomial lm=res.lead();
       
         if (lm==this->strat->generators[i].lm)
           res+=this->strat->generators[i].p;
       }
-      /*else{
-        if (lm.reducibleBy(this->strat->generators[i].lm))
-          res=spoly(res,this->strat->generators[i].p);
-      }*/
-      //best reductor by genesis
+      
       return res;
       
     }
   }
-  Polynomial res=Pair(queue.top()).extract(gen);
+  Polynomial res=act_pair.extract(gen);
   
-  queue.pop();
+  
   
   return res;
   

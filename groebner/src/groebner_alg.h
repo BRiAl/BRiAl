@@ -82,6 +82,8 @@ public:
   Polynomial nextSpoly(const PolyEntryVector& gen);
   bool pairSetEmpty() const;
   void cleanTopByChainCriterion();
+protected:
+	void replacePair(int& i, int & j);
    };
 class MonomialHasher{
 public:
