@@ -235,6 +235,7 @@ void PairManager::cleanTopByChainCriterion(){
     ///@todo implement this
       const int i=ij->i;
       const int j=ij->j;
+      if (strat->pairs.status.hasTRep(i,j)) {queue.pop();continue;}
       if ((strat->generators[i].length==1) &&(strat->generators[j].length==1)){
         this->queue.pop();
         strat->pairs.status.setToHasTRep(i,j);
