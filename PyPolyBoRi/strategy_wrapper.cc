@@ -146,6 +146,8 @@ void export_strategy(){
   .def("topSugar",pairs_top_sugar)
   .def("containsOne",contains_one)
   .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
+  .def("minimalize",&GroebnerStrategy::minimalize)
+	
   .def("select", select_wrapped)
   .def_readwrite("optRedByReduced",&GroebnerStrategy::reduceByTailReduced)
   .def("symmGB_F2",&GroebnerStrategy::symmGB_F2)

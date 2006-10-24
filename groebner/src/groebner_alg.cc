@@ -1536,6 +1536,20 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     
 }
 
+std::vector<Polynomial> GroebnerStrategy::minimalize(){
+    MonomialSet m=minimal_elements(this->minimalLeadingTerms);
+    std::vector<Polynomial> result;
+    MonomialSet::const_iterator it=m.begin();
+    MonomialSet::const_iterator end=m.end();
+    while(it!=end){
+        //redTail
+        result.push_back(generators[lm2Index[*it]].p);
+        it++;
+    }
+    return result;
+    
+}
+
 class ShorterEliminationLength{
   public:
     const GroebnerStrategy* strat;

@@ -105,6 +105,7 @@ public:
   
   GroebnerStrategy(const GroebnerStrategy& orig);
   std::vector<Polynomial>  minimalizeAndTailReduce();
+  std::vector<Polynomial>  minimalize();
   int addGenerator(const BoolePolynomial& p, bool is_impl=false, std::vector<int>* impl_v=NULL);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);
