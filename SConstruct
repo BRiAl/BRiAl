@@ -38,8 +38,8 @@ if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
 
 
-cudd_libs=Split("obj cudd dddmp mtr st util epd")
-
+cudd_libs=Split("obj cudd dddmp mtr st cuddutil epd")
+#cudd_libs=Split("obj cudd dddmp mtr st util epd")
 
 
 HAVE_PYTHON_EXTENSION=1
