@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.74  2006/10/24 14:21:56  dreyer
+ * ADD: variable_name functional
+ *
  * Revision 1.73  2006/10/23 16:05:55  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -803,9 +806,6 @@ BoolePolynomial::print(ostream_type& os) const {
   // defining literal variable products
   typedef CStringLiteral<CLiteralCodes::times> times_as_separator;
 
-  // defining path type
-  typedef CIdxPath<CIdxVariable<idx_type>, times_as_separator> path_type;
-
   // defining literal for term separators
   typedef CStringLiteral<CLiteralCodes::term_separator> sep_literal_type;
 
@@ -813,6 +813,7 @@ BoolePolynomial::print(ostream_type& os) const {
     os << 0;
   else
     dd_print_terms(orderedExpBegin(), orderedExpEnd(), 
+                   variable_name<manager_type>(BoolePolyRing::activeManager()), 
                    sep_literal_type(), times_as_separator(), 
                    integral_constant<unsigned, 1>(), os);
 

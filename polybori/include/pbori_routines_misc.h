@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/10/24 14:21:56  dreyer
+ * ADD: variable_name functional
+ *
  * Revision 1.5  2006/10/23 16:05:55  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -97,56 +100,61 @@ dd_cached_degree(DegreeCacher cache, NaviType navi) {
   return deg;
 }
 
-template <class Iterator, class Separator, class EmptySetType, 
+
+
+template <class Iterator, class NameGenerator, 
+          class Separator, class EmptySetType, 
           class OStreamType>
 void 
-dd_print_term(Iterator start, Iterator finish, 
+dd_print_term(Iterator start, Iterator finish, const NameGenerator& get_name,
               const Separator& sep, const EmptySetType& emptyset, 
               OStreamType& os){
 
   if (start != finish){
-    os << BoolePolyRing::getRingVariableName(*start);
-    //CIdxVariable<CTypes::idx_type>(*start);
+    os << get_name(*start);
     ++start;
   }
   else
     os << emptyset();
 
   while (start != finish){
-    os << sep() << BoolePolyRing::getRingVariableName(*start);
-    //CIdxVariable<CTypes::idx_type>(*start);
+    os << sep() << get_name(*start);
     ++start;
   }
 }
 
-template <class TermType, class Separator, class EmptySetType,
+template <class TermType, class NameGenerator,
+          class Separator, class EmptySetType,
           class OStreamType>
 void 
-dd_print_term(const TermType& term, 
+dd_print_term(const TermType& term, const NameGenerator& get_name,
               const Separator& sep, const EmptySetType& emptyset, 
               OStreamType& os){
-  dd_print_term(term.begin(), term.end(), sep, emptyset, os);
+  dd_print_term(term.begin(), term.end(), get_name, sep, emptyset, os);
 }
 
 
-template <class Iterator, class Separator, class InnerSeparator, 
+template <class Iterator, class NameGenerator,
+          class Separator, class InnerSeparator, 
           class EmptySetType, class OStreamType>
 void 
-dd_print_terms(Iterator start, Iterator finish, 
+dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
                const Separator& sep, const InnerSeparator& innersep,
                const EmptySetType& emptyset, OStreamType& os) {
 
   if (start != finish){
-    dd_print_term(*start, innersep, emptyset, os);
+    dd_print_term(*start, get_name, innersep, emptyset, os);
     ++start;
   }
 
   while (start != finish){
     os << sep(); 
-    dd_print_term(*start, innersep, emptyset, os);
+    dd_print_term(*start, get_name, innersep, emptyset, os);
     ++start;
   }
 
 }
+
+
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2006/10/24 14:21:56  dreyer
+ * ADD: variable_name functional
+ *
  * Revision 1.31  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -931,6 +934,31 @@ class default_binder1st :
 //   /// Generate Boolean member function
 //   is_same_type<property, valid_tag> hasProperty;
 // };
+
+/** @class variable_name
+ *  @brief Defines generic access to variable names
+ **/
+template <class ManagerType, 
+          class IdxType = typename ManagerType::idx_type,
+          class VarNameType = typename ManagerType::const_varname_reference>
+class variable_name {
+public:
+  typedef ManagerType manager_type;
+  typedef IdxType idx_type;
+  typedef VarNameType varname_type;
+
+  /// Constructor
+  variable_name(const manager_type& mgr): m_mgr(mgr) {}
+
+  /// Funtional operator
+  varname_type operator()(idx_type idx) const{
+    return m_mgr.getVariableName(idx);
+  }
+
+protected:
+  /// Store reference to manager
+  const manager_type& m_mgr;
+};
 
 END_NAMESPACE_PBORI
 
