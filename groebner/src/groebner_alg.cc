@@ -121,8 +121,8 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
 			replaced=spoly(strat->generators[i].p,strat->generators[j].p);
 			replaced_used=true;
 			this->status.setToHasTRep(i,j);
-			this->status.setToHasTRep(ij->i,j);
-			this->status.setToHasTRep(i,ij->j);
+			//this->status.setToHasTRep(ij->i,j);
+			//this->status.setToHasTRep(i,ij->j);
 		}
 		
 		//ij->i=i;
