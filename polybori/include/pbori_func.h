@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2006/10/26 12:58:25  dreyer
+ * ADD: lowlevel routine for union-xor (easy cudd-style variant)
+ *
  * Revision 1.32  2006/10/24 14:21:56  dreyer
  * ADD: variable_name functional
  *
@@ -480,7 +483,7 @@ public:
 
 # elif defined(PBORI_ADD_BY_UNION)
       (lhs = lhs.unite(rhs).diff( lhs.intersect(rhs) ) );
-# elif defined(PBORI_ADD_BY_EXTRA_XOR)
+# elif defined(PBORI_ADD_BY_EXTRA_XOR) || defined(PBORI_ADD_BY_XOR)
       (lhs = lhs.Xor(rhs));
 #endif
   }

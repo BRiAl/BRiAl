@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/10/26 12:58:25  dreyer
+ * ADD: lowlevel routine for union-xor (easy cudd-style variant)
+ *
  * Revision 1.1  2006/08/23 14:24:54  dreyer
  * ADD: BooleSet::usedVariables and infrastructure
  *
@@ -32,6 +35,8 @@
 
 
 BEGIN_NAMESPACE_PBORI
-
+extern "C" {
+  extern DdNode * pboriCudd_zddUnionXor (DdManager *dd, DdNode *P, DdNode *Q);
+}
 
 END_NAMESPACE_PBORI

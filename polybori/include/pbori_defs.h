@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/10/26 12:58:24  dreyer
+ * ADD: lowlevel routine for union-xor (easy cudd-style variant)
+ *
  * Revision 1.27  2006/10/23 16:05:54  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -446,11 +449,17 @@ END_NAMESPACE_PBORI
 
 // Set default addition method
 #if defined(PBORI_ADD_BY_ITE) || defined(PBORI_ADD_BY_OR) \
-    || defined(PBORI_ADD_BY_UNION) || defined(PBORI_ADD_BY_EXTRA_XOR)
+    || defined(PBORI_ADD_BY_UNION) || defined(PBORI_ADD_BY_EXTRA_XOR) \
+    || defined(PBORI_ADD_BY_XOR)
 #else
 # define PBORI_ADD_BY_EXTRA_XOR
 #endif 
 
+
+// Set default union-xor method
+#ifndef PBORI_ADD_BY_EXTRA_XOR
+# define PBORI_LOWLEVEL_XOR 
+#endif 
 
 // Set default method for getting all used variables
 #if defined(PBORI_USEDVARS_BY_IDX) || defined(PBORI_USEDVARS_BY_TRANSFORM) \

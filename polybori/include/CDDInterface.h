@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2006/10/26 12:58:24  dreyer
+ * ADD: lowlevel routine for union-xor (easy cudd-style variant)
+ *
  * Revision 1.37  2006/10/23 16:05:54  dreyer
  * ADD: BoolePolyRing::set/get(Ring)VariableName()
  *
@@ -175,6 +178,12 @@
 #include <vector>
 #include <numeric>
 BEGIN_NAMESPACE_PBORI
+
+// Declare lowlevel union-xor
+extern "C" {
+  extern DdNode * pboriCudd_zddUnionXor (DdManager *dd, DdNode *P, DdNode *Q);
+}
+
 
 /** @class CDDInterfaceBase
  *
@@ -379,11 +388,19 @@ class CDDInterface<ZDD>:
 
 
   self Xor(const self& rhs) const {
+#ifdef PBORI_LOWLEVEL_XOR
+        return interfaced_type(&manager(),
+            pboriCudd_zddUnionXor(
+                manager().getManager(),
+                m_interfaced.getNode(),
+                rhs.m_interfaced.getNode()));
+#else
         return interfaced_type(&manager(),
             Extra_zddUnionExor(
                 manager().getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
+#endif
   }
 
   

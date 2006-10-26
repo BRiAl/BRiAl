@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/10/26 12:58:25  dreyer
+ * ADD: lowlevel routine for union-xor (easy cudd-style variant)
+ *
  * Revision 1.17  2006/09/01 10:35:26  dreyer
  * ADD: Multiplication poly * poly, poly * exponent
  *
@@ -83,7 +86,18 @@
 // load polybori header file
 # include "polybori.h"
 
+#include "CCacheManagement.h"
+
 USING_NAMESPACE_PBORI
+
+# include "pbori_routines.h"
+template <class NaviType>
+NaviType
+test_union_xor(NaviType first, NaviType second) {
+
+
+}
+
 
 int
 main(){
@@ -288,12 +302,47 @@ main(){
     std::cout << poly * poly2 <<std::endl;
 
 
-    std::cout <<std::endl<<  "Finished."<<std::endl;
+
+
+
+    std::cout <<std::endl<<  "Going on..."<<std::endl;
+
+    CCacheManagement<CCacheTypes::dp_asc_lead> 
+      test_marker(BoolePolyRing::activeManager().manager());
+
+    CCacheManagement<CCacheTypes::dlex_lead> 
+      test_marker2(BoolePolyRing::activeManager().manager());
+
+    std::cout <<   test_marker.find( poly.navigation() )<<std::endl;
+
+      test_marker.insert(poly.navigation(), poly.navigation() );
+      std::cout <<  test_marker.find( poly.navigation() )<<std::endl;
+      std::cout <<  test_marker2.find( poly.navigation() )<<std::endl;
+      poly = x*y*z +y*z +y*v + y*w;
+      poly2 = x*y+y*z +y*w +v*w;
+      std::cout << poly<<std::endl;
+      std::cout << poly2<<std::endl;
+
+
+ BoolePolynomial result =
+       CDDInterface<ZDD>(
+ ZDD( &BoolePolyRing::activeManager().manager(),
+  pboriCudd_zddUnionXor(poly.diagram().manager().getManager(), 
+                        poly.navigation(), poly2.navigation())
+ ));
+
+ std::cout <<  "result " <<result<<std::endl;
+
+  std::cout <<std::endl<<  "Finished."<<std::endl;
+
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
+
+
+    std::cout <<std::endl<<  "Finished."<<std::endl;
 
   return 0;
 }
