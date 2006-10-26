@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/10/26 14:15:47  dreyer
+ * CHANGE: make low-level ariant of union-xor default
+ *
  * Revision 1.28  2006/10/26 12:58:24  dreyer
  * ADD: lowlevel routine for union-xor (easy cudd-style variant)
  *
@@ -452,7 +455,7 @@ END_NAMESPACE_PBORI
     || defined(PBORI_ADD_BY_UNION) || defined(PBORI_ADD_BY_EXTRA_XOR) \
     || defined(PBORI_ADD_BY_XOR)
 #else
-# define PBORI_ADD_BY_EXTRA_XOR
+# define PBORI_ADD_BY_XOR
 #endif 
 
 
