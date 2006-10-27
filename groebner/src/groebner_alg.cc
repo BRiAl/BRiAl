@@ -910,6 +910,7 @@ Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& t
     if (p.isConstant()) return p;
     int index=*(p.navigation());
     int index_mapped=table[index];
+		
 #if 0
 return
       dd_backward_transform(p.navigation(), Polynomial(0), 
@@ -919,9 +920,22 @@ return
 
 
 #else
-    return ((Monomial) Variable(index_mapped))*translate_indices(p.diagram().subset1(index),table)
-    
-    +translate_indices(p.diagram().subset0(index), table);
+
+  	MonomialSet s1=p.diagram().subset1(index);
+  	MonomialSet s0=p.diagram().subset0(index);
+  	if (s1!=s0){
+  		s1=translate_indices(s1,table);
+      s1=s1.change(index_mapped);
+  		s0=translate_indices(s0,table);
+  	} else {
+  		s0=translate_indices(s0,table);
+  		s1=s0.change(index_mapped);
+      
+  	}
+    return s1.unite(s0);
+    //we can assume that index_mapped does not occur in the translated subpolynomial, in which index index does not occurr
+   // return translate_indices(p.diagram().subset1(index),table).diagram().change(index_mapped).unite(
+	//		translate_indices(p.diagram().subset0(index), table));
 #endif
 
 
