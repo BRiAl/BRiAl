@@ -910,9 +910,21 @@ Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& t
     if (p.isConstant()) return p;
     int index=*(p.navigation());
     int index_mapped=table[index];
+#if 0
+return
+      dd_backward_transform(p.navigation(), Polynomial(0), 
+                            mapped_new_node<std::vector<idx_type>,
+                            Variable, Monomial, Polynomial>(table), 
+                            integral_constant<bool, true, Polynomial>());
+
+
+#else
     return ((Monomial) Variable(index_mapped))*translate_indices(p.diagram().subset1(index),table)
     
     +translate_indices(p.diagram().subset0(index), table);
+#endif
+
+
 }
 static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
     return p2code<unsigned int, ZeroFunction, SetBitUInt>(p,ring_2_0123, 4);
