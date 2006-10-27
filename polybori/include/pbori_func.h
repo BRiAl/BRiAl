@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2006/10/27 15:31:11  dreyer
+ * ADD: some maybe useful stuff
+ *
  * Revision 1.33  2006/10/26 12:58:25  dreyer
  * ADD: lowlevel routine for union-xor (easy cudd-style variant)
  *
@@ -961,6 +964,27 @@ public:
 protected:
   /// Store reference to manager
   const manager_type& m_mgr;
+};
+
+template <class MapType, class VariableType, class NodeType>
+class mapped_new_node {
+public:
+  typedef MapType map_type;
+  typedef NodeType node_type;
+
+  typedef typename node_type::idx_type idx_type;
+
+  mapped_new_node(const map_type& the_map): m_map(the_map) {}
+
+  NodeType operator()(idx_type idx,
+                      const node_type& first, const node_type&  second) const{
+    return NodeType(VariableType(m_map[idx])).diagram().ite(first, second);
+  }
+
+
+
+private:
+  const map_type& m_map;
 };
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/10/27 15:31:11  dreyer
+ * ADD: some maybe useful stuff
+ *
  * Revision 1.18  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -91,6 +94,37 @@
 #define pbori_algo_h_
 
 BEGIN_NAMESPACE_PBORI
+
+
+//       dd_backward_transform(p.navigation(), Polynomial(0), 
+//                             mapped_new_node<std::vector<idx_type>, Variable,
+//                             Polynomial>(table), 
+//                             integral_constant<bool, true, Polynomial>());
+
+/// Function templates for transforming decision diagrams 
+template< class NaviType, class TermType, 
+          class TernaryOperator, 
+          class TerminalOperator >
+TermType
+dd_backward_transform( NaviType navi, TermType init, TernaryOperator newNode,
+              TerminalOperator terminate ) {
+ 
+  TermType result = init;
+
+  if (navi.isConstant()) {      // Reached end of path
+    if (navi.terminalValue()){   // Case of a valid path
+      result = terminate();
+    }
+  }
+  else {
+    result = dd_backward_transform(navi.thenBranch(), init, newNode, terminate);
+    result = newNode(*navi, result, 
+                     dd_backward_transform(navi.elseBranch(), init, newNode,
+                                           terminate) );
+  }
+  return result;
+}
+
 
 /// Function templates for transforming decision diagrams 
 template< class NaviType, class TermType, class OutIterator,
