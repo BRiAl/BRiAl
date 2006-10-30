@@ -512,6 +512,33 @@ static Polynomial multiply_recursively(Polynomial a,Polynomial b){
 	as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
 	return as0+as1;
 }
+static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
+	if (a.isZero()) return Polynomial(0);
+	if (a.isOne()) return b;
+	if (b.isZero()) return Polynomial(0);
+	if (b.isOne()) return a;
+	if (a==b) return a;
+	int indexa=*(a.navigation());
+	int indexb=*(b.navigation());
+	int index=std::min(indexa,indexb);
+	Polynomial as0=a.diagram().subset0(index);
+	Polynomial as1=a.diagram().subset1(index);
+	Polynomial bs0=b.diagram().subset0(index);
+	Polynomial bs1=b.diagram().subset1(index);
+	if (as0==as1){
+	  Polynomial zero(0);
+		bs1=zero.diagram();
+	} else {
+	  if (bs0==bs1){
+	    Polynomial zero(0);
+	    as1=zero.diagram();
+	  }
+	}
+  return ((Polynomial) multiply_recursively2(as0,bs1).diagram().change(index)
+    + (Polynomial) multiply_recursively2(as1,bs1).diagram().change(index)
+    + (Polynomial) multiply_recursively2(as1,bs0).diagram().change(index))
+    +multiply_recursively2(as0,bs0);
+}
 static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_b){
 	if (len_a>len_b) std::swap(a,b);
 	return multiply_recursively(a,b);
@@ -532,7 +559,8 @@ Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor){
 	Polynomial factor_reductor=reductor.p;//tail;
 	size_t factor_reductor_len=reductor.length;//factor_reductor.length();
 	size_t rewriteable_terms_len=rewriteable_terms_divided.length();
-	Polynomial product=multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
+	Polynomial product=multiply_recursively2(factor_reductor,rewriteable_terms_divided);
+	//multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
 	/*if (factor_reductor_len<rewriteable_terms_len){
 		product=factor_reductor*((Polynomial)rewriteable_terms_divided);
 	
