@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/30 13:30:33  dreyer
+ * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
+ *
  * Revision 1.2  2006/10/26 12:58:25  dreyer
  * ADD: lowlevel routine for union-xor (easy cudd-style variant)
  *
@@ -35,8 +38,9 @@
 
 
 BEGIN_NAMESPACE_PBORI
+#ifdef PBORI_LOWLEVEL_XOR 
 extern "C" {
   extern DdNode * pboriCudd_zddUnionXor (DdManager *dd, DdNode *P, DdNode *Q);
 }
-
+#endif
 END_NAMESPACE_PBORI

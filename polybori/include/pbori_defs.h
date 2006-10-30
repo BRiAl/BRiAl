@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/10/30 13:30:32  dreyer
+ * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
+ *
  * Revision 1.29  2006/10/26 14:15:47  dreyer
  * CHANGE: make low-level ariant of union-xor default
  *
@@ -460,7 +463,7 @@ END_NAMESPACE_PBORI
 
 
 // Set default union-xor method
-#ifndef PBORI_ADD_BY_EXTRA_XOR
+#ifdef PBORI_ADD_BY_XOR
 # define PBORI_LOWLEVEL_XOR 
 #endif 
 
