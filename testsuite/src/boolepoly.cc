@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/10/30 14:00:17  dreyer
+ * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
+ *
  * Revision 1.18  2006/10/26 12:58:25  dreyer
  * ADD: lowlevel routine for union-xor (easy cudd-style variant)
  *
@@ -324,12 +327,8 @@ main(){
       std::cout << poly2<<std::endl;
 
 
- BoolePolynomial result =
-       CDDInterface<ZDD>(
- ZDD( &BoolePolyRing::activeManager().manager(),
-  pboriCudd_zddUnionXor(poly.diagram().manager().getManager(), 
-                        poly.navigation(), poly2.navigation())
- ));
+      BoolePolynomial result = poly + poly2;
+     
 
  std::cout <<  "result " <<result<<std::endl;
 
