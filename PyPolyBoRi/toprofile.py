@@ -12,4 +12,4 @@ except:
     print 'No custom_profile.py file! Using ' + datafilename + '.';
 
 data=my_import(datafilename)
-I=buchberger_C_based2(data.ideal)
+I=buchberger_C_based2(data.ideal,optAllowRecursion=False)
