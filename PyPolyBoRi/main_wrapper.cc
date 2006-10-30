@@ -35,15 +35,16 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .value("dlex", COrderEnums::dlex)
     .value("dp_asc",COrderEnums::dp_asc)
     ;
-    
-    struct COrderEnums {
+  
+  /*  struct COrderEnums {
   /// Codes For orderings
   enum ordercodes {
     lp,
     dlex,
     dp_asc
   };
-};
+};*/
+  def("get_order_code",BoolePolyRing::getOrderCode);  
   def("print_ring_info", &BoolePolyRing::printInfo);
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
