@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/10/31 09:18:45  dreyer
+ * FIX: Bug (union-xor) on 64-bit systems should be fixed now
+ *
  * Revision 1.2  2006/10/30 13:30:33  dreyer
  * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
  *
@@ -75,41 +78,41 @@ pboriCuddZddUnionXor(
     if (p_top < q_top) {
 	e = pboriCuddZddUnionXor(zdd, cuddE(P), Q);
 	if (e == NULL) return (NULL);
-	cuddRef(e);
+	Cudd_Ref(e);
 	res = cuddZddGetNode(zdd, P->index, cuddT(P), e);
 	if (res == NULL) {
 	    Cudd_RecursiveDerefZdd(table, e);
 	    return(NULL);
 	}
-	cuddDeref(e);
+	Cudd_Deref(e);
     } else if (p_top > q_top) {
 	e = pboriCuddZddUnionXor(zdd, P, cuddE(Q));
 	if (e == NULL) return(NULL);
-	cuddRef(e);
+	Cudd_Ref(e);
 	res = cuddZddGetNode(zdd, Q->index, cuddT(Q), e);
 	if (res == NULL) {
 	    Cudd_RecursiveDerefZdd(table, e);
 	    return(NULL);
 	}
-	cuddDeref(e);
+	Cudd_Deref(e);
     } else {
 	t = pboriCuddZddUnionXor(zdd, cuddT(P), cuddT(Q));
 	if (t == NULL) return(NULL);
-	cuddRef(t);
+	Cudd_Ref(t);
 	e = pboriCuddZddUnionXor(zdd, cuddE(P), cuddE(Q));
 	if (e == NULL) {
 	    Cudd_RecursiveDerefZdd(table, t);
 	    return(NULL);
 	}
-	cuddRef(e);
+	Cudd_Ref(e);
 	res = cuddZddGetNode(zdd, P->index, t, e);
 	if (res == NULL) {
 	    Cudd_RecursiveDerefZdd(table, t);
 	    Cudd_RecursiveDerefZdd(table, e);
 	    return(NULL);
 	}
-	cuddDeref(t);
-	cuddDeref(e);
+	Cudd_Deref(t);
+	Cudd_Deref(e);
     }
 
     cuddCacheInsert2(table, pboriCuddZddUnionXor, P, Q, res);
