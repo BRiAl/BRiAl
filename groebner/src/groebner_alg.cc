@@ -559,8 +559,8 @@ Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor){
 	Polynomial factor_reductor=reductor.p;//tail;
 	size_t factor_reductor_len=reductor.length;//factor_reductor.length();
 	size_t rewriteable_terms_len=rewriteable_terms_divided.length();
-	Polynomial product=multiply_recursively2(factor_reductor,rewriteable_terms_divided);
-	//multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
+	Polynomial product=//multiply_recursively2(factor_reductor,rewriteable_terms_divided);
+	multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
 	/*if (factor_reductor_len<rewriteable_terms_len){
 		product=factor_reductor*((Polynomial)rewriteable_terms_divided);
 	
