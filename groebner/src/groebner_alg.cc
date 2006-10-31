@@ -168,6 +168,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  optDelayNonMinimals=orig.optDelayNonMinimals;
 	optBrutalReductions=orig.optBrutalReductions;
 	cache=orig.cache;
 	optStepBounded=orig.optStepBounded;
@@ -1774,10 +1775,14 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
         addGenerator(p);
     else addGeneratorDelayed(p);
     #else
-    if (divisors.owns(Monomial(lm_exp))){
-        addGeneratorDelayed(p);
-        return;
-    }
+    if ((optDelayNonMinimals) && (!(divisors.emptiness()))){
+      addGeneratorDelayed(p);
+      return;
+    }else {
+      if (divisors.owns(Monomial(lm_exp))){
+          addGeneratorDelayed(p);
+          return;
+    }}
     wlen_type el=p.eliminationLength();
     if (std::find_if(
             divisors.expBegin(),

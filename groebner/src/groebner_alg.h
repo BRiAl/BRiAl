@@ -132,6 +132,7 @@ public:
   int averageLength;
   bool optRedTail;
   bool optLazy;
+  bool optDelayNonMinimals;
   bool optBrutalReductions;
   bool optExchange;
   bool optAllowRecursion;
@@ -141,6 +142,7 @@ public:
   exp2Index_map_type exp2Index;
 
 	GroebnerStrategy():pairs(*this),cache(new CacheManager()){
+	  optDelayNonMinimals=true;
 		optRedTailDegGrowth=true;
 		chainCriterions=0;
 		enabledLog=false;
