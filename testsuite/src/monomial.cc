@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/11/03 10:22:59  dreyer
+ * FIX: bug at comparison between monomials, extended workaround
+ *
  * Revision 1.5  2006/08/01 11:17:55  dreyer
  * CHANGE: test refined (would show nonzero reference-counts)
  *
@@ -237,7 +240,26 @@ main(){
     std::cout <<poly.diagram().firstMultiples(multipliers) <<std::endl;
     poly.diagram().firstMultiples(multipliers);
 
+    monom1 = x*w;
+    monom2 = x;
+
+    std::cout <<monom1 <<" < " << monom2 <<std::endl;
+
+    std::cout << (monom1 < monom2 ) <<std::endl;
+    std::cout <<monom1 <<" > " << monom2 <<std::endl;
+
+    std::cout << (monom1 > monom2 ) <<std::endl;
+
+    std::cout <<monom1 <<" < " << monom2 <<std::endl;
+
+    std::cout << (monom1.exp() < monom2.exp() ) <<std::endl;
+    std::cout <<monom1 <<" > " << monom2 <<std::endl;
+
+    std::cout << (monom1.exp() > monom2.exp() ) <<std::endl;
+
     std::cout << "Finished."<<std::endl;
+
+
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

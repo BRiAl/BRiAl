@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/11/03 10:22:59  dreyer
+ * FIX: bug at comparison between monomials, extended workaround
+ *
  * Revision 1.6  2006/11/03 08:54:38  bricken
  * + same proc to compare lex. for monom/exponent, ignores easy equality
  *
@@ -86,6 +89,10 @@ template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 lex_compare(const LhsType& lhs, const RhsType& rhs, 
             BinaryPredicate idx_comp, valid_tag has_easy_equality_test) {
+
+  if (lhs == rhs)
+    return CTypes::equality;
+
   return lex_compare_3way(lhs.begin(), lhs.end(), 
                                       rhs.begin(), rhs.end(), idx_comp);
   //typedef lex_compare_predicate<LhsType, RhsType, BinaryPredicate> comp_type;

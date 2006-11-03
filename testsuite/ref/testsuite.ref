@@ -646,6 +646,16 @@ x(1)*x(2)  hasConstantTerm() ?
 x(0)*x(1) + x(1)*x(2)  * x(2)*x(4) + x(3)*x(4) 
 x(0)*x(1)*x(2)*x(4) + x(0)*x(1)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(4) 
 
+Going on...
+0
+0x813b160
+0
+x(0)*x(1)*x(2) + x(1)*x(2) + x(1)*x(3) + x(1)*x(4) 
+x(0)*x(1) + x(1)*x(2) + x(1)*x(4) + x(3)*x(4) 
+result x(0)*x(1)*x(2) + x(0)*x(1) + x(1)*x(3) + x(3)*x(4) 
+
+Finished.
+
 Finished.
 ----------------------
 Executing testsuite/stringlit
@@ -767,6 +777,14 @@ Testing lowlevel multiples
 : 4 nodes 4 minterms
 1-10- 1
 
+x(0)*x(4)  < x(0) 
+0
+x(0)*x(4)  > x(0) 
+1
+x(0)*x(4)  < x(0) 
+0
+x(0)*x(4)  > x(0) 
+1
 Finished.
 -------------------
 Testsuite finished.
