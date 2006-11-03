@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/11/03 08:54:38  bricken
+ * + same proc to compare lex. for monom/exponent, ignores easy equality
+ *
  * Revision 1.5  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -49,16 +52,7 @@
 BEGIN_NAMESPACE_PBORI
 
 
-/// @func lex_compare
-/// @brief defines lexicographic comparison
-template <class LhsType, class RhsType, class BinaryPredicate>
-CTypes::comp_type
-lex_compare(const LhsType& lhs, const RhsType& rhs, 
-            BinaryPredicate idx_comp, valid_tag has_easy_equality_test) {
 
-  typedef lex_compare_predicate<LhsType, RhsType, BinaryPredicate> comp_type;
-  return generic_compare_3way(lhs, rhs, comp_type(idx_comp));
-}
 
 template <class FirstIterator, class SecondIterator, class BinaryPredicate>
 CTypes::comp_type
@@ -83,6 +77,19 @@ lex_compare_3way(FirstIterator start, FirstIterator finish,
 
    return (idx_comp(*start, *rhs_start)? 
            CTypes::greater_than: CTypes::less_than);
+}
+
+
+/// @func lex_compare
+/// @brief defines lexicographic comparison
+template <class LhsType, class RhsType, class BinaryPredicate>
+CTypes::comp_type
+lex_compare(const LhsType& lhs, const RhsType& rhs, 
+            BinaryPredicate idx_comp, valid_tag has_easy_equality_test) {
+  return lex_compare_3way(lhs.begin(), lhs.end(), 
+                                      rhs.begin(), rhs.end(), idx_comp);
+  //typedef lex_compare_predicate<LhsType, RhsType, BinaryPredicate> comp_type;
+  //return generic_compare_3way(lhs, rhs, comp_type(idx_comp));
 }
 
 
