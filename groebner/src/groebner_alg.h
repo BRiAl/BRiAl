@@ -308,7 +308,7 @@ public:
 
 Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
 std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
-Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor);
+Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
 END_NAMESPACE_PBORIGB
 
 #endif

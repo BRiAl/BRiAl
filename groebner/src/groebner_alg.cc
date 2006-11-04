@@ -67,35 +67,35 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
 }
 
 void PairManager::replacePair(int& i, int& j){
-	MonomialSet m=strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
-	MonomialSet::exp_iterator it=m.expBegin();
-	MonomialSet::exp_iterator end=m.expEnd();
-	int i_n=i;
-	int j_n=j;
-	while(it!=end){
-		Exponent curr=*it;
-		int index=strat->exp2Index[curr];
-		wlen_type curr_wl=strat->generators[index].weightedLength;
-		if ((index!=i) && (index!=j)){
-		if ((status.hasTRep(index,i)) &&
-			(strat->generators[i_n].weightedLength>curr_wl) &&
-			(strat->generators[index].ecart()<=strat->generators[i].ecart())){
-			i_n=index;
-		}
-		if ((status.hasTRep(index,j)) &&
-			(strat->generators[j_n].weightedLength>curr_wl) &&
-			(strat->generators[index].ecart()<=strat->generators[j].ecart())
-			){
-			j_n=index;
-		}
+  MonomialSet m=strat->leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
+  MonomialSet::exp_iterator it=m.expBegin();
+  MonomialSet::exp_iterator end=m.expEnd();
+  int i_n=i;
+  int j_n=j;
+  while(it!=end){
+    Exponent curr=*it;
+    int index=strat->exp2Index[curr];
+    wlen_type curr_wl=strat->generators[index].weightedLength;
+    if ((index!=i) && (index!=j)){
+    if ((status.hasTRep(index,i)) &&
+      (strat->generators[i_n].weightedLength>curr_wl) &&
+      (strat->generators[index].ecart()<=strat->generators[i].ecart())){
+      i_n=index;
+    }
+    if ((status.hasTRep(index,j)) &&
+      (strat->generators[j_n].weightedLength>curr_wl) &&
+      (strat->generators[index].ecart()<=strat->generators[j].ecart())
+      ){
+      j_n=index;
+    }
   }
-		it++;
-	}
-	assert(i_n!=j_n);
-	if (i_n!=j_n){
-		i=i_n;
-		j=j_n;
-	}
+    it++;
+  }
+  assert(i_n!=j_n);
+  if (i_n!=j_n){
+    i=i_n;
+    j=j_n;
+  }
 }
 void PairManager::introducePair(const Pair& pair){
   queue.push(pair);
@@ -107,26 +107,26 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   assert(!(pairSetEmpty()));
   bool replaced_used=false;
   
-	Polynomial replaced;
-	Pair act_pair(queue.top());
-	queue.pop();
+  Polynomial replaced;
+  Pair act_pair(queue.top());
+  queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
   if (act_pair.getType()==IJ_PAIR){
     IJPairData* ij= (IJPairData*)(act_pair.data.get());
-		int i=ij->i;
-		int j=ij->j;
-		
-		replacePair(i,j);
-		if ((i!=ij->i)||(ij->j!=j)){
-			replaced=spoly(strat->generators[i].p,strat->generators[j].p);
-			replaced_used=true;
-			this->status.setToHasTRep(i,j);
-			//this->status.setToHasTRep(ij->i,j);
-			//this->status.setToHasTRep(i,ij->j);
-		}
-		
-		//ij->i=i;
-		//ac->j;
+    int i=ij->i;
+    int j=ij->j;
+    
+    replacePair(i,j);
+    if ((i!=ij->i)||(ij->j!=j)){
+      replaced=spoly(strat->generators[i].p,strat->generators[j].p);
+      replaced_used=true;
+      this->status.setToHasTRep(i,j);
+      //this->status.setToHasTRep(ij->i,j);
+      //this->status.setToHasTRep(i,ij->j);
+    }
+    
+    //ij->i=i;
+    //ac->j;
     //cout<<"mark1"<<endl;
     this->status.setToHasTRep(ij->i,ij->j);
   } else{
@@ -169,27 +169,27 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
   optDelayNonMinimals=orig.optDelayNonMinimals;
-	optBrutalReductions=orig.optBrutalReductions;
-	cache=orig.cache;
-	optStepBounded=orig.optStepBounded;
+  optBrutalReductions=orig.optBrutalReductions;
+  cache=orig.cache;
+  optStepBounded=orig.optStepBounded;
 
-	optAllowRecursion=orig.optAllowRecursion;
-	
-	optRedTailDegGrowth=orig.optRedTailDegGrowth;
-	optLazy=orig.optLazy;
-	optRedTail=orig.optRedTail;
-	optExchange=orig.optExchange;
-	reductionSteps=orig.reductionSteps;
-	normalForms=orig.normalForms;
-	currentDegree=orig.currentDegree;
-	chainCriterions=orig.chainCriterions;
-	variableChainCriterions=orig.variableChainCriterions;
-	easyProductCriterions=orig.easyProductCriterions;
-	extendedProductCriterions=orig.extendedProductCriterions;
-	averageLength=orig.averageLength;
-	enabledLog=orig.enabledLog;
-	reduceByTailReduced=orig.reduceByTailReduced;
-	this->pairs.strat=this; 
+  optAllowRecursion=orig.optAllowRecursion;
+  
+  optRedTailDegGrowth=orig.optRedTailDegGrowth;
+  optLazy=orig.optLazy;
+  optRedTail=orig.optRedTail;
+  optExchange=orig.optExchange;
+  reductionSteps=orig.reductionSteps;
+  normalForms=orig.normalForms;
+  currentDegree=orig.currentDegree;
+  chainCriterions=orig.chainCriterions;
+  variableChainCriterions=orig.variableChainCriterions;
+  easyProductCriterions=orig.easyProductCriterions;
+  extendedProductCriterions=orig.extendedProductCriterions;
+  averageLength=orig.averageLength;
+  enabledLog=orig.enabledLog;
+  reduceByTailReduced=orig.reduceByTailReduced;
+  this->pairs.strat=this; 
 }
 /// assumes that divisibility condition is fullfilled
 class ChainCriterion{
@@ -497,79 +497,118 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
 }
 
 static Polynomial multiply_recursively(Polynomial a,Polynomial b){
-	if (a.isZero()) return Polynomial(0);
-	if (a.isOne()) return b;
-	if (b.isZero()) return Polynomial(0);
-	if (b.isOne()) return a;
-	int index=*(a.navigation());
-	Polynomial as0=a.diagram().subset0(index);
-	Polynomial as1=a.diagram().subset1(index);
-	if (as0==as1){
-		b=b.diagram().subset0(index);
-	}
-	if (b.isZero()) return Polynomial(0);
-	if (b.isOne()) return a;
-	as0=multiply_recursively(as0,b);
-	as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
-	return as0+as1;
+  if (a.isZero()) return Polynomial(0);
+  if (a.isOne()) return b;
+  if (b.isZero()) return Polynomial(0);
+  if (b.isOne()) return a;
+  int index=*(a.navigation());
+  Polynomial as0=a.diagram().subset0(index);
+  Polynomial as1=a.diagram().subset1(index);
+  if (as0==as1){
+    b=b.diagram().subset0(index);
+  }
+  if (b.isZero()) return Polynomial(0);
+  if (b.isOne()) return a;
+  as0=multiply_recursively(as0,b);
+  as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
+  return as0+as1;
 }
 static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
-	if (a.isZero()) return Polynomial(0);
-	if (a.isOne()) return b;
-	if (b.isZero()) return Polynomial(0);
-	if (b.isOne()) return a;
-	if (a==b) return a;
-	int indexa=*(a.navigation());
-	int indexb=*(b.navigation());
-	int index=std::min(indexa,indexb);
-	Polynomial as0=a.diagram().subset0(index);
-	Polynomial as1=a.diagram().subset1(index);
-	Polynomial bs0=b.diagram().subset0(index);
-	Polynomial bs1=b.diagram().subset1(index);
-	if (as0==as1){
-	  Polynomial zero(0);
-		bs1=zero.diagram();
-	} else {
-	  if (bs0==bs1){
-	    Polynomial zero(0);
-	    as1=zero.diagram();
-	  }
-	}
+  if (a.isZero()) return Polynomial(0);
+  if (a.isOne()) return b;
+  if (b.isZero()) return Polynomial(0);
+  if (b.isOne()) return a;
+  if (a==b) return a;
+  int indexa=*(a.navigation());
+  int indexb=*(b.navigation());
+  int index=std::min(indexa,indexb);
+  Polynomial as0=a.diagram().subset0(index);
+  Polynomial as1=a.diagram().subset1(index);
+  Polynomial bs0=b.diagram().subset0(index);
+  Polynomial bs1=b.diagram().subset1(index);
+  if (as0==as1){
+    Polynomial zero(0);
+    bs1=zero.diagram();
+  } else {
+    if (bs0==bs1){
+      Polynomial zero(0);
+      as1=zero.diagram();
+    }
+  }
   return ((Polynomial) multiply_recursively2(as0,bs1).diagram().change(index)
     + (Polynomial) multiply_recursively2(as1,bs1).diagram().change(index)
     + (Polynomial) multiply_recursively2(as1,bs0).diagram().change(index))
     +multiply_recursively2(as0,bs0);
 }
+
+static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
+  if (a.isZero()) return Polynomial(0);
+  if (a.isOne()) return b;
+  if (b.isZero()) return Polynomial(0);
+  if (b.isOne()) return a;
+  if (a==b) return a;
+  int indexa=*(a.navigation());
+  int indexb=*(b.navigation());
+  int index=std::min(indexa,indexb);
+  Polynomial as0=a.diagram().subset0(index);
+  Polynomial as1=a.diagram().subset1(index);
+  Polynomial bs0=b.diagram().subset0(index);
+  Polynomial bs1=b.diagram().subset1(index);
+  if (indexa!=indexb){
+
+    if (as0==as1){
+      Polynomial zero(0);
+      bs1=zero.diagram();
+    } else {
+      if (bs0==bs1){
+        Polynomial zero(0);
+        as1=zero.diagram();
+      }
+    }
+    return ((Polynomial) (multiply_recursively3(as0,bs1)
+      + multiply_recursively3(as1,bs1)
+      + multiply_recursively3(as1,bs0)).diagram().change(index))
+      + multiply_recursively3(as0,bs0);
+  } else {
+
+    
+    Polynomial res00=multiply_recursively3(as0,bs0);
+    Polynomial res11=multiply_recursively3(as1+as0,bs0+bs1)+res00;
+    return res11.diagram().change(index).unite(res00.diagram());
+  }
+  
+}
 static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_b){
-	if (len_a>len_b) std::swap(a,b);
-	return multiply_recursively(a,b);
+  if (len_a>len_b) std::swap(a,b);
+  return multiply_recursively(a,b);
 }
 
 
-Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor){
+Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type & len){
   //cout<<"red complete"<<endl;
-	MonomialSet rewriteable_terms_divided=p.diagram();
-	Exponent::const_iterator it=reductor.lmExp.begin();
-	Exponent::const_iterator end=reductor.lmExp.end();
-	while (it!=end){
-		rewriteable_terms_divided=rewriteable_terms_divided.subset1(*it);
-		it++;
-	}
-	//divide_monomial_divisors_out(p.diagram(),reductor.lm);
-	//Polynomial res=p-reductor.lm*(Polynomial)rewriteable_terms_divided;
-	Polynomial factor_reductor=reductor.p;//tail;
-	size_t factor_reductor_len=reductor.length;//factor_reductor.length();
-	size_t rewriteable_terms_len=rewriteable_terms_divided.length();
-	Polynomial product=//multiply_recursively2(factor_reductor,rewriteable_terms_divided);
-	multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
-	/*if (factor_reductor_len<rewriteable_terms_len){
-		product=factor_reductor*((Polynomial)rewriteable_terms_divided);
-	
-	} else {
-		product=((Polynomial)rewriteable_terms_divided)*((Polynomial) factor_reductor);
-	}*/
-	//res=res+product;
-	return p+product;
+  MonomialSet rewriteable_terms_divided=p.diagram();
+  Exponent::const_iterator it=reductor.lmExp.begin();
+  Exponent::const_iterator end=reductor.lmExp.end();
+  while (it!=end){
+    rewriteable_terms_divided=rewriteable_terms_divided.subset1(*it);
+    it++;
+  }
+  //divide_monomial_divisors_out(p.diagram(),reductor.lm);
+  //Polynomial res=p-reductor.lm*(Polynomial)rewriteable_terms_divided;
+  Polynomial factor_reductor=reductor.p;//tail;
+  size_t factor_reductor_len=reductor.length;//factor_reductor.length();
+  size_t rewriteable_terms_len=rewriteable_terms_divided.length();
+  len=len+(factor_reductor_len-2)*rewriteable_terms_len;
+  Polynomial product=//multiply_recursively3(factor_reductor,rewriteable_terms_divided);
+    multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
+  /*if (factor_reductor_len<rewriteable_terms_len){
+    product=factor_reductor*((Polynomial)rewriteable_terms_divided);
+  
+  } else {
+    product=((Polynomial)rewriteable_terms_divided)*((Polynomial) factor_reductor);
+  }*/
+  //res=res+product;
+  return p+product;
 }
 
 
@@ -939,7 +978,7 @@ Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& t
     if (p.isConstant()) return p;
     int index=*(p.navigation());
     int index_mapped=table[index];
-		
+    
 #if 0
 return
       dd_backward_transform(p.navigation(), Polynomial(0), 
@@ -950,21 +989,21 @@ return
 
 #else
 
-  	MonomialSet s1=p.diagram().subset1(index);
-  	MonomialSet s0=p.diagram().subset0(index);
-  	if (s1!=s0){
-  		s1=translate_indices(s1,table);
+    MonomialSet s1=p.diagram().subset1(index);
+    MonomialSet s0=p.diagram().subset0(index);
+    if (s1!=s0){
+      s1=translate_indices(s1,table);
       s1=s1.change(index_mapped);
-  		s0=translate_indices(s0,table);
-  	} else {
-  		s0=translate_indices(s0,table);
-  		s1=s0.change(index_mapped);
+      s0=translate_indices(s0,table);
+    } else {
+      s0=translate_indices(s0,table);
+      s1=s0.change(index_mapped);
       
-  	}
+    }
     return s1.unite(s0);
     //we can assume that index_mapped does not occur in the translated subpolynomial, in which index index does not occurr
    // return translate_indices(p.diagram().subset1(index),table).diagram().change(index_mapped).unite(
-	//		translate_indices(p.diagram().subset0(index), table));
+  //    translate_indices(p.diagram().subset0(index), table));
 #endif
 
 
@@ -1670,104 +1709,104 @@ class ShorterEliminationLength{
 };
 
 class ShorterEliminationLengthModified{
-	public:
-		const GroebnerStrategy* strat;
-	wlen_type el;
-	deg_type lm_deg;
-	ShorterEliminationLengthModified(const GroebnerStrategy& strat,wlen_type el, deg_type  lm_deg){
-		this->el=el;
-		this->strat=&strat;
-		this->lm_deg=lm_deg;
-		
-	}
-	bool operator() (const Exponent& e){
-		assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
-		assert(e.deg()<=lm_deg);
+  public:
+    const GroebnerStrategy* strat;
+  wlen_type el;
+  deg_type lm_deg;
+  ShorterEliminationLengthModified(const GroebnerStrategy& strat,wlen_type el, deg_type  lm_deg){
+    this->el=el;
+    this->strat=&strat;
+    this->lm_deg=lm_deg;
+    
+  }
+  bool operator() (const Exponent& e){
+    assert(strat->exp2Index.find(e)!=strat->exp2Index.end());
+    assert(e.deg()<=lm_deg);
 
-		const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
-		return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
-	}
+    const PolyEntry* p=&strat->generators[strat->exp2Index.find(e)->second];
+    return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
+  }
 };
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
-	std::vector<Polynomial> impl;
-	int way=0;
-	if (have_ordering_for_tables()){
+  std::vector<Polynomial> impl;
+  int way=0;
+  if (have_ordering_for_tables()){
 
-		int u_v=p.usedVariablesExp().deg();
-		if  (u_v<=4) {
-			way=1;
-			impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
-		} else {
-			way=2;
-			if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
-				way=3;
-				LiteralFactorization f(p);
-				if (f.rest.usedVariablesExp().deg()<=4){
-					way=4;
-					impl=addHigherImplDelayedUsing4(-1,f,true);
-				} else {
-					deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
-					deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
-					if ((optAllowRecursion) &&(is_minimal) && 
+    int u_v=p.usedVariablesExp().deg();
+    if  (u_v<=4) {
+      way=1;
+      impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
+    } else {
+      way=2;
+      if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
+        way=3;
+        LiteralFactorization f(p);
+        if (f.rest.usedVariablesExp().deg()<=4){
+          way=4;
+          impl=addHigherImplDelayedUsing4(-1,f,true);
+        } else {
+          deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
+          deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
+          if ((optAllowRecursion) &&(is_minimal) && 
 
-						(
-						(rest_used_variables_deg<=rest_lead_exp_deg+2)||
-						((rest_lead_exp_deg<=6)
-						&&(rest_used_variables_deg<=rest_lead_exp_deg+3))||
-						((rest_lead_exp_deg<=4)
-						&&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
-						((rest_lead_exp_deg<=3)
-						&&(rest_used_variables_deg<=rest_lead_exp_deg+5))||
-						((rest_lead_exp_deg<=2)
-						&&(rest_used_variables_deg<=rest_lead_exp_deg+7))))
-					{
-												//orig +2
-						log("Recursive call");
-						impl=full_implication_gb(f.rest,*cache,*this);
-						int i;
-						int s=impl.size();
-						for(i=0;i<s;i++){
-							impl[i]=multiply_with_literal_factors(f,impl[i]);
-						}
-					}
-				}
+            (
+            (rest_used_variables_deg<=rest_lead_exp_deg+2)||
+            ((rest_lead_exp_deg<=6)
+            &&(rest_used_variables_deg<=rest_lead_exp_deg+3))||
+            ((rest_lead_exp_deg<=4)
+            &&(rest_used_variables_deg<=rest_lead_exp_deg+4))||
+            ((rest_lead_exp_deg<=3)
+            &&(rest_used_variables_deg<=rest_lead_exp_deg+5))||
+            ((rest_lead_exp_deg<=2)
+            &&(rest_used_variables_deg<=rest_lead_exp_deg+7))))
+          {
+                        //orig +2
+            log("Recursive call");
+            impl=full_implication_gb(f.rest,*cache,*this);
+            int i;
+            int s=impl.size();
+            for(i=0;i<s;i++){
+              impl[i]=multiply_with_literal_factors(f,impl[i]);
+            }
+          }
+        }
 
-			} else {
+      } else {
 
-			}
+      }
 
-		}
+    }
 
 
-	} 
-	if (impl.size()==0)
-		addGenerator(p);
-	else{
-		int s=impl.size();
-		int i;
-		std::vector<int> implication_indices;
-		for(i=0;i<s;i++){
-			assert(!(impl[i].isZero()));
-			if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness()){
+  } 
+  if (impl.size()==0)
+    addGenerator(p);
+  else{
+    int s=impl.size();
+    int i;
+    std::vector<int> implication_indices;
+    for(i=0;i<s;i++){
+      assert(!(impl[i].isZero()));
+      if (minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness()){
 
-				
-				Polynomial p_impl=impl[i];
-				if(optRedTail) p_impl=red_tail(*this,p_impl);
-				assert(!(p_impl.isZero()));
-				implication_indices.push_back(
-					addGenerator(p_impl,true,&implication_indices));
-			}
-			else {
-				addGeneratorDelayed(impl[i]);
-								//assert(impl[i]!=)
-			}
+        
+        Polynomial p_impl=impl[i];
+        if(optRedTail) p_impl=red_tail(*this,p_impl);
+        assert(!(p_impl.isZero()));
+        implication_indices.push_back(
+          addGenerator(p_impl,true,&implication_indices));
+      }
+      else {
+        addGeneratorDelayed(impl[i]);
+                //assert(impl[i]!=)
+      }
 
-		}
-		assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
-	}
+    }
+    assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
+  }
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
-		//if (p.isZero()) return;
+    //if (p.isZero()) return;
     Exponent lm_exp=p.leadExp();
     MonomialSet divisors=this->leadingTerms.divisorsOf(lm_exp);
     #if 0
