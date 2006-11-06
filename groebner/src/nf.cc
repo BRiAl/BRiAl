@@ -616,10 +616,10 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       }
     */  
   if (pivot_el<strat.generators[index].weightedLength){
-    
+    wlen_type pivot_len=curr[found].value().length();
     for(int i=0;i<s;i++){
       if(i==found) continue;
-      curr[i].add(curr[found].value(), curr[found].getSugar(),curr[found].getLengthEstimation());
+      curr[i].add(curr[found].value(), curr[found].getSugar(),pivot_len);
       ///@todo different prototpye
     }
     #if 1
