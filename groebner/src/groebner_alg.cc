@@ -1333,7 +1333,86 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 }
 #endif
 
+std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
+  std::vector<Polynomial> impl;
+  PolyEntry& e=generators[s];
+  if (have_ordering_for_tables()){
+    int uv=e.usedVariables.deg();
+    if (uv<=4){
+      impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
+    } else {
+
+      int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
+      ////should also be proofable for var2var factors
+      assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
+      if (uv_opt<=4){
+        impl=addHigherImplDelayedUsing4(s, e.literal_factors,false);
+      } else {
+        addVariablePairs(s);
+      }
+    }
+  }
+
+  else {
+
+    addVariablePairs(s);
+  }
+
+  return impl;
+}
+void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms){
+    PolyEntry e=generators[s];
+    if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
+     {
+       BooleMonomial lm=e.lm;
+
+  #ifndef EXP_FOR_PAIRS
+          //MonomialSet already_used;
+          std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(minimalLeadingTerms), lm);
+  #else
+          std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(minimalLeadingTerms), lm);
+  #endif
+
+          int mt_i;
+          for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
+  #ifndef EXP_FOR_PAIRS
+              Monomial t=mt_vec[mt_i];
+              Monomial t_divided=t/lm;
+              assert(t.reducibleBy(lm));
+  #else
+              Exponent t_divided=mt_vec[mt_i];
+              Exponent t=t_divided+e.lmExp;
+  #endif
+              MonomialSet lm_d=t_divided.divisors();
+              if ((other_terms.intersect(lm_d).emptiness())){
+             // #ifndef EXP_FOR_PAIRS
+             //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
+              //#else
+                  MonomialSet act_l_terms=leadingTerms.divisorsOf(t);//intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
+              //#endif
+                  if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
+                      //at this point we assume minimality of t_divided w.r.t. natural partial order
+                      //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
+                      continue;
+                  }
+                  //chosen=chosen.unite(t_divided.diagram());
+                  #ifndef EXP_FOR_PAIRS
+
+                  Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
+                  #else
+
+                  Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(*this)));
+                  #endif
+                  int chosen_index=exp2Index[min];
+                  this->pairs.introducePair(Pair(chosen_index,s,generators));
+              }
+              //if (t.intersect())
+          }
+
+     }
+}
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::vector<int>* impl_v){
+  
   
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -1391,19 +1470,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
   
   int i;
 
-  //it=generators[s].lm.begin();
-  //end=generators[s].lm.end();
-  //if ((e.usedVariables.deg()>4)||(!(BoolePolyRing::isLexicographical()))){
-  //  if (
-  //    addVariablePairs(s);
-  // 
-  //} else {
-  //  
-  //  add4lpImplDelayed(s);
-    
-  //}
   
-  //workaround
   Polynomial inter_as_poly=intersecting_terms;
   
   Polynomial::exp_iterator is_it=inter_as_poly.expBegin();
@@ -1432,59 +1499,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
   //Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
   
-  if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
-   {
-
-#ifndef EXP_FOR_PAIRS
-        //MonomialSet already_used;
-        std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(minimalLeadingTerms), lm);
-#else
-        std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(minimalLeadingTerms), lm);
-#endif
-        //(multiplied_terms.length());
-        
-        //assert(mt_i==multiplied_terms.length());
-        //MonomialSet chosen;
-        //mt_i=mt_vec.size()-1; //alternativ mt_i--, but that's very bad
-        //we assume, that iteration through polynomial corresponds to a global ordering
-        //assert(mt_vec.size()==multiplied_terms.length());
-        int mt_i;
-        for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
-#ifndef EXP_FOR_PAIRS
-            Monomial t=mt_vec[mt_i];
-            Monomial t_divided=t/lm;
-            assert(t.reducibleBy(lm));
-#else
-            Exponent t_divided=mt_vec[mt_i];
-            Exponent t=t_divided+e.lmExp;
-#endif
-            MonomialSet lm_d=t_divided.divisors();
-            if ((other_terms.intersect(lm_d).emptiness())){
-           // #ifndef EXP_FOR_PAIRS
-           //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
-            //#else
-                MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
-            //#endif
-                if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
-                    //at this point we assume minimality of t_divided w.r.t. natural partial order
-                    //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
-                    continue;
-                }
-                //chosen=chosen.unite(t_divided.diagram());
-                #ifndef EXP_FOR_PAIRS
-                
-                Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(*this)));
-                #else
-                
-                Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(*this)));
-                #endif
-                int chosen_index=exp2Index[min];
-                this->pairs.introducePair(Pair(chosen_index,s,generators));
-            }
-            //if (t.intersect())
-        }
-        
-   }
+   treatNormalPairs(s,intersecting_terms,other_terms);
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in leadingTerms
     
@@ -1518,37 +1533,16 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
         }
         minimalLeadingTerms=minimalLeadingTerms.diff(lm_multiples_min);
         
-        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());
-        
-        
-        
+        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());   
         
         if (!(is_impl)){
 
-        
-        if (have_ordering_for_tables()){
-        int uv=e.usedVariables.deg();
-        if (uv<=4){
-            impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
-        } else {
-        
-            int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
-            ////should also be proofable for var2var factors
-            assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
-            if (uv_opt<=4){
-                impl=addHigherImplDelayedUsing4(s, e.literal_factors,false);
-            } else {
-                addVariablePairs(s);
-            }
-         }
-        } else {
-
-          addVariablePairs(s);
+        impl=treatVariablePairs(s);
+      }
+        else {
+          mark_all_variable_pairs_as_calculated(*this, s);
         }
-        } else {
-
-             mark_all_variable_pairs_as_calculated(*this, s);
-        }
+        
     } else 
     {
         //cerr<<"Warning:adding non minimal element to strategy"<<std::endl;
