@@ -535,9 +535,10 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
       as1=zero.diagram();
     }
   }
-  return ((Polynomial) multiply_recursively2(as0,bs1).diagram().change(index)
-    + (Polynomial) multiply_recursively2(as1,bs1).diagram().change(index)
-    + (Polynomial) multiply_recursively2(as1,bs0).diagram().change(index))
+
+  return (Polynomial)( (multiply_recursively2(as0,bs1) 
+    + multiply_recursively2(as1,bs1)
+    + multiply_recursively2(as1,bs0)).diagram().change(index) )
     +multiply_recursively2(as0,bs0);
 }
 
