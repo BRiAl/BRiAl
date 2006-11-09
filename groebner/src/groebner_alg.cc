@@ -29,6 +29,10 @@
 #ifdef HAVE_DP_ASC4_DATA
 #include "dp_asc4data.h"
 #endif
+
+#include "CCacheManagement.h"
+
+
 BEGIN_NAMESPACE_PBORIGB
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 static bool have_ordering_for_tables(){
@@ -514,49 +518,36 @@ static Polynomial multiply_recursively(Polynomial a,Polynomial b){
   return as0+as1;
 }
 static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
+
   if (a.isZero()) return Polynomial(0);
   if (a.isOne()) return b;
   if (b.isZero()) return Polynomial(0);
   if (b.isOne()) return a;
   if (a==b) return a;
-  int indexa=*(a.navigation());
-  int indexb=*(b.navigation());
-  int index=std::min(indexa,indexb);
-  Polynomial as0=a.diagram().subset0(index);
-  Polynomial as1=a.diagram().subset1(index);
-  Polynomial bs0=b.diagram().subset0(index);
-  Polynomial bs1=b.diagram().subset1(index);
-  if (as0==as1){
-    Polynomial zero(0);
-    bs1=zero.diagram();
-  } else {
-    if (bs0==bs1){
-      Polynomial zero(0);
-      as1=zero.diagram();
-    }
+
+  typedef PBORI::CCacheManagement<PBORI::CCacheTypes::multiply_recursive>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
+
+  PBORI::BoolePolynomial::navigator cached =
+    cache_mgr.find(a.navigation(), b.navigation());
+
+  Polynomial result;
+
+  if (cached.isValid() ){
+    result = (CDDInterface<ZDD>)
+      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+                               cached);
   }
-
-  return (Polynomial)( (multiply_recursively2(as0,bs1) 
-    + multiply_recursively2(as1,bs1)
-    + multiply_recursively2(as1,bs0)).diagram().change(index) )
-    +multiply_recursively2(as0,bs0);
-}
-
-static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
-  if (a.isZero()) return Polynomial(0);
-  if (a.isOne()) return b;
-  if (b.isZero()) return Polynomial(0);
-  if (b.isOne()) return a;
-  if (a==b) return a;
-  int indexa=*(a.navigation());
-  int indexb=*(b.navigation());
-  int index=std::min(indexa,indexb);
-  Polynomial as0=a.diagram().subset0(index);
-  Polynomial as1=a.diagram().subset1(index);
-  Polynomial bs0=b.diagram().subset0(index);
-  Polynomial bs1=b.diagram().subset1(index);
-  if (indexa!=indexb){
-
+  else {
+    int indexa=*(a.navigation());
+    int indexb=*(b.navigation());
+    int index=std::min(indexa,indexb);
+    Polynomial as0=a.diagram().subset0(index);
+    Polynomial as1=a.diagram().subset1(index);
+    Polynomial bs0=b.diagram().subset0(index);
+    Polynomial bs1=b.diagram().subset1(index);
     if (as0==as1){
       Polynomial zero(0);
       bs1=zero.diagram();
@@ -566,18 +557,74 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
         as1=zero.diagram();
       }
     }
-    return ((Polynomial) (multiply_recursively3(as0,bs1)
-      + multiply_recursively3(as1,bs1)
-      + multiply_recursively3(as1,bs0)).diagram().change(index))
-      + multiply_recursively3(as0,bs0);
-  } else {
 
-    
-    Polynomial res00=multiply_recursively3(as0,bs0);
-    Polynomial res11=multiply_recursively3(as1+as0,bs0+bs1)+res00;
-    return res11.diagram().change(index).unite(res00.diagram());
+    result = (Polynomial)( (multiply_recursively2(as0,bs1) 
+                            + multiply_recursively2(as1,bs1)
+                            + multiply_recursively2(as1,bs0)).diagram().change(index) )
+      +multiply_recursively2(as0,bs0);
+ 
+    cache_mgr.insert(a.navigation(), b.navigation(), result.navigation());
   }
-  
+
+
+  return result;
+}
+
+static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
+  if (a.isZero()) return Polynomial(0);
+  if (a.isOne()) return b;
+  if (b.isZero()) return Polynomial(0);
+  if (b.isOne()) return a;
+  if (a==b) return a;
+
+  typedef PBORI::CCacheManagement<PBORI::CCacheTypes::multiply_recursive>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
+
+  PBORI::BoolePolynomial::navigator cached =
+    cache_mgr.find(a.navigation(), b.navigation());
+
+  Polynomial result;
+
+  if (cached.isValid() ){
+    result = (CDDInterface<ZDD>)
+      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+                               cached);
+  }
+  else {
+
+    int indexa=*(a.navigation());
+    int indexb=*(b.navigation());
+    int index=std::min(indexa,indexb);
+    Polynomial as0=a.diagram().subset0(index);
+    Polynomial as1=a.diagram().subset1(index);
+    Polynomial bs0=b.diagram().subset0(index);
+    Polynomial bs1=b.diagram().subset1(index);
+    if (indexa!=indexb){
+      
+      if (as0==as1){
+        Polynomial zero(0);
+        bs1=zero.diagram();
+      } else {
+        if (bs0==bs1){
+          Polynomial zero(0);
+          as1=zero.diagram();
+        }
+      }
+      result = ((Polynomial) (multiply_recursively3(as0,bs1)
+                     + multiply_recursively3(as1,bs1)
+                     + multiply_recursively3(as1,bs0)).diagram().change(index))
+        + multiply_recursively3(as0,bs0);
+    } else {
+      
+      Polynomial res00=multiply_recursively3(as0,bs0);
+      Polynomial res11=multiply_recursively3(as1+as0,bs0+bs1)+res00;
+      result = res11.diagram().change(index).unite(res00.diagram());
+    }
+  }
+
+  return result;
 }
 static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_b){
   if (len_a>len_b) std::swap(a,b);
@@ -600,8 +647,13 @@ Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_
   size_t factor_reductor_len=reductor.length;//factor_reductor.length();
   size_t rewriteable_terms_len=rewriteable_terms_divided.length();
   len=len+(factor_reductor_len-2)*rewriteable_terms_len;
-  Polynomial product=//multiply_recursively3(factor_reductor,rewriteable_terms_divided);
+  Polynomial product=
+#if 1
+    multiply_recursively2(factor_reductor,rewriteable_terms_divided);
+#else
     multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
+#endif
+
   /*if (factor_reductor_len<rewriteable_terms_len){
     product=factor_reductor*((Polynomial)rewriteable_terms_divided);
   

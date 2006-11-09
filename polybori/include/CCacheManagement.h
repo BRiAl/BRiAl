@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/11/09 12:48:33  dreyer
+ * + added cachemanager to multiply_recursively2|3
+ *
  * Revision 1.1  2006/10/25 14:17:40  dreyer
  * + Initial Version
  *
@@ -45,6 +48,9 @@ protected:
 
 public:
   struct union_xor: public binary_cache_type { };
+
+  struct multiply_recursive: public binary_cache_type { };
+
   struct dlex_lead: public unary_cache_type { };
   struct dp_asc_lead: public unary_cache_type { };
 };
@@ -94,7 +100,9 @@ public:
 
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
+    Cudd_Ref(result);
     cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
+    Cudd_Deref(result);
   }
 
 private:
@@ -121,7 +129,9 @@ public:
 
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
+    Cudd_Ref(result);
     cuddCacheInsert2(base::operator()(), cache_dummy, first, second, result);
+    Cudd_Deref(result);
   }
 
 private:
