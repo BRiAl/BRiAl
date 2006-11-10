@@ -525,10 +525,10 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   if (b.isOne()) return a;
   if (a==b) return a;
 
-  typedef PBORI::CCacheManagement<PBORI::CCacheTypes::multiply_recursive>
+  typedef PBORI::CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
-  cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
+  cache_mgr_type cache_mgr;
 
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(a.navigation(), b.navigation());
@@ -577,7 +577,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
   if (b.isOne()) return a;
   if (a==b) return a;
 
-  typedef PBORI::CCacheManagement<PBORI::CCacheTypes::multiply_recursive>
+  typedef PBORI::CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
   cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
