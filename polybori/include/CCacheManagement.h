@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/11/13 11:39:52  dreyer
+ * ADD: changed order of template arguments
+ *
  * Revision 1.4  2006/11/13 11:31:15  dreyer
  * ADD: Arity may be changed/given explicitely as template argument
  *
@@ -152,8 +155,9 @@ private:
 };
 
 
-template <class CacheType, class ManagerType = typename CTypes::manager_base,
-          unsigned ArgumentLength = CacheType::nargs>
+template <class CacheType, 
+          unsigned ArgumentLength = CacheType::nargs,
+          class ManagerType = typename CTypes::manager_base>
 class CCacheManagement: 
   public CCacheManBase<ManagerType, CacheType, ArgumentLength> {
 public:
@@ -179,7 +183,7 @@ public:
 
 template <class CacheType, class ManagerType = typename CTypes::manager_base>
 class CCommutativeCacheManagement: 
-  public CCacheManagement<CacheType, ManagerType, 2> {
+  public CCacheManagement<CacheType, 2, ManagerType> {
 public:
 
   /// @name Get template parameters
@@ -189,7 +193,7 @@ public:
   //@}
 
   /// Name base type
-  typedef CCacheManagement<cache_type, manager_type> base;
+  typedef CCacheManagement<cache_type, 2, manager_type> base;
 
   /// Define node type
   typedef typename base::node_type node_type;
