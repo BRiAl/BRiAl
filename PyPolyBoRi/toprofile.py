@@ -1,6 +1,6 @@
 from sys import path
 
-from gbrefs import my_import
+from gbrefs import load_data, clean_data, my_import
 #from data import stas1 as data
 from nf import *
 
@@ -11,5 +11,8 @@ try:
 except:
     print 'No custom_profile.py file! Using ' + datafilename + '.';
 
-data=my_import(datafilename)
+data=load_data(datafilename, base_dir="../testsuite/py/")
 I=buchberger_C_based2(data.ideal,optAllowRecursion=False)
+del I
+clean_data(data)
+del data
