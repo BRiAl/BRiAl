@@ -549,19 +549,25 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
     Polynomial bs0=b.diagram().subset0(index);
     Polynomial bs1=b.diagram().subset1(index);
     if (as0==as1){
-      Polynomial zero(0);
-      bs1=zero.diagram();
+      //Polynomial zero(0);
+      //bs1=zero.diagram();
+      result = (Polynomial)multiply_recursively2(as1,bs0).diagram().change(index)
+        +multiply_recursively2(as0,bs0);
     } else {
       if (bs0==bs1){
-        Polynomial zero(0);
-        as1=zero.diagram();
+        //Polynomial zero(0);
+        //as1=zero.diagram();
+        result = (Polynomial)(multiply_recursively2(as0,bs1).diagram().change(index))
+            +multiply_recursively2(as0,bs0);
+      } else {
+        result = (Polynomial)( (multiply_recursively2(as0,bs1) 
+                                + multiply_recursively2(as1,bs1)
+                                + multiply_recursively2(as1,bs0)).diagram().change(index) )
+          +multiply_recursively2(as0,bs0);
       }
     }
 
-    result = (Polynomial)( (multiply_recursively2(as0,bs1) 
-                            + multiply_recursively2(as1,bs1)
-                            + multiply_recursively2(as1,bs0)).diagram().change(index) )
-      +multiply_recursively2(as0,bs0);
+   
  
     cache_mgr.insert(a.navigation(), b.navigation(), result.navigation());
   }
