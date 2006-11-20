@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/11/20 13:08:00  dreyer
+ * FIX: Destructor now virtual
+ *
  * Revision 1.7  2006/10/06 12:52:00  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -116,7 +119,7 @@ class COrderBase:
   COrderBase(const COrderBase&) {};
 
   /// Destructor
-  ~COrderBase() {};
+  virtual ~COrderBase() {};
 
   /// Comparison of indices corresponding to variables
   virtual comp_type compare(idx_type, idx_type) const = 0;
