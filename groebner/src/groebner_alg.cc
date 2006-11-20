@@ -1497,7 +1497,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
     MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , MonomialSet());
     MonomialSet result1= do_minimal_elements_cudd_style(
       m.subset1(index),result0);
-    result= result0.unite(result1.change(index));
+    result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
      
   } else {
       MonomialSet mod0=mod.subset0(index);
@@ -1505,7 +1505,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
       MonomialSet mod1=mod.subset1(index);
       MonomialSet result1= do_minimal_elements_cudd_style(
         m.subset1(index),result0.unite(mod0.unite(mod1)));
-      result= result0.unite(result1.change(index));
+      result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
   }
   cache_mgr.insert(m.navigation(), mod.navigation(), result.navigation());
   return result;
