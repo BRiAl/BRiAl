@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/20 16:37:03  dreyer
+ * FIX: broken assertion
+ *
  * Revision 1.8  2006/11/20 16:18:07  dreyer
  * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
  *
@@ -167,7 +170,8 @@ template <class PolynomialType>
 PolynomialType 
 dd_multiply_recursively(PolynomialType a, PolynomialType b){
 
-  assert( (&a.diagram().manager()) == (&b.diagram().manager()) );
+  assert( a.diagram().manager().getManager() == 
+          b.diagram().manager().getManager() );
 
   if (a.isZero() || b.isZero()) return 0;
   if (a.isOne()) return b;
