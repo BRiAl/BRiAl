@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/11/20 16:18:07  dreyer
+ * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
+ *
  * Revision 1.21  2006/10/04 15:46:50  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -135,6 +138,12 @@ BooleSet::BooleSet(const base& rhs) :
   PBORI_TRACE_FUNC( "BooleSet(const base&)" );
 }
 
+// Construct new node
+BooleSet::BooleSet(idx_type idx, const self& first, const self& second) :
+  base(idx, first, second) {
+  
+  PBORI_TRACE_FUNC( "BooleSet(idx_type, const self&, const self&)" );
+}
 
 // Destructor
 BooleSet::~BooleSet() {

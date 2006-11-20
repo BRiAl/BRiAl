@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/11/20 16:18:07  dreyer
+ * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
+ *
  * Revision 1.15  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -126,6 +129,9 @@ public:
 
   /// Copy constructor
   BooleSet(const base&);
+
+  /// Construct new node
+  BooleSet(idx_type idx, const self&, const self&);
 
   /// Destructor
   ~BooleSet();

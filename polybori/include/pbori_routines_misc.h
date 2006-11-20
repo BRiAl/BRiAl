@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/11/20 16:18:07  dreyer
+ * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
+ *
  * Revision 1.7  2006/11/20 14:56:46  dreyer
  * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
  *
@@ -53,9 +56,8 @@
 
 // temprarily
 #include "CIdxVariable.h"
-// temprarily
-#include "BoolePolyRing.h"
 
+// temprarily
 #include "CCacheManagement.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -165,51 +167,65 @@ template <class PolynomialType>
 PolynomialType 
 dd_multiply_recursively(PolynomialType a, PolynomialType b){
 
+  assert( (&a.diagram().manager()) == (&b.diagram().manager()) );
+
   if (a.isZero() || b.isZero()) return 0;
   if (a.isOne()) return b;
   if (b.isOne()) return a;
   if (a == b) return a;
 
+  // Get cache management types
   typedef CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
+  // Extract subtypes
+  typedef typename PolynomialType::dd_type dd_type;
+  typedef typename PolynomialType::idx_type idx_type;
+  typedef typename PolynomialType::navigator navigator;
+
+  // Instantiate cache manager
   cache_mgr_type cache_mgr;
 
-  typename PolynomialType::navigator cached =
-    cache_mgr.find(a.navigation(), b.navigation());
+  // Get navigators (nodes) from polynomial
+  navigator firstNavi(a.navigation()), secondNavi(b.navigation());
+
+  // Look up, whether operation was already used
+  navigator cached = cache_mgr.find(firstNavi, secondNavi);
 
   PolynomialType result;
 
-  if (cached.isValid() ){
-    result = (CDDInterface<ZDD>)
-      CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
-                               cached);
+  if (cached.isValid() ){       // Cache lookup sucessful
+    result = (dd_type) CTypes::dd_base(&a.diagram().manager(), cached);
   }
-  else {
-    int indexa=*(a.navigation());
-    int indexb=*(b.navigation());
-    int index=std::min(indexa,indexb);
-    PolynomialType as0=a.diagram().subset0(index);
-    PolynomialType as1=a.diagram().subset1(index);
-    PolynomialType bs0=b.diagram().subset0(index);
-    PolynomialType bs1=b.diagram().subset1(index);
+  else {                        // Cache lookup not sucessful
+    // Get top variable's index
+    idx_type index = std::min(*firstNavi, *secondNavi);
+
+    // Get then- and else-branches wrt. current indexed variable
+    PolynomialType as0 = a.diagram().subset0(index);
+    PolynomialType as1 = a.diagram().subset1(index);
+    PolynomialType bs0 = b.diagram().subset0(index);
+    PolynomialType bs1 = b.diagram().subset1(index);
 
     if (as0 == as1){
       PolynomialType zero(0);
       bs1=zero.diagram();
-    } else {
+    } 
+    else {
       if (bs0 == bs1){
         PolynomialType zero(0);
         as1 = zero.diagram();
       }
     }
+    // Do recursion
+    result = dd_type(index,  
+                     dd_multiply_recursively(as0, bs1) 
+                     + dd_multiply_recursively(as1, bs1)
+                     + dd_multiply_recursively(as1, bs0),
+                     dd_multiply_recursively(as0, bs0) );
 
-    result = (PolynomialType)( (dd_multiply_recursively(as0, bs1) 
-                            + dd_multiply_recursively(as1, bs1)
-                            + dd_multiply_recursively(as1, bs0)).diagram().change(index) )
-      + dd_multiply_recursively(as0, bs0);
- 
-    cache_mgr.insert(a.navigation(), b.navigation(), result.navigation());
+    // Insert in cache
+    cache_mgr.insert(firstNavi, secondNavi, result.navigation());
   }
 
 
