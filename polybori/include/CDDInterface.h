@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2006/11/20 14:56:46  dreyer
+ * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
+ *
  * Revision 1.39  2006/10/30 13:30:32  dreyer
  * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
  *
@@ -297,6 +300,18 @@ class CDDInterface<ZDD>:
 
   /// Construct from interfaced type
   CDDInterface(const interfaced_type& rhs): base_type(rhs) {}
+
+  /// Construct new node
+  CDDInterface(idx_type idx, const self& thenDD, const self& elseDD): 
+    base_type(interfaced_type( &thenDD.manager(), 
+                               cuddZddGetNode( thenDD.manager().getManager(), 
+                                               idx, 
+                                               thenDD.navigation(), 
+                                               elseDD.navigation()) ) ) {
+    assert(idx < *thenDD.navigation());
+    assert(idx < *elseDD.navigation());
+  }
+
 
   /// Destructor
   ~CDDInterface() {}
@@ -738,6 +753,7 @@ class CDDInterface<ZDD>:
                                rhs.m_interfaced.getNode(),
                                includeVars) );
   }
+
 };
 
 /// Stream output operator

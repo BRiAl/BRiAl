@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/11/20 14:56:46  dreyer
+ * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
+ *
  * Revision 1.6  2006/11/20 12:40:57  bricken
  * + new minimal elements, fails tests
  *
@@ -61,17 +64,18 @@ BEGIN_NAMESPACE_PBORI
 
 class CCacheTypes {
 protected:
-  struct unary_cache_type { enum { nargs = 1 }; };
-  struct binary_cache_type { enum { nargs = 2 }; };
+  struct unary_cache_tag { enum { nargs = 1 }; };
+  struct binary_cache_tag { enum { nargs = 2 }; };
+  struct ternary_cache_tag { enum { nargs = 3 }; };
 
 public:
-  struct union_xor: public binary_cache_type { };
+  struct union_xor: public binary_cache_tag { };
 
-  struct multiply_recursive: public binary_cache_type { };
-  struct minimal_mod: public binary_cache_type { };
+  struct multiply_recursive: public binary_cache_tag { };
+  struct minimal_mod: public binary_cache_tag { };
   
-  struct dlex_lead: public unary_cache_type { };
-  struct dp_asc_lead: public unary_cache_type { };
+  struct dlex_lead: public unary_cache_tag { };
+  struct dp_asc_lead: public unary_cache_tag { };
 };
 
 
@@ -158,6 +162,39 @@ private:
   static node_type cache_dummy(internal_manager_type, node_type, node_type){}
 };
 
+
+template <class CacheType>
+class CCacheManBase<Cudd, CacheType, 3> :
+  protected cudd_manager_storage {
+
+public:
+
+  /// Set base type
+  typedef cudd_manager_storage base;
+
+  /// Constructor
+  CCacheManBase(const manager_type& mgr): base(mgr) {}
+
+  /// Find cached value wrt. given node
+  node_type find(node_type first, node_type second, node_type third) const {
+    return cuddCacheLookupZdd(base::operator()(), (ptruint)cache_dummy, 
+                               first, second, third);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(node_type first, node_type second, node_type third, 
+              node_type result) const {
+    Cudd_Ref(result);
+    cuddCacheInsert(base::operator()(), (ptruint)cache_dummy, 
+                    first, second, third, result);
+    Cudd_Deref(result);
+  }
+
+private:
+  /// Define unique static function, as marker for Cudd cache
+  static node_type cache_dummy(internal_manager_type, 
+                               node_type, node_type, node_type){}
+};
 
 template <class CacheType, 
           unsigned ArgumentLength = CacheType::nargs,

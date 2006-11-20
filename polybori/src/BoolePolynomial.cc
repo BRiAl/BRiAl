@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.75  2006/11/20 14:56:46  dreyer
+ * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
+ *
  * Revision 1.74  2006/10/24 14:21:56  dreyer
  * ADD: variable_name functional
  *
@@ -423,6 +426,10 @@ BoolePolynomial::operator*=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const self&)" );
 
+  self result = dd_multiply_recursively(*this, rhs);
+
+#if 0
+
   self result(0);
 
   exp_iterator start(rhs.expBegin()), finish(rhs.expEnd());
@@ -437,6 +444,8 @@ BoolePolynomial::operator*=(const self& rhs) {
     }
     ++start;
   }
+
+#endif
 
   return (*this = result);
 }

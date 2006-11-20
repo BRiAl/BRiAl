@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/11/20 14:56:46  dreyer
+ * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
+ *
  * Revision 1.6  2006/10/24 14:21:56  dreyer
  * ADD: variable_name functional
  *
@@ -52,6 +55,8 @@
 #include "CIdxVariable.h"
 // temprarily
 #include "BoolePolyRing.h"
+
+#include "CCacheManagement.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -156,5 +161,59 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 }
 
 
+template <class PolynomialType>
+PolynomialType 
+dd_multiply_recursively(PolynomialType a, PolynomialType b){
+
+  if (a.isZero() || b.isZero()) return 0;
+  if (a.isOne()) return b;
+  if (b.isOne()) return a;
+  if (a == b) return a;
+
+  typedef CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr;
+
+  typename PolynomialType::navigator cached =
+    cache_mgr.find(a.navigation(), b.navigation());
+
+  PolynomialType result;
+
+  if (cached.isValid() ){
+    result = (CDDInterface<ZDD>)
+      CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+                               cached);
+  }
+  else {
+    int indexa=*(a.navigation());
+    int indexb=*(b.navigation());
+    int index=std::min(indexa,indexb);
+    PolynomialType as0=a.diagram().subset0(index);
+    PolynomialType as1=a.diagram().subset1(index);
+    PolynomialType bs0=b.diagram().subset0(index);
+    PolynomialType bs1=b.diagram().subset1(index);
+
+    if (as0 == as1){
+      PolynomialType zero(0);
+      bs1=zero.diagram();
+    } else {
+      if (bs0 == bs1){
+        PolynomialType zero(0);
+        as1 = zero.diagram();
+      }
+    }
+
+    result = (PolynomialType)( (dd_multiply_recursively(as0, bs1) 
+                            + dd_multiply_recursively(as1, bs1)
+                            + dd_multiply_recursively(as1, bs0)).diagram().change(index) )
+      + dd_multiply_recursively(as0, bs0);
+ 
+    cache_mgr.insert(a.navigation(), b.navigation(), result.navigation());
+  }
+
+
+  return result;
+}
 
 END_NAMESPACE_PBORI
