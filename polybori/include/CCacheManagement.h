@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/11/20 12:40:57  bricken
+ * + new minimal elements, fails tests
+ *
  * Revision 1.5  2006/11/13 11:39:52  dreyer
  * ADD: changed order of template arguments
  *
@@ -65,7 +68,8 @@ public:
   struct union_xor: public binary_cache_type { };
 
   struct multiply_recursive: public binary_cache_type { };
-
+  struct minimal_mod: public binary_cache_type { };
+  
   struct dlex_lead: public unary_cache_type { };
   struct dp_asc_lead: public unary_cache_type { };
 };
