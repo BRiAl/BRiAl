@@ -35,6 +35,7 @@
 
 BEGIN_NAMESPACE_PBORIGB
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
+static MonomialSet minimal_elements_cudd_style(MonomialSet m);
 static bool have_ordering_for_tables(){
         
         
@@ -1349,6 +1350,8 @@ static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomia
 #define EXP_FOR_PAIRS
 #ifndef EXP_FOR_PAIRS
 static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
+  
+  
     std::vector<Monomial> result;
     if (!(m.divisorsOf(lm).emptiness())){
         result.push_back(lm);
@@ -1372,11 +1375,13 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
         
     }
     return result;
+
 }
 #else
+#if 0
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
     std::vector<Exponent> result;
-    Exponent exp=lm.exp();
+    Exponent exp;//=lm.exp();
     if (!(m.divisorsOf(lm).emptiness())){
         result.push_back(exp);
     } else {
@@ -1390,6 +1395,24 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     }
     return result;
 }
+#else
+static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
+    std::vector<Exponent> result;
+    Exponent exp;//=lm.exp();
+    if (!(m.divisorsOf(lm).emptiness())){
+        result.push_back(exp);
+    } else {
+        Monomial v;
+        m=divide_monomial_divisors_out(m,lm);
+        m=minimal_elements_cudd_style(m);
+        result.resize(m.length());
+        std::copy(m.expBegin(),m.expEnd(),result.begin());
+        //return minimal_elements_internal3(m);
+        
+    }
+    return result;
+}
+#endif
 #endif
 
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
@@ -1418,6 +1441,69 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   }
 
   return impl;
+}
+static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
+  if (m.emptiness()) return MonomialSet();
+  Polynomial p=m;
+  Polynomial p_mod=mod;
+  if (p_mod.hasConstantPart())
+    return MonomialSet();
+  if (p.hasConstantPart())
+    return ((Polynomial)1).diagram();
+  MonomialSet result;
+  int index=*m.navigation();
+  
+  
+  
+  
+  if (!mod.emptiness())
+  {
+    MonomialSet::navigator nav_mod=mod.navigation();
+    while((!(nav_mod.isConstant())) && (index>*nav_mod)){
+      nav_mod.incrementElse();
+     
+    }
+    mod=(CDDInterface<ZDD>)
+      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+                                 nav_mod);
+  }
+  
+  typedef PBORI::CCacheManagement<CCacheTypes::minimal_mod>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr;
+  PBORI::BoolePolynomial::navigator cached =
+    cache_mgr.find(m.navigation(), mod.navigation());
+
+
+      
+  if (cached.isValid() ){
+    return (CDDInterface<ZDD>)
+      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+                               cached);
+  }
+  
+  
+  if (mod.emptiness()){
+    
+    MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , MonomialSet());
+    MonomialSet result1= do_minimal_elements_cudd_style(
+      m.subset1(index),result0);
+    result= result0.unite(result1.change(index));
+     
+  } else {
+      MonomialSet mod0=mod.subset0(index);
+      MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , mod0);
+      MonomialSet mod1=mod.subset1(index);
+      MonomialSet result1= do_minimal_elements_cudd_style(
+        m.subset1(index),result0.unite(mod0.unite(mod1)));
+      result= result0.unite(result1.change(index));
+  }
+  cache_mgr.insert(m.navigation(), mod.navigation(), result.navigation());
+  return result;
+}
+static MonomialSet minimal_elements_cudd_style(MonomialSet m){
+  return do_minimal_elements_cudd_style(m, MonomialSet());
 }
 void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms){
     PolyEntry e=generators[s];
