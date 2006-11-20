@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/11/20 15:07:47  dreyer
+ * FIX: headed included
+ *
  * Revision 1.27  2006/10/24 06:39:38  dreyer
  * CHANGE: changed interface type
  *
@@ -113,6 +116,7 @@
 
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
+#include "OrderedManager.h"
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
