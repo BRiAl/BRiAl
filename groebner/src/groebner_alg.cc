@@ -36,6 +36,7 @@
 BEGIN_NAMESPACE_PBORIGB
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 static MonomialSet minimal_elements_cudd_style(MonomialSet m);
+static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod);
 static bool have_ordering_for_tables(){
         
         
@@ -661,7 +662,8 @@ Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_
   len=len+(factor_reductor_len-2)*rewriteable_terms_len;
   Polynomial product=
 #if 1
-    multiply_recursively2(factor_reductor,rewriteable_terms_divided);
+    factor_reductor*(Polynomial) rewriteable_terms_divided;
+    //multiply_recursively2(factor_reductor,rewriteable_terms_divided);
 #else
     multiply(factor_reductor,factor_reductor_len,rewriteable_terms_divided,rewriteable_terms_len);
 #endif
@@ -1401,7 +1403,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     return result;
 }
 #else
-static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
+static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
     Exponent exp;//=lm.exp();
     if (!(m.divisorsOf(lm).emptiness())){
@@ -1409,7 +1411,8 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     } else {
         Monomial v;
         m=divide_monomial_divisors_out(m,lm);
-        m=minimal_elements_cudd_style(m);
+        //mod=divide_monomial_divisors_out(mod,lm);
+        m=do_minimal_elements_cudd_style(m,mod);
         result.resize(m.length());
         std::copy(m.expBegin(),m.expEnd(),result.begin());
         //return minimal_elements_internal3(m);
@@ -1510,8 +1513,10 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
 static MonomialSet minimal_elements_cudd_style(MonomialSet m){
   return do_minimal_elements_cudd_style(m, MonomialSet());
 }
-void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms){
+void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){
     PolyEntry e=generators[s];
+    int i;
+    
     if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
      {
        BooleMonomial lm=e.lm;
@@ -1520,7 +1525,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
           //MonomialSet already_used;
           std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(minimalLeadingTerms), lm);
   #else
-          std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(minimalLeadingTerms), lm);
+          std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(minimalLeadingTerms), lm,ext_prod_terms);
   #endif
 
           int mt_i;
@@ -1534,7 +1539,8 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
               Exponent t=t_divided+e.lmExp;
   #endif
               MonomialSet lm_d=t_divided.divisors();
-              if ((other_terms.intersect(lm_d).emptiness())){
+              assert((other_terms.intersect(lm_d).emptiness()));
+              if (true){
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
               //#else
@@ -1563,7 +1569,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 }
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::vector<int>* impl_v){
   
-  
+  MonomialSet ext_prod_terms;
   PolyEntry e(p);
   Monomial lm=e.lm;
   this->propagate(e);
@@ -1598,7 +1604,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
-            other_terms=other_terms.unite(divide_monomial_divisors_out(ot2,lm));
+            other_terms=other_terms.unite(ext_prod_terms=divide_monomial_divisors_out(ot2,lm));
         }
        
         //other_terms=other_terms.unite(ot2);
@@ -1649,7 +1655,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
   //Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
   
-   treatNormalPairs(s,intersecting_terms,other_terms);
+   treatNormalPairs(s,intersecting_terms,other_terms, ext_prod_terms);
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in leadingTerms
     
