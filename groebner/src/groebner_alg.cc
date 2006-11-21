@@ -530,11 +530,6 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   typedef PBORI::CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
-  typedef PBORI::CCacheManagement<CCacheTypes::union_xor,3>
-    cache3_mgr_type;
-  cache3_mgr_type cache3;
-  cache3.find(a.navigation(), b.navigation(), b.navigation());
-
   cache_mgr_type cache_mgr;
 
   PBORI::BoolePolynomial::navigator cached =
