@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/11/21 12:33:34  dreyer
+ * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
+ *
  * Revision 1.22  2006/11/20 16:18:07  dreyer
  * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
  *
@@ -143,6 +146,13 @@ BooleSet::BooleSet(idx_type idx, const self& first, const self& second) :
   base(idx, first, second) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, const self&, const self&)" );
+}
+
+// Construct new node (using navigator nodes)
+BooleSet::BooleSet(idx_type idx, navigator first, navigator second) :
+  base(BoolePolyRing::activeManager().manager(), idx, first, second) {
+  
+  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
 }
 
 // Destructor

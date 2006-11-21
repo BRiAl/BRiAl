@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.56  2006/11/21 12:33:33  dreyer
+ * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
+ *
  * Revision 1.55  2006/11/21 09:52:05  dreyer
  * CHANGE: some simple functions in BoolePolynomial inlined
  * ADD: caching of ternary operations
@@ -682,6 +685,16 @@ BoolePolynomial::isConstant() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::isConstant() const" );
 
   return m_dd.isConstant();
+}
+
+
+// Check whether polynomial own the one term
+inline BoolePolynomial::bool_type
+BoolePolynomial::hasConstantPart() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::hasConstantPart() const" );
+
+  return m_dd.ownsOne();
 }
 
 

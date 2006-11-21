@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/21 12:33:34  dreyer
+ * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
+ *
  * Revision 1.8  2006/11/21 09:52:05  dreyer
  * CHANGE: some simple functions in BoolePolynomial inlined
  * ADD: caching of ternary operations
@@ -78,7 +81,9 @@ public:
 
   struct multiply_recursive: public binary_cache_tag { };
   struct minimal_mod: public binary_cache_tag { };
-  
+
+  struct divisorsof: public binary_cache_tag { };
+ 
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
 

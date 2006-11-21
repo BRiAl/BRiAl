@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2006/11/21 12:33:34  dreyer
+ * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
+ *
  * Revision 1.40  2006/11/20 14:56:46  dreyer
  * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
  *
@@ -301,20 +304,26 @@ class CDDInterface<ZDD>:
   /// Construct from interfaced type
   CDDInterface(const interfaced_type& rhs): base_type(rhs) {}
 
-  /// Construct new node
-  CDDInterface(idx_type idx, const self& thenDD, const self& elseDD): 
-    base_type(interfaced_type( &thenDD.manager(), 
-                               cuddZddGetNode( thenDD.manager().getManager(), 
-                                               idx, 
-                                               thenDD.navigation(), 
-                                               elseDD.navigation()) ) ) {
-    assert(idx < *thenDD.navigation());
-    assert(idx < *elseDD.navigation());
+  /// Construct from Manager and navigator
+  CDDInterface(const manager_base& mgr, const navigator& navi): 
+    base_type(self::newDiagram(mgr, navi)) {}
+
+  /// Construct new node from manager, index, and navigators
+  CDDInterface(const manager_base& mgr, 
+               idx_type idx, navigator thenNavi, navigator elseNavi): 
+    base_type( self::newNodeDiagram(mgr, idx, thenNavi, elseNavi) ) {
   }
 
+  /// Construct new node
+  CDDInterface(idx_type idx, const self& thenDD, const self& elseDD): 
+    base_type( self::newNodeDiagram(thenDD.manager(), idx, 
+                                    thenDD.navigation(), 
+                                    elseDD.navigation()) ) {
+  }
 
   /// Destructor
   ~CDDInterface() {}
+
   /// Set union
   self unite(const self& rhs) const {
     return self(base_type(m_interfaced.Union(rhs.m_interfaced)));
@@ -754,6 +763,33 @@ class CDDInterface<ZDD>:
                                includeVars) );
   }
 
+  /// Test whether the empty set is included
+  bool_type ownsOne() const {
+    navigator navi(navigation());
+
+    while (!navi.isConstant() )
+      navi.incrementElse();
+    
+    return navi.terminalValue();
+  }
+
+private:
+  navigator newNode(const manager_base& mgr, idx_type idx, 
+                    navigator thenNavi, navigator elseNavi) const {
+    assert(idx < *thenNavi);
+    assert(idx < *elseNavi); 
+    return cuddZddGetNode(mgr.getManager(), idx, thenNavi, elseNavi);
+  }
+
+  interfaced_type newDiagram(const manager_base& mgr, navigator navi) const { 
+    return interfaced_type(&const_cast<manager_base&>(mgr), navi);
+  }
+
+  interfaced_type newNodeDiagram(const manager_base& mgr, idx_type idx, 
+                                 navigator thenNavi, 
+                                 navigator elseNavi) const { 
+    return newDiagram(mgr, newNode(mgr, idx, thenNavi, elseNavi) );
+  }
 };
 
 /// Stream output operator

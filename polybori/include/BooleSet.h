@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/11/21 12:33:33  dreyer
+ * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
+ *
  * Revision 1.16  2006/11/20 16:18:07  dreyer
  * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
  *
@@ -133,6 +136,9 @@ public:
   /// Construct new node
   BooleSet(idx_type idx, const self&, const self&);
 
+  /// Construct new node (using navigator nodes)
+  BooleSet(idx_type idx, navigator, navigator);
+
   /// Destructor
   ~BooleSet();
 
@@ -192,6 +198,9 @@ public:
 
   /// Get minimal elements wrt. inclusion
   self minimalElements() const;// { return base::minimalElements(); };
+
+  /// Test whether the empty set is included
+  using base::ownsOne;
 };
 
 
