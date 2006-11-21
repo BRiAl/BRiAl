@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/11/21 10:33:22  dreyer
+ * CHANGE: added inlinable member functions
+ *
  * Revision 1.10  2006/09/21 16:09:59  dreyer
  * ADD: caching mechanism for BoolePolynomial::deg()
  *
@@ -111,13 +114,13 @@ public:
   //@}
 
   /// Default constructor and construct from node pointer
-  CCuddNavigator(pointer_type ptr = NULL);
+  CCuddNavigator(pointer_type ptr = NULL): pNode(ptr) {}
 
   /// Copy Constructor
-  CCuddNavigator(const self&);
+  CCuddNavigator(const self& rhs): pNode(rhs.pNode) {}
 
   /// Destructor
-  ~CCuddNavigator();
+  ~CCuddNavigator() {}
 
   /// Increment in @i then direction
   self& incrementThen();
@@ -169,6 +172,120 @@ public:
 private:
   pointer_type pNode;
 };
+
+// Inlined member functions
+
+// constant pointer access operator
+inline CCuddNavigator::value_type
+CCuddNavigator::operator*() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::operator*() const" );
+  return Cudd_Regular(pNode)->index;
+}
+
+// constant pointer access operator
+inline const CCuddNavigator::pointer_type
+CCuddNavigator::operator->() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::operator->() const" );
+  return pNode;
+}
+
+// constant pointer access operator
+inline CCuddNavigator::hash_type
+CCuddNavigator::hash() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::hash() const" );
+  return reinterpret_cast<long>(pNode);
+}
+
+// equality test
+inline CCuddNavigator::bool_type 
+CCuddNavigator::operator==(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::operator==(const self&) const" );
+
+  return (pNode == rhs.pNode);
+}
+
+// nonequality test
+inline CCuddNavigator::bool_type 
+CCuddNavigator::operator!=(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::operator!=(const self&) const" );
+  return (pNode != rhs.pNode);
+}
+
+// whether constant node was reached
+inline CCuddNavigator::bool_type 
+CCuddNavigator::isConstant() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::isConstant() const" );
+  return isValid() && Cudd_IsConstant(pNode);
+}
+
+// constant node value
+inline CCuddNavigator::bool_type 
+CCuddNavigator::terminalValue() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::terminalValue() const" );
+  return Cudd_V(pNode);
+}
+
+// whether iterator is at end
+inline CCuddNavigator::bool_type 
+CCuddNavigator::isValid() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::isValid()() const" );
+
+  // convention: all non-Null pointers are valid 
+  return (pNode != NULL);
+}
+
+// increment in then direction
+inline CCuddNavigator&
+CCuddNavigator::incrementThen() {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::incrementThen()" );
+
+  assert(isValid());
+  pNode = Cudd_T(pNode);
+
+  return *this;
+}
+
+// go to then direction
+inline CCuddNavigator
+CCuddNavigator::thenBranch() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::thenBranch() const" );
+
+  self copy(*this);
+  return copy.incrementThen();
+}
+
+// increment in else direction
+inline CCuddNavigator&
+CCuddNavigator::incrementElse() {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::incrementElse()" );
+
+  assert(isValid());
+  pNode = Cudd_E(pNode);
+
+  return *this;
+}
+
+// go to else direction
+inline CCuddNavigator
+CCuddNavigator::elseBranch() const {
+
+  PBORI_TRACE_FUNC( "CCuddNavigator::ielseBranch() const" );
+
+  self copy(*this);
+  return copy.incrementElse();
+}
+
 
 END_NAMESPACE_PBORI
 
