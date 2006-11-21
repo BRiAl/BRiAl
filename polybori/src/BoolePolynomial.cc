@@ -20,6 +20,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.76  2006/11/21 09:52:05  dreyer
+ * CHANGE: some simple functions in BoolePolynomial inlined
+ * ADD: caching of ternary operations
+ * ADD: commandline switch PBORI_FAST_MULTIPLICATION (dense multiplication)
+ *
  * Revision 1.75  2006/11/20 14:56:46  dreyer
  * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
  *
@@ -524,33 +529,6 @@ BoolePolynomial::operator!=(bool_type rhs) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(bool_type) const" );
 
   return ( rhs? isZero() : isOne() );
-}
-
-// Check whether polynomial is zero
-BoolePolynomial::bool_type
-BoolePolynomial::isZero() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::isZero() const" );
-
-  return m_dd.emptiness();
-}
-
-// Check whether polynomial is one
-BoolePolynomial::bool_type
-BoolePolynomial::isOne() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::isOne() const" );
-
-  return m_dd.blankness();
-}
-
-// Check whether polynomial is zero or one
-BoolePolynomial::bool_type
-BoolePolynomial::isConstant() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::isConstant() const" );
-
-  return m_dd.isConstant();
 }
 
 // Check whether polynomial own the one term

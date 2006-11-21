@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/11/21 09:52:05  dreyer
+ * CHANGE: some simple functions in BoolePolynomial inlined
+ * ADD: caching of ternary operations
+ * ADD: commandline switch PBORI_FAST_MULTIPLICATION (dense multiplication)
+ *
  * Revision 1.9  2006/11/20 16:37:03  dreyer
  * FIX: broken assertion
  *
@@ -196,9 +201,10 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(firstNavi, secondNavi);
 
+  // Instantiate result
   PolynomialType result;
 
-  if (cached.isValid() ){       // Cache lookup sucessful
+  if (cached.isValid()) {       // Cache lookup sucessful
     result = (dd_type) CTypes::dd_base(&a.diagram().manager(), cached);
   }
   else {                        // Cache lookup not sucessful
@@ -211,23 +217,33 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
     PolynomialType bs0 = b.diagram().subset0(index);
     PolynomialType bs1 = b.diagram().subset1(index);
 
-    if (as0 == as1){
-      PolynomialType zero(0);
-      bs1=zero.diagram();
-    } 
-    else {
-      if (bs0 == bs1){
-        PolynomialType zero(0);
-        as1 = zero.diagram();
-      }
-    }
-    // Do recursion
-    result = dd_type(index,  
-                     dd_multiply_recursively(as0, bs1) 
-                     + dd_multiply_recursively(as1, bs1)
-                     + dd_multiply_recursively(as1, bs0),
-                     dd_multiply_recursively(as0, bs0) );
+#ifdef PBORI_FAST_MULTIPLICATION
+    if (*firstNavi == *secondNavi) {
+      PolynomialType res00 = dd_multiply_recursively(as0, bs0);
+      PolynomialType res11 = dd_multiply_recursively(as1 + as0, 
+                                                     bs0 + bs1) - res00;
+      result = dd_type(index, res11, res00);
+    } else
+#endif
+      {
+        if (as0 == as1){
+          PolynomialType zero(0);
+          bs1=zero.diagram();
+        } 
+        else {
+          if (bs0 == bs1){
+            PolynomialType zero(0);
+            as1 = zero.diagram();
+          }
+        }
+        // Do recursion
+        result = dd_type(index,  
+                         dd_multiply_recursively(as0, bs1) 
+                         + dd_multiply_recursively(as1, bs1)
+                         + dd_multiply_recursively(as1, bs0),
+                         dd_multiply_recursively(as0, bs0) );
 
+      }
     // Insert in cache
     cache_mgr.insert(firstNavi, secondNavi, result.navigation());
   }

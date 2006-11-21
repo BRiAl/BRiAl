@@ -21,6 +21,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.55  2006/11/21 09:52:05  dreyer
+ * CHANGE: some simple functions in BoolePolynomial inlined
+ * ADD: caching of ternary operations
+ * ADD: commandline switch PBORI_FAST_MULTIPLICATION (dense multiplication)
+ *
  * Revision 1.54  2006/10/16 15:13:10  bricken
  * + new map type
  *
@@ -651,6 +656,34 @@ operator!=(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 /// Stream output operator
 BoolePolynomial::ostream_type& 
 operator<<(BoolePolynomial::ostream_type&, const BoolePolynomial&);
+
+// Check whether polynomial is zero
+inline BoolePolynomial::bool_type
+BoolePolynomial::isZero() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isZero() const" );
+
+  return m_dd.emptiness();
+}
+
+// Check whether polynomial is one
+inline BoolePolynomial::bool_type
+BoolePolynomial::isOne() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isOne() const" );
+
+  return m_dd.blankness();
+}
+
+// Check whether polynomial is zero or one
+inline BoolePolynomial::bool_type
+BoolePolynomial::isConstant() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::isConstant() const" );
+
+  return m_dd.isConstant();
+}
+
 
 END_NAMESPACE_PBORI
 

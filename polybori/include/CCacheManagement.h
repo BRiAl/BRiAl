@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2006/11/21 09:52:05  dreyer
+ * CHANGE: some simple functions in BoolePolynomial inlined
+ * ADD: caching of ternary operations
+ * ADD: commandline switch PBORI_FAST_MULTIPLICATION (dense multiplication)
+ *
  * Revision 1.7  2006/11/20 14:56:46  dreyer
  * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
  *
@@ -76,6 +81,37 @@ public:
   
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
+
+  struct divisorsof_fixedpath: public ternary_cache_tag { };
+  struct testwise_ternary: public ternary_cache_tag { };
+};
+
+// Reserve integer Numbers for Ternary operations (for cudd)
+template <class TagType>
+struct count_tags;
+
+template<>
+struct count_tags<CCacheTypes::divisorsof_fixedpath>{
+  enum { value = 0 };
+};
+
+template <class BaseTag>
+struct increment_count_tags {
+  enum{ value = count_tags<BaseTag>::value + 1 };
+};
+
+template<>
+class count_tags<CCacheTypes::testwise_ternary>:
+  public increment_count_tags<CCacheTypes::divisorsof_fixedpath>{ };
+
+// generate tag number (special pattern with 4 usable bits)
+// 18 bits are already used
+template <unsigned Counted, unsigned Offset = 18>
+class cudd_tag_number {
+public:
+  enum { value = 
+         ( ((Counted + Offset) & 0x3 ) << 2) | 
+         ( ((Counted + Offset) & 0x1C ) << 3) | 0x2 };
 };
 
 
@@ -177,23 +213,22 @@ public:
 
   /// Find cached value wrt. given node
   node_type find(node_type first, node_type second, node_type third) const {
-    return cuddCacheLookupZdd(base::operator()(), (ptruint)cache_dummy, 
-                               first, second, third);
+    return cuddCacheLookupZdd(base::operator()(), (ptruint)GENERIC_DD_TAG, 
+                              first, second, third);
   }
 
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type third, 
               node_type result) const {
     Cudd_Ref(result);
-    cuddCacheInsert(base::operator()(), (ptruint)cache_dummy, 
+    cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
                     first, second, third, result);
     Cudd_Deref(result);
   }
 
 private:
-  /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, 
-                               node_type, node_type, node_type){}
+  enum { GENERIC_DD_TAG =
+         cudd_tag_number<count_tags<CacheType>::value>::value };
 };
 
 template <class CacheType, 
