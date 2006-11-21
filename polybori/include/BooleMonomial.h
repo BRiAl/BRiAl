@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.20  2006/10/10 16:12:28  bricken
  * + try this deg function
  *
@@ -166,7 +169,7 @@ class BooleMonomial {
   BooleMonomial();
 
   /// Copy constructor
-  BooleMonomial(const self&);
+  BooleMonomial(const self& rhs):  m_poly(rhs.m_poly) {}
 
   /// Construct from Boolean variable
   BooleMonomial(const var_type&);
@@ -175,13 +178,13 @@ class BooleMonomial {
   explicit BooleMonomial(const exp_type&);
 
   /// Construct from Boolean constant
-  BooleMonomial(bool_type);
+  BooleMonomial(bool_type val): m_poly(val) {}
 
   /// Destructor
-  ~BooleMonomial();
+  ~BooleMonomial() {}
 
   /// Casting operator
-  operator const BoolePolynomial&() const;
+  operator const BoolePolynomial&() const { return m_poly; }
 
   /// Get exponent vector
   exp_type exp() const;
@@ -277,7 +280,7 @@ protected:
   dd_type& internalDiagram() { return m_poly.internalDiagram(); }
 
   /// Construct from decision diagram
-  BooleMonomial(const dd_type&);
+  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
 
 private:
   BoolePolynomial m_poly;

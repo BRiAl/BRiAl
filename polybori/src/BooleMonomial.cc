@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.10  2006/08/29 12:09:27  dreyer
  * using CDDOperations for generic dd functions
  *
@@ -78,13 +81,6 @@ BooleMonomial::BooleMonomial():
 
 }
 
-// Copy constructor
-BooleMonomial::BooleMonomial(const self& rhs) :
-  m_poly(rhs.m_poly) {
-  
-  PBORI_TRACE_FUNC( "BooleMonomial(const self&)" );
-}
-
 //  Construct from Boolean variable
 BooleMonomial::BooleMonomial(const var_type& rhs) :
   m_poly(rhs) {
@@ -100,28 +96,6 @@ BooleMonomial::BooleMonomial(const exp_type& rhs) :
 
 }
 
-//  Construct from decision diagram (protected, for internal use only)
-BooleMonomial::BooleMonomial(const dd_type& rhs) :
-  m_poly(rhs) {
-  
-  PBORI_TRACE_FUNC( "BooleMonomial(const dd_type&)" );
-
-}
-
-//  Construct from Boolean constant
-BooleMonomial::BooleMonomial(bool_type val) :
-  m_poly(val) {
-  
-  PBORI_TRACE_FUNC( "BooleMonomial(bool_type)" );
-}
-
-// Destructor
-BooleMonomial::~BooleMonomial() {
-
-  PBORI_TRACE_FUNC( "~BooleMonomial()" );
-}
-
-
 // Reducibility test
 BooleMonomial::bool_type
 BooleMonomial::reducibleBy(const var_type& rhs) const {
@@ -129,15 +103,6 @@ BooleMonomial::reducibleBy(const var_type& rhs) const {
   PBORI_TRACE_FUNC( "BooleMonomial::reducibleBy(const var_type&) const" );
 
   return m_poly.reducibleBy(rhs);
-}
-
-
-// Casting operator
-BooleMonomial::operator const BoolePolynomial&() const {
-
-  PBORI_TRACE_FUNC( "BooleMonomial::operator const BoolePolynomial&() const" );
-
-  return m_poly;
 }
 
 //  Substitute variable with index idx by its complement and assign

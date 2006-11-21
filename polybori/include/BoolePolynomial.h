@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.57  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.56  2006/11/21 12:33:33  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -393,7 +396,7 @@ public:
   BoolePolynomial(const self&);
 
   /// Destructor
-  ~BoolePolynomial();
+  ~BoolePolynomial() {}
 
   //-------------------------------------------------------------------------
   // operators and member functions

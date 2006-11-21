@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.78  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.77  2006/11/21 12:33:34  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -367,13 +370,6 @@ BoolePolynomial::BoolePolynomial(const self& rhs) :
   m_dd(rhs.m_dd) {
   
   PBORI_TRACE_FUNC( "BoolePolynomial(const self&)" );
-}
-
-// Destructor
-BoolePolynomial::~BoolePolynomial() {
-
-  PBORI_TRACE_FUNC( "~BoolePolynomial()" );
-
 }
 
 //-------------------------------------------------------------------------

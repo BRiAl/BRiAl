@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.24  2006/11/21 15:42:15  dreyer
  * ADD: Construct Booleset from navigator
  *
@@ -130,29 +133,8 @@ BooleSet::BooleSet():
 
 }
 
-// Copy constructor
-BooleSet::BooleSet(const self& rhs) :
-  base(rhs) {
-  
-  PBORI_TRACE_FUNC( "BooleSet(const self&)" );
-}
-
-// Copy constructor
-BooleSet::BooleSet(const base& rhs) :
-  base(rhs) {
-  
-  PBORI_TRACE_FUNC( "BooleSet(const base&)" );
-}
-
-// Construct new node
-BooleSet::BooleSet(idx_type idx, const self& first, const self& second) :
-  base(idx, first, second) {
-  
-  PBORI_TRACE_FUNC( "BooleSet(idx_type, const self&, const self&)" );
-}
-
 // Construct new node (using navigator nodes)
-BooleSet::BooleSet(idx_type idx, navigator first, navigator second) :
+BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
   base(BoolePolyRing::activeManager().manager(), idx, first, second) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
@@ -163,12 +145,6 @@ BooleSet::BooleSet(navigator navi) :
   base(BoolePolyRing::activeManager().manager(), navi) {
   
   PBORI_TRACE_FUNC( "BooleSet(navigator)" );
-}
-
-// Destructor
-BooleSet::~BooleSet() {
-
-  PBORI_TRACE_FUNC( "~BooleSet()" );
 }
 
 // Assignment

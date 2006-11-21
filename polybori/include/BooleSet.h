@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/11/21 16:06:40  dreyer
+ * CHANGE: inlining added
+ *
  * Revision 1.18  2006/11/21 15:42:15  dreyer
  * ADD: Construct Booleset from navigator
  *
@@ -131,13 +134,14 @@ public:
   BooleSet();
 
   /// Copy constructor
-  BooleSet(const self&);
+  BooleSet(const self& rhs): base(rhs) {}
 
   /// Copy constructor
-  BooleSet(const base&);
+  BooleSet(const base& rhs): base(rhs) {}
 
   /// Construct new node
-  BooleSet(idx_type idx, const self&, const self&);
+  BooleSet(idx_type idx, const self& first, const self& second):
+    base(idx, first, second) {}
 
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator, navigator);
@@ -146,7 +150,7 @@ public:
   BooleSet(navigator);
 
   /// Destructor
-  ~BooleSet();
+  ~BooleSet() {}
 
   /// Start of iteration over terms
   const_iterator begin() const;
