@@ -37,6 +37,102 @@ BEGIN_NAMESPACE_PBORIGB
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 static MonomialSet minimal_elements_cudd_style(MonomialSet m);
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod);
+static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialSet n){
+  //we assume that m is a multiple of n
+  MonomialSet::navigator m_nav=m.navigation();
+  MonomialSet::navigator n_nav=n.navigation();
+  if (n_nav.terminalValue()) return a.firstDivisorsOf(m);
+  assert(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
+  MonomialSet::navigator a_nav=a.navigation();
+  if (a_nav.isConstant()) return a;
+  assert(!(n_nav.isConstant()));
+  assert(!(m_nav.isConstant()));
+  int m_index=*m_nav;
+  int n_index=*n_nav;
+  int a_index=*a_nav;
+  
+    
+  assert(m_index<=n_index);
+  
+  
+  
+  //here we rely on the fact, that in Cudd deref of constant nav. gives a bigger index than allow allowed real indices
+  while((a_index=*a_nav)!=(m_index=*m_nav)){
+     if (a_index<m_index) a_nav.incrementElse();
+     else{
+       n_index=*n_nav;
+       assert(n_index>=m_index);
+       if (m_index==n_index){
+         n_nav.incrementThen();
+         m_nav.incrementThen();
+       } else {
+         m_nav.incrementThen();
+       }
+     }
+   
+  } 
+  
+
+  
+  
+  //a=MonomialSet(a_nav);
+  if (a_nav.isConstant()){
+    return a_nav;
+  }
+  assert((*a_nav)==(*m_nav));
+  
+  typedef PBORI::CCacheManagement<CCacheTypes::divisorsof_fixedpath>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr;
+
+
+  
+  
+  MonomialSet::navigator cached =
+    cache_mgr.find(a_nav, m_nav,n_nav);
+  
+  if (cached.isValid() ){
+     return cached;
+  }
+    
+  // here it is theoretically possible to get answers which don't contain the fixed path n, but that doesn't matter in practice,
+  // as it is optimization anyway
+  typedef PBORI::CCacheManagement<CCacheTypes::divisorsof>
+    cache_mgr_type2;
+
+  cache_mgr_type2 cache_mgr2;
+  
+  cached =
+    cache_mgr2.find(a_nav, m_nav);
+  
+  if (cached.isValid() ){
+     return cached;
+  }
+    
+  assert(a_index==m_index);
+  int index=m_index;
+  MonomialSet result;
+  if (m_index==n_index){
+    result=do_fixed_path_divisors(a_nav.thenBranch(),m_nav.thenBranch(),n_nav.thenBranch());
+    if (!(result.emptiness())) result=MonomialSet(index,result,MonomialSet());
+  } else {
+    MonomialSet then_path=do_fixed_path_divisors(a_nav.thenBranch(),m_nav.thenBranch(),n_nav);
+    MonomialSet else_path=do_fixed_path_divisors(a_nav.elseBranch(),m_nav.thenBranch(),n_nav);
+    if (then_path.emptiness()){
+      result=else_path;
+    } else {
+      result=MonomialSet(index,then_path,else_path);
+    }
+  }
+  cache_mgr.insert(a_nav,m_nav,n_nav,result.navigation());
+  return result;
+}
+static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
+   assert(m.divisibleBy(n));
+   return do_fixed_path_divisors(a,m.diagram(),n.diagram());
+}
+
 static bool have_ordering_for_tables(){
         
         
@@ -1533,13 +1629,17 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
               Exponent t_divided=mt_vec[mt_i];
               Exponent t=t_divided+e.lmExp;
   #endif
-              MonomialSet lm_d=t_divided.divisors();
-              assert((other_terms.intersect(lm_d).emptiness()));
+              //MonomialSet lm_d=t_divided.divisors();
+              assert((other_terms.intersect(t_divided.divisors()).emptiness()));
               if (true){
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
               //#else
-                  MonomialSet act_l_terms=leadingTerms.divisorsOf(t);//intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
+                  MonomialSet act_l_terms=fixed_path_divisors(leadingTerms,(Monomial)t, (Monomial) t_divided);
+                  //leadingTerms.divisorsOf(t);
+                  
+                  
+                  //intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
               //#endif
                   if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
                       //at this point we assume minimality of t_divided w.r.t. natural partial order
