@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/11/21 15:42:15  dreyer
+ * ADD: Construct Booleset from navigator
+ *
  * Revision 1.17  2006/11/21 12:33:33  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -138,6 +141,9 @@ public:
 
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator, navigator);
+
+  /// Construct from navigator node
+  BooleSet(navigator);
 
   /// Destructor
   ~BooleSet();

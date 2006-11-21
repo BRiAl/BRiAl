@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/11/21 15:42:15  dreyer
+ * ADD: Construct Booleset from navigator
+ *
  * Revision 1.23  2006/11/21 12:33:34  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -153,6 +156,13 @@ BooleSet::BooleSet(idx_type idx, navigator first, navigator second) :
   base(BoolePolyRing::activeManager().manager(), idx, first, second) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
+}
+
+// Construct new node (using navigator nodes)
+BooleSet::BooleSet(navigator navi) :
+  base(BoolePolyRing::activeManager().manager(), navi) {
+  
+  PBORI_TRACE_FUNC( "BooleSet(navigator)" );
 }
 
 // Destructor
