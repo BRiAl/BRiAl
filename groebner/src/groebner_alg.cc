@@ -1503,7 +1503,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         Monomial v;
         m=divide_monomial_divisors_out(m,lm);
         //mod=divide_monomial_divisors_out(mod,lm);
-        m=do_minimal_elements_cudd_style(m,mod);
+        m=do_minimal_elements_cudd_style(m,minimal_elements_cudd_style(mod));
         result.resize(m.length());
         std::copy(m.expBegin(),m.expEnd(),result.begin());
         //return minimal_elements_internal3(m);
@@ -1543,6 +1543,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
 }
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   if (m.emptiness()) return MonomialSet();
+  
   Polynomial p=m;
   Polynomial p_mod=mod;
   if (p_mod.hasConstantPart())
@@ -1562,9 +1563,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
       nav_mod.incrementElse();
      
     }
-    mod=(CDDInterface<ZDD>)
-      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
-                                 nav_mod);
+    mod=MonomialSet(nav_mod);
   }
   
   typedef PBORI::CCacheManagement<CCacheTypes::minimal_mod>
@@ -1699,7 +1698,8 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
-            other_terms=other_terms.unite(ext_prod_terms=divide_monomial_divisors_out(ot2,lm));
+            ext_prod_terms=divide_monomial_divisors_out(ot2,lm).diff(other_terms);
+            other_terms=other_terms.unite(ext_prod_terms);
         }
        
         //other_terms=other_terms.unite(ot2);
