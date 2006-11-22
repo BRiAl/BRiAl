@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/11/22 10:10:23  dreyer
+ * ADD: dd_first_divisors_of
+ *
  * Revision 1.19  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -145,6 +148,9 @@ public:
 
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator, navigator);
+
+  /// Construct new node (using navigator for then and else-branches)
+  BooleSet(idx_type idx, navigator);
 
   /// Construct from navigator node
   BooleSet(navigator);

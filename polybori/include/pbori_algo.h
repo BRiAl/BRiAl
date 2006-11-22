@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/11/22 10:10:23  dreyer
+ * ADD: dd_first_divisors_of
+ *
  * Revision 1.19  2006/10/27 15:31:11  dreyer
  * ADD: some maybe useful stuff
  *
@@ -583,6 +586,68 @@ generic_compare_3way(const LhsType& lhs, const RhsType& rhs, BinaryPredicate com
     return CTypes::equality;
 
   return (comp(lhs, rhs)?  CTypes::greater_than: CTypes::less_than);
+}
+
+
+
+/// Function templates extracting the terms of a given decision diagram contain
+/// which contains only indices from the range [start, finish)
+/// Note: Returns incremented node
+/// Replacement for dd_intersect_some_index
+template <class CacheManager, class NaviType, class NodeOperation>
+NaviType
+dd_first_divisors_of(CacheManager cache_mgr, NaviType navi, 
+                     NaviType start, 
+                     NodeOperation newNode ) {
+  
+  if (!navi.isConstant()) {     // Not at end of path
+    bool not_at_end;
+    while( (not_at_end = (start.isValid())) && (*start < *navi) )
+      start.incrementThen();
+
+    if (not_at_end) {
+
+      // Get cache management types
+      //      typedef CCacheManagement<CCacheTypes::divisorsof>
+      //        cache_mgr_type;
+
+      // Instantiate cache manager
+      //      cache_mgr_type cache_mgr;
+
+      // Look up, whether operation was already used
+      NaviType result = cache_mgr.find(navi, start);
+
+     if (result.isValid()) {       // Cache lookup sucessful
+       return  newNode(result);
+     }
+     else {   
+       NaviType elseNode = 
+         dd_first_divisors_of(cache_mgr, navi.elseBranch(), start, newNode);
+       
+       if (*start == *navi) {
+         
+         NaviType thenNode = 
+           dd_first_divisors_of(cache_mgr, navi.thenBranch(), start, newNode);
+         
+         result = newNode(*start, navi, thenNode, elseNode); 
+       }
+       else
+         result = elseNode;
+
+       cache_mgr.insert(navi, start, result);
+       return result;
+     }
+    }
+    else {                      // if at end, we only check 
+                                // validity of the else-only branch 
+      while(!navi.isConstant()) 
+        navi = navi.elseBranch();
+      return newNode(navi);
+    }
+
+  }
+
+  return newNode(navi);
 }
 
 

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2006/11/22 10:10:23  dreyer
+ * ADD: dd_first_divisors_of
+ *
  * Revision 1.41  2006/11/21 12:33:34  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -186,7 +189,17 @@
 // Using stl's vector
 #include <vector>
 #include <numeric>
+
+
+
+
+
 BEGIN_NAMESPACE_PBORI
+
+// temporarily wrapping of dd_first_divisors_of (implementation in
+// pbori_routines.cc) for avoiding premature use of BoolePolyRing
+CCuddNavigator 
+static_dd_first_divisors_of(Cudd&, CCuddNavigator, CCuddNavigator);
 
 // Declare lowlevel union-xor
 #ifdef PBORI_LOWLEVEL_XOR 
@@ -312,6 +325,13 @@ class CDDInterface<ZDD>:
   CDDInterface(const manager_base& mgr, 
                idx_type idx, navigator thenNavi, navigator elseNavi): 
     base_type( self::newNodeDiagram(mgr, idx, thenNavi, elseNavi) ) {
+  }
+
+  /// Construct new node from manager, index, and common navigator for then and
+  /// else-branches
+  CDDInterface(const manager_base& mgr, 
+               idx_type idx, navigator navi): 
+    base_type( self::newNodeDiagram(mgr, idx, navi, navi) ) {
   }
 
   /// Construct new node
@@ -679,7 +699,10 @@ class CDDInterface<ZDD>:
 
   self firstDivisorsOf(const self& rhs) const {
 
-    return firstDivisorsOf(rhs.firstBegin(), rhs.firstEnd());
+    //  return firstDivisorsOf(rhs.firstBegin(), rhs.firstEnd());
+    return fromTemporaryNode(static_dd_first_divisors_of(manager(),
+                                                         navigation(),
+                                                         rhs.navigation() ));
   }
 
   template <class Iterator>
@@ -785,10 +808,25 @@ private:
     return interfaced_type(&const_cast<manager_base&>(mgr), navi);
   }
 
+  self fromTemporaryNode(navigator navi) const { 
+    Cudd_Deref(navi);
+    return self(manager(), navi);
+  }
+
+
   interfaced_type newNodeDiagram(const manager_base& mgr, idx_type idx, 
                                  navigator thenNavi, 
                                  navigator elseNavi) const { 
     return newDiagram(mgr, newNode(mgr, idx, thenNavi, elseNavi) );
+  }
+
+  interfaced_type newNodeDiagram(const manager_base& mgr, 
+                                 idx_type idx, navigator navi) const {
+    Cudd_Ref(navi);
+    interfaced_type result =
+      newDiagram(mgr, newNode(mgr, idx, navi, navi) );
+    Cudd_Deref(navi);
+    return result;
   }
 };
 

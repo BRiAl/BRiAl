@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/11/22 10:10:23  dreyer
+ * ADD: dd_first_divisors_of
+ *
  * Revision 1.25  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -138,6 +141,13 @@ BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
   base(BoolePolyRing::activeManager().manager(), idx, first, second) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
+}
+
+// Construct new node (using navigator nodes)
+BooleSet::BooleSet(idx_type idx, navigator navi):
+  base(BoolePolyRing::activeManager().manager(), idx, navi) {
+  
+  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
 }
 
 // Construct new node (using navigator nodes)

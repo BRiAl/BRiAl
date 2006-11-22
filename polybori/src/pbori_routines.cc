@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/11/22 10:10:23  dreyer
+ * ADD: dd_first_divisors_of
+ *
  * Revision 1.3  2006/10/31 09:18:45  dreyer
  * FIX: Bug (union-xor) on 64-bit systems should be fixed now
  *
@@ -37,6 +40,10 @@
 
 #include "cudd.h"
 #include "cuddInt.h"
+#include "pbori_algo.h"
+
+#include "CCacheManagement.h"
+#include "CCuddGetNode.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -140,4 +147,12 @@ pboriCudd_zddUnionXor(
 } /* end of extern "C" */
 
 #endif
+
+CCuddNavigator
+static_dd_first_divisors_of(Cudd& mgr,
+                            CCuddNavigator navi, CCuddNavigator start) {
+  return dd_first_divisors_of(CCacheManagement<CCacheTypes::divisorsof>(), 
+                              navi, start, CCuddGetNode(mgr) ); 
+}
+
 END_NAMESPACE_PBORI
