@@ -81,7 +81,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
   }
   assert((*a_nav)==(*m_nav));
   
-  typedef PBORI::CCacheManagement<CCacheTypes::divisorsof_fixedpath>
+  typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
     cache_mgr_type;
 
   cache_mgr_type cache_mgr;
@@ -98,7 +98,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
     
   // here it is theoretically possible to get answers which don't contain the fixed path n, but that doesn't matter in practice,
   // as it is optimization anyway
-  typedef PBORI::CCacheManagement<CCacheTypes::divisorsof>
+  typedef PBORI::CacheManager<CCacheTypes::divisorsof>
     cache_mgr_type2;
 
   cache_mgr_type2 cache_mgr2;
@@ -129,7 +129,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
   return result;
 }
 static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
-   assert(m.divisibleBy(n));
+   assert(m.reducibleBy(n));
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
 
@@ -681,7 +681,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
   if (b.isOne()) return a;
   if (a==b) return a;
 
-  typedef PBORI::CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
+  typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
   cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
