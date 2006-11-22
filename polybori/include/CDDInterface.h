@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2006/11/22 16:19:57  dreyer
+ * CHANGE: actually did the prepared inlining
+ *
  * Revision 1.42  2006/11/22 10:10:23  dreyer
  * ADD: dd_first_divisors_of
  *
@@ -191,15 +194,10 @@
 #include <numeric>
 
 
-
+#include "CCacheManagement.h"
 
 
 BEGIN_NAMESPACE_PBORI
-
-// temporarily wrapping of dd_first_divisors_of (implementation in
-// pbori_routines.cc) for avoiding premature use of BoolePolyRing
-CCuddNavigator 
-static_dd_first_divisors_of(Cudd&, CCuddNavigator, CCuddNavigator);
 
 // Declare lowlevel union-xor
 #ifdef PBORI_LOWLEVEL_XOR 
@@ -698,11 +696,11 @@ class CDDInterface<ZDD>:
   }
 
   self firstDivisorsOf(const self& rhs) const {
-
-    //  return firstDivisorsOf(rhs.firstBegin(), rhs.firstEnd());
-    return fromTemporaryNode(static_dd_first_divisors_of(manager(),
-                                                         navigation(),
-                                                         rhs.navigation() ));
+    typedef CCacheManagement<CCacheTypes::divisorsof> cache_type;
+    return fromTemporaryNode(dd_first_divisors_of( cache_type(manager()), 
+                                                   navigation(), 
+                                                   rhs.navigation(), 
+                                                   CCuddGetNode(manager()) ));
   }
 
   template <class Iterator>
