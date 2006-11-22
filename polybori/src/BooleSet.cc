@@ -20,6 +20,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/11/22 15:46:22  dreyer
+ * ADD: CacheManager replacing CCacheManagement for external use
+ * CHANGE: CacheManager used, where necessary
+ * CHANGE: multiplesOf, uses cached recursion
+ *
  * Revision 1.26  2006/11/22 10:10:23  dreyer
  * ADD: dd_first_divisors_of
  *
@@ -121,6 +126,7 @@
 // get internal routines
 # include "pbori_routines.h"
 # include "CDDOperations.h"
+# include "CCacheManagement.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -287,24 +293,19 @@ BooleSet::divisorsOf(const exp_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const exp_type&) const" );
 
-  return firstDivisorsOf(rhs.begin(), rhs.end());
+  return divisorsOf(term_type(rhs));
+ // return firstDivisorsOf(rhs.begin(), rhs.end());
 }
 
-BooleSet BooleSet::multiplesOf(const term_type& t) const{
-    BooleSet acc=*this;
-    term_type::const_iterator it=t.begin();
-    term_type::const_iterator end=t.end();
-    while((it!=end) &&(!(acc.emptiness()))){
-        acc=acc.subset1(*it);
-        it++;
-    }
-    
-    if(!(acc.emptiness()))
-        return acc.unateProduct(t.diagram());
-    else
-        //is empty
-        return acc;
+BooleSet BooleSet::multiplesOf(const term_type& rhs) const{
+
+  typedef CCacheManagement<CCacheTypes::multiplesof> cache_type;
+
+  return 
+    dd_first_multiples_of( cache_type(base::manager()), navigation(),
+                           rhs.diagram().navigation(), self() );
 }
+
 // check whether the intersection with divisors of rhs is non-empty
 BooleSet::bool_type
 BooleSet::hasTermOfVariables(const term_type& rhs) const {
@@ -320,8 +321,7 @@ BooleSet::hasTermOfVariables(const term_type& rhs) const {
   bool_type result = dd_owns_term_of_indices(navigation(),
                                              rhs.begin(), rhs.end());
 
-//   if (result != !divisorsOf(rhs).emptiness())
-//     std::cerr << "Error in hasTermOfVariables!!!" <<std::endl;
+  assert(result == !divisorsOf(rhs).emptiness());
 
 #endif
   

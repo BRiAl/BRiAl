@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2006/11/22 15:46:22  dreyer
+ * ADD: CacheManager replacing CCacheManagement for external use
+ * CHANGE: CacheManager used, where necessary
+ * CHANGE: multiplesOf, uses cached recursion
+ *
  * Revision 1.4  2006/11/22 10:10:23  dreyer
  * ADD: dd_first_divisors_of
  *
@@ -42,7 +47,7 @@
 #include "cuddInt.h"
 #include "pbori_algo.h"
 
-#include "CCacheManagement.h"
+#include "CacheManager.h"
 #include "CCuddGetNode.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -151,7 +156,7 @@ pboriCudd_zddUnionXor(
 CCuddNavigator
 static_dd_first_divisors_of(Cudd& mgr,
                             CCuddNavigator navi, CCuddNavigator start) {
-  return dd_first_divisors_of(CCacheManagement<CCacheTypes::divisorsof>(), 
+  return dd_first_divisors_of(CacheManager<CCacheTypes::divisorsof>(), 
                               navi, start, CCuddGetNode(mgr) ); 
 }
 

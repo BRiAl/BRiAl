@@ -30,7 +30,7 @@
 #include "dp_asc4data.h"
 #endif
 
-#include "CCacheManagement.h"
+#include "CacheManager.h"
 
 
 BEGIN_NAMESPACE_PBORIGB
@@ -623,7 +623,7 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   if (b.isOne()) return a;
   if (a==b) return a;
 
-  typedef PBORI::CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
+  typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
   cache_mgr_type cache_mgr;
@@ -1566,7 +1566,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
     mod=MonomialSet(nav_mod);
   }
   
-  typedef PBORI::CCacheManagement<CCacheTypes::minimal_mod>
+  typedef PBORI::CacheManager<CCacheTypes::minimal_mod>
     cache_mgr_type;
 
   cache_mgr_type cache_mgr;

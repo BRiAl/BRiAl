@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/11/22 15:46:22  dreyer
+ * ADD: CacheManager replacing CCacheManagement for external use
+ * CHANGE: CacheManager used, where necessary
+ * CHANGE: multiplesOf, uses cached recursion
+ *
  * Revision 1.10  2006/11/21 09:52:05  dreyer
  * CHANGE: some simple functions in BoolePolynomial inlined
  * ADD: caching of ternary operations
@@ -66,7 +71,7 @@
 #include "CIdxVariable.h"
 
 // temprarily
-#include "CCacheManagement.h"
+#include "CacheManager.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -184,7 +189,7 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
   if (a == b) return a;
 
   // Get cache management types
-  typedef CCommutativeCacheManagement<CCacheTypes::multiply_recursive>
+  typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
   // Extract subtypes

@@ -20,6 +20,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/11/22 15:46:22  dreyer
+ * ADD: CacheManager replacing CCacheManagement for external use
+ * CHANGE: CacheManager used, where necessary
+ * CHANGE: multiplesOf, uses cached recursion
+ *
  * Revision 1.20  2006/11/22 10:10:23  dreyer
  * ADD: dd_first_divisors_of
  *
@@ -650,6 +655,48 @@ dd_first_divisors_of(CacheManager cache_mgr, NaviType navi,
   return newNode(navi);
 }
 
+template <class CacheType, class NaviType, class SetType>
+SetType
+dd_first_multiples_of(const CacheType& cache_mgr,
+                      NaviType navi, NaviType rhsNavi, SetType init){
+
+  if(navi.isEmpty())
+    return navi;
+
+  if(rhsNavi.isConstant())
+    if(rhsNavi.terminalValue())
+      return navi;
+    else
+      return rhsNavi;
+
+  if (*navi > *rhsNavi)
+    return init;
+
+  NaviType result = cache_mgr.find(navi, rhsNavi);
+
+  if (result.isValid()) {
+    return result;
+  }
+  else {
+    if (*navi == *rhsNavi) {
+      init = dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                   rhsNavi.thenBranch(), 
+                                   init).change(*navi);
+    }
+    else {
+      
+      init = SetType(*navi,
+                     dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                           rhsNavi, init),
+                     dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
+                                           rhsNavi, init)
+                     );
+    }
+    cache_mgr.insert(navi, rhsNavi, init.navigation());
+  }
+
+  return init;
+}
 
 END_NAMESPACE_PBORI
 

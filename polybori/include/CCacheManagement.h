@@ -19,6 +19,11 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/11/22 15:46:22  dreyer
+ * ADD: CacheManager replacing CCacheManagement for external use
+ * CHANGE: CacheManager used, where necessary
+ * CHANGE: multiplesOf, uses cached recursion
+ *
  * Revision 1.9  2006/11/21 12:33:34  dreyer
  * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
  *
@@ -59,7 +64,7 @@
 #include "CCuddNavigator.h"
 
 // get polynomial ring
-#include "BoolePolyRing.h"
+//#include "BoolePolyRing.h"
 
 // get standard functionality
 #include <functional>
@@ -82,6 +87,7 @@ public:
   struct multiply_recursive: public binary_cache_tag { };
   struct minimal_mod: public binary_cache_tag { };
 
+  struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
  
   struct dlex_lead: public unary_cache_tag { };
@@ -254,7 +260,7 @@ public:
   typedef CCacheManBase<manager_type, cache_type, nargs> base;
 
   /// Constructor and default constructor
-  CCacheManagement(const manager_type& mgr = BoolePolyRing::activeManager()):
+  CCacheManagement(const manager_type& mgr):
     base(mgr) {}
 
   using base::find;
@@ -280,8 +286,7 @@ public:
   typedef typename base::node_type node_type;
 
   /// Constructor and default constructor
-  CCommutativeCacheManagement(const manager_type& mgr = 
-                              BoolePolyRing::activeManager()):
+  CCommutativeCacheManagement(const manager_type& mgr):
     base(mgr) {}
 
   /// Find cached value wrt. given node
