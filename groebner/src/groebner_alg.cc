@@ -1625,8 +1625,10 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
   Polynomial p=m;
   
   MonomialSet cv=contained_variables_cudd_style(m);
+  MonomialSet cv_orig=cv;
   cv=cv.diff(mod);
   mod=mod.unite(cv);
+  m=mod_var_set(m,cv_orig);
   m=m.diff(mod);
   if (m.emptiness()) return cv;
   bool cv_empty=cv.emptiness();
