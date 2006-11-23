@@ -1578,7 +1578,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         Monomial v;
         m=divide_monomial_divisors_out(m,lm);
         //mod=divide_monomial_divisors_out(mod,lm);
-        m=do_minimal_elements_cudd_style(m,minimal_elements_cudd_style(mod));
+        m=do_minimal_elements_cudd_style(m,mod);
         result.resize(m.length());
         std::copy(m.expBegin(),m.expEnd(),result.begin());
         //return minimal_elements_internal3(m);
