@@ -160,4 +160,6 @@ void export_strategy(){
   def("translate_indices",translate_indices);
   def("mult_fast_sim_C",mult_fast_sim);
   def("set_variable_name",&BoolePolyRing::setRingVariableName);
+  def("mod_var_set",mod_var_set);
+  def("contained_vars",contained_variables_cudd_style);
 }

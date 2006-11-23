@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/11/23 12:46:44  bricken
+ * + new minimal elements
+ *
  * Revision 1.10  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary
@@ -89,7 +92,10 @@ public:
 
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
+  struct mod_varset: public binary_cache_tag { };
  
+   
+  struct contained_variables: public unary_cache_tag { };
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
 

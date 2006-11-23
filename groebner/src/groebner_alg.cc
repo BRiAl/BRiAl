@@ -132,7 +132,82 @@ static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
    assert(m.reducibleBy(n));
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
+static MonomialSet var_set(MonomialSet as){
+  MonomialSet::navigator a=as.navigation();
+}
+MonomialSet mod_var_set(MonomialSet as, MonomialSet vs){
+  MonomialSet::navigator a=as.navigation();
+  MonomialSet::navigator v=vs.navigation();
+  idx_type a_index=*a;
+  idx_type v_index=*v;
+  while((v_index<a_index)||((v_index==a_index)&&(!(v.isConstant())))){
+    if (v_index<a_index)
+      v.incrementElse();
+    if (v_index==a_index){
+      a.incrementElse();
+      v.incrementElse();
+    }
+    v_index=*v;
+    a_index=*a;
+  }
+  if (v_index>a_index){
+    if (v.isConstant()) return a;
+    
+    typedef PBORI::CacheManager<CCacheTypes::mod_varset>
+      cache_mgr_type;
 
+    cache_mgr_type cache_mgr;
+
+    MonomialSet::navigator cached =
+      cache_mgr.find(a, v);
+    if (cached.isValid()) return cached;
+    MonomialSet a0=mod_var_set(a.elseBranch(),v);
+    MonomialSet a1=mod_var_set(a.thenBranch(),v);
+    MonomialSet result;
+    if (a1.emptiness()) result=a0;
+    else result=MonomialSet(a_index,a1,a0);
+    cache_mgr.insert(a,v,result.navigation());
+    return result;
+  }
+  //so v_index==a_index and v.IsConstant
+  return a;
+}
+MonomialSet contained_variables_cudd_style(const MonomialSet& m){
+    
+    MonomialSet::navigator nav=m.navigation();
+    MonomialSet::navigator orig=nav;
+    typedef PBORI::CacheManager<CCacheTypes::contained_variables>
+      cache_mgr_type;
+
+    cache_mgr_type cache_mgr;
+
+
+    while (!(nav.isConstant())){
+        MonomialSet::navigator cached =
+          cache_mgr.find(nav);
+        if (cached.isValid()) return cached;
+        idx_type v=*nav;
+        MonomialSet::navigator check_nav=nav.thenBranch();
+        while(!(check_nav.isConstant())){
+            check_nav.incrementElse();
+        }
+        if (check_nav.terminalValue()){
+            idx_type result_index=v;
+            MonomialSet result=MonomialSet(result_index,Polynomial(1).diagram(),contained_variables_cudd_style(nav.elseBranch()));
+            MonomialSet::navigator r_nav=result.navigation();
+            while(1){
+              MonomialSet::navigator last=orig;
+              cache_mgr.insert(orig, r_nav);
+              orig.incrementElse();
+              if(last==nav) break;
+            }
+            return result;
+        }
+        nav.incrementElse();
+        
+    }
+    return MonomialSet();
+}
 static bool have_ordering_for_tables(){
         
         
@@ -1542,14 +1617,20 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   return impl;
 }
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
-  if (m.emptiness()) return MonomialSet();
-  
-  Polynomial p=m;
   Polynomial p_mod=mod;
-  if (p_mod.hasConstantPart())
+  if (m.emptiness()) return m;
+  if (mod.ownsOne())
     return MonomialSet();
-  if (p.hasConstantPart())
-    return ((Polynomial)1).diagram();
+  if (m.ownsOne()) return ((Polynomial) 1).diagram();
+  Polynomial p=m;
+  
+  MonomialSet cv=contained_variables_cudd_style(m);
+  cv=cv.diff(mod);
+  mod=mod.unite(cv);
+  m=m.diff(mod);
+  if (m.emptiness()) return cv;
+  bool cv_empty=cv.emptiness();
+  
   MonomialSet result;
   int index=*m.navigation();
   
@@ -1576,15 +1657,13 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
 
       
   if (cached.isValid() ){
-    return (CDDInterface<ZDD>)
-      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
-                               cached);
+    return cv.unite((MonomialSet)cached);
   }
   
   
   if (mod.emptiness()){
     
-    MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , MonomialSet());
+    MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , cv);
     MonomialSet result1= do_minimal_elements_cudd_style(
       m.subset1(index),result0);
     result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
@@ -1598,7 +1677,9 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
       result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
   }
   cache_mgr.insert(m.navigation(), mod.navigation(), result.navigation());
-  return result;
+  if (cv_empty) return result;
+  else
+    return cv.unite(result);
 }
 static MonomialSet minimal_elements_cudd_style(MonomialSet m){
   return do_minimal_elements_cudd_style(m, MonomialSet());
