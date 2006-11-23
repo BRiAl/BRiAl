@@ -1627,7 +1627,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
   MonomialSet cv=contained_variables_cudd_style(m);
   MonomialSet cv_orig=cv;
   cv=cv.diff(mod);
-  mod=mod.unite(cv);
+  mod=mod_var_set(mod,cv_orig);
   m=mod_var_set(m,cv_orig);
   m=m.diff(mod);
   if (m.emptiness()) return cv;
