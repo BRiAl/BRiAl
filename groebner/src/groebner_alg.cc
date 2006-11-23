@@ -1622,8 +1622,9 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
   if (mod.ownsOne())
     return MonomialSet();
   if (m.ownsOne()) return ((Polynomial) 1).diagram();
-  Polynomial p=m;
-  
+  MonomialSet mod_cv=contained_variables_cudd_style(mod);
+  m=mod_var_set(m,mod_cv);
+  mod=mod_var_set(mod,mod_cv);
   MonomialSet cv=contained_variables_cudd_style(m);
   MonomialSet cv_orig=cv;
   cv=cv.diff(mod);
