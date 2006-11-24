@@ -35,7 +35,7 @@
 
 BEGIN_NAMESPACE_PBORIGB
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
-static MonomialSet minimal_elements_cudd_style(MonomialSet m);
+//static MonomialSet minimal_elements_cudd_style(MonomialSet m);
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod);
 static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialSet n){
   //we assume that m is a multiple of n
@@ -135,7 +135,7 @@ static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
 static MonomialSet var_set(MonomialSet as){
   MonomialSet::navigator a=as.navigation();
 }
-MonomialSet mod_var_set(MonomialSet as, MonomialSet vs){
+MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
   MonomialSet::navigator a=as.navigation();
   MonomialSet::navigator v=vs.navigation();
   idx_type a_index=*a;
@@ -161,11 +161,18 @@ MonomialSet mod_var_set(MonomialSet as, MonomialSet vs){
     MonomialSet::navigator cached =
       cache_mgr.find(a, v);
     if (cached.isValid()) return cached;
-    MonomialSet a0=mod_var_set(a.elseBranch(),v);
-    MonomialSet a1=mod_var_set(a.thenBranch(),v);
+    MonomialSet::navigator a_e=a.elseBranch();
+    MonomialSet::navigator a_t=a.thenBranch();
+    MonomialSet a0=mod_var_set(a_e,v);
+    MonomialSet a1=mod_var_set(a_t,v);
     MonomialSet result;
     if (a1.emptiness()) result=a0;
-    else result=MonomialSet(a_index,a1,a0);
+    else {
+      if ((a1.navigation()==a_t)&&(a0.navigation()==a_e))
+        result=a;
+      else
+        result=MonomialSet(a_index,a1,a0);
+    }
     cache_mgr.insert(a,v,result.navigation());
     return result;
   }
@@ -1616,7 +1623,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
 
   return impl;
 }
-static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
+MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   Polynomial p_mod=mod;
   if (m.emptiness()) return m;
   if (mod.ownsOne())
@@ -1684,7 +1691,7 @@ static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod
   else
     return cv.unite(result);
 }
-static MonomialSet minimal_elements_cudd_style(MonomialSet m){
+MonomialSet minimal_elements_cudd_style(MonomialSet m){
   return do_minimal_elements_cudd_style(m, MonomialSet());
 }
 void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){

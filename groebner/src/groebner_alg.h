@@ -182,7 +182,7 @@ public:
       
       
 };
-MonomialSet mod_var_set(MonomialSet as, MonomialSet vs);
+MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs);
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
@@ -313,6 +313,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
 std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
 MonomialSet contained_variables_cudd_style(const MonomialSet& m);
+MonomialSet minimal_elements_cudd_style(MonomialSet m);
 END_NAMESPACE_PBORIGB
 
 #endif
