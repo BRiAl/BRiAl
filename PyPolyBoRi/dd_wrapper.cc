@@ -87,7 +87,7 @@ void export_dd(){
   .def("cofactor0", &dd_type::cofactor0)
   .def("cofactor1", &dd_type::cofactor1)
   .def("existAbstract", &dd_type::existAbstract)
-  .def("onePath", one_path);
-  //.def("ite", &CTypes::dd_type::ite)
+  .def("onePath", one_path)
+  .def("ite", &CTypes::dd_type::ite);
   //.def("printMinterm", &CTypes::dd_type::printMinterm);
 }
