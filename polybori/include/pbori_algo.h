@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/11/24 16:38:37  dreyer
+ * CHANGE: additional fine-tuning multiplesOf
+ *
  * Revision 1.23  2006/11/24 15:45:30  dreyer
  * CHANGE: fine-tuning multiplesOf
  *
@@ -644,16 +647,13 @@ SetType
 dd_first_multiples_of(const CacheType& cache_mgr,
                       NaviType navi, NaviType rhsNavi, SetType init){
 
-  if(navi.isEmpty())
-    return navi;
-
   if(rhsNavi.isConstant())
     if(rhsNavi.terminalValue())
       return navi;
     else
       return rhsNavi;
 
-  if (*navi > *rhsNavi)
+  if (navi.isConstant() || (*navi > *rhsNavi)) 
     return init;
 
   if (*navi == *rhsNavi)
