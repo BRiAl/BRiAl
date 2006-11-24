@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/11/24 14:49:00  dreyer
+ * CHANGE: divisorsOf (less recursions/cache-lookups)
+ *
  * Revision 1.21  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary
@@ -593,66 +596,46 @@ generic_compare_3way(const LhsType& lhs, const RhsType& rhs, BinaryPredicate com
   return (comp(lhs, rhs)?  CTypes::greater_than: CTypes::less_than);
 }
 
-
-
+/// @func dd_first_divisors_of
 /// Function templates extracting the terms of a given decision diagram contain
-/// which contains only indices from the range [start, finish)
-/// Note: Returns incremented node
-/// Replacement for dd_intersect_some_index
-template <class CacheManager, class NaviType, class NodeOperation>
-NaviType
+/// which contains only indices from first lexicographical path in 
+/// Note: Replacement for dd_intersect_some_index
+template <class CacheManager, class NaviType, class SetType>
+SetType
 dd_first_divisors_of(CacheManager cache_mgr, NaviType navi, 
-                     NaviType start, 
-                     NodeOperation newNode ) {
-  
-  if (!navi.isConstant()) {     // Not at end of path
-    bool not_at_end;
-    while( (not_at_end = (start.isValid())) && (*start < *navi) )
-      start.incrementThen();
+                     NaviType rhsNavi, SetType init ) {
 
-    if (not_at_end) {
+  while( (!navi.isConstant()) && (*rhsNavi != *navi) ) {
 
-      // Get cache management types
-      //      typedef CCacheManagement<CCacheTypes::divisorsof>
-      //        cache_mgr_type;
-
-      // Instantiate cache manager
-      //      cache_mgr_type cache_mgr;
-
-      // Look up, whether operation was already used
-      NaviType result = cache_mgr.find(navi, start);
-
-     if (result.isValid()) {       // Cache lookup sucessful
-       return  newNode(result);
-     }
-     else {   
-       NaviType elseNode = 
-         dd_first_divisors_of(cache_mgr, navi.elseBranch(), start, newNode);
-       
-       if (*start == *navi) {
-         
-         NaviType thenNode = 
-           dd_first_divisors_of(cache_mgr, navi.thenBranch(), start, newNode);
-         
-         result = newNode(*start, navi, thenNode, elseNode); 
-       }
-       else
-         result = elseNode;
-
-       cache_mgr.insert(navi, start, result);
-       return result;
-     }
-    }
-    else {                      // if at end, we only check 
-                                // validity of the else-only branch 
-      while(!navi.isConstant()) 
-        navi = navi.elseBranch();
-      return newNode(navi);
-    }
-
+    if ( (*rhsNavi < *navi) && (!rhsNavi.isConstant()) ) 
+      rhsNavi.incrementThen();
+    else 
+      navi.incrementElse();  
   }
 
-  return newNode(navi);
+  if (!navi.isConstant()) {     // Not at end of path
+
+    // Look up, whether operation was already used
+    NaviType result = cache_mgr.find(navi, rhsNavi);
+    
+    if (result.isValid()) {     // Cache lookup sucessful
+      return  result;
+    }
+    else {
+      assert(*rhsNavi == *navi);
+   
+      init = SetType(*rhsNavi,  
+                     dd_first_divisors_of(cache_mgr, 
+                                          navi.thenBranch(), rhsNavi, init),
+                     dd_first_divisors_of(cache_mgr, 
+                                          navi.elseBranch(), rhsNavi, init) );
+
+      cache_mgr.insert(navi, rhsNavi, init.navigation());
+      return init;
+    }
+  }
+
+  return navi;
 }
 
 template <class CacheType, class NaviType, class SetType>

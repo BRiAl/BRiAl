@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2006/11/24 14:49:01  dreyer
+ * CHANGE: divisorsOf (less recursions/cache-lookups)
+ *
  * Revision 1.27  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary
@@ -266,25 +269,22 @@ BooleSet::lastLexicographicalTerm() const {
   return result;
 }
 
+BooleSet
+BooleSet::firstDivisorsOf(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const term_type&) const" );
+
+  typedef CCacheManagement<CCacheTypes::divisorsof> cache_type;
+  return dd_first_divisors_of( cache_type(manager()), 
+                               navigation(), rhs.navigation(), self() );
+}
+
 // compute intersection with divisors of rhs
 BooleSet
 BooleSet::divisorsOf(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const term_type&) const" );
-
-#ifdef PBORI_DIVISORSOF_HIGHLEVEL
-
-    return intersect(rhs.divisors());
-
-#else 
-
-#ifdef PBORI_DIVISORSOF_EXTRA
-    return subSet(rhs.diagram());
-#else
-    return firstDivisorsOf(rhs.diagram());
-#endif
-#endif 
-
+  return firstDivisorsOf(rhs.diagram());
 }
 
 // compute intersection with divisors of rhs
@@ -293,8 +293,7 @@ BooleSet::divisorsOf(const exp_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const exp_type&) const" );
 
-  return divisorsOf(term_type(rhs));
- // return firstDivisorsOf(rhs.begin(), rhs.end());
+  return firstDivisorsOf(term_type(rhs).diagram());
 }
 
 BooleSet BooleSet::multiplesOf(const term_type& rhs) const{

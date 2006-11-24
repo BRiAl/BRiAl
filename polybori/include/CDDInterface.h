@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2006/11/24 14:49:00  dreyer
+ * CHANGE: divisorsOf (less recursions/cache-lookups)
+ *
  * Revision 1.43  2006/11/22 16:19:57  dreyer
  * CHANGE: actually did the prepared inlining
  *
@@ -693,28 +696,6 @@ class CDDInterface<ZDD>:
 
     return cudd_generate_divisors(manager(), indices.rbegin(), indices.rend());
 
-  }
-
-  self firstDivisorsOf(const self& rhs) const {
-    typedef CCacheManagement<CCacheTypes::divisorsof> cache_type;
-    return fromTemporaryNode(dd_first_divisors_of( cache_type(manager()), 
-                                                   navigation(), 
-                                                   rhs.navigation(), 
-                                                   CCuddGetNode(manager()) ));
-  }
-
-  template <class Iterator>
-  self firstDivisorsOf(const Iterator& start, const Iterator& finish) const {
-
-    navigator navi =
-      dd_intersect_some_index( navigation(), start, finish, 
-                               CCuddGetNode(manager()) );
-
-    // Mark navi as unused
-    Cudd_Deref(navi);
-
-    // Generate interfaced type, which cares for reference count from now on
-    return interfaced_type(&manager(), navi);
   }
 
   /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/11/24 14:49:00  dreyer
+ * CHANGE: divisorsOf (less recursions/cache-lookups)
+ *
  * Revision 1.20  2006/11/22 10:10:23  dreyer
  * ADD: dd_first_divisors_of
  *
@@ -199,6 +202,9 @@ public:
   
    /// Compute intersection with divisors of rhs
   self divisorsOf(const exp_type& rhs) const;
+
+   /// Intersection with divisors of first (lexicographical) term of rhs
+  self firstDivisorsOf(const self& rhs) const;
 
  /// Compute intersection with multiples of rhs
   self multiplesOf(const term_type& rhs) const;

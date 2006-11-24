@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/11/24 14:49:01  dreyer
+ * CHANGE: divisorsOf (less recursions/cache-lookups)
+ *
  * Revision 1.5  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary
@@ -153,11 +156,11 @@ pboriCudd_zddUnionXor(
 
 #endif
 
-CCuddNavigator
-static_dd_first_divisors_of(Cudd& mgr,
-                            CCuddNavigator navi, CCuddNavigator start) {
-  return dd_first_divisors_of(CacheManager<CCacheTypes::divisorsof>(), 
-                              navi, start, CCuddGetNode(mgr) ); 
-}
+// CCuddNavigator
+// static_dd_first_divisors_of(Cudd& mgr,
+//                             CCuddNavigator navi, CCuddNavigator start) {
+//   return dd_first_divisors_of(CacheManager<CCacheTypes::divisorsof>(), 
+//                               navi, start, CCuddGetNode(mgr) ); 
+// }
 
 END_NAMESPACE_PBORI
