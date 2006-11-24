@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/11/24 15:45:30  dreyer
+ * CHANGE: fine-tuning multiplesOf
+ *
  * Revision 1.22  2006/11/24 14:49:00  dreyer
  * CHANGE: divisorsOf (less recursions/cache-lookups)
  *
@@ -613,29 +616,27 @@ dd_first_divisors_of(CacheManager cache_mgr, NaviType navi,
       navi.incrementElse();  
   }
 
-  if (!navi.isConstant()) {     // Not at end of path
+  if (navi.isConstant())        // At end of path
+    return navi;
 
-    // Look up, whether operation was already used
-    NaviType result = cache_mgr.find(navi, rhsNavi);
+  // Look up, whether operation was already used
+  NaviType result = cache_mgr.find(navi, rhsNavi);
     
-    if (result.isValid()) {     // Cache lookup sucessful
-      return  result;
-    }
-    else {
-      assert(*rhsNavi == *navi);
+  if (result.isValid())       // Cache lookup sucessful
+    return  result;
+  
+  assert(*rhsNavi == *navi);
    
-      init = SetType(*rhsNavi,  
-                     dd_first_divisors_of(cache_mgr, 
-                                          navi.thenBranch(), rhsNavi, init),
-                     dd_first_divisors_of(cache_mgr, 
-                                          navi.elseBranch(), rhsNavi, init) );
+  // Compute new result
+  init = SetType(*rhsNavi,  
+                 dd_first_divisors_of(cache_mgr, 
+                                      navi.thenBranch(), rhsNavi, init),
+                 dd_first_divisors_of(cache_mgr, 
+                                      navi.elseBranch(), rhsNavi, init) );
+  // Insert result to cache
+  cache_mgr.insert(navi, rhsNavi, init.navigation());
 
-      cache_mgr.insert(navi, rhsNavi, init.navigation());
-      return init;
-    }
-  }
-
-  return navi;
+  return init;
 }
 
 template <class CacheType, class NaviType, class SetType>
@@ -655,28 +656,25 @@ dd_first_multiples_of(const CacheType& cache_mgr,
   if (*navi > *rhsNavi)
     return init;
 
+  if (*navi == *rhsNavi)
+    return dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                 rhsNavi.thenBranch(), init).change(*navi);
+
+  // Look up old result - if any
   NaviType result = cache_mgr.find(navi, rhsNavi);
 
-  if (result.isValid()) {
+  if (result.isValid())
     return result;
-  }
-  else {
-    if (*navi == *rhsNavi) {
-      init = dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
-                                   rhsNavi.thenBranch(), 
-                                   init).change(*navi);
-    }
-    else {
-      
-      init = SetType(*navi,
-                     dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
-                                           rhsNavi, init),
-                     dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
-                                           rhsNavi, init)
-                     );
-    }
-    cache_mgr.insert(navi, rhsNavi, init.navigation());
-  }
+
+  // Compute new result
+  init = SetType(*navi,
+                 dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                       rhsNavi, init),
+                 dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
+                                       rhsNavi, init) );
+
+  // Insert new result in cache
+  cache_mgr.insert(navi, rhsNavi, init.navigation());
 
   return init;
 }
