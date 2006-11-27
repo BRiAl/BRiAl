@@ -179,6 +179,38 @@ MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
   //so v_index==a_index and v.IsConstant
   return a;
 }
+MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs){
+  MonomialSet::navigator a=as.navigation();
+  MonomialSet::navigator v=vs.navigation();
+  idx_type a_index=*a;
+  idx_type v_index=*v;
+  if (a.isConstant()) return as;
+  while((v_index=*v)<(a_index=*a)){
+        v.incrementElse();
+    }
+  if (v.isConstant()) return as;
+  typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
+    cache_mgr_type;
+  cache_mgr_type cache_mgr;
+  MonomialSet::navigator cached =
+    cache_mgr.find(a, v);
+  if (cached.isValid()) return cached;
+  MonomialSet result;
+  if (a_index==v_index){
+    result=MonomialSet(a_index,
+    mod_deg2_set(mod_var_set(a.thenBranch(), v.thenBranch()),v.elseBranch()),
+    mod_deg2_set(a.elseBranch(),v.elseBranch())
+    );
+    
+  } else {
+    assert(v_index>a_index);
+    result=MonomialSet(a_index,
+      mod_deg2_set(a.thenBranch(),v),
+      mod_deg2_set(a.elseBranch(), v));
+  }
+  cache_mgr.insert(a,v,result.navigation());
+  return result;
+}
 MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     
     MonomialSet::navigator nav=m.navigation();
@@ -215,6 +247,32 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     }
     return MonomialSet();
 }
+
+MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
+    
+    MonomialSet::navigator nav=m.navigation();
+    
+    typedef PBORI::CacheManager<CCacheTypes::contained_deg2>
+      cache_mgr_type;
+
+    cache_mgr_type cache_mgr;
+
+
+    if (!(nav.isConstant())){
+        MonomialSet::navigator cached =
+          cache_mgr.find(nav);
+        if (cached.isValid()) return cached;
+        MonomialSet::navigator then_branch=nav.thenBranch();
+        MonomialSet::navigator else_branch=nav.elseBranch();
+        MonomialSet then_res=contained_variables_cudd_style(then_branch);
+        MonomialSet else_res=contained_deg2_cudd_style(else_branch);
+        MonomialSet result=MonomialSet(*nav,then_res,else_res);
+        cache_mgr.insert(nav,result.navigation());
+        return result;
+    }
+    else return MonomialSet();
+}
+
 static bool have_ordering_for_tables(){
         
         
@@ -1632,6 +1690,9 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   MonomialSet mod_cv=contained_variables_cudd_style(mod);
   m=mod_var_set(m,mod_cv);
   mod=mod_var_set(mod,mod_cv);
+  MonomialSet mod_d2=contained_deg2_cudd_style(mod);
+  mod=mod_deg2_set(mod,mod_d2);
+  m=mod_deg2_set(m,mod_d2);
   MonomialSet cv=contained_variables_cudd_style(m);
   MonomialSet cv_orig=cv;
   cv=cv.diff(mod);
