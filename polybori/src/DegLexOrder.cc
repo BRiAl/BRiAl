@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.8  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -51,6 +54,8 @@
 //*****************************************************************************
 
 // include  definitions
+
+
 #include "DegLexOrder.h"
 
 #include "pbori_algo.h"
@@ -64,6 +69,12 @@
 #include "pbori_routines.h"
 
 #include "CDegLexIter.h"
+
+
+#include "CDegreeCache.h"
+
+
+#include "BooleSet.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -104,6 +115,7 @@ DegLexOrder::compare(idx_type lhs, idx_type rhs) const {
 DegLexOrder::monom_type 
 DegLexOrder::lead(const poly_type& poly) const {
 
+#if 0
   typedef CDelayedTermIter<monom_type, 
     change_assign<>, project_ith<2>, poly_type::deg_iterator >
     degree_term_iterator;
@@ -118,7 +130,25 @@ DegLexOrder::lead(const poly_type& poly) const {
     leadterm =  degree_term_iterator(std::max_element( poly.degBegin(), 
                                                        poly.degEnd() )).term();
 
+
+  
+  monom_type lead2 =
+   dd_recursive_lead( 
+    CCacheManagement<CCacheTypes::dlex_lead>(poly.diagram().manager()),
+ CDegreeCache<>(poly.diagram().manager()),
+                                       poly.navigation(), monom_type(),
+                                       dlex_tag() );
+ 
+  assert(leadterm==lead2);
   return leadterm;
+#endif
+  typedef poly_type::dd_type dd_type;
+  return  CDDOperations<dd_type, monom_type>().getMonomial(
+    dd_recursive_lead( 
+      CCacheManagement<CCacheTypes::dlex_lead>(poly.diagram().manager()),
+      CDegreeCache<>(poly.diagram().manager()),
+      poly.navigation(), BooleSet(),
+      dlex_tag() ) );
 }
 
 // Extraction of leading term
@@ -149,6 +179,7 @@ DegLexOrder::lead(const poly_type& poly, size_type bound) const {
 DegLexOrder::exp_type 
 DegLexOrder::leadExp(const poly_type& poly) const {
 
+#if 0
   typedef CDelayedTermIter<exp_type, 
     inserts<>, project_ith<1>, poly_type::deg_iterator >
     degree_term_iterator;
@@ -158,6 +189,9 @@ DegLexOrder::leadExp(const poly_type& poly) const {
                              degree_term_iterator(poly.degEnd()) ).term();
   else 
     return exp_type();
+#else
+  return lead(poly).exp();
+#endif
 }
 
 // maybe common template here

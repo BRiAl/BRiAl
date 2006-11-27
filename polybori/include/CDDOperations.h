@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.3  2006/09/14 10:57:26  dreyer
  * ADD: usedVariablesExp()
  *
@@ -50,6 +53,11 @@ template <class DDType, class MonomType>
 class CDDOperations {
 public:
 
+  // This is only a work-around, since a monomial should not be generated from
+  // a dd.
+  MonomType getMonomial(const DDType& dd) const {
+    return MonomType(dd);
+  }
   
   MonomType usedVariables(const DDType& dd){
 

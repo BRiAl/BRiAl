@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/11/27 16:25:13  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.28  2006/11/20 15:07:47  dreyer
  * FIX: headed included
  *
@@ -218,6 +221,12 @@ class BoolePolyRing:
 
   /// Access nvar-th variable of the active ring
   static dd_type ringVariable(idx_type nvar);
+
+  /// Access nvar-th ring variable
+  dd_type persistentVariable(idx_type nvar) const;
+
+  /// Access nvar-th variable of the active ring
+  static dd_type persistentRingVariable(idx_type nvar);
 
   /// Get empty decision diagram 
   dd_type zero() const;

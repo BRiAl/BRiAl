@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.29  2006/10/24 06:39:38  dreyer
  * CHANGE: changed interface type
  *
@@ -240,6 +243,25 @@ BoolePolyRing::ringVariable(idx_type nvar) {
 
   // return ring().variable(nvar);
    return current_mgr->variable(nvar);
+}
+
+// access persistend nvar-th ring variable
+BoolePolyRing::dd_type
+BoolePolyRing::persistentVariable(idx_type nvar) const {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::variable(idx_type) const" );
+
+  return pMgr->persistentVariable(nvar);
+}
+
+// access nvar-th variable of the active ring
+BoolePolyRing::dd_type
+BoolePolyRing::persistentRingVariable(idx_type nvar) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::ringVariable(idx_type nvar)" );
+
+  // return ring().variable(nvar);
+   return current_mgr->persistentVariable(nvar);
 }
 
 // get empty decision diagram

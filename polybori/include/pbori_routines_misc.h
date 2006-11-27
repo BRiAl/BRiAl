@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.11  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary
@@ -73,6 +76,8 @@
 // temprarily
 #include "CacheManager.h"
 
+#include "CDDOperations.h"
+
 BEGIN_NAMESPACE_PBORI
 
 template<class Iterator>
@@ -96,7 +101,7 @@ index_vector_hash(Iterator start, Iterator finish){
 /// with the help of cache (e. g. CDegreeCache)
 template <class DegreeCacher, class NaviType>
 typename NaviType::size_type
-dd_cached_degree(DegreeCacher cache, NaviType navi) {
+dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
 
   typedef typename NaviType::size_type size_type;
 
@@ -104,9 +109,9 @@ dd_cached_degree(DegreeCacher cache, NaviType navi) {
     return 0;
  
   // Look whether result was cached before
-  NaviType result = cache.find(navi);
+  typename DegreeCacher::node_type result = cache.find(navi);
   if (result.isValid())
-    return cache.convert(result);
+    return *result;
 
   // Get degree of then branch (contains at least one valid path)...
   size_type deg = dd_cached_degree(cache, navi.thenBranch()) + 1;
@@ -256,5 +261,38 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
 
   return result;
 }
+
+
+template <class CacheType, class DegCacheMgr, class NaviType, class TermType>
+TermType
+dd_recursive_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
+                  NaviType navi, TermType init, dlex_tag order) {
+
+  if (navi.isConstant())
+    return navi;//TermType(navi.terminalValue());
+
+  NaviType cached = cache_mgr.find(navi);
+
+  if (cached.isValid())
+    return cached;
+
+  unsigned deg_then = (dd_cached_degree(deg_mgr, navi.thenBranch()) + 1);
+  unsigned deg_else = dd_cached_degree(deg_mgr, navi.elseBranch());
+
+
+  if (deg_then >= deg_else) {
+
+    init = dd_recursive_lead(cache_mgr, deg_mgr, navi.thenBranch(), 
+                             init, order).change(*navi);
+    cache_mgr.insert(navi, init.navigation());
+  }
+  else {
+    init = dd_recursive_lead(cache_mgr, deg_mgr, navi.elseBranch(), 
+                             init, order);
+  }
+
+  return init;
+}
+
 
 END_NAMESPACE_PBORI

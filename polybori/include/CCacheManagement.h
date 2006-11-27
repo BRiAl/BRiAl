@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/11/27 16:25:13  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.12  2006/11/27 08:00:56  bricken
  * + mod_deg2
  *
@@ -95,11 +98,16 @@ public:
 
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
+ 
+  struct degree: public unary_cache_tag { };
+
+
   struct mod_varset: public binary_cache_tag { };
   struct mod_deg2_set: public binary_cache_tag { };
   
   struct contained_deg2: public unary_cache_tag { };
   struct contained_variables: public unary_cache_tag { };
+
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
 

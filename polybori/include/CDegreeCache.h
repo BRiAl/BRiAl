@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.2  2006/09/21 16:09:59  dreyer
  * ADD: caching mechanism for BoolePolynomial::deg()
  *
@@ -33,76 +36,110 @@
 // include basic definitions
 #include "pbori_defs.h"
 
+#include "BoolePolyRing.h"
+
+#include "CCacheManagement.h"
+
 #ifndef CDegreeCache_h_
 #define CDegreeCache_h_ 
 
 BEGIN_NAMESPACE_PBORI
 
-template <class DDType>
-class CDegreeCache {
+/** @class CIndexHandle
+ * @brief This class defines an uses an navigator-like type for storing integer
+ * values from 0 upto nmax (number of currently active ring variables).
+ **/
 
+
+template <class NaviType>
+class CIndexHandle:
+  public NaviType {
 public:
-  typedef DDType dd_type;
-  typedef typename dd_type::manager_base manager_type;
 
-  typedef typename dd_type::navigator navi_type;
-  typedef unsigned size_type;
+  /// Set actual storage type
+  typedef NaviType navigator;
 
-  /// Constructor
-  CDegreeCache(const dd_type& dd): m_mgr(dd.manager()) {}
+  /// Define type base
+  typedef navigator base;
 
-  navi_type find(const navi_type& navi) const;
+  /// Plain Boolean type
+  typedef typename navigator::bool_type bool_type;
 
-  size_type convert(const navi_type& result) const;
+  /// Type for representing indices
+  typedef typename base::value_type idx_type;
 
-  void insert(const navi_type& navi, const size_type& deg) const;
+  /// Type of decision diagram manager
+  typedef typename BoolePolyRing::manager_type manager_type;
+
+  /// Construct from index
+  CIndexHandle(idx_type idx): base( toNode(idx) ) {}
+
+  /// Construct from given navigator
+  explicit CIndexHandle(navigator navi): base(navi) {}
+
+  /// Dereference to get stored index
+  typename base::reference operator*() const {
+    if (base::isConstant())
+      return manager().nVariables();
+    else 
+      return base::operator*();
+  }
+
 protected:
 
-  const manager_type& m_mgr;
+  /// Get active manager
+  manager_type& manager() const { return BoolePolyRing::activeManager(); }
+
+  /// Convert plain number to navigation type
+  navigator toNode(idx_type idx) const {
+
+    if (idx < manager().nVariables())
+      return  navigator(manager().persistentVariable(idx));
+    else
+      return  navigator(manager().empty());
+  }
 };
 
+template <class DDType = typename CTypes::dd_type,
+          class ManagerType = typename CTypes::manager_base>
+class CDegreeCache:
+  public CCacheManagement<CCacheTypes::degree, 1, ManagerType> {
 
-// Static function prototype for cudd interface
-inline static DdNode * cudd_pbori_zdd_deg(DdManager *ddman, DdNode *zdd){}
+public:
+  /// @name Define generic access to data types
+  //@{
+  typedef ManagerType manager_type;
+  typedef DDType dd_type;
+  typedef CCacheManagement<CCacheTypes::degree, 1, manager_type> base;
+  typedef CDegreeCache<dd_type, manager_type> self;
+  //@}
 
-template<>
-inline CDegreeCache<CDDInterface<ZDD> >::navi_type
-CDegreeCache<CDDInterface<ZDD> >::find(const navi_type& navi) const {
-  return
-    cuddCacheLookup1Zdd(m_mgr.getManager(), cudd_pbori_zdd_deg, navi);
-}
+  /// @name Adopt type definitions
+  //@{
+  typedef typename base::node_type input_node_type;
+  typedef typename dd_type::size_type size_type;
+  typedef typename dd_type::navigator navi_type;
+  typedef CIndexHandle<navi_type> node_type;
+  //@}
 
-template<>
-inline CDegreeCache< CDDInterface<ZDD> >::size_type
-CDegreeCache<CDDInterface<ZDD> >::convert(const navi_type& result) const { 
- 
-  //  assuming validity
-  if (result.isConstant()) {
-    if (result.terminalValue())
-      return BoolePolyRing::activeManager().nVariables();
-    else 
-      return 0;
+  /// Constructor
+  CDegreeCache(const manager_type& mgr): base(mgr) {}
+
+  /// Copy Constructor
+  CDegreeCache(const self& rhs): base(rhs) {}
+
+  /// Destructor
+  ~CDegreeCache() {}
+
+  /// Find cached degree wrt. given navigator
+  node_type find(input_node_type navi) const{ 
+    return node_type(base::find(navi)); }
+
+  /// Store cached degree wrt. given navigator
+  void insert(input_node_type navi, size_type deg) const {
+    base::insert(navi, node_type(deg));
   }
-  else 
-    return *result;
-}
-
-template<>
-void
-CDegreeCache<CDDInterface<ZDD> >::insert(const navi_type& navi, 
-                                         const size_type& deg) const {
-  navi_type result;
-  if (deg < BoolePolyRing::activeManager().nVariables()){
-    result = 
-      BoolePolyRing::activeManager().persistentVariable(deg).getNode();
-  }
-  else {
-    result = 
-      BoolePolyRing::activeManager().blank().navigation();
-  }
-  cuddCacheInsert1(m_mgr.getManager(),  cudd_pbori_zdd_deg, 
-                   navi,  result);
-}
+};
 
 
 END_NAMESPACE_PBORI

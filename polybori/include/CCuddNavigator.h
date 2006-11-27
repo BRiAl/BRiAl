@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/11/27 16:25:13  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.11  2006/11/21 10:33:22  dreyer
  * CHANGE: added inlinable member functions
  *
@@ -84,6 +87,9 @@ public:
   /// Cudd's node pointer
   typedef DdNode* pointer_type;
 
+  /// Cudd's node pointer
+  typedef CTypes::dd_base dd_base;
+
   /// Type for accessing node pointer
   typedef const pointer_type access_type;
 
@@ -115,6 +121,9 @@ public:
 
   /// Default constructor and construct from node pointer
   CCuddNavigator(pointer_type ptr = NULL): pNode(ptr) {}
+
+  /// Construct from decision diagram
+  explicit CCuddNavigator(const dd_base& rhs): pNode(rhs.getNode()) {}
 
   /// Copy Constructor
   CCuddNavigator(const self& rhs): pNode(rhs.pNode) {}

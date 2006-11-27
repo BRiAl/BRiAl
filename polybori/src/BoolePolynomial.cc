@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.79  2006/11/27 16:25:14  dreyer
+ * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
+ *
  * Revision 1.78  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -652,7 +655,7 @@ BoolePolynomial::deg() const {
   /// more efficient search may be needed.
 
 #ifndef PBORI_NO_DEGCACHE
-  return dd_cached_degree(CDegreeCache<dd_type>(m_dd), navigation());
+  return dd_cached_degree(CDegreeCache<>(m_dd.manager()), navigation());
 #else
   return ( isConstant() ? 
            (size_type) 0 :
