@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/11/27 08:00:56  bricken
+ * + mod_deg2
+ *
  * Revision 1.11  2006/11/23 12:46:44  bricken
  * + new minimal elements
  *
@@ -93,8 +96,9 @@ public:
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
   struct mod_varset: public binary_cache_tag { };
- 
-   
+  struct mod_deg2_set: public binary_cache_tag { };
+  
+  struct contained_deg2: public unary_cache_tag { };
   struct contained_variables: public unary_cache_tag { };
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
