@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/11/28 09:32:58  dreyer
+ * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
+ *
  * Revision 1.12  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -199,6 +202,7 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
 
   // Extract subtypes
   typedef typename PolynomialType::dd_type dd_type;
+  typedef typename PolynomialType::set_type set_type;
   typedef typename PolynomialType::idx_type idx_type;
   typedef typename PolynomialType::navigator navigator;
 
@@ -215,7 +219,7 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
   PolynomialType result;
 
   if (cached.isValid()) {       // Cache lookup sucessful
-    result = (dd_type) CTypes::dd_base(&a.diagram().manager(), cached);
+    result = (set_type) cached;
   }
   else {                        // Cache lookup not sucessful
     // Get top variable's index
@@ -263,10 +267,11 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
 }
 
 
-template <class CacheType, class DegCacheMgr, class NaviType, class TermType>
+template <class CacheType, class DegCacheMgr, class NaviType, 
+          class TermType, class BinComp>
 TermType
-dd_recursive_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
-                  NaviType navi, TermType init, dlex_tag order) {
+dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
+                  NaviType navi, TermType init, BinComp comp) {
 
   if (navi.isConstant())
     return navi;//TermType(navi.terminalValue());
@@ -276,19 +281,22 @@ dd_recursive_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
   if (cached.isValid())
     return cached;
 
-  unsigned deg_then = (dd_cached_degree(deg_mgr, navi.thenBranch()) + 1);
-  unsigned deg_else = dd_cached_degree(deg_mgr, navi.elseBranch());
+  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
+
+  typedef typename NaviType::size_type size_type;
+  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi) + 1);
+  size_type deg_else = dd_cached_degree(deg_mgr, elseNavi);
 
 
-  if (deg_then >= deg_else) {
+  if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, elseNavi, 
+                                    init, comp);
 
-    init = dd_recursive_lead(cache_mgr, deg_mgr, navi.thenBranch(), 
-                             init, order).change(*navi);
-    cache_mgr.insert(navi, init.navigation());
   }
   else {
-    init = dd_recursive_lead(cache_mgr, deg_mgr, navi.elseBranch(), 
-                             init, order);
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
+                                    init, comp).change(*navi);
+    cache_mgr.insert(navi, init.navigation());
   }
 
   return init;

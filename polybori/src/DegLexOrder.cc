@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/11/28 09:32:58  dreyer
+ * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
+ *
  * Revision 1.9  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -115,40 +118,14 @@ DegLexOrder::compare(idx_type lhs, idx_type rhs) const {
 DegLexOrder::monom_type 
 DegLexOrder::lead(const poly_type& poly) const {
 
-#if 0
-  typedef CDelayedTermIter<monom_type, 
-    change_assign<>, project_ith<2>, poly_type::deg_iterator >
-    degree_term_iterator;
+  CDDOperations<BooleSet, monom_type> op;
+  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  monom_type leadterm;
-   
-  if (poly.isZero())
-    leadterm = 0;
-  else if (poly.isOne())
-    leadterm = 1;
-  else
-    leadterm =  degree_term_iterator(std::max_element( poly.degBegin(), 
-                                                       poly.degEnd() )).term();
-
-
-  
-  monom_type lead2 =
-   dd_recursive_lead( 
-    CCacheManagement<CCacheTypes::dlex_lead>(poly.diagram().manager()),
- CDegreeCache<>(poly.diagram().manager()),
-                                       poly.navigation(), monom_type(),
-                                       dlex_tag() );
- 
-  assert(leadterm==lead2);
-  return leadterm;
-#endif
-  typedef poly_type::dd_type dd_type;
-  return  CDDOperations<dd_type, monom_type>().getMonomial(
-    dd_recursive_lead( 
-      CCacheManagement<CCacheTypes::dlex_lead>(poly.diagram().manager()),
-      CDegreeCache<>(poly.diagram().manager()),
-      poly.navigation(), BooleSet(),
-      dlex_tag() ) );
+  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
+                                                   poly.navigation(), 
+                                                   BooleSet(),
+                                                   std::less<size_type>()) );
 }
 
 // Extraction of leading term

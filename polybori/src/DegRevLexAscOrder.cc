@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2006/11/28 09:32:58  dreyer
+ * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
+ *
  * Revision 1.6  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -59,6 +62,8 @@
 
 #include "CDegLexIter.h"
 
+#include "CDegreeCache.h"
+
 BEGIN_NAMESPACE_PBORI
 
 
@@ -98,25 +103,16 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
 DegRevLexAscOrder::monom_type 
 DegRevLexAscOrder::lead(const poly_type& poly) const {
 
-  typedef CDelayedTermIter<monom_type, 
-    change_assign<>, project_ith<2>, poly_type::deg_iterator >
-    degree_term_iterator;
 
-  monom_type leadterm;
-   
-  if (poly.isZero())
-    leadterm = 0;
-  else if (poly.isOne())
-    leadterm = 1;
-  else
-    leadterm =  degree_term_iterator(std::max_element( poly.degBegin(), 
-                                                       poly.degEnd() ,
-                                                 std::less_equal<size_type>() )
-                                     ).term();
+  CDDOperations<BooleSet, monom_type> op;
+  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  return leadterm;
+  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
+                                               poly.navigation(), 
+                                               BooleSet(),
+                                               std::less_equal<size_type>()) );  
 }
-
 
 // maybe common template here
 // Extraction of leading exponent
