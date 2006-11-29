@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/11/29 16:37:35  dreyer
+ * CHANGE: updated testsuite
+ *
  * Revision 1.3  2006/08/24 14:47:51  dreyer
  * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
  *
@@ -38,6 +41,7 @@
 
 // load polybori header file
 # include "polybori.h"
+#include "CacheManager.h"
 
 USING_NAMESPACE_PBORI
 
@@ -172,6 +176,36 @@ main(){
       
 
     std::cout <<(poly.lead().exp().divisors() )<<std::endl; 
+
+    poly = x * y + y * z + w;
+
+    bset = poly.diagram();
+
+    BooleMonomial monom = x * w* v;
+
+    std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
+    monom = y;
+
+    std::cout  <<bset.multiplesOf(monom) <<std::endl;
+
+
+    std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
+
+    std::cout  <<bset.multiplesOf(monom) <<std::endl;
+
+    poly = x * y+x * y*z + y * z*v + w;
+    bset = poly.diagram();
+    monom = y*z;
+    std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
+
+    std::cout  <<bset.multiplesOf(monom) <<std::endl;
+    monom = 0;
+    std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
+
+    std::cout  <<bset.multiplesOf(monom) <<std::endl;
+ 
+    monom = 1;
+    std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout << std::endl;
                

@@ -396,6 +396,11 @@ Test Variablenames
 x(0)? x(0)
 X? X
 Finished.
+2
+0
+1
+2
+0x2
 ----------------------
 Executing testsuite/spoly
 ----------------------
@@ -555,6 +560,45 @@ divisors x(2)*x(3)
 : 2 nodes 4 minterms
 00--0 1
 
+multiplesOf : 5 nodes 3 minterms
+11000 1
+01100 1
+00001 1
+|x(0)*x(3)*x(4) 
+: 4 nodes 2 minterms
+11000 1
+01100 1
+
+multiplesOf : 5 nodes 3 minterms
+11000 1
+01100 1
+00001 1
+|x(1) 
+: 4 nodes 2 minterms
+11000 1
+01100 1
+
+multiplesOf : 7 nodes 4 minterms
+11-00 1
+01110 1
+00001 1
+|x(1)*x(2) 
+: 6 nodes 2 minterms
+11100 1
+01110 1
+
+multiplesOf : 7 nodes 4 minterms
+11-00 1
+01110 1
+00001 1
+|0 
+: is the empty ZDD
+
+multiplesOf : 7 nodes 4 minterms
+11-00 1
+01110 1
+00001 1
+|1 
 
 ----------------------
 Executing testsuite/strategy_initialization
@@ -647,12 +691,15 @@ x(0)*x(1) + x(1)*x(2)  * x(2)*x(4) + x(3)*x(4)
 x(0)*x(1)*x(2)*x(4) + x(0)*x(1)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(4) 
 
 Going on...
-0
-0x813b160
-0
+1
+1
+1
 x(0)*x(1)*x(2) + x(1)*x(2) + x(1)*x(3) + x(1)*x(4) 
 x(0)*x(1) + x(1)*x(2) + x(1)*x(4) + x(3)*x(4) 
 result x(0)*x(1)*x(2) + x(0)*x(1) + x(1)*x(3) + x(3)*x(4) 
+test newnode.
+newnode 0 x(1)*x(2) + x(2) + x(4)  x(3) + x(4) 
+result x(0)*x(1)*x(2) + x(0)*x(2) + x(0)*x(4) + x(3) + x(4) 
 
 Finished.
 

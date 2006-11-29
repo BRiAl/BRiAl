@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/11/29 16:37:35  dreyer
+ * CHANGE: updated testsuite
+ *
  * Revision 1.19  2006/10/30 14:00:17  dreyer
  * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
  *
@@ -316,11 +319,11 @@ main(){
     CCacheManagement<CCacheTypes::dlex_lead> 
       test_marker2(BoolePolyRing::activeManager().manager());
 
-    std::cout <<   test_marker.find( poly.navigation() )<<std::endl;
+    std::cout <<  (( test_marker.find( poly.navigation() ))==NULL)<<std::endl;
 
       test_marker.insert(poly.navigation(), poly.navigation() );
-      std::cout <<  test_marker.find( poly.navigation() )<<std::endl;
-      std::cout <<  test_marker2.find( poly.navigation() )<<std::endl;
+      std::cout <<  (test_marker.find( poly.navigation() )!=NULL)<<std::endl;
+      std::cout <<  (test_marker2.find( poly.navigation() )==NULL)<<std::endl;
       poly = x*y*z +y*z +y*v + y*w;
       poly2 = x*y+y*z +y*w +v*w;
       std::cout << poly<<std::endl;
@@ -331,6 +334,19 @@ main(){
      
 
  std::cout <<  "result " <<result<<std::endl;
+
+
+  std::cout <<  "test newnode."<<std::endl;
+
+   poly = y*z + z + w;
+
+   poly2 =  w +v ;
+
+   std::cout << "newnode "<< 0 << " " <<poly << " " << poly2<<std::endl;
+
+   CDDInterface<ZDD> ddtest(0, poly.diagram(), poly2.diagram());
+   std::cout <<  "result " << BoolePolynomial(ddtest) <<std::endl;
+
 
   std::cout <<std::endl<<  "Finished."<<std::endl;
 

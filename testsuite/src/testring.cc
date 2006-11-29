@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.18  2006/11/29 16:37:35  dreyer
+// CHANGE: updated testsuite
+//
 // Revision 1.17  2006/10/24 08:44:05  dreyer
 // CHANGE: Added CVariableNames; variable names handled by OrderedManager
 //
@@ -84,6 +87,48 @@
 
 #include "CDegLexIter.h"
 #include "COrderedIter.h"
+
+
+
+template <class Type, class BaseType = void>
+class enumerate_tags;
+
+template <class Type, class BaseType>
+class enumerate_tags:
+  public BaseType {
+public:
+
+  enum { numval = BaseType::numval + 1};
+  using BaseType::num;
+  static unsigned num(Type) { return numval; }
+// template<class Klasse>
+// struct dummy_enum;
+//   using base::dummy_enum;
+// template<>
+// struct dummy_enum<Type> { enum{ val = numval}; };
+
+};
+
+
+template<class Type>
+class enumerate_tags<Type, void> {
+  public:
+  enum { numval = 0};
+  static unsigned num(Type) { return numval; }
+
+
+// template<class Klasse>
+// struct dummy_enum;
+
+// template<>
+// struct dummy_enum<Type> { enum{ val = numval}; };
+};
+
+
+struct dummy1_type{};
+struct dummy2_type{};
+struct dummy3_type{};
+
 
 
 USING_NAMESPACE_PBORI
@@ -472,6 +517,57 @@ main(){
     std::cout << "Unexpected exception occured: ";
     std::cout <<err.text() <<std::endl;
   }
+
+  typedef  enumerate_tags<dummy3_type, enumerate_tags<dummy2_type,
+  enumerate_tags<dummy1_type> > > enumit;
+
+  std::cout<< enumit::numval <<std::endl;
+  std::cout<< enumit::num(dummy1_type()) <<std::endl;
+  std::cout<< enumit::num(dummy2_type()) <<std::endl;
+  std::cout<< enumit::num(dummy3_type()) <<std::endl;
+
+  //  std::cout<< integral_constant<int,
+  //  count_tags<dummy3_type>::value>()()<<std::endl; 
+  std::cout<<(void*) cudd_tag_number<0, 0>::value  <<std::endl; 
+  /*
+  std::cout<<(void*) cudd_tag_number<1, 0>::value  <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<2, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<3, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<4, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<5, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<6, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<7, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<8, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<9, 0>::value   <<std::endl;
+  std::cout<<(void*) cudd_tag_number<10, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<11, 0>::value  <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<12, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<13, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<14, 0>::value   <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<15, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<16, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<17, 0>::value   <<std::endl;
+   std::cout<<18   <<std::endl;
+ std::cout<<(void*)  cudd_tag_number<18, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<19, 0>::value   <<std::endl;
+  std::cout<<(void*) cudd_tag_number<20, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<21, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<22, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<23, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<24, 0>::value  <<std::endl;
+  std::cout<<(void*) cudd_tag_number<25, 0>::value  <<std::endl; 
+  std::cout<<(void*)  cudd_tag_number<26, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<27, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<28, 0>::value   <<std::endl;
+  std::cout<<(void*)  cudd_tag_number<29, 0>::value   <<std::endl;
+  std::cout<<(void*) cudd_tag_number<30, 0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<31, 0>::value  <<std::endl; 
+  std::cout<<"huhu" <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<0, 17>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<0>::value  <<std::endl; 
+  std::cout<<(void*) cudd_tag_number<1>::value  <<std::endl; 
+*/
+ //  std::cout<< enumit::dummy_enum<dummy1_type>::numval <<std::endl;
 
   return 0;
 }
