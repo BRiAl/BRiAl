@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/29 13:40:03  dreyer
+ * CHANGE: leadexp() made recursive and cached
+ *
  * Revision 1.8  2006/10/06 12:52:00  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -200,6 +203,8 @@ class BooleExponent {
   self multiply(const idx_type& rhs) const { return insertConst(rhs); }
   self multiply(const var_type& rhs) const { return multiply(rhs.index()); }
   self multiply(const monom_type&) const;
+  self multiplyFirst(const set_type&) const;
+
 
 //   /// @name Arithmetical operations
 //   //@{

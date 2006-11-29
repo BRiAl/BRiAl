@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/11/29 13:40:03  dreyer
+ * CHANGE: leadexp() made recursive and cached
+ *
  * Revision 1.13  2006/11/28 09:32:58  dreyer
  * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
  *
@@ -296,10 +299,44 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
   else {
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
                                     init, comp).change(*navi);
-    cache_mgr.insert(navi, init.navigation());
+  }
+  cache_mgr.insert(navi, init.navigation());
+  return init;
+}
+
+
+
+template <class CacheType, class DegCacheMgr, class NaviType, 
+          class TermType, class BinComp>
+TermType&
+dd_recursive_degree_leadexp(const CacheType& cache_mgr, 
+                            const DegCacheMgr& deg_mgr,
+                            NaviType navi, TermType& result, BinComp comp) {
+
+  if (navi.isConstant())
+    return result;
+ 
+  NaviType cached = cache_mgr.find(navi);
+
+  if (cached.isValid())
+    return result = result.multiplyFirst(cached);
+
+  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
+
+  typedef typename NaviType::size_type size_type;
+  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi) + 1);
+  size_type deg_else = dd_cached_degree(deg_mgr, elseNavi);
+
+
+  if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
+    navi = elseNavi;
+  }
+  else {
+    result.push_back(*navi);
+    navi = thenNavi;
   }
 
-  return init;
+  return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, comp);
 }
 
 

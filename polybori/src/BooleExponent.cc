@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/29 13:40:03  dreyer
+ * CHANGE: leadexp() made recursive and cached
+ *
  * Revision 1.8  2006/10/02 15:39:36  dreyer
  * FIX: BooleExponent::push_back() (empty exponent)
  *
@@ -359,17 +362,25 @@ BooleExponent::LCM(const self& rhs) const {
   return multiply(rhs);
 }
 
-template<class ExpType, class RhsType, class ResultType>
+template<class ExpType, class RhsIterator, class SizeType, class ResultType>
 void
-exp_multiply(const ExpType& lhs, const RhsType& rhs, ResultType& result) {
+exp_multiply(const ExpType& lhs, RhsIterator start, RhsIterator finish,
+             SizeType nlen, ResultType& result) {
 
   typedef ExpType self; 
   typedef ResultType data_type; 
 
-  result.reserve(lhs.size() + rhs.size());
+  result.reserve(lhs.size() + nlen);
   std::back_insert_iterator<data_type> outiter(result);
 
-  std::set_union(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), outiter);
+  std::set_union(lhs.begin(), lhs.end(), start, finish, outiter);
+}
+
+template<class ExpType, class RhsType, class ResultType>
+void
+exp_multiply(const ExpType& lhs, const RhsType& rhs, ResultType& result) {
+
+  exp_multiply(lhs, rhs.begin(), rhs.end(), rhs.size(), result);
 }
 
 // multiplication
@@ -392,6 +403,21 @@ BooleExponent::multiply(const monom_type& rhs) const {
 
   self result;
   exp_multiply(*this, rhs, result.m_data);
+
+  return result;
+}
+
+
+// multiplication
+BooleExponent
+BooleExponent::multiplyFirst(const set_type& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::multiplyFirst(const set_type&) const" );
+
+  self result;
+
+  exp_multiply(*this, rhs.firstBegin(), rhs.firstEnd(),
+               std::distance(rhs.firstBegin(), rhs.firstEnd()), result.m_data);
 
   return result;
 }

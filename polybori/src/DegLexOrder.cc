@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2006/11/29 13:40:03  dreyer
+ * CHANGE: leadexp() made recursive and cached
+ *
  * Revision 1.10  2006/11/28 09:32:58  dreyer
  * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
  *
@@ -156,19 +159,15 @@ DegLexOrder::lead(const poly_type& poly, size_type bound) const {
 DegLexOrder::exp_type 
 DegLexOrder::leadExp(const poly_type& poly) const {
 
-#if 0
-  typedef CDelayedTermIter<exp_type, 
-    inserts<>, project_ith<1>, poly_type::deg_iterator >
-    degree_term_iterator;
+  exp_type result;
+  result.reserve(poly.deg());
 
-  if (!poly.isZero() && !poly.isOne())
-    return std::max_element( degree_term_iterator(poly.degBegin()), 
-                             degree_term_iterator(poly.degEnd()) ).term();
-  else 
-    return exp_type();
-#else
-  return lead(poly).exp();
-#endif
+  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
+
+  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr,
+                                      poly.navigation(), result,
+                                      std::less<size_type>());
 }
 
 // maybe common template here
