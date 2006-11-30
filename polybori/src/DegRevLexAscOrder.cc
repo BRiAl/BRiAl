@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/11/30 19:42:47  dreyer
+ * CHANGE: lead(bound) now uses cached and recursive variant
+ *
  * Revision 1.8  2006/11/29 13:40:03  dreyer
  * CHANGE: leadexp() made recursive and cached
  *
@@ -139,49 +142,33 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 DegRevLexAscOrder::exp_type 
 DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
-  typedef CDelayedTermIter<exp_type, 
-    inserts<>, project_ith<1>, iterator >
-    degree_term_iterator;
+  exp_type result;
+  result.reserve(poly.deg());
 
-  if (!poly.isZero() && !poly.isOne())
-    return degree_term_iterator( bounded_max_element(
-          reversed_iteration_adaptor<iterator>(iterator(poly.navigation(),
-                                                        dummy_iterator())), 
-          reversed_iteration_adaptor<iterator>((iterator)poly.endOfNavigation()),
-          bound
-          ).get()
-        ).term();
-  else 
-    return exp_type();
+  CCacheManagement<CCacheTypes::dp_asc_lead> 
+    cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
+
+  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr,
+                                      poly.navigation(), result, bound,
+                                      std::less_equal<size_type>());
+
+
 }
-
 
 // Extraction of leading term
 DegRevLexAscOrder::monom_type 
 DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
-  typedef CDelayedTermIter<monom_type, 
-    change_assign<>, project_ith<2>, iterator >
-    degree_term_iterator;
+  CDDOperations<BooleSet, monom_type> op;
+  CCacheManagement<CCacheTypes::dp_asc_lead> 
+    cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  monom_type leadterm;
-   
-  if (poly.isZero())
-    leadterm = 0;
-  else if (poly.isOne())
-    leadterm = 1;
-  else
-    leadterm = 
-      degree_term_iterator(
-        bounded_max_element(
-          reversed_iteration_adaptor<iterator>(iterator(poly.navigation(),
-                                                        dummy_iterator())), 
-          reversed_iteration_adaptor<iterator>(poly.endOfNavigation()),
-          bound
-          ).get()
-        ).term();
-
-  return leadterm;
+  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
+                                                poly.navigation(), 
+                                                BooleSet(), bound,
+                                                std::less_equal<size_type>()) );
 }
 
 

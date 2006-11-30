@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2006/11/30 19:42:47  dreyer
+ * CHANGE: lead(bound) now uses cached and recursive variant
+ *
  * Revision 1.11  2006/11/29 13:40:03  dreyer
  * CHANGE: leadexp() made recursive and cached
  *
@@ -135,22 +138,15 @@ DegLexOrder::lead(const poly_type& poly) const {
 DegLexOrder::monom_type 
 DegLexOrder::lead(const poly_type& poly, size_type bound) const {
 
-  typedef CDelayedTermIter<monom_type, 
-    change_assign<>, project_ith<2>, poly_type::deg_iterator >
-    degree_term_iterator;
+  CDDOperations<BooleSet, monom_type> op;
+  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  monom_type leadterm;
-   
-  if (poly.isZero())
-    leadterm = 0;
-  else if (poly.isOne())
-    leadterm = 1;
-  else
-    leadterm = degree_term_iterator(bounded_max_element(poly.degBegin(), 
-                                                        poly.degEnd(),
-                                                        bound)).term();
+  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
+                                                   poly.navigation(), 
+                                                   BooleSet(), bound,
+                                                   std::less<size_type>()) );
 
-  return leadterm;
 }
 
 
@@ -175,16 +171,15 @@ DegLexOrder::leadExp(const poly_type& poly) const {
 DegLexOrder::exp_type 
 DegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
 
-  typedef CDelayedTermIter<exp_type, 
-    inserts<>, project_ith<1>, poly_type::deg_iterator >
-    degree_term_iterator;
+  exp_type result;
+  result.reserve(poly.deg());
 
-  if (!poly.isZero() && !poly.isOne())
-    return degree_term_iterator(bounded_max_element(poly.degBegin(), 
-                                                    poly.degEnd(), 
-                                                    bound)).term();
-  else 
-    return exp_type();
+  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
+  CDegreeCache<> deg_mgr(poly.diagram().manager());
+
+  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr,
+                                      poly.navigation(), result, bound,
+                                      std::less<size_type>());
 }
 
 

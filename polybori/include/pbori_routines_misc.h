@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/11/30 19:42:44  dreyer
+ * CHANGE: lead(bound) now uses cached and recursive variant
+ *
  * Revision 1.14  2006/11/29 13:40:03  dreyer
  * CHANGE: leadexp() made recursive and cached
  *
@@ -131,7 +134,37 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
   return deg;
 }
 
+/// Function templates for determining the degree of a decision diagram
+/// with the help of cache (e. g. CDegreeCache)
+/// Variant *with* given upper bound
+/// Assumming that the bound is valid!
+template <class DegreeCacher, class NaviType, class SizeType>
+typename NaviType::size_type
+dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
 
+  typedef typename NaviType::size_type size_type;
+
+  // No need for caching of constant nodes' degrees
+  if (navi.isConstant() || bound == 0)
+    return 0;
+ 
+  // Look whether result was cached before
+  typename DegreeCacher::node_type result = cache.find(navi);
+  if (result.isValid())
+    return *result;
+
+  // Get degree of then branch (contains at least one valid path)...
+  size_type deg = dd_cached_degree(cache, navi.thenBranch(), bound - 1) + 1;
+
+  // ... combine with degree of else branch
+  if (bound > deg)              // if deg <= bound, we are already finished
+    deg = std::max(deg,  dd_cached_degree(cache, navi.elseBranch(), bound) );
+
+  // Write result to cache
+  cache.insert(navi, deg);
+ 
+  return deg;
+}
 
 template <class Iterator, class NameGenerator, 
           class Separator, class EmptySetType, 
@@ -287,20 +320,71 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
   NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
 
   typedef typename NaviType::size_type size_type;
-  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi) + 1);
+  size_type deg = (dd_cached_degree(deg_mgr, thenNavi) + 1);
   size_type deg_else = dd_cached_degree(deg_mgr, elseNavi);
 
 
-  if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
+  if ( comp(deg, deg_else) ) { // < for dlex, <= for dp_asc
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, elseNavi, 
                                     init, comp);
-
+    deg = deg_else;
   }
   else {
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
                                     init, comp).change(*navi);
   }
-  cache_mgr.insert(navi, init.navigation());
+
+  NaviType resultNavi(init.navigation());
+  cache_mgr.insert(navi, resultNavi);
+  deg_mgr.insert(resultNavi, deg);
+
+  return init;
+}
+
+// with degree bound
+template <class CacheType, class DegCacheMgr, class NaviType, 
+          class TermType, class SizeType, class BinComp>
+TermType
+dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
+                         NaviType navi, TermType init, SizeType bound,
+                         BinComp comp) {
+
+  if ((bound == 0) || navi.isConstant())
+    return navi;
+
+  NaviType cached = cache_mgr.find(navi);
+
+  if (cached.isValid())
+    return cached;
+
+  NaviType thenNavi(navi.thenBranch());
+
+  typedef typename NaviType::size_type size_type;
+  size_type deg = (dd_cached_degree(deg_mgr, thenNavi, bound - 1) + 1);
+
+  if ( !comp(deg, bound) )
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
+                                    init, bound - 1, comp).change(*navi);
+  else {
+    NaviType elseNavi(navi.elseBranch());
+    size_type deg_else= dd_cached_degree(deg_mgr, elseNavi, bound);
+    
+    
+    if ( comp(deg, deg_else) ) { // < for dlex, <= for dp_asc
+      init = dd_recursive_degree_lead(cache_mgr, deg_mgr, elseNavi, 
+                                      init, comp);
+      deg = deg_else; 
+    }
+    else {
+      init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
+                                      init, comp).change(*navi);
+    }
+  }
+
+  NaviType resultNavi(init.navigation());
+  cache_mgr.insert(navi, resultNavi);
+  deg_mgr.insert(resultNavi, deg);
+
   return init;
 }
 
@@ -337,6 +421,49 @@ dd_recursive_degree_leadexp(const CacheType& cache_mgr,
   }
 
   return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, comp);
+}
+
+template <class CacheType, class DegCacheMgr, class NaviType, 
+          class TermType, class SizeType, class BinComp>
+TermType&
+dd_recursive_degree_leadexp(const CacheType& cache_mgr, 
+                            const DegCacheMgr& deg_mgr,
+                            NaviType navi, TermType& result, SizeType bound,
+                            BinComp comp) {
+
+  if (navi.isConstant())
+    return result;
+ 
+  NaviType cached = cache_mgr.find(navi);
+
+  if (cached.isValid())
+    return result = result.multiplyFirst(cached);
+
+  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
+
+  typedef SizeType size_type;
+  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi, bound - 1) + 1);
+
+  if ( !comp(deg_then, bound) ) {
+    result.push_back(*navi);
+    navi = thenNavi;
+    --bound;
+  }
+  else {
+
+    size_type deg_else = dd_cached_degree(deg_mgr, elseNavi, bound);
+    if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
+      navi = elseNavi;
+    }
+    else {
+      result.push_back(*navi);
+      navi = thenNavi;
+      --bound;
+    }
+  }
+
+  return 
+    dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, bound, comp);
 }
 
 

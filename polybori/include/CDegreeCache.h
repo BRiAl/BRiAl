@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2006/11/30 19:42:44  dreyer
+ * CHANGE: lead(bound) now uses cached and recursive variant
+ *
  * Revision 1.3  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -100,18 +103,20 @@ protected:
   }
 };
 
-template <class DDType = typename CTypes::dd_type,
+template <class TagType = typename CCacheTypes::degree,
+          class DDType = typename CTypes::dd_type,
           class ManagerType = typename CTypes::manager_base>
 class CDegreeCache:
-  public CCacheManagement<CCacheTypes::degree, 1, ManagerType> {
+  public CCacheManagement<TagType, 1, ManagerType> {
 
 public:
   /// @name Define generic access to data types
   //@{
   typedef ManagerType manager_type;
   typedef DDType dd_type;
-  typedef CCacheManagement<CCacheTypes::degree, 1, manager_type> base;
-  typedef CDegreeCache<dd_type, manager_type> self;
+  typedef TagType tag_type;
+  typedef CCacheManagement<tag_type, 1, manager_type> base;
+  typedef CDegreeCache<tag_type, dd_type, manager_type> self;
   //@}
 
   /// @name Adopt type definitions

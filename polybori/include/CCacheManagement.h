@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2006/11/30 19:42:43  dreyer
+ * CHANGE: lead(bound) now uses cached and recursive variant
+ *
  * Revision 1.13  2006/11/27 16:25:13  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -85,12 +88,13 @@ BEGIN_NAMESPACE_PBORI
 
 
 class CCacheTypes {
-protected:
+
+public:
   struct unary_cache_tag { enum { nargs = 1 }; };
   struct binary_cache_tag { enum { nargs = 2 }; };
   struct ternary_cache_tag { enum { nargs = 3 }; };
 
-public:
+  // user functions
   struct union_xor: public binary_cache_tag { };
 
   struct multiply_recursive: public binary_cache_tag { };
