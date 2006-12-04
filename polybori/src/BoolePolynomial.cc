@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.80  2006/12/04 17:08:19  dreyer
+ * CHANGE: multiplication in new style
+ *
  * Revision 1.79  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -433,7 +436,14 @@ BoolePolynomial::operator*=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const self&)" );
 
-  self result = dd_multiply_recursively(*this, rhs);
+
+  //return *this = dd_multiply_recursively(*this, rhs);
+  //  self result = dd_multiply_recursively(*this, rhs);
+  typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
+    cache_mgr_type;
+
+  self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
+                                        navigation(), rhs.navigation(), self());
 
 #if 0
 

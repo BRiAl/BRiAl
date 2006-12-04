@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2006/12/04 17:08:19  dreyer
+ * CHANGE: multiplication in new style
+ *
  * Revision 1.16  2006/12/04 12:48:16  dreyer
  * CHANGE: cached and recursive lead() and leadexp() refined, generalized
  *
@@ -304,6 +307,104 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
 
   return result;
 }
+
+
+
+template <class CacheType, class NaviType, class PolyType>
+PolyType
+dd_multiply_recursively(const CacheType& cache_mgr,
+                        NaviType firstNavi, NaviType secondNavi, PolyType init){
+  // Extract subtypes
+  typedef typename PolyType::set_type dd_type;
+  typedef typename NaviType::idx_type idx_type;
+  typedef NaviType navigator;
+
+  if (firstNavi.isConstant()) {
+    if(firstNavi.terminalValue())
+      return dd_type(secondNavi);
+    else 
+      return init;
+  }
+
+  if (secondNavi.isConstant()) {
+    if(secondNavi.terminalValue())
+      return dd_type(firstNavi);
+    else 
+      return init;
+  }
+  if (firstNavi == secondNavi)
+    return dd_type(firstNavi);
+  
+  // Look up, whether operation was already used
+  navigator cached = cache_mgr.find(firstNavi, secondNavi);
+
+  if (cached.isValid()) {       // Cache lookup sucessful
+    return dd_type(cached);
+  }
+  else {                        // Cache lookup not sucessful
+    // Get top variable's index
+
+    if (*secondNavi < *firstNavi)
+      std::swap(firstNavi, secondNavi);
+
+    idx_type index = *firstNavi;
+
+    // Get then- and else-branches wrt. current indexed variable
+    navigator as0 = firstNavi.elseBranch();
+    navigator as1 = firstNavi.thenBranch();
+
+    navigator bs0;
+    navigator bs1;
+
+    if (*secondNavi == index) {
+      bs0 = secondNavi.elseBranch();
+      bs1 = secondNavi.thenBranch();
+    }
+    else {
+      bs0 = secondNavi;
+      bs1 = init.navigation();
+    }
+
+
+#ifdef PBORI_FAST_MULTIPLICATION
+    if (*firstNavi == *secondNavi) {
+
+      PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init);
+
+      PolyType res10 = dd_type(as1);
+      res10 += PolyType(dd_type(as0));
+      PolyType res01 = dd_type(bs0);
+      res01 += PolyType(dd_type(bs1));
+
+      PolyType res11 = dd_multiply_recursively(cache_mgr,
+                                               res10.navigation(), res01.navigation(),
+                                               init) - res00;
+
+      init = dd_type(index, res11.navigation(), res00.navigation());
+    } else
+#endif
+      {
+        if (as0 == as1)
+          bs1 = init.navigation();
+        else if (bs0 == bs1)
+          as1 = init.navigation();
+
+        // Do recursion
+        init = dd_type(index,  
+                         (dd_multiply_recursively(cache_mgr, as0, bs1, init) 
+                         + dd_multiply_recursively(cache_mgr, as1, bs1, init)
+                         + dd_multiply_recursively(cache_mgr, as1, bs0, init)).diagram(),
+                         dd_multiply_recursively(cache_mgr, as0, bs0, init).diagram() );
+        
+      }
+    // Insert in cache
+    cache_mgr.insert(firstNavi, secondNavi, init.navigation());
+  }
+
+
+  return init;
+}
+
 
 template<class DegCacheMgr, class NaviType, class SizeType>
 bool max_degree_on_then(const DegCacheMgr& deg_mgr, NaviType navi,
