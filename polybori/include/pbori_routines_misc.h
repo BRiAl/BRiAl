@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/12/04 12:48:16  dreyer
+ * CHANGE: cached and recursive lead() and leadexp() refined, generalized
+ *
  * Revision 1.15  2006/11/30 19:42:44  dreyer
  * CHANGE: lead(bound) now uses cached and recursive variant
  *
@@ -145,7 +148,7 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
   typedef typename NaviType::size_type size_type;
 
   // No need for caching of constant nodes' degrees
-  if (navi.isConstant() || bound == 0)
+  if (bound == 0 || navi.isConstant())
     return 0;
  
   // Look whether result was cached before
@@ -302,168 +305,111 @@ dd_multiply_recursively(PolynomialType a, PolynomialType b){
   return result;
 }
 
-
-template <class CacheType, class DegCacheMgr, class NaviType, 
-          class TermType, class BinComp>
-TermType
-dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
-                  NaviType navi, TermType init, BinComp comp) {
-
-  if (navi.isConstant())
-    return navi;//TermType(navi.terminalValue());
-
-  NaviType cached = cache_mgr.find(navi);
-
-  if (cached.isValid())
-    return cached;
-
-  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
-
-  typedef typename NaviType::size_type size_type;
-  size_type deg = (dd_cached_degree(deg_mgr, thenNavi) + 1);
-  size_type deg_else = dd_cached_degree(deg_mgr, elseNavi);
-
-
-  if ( comp(deg, deg_else) ) { // < for dlex, <= for dp_asc
-    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, elseNavi, 
-                                    init, comp);
-    deg = deg_else;
-  }
-  else {
-    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
-                                    init, comp).change(*navi);
-  }
-
-  NaviType resultNavi(init.navigation());
-  cache_mgr.insert(navi, resultNavi);
-  deg_mgr.insert(resultNavi, deg);
-
-  return init;
+template<class DegCacheMgr, class NaviType, class SizeType>
+bool max_degree_on_then(const DegCacheMgr& deg_mgr, NaviType navi,
+                        SizeType degree, valid_tag is_descending) {
+  navi.incrementThen();
+  return ((dd_cached_degree(deg_mgr, navi, degree - 1) + 1) == degree);
 }
+
+template<class DegCacheMgr, class NaviType, class SizeType>
+bool max_degree_on_then(const DegCacheMgr& deg_mgr, NaviType navi,
+                        SizeType degree, invalid_tag non_descending) {
+  navi.incrementElse();
+  return (dd_cached_degree(deg_mgr, navi, degree) != degree);
+}
+
 
 // with degree bound
 template <class CacheType, class DegCacheMgr, class NaviType, 
-          class TermType, class SizeType, class BinComp>
+          class TermType, class SizeType, class DescendingProperty>
 TermType
-dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
-                         NaviType navi, TermType init, SizeType bound,
-                         BinComp comp) {
+dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
+                         deg_mgr,
+                         NaviType navi, TermType init, SizeType degree,
+                         DescendingProperty prop) {
 
-  if ((bound == 0) || navi.isConstant())
+  if ((degree == 0) || navi.isConstant())
     return navi;
 
+  // Check cache for previous results
   NaviType cached = cache_mgr.find(navi);
-
   if (cached.isValid())
     return cached;
 
-  NaviType thenNavi(navi.thenBranch());
-
-  typedef typename NaviType::size_type size_type;
-  size_type deg = (dd_cached_degree(deg_mgr, thenNavi, bound - 1) + 1);
-
-  if ( !comp(deg, bound) )
-    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
-                                    init, bound - 1, comp).change(*navi);
+  // Go to next branch
+  if ( max_degree_on_then(deg_mgr, navi, degree, prop) ) {
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, navi.thenBranch(), 
+                                    init, degree - 1, prop).change(*navi);
+  }
   else {
-    NaviType elseNavi(navi.elseBranch());
-    size_type deg_else= dd_cached_degree(deg_mgr, elseNavi, bound);
-    
-    
-    if ( comp(deg, deg_else) ) { // < for dlex, <= for dp_asc
-      init = dd_recursive_degree_lead(cache_mgr, deg_mgr, elseNavi, 
-                                      init, comp);
-      deg = deg_else; 
-    }
-    else {
-      init = dd_recursive_degree_lead(cache_mgr, deg_mgr, thenNavi, 
-                                      init, comp).change(*navi);
-    }
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, navi.elseBranch(), 
+                                    init, degree, prop);
   }
 
   NaviType resultNavi(init.navigation());
   cache_mgr.insert(navi, resultNavi);
-  deg_mgr.insert(resultNavi, deg);
+  deg_mgr.insert(resultNavi, degree);
 
   return init;
 }
 
-
-
 template <class CacheType, class DegCacheMgr, class NaviType, 
-          class TermType, class BinComp>
-TermType&
-dd_recursive_degree_leadexp(const CacheType& cache_mgr, 
-                            const DegCacheMgr& deg_mgr,
-                            NaviType navi, TermType& result, BinComp comp) {
+          class TermType, class DescendingProperty>
+TermType
+dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
+                         NaviType navi, TermType init, DescendingProperty prop){
 
   if (navi.isConstant())
-    return result;
- 
-  NaviType cached = cache_mgr.find(navi);
-
-  if (cached.isValid())
-    return result = result.multiplyFirst(cached);
-
-  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
-
-  typedef typename NaviType::size_type size_type;
-  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi) + 1);
-  size_type deg_else = dd_cached_degree(deg_mgr, elseNavi);
-
-
-  if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
-    navi = elseNavi;
-  }
-  else {
-    result.push_back(*navi);
-    navi = thenNavi;
-  }
-
-  return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, comp);
+    return navi;
+  
+  return dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, init,
+                                  dd_cached_degree(deg_mgr, navi), prop);
 }
 
 template <class CacheType, class DegCacheMgr, class NaviType, 
-          class TermType, class SizeType, class BinComp>
+          class TermType, class SizeType, class DescendingProperty>
 TermType&
 dd_recursive_degree_leadexp(const CacheType& cache_mgr, 
                             const DegCacheMgr& deg_mgr,
-                            NaviType navi, TermType& result, SizeType bound,
-                            BinComp comp) {
+                            NaviType navi, TermType& result,  
+                            SizeType degree,
+                            DescendingProperty prop) {
 
-  if (navi.isConstant())
+  if ((degree == 0) || navi.isConstant())
     return result;
  
+  // Check cache for previous result
   NaviType cached = cache_mgr.find(navi);
-
   if (cached.isValid())
     return result = result.multiplyFirst(cached);
 
-  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch());
-
-  typedef SizeType size_type;
-  size_type deg_then = (dd_cached_degree(deg_mgr, thenNavi, bound - 1) + 1);
-
-  if ( !comp(deg_then, bound) ) {
+  // Prepare next branch
+  if ( max_degree_on_then(deg_mgr, navi, degree, prop) ) {
     result.push_back(*navi);
-    navi = thenNavi;
-    --bound;
+    navi.incrementThen();
+    --degree;
   }
-  else {
-
-    size_type deg_else = dd_cached_degree(deg_mgr, elseNavi, bound);
-    if ( comp(deg_then, deg_else) ) { // < for dlex, <= for dp_asc
-      navi = elseNavi;
-    }
-    else {
-      result.push_back(*navi);
-      navi = thenNavi;
-      --bound;
-    }
-  }
+  else 
+    navi.incrementElse();
 
   return 
-    dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, bound, comp);
+    dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, degree, prop);
+}
+
+template <class CacheType, class DegCacheMgr, class NaviType, 
+          class TermType, class DescendingProperty>
+TermType&
+dd_recursive_degree_leadexp(const CacheType& cache_mgr, 
+                            const DegCacheMgr& deg_mgr,
+                            NaviType navi, TermType& result,  
+                            DescendingProperty prop) {
+
+  if (navi.isConstant())
+    return result;
+
+  return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, 
+                                     dd_cached_degree(deg_mgr, navi), prop);
 }
 
 

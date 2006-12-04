@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2006/12/04 12:48:16  dreyer
+ * CHANGE: cached and recursive lead() and leadexp() refined, generalized
+ *
  * Revision 1.8  2006/11/20 13:08:00  dreyer
  * FIX: Destructor now virtual
  *
@@ -97,6 +100,9 @@ class COrderBase:
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
 
+  /// Type of Boolean sets
+  typedef BooleSet set_type;
+
   /// Type of Boolean monomials
   typedef BooleExponent exp_type;
 
@@ -147,6 +153,10 @@ class COrderBase:
 
   /// Find next term (after iter) in polynomial according to current order
   virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
+
+protected:
+  /// Get monomial from set of subsets of Boolean variables (internal use only)
+  monom_type monom(const set_type& rhs) const { return monom_type(rhs); }
 };
 
 END_NAMESPACE_PBORI

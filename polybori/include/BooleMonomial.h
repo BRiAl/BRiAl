@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/12/04 12:48:16  dreyer
+ * CHANGE: cached and recursive lead() and leadexp() refined, generalized
+ *
  * Revision 1.21  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -120,6 +123,7 @@ class BooleMonomial {
 
  public:
   template <class, class> friend class CDDOperations;
+  friend class COrderBase;
 
   //-------------------------------------------------------------------------
   // types definitions

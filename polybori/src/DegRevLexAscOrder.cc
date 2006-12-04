@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2006/12/04 12:48:17  dreyer
+ * CHANGE: cached and recursive lead() and leadexp() refined, generalized
+ *
  * Revision 1.9  2006/11/30 19:42:47  dreyer
  * CHANGE: lead(bound) now uses cached and recursive variant
  *
@@ -109,16 +112,14 @@ DegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
 DegRevLexAscOrder::monom_type 
 DegRevLexAscOrder::lead(const poly_type& poly) const {
 
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&) const)" );
 
-  CDDOperations<BooleSet, monom_type> op;
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
-                                               poly.navigation(), 
-                                               BooleSet(),
-                                               std::less_equal<size_type>()) );  
+  return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, poly.navigation(), 
+                                         set_type(), descending_property() ) );
 }
 
 // maybe common template here
@@ -126,49 +127,56 @@ DegRevLexAscOrder::lead(const poly_type& poly) const {
 DegRevLexAscOrder::exp_type 
 DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
+
   exp_type result;
-  result.reserve(poly.deg());
+  size_type deg(poly.deg());
+  result.reserve(deg);
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr,
-                                      poly.navigation(), result,
-                                      std::less_equal<size_type>());
+  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr, poly.navigation(), result, deg,
+                                      descending_property());
 }
 
 // Extraction of leading exponent
 DegRevLexAscOrder::exp_type 
 DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
-  exp_type result;
-  result.reserve(poly.deg());
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, size_type) const)" );
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  return dd_recursive_degree_leadexp (cache_mgr, deg_mgr,
-                                      poly.navigation(), result, bound,
-                                      std::less_equal<size_type>());
+  poly_type::navigator navi(poly.navigation());
+  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
+  exp_type result;
+  result.reserve(deg);
 
+  return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, deg,
+                                     descending_property());
 }
 
 // Extraction of leading term
 DegRevLexAscOrder::monom_type 
 DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
-  CDDOperations<BooleSet, monom_type> op;
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
+
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
-  return  op.getMonomial( dd_recursive_degree_lead(cache_mgr, deg_mgr,
-                                                poly.navigation(), 
-                                                BooleSet(), bound,
-                                                std::less_equal<size_type>()) );
+  poly_type::navigator navi(poly.navigation());
+  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
+
+  return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, set_type(), deg,
+                                         descending_property()) );
+
 }
 
 
