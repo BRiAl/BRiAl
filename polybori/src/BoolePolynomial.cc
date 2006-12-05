@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.81  2006/12/05 16:18:46  dreyer
+ * CHANGE: specialized multiplication with monomial
+ *
  * Revision 1.80  2006/12/04 17:08:19  dreyer
  * CHANGE: multiplication in new style
  *
@@ -399,6 +402,18 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const monom_type&)" );
 
+  typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
+    cache_mgr_type;
+
+  self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
+                                        rhs.diagram().navigation(),
+                                        navigation(),  self(), 
+                                        int());
+
+
+
+
+#if 0
   // store indices in list
   CIdxPath<idx_type> indices(rhs.deg());
   
@@ -410,7 +425,9 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   // insert backward (for efficiency reasons)
   reversed_inter_copy(rhs.begin(), rhs.end(), indices, outiter);
 
-  return *this;
+  assert(result == *this);
+#endif
+  return (*this = result);
 }
 
 // Multiplication

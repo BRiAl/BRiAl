@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2006/12/05 16:18:46  dreyer
+ * CHANGE: specialized multiplication with monomial
+ *
  * Revision 1.18  2006/12/05 08:18:49  dreyer
  * CHANGE: nicer source code
  *
@@ -229,89 +232,6 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 }
 
 
-template <class PolynomialType>
-PolynomialType 
-dd_multiply_recursively(PolynomialType a, PolynomialType b){
-
-  assert( a.diagram().manager().getManager() == 
-          b.diagram().manager().getManager() );
-
-  if (a.isZero() || b.isZero()) return 0;
-  if (a.isOne()) return b;
-  if (b.isOne()) return a;
-  if (a == b) return a;
-
-  // Get cache management types
-  typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
-    cache_mgr_type;
-
-  // Extract subtypes
-  typedef typename PolynomialType::dd_type dd_type;
-  typedef typename PolynomialType::set_type set_type;
-  typedef typename PolynomialType::idx_type idx_type;
-  typedef typename PolynomialType::navigator navigator;
-
-  // Instantiate cache manager
-  cache_mgr_type cache_mgr;
-
-  // Get navigators (nodes) from polynomial
-  navigator firstNavi(a.navigation()), secondNavi(b.navigation());
-
-  // Look up, whether operation was already used
-  navigator cached = cache_mgr.find(firstNavi, secondNavi);
-
-  // Instantiate result
-  PolynomialType result;
-
-  if (cached.isValid()) {       // Cache lookup sucessful
-    result = (set_type) cached;
-  }
-  else {                        // Cache lookup not sucessful
-    // Get top variable's index
-    idx_type index = std::min(*firstNavi, *secondNavi);
-
-    // Get then- and else-branches wrt. current indexed variable
-    PolynomialType as0 = a.diagram().subset0(index);
-    PolynomialType as1 = a.diagram().subset1(index);
-    PolynomialType bs0 = b.diagram().subset0(index);
-    PolynomialType bs1 = b.diagram().subset1(index);
-
-#ifdef PBORI_FAST_MULTIPLICATION
-    if (*firstNavi == *secondNavi) {
-      PolynomialType res00 = dd_multiply_recursively(as0, bs0);
-      PolynomialType res11 = dd_multiply_recursively(as1 + as0, 
-                                                     bs0 + bs1) - res00;
-      result = dd_type(index, res11, res00);
-    } else
-#endif
-      {
-        if (as0 == as1){
-          PolynomialType zero(0);
-          bs1=zero.diagram();
-        } 
-        else {
-          if (bs0 == bs1){
-            PolynomialType zero(0);
-            as1 = zero.diagram();
-          }
-        }
-        // Do recursion
-        result = dd_type(index,  
-                         dd_multiply_recursively(as0, bs1) 
-                         + dd_multiply_recursively(as1, bs1)
-                         + dd_multiply_recursively(as1, bs0),
-                         dd_multiply_recursively(as0, bs0) );
-
-      }
-    // Insert in cache
-    cache_mgr.insert(firstNavi, secondNavi, result.navigation());
-  }
-
-
-  return result;
-}
-
-
 
 template <class CacheType, class NaviType, class PolyType>
 PolyType
@@ -404,6 +324,82 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     // Insert in cache
     cache_mgr.insert(firstNavi, secondNavi, init.navigation());
   }
+
+  return init;
+}
+
+
+template <class CacheType, class NaviType, class PolyType,
+          class MonomTag>
+PolyType
+dd_multiply_recursively(const CacheType& cache_mgr,
+                        NaviType monomNavi, NaviType navi, PolyType init,
+                        MonomTag monom_tag ){
+  // Extract subtypes
+  typedef typename PolyType::set_type dd_type;
+  typedef typename NaviType::idx_type idx_type;
+  typedef NaviType navigator;
+
+  if (monomNavi.isConstant()) {
+    if(monomNavi.terminalValue())
+      return dd_type(navi);
+    else 
+      return init;
+  }
+
+  assert(monomNavi.elseBranch().isEmpty());
+
+  if (navi.isConstant()) {
+    if(navi.terminalValue())
+      return dd_type(monomNavi);
+    else 
+      return init;
+  }
+  if (monomNavi == navi)
+    return dd_type(monomNavi);
+  
+  // Look up, whether operation was already used
+  navigator cached = cache_mgr.find(monomNavi, navi);
+
+  if (cached.isValid()) {       // Cache lookup sucessful
+    return dd_type(cached);
+  }
+
+  // Cache lookup not sucessful
+  // Get top variables' index
+
+  idx_type index = *navi;
+  idx_type monomIndex = *monomNavi;
+
+  if (monomIndex < index) {     // Case: index may occure within monom
+    init = dd_multiply_recursively(cache_mgr, monomNavi.thenBranch(), navi,
+                                   init, monom_tag).diagram().change(monomIndex);
+  }
+  else if (monomIndex == index) { // Case: monom and poly start with the same index
+
+    // Increment navigators
+    navigator monomThen = monomNavi.thenBranch();
+    navigator naviThen = navi.thenBranch();
+    navigator naviElse = navi.elseBranch();
+
+    if (naviThen != naviElse)
+      init = (dd_multiply_recursively(cache_mgr, monomThen, naviThen, init,
+                                      monom_tag)
+              + dd_multiply_recursively(cache_mgr, monomThen, naviElse, init,
+                                        monom_tag)).diagram().change(index);
+  }
+  else {                        // Case: var(index) not part of monomial
+    
+    init = 
+      dd_type(index,  
+              dd_multiply_recursively(cache_mgr, monomNavi, navi.thenBranch(), init,
+                                        monom_tag).diagram(),
+              dd_multiply_recursively(cache_mgr, monomNavi, navi.elseBranch(), init, 
+                                        monom_tag).diagram() );
+  }
+  
+  // Insert in cache
+  cache_mgr.insert(monomNavi, navi, init.navigation());
 
   return init;
 }
