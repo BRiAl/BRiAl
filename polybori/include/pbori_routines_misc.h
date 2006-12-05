@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2006/12/05 08:18:49  dreyer
+ * CHANGE: nicer source code
+ *
  * Revision 1.17  2006/12/04 17:08:19  dreyer
  * CHANGE: multiplication in new style
  *
@@ -371,14 +374,13 @@ dd_multiply_recursively(const CacheType& cache_mgr,
 
       PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init);
 
-      PolyType res10 = dd_type(as1);
-      res10 += PolyType(dd_type(as0));
-      PolyType res01 = dd_type(bs0);
-      res01 += PolyType(dd_type(bs1));
+      PolyType res10 = PolyType(dd_type(as1)) + PolyType(dd_type(as0));
+      PolyType res01 = PolyType(dd_type(bs0)) + PolyType(dd_type(bs1));
 
-      PolyType res11 = dd_multiply_recursively(cache_mgr,
-                                               res10.navigation(), res01.navigation(),
-                                               init) - res00;
+      PolyType res11 = 
+        dd_multiply_recursively(cache_mgr,
+                                res10.navigation(), res01.navigation(),
+                                init) - res00;
 
       init = dd_type(index, res11.navigation(), res00.navigation());
     } else
@@ -393,14 +395,15 @@ dd_multiply_recursively(const CacheType& cache_mgr,
         init = dd_type(index,  
                          (dd_multiply_recursively(cache_mgr, as0, bs1, init) 
                          + dd_multiply_recursively(cache_mgr, as1, bs1, init)
-                         + dd_multiply_recursively(cache_mgr, as1, bs0, init)).diagram(),
-                         dd_multiply_recursively(cache_mgr, as0, bs0, init).diagram() );
+                         + dd_multiply_recursively(cache_mgr,
+                                                   as1, bs0, init)).diagram(),
+                         dd_multiply_recursively(cache_mgr, 
+                                                 as0, bs0, init).diagram() );
         
       }
     // Insert in cache
     cache_mgr.insert(firstNavi, secondNavi, init.navigation());
   }
-
 
   return init;
 }
