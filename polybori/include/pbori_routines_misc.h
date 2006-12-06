@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2006/12/06 09:20:09  dreyer
+ * CHANGE: poly * exp now recursive
+ *
  * Revision 1.19  2006/12/05 16:18:46  dreyer
  * CHANGE: specialized multiplication with monomial
  *
@@ -375,7 +378,7 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     init = dd_multiply_recursively(cache_mgr, monomNavi.thenBranch(), navi,
                                    init, monom_tag).diagram().change(monomIndex);
   }
-  else if (monomIndex == index) { // Case: monom and poly start with the same index
+  else if (monomIndex == index) { // Case: monom and poly start with same index
 
     // Increment navigators
     navigator monomThen = monomNavi.thenBranch();
@@ -392,10 +395,10 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     
     init = 
       dd_type(index,  
-              dd_multiply_recursively(cache_mgr, monomNavi, navi.thenBranch(), init,
-                                        monom_tag).diagram(),
-              dd_multiply_recursively(cache_mgr, monomNavi, navi.elseBranch(), init, 
-                                        monom_tag).diagram() );
+              dd_multiply_recursively(cache_mgr, monomNavi, navi.thenBranch(), 
+                                      init, monom_tag).diagram(),
+              dd_multiply_recursively(cache_mgr, monomNavi, navi.elseBranch(),
+                                      init, monom_tag).diagram() );
   }
   
   // Insert in cache
@@ -404,6 +407,78 @@ dd_multiply_recursively(const CacheType& cache_mgr,
   return init;
 }
 
+
+template <class Iterator, class NaviType, class PolyType>
+PolyType
+dd_multiply_recursively_exp(Iterator start, Iterator finish,
+                            NaviType navi, PolyType init){
+  // Extract subtypes
+  typedef typename PolyType::set_type dd_type;
+  typedef typename NaviType::idx_type idx_type;
+  typedef NaviType navigator;
+
+  if (start == finish)
+    return dd_type(navi);
+
+  if (navi.isConstant()) {
+    if(navi.terminalValue()) {
+
+      std::reverse_iterator<Iterator> rstart(finish), rfinish(start);
+      init = dd_type(navi);
+      while (rstart != rfinish) {
+        init = init.diagram().change(*rstart);
+        ++rstart;
+      }
+    }
+
+    return init;
+  }
+
+  // Cache lookup not sucessful
+  // Get top variables' index
+
+  idx_type index = *navi;
+  idx_type monomIndex = *start;
+
+  if (monomIndex < index) {     // Case: index may occure within monom
+
+    Iterator next(start);
+    while( (next != finish) && (*next < index) )
+      ++next;
+
+    init = dd_multiply_recursively_exp(next, finish, navi, init);
+
+    std::reverse_iterator<Iterator> rstart(next), rfinish(start);
+    while (rstart != rfinish) {
+      init = init.diagram().change(*rstart);
+      ++rstart;
+    }
+  }
+  else if (monomIndex == index) { // Case: monom and poly start with same index
+
+    // Increment navigators
+    ++start;
+
+    navigator naviThen = navi.thenBranch();
+    navigator naviElse = navi.elseBranch();
+
+    if (naviThen != naviElse)
+      init = (dd_multiply_recursively_exp(start, finish, naviThen, init)
+              + dd_multiply_recursively_exp(start, finish, naviElse,
+                                            init)).diagram().change(index);
+  }
+  else {                        // Case: var(index) not part of monomial
+    
+    init = 
+      dd_type(index,  
+              dd_multiply_recursively_exp(start, finish, navi.thenBranch(), 
+                                      init).diagram(),
+              dd_multiply_recursively_exp(start, finish, navi.elseBranch(),
+                                      init).diagram() );
+  }
+
+  return init;
+}
 
 template<class DegCacheMgr, class NaviType, class SizeType>
 bool max_degree_on_then(const DegCacheMgr& deg_mgr, NaviType navi,

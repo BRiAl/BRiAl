@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.82  2006/12/06 09:20:09  dreyer
+ * CHANGE: poly * exp now recursive
+ *
  * Revision 1.81  2006/12/05 16:18:46  dreyer
  * CHANGE: specialized multiplication with monomial
  *
@@ -444,7 +447,12 @@ BoolePolynomial::operator*=(const exp_type& rhs) {
   // insert backward (for efficiency reasons)
   std::copy(rhs.rbegin(), rhs.rend(), outiter);
 
-  return *this;
+  self result = dd_multiply_recursively_exp(rhs.begin(), rhs.end(),
+                                            navigation(),  self() );
+
+  assert(*this == result);
+
+  return (*this = result);;
 }
 
 // Multiplication
