@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/12/07 13:54:32  dreyer
+ * CHANGE: fine-tuning
+ *
  * Revision 1.21  2006/12/07 08:22:53  dreyer
  * ADD/CHANGE: Lowlevel variant of existAbstract
  *
@@ -603,7 +606,7 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 
   typedef typename TermType::idx_type idx_type;
 
-  if (navi.isConstant())
+  if (navi.isConstant()) 
     return navi;
 
   idx_type index(*navi);
@@ -615,18 +618,22 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 
   // Check cache for previous result
   NaviType cached = cache_mgr.find(varsNavi, navi);
-  if (cached.isValid())
+  if (cached.isValid()) 
     return cached;
 
+  NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch()); 
+
   TermType thenResult = 
-    dd_existential_abstraction(cache_mgr, varsNavi, navi.thenBranch(), init);
+    dd_existential_abstraction(cache_mgr, varsNavi, thenNavi, init);
 
   TermType elseResult = 
-    dd_existential_abstraction(cache_mgr, varsNavi, navi.elseBranch(), init);
-
+    dd_existential_abstraction(cache_mgr, varsNavi, elseNavi, init);
 
   if ((*varsNavi) == index)
     init = thenResult.unite(elseResult);
+  else if ( (thenResult.navigation() == thenNavi) && 
+            (elseResult.navigation() == elseNavi)  )
+    init = navi;
   else
     init = TermType(index, thenResult, elseResult);
 
@@ -635,7 +642,6 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 
   return init;
 }
-
 
 
 END_NAMESPACE_PBORI

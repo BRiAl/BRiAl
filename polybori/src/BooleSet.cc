@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/12/07 13:54:33  dreyer
+ * CHANGE: fine-tuning
+ *
  * Revision 1.29  2006/12/07 08:22:53  dreyer
  * ADD/CHANGE: Lowlevel variant of existAbstract
  *
@@ -402,7 +405,6 @@ BooleSet::existAbstract(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::existAbstract(const term_type&) const" );
 
-  //  return base::existAbstract(rhs);
   typedef CCacheManagement<CCacheTypes::exist_abstract> cache_mgr_type;
   return 
     dd_existential_abstraction(cache_mgr_type(base::manager()), 
