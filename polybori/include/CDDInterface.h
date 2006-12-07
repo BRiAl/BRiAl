@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2006/12/07 08:22:52  dreyer
+ * ADD/CHANGE: Lowlevel variant of existAbstract
+ *
  * Revision 1.44  2006/11/24 14:49:00  dreyer
  * CHANGE: divisorsOf (less recursions/cache-lookups)
  *
@@ -195,9 +198,6 @@
 // Using stl's vector
 #include <vector>
 #include <numeric>
-
-
-#include "CCacheManagement.h"
 
 
 BEGIN_NAMESPACE_PBORI
@@ -737,17 +737,8 @@ class CDDInterface<ZDD>:
   self minimalElements() const {
         return interfaced_type(&manager(),
             Extra_zddMinimal(manager().getManager(),m_interfaced.getNode()));
-    //self resultMultiples;
-    //return dd_minimal_elements(navigation(), *this, resultMultiples);
   }
 
-  self existAbstract(const self& rhs) const {
-
-    return interfaced_type(&manager(),
-            Extra_zddExistAbstract(manager().getManager(), 
-                                   m_interfaced.getNode(), 
-                                   rhs.m_interfaced.getNode()) );
-  }
   self cofactor0(const self& rhs) const {
 
     return interfaced_type(&manager(),

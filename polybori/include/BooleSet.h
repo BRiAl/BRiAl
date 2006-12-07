@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2006/12/07 08:22:52  dreyer
+ * ADD/CHANGE: Lowlevel variant of existAbstract
+ *
  * Revision 1.21  2006/11/24 14:49:00  dreyer
  * CHANGE: divisorsOf (less recursions/cache-lookups)
  *
@@ -223,6 +226,9 @@ public:
 
   /// Test whether the empty set is included
   using base::ownsOne;
+
+  /// Compute existential abstraction
+  self existAbstract(const self& rhs) const;
 };
 
 

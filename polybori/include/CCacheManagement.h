@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2006/12/07 08:22:52  dreyer
+ * ADD/CHANGE: Lowlevel variant of existAbstract
+ *
  * Revision 1.14  2006/11/30 19:42:43  dreyer
  * CHANGE: lead(bound) now uses cached and recursive variant
  *
@@ -102,7 +105,8 @@ public:
 
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
- 
+  struct exist_abstract: public binary_cache_tag { };
+
   struct degree: public unary_cache_tag { };
 
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2006/12/07 08:22:53  dreyer
+ * ADD/CHANGE: Lowlevel variant of existAbstract
+ *
  * Revision 1.20  2006/12/06 09:20:09  dreyer
  * CHANGE: poly * exp now recursive
  *
@@ -586,6 +589,53 @@ dd_recursive_degree_leadexp(const CacheType& cache_mgr,
   return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, navi, result, 
                                      dd_cached_degree(deg_mgr, navi), prop);
 }
+
+// Existential Abstraction. Given a ZDD F, and a set of variables
+// S, remove all occurrences of s in S from any subset in F. This can
+// be implemented by cofactoring F with respect to s = 1 and s = 0,
+// then forming the union of these results. 
+
+
+template <class CacheType, class NaviType, class TermType>
+TermType
+dd_existential_abstraction(const CacheType& cache_mgr, 
+                           NaviType varsNavi, NaviType navi, TermType init){
+
+  typedef typename TermType::idx_type idx_type;
+
+  if (navi.isConstant())
+    return navi;
+
+  idx_type index(*navi);
+  while (!varsNavi.isConstant() && ((*varsNavi) < index))
+    varsNavi.incrementThen();
+
+  if (varsNavi.isConstant())
+    return navi;
+
+  // Check cache for previous result
+  NaviType cached = cache_mgr.find(varsNavi, navi);
+  if (cached.isValid())
+    return cached;
+
+  TermType thenResult = 
+    dd_existential_abstraction(cache_mgr, varsNavi, navi.thenBranch(), init);
+
+  TermType elseResult = 
+    dd_existential_abstraction(cache_mgr, varsNavi, navi.elseBranch(), init);
+
+
+  if ((*varsNavi) == index)
+    init = thenResult.unite(elseResult);
+  else
+    init = TermType(index, thenResult, elseResult);
+
+  // Insert result to cache
+  cache_mgr.insert(varsNavi, navi, init.navigation());
+
+  return init;
+}
+
 
 
 END_NAMESPACE_PBORI

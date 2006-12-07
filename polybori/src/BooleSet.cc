@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2006/12/07 08:22:53  dreyer
+ * ADD/CHANGE: Lowlevel variant of existAbstract
+ *
  * Revision 1.28  2006/11/24 14:49:01  dreyer
  * CHANGE: divisorsOf (less recursions/cache-lookups)
  *
@@ -392,5 +395,18 @@ BooleSet::usedVariablesExp() const {
   return result;
 }
 
+// Computes existential abstraction wrt to the variables in the first
+// lexicographical term of rhs
+BooleSet
+BooleSet::existAbstract(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::existAbstract(const term_type&) const" );
+
+  //  return base::existAbstract(rhs);
+  typedef CCacheManagement<CCacheTypes::exist_abstract> cache_mgr_type;
+  return 
+    dd_existential_abstraction(cache_mgr_type(base::manager()), 
+                               rhs.navigation(), base::navigation(), self());
+}
 
 END_NAMESPACE_PBORI
