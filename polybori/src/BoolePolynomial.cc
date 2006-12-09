@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.83  2006/12/09 10:46:19  dreyer
+ * CHANGE added and used recursively cache variant of /=
+ *
  * Revision 1.82  2006/12/06 09:20:09  dreyer
  * CHANGE: poly * exp now recursive
  *
@@ -441,16 +444,16 @@ BoolePolynomial::operator*=(const exp_type& rhs) {
 
   // iterator, which generates m_dd *= var(idx) for given index idx
   // on assignment of dereferenced object
-  PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
-    outiter(m_dd) ;
+//   PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
+//     outiter(m_dd) ;
   
-  // insert backward (for efficiency reasons)
-  std::copy(rhs.rbegin(), rhs.rend(), outiter);
+//   // insert backward (for efficiency reasons)
+//   std::copy(rhs.rbegin(), rhs.rend(), outiter);
 
   self result = dd_multiply_recursively_exp(rhs.begin(), rhs.end(),
                                             navigation(),  self() );
 
-  assert(*this == result);
+  //  assert(*this == result);
 
   return (*this = result);;
 }
@@ -499,9 +502,18 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const monom_type&)" );
 
-  m_dd.divideFirstAssign(rhs.diagram());
 
-  return *this;
+
+  typedef CCacheManagement<CCacheTypes::divide>
+    cache_mgr_type;
+
+  self result = dd_divide_recursively(cache_mgr_type(diagram().manager()), 
+                                      navigation(),
+                                      rhs.diagram().navigation(), self() );
+
+//   m_dd.divideFirstAssign(rhs.diagram());
+//   assert(*this == result);
+  return (*this = result);
 }
 
 // Modulus

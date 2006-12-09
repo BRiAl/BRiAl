@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2006/12/09 10:46:18  dreyer
+ * CHANGE added and used recursively cache variant of /=
+ *
  * Revision 1.15  2006/12/07 08:22:52  dreyer
  * ADD/CHANGE: Lowlevel variant of existAbstract
  *
@@ -101,6 +104,8 @@ public:
   struct union_xor: public binary_cache_tag { };
 
   struct multiply_recursive: public binary_cache_tag { };
+  struct divide: public binary_cache_tag { };
+
   struct minimal_mod: public binary_cache_tag { };
 
   struct multiplesof: public binary_cache_tag { };

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2006/12/09 10:46:18  dreyer
+ * CHANGE added and used recursively cache variant of /=
+ *
  * Revision 1.22  2006/12/07 13:54:32  dreyer
  * CHANGE: fine-tuning
  *
@@ -642,6 +645,73 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 
   return init;
 }
+
+
+
+template <class CacheType, class NaviType, class PolyType>
+PolyType
+dd_divide_recursively(const CacheType& cache_mgr,
+                        NaviType navi,  NaviType monomNavi,PolyType init){
+  // Extract subtypes
+  typedef typename PolyType::set_type dd_type;
+  typedef typename NaviType::idx_type idx_type;
+  typedef NaviType navigator;
+
+  if (monomNavi.isConstant()) {
+    if(monomNavi.terminalValue())
+      return dd_type(navi);
+    else 
+      return init;
+  }
+
+  assert(monomNavi.elseBranch().isEmpty());
+
+  if (navi.isConstant()) 
+    return init;
+
+  if (monomNavi == navi)
+    return PolyType(1);
+  
+  // Look up, whether operation was already used
+  navigator cached = cache_mgr.find(navi, monomNavi);
+
+  if (cached.isValid()) {       // Cache lookup sucessful
+    return dd_type(cached);
+  }
+
+  // Cache lookup not sucessful
+  // Get top variables' index
+
+  idx_type index = *navi;
+  idx_type monomIndex = *monomNavi;
+
+  if (monomIndex < index) {     // Case: var(monomIndex) not part of poly
+    //
+  }
+  else if (monomIndex == index) { // Case: monom and poly start with same index
+
+    // Increment navigators
+    navigator monomThen = monomNavi.thenBranch();
+    navigator naviThen = navi.thenBranch();
+
+    init = dd_divide_recursively(cache_mgr, naviThen, monomThen, init);
+   }
+  else {                        // Case: monomIndex may occure within poly
+    
+    init = 
+      dd_type(index,  
+              dd_divide_recursively(cache_mgr,  navi.thenBranch(), monomNavi,
+                                      init).diagram(),
+              dd_divide_recursively(cache_mgr, navi.elseBranch(), monomNavi, 
+                                      init).diagram() );
+  }
+  
+  // Insert in cache
+  cache_mgr.insert(navi, monomNavi,  init.navigation());
+
+  return init;
+}
+
 
 
 END_NAMESPACE_PBORI
