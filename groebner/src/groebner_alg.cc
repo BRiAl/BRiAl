@@ -1718,12 +1718,19 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
     mod=MonomialSet(nav_mod);
   }
   
+  MonomialSet::navigator m_nav=m.navigation();
+  MonomialSet::navigator ms0=m_nav.elseBranch();
+  MonomialSet::navigator ms1=m_nav.thenBranch();
+  MonomialSet::navigator mod_nav=mod.navigation();
+  
   typedef PBORI::CacheManager<CCacheTypes::minimal_mod>
     cache_mgr_type;
 
+
+
   cache_mgr_type cache_mgr;
   PBORI::BoolePolynomial::navigator cached =
-    cache_mgr.find(m.navigation(), mod.navigation());
+    cache_mgr.find(m_nav, mod_nav);
 
 
       
@@ -1731,21 +1738,31 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
     return cv.unite((MonomialSet)cached);
   }
   
-  
   if (mod.emptiness()){
     
-    MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , cv);
+    MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod);
     MonomialSet result1= do_minimal_elements_cudd_style(
-      m.subset1(index),result0);
+      ms1,result0);
     result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
      
   } else {
-      MonomialSet mod0=mod.subset0(index);
-      MonomialSet result0=do_minimal_elements_cudd_style(m.subset0(index) , mod0);
-      MonomialSet mod1=mod.subset1(index);
+      if (*mod_nav>index){
+        MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod);
+        MonomialSet result1= do_minimal_elements_cudd_style(
+          ms1,result0.unite(mod));
+        if (result1.emptiness()) {result=result0;}
+        else
+          {result= MonomialSet(index,result1,result0);}
+      } else {
+      assert(index==*mod_nav);
+      MonomialSet::navigator mod0=mod_nav.elseBranch();
+      MonomialSet::navigator mod1=mod_nav.thenBranch();
+      MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod0);
+      //MonomialSet mod1=mod.subset1(index);
       MonomialSet result1= do_minimal_elements_cudd_style(
-        m.subset1(index),result0.unite(mod0.unite(mod1)));
+        ms1,result0.unite(((MonomialSet) mod0).unite((MonomialSet)mod1)));
       result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
+    }
   }
   cache_mgr.insert(m.navigation(), mod.navigation(), result.navigation());
   if (cv_empty) return result;
