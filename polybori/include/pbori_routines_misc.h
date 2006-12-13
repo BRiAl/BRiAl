@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.23  2006/12/09 10:46:18  dreyer
  * CHANGE added and used recursively cache variant of /=
  *
@@ -651,7 +654,7 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 template <class CacheType, class NaviType, class PolyType>
 PolyType
 dd_divide_recursively(const CacheType& cache_mgr,
-                        NaviType navi,  NaviType monomNavi,PolyType init){
+                      NaviType navi, NaviType monomNavi,PolyType init){
   // Extract subtypes
   typedef typename PolyType::set_type dd_type;
   typedef typename NaviType::idx_type idx_type;
@@ -685,18 +688,15 @@ dd_divide_recursively(const CacheType& cache_mgr,
   idx_type index = *navi;
   idx_type monomIndex = *monomNavi;
 
-  if (monomIndex < index) {     // Case: var(monomIndex) not part of poly
-    //
-  }
-  else if (monomIndex == index) { // Case: monom and poly start with same index
+  if (monomIndex == index) { // Case: monom and poly start with same index
 
     // Increment navigators
-    navigator monomThen = monomNavi.thenBranch();
+    navigator monomThen =  increment_iteratorlike(monomNavi);
     navigator naviThen = navi.thenBranch();
 
     init = dd_divide_recursively(cache_mgr, naviThen, monomThen, init);
-   }
-  else {                        // Case: monomIndex may occure within poly
+  }
+  else if (monomIndex > index) {                        // Case: monomIndex may occure within poly
     
     init = 
       dd_type(index,  
@@ -708,6 +708,53 @@ dd_divide_recursively(const CacheType& cache_mgr,
   
   // Insert in cache
   cache_mgr.insert(navi, monomNavi,  init.navigation());
+
+  return init;
+}
+
+
+
+template <class Iterator, class NaviType, class PolyType>
+PolyType
+dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
+                          PolyType init){
+
+  // Extract subtypes
+  typedef typename PolyType::set_type dd_type;
+  typedef typename NaviType::idx_type idx_type;
+  typedef NaviType navigator;
+
+  if (start == finish)
+    return dd_type(navi);
+
+  if (navi.isConstant()) 
+    return init;
+  
+
+  // Cache lookup not sucessful
+  // Get top variables' index
+
+  idx_type index = *navi;
+  idx_type monomIndex = *start;
+
+  if (monomIndex == index) { // Case: monom and poly start with same index
+
+    // Increment navigators
+    start = increment_iteratorlike(start);
+    navigator naviThen = navi.thenBranch();
+
+    init = dd_divide_recursively_exp(naviThen, start, finish, init);
+   }
+  else if (monomIndex > index) {                        // Case: monomIndex may occure within poly
+    
+    init = 
+      dd_type(index,  
+              dd_divide_recursively_exp(navi.thenBranch(), start, finish,
+                                      init).diagram(),
+              dd_divide_recursively_exp( navi.elseBranch(), start, finish,
+                                      init).diagram() );
+  }
+  
 
   return init;
 }

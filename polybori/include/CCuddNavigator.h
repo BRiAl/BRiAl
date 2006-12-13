@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.12  2006/11/27 16:25:13  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -69,6 +72,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
+#include "pbori_tags.h"
 
 #ifndef CCuddNavigator_h_
 #define CCuddNavigator_h_
@@ -113,7 +117,7 @@ public:
 
   /// @name Interface types for standard iterator access
   //@{
-  typedef std::forward_iterator_tag iterator_category;
+  typedef navigator_tag iterator_category;
   typedef std::iterator_traits<pointer_type>::difference_type difference_type;
   typedef void pointer;
   typedef value_type reference;

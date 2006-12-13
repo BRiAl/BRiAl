@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.24  2006/11/24 16:38:37  dreyer
  * CHANGE: additional fine-tuning multiplesOf
  *
@@ -677,6 +680,29 @@ dd_first_multiples_of(const CacheType& cache_mgr,
   cache_mgr.insert(navi, rhsNavi, init.navigation());
 
   return init;
+}
+
+
+template <class IteratorLike>
+IteratorLike 
+increment_iteratorlike(IteratorLike iter, std::forward_iterator_tag) {
+
+  return ++iter;
+}
+
+template <class IteratorLike>
+IteratorLike 
+increment_iteratorlike(IteratorLike iter, navigator_tag) {
+
+  return iter.incrementThen();
+}
+
+
+template <class IteratorLike>
+IteratorLike 
+increment_iteratorlike(IteratorLike iter) {
+
+  return increment_iteratorlike(iter, std::iterator_traits<IteratorLike>::iterator_category());
 }
 
 END_NAMESPACE_PBORI

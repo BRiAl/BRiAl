@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.58  2006/12/13 18:07:03  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.57  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -410,6 +413,7 @@ public:
   self& operator*=(const exp_type&);
   self& operator*=(const self&);
   self& operator/=(const monom_type&);
+  self& operator/=(const exp_type&);
   self& operator%=(const monom_type&);
   //@}
 

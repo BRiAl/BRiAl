@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.84  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.83  2006/12/09 10:46:19  dreyer
  * CHANGE added and used recursively cache variant of /=
  *
@@ -514,6 +517,17 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 //   m_dd.divideFirstAssign(rhs.diagram());
 //   assert(*this == result);
   return (*this = result);
+}
+// Division
+BoolePolynomial&
+BoolePolynomial::operator/=(const exp_type& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const exp_type&)" );
+
+
+
+  return (*this = 
+          dd_divide_recursively_exp(navigation(), rhs.begin(),rhs.end(), self()));
 }
 
 // Modulus

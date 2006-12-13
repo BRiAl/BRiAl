@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.5  2006/12/06 09:20:09  dreyer
  * CHANGE: poly * exp now recursive
  *
@@ -59,6 +62,9 @@ class CCuddFirstIter :
   public CCuddNavigator {
 
 public:
+
+  /// Interface type for standard iterator access
+  typedef std::forward_iterator_tag iterator_category;
 
   /// Get type of *this
   typedef CCuddFirstIter self;

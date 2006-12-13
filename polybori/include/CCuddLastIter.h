@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.1  2006/06/07 08:37:50  dreyer
  * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
  *
@@ -59,6 +62,8 @@ class CCuddLastIter :
   public CCuddNavigator {
 
 public:
+  /// Interface type for standard iterator access
+  typedef std::forward_iterator_tag iterator_category;
 
   /// Get type of *this
   typedef CCuddLastIter self;

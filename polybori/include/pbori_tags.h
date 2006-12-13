@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2006/12/13 18:07:04  dreyer
+ * ADD: poly /= exp
+ *
  * Revision 1.1  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -44,6 +47,11 @@ struct invalid_tag {};
  * @brief This class shows, whether a property of an order is valid.
  **/
 struct valid_tag {};
+
+/** @class navigator_tag
+ * @brief for iterator_category
+ **/
+struct navigator_tag {};
 
 /** @class easy_equality_property
  *  @brief defines generic base for properties
