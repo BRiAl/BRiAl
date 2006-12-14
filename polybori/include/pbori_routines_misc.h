@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2006/12/14 13:48:04  dreyer
+ * FIX: Slowdown on sculptor, due to unnecessary return + copy
+ *
  * Revision 1.24  2006/12/13 18:07:04  dreyer
  * ADD: poly /= exp
  *
@@ -688,15 +691,15 @@ dd_divide_recursively(const CacheType& cache_mgr,
   idx_type index = *navi;
   idx_type monomIndex = *monomNavi;
 
-  if (monomIndex == index) { // Case: monom and poly start with same index
+  if (monomIndex == index) {    // Case: monom and poly start with same index
 
     // Increment navigators
-    navigator monomThen =  increment_iteratorlike(monomNavi);
+    navigator monomThen =  monomNavi.thenBranch();
     navigator naviThen = navi.thenBranch();
 
     init = dd_divide_recursively(cache_mgr, naviThen, monomThen, init);
   }
-  else if (monomIndex > index) {                        // Case: monomIndex may occure within poly
+  else if (monomIndex > index) { // Case: monomIndex may occure within poly
     
     init = 
       dd_type(index,  
@@ -737,15 +740,15 @@ dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
   idx_type index = *navi;
   idx_type monomIndex = *start;
 
-  if (monomIndex == index) { // Case: monom and poly start with same index
+  if (monomIndex == index) {    // Case: monom and poly start with same index
 
     // Increment navigators
-    start = increment_iteratorlike(start);
+    ++start;
     navigator naviThen = navi.thenBranch();
 
     init = dd_divide_recursively_exp(naviThen, start, finish, init);
-   }
-  else if (monomIndex > index) {                        // Case: monomIndex may occure within poly
+  }
+  else if (monomIndex > index) { // Case: monomIndex may occure within poly
     
     init = 
       dd_type(index,  

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.85  2006/12/14 13:48:04  dreyer
+ * FIX: Slowdown on sculptor, due to unnecessary return + copy
+ *
  * Revision 1.84  2006/12/13 18:07:04  dreyer
  * ADD: poly /= exp
  *
@@ -524,10 +527,9 @@ BoolePolynomial::operator/=(const exp_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const exp_type&)" );
 
-
-
   return (*this = 
-          dd_divide_recursively_exp(navigation(), rhs.begin(),rhs.end(), self()));
+          dd_divide_recursively_exp(navigation(), rhs.begin(),rhs.end(),
+          self()));
 }
 
 // Modulus

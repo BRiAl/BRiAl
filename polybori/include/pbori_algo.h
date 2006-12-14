@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2006/12/14 13:48:04  dreyer
+ * FIX: Slowdown on sculptor, due to unnecessary return + copy
+ *
  * Revision 1.25  2006/12/13 18:07:04  dreyer
  * ADD: poly /= exp
  *
@@ -683,9 +686,9 @@ dd_first_multiples_of(const CacheType& cache_mgr,
 }
 
 
-template <class IteratorLike>
+template <class IteratorLike, class ForwardIteratorTag>
 IteratorLike 
-increment_iteratorlike(IteratorLike iter, std::forward_iterator_tag) {
+increment_iteratorlike(IteratorLike iter, ForwardIteratorTag) {
 
   return ++iter;
 }
@@ -694,7 +697,7 @@ template <class IteratorLike>
 IteratorLike 
 increment_iteratorlike(IteratorLike iter, navigator_tag) {
 
-  return iter.incrementThen();
+  return iter.thenBranch();
 }
 
 
@@ -702,7 +705,10 @@ template <class IteratorLike>
 IteratorLike 
 increment_iteratorlike(IteratorLike iter) {
 
-  return increment_iteratorlike(iter, std::iterator_traits<IteratorLike>::iterator_category());
+  typedef std::iterator_traits<IteratorLike>::iterator_category
+    iterator_category;
+
+  return increment_iteratorlike(iter, iterator_category());
 }
 
 END_NAMESPACE_PBORI
