@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2006/12/14 16:08:19  dreyer
+ * FIX: forgotten typename
+ *
  * Revision 1.26  2006/12/14 13:48:04  dreyer
  * FIX: Slowdown on sculptor, due to unnecessary return + copy
  *
@@ -705,7 +708,7 @@ template <class IteratorLike>
 IteratorLike 
 increment_iteratorlike(IteratorLike iter) {
 
-  typedef std::iterator_traits<IteratorLike>::iterator_category
+  typedef typename std::iterator_traits<IteratorLike>::iterator_category
     iterator_category;
 
   return increment_iteratorlike(iter, iterator_category());
