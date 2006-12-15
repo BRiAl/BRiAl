@@ -227,6 +227,7 @@ if HAVE_PYTHON_EXTENSION:
         
     for f in glob("testsuite/py/data/qg/*.cnf"):
         env.CNF(f[:-4])
-    
+    for f in glob("testsuite/py/data/gcp_large/*.cnf"):
+        env.CNF(f[:-4])
 else:
     print "no python extension"
