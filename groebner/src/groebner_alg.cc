@@ -2082,15 +2082,23 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     std::vector<Polynomial> result;
     bool tail_growth_bak=optRedTailDegGrowth;
     optRedTailDegGrowth=true;
-    MonomialSet::const_iterator it=m.begin();
-    MonomialSet::const_iterator end=m.end();
-    while(it!=end){
+    std::vector<Exponent> m_vec;
+    m_vec.resize(m.length());
+    std::copy(m.expBegin(),m.expEnd(),m_vec.begin());
+    int i=m_vec.size()-1;
+    while(i>=0){
         //redTail
-        result.push_back(red_tail(*this,generators[lm2Index[*it]].p));
-        it++;
+        int index=exp2Index[m_vec[i]];
+        Polynomial reduced=red_tail(*this,generators[index].p);
+        generators[index].p=reduced;
+        generators[index].recomputeInformation();
+        result.push_back(reduced);
+        i--;
     }
     optRedTailDegGrowth=tail_growth_bak;
-    return result;
+    std::vector<Polynomial> result_r(result.size());
+    std::copy(result.rbegin(),result.rend(),result_r.begin());
+    return result_r;
     
 }
 
