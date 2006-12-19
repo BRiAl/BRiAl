@@ -395,6 +395,7 @@ usedVariables.Exp(0, 1, 2, 3)
 Test Variablenames
 x(0)? x(0)
 X? X
+Testing cache flushing...
 Finished.
 2
 0

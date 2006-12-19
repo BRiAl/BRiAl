@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.19  2006/12/19 12:36:47  dreyer
+// ADD: BoolePolyRing::clear{Ring}Cache()
+//
 // Revision 1.18  2006/11/29 16:37:35  dreyer
 // CHANGE: updated testsuite
 //
@@ -506,7 +509,11 @@ main(){
       std::cout <<"X? "<<
         BoolePolyRing::activeManager().getVariableName(0) <<std::endl;
 
-  std::cout << "Finished." <<std::endl;
+      std::cout <<"Testing cache flushing..." <<std::endl;
+      std::cout.flush();
+      BoolePolyRing::clearRingCache();
+
+      std::cout << "Finished." <<std::endl;
 
 
   try{

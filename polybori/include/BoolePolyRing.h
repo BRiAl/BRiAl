@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2006/12/19 12:36:46  dreyer
+ * ADD: BoolePolyRing::clear{Ring}Cache()
+ *
  * Revision 1.29  2006/11/27 16:25:13  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -292,17 +295,23 @@ class BoolePolyRing:
   /// Change order of current ring
   static void changeOrdering(ordercode_type);
 
-  /// Get name of variable with index idx
+  /// Set name of variable with index idx
   void setVariableName(idx_type idx, vartext_type varname);
 
   /// Get name of variable with index idx
   vartext_type getVariableName(idx_type idx);
 
-  /// Get name of variable with index idx
+  /// Set name of variable with index idx
   static void setRingVariableName(idx_type idx, vartext_type varname);
 
   /// Get name of variable with index idx
   static vartext_type getRingVariableName(idx_type idx);
+
+  /// Clears the function cache
+  void clearCache();
+
+  ///  Clears the function cache of the current ring
+  static void clearRingCache();
 
 protected: public:
   /// Pointer to current global manager setting

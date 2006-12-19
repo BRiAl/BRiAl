@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2006/12/19 12:36:46  dreyer
+ * ADD: BoolePolyRing::clear{Ring}Cache()
+ *
  * Revision 1.30  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -129,6 +132,8 @@
 
 #include "BooleExponent.h"
 #include "BooleMonomial.h"
+
+#include "cuddInt.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -474,6 +479,20 @@ BoolePolyRing::getRingVariableName(idx_type idx) {
 
   PBORI_TRACE_FUNC( "getRingVariableName(idx_typ)");
   return activeManager().getVariableName(idx);
+}
+void
+BoolePolyRing::clearCache() {
+
+  PBORI_TRACE_FUNC( "clearCache()");
+  cuddCacheFlush(pMgr->manager().getManager());
+}
+
+
+void
+BoolePolyRing::clearRingCache() {
+
+  PBORI_TRACE_FUNC( "clearRingCache()");
+  cuddCacheFlush(activeManager().manager().getManager());
 }
 
 END_NAMESPACE_PBORI
