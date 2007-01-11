@@ -114,6 +114,10 @@ poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
 *iter x(2)*x(3)*x(4) 
 ++ 
 *iter x(2)*x(4) 
+ Testing additional properties...
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+term length: 5
+first index: 0
 Finished.
 ----------------------
 Executing testsuite/testring

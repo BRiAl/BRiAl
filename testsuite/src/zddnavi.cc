@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/01/11 17:08:04  dreyer
+ * ADD: deg() and FirstIndex() for term iterators; deque instead of stack
+ *
  * Revision 1.11  2006/09/12 14:56:56  dreyer
  * ADD bidirectional term iterator template
  *
@@ -410,6 +413,17 @@ main(){
 
 
     testiter(poly+1);
+
+    std::cout <<" Testing additional properties..." <<std::endl;
+    std::cout << "poly "<<poly <<std::endl;
+
+    BoolePolynomial::deg_iterator degiter(poly.degBegin());
+
+    std::cout << "term length: " << degiter.deg()  <<std::endl;
+
+    std::cout << "first index: " << degiter.firstIndex()  <<std::endl;
+
+    
 
     std::cout << "Finished."<<std::endl;
 

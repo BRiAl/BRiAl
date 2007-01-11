@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/01/11 17:08:04  dreyer
+ * ADD: deg() and FirstIndex() for term iterators; deque instead of stack
+ *
  * Revision 1.14  2006/09/12 15:33:16  dreyer
  * CHANGE: project_ith<0> corresponds to do-nothing (void return_type)
  *
@@ -83,6 +86,34 @@
 BEGIN_NAMESPACE_PBORI
 
 
+template <class _Tp, class _Sequence = std::deque<_Tp> >
+class dstack {
+
+  typedef typename _Sequence::value_type _Sequence_value_type;
+
+public:
+  typedef typename _Sequence::value_type      value_type;
+  typedef typename _Sequence::size_type       size_type;
+  typedef          _Sequence                  container_type;
+
+  typedef typename _Sequence::reference       reference;
+  typedef typename _Sequence::const_reference const_reference;
+protected:
+  _Sequence c;
+public:
+  dstack() : c() {}
+  explicit dstack(const _Sequence& __s) : c(__s) {}
+
+  bool empty() const { return c.empty(); }
+  size_type size() const { return c.size(); }
+  reference top() { return c.back(); }
+  const_reference top() const { return c.back(); }
+  void push(const value_type& __x) { c.push_back(__x); }
+  void pop() { c.pop_back(); }
+  const_reference bottom() const {  return c.front();  }
+};
+
+
 /** @class CTermIter
  * @brief This class defines an iterator for the monomials in a Boolean
  * polynomial.
@@ -106,8 +137,11 @@ public:
   /// Type for hashing
   typedef typename pbori_traits<term_type>::hash_type hash_type;
 
-  /// Type for boolean results
+  /// Type for Boolean results
   typedef typename pbori_traits<term_type>::bool_type bool_type;
+
+  /// Type for lengths
+  typedef typename pbori_traits<term_type>::size_type size_type;
 
   /// Get type of navigators
   typedef NavigatorType navigator_type;
@@ -142,7 +176,8 @@ public:
   //@}
 
   /// Define type for stacking
-  typedef std::stack<navigator_type> stack_type;
+  //  typedef std::stack<navigator_type> stack_type;
+  typedef dstack<navigator_type> stack_type;
 
   /// result type of top()
   typedef typename stack_type::value_type top_type;
@@ -197,6 +232,15 @@ public:
 
   /// Get element on stack
   top_type& top() { return m_stack.top(); }
+
+  /// Get degree of current term
+  size_type deg() const { return m_stack.size(); }
+
+  /// Get first index
+  idx_type firstIndex() const { 
+    assert(!empty());
+    return *(m_stack.bottom()); 
+  }
 
   /// Check whether stack is empty
   bool empty() const { return m_stack.empty(); }
