@@ -132,7 +132,7 @@ if isinstance(libpb,list):
 Default(libpb)
 
 
-gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
+gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
 gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 print "gb:", gb, dir(gb)
@@ -160,7 +160,9 @@ for t in tests_gb:
 
 LIBS=env['LIBS']+['boost_python',"polybori", "groebner","extra"]
 
-
+def add_cnf_dir(env,directory):
+  for f in glob(directory+"/*.cnf"):
+      env.CNF(f[:-4])
 if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=["PyPolyBoRi/" + f  for f in ["main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
@@ -229,5 +231,30 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF(f[:-4])
     for f in glob("testsuite/py/data/gcp_large/*.cnf"):
         env.CNF(f[:-4])
+     #   for f in glob("testsuite/py/data/gcp_large/*.cnf"):
+     #       env.CNF(f[:-4])
+    add_cnf_dir(env,"testsuite/py/data/gcp_large")
+    add_cnf_dir(env,"testsuite/py/data/bejing")
 else:
     print "no python extension"
+    
+HAVE_SINGULAR_EXTENSION=False
+SINGULAR_HOME="/Users/michael/sing-clean3/"
+SING_ARCH="ppcMac-darwin"
+if HAVE_SINGULAR_EXTENSION:
+    SING_INCLUDES=[SINGULAR_HOME+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
+    
+    wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
+    if env['PLATFORM']=="darwin":
+        env.LoadableModule('Singular/polybori_module', wrapper_files,
+            LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
+            LIBS=LIBS,LDMODULESUFFIX=".so",
+            CPPPATH=SING_INCLUDES+CPPPATH)
+    else:
+        #print "l:", l
+        env.SharedLibrary('Singular/polybori_module', wrapper_files,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
+            CPPPATH=[SINGULAR_HOME+SING_ARCH+"/include"]+CPPPATH)
+            #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
+            #SHLIBPREFIX="")
+  
