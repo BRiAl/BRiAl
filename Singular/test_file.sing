@@ -1,5 +1,11 @@
 LIB("polybori_module.so");
 ring r=2,x(1..10),lp;
-ideal i=x(1)*(x(2)+x(3)+x(2)*x(3));
+ideal i=x(1)*(x(2)+x(3)+x(2)*x(3)),x(4);
+
+ideal j=Polybori_module::lex_boolean_gb(i);
+j;
+
+ideal i=x(1)*(1+x(2)*x(3)),x(4);
+
 ideal j=Polybori_module::lex_boolean_gb(i);
 j;

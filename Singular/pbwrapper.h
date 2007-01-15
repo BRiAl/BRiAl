@@ -47,9 +47,10 @@ poly pb2sing(Polynomial p){
     pSetm(m);
     int len=1;
     kBucket_Add_q(bucket,m,&len);
-    nDelete(&one);
+    
     it++;
   }
+  nDelete(&one);
   kBucketCanonicalize(bucket);
   int dummy;
   poly res;
