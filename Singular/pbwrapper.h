@@ -55,6 +55,7 @@ poly pb2sing(Polynomial p){
   int dummy;
   poly res;
   kBucketClear(bucket,&res,&dummy);
+  kBucketDestroy(&bucket);
   return res;
   
 }
