@@ -51,7 +51,7 @@ ideal lex_boolean_gb(ideal a)
 %C
 
 ideal lex_bgb(ideal s){
-return idCopy(s);
+return do_lex_gb(s);
  
 
 

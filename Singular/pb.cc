@@ -264,6 +264,6 @@ BOOLEAN mod_lex_boolean_gb(leftv __res, leftv __h)
 #line 243 "pb.cc"
 #line 53 "pb.mod"
 ideal lex_bgb(ideal s){
-return idCopy(s);
+return do_lex_gb(s);
  
 }
