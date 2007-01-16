@@ -104,7 +104,7 @@ typedef Monomial::idx_map_type lm2Index_map_type;
 typedef Exponent::idx_map_type exp2Index_map_type;
 class GroebnerStrategy{
 public:
-  
+  idx_type reducibleUntil;
   GroebnerStrategy(const GroebnerStrategy& orig);
   std::vector<Polynomial>  minimalizeAndTailReduce();
   std::vector<Polynomial>  minimalize();
@@ -142,6 +142,7 @@ public:
   exp2Index_map_type exp2Index;
 
 	GroebnerStrategy():pairs(*this),cache(new CacheManager()){
+	  reducibleUntil=-1;
 	  optDelayNonMinimals=true;
 		optRedTailDegGrowth=true;
 		chainCriterions=0;

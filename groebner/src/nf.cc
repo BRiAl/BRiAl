@@ -8,6 +8,7 @@
  */
 
 #include "nf.h"
+#include "lexbuckets.h"
 #include <iostream>
 #include <COrderedIter.h>
 using std::cout;
@@ -156,6 +157,41 @@ Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead){
         rest_lead=p.lead();
   }
   return p;
+}
+
+
+Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead){
+  int index;
+  LexBucket bucket(p);
+  //cout<<"huhu";
+  while((index=select1(strat,rest_lead))>=0){
+    assert(index<strat.generators.size());
+  
+    const Polynomial* g=&strat.generators[index].p;
+    
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
+    (((strat.optBrutalReductions) && (rest_lead!=strat.generators[index].lm))||((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
+    && (rest_lead!=strat.generators[index].lm))){
+      //wlen_type dummy;
+      Polynomial front=bucket.getFront();
+      front/=strat.generators[index].lmExp;
+      front*=*g;
+      bucket+=front;
+      
+      //p=reduce_complete(p,strat.generators[index], dummy);
+
+    } else{
+      //p=spoly(p,*g);
+      Exponent exp=rest_lead.exp();
+      //Monomial lm=strat.generators[index].lm
+      bucket+=(exp-strat.generators[index].lmExp)*(*g);
+    }
+    if (bucket.isZero())
+        return 0;
+    else
+        rest_lead=(Monomial) bucket.leadExp();
+  }
+  return bucket.value();
 }
 
 Polynomial nf3_no_deg_growth(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead){
@@ -972,11 +1008,13 @@ class LexHelper{
         return p.end();
     }
     static Polynomial nf(const GroebnerStrategy& strat, const Polynomial& p, const Monomial& m){
-        if (strat.optRedTailDegGrowth) return nf3(strat,p,m);
-        else return nf3_no_deg_growth(strat,p,m);
+        return nf3_lexbuckets(strat,p,m);
+        //if (strat.optRedTailDegGrowth) return nf3(strat,p,m);
+        //else return nf3_no_deg_growth(strat,p,m);
     }
     typedef Polynomial::const_iterator iterator_type;
     const static bool isDegreeOrder=false;
+    const static bool isLexicographicalOrder=true;
 };
 
 class DegOrderHelper{
@@ -995,6 +1033,7 @@ class DegOrderHelper{
     }
     typedef Polynomial::ordered_iterator iterator_type;
     const static bool isDegreeOrder=true;
+    const static bool isLexicographicalOrder=false;
 };
 int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
@@ -1223,18 +1262,29 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);
     typename Helper::iterator_type end=Helper::end(p);
+    bool rest_is_irreducible=false;
+    //typedef  (typename Helper::iterator_type) it_type;
+    //typedef  (typename it_type::value_type) mon_type;
+    Monomial mymon;
     while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
+      if ((Helper::isLexicographicalOrder) && ((mymon=*it).deg()>0) && ((*(mymon.begin()))>strat.reducibleUntil)){
+       rest_is_irreducible=true;
+       break;
+      } else{
         irr.push_back(*it);
         it++;
+        
+      }
     }
     Monomial rest_lead;
     
     if ((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
-    if (it!=end) {
+    if ((it!=end) &&(!(rest_is_irreducible))) {
         irr_p=add_up_monomials(irr);
         rest_lead=*it;
+        
         }
     else irr_p=p;
     int s,i;

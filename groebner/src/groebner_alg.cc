@@ -431,7 +431,8 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   averageLength=orig.averageLength;
   enabledLog=orig.enabledLog;
   reduceByTailReduced=orig.reduceByTailReduced;
-  this->pairs.strat=this; 
+  this->pairs.strat=this;
+  this->reducibleUntil=orig.reducibleUntil;
 }
 /// assumes that divisibility condition is fullfilled
 class ChainCriterion{
@@ -1835,6 +1836,11 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
   MonomialSet ext_prod_terms;
   PolyEntry e(p);
   Monomial lm=e.lm;
+  Polynomial lm_as_poly=lm;
+  idx_type idx_from_navigation=*lm_as_poly.navigation();
+  if (reducibleUntil<idx_from_navigation)
+     reducibleUntil=idx_from_navigation;
+  //here we make use of the fact, that the index of the 1 node is bigger than that of variables
   this->propagate(e);
   //do this before adding leading term
   Monomial::const_iterator it=e.lm.begin();
