@@ -7,7 +7,9 @@ USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
 USERLIBS=[]
 PYPREFIX="/sw"
-
+SINGULAR_HOME=None
+#TODO: use opts.Add instead of the import of custom.py
+#see http://www.scons.org/doc/production/HTML/scons-user/x1445.html
 try:
     import custom
     if "LIBPATH" in dir(custom):
@@ -20,6 +22,8 @@ try:
         PYPREFIX=custom.PYPREFIX
     if "LIBS" in dir(custom):
         USERLIBS=custom.LIBS
+    if "SINGULAR_HOME" in dir(custom):
+        SINGULAR_HOME=custom.SINGULAR_HOME
 except:
     pass
 
@@ -31,7 +35,7 @@ except:
 import os
 
 
-
+#opts.Add("SINGULAR_HOME")
 env=Environment(options=opts)
 
 if (env['PLATFORM']=="darwin"):
@@ -238,11 +242,18 @@ if HAVE_PYTHON_EXTENSION:
 else:
     print "no python extension"
     
-HAVE_SINGULAR_EXTENSION=False
-SINGULAR_HOME="/Users/michael/sing-clean3/"
-SING_ARCH="ppcMac-darwin"
+HAVE_SINGULAR_EXTENSION=True
+
+import subprocess
+#import re
+if SINGULAR_HOME:
+  HAVE_SINGULAR_EXTENSION=True
+else:
+  HAVE_SINGULAR_EXTENSION=False
 if HAVE_SINGULAR_EXTENSION:
-    SING_INCLUDES=[SINGULAR_HOME+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
+    SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
+    SING_ARCH=SING_ARCH.replace("\n","")
+    SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
     
     wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
     if env['PLATFORM']=="darwin":
@@ -254,7 +265,7 @@ if HAVE_SINGULAR_EXTENSION:
         #print "l:", l
         env.SharedLibrary('Singular/polybori_module', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
-            CPPPATH=[SINGULAR_HOME+SING_ARCH+"/include"]+CPPPATH)
+            CPPPATH=SING_INCLUDES+CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
   
