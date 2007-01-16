@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/01/16 10:53:54  dreyer
+ * FIX: bug in CTermIter::deg(), wrong degree for monomial 1.
+ *
  * Revision 1.15  2007/01/11 17:08:04  dreyer
  * ADD: deg() and FirstIndex() for term iterators; deque instead of stack
  *
@@ -234,7 +237,13 @@ public:
   top_type& top() { return m_stack.top(); }
 
   /// Get degree of current term
-  size_type deg() const { return m_stack.size(); }
+  size_type deg() const { 
+
+    if(top().isValid())
+      return m_stack.size();
+    else 
+      return 0;
+  }
 
   /// Get first index
   idx_type firstIndex() const { 
