@@ -1015,6 +1015,12 @@ class LexHelper{
     typedef Polynomial::const_iterator iterator_type;
     const static bool isDegreeOrder=false;
     const static bool isLexicographicalOrder=true;
+    static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
+      if ( (it.deg()>0) && (it.firstIndex()>strat.reducibleUntil))
+        return true;
+      else return false;
+      
+    }
 };
 
 class DegOrderHelper{
@@ -1034,6 +1040,9 @@ class DegOrderHelper{
     typedef Polynomial::ordered_iterator iterator_type;
     const static bool isDegreeOrder=true;
     const static bool isLexicographicalOrder=false;
+    static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
+      return false;
+    }
 };
 int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
@@ -1265,9 +1274,9 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     bool rest_is_irreducible=false;
     //typedef  (typename Helper::iterator_type) it_type;
     //typedef  (typename it_type::value_type) mon_type;
-    Monomial mymon;
+    //Monomial mymon;
     while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
-      if ((Helper::isLexicographicalOrder) && ((mymon=*it).deg()>0) && ((*(mymon.begin()))>strat.reducibleUntil)){
+      if (Helper::knowRestIsIrreducible(it,strat)){
        rest_is_irreducible=true;
        break;
       } else{
@@ -1289,7 +1298,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     else irr_p=p;
     int s,i;
     s=irr.size();
-    assert(s==irr_p.length());
+    assert((s==irr_p.length())||(rest_is_irreducible));
     //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
     //for(i=0;i<s;i++){
     //    res_vec.push_back(irr[i]);
