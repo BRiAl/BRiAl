@@ -8,7 +8,7 @@
 #include "kbuckets.h"
 #include "polys.h"
 #include "ideals.h"
-
+#include "kutil.h"
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 Polynomial sing2pb(poly p, ring r){
@@ -74,7 +74,7 @@ poly gen_fe(int i,ring r){
   return square;
 }
 
-ideal do_lex_gb(ideal s, bool generate_fe=true){
+ideal do_lex_gb(ideal s, bool generate_fe=true, bool use_singular_options=true){
   int nvariables=rVar(currRing);
   BoolePolyRing pbring(nvariables);
   int i_size=IDELEMS(s);
@@ -86,8 +86,23 @@ ideal do_lex_gb(ideal s, bool generate_fe=true){
     Polynomial pb_p=sing2pb(p,currRing);
     strat.addGeneratorDelayed(pb_p);
   }
+  if (use_singular_options){
+    if (TEST_OPT_REDTAIL){
+      strat.optRedTail=true;
+    } else
+    strat.optRedTail=false;
+    if (K_TEST_OPT_REDTHROUGH){
+      strat.optLazy=true;
+    } else
+    strat.optLazy=false;
+  }
+  //todo: deg_bound
   strat.symmGB_F2();
-  std::vector<Polynomial> res_pb=strat.minimalizeAndTailReduce();
+  std::vector<Polynomial> res_pb;
+  if ((use_singular_options)&&(!(TEST_OPT_REDSB)))
+   res_pb=strat.minimalize();
+  else
+   res_pb=strat.minimalizeAndTailReduce();
   i_size=res_pb.size();
   
   bool contains_one=false;
