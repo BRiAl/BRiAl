@@ -26,6 +26,7 @@ Polynomial without_prior_part(Polynomial p,idx_type tail_start){
   return Polynomial(nav);
 }
 Exponent LexBucket::leadExp(){
+  usualAssertions();
   if (front.isZero()) {
     Exponent one;
     return one;
@@ -36,6 +37,7 @@ Exponent LexBucket::leadExp(){
   
 }
 Polynomial LexBucket::value(){
+  usualAssertions();
   Polynomial sum;
   Polynomial bucket_value=sum_up_buckets(buckets.begin(), buckets.size());
   sum=front+bucket_value+ones;
@@ -51,10 +53,12 @@ Polynomial LexBucket::value(){
   return sum;
 }
 bool LexBucket::isZero(){
+  assert(!((front.isZero())&&(buckets.size()!=0)));
   return (front.isZero() &&(!(ones)));
 }
 //we assume that p has smaller/equal terms than the bucket, or the bucket is zero
 LexBucket& LexBucket::operator+=(const Polynomial& p){
+  usualAssertions();
   Polynomial pback=without_prior_part(p,tail_start);
   Polynomial pfront=p-pback;
   front+=pfront;

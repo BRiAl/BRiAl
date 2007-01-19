@@ -49,6 +49,12 @@ public:
      if (p.isOne()) ones=true;
    }
   }
+  void clearFront(){
+    front=0;
+    while((front.isZero())&& (buckets.size()>0)){
+      increaseTailStart(tail_start+var_group_size);
+    }
+  }
   Exponent leadExp();
   bool isZero();
   //we assume that p has smaller/equal terms than the bucket, or the bucket is zero
@@ -59,7 +65,16 @@ public:
   Polynomial getFront(){
     return front;
   }
+  
+  bool isOne(){
+    usualAssertions();
+    if ((front.isZero()) && (ones) && (buckets.size()==0)) return true;
+    else return false;
+  }
 private:
+  void usualAssertions(){
+      assert((buckets.size()==0)||(!(front.isZero())));
+  }
   std::vector<Polynomial> buckets;
   Polynomial front;
   idx_type tail_start;
