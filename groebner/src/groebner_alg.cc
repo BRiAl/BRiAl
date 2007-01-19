@@ -1998,6 +1998,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::v
     }
     return s;
 }
+#if 0
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   
   const Polynomial &p=e.p;
@@ -2062,6 +2063,51 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   }
   }
   
+}
+#endif
+static Polynomial opposite_logic_mapping(Polynomial p){
+  Exponent e=p.usedVariablesExp();
+  Exponent::const_iterator it=e.begin();
+  Exponent::const_iterator end=e.end();
+  while (it!=end){
+    p=p+(Polynomial) p.diagram().subset0(*it);
+    it++;
+  }
+  p=p+1;
+  return p;
+}
+void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
+  Polynomial p_opp=opposite_logic_mapping(e.p);
+  LiteralFactorization factors_opp(p_opp);
+  if (factors_opp.trivial()){
+    return;
+  } else{
+    this->log("found new implications");
+    if (!(factors_opp.rest.isOne())){
+      addGeneratorDelayed(opposite_logic_mapping(factors_opp.rest));
+    }
+    LiteralFactorization::map_type::const_iterator itf=factors_opp.factors.begin();
+    LiteralFactorization::map_type::const_iterator endf=factors_opp.factors.end();
+    while(itf!=endf){
+      idx_type var=itf->first;
+      int val=itf->second;
+      if (val==0){
+        addGeneratorDelayed(Variable(var)+1);
+      } else addGeneratorDelayed(Variable(var));
+      
+    }
+    
+    LiteralFactorization::var2var_map_type::const_iterator itv=factors_opp.var2var_map.begin();
+    LiteralFactorization::var2var_map_type::const_iterator endv=factors_opp.var2var_map.end();
+    while(itv!=endv){
+      idx_type var=itv->first;
+      idx_type var2=itv->second;
+      
+        addGeneratorDelayed(Variable(var)+Variable(var2)+ 1);
+      
+      
+    }
+  }
 }
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
   this->pairs.introducePair(Pair(p));
