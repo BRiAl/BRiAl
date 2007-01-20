@@ -2078,10 +2078,47 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
+  Polynomial mult_by(1);
   LiteralFactorization factors_opp(p_opp);
+  
   if (factors_opp.trivial()){
-    return;
-  } else{
+    if (e.literal_factors.trivial()) return;
+    if (e.literal_factors.rest!=(Polynomial)1){
+      
+    
+      if (e.literal_factors.trivial())
+      mult_by=Polynomial(1);
+      LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
+      LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
+      while(itf!=endf){
+        idx_type var=itf->first;
+        int val=itf->second;
+        if (val==0){
+          mult_by*=(Monomial)Variable(var);
+        } else mult_by*=Variable(var)+1;
+        itf++;
+      }
+
+      LiteralFactorization::var2var_map_type::const_iterator itv=e.literal_factors.var2var_map.begin();
+      LiteralFactorization::var2var_map_type::const_iterator endv=e.literal_factors.var2var_map.end();
+      while(itv!=endv){
+        idx_type var=itv->first;
+        idx_type var2=itv->second;
+
+          mult_by*=Variable(var)+Variable(var2);
+        itv++;
+
+      }
+      p_opp=opposite_logic_mapping(e.literal_factors.rest);
+      factors_opp=LiteralFactorization(p_opp);
+      if (factors_opp.trivial()) return;
+    } else return;
+    
+  }
+  
+  
+  
+   {
     this->log("found new implications");
     if (!(factors_opp.rest.isOne())){
       addGeneratorDelayed(opposite_logic_mapping(factors_opp.rest));
@@ -2092,8 +2129,8 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
       idx_type var=itf->first;
       int val=itf->second;
       if (val==0){
-        addGeneratorDelayed(Variable(var)+1);
-      } else addGeneratorDelayed(Variable(var));
+        addGeneratorDelayed(mult_by*(Variable(var)+1));
+      } else addGeneratorDelayed(((Monomial) Variable(var))*mult_by);
       
     }
     
@@ -2103,7 +2140,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
       idx_type var=itv->first;
       idx_type var2=itv->second;
       
-        addGeneratorDelayed(Variable(var)+Variable(var2)+ 1);
+        addGeneratorDelayed(mult_by*(Variable(var)+Variable(var2)+ 1));
       
       
     }
