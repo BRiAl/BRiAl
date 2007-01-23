@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.86  2007/01/23 13:38:54  dreyer
+ * Fix: prints now without spaced appended
+ *
  * Revision 1.85  2006/12/14 13:48:04  dreyer
  * FIX: Slowdown on sculptor, due to unnecessary return + copy
  *
@@ -853,8 +856,6 @@ BoolePolynomial::print(ostream_type& os) const {
                    variable_name<manager_type>(BoolePolyRing::activeManager()), 
                    sep_literal_type(), times_as_separator(), 
                    integral_constant<unsigned, 1>(), os);
-
-  os << ' ';
 
   return os;
 }
