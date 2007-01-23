@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/01/23 12:37:21  dreyer
+ * + Workaround for segfault after order change
+ *
  * Revision 1.30  2006/12/19 12:36:46  dreyer
  * ADD: BoolePolyRing::clear{Ring}Cache()
  *
@@ -123,6 +126,9 @@
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
 #include "OrderedManager.h"
+
+  // temporarily for work around
+#include <list>
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
@@ -319,6 +325,9 @@ protected: public:
 
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
   manager_ptr pMgr;
+
+  /// Work around, if we want to reuse Polynomials after order change
+  static std::list<manager_ptr> old_rings;
 };
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/01/23 12:37:21  dreyer
+ * + Workaround for segfault after order change
+ *
  * Revision 1.31  2006/12/19 12:36:46  dreyer
  * ADD: BoolePolyRing::clear{Ring}Cache()
  *
@@ -140,6 +143,8 @@ BEGIN_NAMESPACE_PBORI
 // initialize pointer to active ring
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
+std::list<BoolePolyRing::manager_ptr> BoolePolyRing::old_rings;
+
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : base(),
@@ -157,9 +162,7 @@ BoolePolyRing::changeOrdering(ordercode_type order) {
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
 
   BoolePolyRing the_ring(get_ordered_manager(activeManager(), order));
-
   the_ring.activate();
-
 }
 
 
@@ -345,6 +348,9 @@ BoolePolyRing::activate() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::activate() const" );
 
+  if(current_mgr)
+    old_rings.push_back(current_mgr);
+  
   current_mgr = pMgr;
 }
 
