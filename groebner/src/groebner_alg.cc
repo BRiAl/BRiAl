@@ -981,7 +981,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
-          if (generators[i].length==2)
+          if ((generators[i].length==2)&&(generators[i].ecart()==0))
             addNonTrivialImplicationsDelayed(generators[i]);
           others.insert(i);
           
@@ -2070,7 +2070,7 @@ static Polynomial opposite_logic_mapping(Polynomial p){
   Exponent::const_iterator it=e.begin();
   Exponent::const_iterator end=e.end();
   while (it!=end){
-    p=p+(Polynomial) p.diagram().subset0(*it);
+    p=p+(Polynomial) p.diagram().subset1(*it);
     it++;
   }
   p=p+1;
@@ -2078,6 +2078,7 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 }
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
+  //cout<<"p_opp"<<p_opp<<endl;
   Polynomial mult_by(1);
   LiteralFactorization factors_opp(p_opp);
   
@@ -2086,7 +2087,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     if (e.literal_factors.rest!=(Polynomial)1){
       
     
-      if (e.literal_factors.trivial())
+      //if (e.literal_factors.trivial())
       mult_by=Polynomial(1);
       LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
       LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
@@ -2120,28 +2121,32 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   
    {
     this->log("found new implications");
+    //cout<<"implications"<<endl;
     if (!(factors_opp.rest.isOne())){
       addGeneratorDelayed(opposite_logic_mapping(factors_opp.rest));
     }
     LiteralFactorization::map_type::const_iterator itf=factors_opp.factors.begin();
     LiteralFactorization::map_type::const_iterator endf=factors_opp.factors.end();
     while(itf!=endf){
+      //cout<<"type1"<<endl;
+      
       idx_type var=itf->first;
       int val=itf->second;
       if (val==0){
-        addGeneratorDelayed(mult_by*(Variable(var)+1));
-      } else addGeneratorDelayed(((Monomial) Variable(var))*mult_by);
-      
+        addGeneratorDelayed(((Monomial) Variable(var))*mult_by);
+      } else addGeneratorDelayed(((Monomial) Variable(var)+Polynomial(1))*mult_by);
+      itf++;
     }
     
     LiteralFactorization::var2var_map_type::const_iterator itv=factors_opp.var2var_map.begin();
     LiteralFactorization::var2var_map_type::const_iterator endv=factors_opp.var2var_map.end();
     while(itv!=endv){
+      //cout<<"type2"<<endl;
       idx_type var=itv->first;
       idx_type var2=itv->second;
       
         addGeneratorDelayed(mult_by*(Variable(var)+Variable(var2)+ 1));
-      
+     itv++; 
       
     }
   }
