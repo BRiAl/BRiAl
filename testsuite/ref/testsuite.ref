@@ -14,14 +14,14 @@ Executing testsuite/zddnavi
 ----------------------
 Testing navigating through decision diagrams
 poly:  
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2) + x(1) 
+x(0)*x(2)*x(3)*x(4) + x(0)*x(2) + x(1)
 Navigation: 
-x(0)*x(2)*x(3)*x(4) 
-x(0)*x(2) 
-x(1) 
+x(0)*x(2)*x(3)*x(4)
+x(0)*x(2)
+x(1)
 
 Printing via dd_transform: 
-x(0)*x(2)*x(3)*x(4) x(0)*x(2) x(1) 
+x(0)*x(2)*x(3)*x(4)x(0)*x(2)x(1)
 Storing via dd_transform: 
 0, 2, 3, 4, 
 0, 2, 
@@ -34,94 +34,97 @@ pure print dd_transform:
 0 2 3 4 , 0 2 , 1 , 
 
 Get terms: 
-x(0)*x(2)*x(3)*x(4) , x(0)*x(2) , x(1) , 
+x(0)*x(2)*x(3)*x(4), x(0)*x(2), x(1), 
 
 Test Term iteration 
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) 
-x(0)*x(2)*x(3)*x(4) 
-x(0)*x(2)*x(4) 
-x(0)*x(2) 
-x(1) 
+x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1)
+x(0)*x(2)*x(3)*x(4)
+x(0)*x(2)*x(4)
+x(0)*x(2)
+x(1)
   last: 
-0 
+0
   next: 
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) + 1 
-1 
-0 
+x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) + 1
+1
+0
   next: 
-1 
-1 
-0 
+1
+1
+0
   next: 
-0 
-0 
-0 
+0
+0
+0
 
 Testing last term
-poly x(0)*x(1) + x(0)*x(4) 
+poly x(0)*x(1) + x(0)*x(4)
 last term 0, 4, 
 
 Testing last term
-poly x(0)*x(1) + x(1)*x(4) 
+poly x(0)*x(1) + x(1)*x(4)
 last term 1, 4, 
 
 Testing last term
-poly x(0)*x(1) + x(2)*x(4) 
+poly x(0)*x(1) + x(2)*x(4)
 last term 2, 4, 
 
 Testing last term
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
 last term 2, 4, 
 
 Testing last term
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
-last term 2, 4, last term via BoolSet: x(2)*x(4) 
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
+last term 2, 4, last term via BoolSet: x(2)*x(4)
 
  Testing decrement...
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
-*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
+*iter x(0)*x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(1)*x(2)*x(3)*x(4) 
+*iter x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(3)*x(4) 
+*iter x(2)*x(3)*x(4)
 -- 
-*iter x(1)*x(2)*x(3)*x(4) 
+*iter x(1)*x(2)*x(3)*x(4)
 -- 
-*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+*iter x(0)*x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(1)*x(2)*x(3)*x(4) 
+*iter x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(3)*x(4) 
+*iter x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(4) 
+*iter x(2)*x(4)
 -- 
-*iter x(2)*x(3)*x(4) 
+*iter x(2)*x(3)*x(4)
 -- 
-*iter x(1)*x(2)*x(3)*x(4) 
+*iter x(1)*x(2)*x(3)*x(4)
 -- 
-*iter x(0)*x(1)*x(2)*x(3)*x(4) 
+*iter x(0)*x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(1)*x(2)*x(3)*x(4) 
+*iter x(1)*x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(3)*x(4) 
+*iter x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(4) 
+*iter x(2)*x(4)
 ++ 
-*iter 1 
+*iter 1
 -- 
-*iter x(2)*x(4) 
+*iter x(2)*x(4)
 -- 
-*iter x(2)*x(3)*x(4) 
+*iter x(2)*x(3)*x(4)
 ++ 
-*iter x(2)*x(4) 
+*iter x(2)*x(4)
  Testing additional properties...
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4) 
+poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
 term length: 5
 first index: 0
 Finished.
 ----------------------
 Executing testsuite/testring
 ----------------------
+sizeof(DdNode2)16
+sizeof(DdNode)16
+sizeof(void*)4
 Exception caught sucessfully: No polynomial ring structure defined.
 Variable 0:
 : 1 nodes 0.5 minterms
@@ -216,21 +219,21 @@ has descending variables?
 1
 has ascending variables?
 0
-poly x(2)*x(3)*x(4) + x(0)*x(1) + x(2) + x(4) + 1 
-lead() x(2)*x(3)*x(4) 
+poly x(2)*x(3)*x(4) + x(0)*x(1) + x(2) + x(4) + 1
+lead() x(2)*x(3)*x(4)
 leadExp() (2, 3, 4)
 lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 00--- 1
 
-x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 2, 3, 1, 1, 0, 
 max 3
 min 0
 ordered Iter
-x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , ordered_ Iter
-x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , lex-ordered Iter
-x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, ordered_ Iter
+x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, lex-ordered Iter
+x(0)*x(1), x(2)*x(3)*x(4), x(2), x(4), 1, 
 Testing dlex
 order code?
 1 (should be: 1)
@@ -248,9 +251,9 @@ has descending variables?
 1
 has ascending variables?
 0
-poly x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(0)*x(1) + x(2) + x(4) + 1 
-lead() x(1)*x(3)*x(4) 
-boundedLead(deg()) x(1)*x(3)*x(4) 
+poly x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(0)*x(1) + x(2) + x(4) + 1
+lead() x(1)*x(3)*x(4)
+boundedLead(deg()) x(1)*x(3)*x(4)
 leadExp() (1, 3, 4)
 boundedLeadExp(deg()) (1, 3, 4)
 deg() 3
@@ -259,12 +262,12 @@ lmDivisors() : 3 nodes 8 minterms
 0-0-- 1
 
 ordered iteration... 
-x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
-Comparision x(1)*x(4) < x(0)*x(2) 
+x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
+Comparision x(1)*x(4)< x(0)*x(2)
  1
-Comparision x(1)*x(2) < x(0)*x(4) 
+Comparision x(1)*x(2)< x(0)*x(4)
  1
-Comparision x(1) < x(0)*x(4) 
+Comparision x(1)< x(0)*x(4)
  1
 
 Testing dp_asc
@@ -284,9 +287,9 @@ has descending variables?
 0
 has ascending variables?
 1
-poly x(2)*x(3)*x(4) + x(1)*x(3)*x(4) + x(0)*x(1) + x(4) + x(2) + 1 
-lead() x(2)*x(3)*x(4) 
-boundedLead(deg()) x(2)*x(3)*x(4) 
+poly x(2)*x(3)*x(4) + x(1)*x(3)*x(4) + x(0)*x(1) + x(4) + x(2) + 1
+lead() x(2)*x(3)*x(4)
+boundedLead(deg()) x(2)*x(3)*x(4)
 leadExp() (2, 3, 4)
 boundedLeadExp(deg()) (2, 3, 4)
 deg() 3
@@ -295,12 +298,12 @@ lmDivisors() : 3 nodes 8 minterms
 00--- 1
 
 ordered iteration... 
-x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
-Comparision x(1)*x(4) < x(0)*x(2) 
+x(2)*x(3)*x(4), x(1)*x(3)*x(4), x(0)*x(1), x(4), x(2), 1, 
+Comparision x(1)*x(4)< x(0)*x(2)
  0
-Comparision x(1)*x(2) < x(0)*x(4) 
+Comparision x(1)*x(2)< x(0)*x(4)
  0
-Comparision x(1) < x(0)*x(4) 
+Comparision x(1)< x(0)*x(4)
  1
 
 Testing changing from lex to dlex
@@ -318,9 +321,9 @@ has descending variables?
 1
 has ascending variables?
 0
-poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
-lead() x(0)*x(1) 
-boundedLead(deg()) x(0)*x(1) 
+poly x(0)*x(1) + x(1)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2) + x(4) + 1
+lead() x(0)*x(1)
+boundedLead(deg()) x(0)*x(1)
 leadExp() (0, 1)
 boundedLeadExp(deg()) (0, 1)
 deg() 3
@@ -328,10 +331,10 @@ lmDeg() 2
 lmDivisors() : 2 nodes 4 minterms
 --000 1
 ordered iteration... 
-x(0)*x(1) , x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+x(0)*x(1), x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(2), x(4), 1, 
 
 CHANGE ordering!
-boundedLead(deg()) x(1)*x(3)*x(4) 
+boundedLead(deg()) x(1)*x(3)*x(4)
 leadExp() (1, 3, 4)
 boundedLeadExp(deg()) (1, 3, 4)
 deg() 3
@@ -339,7 +342,7 @@ lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 0-0-- 1
 ordered iteration... 
-x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 ordered exponent iteration... 
 (1, 3, 4), (2, 3, 4), (0, 1), (2), (4), (), 
 
@@ -358,9 +361,9 @@ has descending variables?
 0
 has ascending variables?
 1
-poly x(2)*x(3)*x(4) + x(1)*x(3)*x(4) + x(0)*x(1) + x(4) + x(2) + 1 
-lead() x(2)*x(3)*x(4) 
-boundedLead(deg()) x(2)*x(3)*x(4) 
+poly x(2)*x(3)*x(4) + x(1)*x(3)*x(4) + x(0)*x(1) + x(4) + x(2) + 1
+lead() x(2)*x(3)*x(4)
+boundedLead(deg()) x(2)*x(3)*x(4)
 leadExp() (2, 3, 4)
 boundedLeadExp(deg()) (2, 3, 4)
 deg() 3
@@ -368,10 +371,10 @@ lmDeg() 3
 lmDivisors() : 3 nodes 8 minterms
 00--- 1
 ordered iteration... 
-x(2)*x(3)*x(4) , x(1)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+x(2)*x(3)*x(4), x(1)*x(3)*x(4), x(0)*x(1), x(4), x(2), 1, 
 
 CHANGE ordering!
-boundedLead(deg()) x(0)*x(1) 
+boundedLead(deg()) x(0)*x(1)
 leadExp() (0, 1)
 boundedLeadExp(deg()) (0, 1)
 deg() 3
@@ -379,21 +382,21 @@ lmDeg() 2
 lmDivisors() : 2 nodes 4 minterms
 --000 1
 ordered iteration... 
-x(0)*x(1) , x(1)*x(3)*x(4) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+x(0)*x(1), x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(2), x(4), 1, 
 ordered exponent iteration... 
 (0, 1), (1, 3, 4), (2, 3, 4), (2), (4), (), 
 
-Testing hard-coded iteration for x(0)*x(1) + x(2)*x(3)*x(4) + x(2) + x(4) + 1 
+Testing hard-coded iteration for x(0)*x(1) + x(2)*x(3)*x(4) + x(2) + x(4) + 1
 lex
-x(0)*x(1) , x(2)*x(3)*x(4) , x(2) , x(4) , 1 , 
+x(0)*x(1), x(2)*x(3)*x(4), x(2), x(4), 1, 
 dlex
-x(2)*x(3)*x(4) , x(0)*x(1) , x(2) , x(4) , 1 , 
+x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 dp_asc
-x(2)*x(3)*x(4) , x(0)*x(1) , x(4) , x(2) , 1 , 
+x(2)*x(3)*x(4), x(0)*x(1), x(4), x(2), 1, 
 
 bug?
-polyx(0)*x(1)*x(2)*x(3) + x(0)*x(1)*x(3) + x(0)*x(1) + x(0)*x(2) + x(0) 
-usedVariablesx(0)*x(1)*x(2)*x(3) 
+polyx(0)*x(1)*x(2)*x(3) + x(0)*x(1)*x(3) + x(0)*x(1) + x(0)*x(2) + x(0)
+usedVariablesx(0)*x(1)*x(2)*x(3)
 usedVariablesExp(0, 1, 2, 3)
 usedVariables.Exp(0, 1, 2, 3)
 Test Variablenames
@@ -406,18 +409,21 @@ Finished.
 1
 2
 0x2
+sizeof(int)  4
+100000100000
+0
 ----------------------
 Executing testsuite/spoly
 ----------------------
 Testing boolean ring variables
 Poly 1: 
-x(0)*x(1) + x(0)*x(2) + x(1) + x(4) 
+x(0)*x(1) + x(0)*x(2) + x(1) + x(4)
 Poly 2: 
-x(0)*x(4) + x(4) 
+x(0)*x(4) + x(4)
 spoly: 
-x(0)*x(2)*x(4) + x(4) 
+x(0)*x(2)*x(4) + x(4)
 Expected result: 
-x(0)*x(2)*x(4) + x(4) 
+x(0)*x(2)*x(4) + x(4)
 Equality? 
 1
 Finished.
@@ -425,14 +431,14 @@ Finished.
 Executing testsuite/boolevars
 ----------------------
 Testing boolean ring variables
-x(0) 
-x(1) 
+x(0)
+x(1)
 Sum: 
-x(0) + x(1) 
+x(0) + x(1)
 Zero polynomial: 
-0 
+0
 0 += x 
-x(0) 
+x(0)
 var(1) > var(2)
 1
 var(2) > var(1)
@@ -458,6 +464,16 @@ Testing cudd interface
 11- 1
 101 1
 0-1 1
+----------------------
+Executing testsuite/blocknavi
+----------------------
+Experimenting with block orderings...
+Polynom: x(1)*x(2)*x(6) + x(1)*x(2)*x(7) + x(1)*x(2) + x(3)*x(4)*x(5)
+Block degree wrt. 2: 1
+: 3 nodes 1 minterms
+0110001000 1
+x(1)*x(2)*x(6) < x(1)*x(2)*x(7)? 1
+Finished.
 ----------------------
 Executing testsuite/errorcodes
 ----------------------
@@ -543,25 +559,25 @@ bset : 7 nodes 2 minterms
 : 2 nodes 1 minterms
 01010 1
 
-Test exponents of x(0)*x(1) + x(1)*x(2)*x(3) + x(1)*x(2)*x(4) + x(2)*x(4) 
+Test exponents of x(0)*x(1) + x(1)*x(2)*x(3) + x(1)*x(2)*x(4) + x(2)*x(4)
 (0, 1), (1, 2, 3), (1, 2, 4), (2, 4), 
-divide x(1)*x(3)  == 
+divide x(1)*x(3) == 
 (1, 3) ? 
 (1, 3) ? 
-multiply x(1)*x(2)*x(3)  == 
+multiply x(1)*x(2)*x(3) == 
 (1, 2, 3) ? 
 (1, 2, 3) ? 
-multiply x(1)*x(2)*x(3)*x(4)  == 
+multiply x(1)*x(2)*x(3)*x(4) == 
 (1, 2, 3, 4) ? 
 (1, 2, 3, 4) ? 
-multiples x(2)*x(3)  wrt. x(0)*x(4) 
+multiples x(2)*x(3) wrt. x(0)*x(4)
 : 4 nodes 4 minterms
 -011- 1
 
 : 4 nodes 4 minterms
 -011- 1
 
-divisors x(2)*x(3) 
+divisors x(2)*x(3)
 : 2 nodes 4 minterms
 00--0 1
 
@@ -569,7 +585,7 @@ multiplesOf : 5 nodes 3 minterms
 11000 1
 01100 1
 00001 1
-|x(0)*x(3)*x(4) 
+|x(0)*x(3)*x(4)
 : 4 nodes 2 minterms
 11000 1
 01100 1
@@ -578,7 +594,7 @@ multiplesOf : 5 nodes 3 minterms
 11000 1
 01100 1
 00001 1
-|x(1) 
+|x(1)
 : 4 nodes 2 minterms
 11000 1
 01100 1
@@ -587,7 +603,7 @@ multiplesOf : 7 nodes 4 minterms
 11-00 1
 01110 1
 00001 1
-|x(1)*x(2) 
+|x(1)*x(2)
 : 6 nodes 2 minterms
 11100 1
 01110 1
@@ -596,14 +612,14 @@ multiplesOf : 7 nodes 4 minterms
 11-00 1
 01110 1
 00001 1
-|0 
+|0
 : is the empty ZDD
 
 multiplesOf : 7 nodes 4 minterms
 11-00 1
 01110 1
 00001 1
-|1 
+|1
 
 ----------------------
 Executing testsuite/strategy_initialization
@@ -612,26 +628,26 @@ Executing testsuite/strategy_initialization
 Executing testsuite/boolepoly
 ----------------------
 Testing Boolean polynomials
-x(0) 
-x(1) 
-x(2) 
-x(3) 
-x(4) 
+x(0)
+x(1)
+x(2)
+x(3)
+x(4)
 x*y : 
-x(0)*x(1) 
+x(0)*x(1)
 x*y + z: 
-x(0)*x(1) + x(2) 
+x(0)*x(1) + x(2)
 (x + y)* z: 
-x(0)*x(2) + x(1)*x(2) 
+x(0)*x(2) + x(1)*x(2)
 (x*v + y*v + z ) 
-x(0)*x(3) + x(1)*x(3) + x(2) 
+x(0)*x(3) + x(1)*x(3) + x(2)
 (x*v + y*v + z )* (v*y): 
-x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3) 
+x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3)
 Node count: 5
 N: 5
 
 (x*v + y*v + z )* (v*y): 
-x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3) 
+x(0)*x(1)*x(3) + x(1)*x(2)*x(3) + x(1)*x(3)
 Equality? 
 1
 
@@ -676,35 +692,35 @@ All degrees: x + y*z + 1
 1
 2
 0
-x(0) 
-x(1)*x(2) 
-1 
-1 
-x(0) + x(1)*x(2) + 1  hasConstantTerm() ?
+x(0)
+x(1)*x(2)
 1
-x(0) + x(1)*x(2)  hasConstantTerm() ?
-0
-x(1)*x(2) + 1  hasConstantTerm() ?
 1
-x(1)*x(2)  hasConstantTerm() ?
-0
-1  hasConstantTerm() ?
+x(0) + x(1)*x(2) + 1 hasConstantTerm() ?
 1
-0  hasConstantTerm() ?
+x(0) + x(1)*x(2) hasConstantTerm() ?
 0
-x(0)*x(1) + x(1)*x(2)  * x(2)*x(4) + x(3)*x(4) 
-x(0)*x(1)*x(2)*x(4) + x(0)*x(1)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(4) 
+x(1)*x(2) + 1 hasConstantTerm() ?
+1
+x(1)*x(2) hasConstantTerm() ?
+0
+1 hasConstantTerm() ?
+1
+0 hasConstantTerm() ?
+0
+x(0)*x(1) + x(1)*x(2) * x(2)*x(4) + x(3)*x(4)
+x(0)*x(1)*x(2)*x(4) + x(0)*x(1)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(4)
 
 Going on...
 1
 1
 1
-x(0)*x(1)*x(2) + x(1)*x(2) + x(1)*x(3) + x(1)*x(4) 
-x(0)*x(1) + x(1)*x(2) + x(1)*x(4) + x(3)*x(4) 
-result x(0)*x(1)*x(2) + x(0)*x(1) + x(1)*x(3) + x(3)*x(4) 
+x(0)*x(1)*x(2) + x(1)*x(2) + x(1)*x(3) + x(1)*x(4)
+x(0)*x(1) + x(1)*x(2) + x(1)*x(4) + x(3)*x(4)
+result x(0)*x(1)*x(2) + x(0)*x(1) + x(1)*x(3) + x(3)*x(4)
 test newnode.
-newnode 0 x(1)*x(2) + x(2) + x(4)  x(3) + x(4) 
-result x(0)*x(1)*x(2) + x(0)*x(2) + x(0)*x(4) + x(3) + x(4) 
+newnode 0 x(1)*x(2) + x(2) + x(4) x(3) + x(4)
+result x(0)*x(1)*x(2) + x(0)*x(2) + x(0)*x(4) + x(3) + x(4)
 
 Finished.
 
@@ -729,54 +745,54 @@ Executing testsuite/leadterm
 ----------------------
 Testing leading terms
 x*y + z: 
-x(0)*x(1) + x(2) 
+x(0)*x(1) + x(2)
 leading term: 
-x(0)*x(1) 
+x(0)*x(1)
 x*y*w + z*w: 
-x(0)*x(1)*x(4) + x(2)*x(4) 
+x(0)*x(1)*x(4) + x(2)*x(4)
 leading term: 
-x(0)*x(1)*x(4) 
+x(0)*x(1)*x(4)
 # ring variabled: 
 5
 lmdeg()
 3
 usedVariables()
-x(0)*x(1)*x(2)*x(4) 
-x(0)*x(1)*x(4) + x(1) + x(3)*x(4) + x(4) 
+x(0)*x(1)*x(2)*x(4)
+x(0)*x(1)*x(4) + x(1) + x(3)*x(4) + x(4)
 usedVariables()
-x(0)*x(1)*x(3)*x(4) 
+x(0)*x(1)*x(3)*x(4)
 # usedVariables()
 4
 
 Leading term of simple monomial 
-x(3) 
+x(3)
 Leading term of empty diagram 
-0 
+0
 Leading term of constant polynomial one
-1 
+1
 Checkung handling of constants: x*y + z + 1
-x(0)*x(1) + x(2) + 1 
+x(0)*x(1) + x(2) + 1
 Checkung handling of constants: x*y + z + 0
-x(0)*x(1) + x(2) 
+x(0)*x(1) + x(2)
 Test Modulus
-x(2) 
-x(2) 
-x(0)*x(1) + x(2) 
-x(0) + x(1) + x(2) 
+x(2)
+x(2)
+x(0)*x(1) + x(2)
+x(0) + x(1) + x(2)
 Finished.
 ----------------------
 Executing testsuite/monomial
 ----------------------
 Testing Boolean monomials
-x(0) 
-x(1) 
-x(2) 
-x(3) 
-x(4) 
+x(0)
+x(1)
+x(2)
+x(3)
+x(4)
 
-Monomial x*y: x(0)*x(1) 
+Monomial x*y: x(0)*x(1)
 
-Monomial x*y*z: x(0)*x(1)*x(2)  degree: 3
+Monomial x*y*z: x(0)*x(1)*x(2) degree: 3
 (Sum of) Divisors: 
 : 3 nodes 8 minterms
 ---00 1
@@ -786,37 +802,37 @@ Indices:
 0
 1
 2
-x*y*z*w / y*z: x(0)*x(4) 
-x / x: 1 
-x / y*z: 0 
-x * y (as BooleVariable): x(0)*x(1) 
-x*y*z / y (as BooleVariable): x(0)*x(2) 
-x(0)*x(1)*x(4) .compare( x(0)*x(1)*x(4) ) :0
-x(0)*x(1)*x(4) .compare( x(0)*x(1)*x(2) ) :-1
-x(0)*x(1)*x(2) .compare( x(0)*x(1)*x(4) ) :1
-x(0)*x(1)*x(4)  < x(0)*x(1)*x(2)  :1
-x(0)*x(1)*x(4)  > x(0)*x(1)*x(2)  :0
-x(0)*x(1)*x(4)  <= x(0)*x(1)*x(2)  :1
-x(0)*x(1)*x(4)  >= x(0)*x(1)*x(2)  :0
-x(0)*x(1)*x(4)  == x(0)*x(1)*x(2)  :0
-x(0)*x(1)*x(4)  < x(0)*x(1)*x(4)  :0
-x(0)*x(1)*x(4)  > x(0)*x(1)*x(4)  :0
-x(0)*x(1)*x(4)  <= x(0)*x(1)*x(4)  :1
-x(0)*x(1)*x(4)  >= x(0)*x(1)*x(4)  :1
-x(0)*x(1)*x(4)  == x(0)*x(1)*x(4)  :1
+x*y*z*w / y*z: x(0)*x(4)
+x / x: 1
+x / y*z: 0
+x * y (as BooleVariable): x(0)*x(1)
+x*y*z / y (as BooleVariable): x(0)*x(2)
+x(0)*x(1)*x(4).compare( x(0)*x(1)*x(4)) :0
+x(0)*x(1)*x(4).compare( x(0)*x(1)*x(2)) :-1
+x(0)*x(1)*x(2).compare( x(0)*x(1)*x(4)) :1
+x(0)*x(1)*x(4) < x(0)*x(1)*x(2) :1
+x(0)*x(1)*x(4) > x(0)*x(1)*x(2) :0
+x(0)*x(1)*x(4) <= x(0)*x(1)*x(2) :1
+x(0)*x(1)*x(4) >= x(0)*x(1)*x(2) :0
+x(0)*x(1)*x(4) == x(0)*x(1)*x(2) :0
+x(0)*x(1)*x(4) < x(0)*x(1)*x(4) :0
+x(0)*x(1)*x(4) > x(0)*x(1)*x(4) :0
+x(0)*x(1)*x(4) <= x(0)*x(1)*x(4) :1
+x(0)*x(1)*x(4) >= x(0)*x(1)*x(4) :1
+x(0)*x(1)*x(4) == x(0)*x(1)*x(4) :1
 
-x(0)*x(1)*x(3)*x(4) 
-x(0)*x(1)*x(3)*x(4) .LCMDeg( x(0)*x(1)*x(2) ) :5
-x(0)*x(1)*x(2) .LCMDeg( x(0)*x(1)*x(3)*x(4) ) :5
-GCD( x(0)*x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(0)*x(1) 
-GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2) ) :x(1) 
-GCD( x(1)*x(3)*x(4) , x(0)*x(1)*x(2)*x(4) ) :x(1)*x(4) 
+x(0)*x(1)*x(3)*x(4)
+x(0)*x(1)*x(3)*x(4).LCMDeg( x(0)*x(1)*x(2)) :5
+x(0)*x(1)*x(2).LCMDeg( x(0)*x(1)*x(3)*x(4)) :5
+GCD( x(0)*x(1)*x(3)*x(4), x(0)*x(1)*x(2)) :x(0)*x(1)
+GCD( x(1)*x(3)*x(4), x(0)*x(1)*x(2)) :x(1)
+GCD( x(1)*x(3)*x(4), x(0)*x(1)*x(2)*x(4)) :x(1)*x(4)
 
-Multiples of x(0)*x(1) wrt. x(1)*x(2)*x(4) : 
+Multiples of x(0)*x(1)wrt. x(1)*x(2)*x(4): 
 : 4 nodes 4 minterms
 11-0- 1
 monom1
-x(0)*x(1) 
+x(0)*x(1)
 print
 0
 1
@@ -829,13 +845,13 @@ Testing lowlevel multiples
 : 4 nodes 4 minterms
 1-10- 1
 
-x(0)*x(4)  < x(0) 
+x(0)*x(4) < x(0)
 0
-x(0)*x(4)  > x(0) 
+x(0)*x(4) > x(0)
 1
-x(0)*x(4)  < x(0) 
+x(0)*x(4) < x(0)
 0
-x(0)*x(4)  > x(0) 
+x(0)*x(4) > x(0)
 1
 Finished.
 -------------------

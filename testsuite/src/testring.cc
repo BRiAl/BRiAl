@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.20  2007/01/29 17:03:45  dreyer
+// ADD: toy sandbox for block orderings
+//
 // Revision 1.19  2006/12/19 12:36:47  dreyer
 // ADD: BoolePolyRing::clear{Ring}Cache()
 //
@@ -316,8 +319,21 @@ void print_iter(Iterator start, Iterator end) {
   std::cout <<  std::endl;
 }
 
+/* The DdNode structure is the only one exported out of the package */
+struct DdNode2 {
+    int index;
+  //    short ref;		/* reference count */
+    DdNode2 *next;		/* next pointer for unique table */
+    union {
+      //	CUDD_VALUE_TYPE value;	/* for constant nodes */
+	DdChildren kids;	/* for internal nodes */
+    } type;
+};
 int
 main(){
+  std::cout << "sizeof(DdNode2)"<<sizeof(DdNode2) << std::endl;
+  std::cout << "sizeof(DdNode)"<<sizeof(DdNode) << std::endl;
+  std::cout << "sizeof(void*)"<<sizeof(void*) << std::endl;
 
   try{
     BoolePolyRing::ring();
@@ -575,6 +591,12 @@ main(){
   std::cout<<(void*) cudd_tag_number<1>::value  <<std::endl; 
 */
  //  std::cout<< enumit::dummy_enum<dummy1_type>::numval <<std::endl;
+  std::cout<< "sizeof(int)  " << sizeof(int) <<std::endl;
+
+  std::cout<< "100000" << int(100000) <<std::endl;
+  std::cout<< "" << int() <<std::endl;
+//   BoolePolyRing ring5(100002);
+//   std::cout<< "" << BooleVariable(100000) <<std::endl;
 
   return 0;
 }

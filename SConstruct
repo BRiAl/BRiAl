@@ -148,7 +148,7 @@ Default(gb)
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
-  "booleset" ]
+  "booleset", "blocknavi" ]
 tests_gb=["strategy_initialization"]
 CPPPATH=env['CPPPATH']+['./groebner/src']
 print env['CCFLAGS']
