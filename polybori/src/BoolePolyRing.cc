@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/02/03 17:31:15  dreyer
+ * FIX: deactivated workaround for old rings
+ *
  * Revision 1.32  2007/01/23 12:37:21  dreyer
  * + Workaround for segfault after order change
  *
@@ -143,7 +146,9 @@ BEGIN_NAMESPACE_PBORI
 // initialize pointer to active ring
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
+#ifdef PBORI_KEEP_OLD_RINGS
 std::list<BoolePolyRing::manager_ptr> BoolePolyRing::old_rings;
+#endif
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
@@ -348,9 +353,10 @@ BoolePolyRing::activate() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::activate() const" );
 
+#ifdef PBORI_KEEP_OLD_RINGS
   if(current_mgr)
     old_rings.push_back(current_mgr);
-  
+#endif  
   current_mgr = pMgr;
 }
 

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/02/03 17:31:14  dreyer
+ * FIX: deactivated workaround for old rings
+ *
  * Revision 1.31  2007/01/23 12:37:21  dreyer
  * + Workaround for segfault after order change
  *
@@ -327,7 +330,9 @@ protected: public:
   manager_ptr pMgr;
 
   /// Work around, if we want to reuse Polynomials after order change
+#ifdef PBORI_KEEP_OLD_RINGS
   static std::list<manager_ptr> old_rings;
+#endif
 };
 
 END_NAMESPACE_PBORI
