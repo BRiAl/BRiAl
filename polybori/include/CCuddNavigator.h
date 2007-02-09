@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/02/09 17:08:21  dreyer
+ * ADD: assertion
+ *
  * Revision 1.13  2006/12/13 18:07:04  dreyer
  * ADD: poly /= exp
  *
@@ -193,6 +196,7 @@ inline CCuddNavigator::value_type
 CCuddNavigator::operator*() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::operator*() const" );
+  assert(isValid());
   return Cudd_Regular(pNode)->index;
 }
 
