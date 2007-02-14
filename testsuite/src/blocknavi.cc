@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/02/14 13:56:10  dreyer
+ * CHANGE: finished prototype for block iterator
+ *
  * Revision 1.3  2007/02/09 17:07:00  dreyer
  * CHANGE: experimenting once more
  *
@@ -328,15 +331,16 @@ public:
     // goto begin of next term
 
     NaviType current = m_stack.top();
-    //    std::cout <<"hihi "<<*current <<" "<<upperbound <<std::endl;
+    //       std::cout <<"hihi "<<*current <<" "<<upperbound <<std::endl;
     current.incrementThen();//deg++;
     //   std::cout <<"huhu "<<*current <<std::endl;
     while (notFound) {
 
-
+      //       std::cout <<"while notFound "<<*current <<" "<<upperbound <<std::endl;
       bool notdone = (*current >= min_idx);
       
       while ( (deg < upperbound) && !at_end(current) ) {
+        //  std::cout <<"while deg <"<<deg <<" "<<*current <<" "<<upperbound <<std::endl;
         m_stack.push(current);
         deg++;
         current.incrementThen();
@@ -345,15 +349,16 @@ public:
       if (!on_path(current) ) {
         current = current.elseBranch();
         // assert(deg > 0);
+        
         //  deg--;
-        //   std::cout <<"!on "<<*current <<" "<<deg <<std::endl;
+        //        std::cout <<"!on "<<*current <<" "<<deg <<std::endl;
       }
 
       if (on_path(current) ) {
         if (deg == upperbound) {
-          //std::cout <<"size deg " << deg <<std::endl;
-          //   std::cout << "current3 "<<*current<<std::endl;
-          //          std::cout << "top()"<< *m_stack.top()  <<std::endl;
+//           std::cout <<"size deg " << deg <<std::endl;
+//            std::cout << "current3 "<<*current<<std::endl;
+//                     std::cout << "top()"<< *m_stack.top()  <<std::endl;
           return deg;
         }
 
@@ -362,38 +367,68 @@ public:
           max_path.clear();
         }
       }
-      
-      current = m_stack.top();
-      NaviType next=m_stack.top(); 
-       notdone = (*current >= min_idx);
+
+      if (m_stack.empty()) {
+        //        std::cout <<"EMPTY "<<std::endl;  std::cout.flush();
+      }
+      else
+        current = m_stack.top();//!!!!!!!!!
+      NaviType next=current;
+      //      std::cout <<"b4 !notdone "<<*next <<" "<<*current<<std::endl;
+
+      notdone = (*current >= min_idx);//&&(!current.isConstant());//&&(!max_path.empty());
       if(!notdone) {
         dummy_append(m_stack, max_path.rbegin(), max_path.rend());
-        //   std::cout <<"size " << max_path.size() <<":"<<deg <<std::endl;
+        //     std::cout <<"size " << max_path.size() <<":"<<deg <<std::endl;
         //  std::cout << "max_path."<< *max_path.front()  <<std::endl;
         return deg;
       }
-      
+//       std::cout <<"b4 notdone "<<*next <<" "<<*current<<
+//         "size "<<m_stack.size()<<" "<<max_path.size()<<std::endl;
+      //   std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
       while(notdone) {
+        //        std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
+        assert(!m_stack.empty());
         m_stack.pop();
+        //        std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
         deg--;
-        
-        if (max_path.empty() || *current < (*max_path.back()) )
+        assert(current.isValid());
+        //        std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
+        if (max_path.empty() || *current < (*max_path.back()) ) {
+          //     assert(!current.isConstant());
           max_path.push_back(current);
-        
-        current.incrementElse();
-        
+        }
+        //        std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
+        //        std::cout <<"huhu1"<<*current;
+        if (!current.isConstant())
+          current.incrementElse();
+              assert(current.isValid());
         next = current;
-        current = m_stack.top();
-        notdone = at_end(current) && (*current >= min_idx); 
+        //        std::cout <<"init? "<<m_stack.empty();   std::cout.flush();
+        //    std::cout <<"huhu2"<<m_stack.empty();   std::cout.flush();
+        if (!m_stack.empty())
+          current = m_stack.top();
+        //std::cout <<"huhu2c "<<std::endl;      std::cout.flush();
+        //        std::cout <<"huhu2a "<<current <<std::endl;   
+        //                std::cout <<"huhu2b "<<*current <<std::endl;   
+        assert(current.isValid());
+        //    std::cout <<"huhu2c "<<at_end(current) <<std::endl;   
+
+        notdone = at_end(current) && (*current >= min_idx) && !m_stack.empty(); 
+        //        std::cout <<"huhu3"<<*current;   std::cout.flush();
       }
+      //        std::cout <<"after notdone "<<std::endl; std::cout.flush();
+      std::cout.flush();
+      assert(current.isValid());   
+      assert(next.isValid());
       current = next;
       notFound = !( at_end(current) );
     }
     //    std::cout << "max_path."<< *max_path.front()  <<std::endl;
     dummy_append(m_stack, max_path.rbegin(), max_path.rend());
 
-    //    std::cout <<"size " << max_path.size()<<std::endl;
-    return deg;
+    //    std::cout <<"size/deg " << max_path.size()<< " "<<deg<<*current <<std::endl;
+    return max_path.size();//deg;
   }
 
 
@@ -403,58 +438,101 @@ public:
     IdxType deg = 0;
     bool notFound = true;
     IdxType last_deg = 0;
+    bool LastNotFound = true;
+
     // goto begin of next term
     while (notFound) {
-      current = m_stack.top();
       assert(!m_stack.empty());
+      current = m_stack.top();
 
       next=m_stack.top();
       bool atend = true;
 
-      bool notdone = (*current >= min_idx);
-      //    std::cout <<"not done" <<*current <<" "<<min_idx <<std::endl;
+      //assert(!current.isConstant());
+
+      bool notdone = (*current >= min_idx)&&(LastNotFound);//&&(*current < max_idx);
+      //      std::cout <<"not done" <<*current <<" "<<min_idx<<" "<<max_idx <<"  "<<last_deg<<" "<<notdone<<std::endl; 
+      // assert(LastNotFound);
       if(!notdone) {
-        deg = last_deg;//dd_cached_block_degree(m_deg_cache, m_stack.top(), max_idx)-1;
+        if (!LastNotFound)
+          deg = last_deg-1;//-1;
+        else
+          deg = last_deg;
+
+        //  LastNotFound=true;
+
+
+        //deg = last_deg;//dd_cached_block_degree(m_deg_cache, m_stack.top(), max_idx)-1;
         //        std::cout <<"deg end" <<deg <<std::endl;
+
+        //         std::cout <<"last_deg" << deg <<std::endl;
+         //  assert(!LastNotFound);
         if (deg) {
+          //          std::cout << "b4 tmp "<< (*m_stack.top()) <<std::endl;
           bool tmp = (find_deg(deg-1) == 0);
-          //          std::cout << "tmp "<<tmp<<std::endl;
+          //std::cout << "tmp "<<tmp<< (*m_stack.top()) <<std::endl;
+
           return tmp;
         }
-        // std::cout <<"found deg" << *m_stack.top()<<std::endl;
-
+        //        std::cout <<"found null deg" << *m_stack.top()<<std::endl;
+       LastNotFound=true;
         return true;
       }
+      assert(LastNotFound);
       
       bool huhu = false;
       while(notdone) {
-
+  //       std::cout <<"act !done" << deg <<*m_stack.top()<<*current<<std::endl;
+        next = m_stack.top();
         m_stack.pop();
         deg++;
+        if (m_stack.empty()) {
+          assert(!next.isConstant());
+             m_stack.push(next);
+          notdone = false;
+          
+ //          std::cout <<"m_stack.empty() top()"<<*next<<std::endl;
+//           std::cout << "LastNotFound"<<std::endl;
+              LastNotFound = false;
+          
+        }
+        else {
+          // deg++;
+          current.incrementElse();
+          
+          next = current;
 
-        current.incrementElse();
-
-        next = current;
-        if (m_stack.empty())
-          return false;
-        current = m_stack.top();
-        notdone = at_end(current) && (*current >= min_idx); 
+      //     std::cout<< "next "<<*next <<" "<<deg<<" "<<m_stack.empty()<<std::endl;
+              
+          current = m_stack.top();
+          notdone = at_end(current) && (*current >= min_idx); 
+        }
       }
   
       current = next;
 
       if (*current < min_idx) {
-          return true;
+  
+//         std::cout <<"HIHI "<<*current <<" "<< min_idx <<std::endl;;
+        return true;
       }
 
       last_deg = deg;
-      while ( (deg > 0) && !at_end(current) ) {
 
+//       std::cout <<"huhu" << deg
+//       <<*current<<at_end(current)<<LastNotFound<<std::endl;
+
+      while (LastNotFound&& (deg > 0) && !at_end(current) ) {
+        //std::cout <<"while deg>0 " << deg <<*current<<std::endl;
+        assert(!current.isConstant());
         m_stack.push(current);
         deg--;
         current.incrementThen();
       }
+//       if (LastNotFound&& (deg == 0) )
+//         std::cout <<"lastnot"<< *current <<std::endl;
 
+      //  std::cout <<"hoho" << deg <<*current<<std::endl;
       notFound = !((deg == 0) && at_end(current) );
     }
 
@@ -467,24 +545,23 @@ protected:
   IdxType min_idx, max_idx;
 };
 
+template <class DelayedIterator>
+class CBlockIterator:
+  public DelayedIterator {
 
-class CBlockIterator {
 public:
-  typedef BoolePolynomial::navigator navigator;
-  typedef CBlockIterator self;
+
+  typedef DelayedIterator base;
+  typedef CBlockIterator<base> self;
+  typedef typename base::stack_type stack_type;
+  typedef typename base::navigator navigator;
+  
   CBlockIterator(navigator navi, unsigned* indices, 
                  const CBlockDegreeCache<>& deg_cache):
-    m_stack(),  m_indices(indices), m_deg_cache(deg_cache)
-    {
-
-    unsigned* idx_iter (m_indices);
-
-    while (!navi.isConstant()  ) {
-      incrementBlock(navi, *idx_iter,
-                     dd_cached_block_degree(m_deg_cache, navi, *idx_iter) );
-      if (*idx_iter !=CUDD_MAXINDEX) ++idx_iter;
-      std::cout <<"idx "<<*idx_iter<<std::endl;
-    }
+    base(),  m_indices(indices), m_deg_cache(deg_cache), 
+    m_current_block(indices) {
+    unsigned* idx_iter(m_indices);
+    findTerminal(navi, idx_iter);   
   }
 
   void incrementBlock(navigator& navi, unsigned idx, unsigned deg) {
@@ -493,125 +570,218 @@ public:
       unsigned tmp;
       if ( (tmp = dd_cached_block_degree(m_deg_cache, navi.thenBranch(),
                                    idx) + 1) == deg){
-        m_stack.push(navi);
-        std::cout<< "pn "<<*navi<<tmp<< deg<<std::endl;
+        assert(!navi.isConstant());
+        base::m_stack.push(navi);
         navi.incrementThen(); 
         --deg;
       }
       else {
         navi.incrementElse();
-        m_stack.push(navi);
-        std::cout<< "pe "<<*navi<<tmp << deg <<std::endl;
+        assert(!navi.isConstant());
+        base::m_stack.push(navi);
       }
     }
 
   }
-
-  template <class ListType>
-  void findnext(navigator navi, ListType& thelist,
-                unsigned deg, unsigned maxidx){
-    while( (*navi < maxidx) && (thelist.size() < deg) ){
-      thelist.push_back(navi);
-      navi.incrementThen();
-    }
-    std::cout <<"thelist.size "<< thelist.size() << " "<<deg <<std::endl;
-   
-    while((*navi < maxidx)&&!thelist.empty() && thelist.size() != deg) {
-      // std::cout <<"huhuA "<<std::endl;
-      while (!thelist.empty() && (*thelist.back().elseBranch() < maxidx  )){
-        std::cout <<"huhuAB "<<std::endl;
-        thelist.pop_back();
-      }
-      //std::cout <<"huhuB "<<std::endl;
-      while( (*navi < maxidx) && (thelist.size() < deg) ){
-        std::cout << "*navi " <<*navi << "maxidx " << maxidx << 
-          "thelist.size()  " << thelist.size() <<"deg "<< deg <<std::endl;
-        thelist.push_back(navi);
-        navi.incrementThen();
-      }
-    }
-
-    std::cout <<"terminates?"<<deg <<std::endl;
-  }
-
 
   self & operator++() {
 
+    if (base::empty())
+      return *this;
 
-    unsigned updeg = 0;
-    navigator current = m_stack.top(); 
+    navigator current = base::m_stack.top(); 
 
-    //    std::cout << "++ "<< *current<<std::endl;
+    if (!current.isValid()) {
+      base::clear();
+      return *this;
+    }
+
+
+    while ( (m_current_block != m_indices) && (*current < *(m_current_block-1) )
+    ) 
+      --m_current_block;
+
+    //    std::cout << "++ "<< *current<<" "<< *m_current_block <<std::endl;
     unsigned* idx_iter (m_indices);
 
-    while (*current >= *idx_iter)
+    //   m_current_block = m_indices;
+    while (*current >= *idx_iter) {
       ++idx_iter;
+      // ++m_current_block;
+    }
+//       std::cout << "*idx_iter" <<*idx_iter<<
+//       " *m_current_block"<<*m_current_block<<std::endl;
+      /* std::cout << "idx_iter" <<idx_iter<<"?"<<(idx_iter+1)<<
+      " m_current_block"<<m_current_block<<std::endl;
+    */
+
+    std::cout.flush();
+    assert(idx_iter == m_current_block);
 
     bool notfound = true;
 
     while (notfound) {
 
       unsigned min_idx(idx_iter == m_indices? 0 : *(idx_iter-1) );
-      //      std::cout << "++i "<<   min_idx<< " "<<*idx_iter<<std::endl;
 
-      deg_next_term<std::stack<navigator>, navigator, unsigned>
-        nextop(m_stack, min_idx, *(idx_iter), m_deg_cache);
+      //      std::cout << "mindex"<<  min_idx << " "<< *(idx_iter)<< std::endl;
+
+//       if ( base::empty())
+//         std::cout << "empty";
+//       else
+//         std::cout << *base::top();
+//       std::cout <<std::endl;
+
+      deg_next_term<stack_type, navigator, unsigned>
+        nextop(base::m_stack, min_idx, *(idx_iter), m_deg_cache);
+
       notfound =  nextop();
-      if(notfound)  { 
+    
+//       if ( base::empty())
+//         std::cout << "Empty";
+//       else
+//         std::cout << "!"<<*base::top();
+//       std::cout <<std::endl;
+
+      assert(idx_iter == m_current_block);
+      if(notfound)  {
+        //   std::cout << "notfound idx_iter"<<std::endl;  
+        //         std::cout << "*top() "<<*base::top()<<std::endl;
+
         if  (idx_iter != m_indices) {
-          //  std::cout <<"notfound (++) "<< std::endl;
           --idx_iter;
+          --m_current_block;
         }
         else {
-          notfound = false; //end here
-          std::cout << "already first block"<<std::endl;
-        }
-      }
+          notfound = false; 
+
+          assert(!base::empty());
+          current = base::m_stack.bottom();
+
+          // owns one?
+          while (!current.isConstant())
+            current.incrementElse();
+
+          base::clear();
+          
+          if (current.terminalValue())
+            base::m_stack.push(navigator());
+
+          //end here
+//           std::cout << "already first block"<<std::endl;
+//           std::cout << "          "<<base::empty() <<std::endl;
+          //     std::cout << "          "<<*current <<std::endl;
+
+//        if(!base::empty() )
+//             std::cout << "          "<<*base::top() <<std::endl;
+
+         }
+      } 
+
+      assert(idx_iter == m_current_block);
     }
 
-    if (m_stack.empty()) return *this;
-    navigator navi(m_stack.top());
+    if (base::empty()||!base::top().isValid()) return *this;
+    navigator navi(base::top());
+
     idx_iter = (m_indices);
-    std::cout << " ???? "<<  navi.isConstant()<<std::endl;std::cout.flush();
-    while (*navi >= *idx_iter)
-      ++idx_iter;
 
-    while (!navi.isConstant() && (*navi.thenBranch() < *idx_iter) ) {
-      navi.incrementElse();
+    while (*navi >= *idx_iter) {
+      //      ++m_current_block;
+      ++idx_iter;
+    } 
+    //    std::cout << "*idx_iter "<< *idx_iter<<*navi<<std::endl; 
+    //navi.incrementThen();
+//     navigator next(navi);
+//     navigator nextelse(navi);
+//     if (!next.isConstant()) {
+//       next.incrementThen();
+//       //      if (!nextelse.isConstant()) 
+//         nextelse.incrementElse();
+//     }
+//     bool foundhere= false;
+    if ( !(navi.isConstant() || (*navi >=*idx_iter) ))
+      navi.incrementThen();
+    while(! (navi.isConstant() || (*navi >=*idx_iter) ) ){
+      //      std::cout << "navi1 "<< *navi<<std::endl; 
+      //  navi.incrementThen();
+      //      std::cout << "navi2 "<< *navi<<std::endl; 
+      if ( !(navi.isConstant() || (*navi >=*idx_iter) ))
+        navi.incrementElse();
+      //      std::cout << "navi3 "<< *navi<<std::endl; 
+//   std::cout << "next "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl; 
+//       if ( (*next >= *idx_iter)) {
+//         navi = next;
+//       }
+//       else {
+//         navi = nextelse;
+//       }
+//       if (!navi.isConstant()) {
+//         next = navi.thenBranch();
+//         //    if (!next.isConstant()) 
+//            nextelse = navi.elseBranch();
+//       }   std::cout << "nexT "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl;
+      
+      // foundhere = (*navi >=*idx_iter);
     }
-    std::cout << " navi " <<*navi <<" "<< *idx_iter <<std::endl;
+
+    //  std::cout << "navi "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl; 
+//     while (!navi.isConstant() && ((*next < *idx_iter)  ) ) {
+//       std::cout << "navi "<<*navi<< " "<<*next<< "  "<<*navi.thenBranch()<<std::endl; 
+//       navi.incrementElse();
+//       if (!navi.isConstant())
+//         next = navi.thenBranch();
+
+//       // next = navi;
+// //       if (!next.isConstant())
+// //         next.incrementThen();
+//       std::cout << "navielse "<<*navi;
+//       //  std::cout << "navielse "<<*navi<< " "<<*navi.thenBranch()<<std::endl;
+//     }
+//     std::cout << "navi "<<*navi<<std::endl;
+//     if  (!navi.isConstant())
+//       std::cout << "navith "<<*navi.thenBranch()<<std::endl;
+
     // 
-    if (!navi.isConstant() ) navi.incrementThen();
- 
+    //   if (!navi.isConstant() ) navi.incrementThen();
+    // assert(idx_iter == m_current_block);
+
+//     std::cout << "b4 find terminal"<<*base::top()<<* navi<<* idx_iter <<std::endl;      std::cout << "navi "<<*navi<<std::endl;
+    findTerminal(navi, idx_iter);
+    return *this;
+  }
+
+  template <class IdxIterator>
+  void findTerminal(navigator navi, IdxIterator& idx_iter) {
     while (!navi.isConstant()  ) {
       incrementBlock(navi, *idx_iter,
                      dd_cached_block_degree(m_deg_cache, navi, *idx_iter) );
-      if (*idx_iter !=CUDD_MAXINDEX) ++idx_iter;
-//      std::cout <<"idx "<<*idx_iter<<std::endl;
+      if (*idx_iter !=CUDD_MAXINDEX){
+        ++idx_iter;
+        ++m_current_block;
+      }
     }
-   
-    return *this;
-    //    unsigned deg = m_stack.size();
-
-
   }
 
   void print() const {
       std::cout << ":";
       std::cout.flush();
-    std::stack<navigator> thestack( m_stack);
+    stack_type thestack( base::m_stack);
     while (!thestack.empty()){
-      std::cout << *(thestack.top()) << ", ";
+      if (thestack.top().isValid())
+        std::cout << *(thestack.top()) << ", ";
+      else 
+        std::cout << 1;
       std::cout.flush();
       thestack.pop();
     }
   }
 
 
-  std::stack<navigator> m_stack;
+  // std::stack<navigator> base::m_stack;
 
   unsigned* m_indices;
-  // unsigned* m_current_block;
+  unsigned* m_current_block;
 
   const CBlockDegreeCache<>& m_deg_cache;
 };
@@ -639,7 +809,7 @@ main(){
 
     BoolePolynomial poly = 
       x1*x2*x6*x9  + x1*x2*x7*x9+ x1*x2*x7+ x1*x2*x8*x9 
-      +   x1*x3*x6*x9  + x1*x3*x7*x9+ x1*x3*x7+ x1*x3*x8*x9 ; 
+      +   x1*x3*x6*x9  + x1*x3*x7*x9+ x1*x3*x7+ x1*x3*x8*x9 + x1*x5 +1; 
 
       // x1+ x2*x3+ x1*x2 +  x1*x2*x6  + x1*x2*x7+ x3*x4*x5;
     std::cout << "Polynom: "<< poly <<std::endl;
@@ -673,27 +843,41 @@ main(){
 
     std::cout << "block iter..."<<std::endl;
 
+    typedef unsigned size_type;
+    // Incrementation functional type
+    typedef 
+      binary_composition< std::plus<size_type>, 
+      project_ith<1>, integral_constant<size_type, 1> > 
+      increment_type;
+      
+    // Decrementation functional type
+    typedef 
+      binary_composition< std::minus<size_type>, 
+      project_ith<1>, integral_constant<size_type, 1> > 
+      decrement_type;
+    typedef BoolePolynomial::navigator navigator;
+    // Iterator type for iterating all monomials (dereferencing to degree)
+    typedef CTermIter<size_type, navigator, 
+      increment_type, decrement_type,
+      integral_constant<size_type, 0> >
+      deg_iterator;
 
-    CBlockIterator biter(poly.navigation(), next_block, blockDegCache);
+    typedef BooleMonomial monom_type;
+    // Iterator type, which extends deg_iterator with function term()
+    typedef CDelayedTermIter<monom_type, 
+      change_assign<>, project_ith<2>, 
+      deg_iterator> delayed_iterator;
 
-    biter.print();
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print(); 
-    ++biter;
-    biter.print();
-    ++biter;
-    biter.print();  
 
+    
+    CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block, blockDegCache);
+
+    for(unsigned i = 0; i < 10; ++i) {
+      biter.print();
+      std::cout << " "<<  biter.term() <<std::endl;
+      ++biter;
+    }
+  
     /*  std::cout << "Experimenting with negations..."<<std::endl;
 
     navi = poly.navigation();
