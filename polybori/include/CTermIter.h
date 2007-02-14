@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/02/14 10:28:48  dreyer
+ * FIX: wrong constant term
+ *
  * Revision 1.16  2007/01/16 10:53:54  dreyer
  * FIX: bug in CTermIter::deg(), wrong degree for monomial 1.
  *
@@ -148,6 +151,7 @@ public:
 
   /// Get type of navigators
   typedef NavigatorType navigator_type;
+  typedef navigator_type navigator;
 
   /// Get operational, which changes the current term on forward steps
   typedef ForwardOp forwardop_type;
@@ -351,7 +355,8 @@ protected:
   /// Handle else-branches (for bidirectional iterators; ignored by default)
   elsehandle_type handleElse;
 
-private:
+private: // Change?
+protected:
   stack_type m_stack;
   value_type m_value;
   forwardop_type forwardop;
