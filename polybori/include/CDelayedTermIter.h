@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/02/14 10:30:13  dreyer
+ * FIX: wrong constant term
+ *
  * Revision 1.2  2006/09/07 16:04:32  dreyer
  * ADD: CDegLexIter.h
  *
@@ -78,10 +81,10 @@ public:
     stack_type the_stack(base::getStack());
 
     term_type result;
-    result = terminalop_type()(result, true);
-
+    result = terminalop_type()(result, !the_stack.empty());
+     
     appendop_type do_append;
-
+      
     while(!the_stack.empty() && the_stack.top().isValid()) {
       result =  do_append(result, *the_stack.top() );
       the_stack.pop();
