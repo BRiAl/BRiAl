@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/02/15 17:03:12  dreyer
+ * + Routine check-in
+ *
  * Revision 1.4  2007/02/14 13:56:10  dreyer
  * CHANGE: finished prototype for block iterator
  *
@@ -581,16 +584,17 @@ public:
         base::m_stack.push(navi);
       }
     }
-
   }
 
   self & operator++() {
 
+    // the zero term
     if (base::empty())
       return *this;
 
     navigator current = base::m_stack.top(); 
 
+    // the term one
     if (!current.isValid()) {
       base::clear();
       return *this;
@@ -598,25 +602,17 @@ public:
 
 
     while ( (m_current_block != m_indices) && (*current < *(m_current_block-1) )
-    ) 
+            ) {
       --m_current_block;
-
-    //    std::cout << "++ "<< *current<<" "<< *m_current_block <<std::endl;
+      std::cout << "     --m_current_block;" <<std::endl;
+    }
     unsigned* idx_iter (m_indices);
 
-    //   m_current_block = m_indices;
     while (*current >= *idx_iter) {
       ++idx_iter;
-      // ++m_current_block;
     }
-//       std::cout << "*idx_iter" <<*idx_iter<<
-//       " *m_current_block"<<*m_current_block<<std::endl;
-      /* std::cout << "idx_iter" <<idx_iter<<"?"<<(idx_iter+1)<<
-      " m_current_block"<<m_current_block<<std::endl;
-    */
-
-    std::cout.flush();
     assert(idx_iter == m_current_block);
+
 
     bool notfound = true;
 
@@ -624,29 +620,15 @@ public:
 
       unsigned min_idx(idx_iter == m_indices? 0 : *(idx_iter-1) );
 
-      //      std::cout << "mindex"<<  min_idx << " "<< *(idx_iter)<< std::endl;
-
-//       if ( base::empty())
-//         std::cout << "empty";
-//       else
-//         std::cout << *base::top();
-//       std::cout <<std::endl;
-
       deg_next_term<stack_type, navigator, unsigned>
         nextop(base::m_stack, min_idx, *(idx_iter), m_deg_cache);
 
       notfound =  nextop();
     
-//       if ( base::empty())
-//         std::cout << "Empty";
-//       else
-//         std::cout << "!"<<*base::top();
-//       std::cout <<std::endl;
-
       assert(idx_iter == m_current_block);
+
       if(notfound)  {
-        //   std::cout << "notfound idx_iter"<<std::endl;  
-        //         std::cout << "*top() "<<*base::top()<<std::endl;
+
 
         if  (idx_iter != m_indices) {
           --idx_iter;
@@ -666,15 +648,6 @@ public:
           
           if (current.terminalValue())
             base::m_stack.push(navigator());
-
-          //end here
-//           std::cout << "already first block"<<std::endl;
-//           std::cout << "          "<<base::empty() <<std::endl;
-          //     std::cout << "          "<<*current <<std::endl;
-
-//        if(!base::empty() )
-//             std::cout << "          "<<*base::top() <<std::endl;
-
          }
       } 
 
@@ -687,42 +660,17 @@ public:
     idx_iter = (m_indices);
 
     while (*navi >= *idx_iter) {
-      //      ++m_current_block;
       ++idx_iter;
     } 
-    //    std::cout << "*idx_iter "<< *idx_iter<<*navi<<std::endl; 
-    //navi.incrementThen();
-//     navigator next(navi);
-//     navigator nextelse(navi);
-//     if (!next.isConstant()) {
-//       next.incrementThen();
-//       //      if (!nextelse.isConstant()) 
-//         nextelse.incrementElse();
-//     }
-//     bool foundhere= false;
+
+     assert(idx_iter == m_current_block);
+
     if ( !(navi.isConstant() || (*navi >=*idx_iter) ))
       navi.incrementThen();
+
     while(! (navi.isConstant() || (*navi >=*idx_iter) ) ){
-      //      std::cout << "navi1 "<< *navi<<std::endl; 
-      //  navi.incrementThen();
-      //      std::cout << "navi2 "<< *navi<<std::endl; 
       if ( !(navi.isConstant() || (*navi >=*idx_iter) ))
         navi.incrementElse();
-      //      std::cout << "navi3 "<< *navi<<std::endl; 
-//   std::cout << "next "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl; 
-//       if ( (*next >= *idx_iter)) {
-//         navi = next;
-//       }
-//       else {
-//         navi = nextelse;
-//       }
-//       if (!navi.isConstant()) {
-//         next = navi.thenBranch();
-//         //    if (!next.isConstant()) 
-//            nextelse = navi.elseBranch();
-//       }   std::cout << "nexT "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl;
-      
-      // foundhere = (*navi >=*idx_iter);
     }
 
     //  std::cout << "navi "<<*navi<< " "<<*next<< "  "<<*nextelse<<std::endl; 
@@ -743,8 +691,7 @@ public:
 //       std::cout << "navith "<<*navi.thenBranch()<<std::endl;
 
     // 
-    //   if (!navi.isConstant() ) navi.incrementThen();
-    // assert(idx_iter == m_current_block);
+     assert(idx_iter == m_current_block);
 
 //     std::cout << "b4 find terminal"<<*base::top()<<* navi<<* idx_iter <<std::endl;      std::cout << "navi "<<*navi<<std::endl;
     findTerminal(navi, idx_iter);
