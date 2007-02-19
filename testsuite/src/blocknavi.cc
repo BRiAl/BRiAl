@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/02/19 17:21:51  dreyer
+ * CHANGE: routine check-in
+ *
  * Revision 1.6  2007/02/16 16:14:22  dreyer
  * CHANGE: routine check-in
  *
@@ -43,6 +46,7 @@
 
 // load standard iostream capapilities
 #include <iostream>
+#include <algorithm>
 
 // load polybori header file
 # include "polybori.h"
@@ -50,6 +54,148 @@
 #include "CDegreeCache.h"
 
 USING_NAMESPACE_PBORI
+
+
+template<class NaviType>
+class bounded_restricted_term {
+public:
+  typedef NaviType navigator;
+  typedef bounded_restricted_term<navigator> self;
+  typedef std::vector<navigator> stack_type;
+  typedef unsigned size_type;
+  typedef unsigned idx_type;
+
+  bounded_restricted_term (): 
+    m_stack(), m_max_idx(0), m_upperbound(0), m_next() {}
+
+  bounded_restricted_term (navigator navi, size_type upperbound, 
+                           idx_type max_idx): 
+    m_stack(), m_upperbound(upperbound), m_max_idx(max_idx), m_next(navi)  {
+
+    m_stack.reserve(upperbound);
+
+    followThen();
+
+    while (!is_path_end() && !empty() )
+      increment();
+  }
+
+  size_type operator*() const {
+    return m_stack.size();
+  }
+
+  const navigator& next() const {
+    return m_next;
+  }
+
+  typename stack_type::const_iterator begin() const {
+    return m_stack.begin();
+  }
+
+  typename stack_type::const_iterator end() const {
+    return m_stack.end();
+  }
+
+  self& operator++() {
+    assert(!empty());
+
+    do {
+      increment();
+    } while (!empty() && !is_path_end());
+
+    return *this;
+  }
+
+  void print() const {
+
+    typename stack_type::const_iterator start(m_stack.begin()), 
+      finish(m_stack.end());
+
+    std::cout <<'(';
+    while (start != finish) {
+      std::cout << *(*start) << ", " ;
+      ++start;
+    }
+    std::cout <<')';
+
+  }
+
+  bool operator==(const self& rhs) const {
+    if (rhs.empty())
+      return empty();
+    if (empty())
+      return rhs.empty();
+
+    else (m_stack == rhs.m_stack);
+  }
+  bool operator!=(const self& rhs) const {
+    return !(*this == rhs);
+  }
+protected:
+
+  void followThen() {
+    while (within_degree() && !at_end())
+      nextThen();
+  }
+
+  void increment() {
+    assert(!empty());
+
+    m_next = top();
+    m_next.incrementElse();
+    m_stack.pop_back();
+
+    followThen();
+
+  }
+
+  bool empty() const{
+    return m_stack.empty();
+  }
+
+  navigator top() const{
+    return m_stack.back();
+  }
+
+  bool is_path_end() {
+ 
+    path_end();
+    return  (!m_next.isConstant() && (*m_next >= m_max_idx)) ||
+      m_next.terminalValue();
+  }
+
+  void path_end()  {
+    while (!at_end()) {
+      m_next.incrementElse();
+    }
+  }
+
+  void nextThen() {
+    assert(!m_next.isConstant());
+    m_stack.push_back(m_next);
+    m_next.incrementThen();
+  }
+
+
+
+  bool within_degree() const {
+    
+    return (*(*this) <  m_upperbound);
+  }
+
+  bool at_end() const {
+    
+    return m_next.isConstant() || (*m_next >= m_max_idx);
+  }
+
+private:
+  stack_type m_stack;
+  idx_type m_max_idx;
+  size_type m_upperbound;
+  navigator m_next;
+};
+
+
 
 struct block_degree: public CCacheTypes::binary_cache_tag { };
 struct block_dlex_lead: public CCacheTypes::unary_cache_tag { };
@@ -322,12 +468,26 @@ public:
       (!navi.isConstant()&&(*navi >= max_idx));
   }
 
-  IdxType find_deg(IdxType upperbound) const {
+  NaviType find_deg(IdxType upperbound) const {
+    NaviType navi = m_stack.top(); 
+    navi.incrementThen();
 
+    bounded_restricted_term<NaviType> bstart(navi, upperbound, max_idx), bend;
+
+    bstart = std::max_element(bstart, bend);
+
+    dummy_append(m_stack, bstart.begin(), bstart.end());
+
+    return bstart.next();//.isEmpty();
+
+      /// end?
+#if 0
+    
     IdxType deg = 0, max_deg = 0;
     //empty?
     assert(!m_stack.empty());
-  
+//     if (upperbound==0)
+//       return 1;
     std::vector<NaviType> max_path;
     max_path.reserve(upperbound);
 
@@ -371,9 +531,16 @@ public:
       NaviType next=current;
 
       bool notdone = (*current >= min_idx);
+
+
       std::cout << "on pa6 "<<*current << max_path.size()<<std::endl;
       if(!notdone) {  
-        std::cout << "on pa6b "<<*current << max_path.size()<<max_idx<<std::endl;
+//         while(!current.isConstant())
+//           current.incrementElse();
+              
+//         if ((upperbound ==0) && current.isTerminated() )
+//           return 1;
+        std::cout << "on pa6b "<<upperbound<<*current << max_path.size()<<max_idx<<std::endl;
         dummy_append(m_stack, max_path.rbegin(), max_path.rend());
         return  max_path.size();
       }
@@ -410,11 +577,67 @@ public:
     dummy_append(m_stack, max_path.rbegin(), max_path.rend());
 
     return max_path.size();//deg;
+#endif
   }
   
 
-  bool operator()() {
+  NaviType operator()() {
 
+    assert(!m_stack.empty());
+    unsigned deg = m_stack.size();
+    unsigned subdeg = 0;
+    NaviType current;
+
+    do {
+      assert(!m_stack.empty());
+      current = m_stack.top();
+      m_stack.pop();
+      //   previous = current;
+     std::cout << "curr "<<*current<<std::endl;
+
+    current.incrementElse();
+
+     std::cout << "curr2 "<<*current<<std::endl;
+      subdeg++;
+
+ 
+
+      while (!current.isConstant() && *current < max_idx) {
+    
+        m_stack.push(current);
+        current.incrementThen();
+        subdeg--;
+      }
+     std::cout << "curr3 "<<std::endl;
+    } while ( !m_stack.empty() && (
+                                   ( (*m_stack.top() >= min_idx) &&
+                                     (  current.isEmpty() ||  (m_stack.size() != deg) )))) ;
+    std::cout << "curr4 "<<std::endl;
+    subdeg = deg - m_stack.size();//
+    //    std::cout << "A"<<deg<<" "<< m_stack.size()<< " "<<*m_stack.top()<<std::endl;
+    if (m_stack.size() == deg)
+      return current;
+
+    std::cout << "B"<<subdeg<<current.isTerminated()<<std::endl;
+    if (m_stack.empty())
+      return current;
+
+    if ((subdeg == 0))
+      return NaviType();
+
+    std::cout << "C"<<std::endl;
+
+    bounded_restricted_term<NaviType> bstart(m_stack.top().thenBranch(),
+                                             subdeg - 1, max_idx), bend;
+    bstart = std::max_element(bstart, bend);
+
+
+    bstart.print();
+
+    dummy_append(m_stack, bstart.begin(), bstart.end());
+
+    return bstart.next();
+#if 0
     NaviType current, next;
     IdxType deg = 0;
     bool notFound = true;
@@ -436,11 +659,12 @@ public:
       std::cout << "LastNotFound "<<LastNotFound<<std::endl;
       if(!notdone) {
       std::cout << "huhu1"<<std::endl;
+
         if (deg) {
-       std::cout << "huhu2"<<std::endl;
-          bool tmp = (find_deg(deg-1) == 0);
-          std::cout << "huhu2tmp "<<tmp<<std::endl;
-          return tmp;
+          std::cout << "huhu2"<<*m_stack.top()<<std::endl;
+       NaviType  tmp =  find_deg(deg-1);
+       std::cout << "huhu2tmp "<<*tmp<< "" <<" "<<*m_stack.top()<<std::endl;
+          return !tmp.isEmpty();
           }
         else { 
 
@@ -496,6 +720,7 @@ public:
     }
 
     return false;
+ #endif
   }
 
 
@@ -566,7 +791,7 @@ public:
       return *this;
 
     navigator current = base::m_stack.top(); 
-
+    navigator next;
     // the term one
     if (!current.isValid()) {
       base::clear();
@@ -579,12 +804,19 @@ public:
     bool notfound = true;
 
     while (notfound) {
-    std::cout <<"max? "<<blockMax()<<std::endl;
+      std::cout <<"max? "<<blockMax()<< " "<< *base::top()<<std::endl;
       deg_next_term<stack_type, navigator, unsigned>
         nextop(base::m_stack,  blockMin(), blockMax());
+      print();
+      navigator tmp =  nextop();
+      if (!tmp.isValid()) {
+        std::cout << "NOT TREATED YET!" <<std::endl;
+        return *this;
+      }
 
-      notfound =  nextop();
-    
+      notfound = tmp.isEmpty();
+      std::cout<< "not found? "<<notfound<<std::endl;
+      print();
       if(notfound)  {
 
         if  (m_current_block == m_indices) {
@@ -603,24 +835,26 @@ public:
           return *this;
         }
         --m_current_block;
-      } 
+      }
+      else
+        next = tmp;
 
     }
 
 
-    navigator navi(base::top());
+//     navigator navi(base::top());
 
 
-    // go to next block
-    if ( !atBlockEnd(navi) )
-      navi.incrementThen();
-    std::cout <<"atend "<< *navi<<std::endl;
-    while( !atBlockEnd(navi) ){
-      navi.incrementElse();
-      std::cout <<"atend "<< *navi<<std::endl;
-   }
-    std::cout <<"atend "<< *navi<<std::endl;
-    findTerminal(navi);
+//     // go to next block
+//     if ( !atBlockEnd(navi) )
+//       navi.incrementThen();
+//     std::cout <<"atend "<< *navi<<std::endl;
+//     while( !atBlockEnd(navi) ){
+//       navi.incrementElse();
+//       std::cout <<"atend "<< *navi<<std::endl;
+//    }
+//     std::cout <<"atend "<< *navi<<std::endl;
+    findTerminal(next);
     return *this;
   }
 
@@ -666,6 +900,8 @@ public:
 };
 
 
+
+
 int
 main(){
 
@@ -688,7 +924,7 @@ main(){
 
     BoolePolynomial poly = 
       x1*x2*x6*x9  + x1*x2*x7*x9+ x1*x2*x7+ x1*x2*x8*x9 
-      +   x1*x3*x6*x9  + x1*x3*x7*x9+ x1*x3*x7+ x1*x3*x8*x9 + x1*x5+x1 /*+x2*/+1; 
+      +   x1*x3*x6*x9  + x1*x3*x7*x9+ x1*x3*x7+ x1*x3*x8*x9 + x1*x5+x1 +x2+1; 
 
       // x1+ x2*x3+ x1*x2 +  x1*x2*x6  + x1*x2*x7+ x3*x4*x5;
     std::cout << "Polynom: "<< poly <<std::endl;
@@ -750,13 +986,40 @@ main(){
 
     
     CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block, blockDegCache);
-
-    for(unsigned i = 0; i < 10; ++i) {
+    /**/
+    for(unsigned i = 0; i < 12; ++i) {
       biter.print();
       std::cout << " "<<  biter.term() <<std::endl;
       ++biter;
     }
-  
+    /**/
+
+
+    bounded_restricted_term<navigator> bounded_iter(poly.navigation(), 2, 4);
+    bounded_restricted_term<navigator> bounded_end;
+    /*
+    std::cout << "bounded max"<<std::endl;
+    bounded_restricted_term<navigator> bounded_max =
+      std::max_element(bounded_iter, bounded_end);
+
+    std::cout << "* " <<  *bounded_max<<std::endl;
+    std::cout << "next " <<  *bounded_max.next()<<" " <<
+      bounded_max.next().isTerminated()<<std::endl;
+    bounded_max.print();   std::cout <<std::endl;std::cout.flush();
+    std::cout <<std::endl<< "bounded iter"<<std::endl;
+
+    while ( bounded_iter !=  bounded_end ){
+      std::cout << "* " <<  *bounded_iter<<std::endl;
+      std::cout << "next " <<  *bounded_iter.next()<< 
+        "  "<<bounded_iter.next().isTerminated()<<std::endl; 
+      bounded_iter.print();   std::cout <<std::endl;std::cout.flush();
+      ++bounded_iter;
+    }
+
+      std::cout << "next " <<  *bounded_iter.next()<< "  "<<bounded_iter.next().isTerminated()<<std::endl; 
+      bounded_iter.print();
+
+    */
     /*  std::cout << "Experimenting with negations..."<<std::endl;
     navi = poly.navigation();
     std::cout << navi.operator->()<<std::endl;
