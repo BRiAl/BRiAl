@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/02/20 09:41:06  dreyer
+ * CHANGE: now running prototype for dlex-block iteration
+ *
  * Revision 1.7  2007/02/19 17:21:51  dreyer
  * CHANGE: routine check-in
  *
@@ -56,17 +59,20 @@
 USING_NAMESPACE_PBORI
 
 
-template<class NaviType>
+template<class NaviType, class DescendingProperty = valid_tag>
 class bounded_restricted_term {
 public:
   typedef NaviType navigator;
-  typedef bounded_restricted_term<navigator> self;
+  typedef DescendingProperty descending_property;
+  typedef bounded_restricted_term<navigator, descending_property> self;
   typedef std::vector<navigator> stack_type;
   typedef unsigned size_type;
   typedef unsigned idx_type;
 
   bounded_restricted_term (): 
     m_stack(), m_max_idx(0), m_upperbound(0), m_next() {}
+
+  is_same_type<descending_property, valid_tag> descendingVariables;
 
   bounded_restricted_term (navigator navi, size_type upperbound, 
                            idx_type max_idx): 
@@ -98,6 +104,11 @@ public:
 
   self& operator++() {
     assert(!empty());
+
+    // if upperbound was already found we're done
+    // (should be optimized away for ascending variables)
+    if (descendingVariables() && (m_stack.size() == m_upperbound) )
+      return *this = self();
 
     do {
       increment();
@@ -468,259 +479,41 @@ public:
       (!navi.isConstant()&&(*navi >= max_idx));
   }
 
-  NaviType find_deg(IdxType upperbound) const {
-    NaviType navi = m_stack.top(); 
-    navi.incrementThen();
-
-    bounded_restricted_term<NaviType> bstart(navi, upperbound, max_idx), bend;
-
-    bstart = std::max_element(bstart, bend);
-
-    dummy_append(m_stack, bstart.begin(), bstart.end());
-
-    return bstart.next();//.isEmpty();
-
-      /// end?
-#if 0
-    
-    IdxType deg = 0, max_deg = 0;
-    //empty?
-    assert(!m_stack.empty());
-//     if (upperbound==0)
-//       return 1;
-    std::vector<NaviType> max_path;
-    max_path.reserve(upperbound);
-
-    bool notFound = true;
-
-    // goto begin of next term
-
-    NaviType current = m_stack.top(); 
-    std::cout << "on pa0"<<*current<<std::endl;
-    current.incrementThen();//deg++;
-      std::cout << "on pa0"<<std::endl;
-    while (notFound) {
-
-      // bool notdone = (*current >= min_idx);
-            std::cout << "on pa1"<<std::endl;
-      while ( (deg < upperbound) && !at_end(current) ) {
-
-        m_stack.push(current);
-        deg++;
-        current.incrementThen();
-      }
-      std::cout << "on pa2"<<std::endl;
-      if (!on_path(current) ) {
-        current = current.elseBranch();
-       }
-      std::cout << "on pa3"<<*current<<std::endl;
-      if (on_path(current) ) {
-        if (deg == upperbound) {
-          return deg;
-        }
-      std::cout << "on pa4"<<std::endl;
-        if (deg > max_deg) {
-          max_deg = deg;
-          max_path.clear();
-        }
-      }
-      std::cout << "on pa5"<<std::endl;
-      if (!m_stack.empty())
-        current = m_stack.top();//!!!!!!!!!
-
-      NaviType next=current;
-
-      bool notdone = (*current >= min_idx);
-
-
-      std::cout << "on pa6 "<<*current << max_path.size()<<std::endl;
-      if(!notdone) {  
-//         while(!current.isConstant())
-//           current.incrementElse();
-              
-//         if ((upperbound ==0) && current.isTerminated() )
-//           return 1;
-        std::cout << "on pa6b "<<upperbound<<*current << max_path.size()<<max_idx<<std::endl;
-        dummy_append(m_stack, max_path.rbegin(), max_path.rend());
-        return  max_path.size();
-      }
-        std::cout << "on pa7 "<<*current <<std::endl;
-      while(notdone) {
-
-        assert(!m_stack.empty());
-        m_stack.pop();
-        deg--;
-        assert(current.isValid());
-
-        if (max_path.empty() || *current < *max_path.back() ) {
-          max_path.push_back(current);
-        }
-        if (!current.isConstant())
-          current.incrementElse();
-   
-        next = current;
-
-        if (!m_stack.empty())
-          current = m_stack.top();
-
-        assert(current.isValid());
-        std::cout << "on pa8 "<<*current <<std::endl;
-        notdone = at_end(current) && (*current >= min_idx) && !m_stack.empty(); 
-      }
-        std::cout << "on pa9 "<<*current <<std::endl;
-      assert(current.isValid());   
-      assert(next.isValid());
-      current = next;
-      notFound = !( at_end(current) );
-    }
-    
-    dummy_append(m_stack, max_path.rbegin(), max_path.rend());
-
-    return max_path.size();//deg;
-#endif
-  }
-  
 
   NaviType operator()() {
 
     assert(!m_stack.empty());
     unsigned deg = m_stack.size();
-    unsigned subdeg = 0;
     NaviType current;
 
     do {
       assert(!m_stack.empty());
       current = m_stack.top();
       m_stack.pop();
-      //   previous = current;
-     std::cout << "curr "<<*current<<std::endl;
 
-    current.incrementElse();
-
-     std::cout << "curr2 "<<*current<<std::endl;
-      subdeg++;
-
- 
+      current.incrementElse();
 
       while (!current.isConstant() && *current < max_idx) {
     
         m_stack.push(current);
         current.incrementThen();
-        subdeg--;
       }
-     std::cout << "curr3 "<<std::endl;
-    } while ( !m_stack.empty() && (
-                                   ( (*m_stack.top() >= min_idx) &&
-                                     (  current.isEmpty() ||  (m_stack.size() != deg) )))) ;
-    std::cout << "curr4 "<<std::endl;
-    subdeg = deg - m_stack.size();//
-    //    std::cout << "A"<<deg<<" "<< m_stack.size()<< " "<<*m_stack.top()<<std::endl;
-    if (m_stack.size() == deg)
+    } while ( !m_stack.empty() && (*m_stack.top() >= min_idx) &&
+              (current.isEmpty() || (m_stack.size() != deg)) );
+
+     if (m_stack.size() == deg)
       return current;
 
-    std::cout << "B"<<subdeg<<current.isTerminated()<<std::endl;
-    if (m_stack.empty())
+     if (m_stack.empty())
       return current;
 
-    if ((subdeg == 0))
-      return NaviType();
-
-    std::cout << "C"<<std::endl;
-
-    bounded_restricted_term<NaviType> bstart(m_stack.top().thenBranch(),
-                                             subdeg - 1, max_idx), bend;
+    bounded_restricted_term<NaviType>
+      bstart(m_stack.top().thenBranch(),  deg - m_stack.size() - 1, max_idx),
+      bend;
     bstart = std::max_element(bstart, bend);
-
-
-    bstart.print();
-
     dummy_append(m_stack, bstart.begin(), bstart.end());
 
     return bstart.next();
-#if 0
-    NaviType current, next;
-    IdxType deg = 0;
-    bool notFound = true;
-    IdxType last_deg = 0;
-    bool LastNotFound = true;
-
-    // goto begin of next term
-    while (notFound) {
-
-      assert(!m_stack.empty());
-      current = m_stack.top();
-
-      next=m_stack.top();
-      bool atend = true;
-
-      //assert(!current.isConstant());
-
-      bool notdone = (*current >= min_idx)&&(LastNotFound);
-      std::cout << "LastNotFound "<<LastNotFound<<std::endl;
-      if(!notdone) {
-      std::cout << "huhu1"<<std::endl;
-
-        if (deg) {
-          std::cout << "huhu2"<<*m_stack.top()<<std::endl;
-       NaviType  tmp =  find_deg(deg-1);
-       std::cout << "huhu2tmp "<<*tmp<< "" <<" "<<*m_stack.top()<<std::endl;
-          return !tmp.isEmpty();
-          }
-        else { 
-
-         std::cout << "deg0 "<<*current<< *current.elseBranch()<<std::endl;
-         std::cout << "deg0 "<<*m_stack.top()<<max_idx<<std::endl;
-          if (current.elseBranch().isTerminated())
-            return false;
-        }
-          std::cout << "deg0 "<<*current<< *current.elseBranch()<<std::endl;
-        return LastNotFound;
-      }
-      
-      while(notdone) {
-
-        next = m_stack.top();
-        m_stack.pop();
-        deg++;
-
-        std::cout <<"huhu? "<<*next<<std::endl;
-        if (m_stack.empty()) {
-          assert(!next.isConstant());
-          m_stack.push(next);
-          notdone = false;
-          --deg; //?
-
-          LastNotFound = false;
-        }
-        else {
-          current.incrementElse();
-          next = current;
-          current = m_stack.top();
-          notdone = at_end(current) && (*current >= min_idx); 
-        }
-      }
-      current = next; 
-      std::cout <<"current "<<deg <<" "<<*current<<std::endl;
-      if (*current < min_idx) {
-
-        return true;
-      }
-
-
-      while (LastNotFound&& (deg > 0) && !at_end(current) ) {
-
-        assert(!current.isConstant());
-        m_stack.push(current);
-        deg--;
-        current.incrementThen();
-      }
-
-      notFound = !((deg == 0) && at_end(current) );
-      std::cout <<"notFound "<<deg <<" "<<*current<<std::endl;
-    }
-
-    return false;
- #endif
   }
 
 
@@ -791,7 +584,7 @@ public:
       return *this;
 
     navigator current = base::m_stack.top(); 
-    navigator next;
+  
     // the term one
     if (!current.isValid()) {
       base::clear();
@@ -800,61 +593,26 @@ public:
 
     while (*current < blockMin())
       --m_current_block;
-    
-    bool notfound = true;
+    ++m_current_block;
 
-    while (notfound) {
-      std::cout <<"max? "<<blockMax()<< " "<< *base::top()<<std::endl;
+
+    do {
+      --m_current_block;
+           
       deg_next_term<stack_type, navigator, unsigned>
         nextop(base::m_stack,  blockMin(), blockMax());
-      print();
-      navigator tmp =  nextop();
-      if (!tmp.isValid()) {
-        std::cout << "NOT TREATED YET!" <<std::endl;
-        return *this;
-      }
+  
+      current = nextop();
 
-      notfound = tmp.isEmpty();
-      std::cout<< "not found? "<<notfound<<std::endl;
-      print();
-      if(notfound)  {
+    } while (!base::empty() && current.isEmpty());
+ 
+    findTerminal(current);
 
-        if  (m_current_block == m_indices) {
-          assert(!base::empty());
-          current = base::m_stack.bottom();
-
-          // owns one?
-          while (!current.isConstant())
-            current.incrementElse();
-
-          base::clear();
-          
-          if (current.terminalValue())
-            base::m_stack.push(navigator());
-
-          return *this;
-        }
-        --m_current_block;
-      }
-      else
-        next = tmp;
-
+    if (base::empty() && current.terminalValue()) {
+      base::clear();
+      base::m_stack.push(navigator());
     }
-
-
-//     navigator navi(base::top());
-
-
-//     // go to next block
-//     if ( !atBlockEnd(navi) )
-//       navi.incrementThen();
-//     std::cout <<"atend "<< *navi<<std::endl;
-//     while( !atBlockEnd(navi) ){
-//       navi.incrementElse();
-//       std::cout <<"atend "<< *navi<<std::endl;
-//    }
-//     std::cout <<"atend "<< *navi<<std::endl;
-    findTerminal(next);
+ 
     return *this;
   }
 
@@ -873,7 +631,6 @@ public:
 
       incrementBlock(navi);
     }
-    std::cout <<"max "<<blockMax()<<std::endl;
   }
 
   void print() const {
@@ -985,9 +742,11 @@ main(){
 
 
     
-    CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block, blockDegCache);
+    CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block,
+    blockDegCache);
     /**/
-    for(unsigned i = 0; i < 12; ++i) {
+    delayed_iterator bstop;
+    while (biter != bstop) {
       biter.print();
       std::cout << " "<<  biter.term() <<std::endl;
       ++biter;

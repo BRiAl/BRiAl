@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/02/20 09:41:06  dreyer
+ * CHANGE: now running prototype for dlex-block iteration
+ *
  * Revision 1.14  2007/02/09 17:08:21  dreyer
  * ADD: assertion
  *
@@ -246,6 +249,7 @@ inline CCuddNavigator::bool_type
 CCuddNavigator::terminalValue() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::terminalValue() const" );
+  assert(isConstant());
   return Cudd_V(pNode);
 }
 
