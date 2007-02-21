@@ -955,7 +955,12 @@ int select1(const GroebnerStrategy& strat, const Polynomial& p){
   if (ms.emptiness())
     return -1;
   else {
-    
+#ifdef LEX_LEAD_RED_STRAT
+    if (BoolePolyRing::isLexicographical()){
+      Exponent min=*(ms.expBegin());
+      return strat.exp2Index.find(min)->second;
+    }
+#endif
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
     Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(strat)));
 
@@ -1008,9 +1013,9 @@ class LexHelper{
         return p.end();
     }
     static Polynomial nf(const GroebnerStrategy& strat, const Polynomial& p, const Monomial& m){
-        return nf3_lexbuckets(strat,p,m);
-        //if (strat.optRedTailDegGrowth) return nf3(strat,p,m);
-        //else return nf3_no_deg_growth(strat,p,m);
+        //return nf3_lexbuckets(strat,p,m);
+        if (strat.optRedTailDegGrowth) return nf3(strat,p,m);
+        else return nf3_no_deg_growth(strat,p,m);
     }
     typedef Polynomial::const_iterator iterator_type;
     const static bool isDegreeOrder=false;
