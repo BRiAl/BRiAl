@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.9  2006/12/04 12:48:16  dreyer
  * CHANGE: cached and recursive lead() and leadexp() refined, generalized
  *
@@ -112,6 +115,7 @@ class COrderBase:
   typedef invalid_tag ordered_property;
   typedef invalid_tag symmetry_property;
   typedef invalid_tag degorder_property;
+  typedef invalid_tag blockorder_property;
   typedef invalid_tag degrevlexorder_property; 
   typedef invalid_tag totaldegorder_property;
   typedef invalid_tag ascending_property;

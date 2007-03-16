@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.59  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.58  2006/12/13 18:07:03  dreyer
  * ADD: poly /= exp
  *
@@ -240,8 +243,16 @@ class DegRevLexAscOrder;
 class BooleMonomial;
 class BooleExponent;
 template<class> class COrderedIter;
-template<class, class, class, class> class CGenericIter;
+//template<class, class, class, class> class CGenericIter;
 template<class, class, class, class> class CDelayedTermIter;
+
+template<class OrderType, class PolyType, class MonomType, 
+         class IteratorType, 
+         class DelayedIterType = CDelayedTermIter<MonomType, change_assign<>, 
+                                                  project_ith<2>, IteratorType>
+>
+class CGenericIter;
+
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the

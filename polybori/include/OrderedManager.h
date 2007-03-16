@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.18  2006/10/24 08:44:04  dreyer
  * CHANGE: Added CVariableNames; variable names handled by OrderedManager
  *
@@ -188,6 +191,9 @@ public:
   /// Test whether we deal with a degree-ordering
   virtual bool_type isDegreeOrder() const = 0;
 
+  /// Test whether we deal with a block-ordering
+  virtual bool_type isBlockOrder() const = 0;
+
   /// Test whether we deal with a total degree-ordering
   virtual bool_type isTotalDegreeOrder() const = 0;
 
@@ -344,6 +350,11 @@ public:
   /// Test whether we deal with a degree-ordering
   bool_type isDegreeOrder() const {
     return properties_type().isDegreeOrder();
+  }
+
+  /// Test whether we deal with a degree-ordering
+  bool_type isBlockOrder() const {
+    return properties_type().isBlockOrder();
   }
 
   /// Test whether we deal with a total degree-ordering

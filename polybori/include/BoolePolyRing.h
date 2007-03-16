@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.32  2007/02/03 17:31:14  dreyer
  * FIX: deactivated workaround for old rings
  *
@@ -278,6 +281,9 @@ class BoolePolyRing:
 
   /// Test whether we deal with a degree-ordering
   static bool_type isDegreeOrder();
+
+  /// Test whether we deal with a block-ordering
+  static bool_type isBlockOrder();
 
   /// Test whether we deal with a total degree-ordering
   static bool_type isTotalDegreeOrder();

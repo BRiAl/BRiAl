@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.4  2006/10/04 15:46:49  dreyer
  * ADD: divisorsOf(exp_type), orderedExpBegin/End;
  * CHANGE: Polynomials printing respects ordering
@@ -52,6 +55,113 @@
 #define COrderedIter_h_
 
 BEGIN_NAMESPACE_PBORI
+
+
+template <class MonomType>
+class CAbstractTermIter {
+
+public:
+
+  /// Fix type for monomials
+  typedef MonomType monom_type;
+
+  /// Extract plain Boolean type
+  typedef typename monom_type::bool_type bool_type;
+
+  /// @name Interface types for standard iterator access
+  //@{
+  typedef monom_type value_type;
+  typedef std::forward_iterator_tag iterator_category;
+  //  typedef typename iterator::difference_type difference_type;
+  typedef void pointer;
+  typedef value_type reference;
+  //@}
+
+  /// Generic access to type of *this
+  typedef CAbstractTermIter<monom_type> self;
+
+  // Default Constructor
+  CAbstractTermIter() {}
+
+  // Destructor
+  ~CAbstractTermIter() {}
+
+  /// Constant dereference operator
+  virtual reference operator*() const = 0;
+
+  /// Prefix increment operator
+  virtual self& operator++() = 0;
+
+  /// Postfix increment operator
+  virtual self operator++(int) = 0;
+
+  /// Equality test
+  virtual bool_type operator!=(const self&) const = 0;
+
+  /// Inequality test
+  virtual bool_type operator==(const self&) const = 0;
+};
+
+
+template <class IteratorType>
+class CIndirectIter {
+
+public:
+
+  /// Fix type of direct iterator
+  typedef IteratorType iterator_type;
+ 
+  // Store shared pointer of iterator
+  typedef PBORI_SHARED_PTR(iterator_type) iterator_pointer;
+
+  /// Extract plain Boolean type
+  typedef typename iterator_type::bool_type bool_type;
+
+  /// @name Interface types for standard iterator access
+  //@{
+  typedef typename iterator_type::value_type value_type;
+  typedef typename iterator_type::iterator_category iterator_category;
+  //  typedef typename iterator::difference_type difference_type;
+  typedef typename iterator_type::pointer pointer;
+  typedef typename iterator_type::reference reference;
+  //@}
+
+  /// Generic access to type of *this
+  typedef CIndirectIter<iterator_type> self;
+
+  // Default Constructor
+  CIndirectIter() {}
+
+  // Destructor
+  ~CIndirectIter() {}
+
+  /// Constant dereference operator
+  reference operator*() const { return **p_iter; }
+
+  /// Prefix increment operator
+  self& operator++()  { 
+    ++(*p_iter); 
+    return *this;
+  }
+
+  /// Postfix increment operator
+  self operator++(int) {  return (*p_iter)++;  }
+
+  /// Equality test
+  bool_type operator !=(const self& rhs) const {
+    return (*p_iter) != (*rhs.p_iter);
+  }
+
+  /// Inequality test
+  bool_type operator==(const self& rhs) const  {
+    return (*p_iter) == (*rhs.p_iter);
+  }
+
+protected:
+  iterator_pointer p_iter;
+};
+
+
 
 template<class MonomType>
 class COrderedIter {

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.33  2007/02/03 17:31:15  dreyer
  * FIX: deactivated workaround for old rings
  *
@@ -398,6 +401,14 @@ BoolePolyRing::isDegreeOrder() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isDegreeOrder()" );
   return activeManager().isDegreeOrder() ;
+}
+
+// test whether we deal with a block-ordering
+BoolePolyRing::bool_type 
+BoolePolyRing::isBlockOrder() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::isBlockOrder()" );
+  return activeManager().isBlockOrder() ;
 }
 
 // test whether we deal with a degree-ordering

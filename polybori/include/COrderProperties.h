@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/03/16 16:59:20  dreyer
+ * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
+ *
  * Revision 1.9  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -81,6 +84,7 @@ class COrderProperties {
   typedef typename order_type::ordered_property ordered_property;
   typedef typename order_type::symmetry_property symmetry_property;
   typedef typename order_type::degorder_property degorder_property;
+  typedef typename order_type::blockorder_property blockorder_property;
   typedef typename order_type::totaldegorder_property totaldegorder_property;
   typedef typename order_type::ascending_property ascending_property;
   typedef typename order_type::descending_property descending_property;
@@ -113,6 +117,9 @@ class COrderProperties {
 
   /// Define test whether ordering is a degree-ordering
   is_same_type<degorder_property, valid_tag> isDegreeOrder;
+
+  /// Define test whether ordering is a block-ordering
+  is_same_type<blockorder_property, valid_tag> isBlockOrder;
 
   /// Define test whether ordering is a total degree-ordering
   is_same_type<totaldegorder_property, valid_tag> isTotalDegreeOrder;
