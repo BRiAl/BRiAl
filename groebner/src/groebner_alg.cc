@@ -41,7 +41,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
   //we assume that m is a multiple of n
   MonomialSet::navigator m_nav=m.navigation();
   MonomialSet::navigator n_nav=n.navigation();
-  if (n_nav.terminalValue()) return a.firstDivisorsOf(m);
+  if (n_nav.isTerminated()) return a.firstDivisorsOf(m);
   assert(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
   MonomialSet::navigator a_nav=a.navigation();
   if (a_nav.isConstant()) return a;
@@ -70,7 +70,9 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
        }
      }
    
-  } 
+  }
+  n_index=*n_nav;
+  
   
 
   
@@ -230,7 +232,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
         while(!(check_nav.isConstant())){
             check_nav.incrementElse();
         }
-        if (check_nav.terminalValue()){
+        if (check_nav.isTerminated()){
             idx_type result_index=v;
             MonomialSet result=MonomialSet(result_index,Polynomial(1).diagram(),contained_variables_cudd_style(nav.elseBranch()));
             MonomialSet::navigator r_nav=result.navigation();
@@ -1012,7 +1014,7 @@ static std::vector<idx_type> contained_variables(const MonomialSet& m){
         while(!(check_nav.isConstant())){
             check_nav.incrementElse();
         }
-        if (check_nav.terminalValue()){
+        if (check_nav.isTerminated()){
             result.push_back(v);
         }
         nav.incrementElse();
