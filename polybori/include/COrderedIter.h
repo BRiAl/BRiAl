@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.5  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -43,13 +46,16 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-
+ 
 #include "BoolePolynomial.h"
 #include "BoolePolyRing.h"
 #include "OrderedManager.h"
 #include "CDelayedTermIter.h"
 #include "CBidirectTermIter.h"
 #include <algorithm>
+
+#include "CGenericIter.h"
+  //#include "CIndirectIter.h"
 
 #ifndef COrderedIter_h_
 #define COrderedIter_h_
@@ -102,7 +108,7 @@ public:
   virtual bool_type operator==(const self&) const = 0;
 };
 
-
+#if 0
 template <class IteratorType>
 class CIndirectIter {
 
@@ -160,7 +166,51 @@ public:
 protected:
   iterator_pointer p_iter;
 };
+#endif
 
+
+template <class IteratorType, class MonomType>
+class CIndirectIter:
+  public boost::iterator_facade<
+  CIndirectIter<IteratorType, MonomType>,
+  MonomType, boost::forward_traversal_tag, MonomType
+  > {
+
+public:
+
+
+  typedef CAbstractIterCore<IteratorType, MonomType> iterator_core;
+
+
+  /// Fix type of direct iterator
+  typedef IteratorType iterator_type;
+ 
+  // Store shared pointer of iterator
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+  /// Extract plain Boolean type
+  typedef typename iterator_type::bool_type bool_type;
+
+  // Default Constructor
+
+  CIndirectIter(core_pointer rhs): p_iter(rhs) {}
+
+  // Destructor
+  ~CIndirectIter() {}
+
+  template <class RhsType>
+  bool equal(const RhsType& rhs) const { 
+    return  p_iter->equality(rhs.p_iter->m_iter); }
+
+  /// Incrementation
+  void increment() { p_iter->increment(); }
+
+  /// Dereferencing operation
+  MonomType dereference() const { return p_iter->dereference(); }
+
+protected:
+  core_pointer p_iter;
+};
 
 
 template<class MonomType>

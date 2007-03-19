@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.10  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -68,6 +71,8 @@
 // include exponent vector definitions
 #include "BooleExponent.h"
 
+#include "COrderedIter.h"
+
 #ifndef COrderBase_h_
 #define COrderBase_h_
 
@@ -102,6 +107,12 @@ class COrderBase:
 
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
+  typedef CDelayedTermIter<monom_type, 
+                           change_assign<>, project_ith<2>, 
+                           iterator> delayed_iterator;
+
+  typedef CIndirectIter<delayed_iterator, monom_type> indirect_iterator;
+
 
   /// Type of Boolean sets
   typedef BooleSet set_type;
@@ -154,6 +165,8 @@ class COrderBase:
 
   /// Initialize iterator corresponding to leading term
   virtual iterator leadIterator(const poly_type&) const = 0;
+  virtual indirect_iterator leadIteratorBegin(const poly_type&) const = 0;
+  virtual indirect_iterator leadIteratorEnd() const = 0;
 
   /// Find next term (after iter) in polynomial according to current order
   virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;

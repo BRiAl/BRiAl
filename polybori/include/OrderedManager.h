@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.19  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -95,6 +98,9 @@
 #include "COrderProperties.h"
 #include "CVariableNames.h"
 
+#include "CGenericIter.h"
+  //#include "CIndirectIter.h"
+
 #ifndef OrderedManager_h_
 #define OrderedManager_h_
 
@@ -133,6 +139,12 @@ public:
   typedef BoolePolynomial poly_type;
   typedef BooleExponent exp_type;
   typedef poly_type::bidirectional_iterator iterator;
+
+   typedef CDelayedTermIter<monom_type, 
+                            change_assign<>, project_ith<2>, 
+                            iterator> delayed_iterator;
+
+  typedef CIndirectIter< delayed_iterator, monom_type> ordered_iterator;
   //@}
 
   /// Define type for storing names of variables
@@ -208,6 +220,10 @@ public:
 
   /// Initialize iterator corresponding to leading term
   virtual iterator leadIterator(const poly_type&) const = 0;
+  virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;
+
+  virtual ordered_iterator leadIteratorEnd() const = 0;
+
 
   /// Find next term (after iter) in polynomial according to current order
   virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
@@ -267,6 +283,7 @@ public:
   typedef typename base::poly_type poly_type;
   typedef typename base::exp_type exp_type;
   typedef typename base::iterator iterator;
+  typedef typename base::ordered_iterator ordered_iterator;
   typedef typename base::ordercode_type ordercode_type;
   //@}
 
@@ -380,6 +397,14 @@ public:
   /// Initialize iterator corresponding to leading term
   iterator leadIterator(const poly_type& poly) const {
     return ordering.leadIterator(poly);
+  }
+   /// Initialize iterator corresponding to leading term
+  ordered_iterator leadIteratorBegin(const poly_type& poly) const {
+    return ordering.leadIteratorBegin(poly);
+  }
+
+  ordered_iterator leadIteratorEnd() const {
+    return ordering.leadIteratorEnd();
   }
 
   /// Find next term (after iter) in polynomial according to current order

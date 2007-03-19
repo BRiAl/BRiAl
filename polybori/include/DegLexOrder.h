@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.8  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -121,6 +124,8 @@ class DegLexOrder:
 
   /// Initialize iterator corresponding to leading term
   iterator leadIterator(const poly_type&) const;
+  indirect_iterator leadIteratorBegin(const poly_type&) const;
+  indirect_iterator leadIteratorEnd() const;
 
   /// Find next term (after iter) in polynomial according to current order
   iterator incrementIterator(iterator iter, const poly_type&) const;

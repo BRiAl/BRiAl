@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.60  2007/03/19 16:49:38  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.59  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -243,6 +246,11 @@ class DegRevLexAscOrder;
 class BooleMonomial;
 class BooleExponent;
 template<class> class COrderedIter;
+
+template <class IteratorType, class MonomType>
+class CIndirectIter;
+
+
 //template<class, class, class, class> class CGenericIter;
 template<class, class, class, class> class CDelayedTermIter;
 
@@ -306,8 +314,25 @@ public:
   /// Fix type for treatment of exponent vectors
   typedef BooleExponent exp_type; 
 
-  /// Iterator type for iterating over all monomials in ordering order
-  typedef COrderedIter<monom_type> ordered_iterator;
+  /// Incrementation functional type
+  typedef 
+  binary_composition< std::plus<size_type>, 
+                      project_ith<1>, integral_constant<size_type, 1> > 
+  increment_type;
+
+  /// Decrementation functional type
+  typedef 
+  binary_composition< std::minus<size_type>, 
+                      project_ith<1>, integral_constant<size_type, 1> > 
+  decrement_type;
+
+  /// Bidirectional iterator type (dereferencing to degree)
+  typedef CBidirectTermIter<size_type, navigator, 
+                            increment_type, decrement_type,
+                            integral_constant<size_type, 0> >
+  bidirectional_iterator;
+
+
 
   /// Iterator type for iterating over all exponents in ordering order
   typedef COrderedIter<exp_type> ordered_exp_iterator;
@@ -324,18 +349,6 @@ public:
                     removes<>, project_ith<1> >
   exp_iterator;
 
-  /// Incrementation functional type
-  typedef 
-  binary_composition< std::plus<size_type>, 
-                      project_ith<1>, integral_constant<size_type, 1> > 
-  increment_type;
-
-  /// Decrementation functional type
-  typedef 
-  binary_composition< std::minus<size_type>, 
-                      project_ith<1>, integral_constant<size_type, 1> > 
-  decrement_type;
-
   /// Iterator type for iterating all monomials (dereferencing to degree)
   typedef CTermIter<size_type, navigator, 
                     increment_type, decrement_type,
@@ -348,11 +361,6 @@ public:
                            deg_iterator> delayed_iterator;
 
 
-  /// Bidirectional iterator type (dereferencing to degree)
-  typedef CBidirectTermIter<size_type, navigator, 
-                            increment_type, decrement_type,
-                            integral_constant<size_type, 0> >
-  bidirectional_iterator;
 
   //typedef CDelayedTermIter<monom_type, 
   //                         change_assign<>, project_ith<2>, 
@@ -362,15 +370,19 @@ public:
                            change_assign<>, project_ith<2>, 
                            bidirectional_iterator> delayed_bi_iterator;
 
+  /// Iterator type for iterating over all monomials in ordering order
+  //  typedef COrderedIter<monom_type> ordered_iterator;
+  typedef CIndirectIter<delayed_bi_iterator, monom_type> ordered_iterator;
+
   /// @name Generic iterators for various orderings
   //@{
-  typedef CGenericIter<LexOrder, self, monom_type, deg_iterator> lex_iterator;
-  typedef CGenericIter<DegLexOrder, self, monom_type, deg_iterator> dlex_iterator;
-  typedef CGenericIter<DegRevLexAscOrder, self, monom_type, bidirectional_iterator> 
+  typedef CGenericIter<LexOrder, self, monom_type,  delayed_iterator, delayed_iterator> lex_iterator;
+  typedef CGenericIter<DegLexOrder, self, monom_type,  delayed_iterator, delayed_iterator> dlex_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, self, monom_type, delayed_bi_iterator, delayed_bi_iterator> 
   dp_asc_iterator;
-  typedef CGenericIter<LexOrder, self, exp_type, deg_iterator> lex_exp_iterator;
-  typedef CGenericIter<DegLexOrder, self, exp_type, deg_iterator> dlex_exp_iterator;
-  typedef CGenericIter<DegRevLexAscOrder, self, exp_type, bidirectional_iterator> 
+  typedef CGenericIter<LexOrder, self, exp_type,  delayed_iterator, delayed_iterator> lex_exp_iterator;
+  typedef CGenericIter<DegLexOrder, self, exp_type,  delayed_iterator, delayed_iterator> dlex_exp_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, self, exp_type, delayed_bi_iterator, delayed_bi_iterator> 
   dp_asc_exp_iterator;
   //@}
 

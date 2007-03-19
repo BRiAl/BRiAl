@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/03/19 16:49:38  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.4  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -44,6 +47,8 @@
 #include "BoolePolynomial.h"
 
 
+#include "CRestrictedIter.h"
+
 #include <boost/iterator/iterator_facade.hpp>
 
 #ifndef CGenericIter_h_
@@ -51,54 +56,96 @@
 
 BEGIN_NAMESPACE_PBORI
 
+// Empty class dummy
+class CIterCore { };
+
+// Abstract interface
 template <class IteratorType, class ReferenceType>
-class CDelayedCore {
+class CAbstractIterCore {
 
 public:
-  /// Constructor
-  CDelayedCore(const IteratorType& iter): m_iter(iter) { }
-
-  /// Default Constructor
-  CDelayedCore(): m_iter() {}
-
-public:
-  friend class boost::iterator_core_access;
+  CAbstractIterCore(const IteratorType& iter): m_iter(iter) {}
+  CAbstractIterCore(): m_iter() {}
 
   /// Equility check for compatible types
-  template <class RhsType>
-  bool equal(const RhsType& rhs) const { return (m_iter == rhs.m_iter); }
+  //template <class RhsType>
+  virtual bool equality(const IteratorType& rhs) const = 0;
 
   /// Abstract function, inherited classes must provide incrementation
   virtual void increment() = 0;
 
   /// Dereferencing operation
-  ReferenceType dereference() const { return m_iter.term(); }
+  virtual ReferenceType dereference() const = 0;
+
+  /// Store unterlying iterator temparily
+  IteratorType m_iter;
+
+};
+
+template <class IteratorType, class ReferenceType, 
+          class RHSIterator = IteratorType, 
+          class IsAbstract = valid_tag>
+class CDelayedCore:
+  public CAbstractIterCore<RHSIterator, ReferenceType> {
+  //  on_same_type<IsAbstract, invalid_tag, CIterCore, 
+  //               CAbstractIterCore<RHSIterator, ReferenceType> >::type {
+
+public:
+  /// Constructor
+  typedef CAbstractIterCore<RHSIterator, ReferenceType> base;
+  CDelayedCore(const IteratorType& iter): base(iter) { }
+
+  /// Default Constructor
+  CDelayedCore(): base() {}
+
+public:
+  friend class boost::iterator_core_access;
+
+  bool equality(const RHSIterator& rhs) const {
+    return (base::m_iter == rhs); 
+  };
+
+  /// Equility check for compatible types
+  template <class RhsType>
+  bool equal(const RhsType& rhs) const { return equality(rhs.base::m_iter); }
+
+  /// Abstract function, inherited classes must provide incrementation
+  //  virtual void increment() = 0;
+
+  /// Dereferencing operation
+  ReferenceType dereference() const {
+
+    typedef CDelayedTermIter<ReferenceType, 
+                           change_assign<>, project_ith<2>, 
+      IteratorType> iter_type;
+  return iter_type(base::m_iter).term(); }
   
 protected:
   /// Store unterlying iterator
-  IteratorType m_iter;
+  // IteratorType m_iter;
 };
 
 
-template <class OrderType, class PolyType, class IteratorType, class ReferenceType>
+template <class OrderType, class PolyType, class IteratorType, class
+ReferenceType, class RHSIterator>
 class CGenericCore;
 
 
 template <class BlockProperty, class DegreeProperty, class DescendingProperty, 
           class PolyType, class IteratorType,
-          class ReferenceType>
+          class ReferenceType, class RHSIterator>
 class CGenericDegreeCore;
 
 template <class DescendingProperty, 
-          class PolyType, class IteratorType, class ReferenceType>
+          class PolyType, class IteratorType, class ReferenceType, class RHSIterator>
 class CGenericDegreeCore<invalid_tag, valid_tag, DescendingProperty, 
                           PolyType,  IteratorType, 
-                          ReferenceType>:
+                         ReferenceType, RHSIterator>:
 
-  public CDelayedCore <IteratorType, ReferenceType> {
+  public CDelayedCore <IteratorType, ReferenceType, RHSIterator> {
 
   /// Base type 
-  typedef CDelayedCore <IteratorType, ReferenceType> base;
+  typedef CDelayedCore <IteratorType, ReferenceType, RHSIterator> base;
 
 public:
 
@@ -125,9 +172,9 @@ public:
       typename std::iterator_traits<IteratorType>::value_type deg =
         *base::m_iter;
 
-      ++base::m_iter;
+
       find_next(deg, DescendingProperty());
-      
+
       typedef CRestrictedIter<IteratorType> bounded_iterator;  
       
       if(base::m_iter == m_finish) {
@@ -140,9 +187,12 @@ public:
 
 private:
   void find_next(unsigned deg, valid_tag) {
+    ++base::m_iter;
     base::m_iter = std::find(base::m_iter, m_finish, deg);
   }
   void find_next(unsigned deg, invalid_tag) {
+
+    --base::m_iter;
     typedef reversed_iteration_adaptor<IteratorType> rev_iter;
     base::m_iter = std::find(rev_iter(base::m_iter), rev_iter(m_finish), 
                              deg).get();
@@ -152,57 +202,24 @@ private:
   IteratorType m_start, m_finish;
 };
 
-/**
-template <class PolyType, class IteratorType, class ReferenceType>
-class CGenericCore<DegLexOrder, PolyType, IteratorType, ReferenceType>:
-  public CGenericDegreeCore<invalid_tag, valid_tag, valid_tag, 
-                            PolyType, IteratorType, ReferenceType> {
 
-  /// Base type 
-  typedef CGenericDegreeCore<invalid_tag, valid_tag, valid_tag, PolyType, 
-                             IteratorType, 
-                             ReferenceType> base;
-
-public:
-  /// Constructor
-  CGenericCore(const PolyType& poly): base(poly) {}
-  CGenericCore(): base() {}
-
-};
-
-template <class PolyType, class IteratorType, class ReferenceType>
-class CGenericCore<DegRevLexAscOrder, PolyType, IteratorType, ReferenceType>:
-  public CGenericDegreeCore<invalid_tag, valid_tag, invalid_tag, PolyType, 
-                            IteratorType, ReferenceType> {
-
-  /// Base type 
-  typedef CGenericDegreeCore<invalid_tag, valid_tag, invalid_tag, PolyType,
-                             IteratorType,  ReferenceType> base;
-
-public:
-  /// Constructor
-  CGenericCore(const PolyType& poly): base(poly) {}
-  CGenericCore(): base() {}
-
-};
-
-**/
 
 template <class OrderType, 
-          class PolyType, class IteratorType, class ReferenceType>
+          class PolyType, class IteratorType, class ReferenceType,
+          class RHSIterator>
 class CGenericCore:
   public CGenericDegreeCore<typename OrderType::blockorder_property,
                             typename OrderType::degorder_property,
                             typename OrderType::descending_property,
                             PolyType, 
-                            IteratorType, ReferenceType> {
+                            IteratorType, ReferenceType, RHSIterator> {
 
   /// Base type 
   typedef CGenericDegreeCore<typename OrderType::blockorder_property,
                              typename OrderType::degorder_property,
                              typename OrderType::descending_property,
                              PolyType, 
-                             IteratorType, ReferenceType> base;
+                             IteratorType, ReferenceType, RHSIterator> base;
 
 public:
   /// Constructor
@@ -211,12 +228,99 @@ public:
 
 };
 
-template <class PolyType, class IteratorType, class ReferenceType>
-class CGenericCore<LexOrder, PolyType, IteratorType, ReferenceType>:
-  public CDelayedCore <IteratorType, ReferenceType> {
+
+/*
+
+template <class PolyType, class IteratorType, class ReferenceType,
+          class RHSIterator>
+class CGenericCore<DegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>:
+  public CDelayedCore <IteratorType, ReferenceType, RHSIterator> {
 
   /// Base type 
-  typedef CDelayedCore <IteratorType, ReferenceType> base;
+  typedef CDelayedCore <IteratorType, ReferenceType, RHSIterator> base;
+
+public:
+  /// Constructor
+  CGenericCore(const PolyType& poly): 
+    base(std::max_element(IteratorType(poly.navigation()), 
+                          IteratorType(poly.endOfNavigation()))) { }
+
+  // Default Constructor
+  CGenericCore(): base() {}
+
+  /// Incrementation operation
+  void increment(){
+    typedef IteratorType iterator;
+    typedef CRestrictedIter<iterator> bounded_iterator;
+    
+    
+    if ((this->m_iter) != m_finish) {
+      unsigned deg = *(this->m_iter);
+      ++(this->m_iter);
+      (this->m_iter) = std::find((this->m_iter), m_finish, deg);
+      
+      if((this->m_iter) == m_finish) {
+        (this->m_iter) = std::max_element( bounded_iterator(m_start, deg),
+                                 bounded_iterator(m_finish, deg) );
+        
+      }
+    }
+  }
+  /// Store begin and end of underlying iteration
+  IteratorType m_start, m_finish;
+};
+
+template <class PolyType, class IteratorType, class ReferenceType,
+          class RHSIterator>
+class CGenericCore<DegRevLexAscOrder, PolyType, IteratorType, ReferenceType, RHSIterator>:
+  public CDelayedCore <IteratorType, ReferenceType, RHSIterator> {
+
+  /// Base type 
+  typedef CDelayedCore <IteratorType, ReferenceType, RHSIterator> base;
+
+public:
+  /// Constructor
+  CGenericCore(const PolyType& poly): 
+    base(std::max_element(IteratorType(poly.navigation()), 
+                          IteratorType(poly.endOfNavigation()),
+                          std::less_equal<unsigned>())) { }
+
+  // Default Constructor
+  CGenericCore(): base() {}
+
+  /// Incrementation operation
+  void increment(){
+    typedef IteratorType iterator;
+    typedef CRestrictedIter<iterator> bounded_iterator;
+    
+    
+    if ((this->m_iter) != m_finish) {
+      
+      unsigned deg = *(this->m_iter);
+      --(this->m_iter);
+      (this->m_iter) = std::find(reversed_iteration_adaptor<iterator>((this->m_iter)), 
+                               reversed_iteration_adaptor<iterator>(m_finish), deg).get();
+      
+      if((this->m_iter) == m_finish) {
+        (this->m_iter) = std::max_element( bounded_iterator(m_start, deg),
+                                         bounded_iterator(m_finish, deg), 
+                                         std::less_equal<unsigned>() );
+        
+      }
+    }
+
+  }
+  /// Store begin and end of underlying iteration
+  IteratorType m_start, m_finish;
+};
+*/
+template <class PolyType, class IteratorType, class ReferenceType,
+          class RHSIterator>
+class CGenericCore<LexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>:
+  public CDelayedCore <IteratorType, ReferenceType, RHSIterator> {
+
+  /// Base type 
+  typedef CDelayedCore <IteratorType, ReferenceType, RHSIterator> base;
 
 public:
   /// Constructor
@@ -244,12 +348,12 @@ class CGenericIter:
   CGenericIter<OrderType, PolyType, MonomType, IteratorType, DelayedIterType>,
   MonomType, boost::forward_traversal_tag, MonomType
   >,
-  public CGenericCore<OrderType, PolyType, DelayedIterType, MonomType> {
+  public CGenericCore<OrderType, PolyType, DelayedIterType, MonomType, IteratorType> {
 
 public:
 
   /// Generic access to type of *this
-  typedef CGenericCore<OrderType, PolyType, DelayedIterType, MonomType> base;
+  typedef CGenericCore<OrderType, PolyType, DelayedIterType, MonomType, IteratorType> base;
 
   // Constructor
   CGenericIter(const PolyType& poly): 

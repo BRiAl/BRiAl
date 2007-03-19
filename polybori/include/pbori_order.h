@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.5  2006/10/05 12:51:32  dreyer
  * CHANGE: Made lex-based comparisions more generic.
  *
@@ -50,6 +53,10 @@
 #include "LexOrder.h"
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"
+
+
+#ifndef pbori_order_h_
+#define pbori_order_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -93,3 +100,5 @@ private:
 };
 
 END_NAMESPACE_PBORI
+
+#endif

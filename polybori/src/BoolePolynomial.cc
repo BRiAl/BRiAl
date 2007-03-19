@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.87  2007/03/19 16:49:39  dreyer
+ * CHANGE: ordered iterators made more generic
+ *
  * Revision 1.86  2007/01/23 13:38:54  dreyer
  * Fix: prints now without spaced appended
  *
@@ -915,7 +918,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedBegin() const" );
-  return *this;
+  return BoolePolyRing::activeManager().leadIteratorBegin(*this);
 }
 
 // Finish of leading term 
@@ -923,7 +926,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedEnd() const" );
-  return ordered_iterator();
+  return BoolePolyRing::activeManager().leadIteratorEnd();
 }
 
 // Start of degrees
