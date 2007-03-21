@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.62  2007/03/21 09:33:07  dreyer
+ * ADD: generic{Exp|}{Begin|End}(block_dlex_tag)
+ *
  * Revision 1.61  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -388,10 +391,16 @@ public:
   typedef CGenericIter<DegLexOrder, self, monom_type,  delayed_iterator, delayed_iterator> dlex_iterator;
   typedef CGenericIter<DegRevLexAscOrder, self, monom_type, delayed_bi_iterator, delayed_bi_iterator> 
   dp_asc_iterator;
+
+  typedef CGenericIter<BlockDegLexOrder, self, monom_type, delayed_bi_iterator, delayed_bi_iterator> 
+  block_dlex_iterator;
+
   typedef CGenericIter<LexOrder, self, exp_type,  delayed_iterator, delayed_iterator> lex_exp_iterator;
   typedef CGenericIter<DegLexOrder, self, exp_type,  delayed_iterator, delayed_iterator> dlex_exp_iterator;
   typedef CGenericIter<DegRevLexAscOrder, self, exp_type, delayed_bi_iterator, delayed_bi_iterator> 
   dp_asc_exp_iterator;
+  typedef CGenericIter<BlockDegLexOrder, self, exp_type, delayed_bi_iterator, delayed_bi_iterator> 
+  block_dlex_exp_iterator;
   //@}
 
 
@@ -559,6 +568,8 @@ public:
   dlex_iterator genericEnd(dlex_tag) const;
   dp_asc_iterator genericBegin(dp_asc_tag) const;
   dp_asc_iterator genericEnd(dp_asc_tag) const;
+  block_dlex_iterator genericBegin(block_dlex_tag) const;
+  block_dlex_iterator genericEnd(block_dlex_tag) const;
 
   lex_exp_iterator genericExpBegin(lex_tag) const;
   lex_exp_iterator genericExpEnd(lex_tag) const;
@@ -566,6 +577,8 @@ public:
   dlex_exp_iterator genericExpEnd(dlex_tag) const;
   dp_asc_exp_iterator genericExpBegin(dp_asc_tag) const;
   dp_asc_exp_iterator genericExpEnd(dp_asc_tag) const;
+  block_dlex_exp_iterator genericExpBegin(block_dlex_tag) const;
+  block_dlex_exp_iterator genericExpEnd(block_dlex_tag) const;
   //@}
 
   /// Navigate through structure
