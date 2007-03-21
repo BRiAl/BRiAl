@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.33  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -131,7 +134,7 @@
 
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
-#include "OrderedManager.h"
+  //#include "OrderedManager.h"
 
   // temporarily for work around
 #include <list>
@@ -182,6 +185,12 @@ class BoolePolyRing:
 
   /// set monomial type
   typedef BooleMonomial monom_type;
+
+  /// Type for block indices
+  typedef std::vector<idx_type> block_idx_type;
+
+  /// Type for block iterators
+  typedef block_idx_type::const_iterator block_iterator;
 
   //-------------------------------------------------------------------------
   // constructors and destructor
@@ -338,7 +347,15 @@ protected: public:
   /// Work around, if we want to reuse Polynomials after order change
 #ifdef PBORI_KEEP_OLD_RINGS
   static std::list<manager_ptr> old_rings;
-#endif
+#endif 
+
+  /// @name interface for block orderings
+  //@{
+  static block_iterator blockRingBegin();
+  static block_iterator blockRingEnd();
+  static void appendRingBlock(idx_type idx);
+  static void clearRingBlocks();
+  //@}
 };
 
 END_NAMESPACE_PBORI

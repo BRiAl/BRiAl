@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.3  2007/02/14 10:30:13  dreyer
  * FIX: wrong constant term
  *
@@ -82,10 +85,11 @@ public:
 
     term_type result;
     result = terminalop_type()(result, !the_stack.empty());
-     
+
     appendop_type do_append;
-      
+
     while(!the_stack.empty() && the_stack.top().isValid()) {
+
       result =  do_append(result, *the_stack.top() );
       the_stack.pop();
     }

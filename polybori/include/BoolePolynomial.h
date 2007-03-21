@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.61  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.60  2007/03/19 16:49:38  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -243,6 +246,8 @@ BEGIN_NAMESPACE_PBORI
 class LexOrder;
 class DegLexOrder;
 class DegRevLexAscOrder;
+class BlockDegLexOrder;
+
 class BooleMonomial;
 class BooleExponent;
 template<class> class COrderedIter;
@@ -334,8 +339,7 @@ public:
 
 
 
-  /// Iterator type for iterating over all exponents in ordering order
-  typedef COrderedIter<exp_type> ordered_exp_iterator;
+
 
   /// Iterator type for iterating over all monomials
   typedef CTermIter<monom_type, navigator, 
@@ -369,6 +373,10 @@ public:
   typedef CDelayedTermIter<monom_type, 
                            change_assign<>, project_ith<2>, 
                            bidirectional_iterator> delayed_bi_iterator;
+
+  /// Iterator type for iterating over all exponents in ordering order
+  //  typedef COrderedIter<exp_type> ordered_exp_iterator;
+  typedef CIndirectIter<delayed_bi_iterator, exp_type> ordered_exp_iterator;
 
   /// Iterator type for iterating over all monomials in ordering order
   //  typedef COrderedIter<monom_type> ordered_iterator;

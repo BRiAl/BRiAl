@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.17  2007/02/14 10:28:48  dreyer
  * FIX: wrong constant term
  *
@@ -355,8 +358,10 @@ protected:
   /// Handle else-branches (for bidirectional iterators; ignored by default)
   elsehandle_type handleElse;
 
-private: // Change?
+private: // Change? 
 protected:
+  /// @todo: change to private, temporarily, e.g. for block iteration
+public:
   stack_type m_stack;
   value_type m_value;
   forwardop_type forwardop;

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/03/21 08:55:10  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.12  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -207,6 +210,33 @@ LexOrder::leadIteratorBegin(const poly_type& poly) const {
 
   return indirect_iterator(core_pointer(new iterator_core(poly)));
 }
+
+// Initialize iterator corresponding to leading term
+LexOrder::indirect_exp_iterator
+LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
+
+  PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
+
+  //  return generic_iteration<self, iterator>().leadIterator(poly);
+  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
+    iterator_core; 
+  typedef CAbstractIterCore<COrderBase::delayed_iterator, exp_type> base_core;
+  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+  return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+}
+
+LexOrder::indirect_exp_iterator
+LexOrder::leadExpIteratorEnd() const {
+
+  PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorEnd() const" );
+
+  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
+    iterator_core; 
+  typedef CAbstractIterCore<delayed_iterator, exp_type> base_core;
+  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+  return indirect_exp_iterator(core_pointer(new iterator_core()));
+}
+
 LexOrder::indirect_iterator
 LexOrder::leadIteratorEnd() const {
 
@@ -230,6 +260,7 @@ LexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
   //  return ++iter;
   return generic_iteration<self, iterator>().incrementIterator(iter, poly);
 }
+
 
 
 END_NAMESPACE_PBORI

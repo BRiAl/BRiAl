@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/03/21 08:55:10  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.14  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -228,6 +231,31 @@ DegLexOrder::leadIteratorEnd() const {
   typedef CAbstractIterCore<delayed_iterator, monom_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
   return indirect_iterator(core_pointer(new iterator_core()));
+}
+// Initialize iterator corresponding to leading term
+DegLexOrder::indirect_exp_iterator
+DegLexOrder::leadExpIteratorBegin(const poly_type& poly) const {
+
+  PBORI_TRACE_FUNC( "DegLexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
+
+  //  return generic_iteration<self, iterator>().leadIterator(poly);
+  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
+    iterator_core; 
+  typedef CAbstractIterCore<COrderBase::delayed_iterator, exp_type> base_core;
+  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+  return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+}
+
+DegLexOrder::indirect_exp_iterator
+DegLexOrder::leadExpIteratorEnd() const {
+
+  PBORI_TRACE_FUNC( "DegLexOrder::leadExpIteratorEnd() const" );
+
+  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
+    iterator_core; 
+  typedef CAbstractIterCore<delayed_iterator, exp_type> base_core;
+  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+  return indirect_exp_iterator(core_pointer(new iterator_core()));
 }
 
 // Find next term (after iter) in polynomial according to current order

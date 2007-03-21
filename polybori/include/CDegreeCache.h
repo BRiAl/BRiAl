@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.4  2006/11/30 19:42:44  dreyer
  * CHANGE: lead(bound) now uses cached and recursive variant
  *
@@ -47,7 +50,7 @@
 #define CDegreeCache_h_ 
 
 BEGIN_NAMESPACE_PBORI
-
+//class BoolePolyRing;
 /** @class CIndexHandle
  * @brief This class defines an uses an navigator-like type for storing integer
  * values from 0 upto nmax (number of currently active ring variables).
@@ -72,7 +75,7 @@ public:
   typedef typename base::value_type idx_type;
 
   /// Type of decision diagram manager
-  typedef typename BoolePolyRing::manager_type manager_type;
+  typedef typename CTypes::manager_type manager_type;
 
   /// Construct from index
   CIndexHandle(idx_type idx): base( toNode(idx) ) {}
@@ -143,6 +146,53 @@ public:
   /// Store cached degree wrt. given navigator
   void insert(input_node_type navi, size_type deg) const {
     base::insert(navi, node_type(deg));
+  }
+};
+
+
+
+
+template <class TagType =  typename CCacheTypes::block_degree,
+          class DDType = typename CTypes::dd_type,
+          class ManagerType = typename CTypes::manager_base>
+class CBlockDegreeCache:
+  public CCacheManagement<TagType, 2, ManagerType> {
+
+public:
+  /// @name Define generic access to data types
+  //@{
+  typedef ManagerType manager_type;
+  typedef DDType dd_type;
+  typedef TagType tag_type;
+  typedef CCacheManagement<tag_type, 2, manager_type> base;
+  typedef CBlockDegreeCache<tag_type, dd_type, manager_type> self;
+  //@}
+
+  /// @name Adopt type definitions
+  //@{
+  typedef typename base::node_type input_node_type;
+  typedef typename dd_type::idx_type idx_type;
+  typedef typename dd_type::size_type size_type;
+  typedef typename dd_type::navigator navi_type;
+  typedef CIndexHandle<navi_type> node_type;
+  //@}
+
+  /// Constructor
+  CBlockDegreeCache(const manager_type& mgr): base(mgr) {}
+
+  /// Copy Constructor
+  CBlockDegreeCache(const self& rhs): base(rhs) {}
+
+  /// Destructor
+  ~CBlockDegreeCache() {}
+
+  /// Find cached degree wrt. given navigator
+  node_type find(input_node_type navi, idx_type idx) const{ 
+    return node_type(base::find(navi, node_type(idx))); }
+
+  /// Store cached degree wrt. given navigator
+  void insert(input_node_type navi, idx_type idx, size_type deg) const {
+    base::insert(navi, node_type(idx), node_type(deg));
   }
 };
 

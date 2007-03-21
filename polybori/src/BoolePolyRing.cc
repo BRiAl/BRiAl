@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.34  2007/03/16 16:59:20  dreyer
  * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
  *
@@ -133,6 +136,8 @@
 
 // load header file
 # include "BoolePolyRing.h"
+
+#include "OrderedManager.h"
 
 // get error types
 # include "PBoRiError.h"
@@ -503,6 +508,37 @@ BoolePolyRing::getRingVariableName(idx_type idx) {
   PBORI_TRACE_FUNC( "getRingVariableName(idx_typ)");
   return activeManager().getVariableName(idx);
 }
+
+
+
+BoolePolyRing::block_iterator 
+BoolePolyRing::blockRingBegin() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::blockRingBegin() const");
+  return activeManager().blockBegin();
+}
+
+BoolePolyRing::block_iterator
+BoolePolyRing::blockRingEnd() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::blockRingEnd() const");
+  return activeManager().blockEnd();
+}
+
+void BoolePolyRing::appendRingBlock(idx_type idx) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::appendRingBlock(idx_type)");
+  return activeManager().appendBlock(idx);
+}
+
+void BoolePolyRing::clearRingBlocks() {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::clearRingBlocks()");
+  return activeManager().clearBlocks();
+}
+
+
+
 void
 BoolePolyRing::clearCache() {
 

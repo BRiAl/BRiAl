@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.30  2006/10/30 13:30:32  dreyer
  * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
  *
@@ -313,7 +316,9 @@ struct COrderEnums {
   enum ordercodes {
     lp,
     dlex,
-    dp_asc
+    dp_asc,
+    block_dlex,
+    block_dp_asc
   };
 };
 
@@ -352,6 +357,8 @@ struct CCompareEnums {
     less_or_equal_max = 0,
     greater_or_equal_min = 0
   };
+
+  enum { max_idx = CUDD_MAXINDEX };
 };
 
 /** @class CAuxTypes

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.6  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -212,7 +215,7 @@ protected:
   core_pointer p_iter;
 };
 
-
+#if 0
 template<class MonomType>
 class COrderedIter {
 
@@ -304,7 +307,7 @@ private:
   poly_type m_poly;
   const manager_type& m_mgr;
 };
-
+#endif
 
 
 END_NAMESPACE_PBORI

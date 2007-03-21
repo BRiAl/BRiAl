@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.88  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.87  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -854,6 +857,8 @@ BoolePolynomial::print(ostream_type& os) const {
 
   if( isZero() )
     os << 0;
+  else if( isOne() )
+    os << 1;
   else
     dd_print_terms(orderedExpBegin(), orderedExpEnd(), 
                    variable_name<manager_type>(BoolePolyRing::activeManager()), 
@@ -934,7 +939,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpBegin() const" );
-  return *this;
+  return BoolePolyRing::activeManager().leadExpIteratorBegin(*this);//*this;
 }
 
 // Finish of leading term 
@@ -942,7 +947,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpEnd() const" );
-  return ordered_exp_iterator();
+  return BoolePolyRing::activeManager().leadExpIteratorEnd();//ordered_exp_iterator();
 }
 
 // Start of iteration over monomials

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.20  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -101,6 +104,7 @@
 #include "CGenericIter.h"
   //#include "CIndirectIter.h"
 
+#include <vector>
 #ifndef OrderedManager_h_
 #define OrderedManager_h_
 
@@ -145,7 +149,14 @@ public:
                             iterator> delayed_iterator;
 
   typedef CIndirectIter< delayed_iterator, monom_type> ordered_iterator;
-  //@}
+  typedef CIndirectIter< delayed_iterator, exp_type> ordered_exp_iterator;
+ //@}
+
+  /// Type for block indices
+  typedef std::vector<idx_type> block_idx_type;
+
+  /// Type for block iterators
+  typedef block_idx_type::const_iterator block_iterator;
 
   /// Define type for storing names of variables
   typedef CVariableNames variable_names_type;
@@ -219,11 +230,13 @@ public:
   virtual bool_type isDegreeReverseLexicograpical() const = 0;
 
   /// Initialize iterator corresponding to leading term
-  virtual iterator leadIterator(const poly_type&) const = 0;
+  //  virtual iterator leadIterator(const poly_type&) const = 0;
   virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;
 
   virtual ordered_iterator leadIteratorEnd() const = 0;
+  virtual ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const = 0;
 
+  virtual ordered_exp_iterator leadExpIteratorEnd() const = 0;
 
   /// Find next term (after iter) in polynomial according to current order
   virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
@@ -240,6 +253,13 @@ public:
   const_varname_reference getVariableName(idx_type idx) const { 
     return m_names[idx];
   }
+  /// @name interface for block orderings
+  //@{
+  virtual block_iterator blockBegin() const = 0;
+  virtual block_iterator blockEnd() const = 0;
+  virtual void appendBlock(idx_type) = 0;
+  virtual void clearBlocks() = 0;
+  //@}
 
 private:
   /// Stores names of variables
@@ -284,7 +304,9 @@ public:
   typedef typename base::exp_type exp_type;
   typedef typename base::iterator iterator;
   typedef typename base::ordered_iterator ordered_iterator;
+  typedef typename base::ordered_exp_iterator ordered_exp_iterator;
   typedef typename base::ordercode_type ordercode_type;
+  typedef typename base::block_iterator block_iterator;
   //@}
 
   /// Construct new decision diagramm manager
@@ -395,9 +417,9 @@ public:
   }
 
   /// Initialize iterator corresponding to leading term
-  iterator leadIterator(const poly_type& poly) const {
-    return ordering.leadIterator(poly);
-  }
+  //  iterator leadIterator(const poly_type& poly) const {
+  //    return ordering.leadIterator(poly);
+  //  }
    /// Initialize iterator corresponding to leading term
   ordered_iterator leadIteratorBegin(const poly_type& poly) const {
     return ordering.leadIteratorBegin(poly);
@@ -406,7 +428,14 @@ public:
   ordered_iterator leadIteratorEnd() const {
     return ordering.leadIteratorEnd();
   }
+   /// Initialize iterator corresponding to leading term
+  ordered_exp_iterator leadExpIteratorBegin(const poly_type& poly) const {
+    return ordering.leadExpIteratorBegin(poly);
+  }
 
+  ordered_exp_iterator leadExpIteratorEnd() const {
+    return ordering.leadExpIteratorEnd();
+  }
   /// Find next term (after iter) in polynomial according to current order
   iterator incrementIterator(iterator iter, const poly_type& poly) const {
     return ordering.incrementIterator(iter, poly);
@@ -416,6 +445,13 @@ public:
   ordercode_type getOrderCode() const {
     return order_type::order_code;
   }
+  /// @name interface for block orderings
+  //@{
+  block_iterator blockBegin() const { return ordering.blockBegin(); }
+  block_iterator blockEnd() const { return ordering.blockEnd();  }
+  void appendBlock(idx_type idx) { ordering.appendBlock(idx); }
+  void clearBlocks() { ordering.clearBlocks();  }
+  //@}
 
 protected:
   order_type ordering;

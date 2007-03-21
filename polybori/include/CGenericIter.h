@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.5  2007/03/19 16:49:38  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -48,13 +51,20 @@
 
 
 #include "CRestrictedIter.h"
-
+#include "CDegreeCache.h"
 #include <boost/iterator/iterator_facade.hpp>
 
 #ifndef CGenericIter_h_
 #define CGenericIter_h_
 
 BEGIN_NAMESPACE_PBORI
+// class block_degree;
+
+template <class, class, class>
+class CBlockDegreeCache;
+
+template<class NaviType, class DescendingProperty>
+class bounded_restricted_term;
 
 // Empty class dummy
 class CIterCore { };
@@ -75,12 +85,34 @@ public:
   virtual void increment() = 0;
 
   /// Dereferencing operation
-  virtual ReferenceType dereference() const = 0;
+  //virtual 
+  ReferenceType dereference() const {
+    typedef CDelayedTermIter<ReferenceType, 
+      change_assign<>, project_ith<2>, 
+      IteratorType> iter_type;
+
+    return iter_type(m_iter).term(); 
+  }
 
   /// Store unterlying iterator temparily
   IteratorType m_iter;
 
 };
+
+template<class StackType>
+void print_stack(StackType thestack) {
+    std::cout <<"(";
+    while (!thestack.empty()){
+      if (thestack.top().isValid())
+        std::cout << *(thestack.top()) << ", ";
+      else 
+        std::cout << "one";
+      std::cout.flush();
+      thestack.pop();
+    }
+
+    std::cout <<")";
+}
 
 template <class IteratorType, class ReferenceType, 
           class RHSIterator = IteratorType, 
@@ -112,13 +144,7 @@ public:
   /// Abstract function, inherited classes must provide incrementation
   //  virtual void increment() = 0;
 
-  /// Dereferencing operation
-  ReferenceType dereference() const {
 
-    typedef CDelayedTermIter<ReferenceType, 
-                           change_assign<>, project_ith<2>, 
-      IteratorType> iter_type;
-  return iter_type(base::m_iter).term(); }
   
 protected:
   /// Store unterlying iterator
@@ -334,6 +360,229 @@ public:
   void increment(){
     ++base::m_iter;
   }
+};
+
+
+template <class StackType, class NaviType, class IdxType>
+class deg_next_term {
+public:
+
+  deg_next_term(StackType& thestack, IdxType mini, IdxType maxi):
+    m_stack(thestack), min_idx(mini), max_idx(maxi)/*, m_deg_cache(deg_cache)*/ {
+
+    assert(mini < maxi);
+  }
+
+
+
+  //CBlockDegreeCache<> m_deg_cache;
+
+  bool at_end(const NaviType& navi) const {
+    
+    return navi.isConstant()  || (*navi >= max_idx);
+  }
+
+  bool on_path(const NaviType& navi) const {
+
+    return (navi.isConstant() && navi.terminalValue()) ||
+      (!navi.isConstant()&&(*navi >= max_idx));
+  }
+
+
+  NaviType operator()() {
+
+    assert(!m_stack.empty());
+    unsigned deg = m_stack.size();
+    NaviType current;
+
+    do {
+      assert(!m_stack.empty());
+      current = m_stack.top();
+      m_stack.pop();
+
+      current.incrementElse();
+
+      while (!current.isConstant() && *current < max_idx) {
+    
+        m_stack.push(current);
+        current.incrementThen();
+      }
+    } while ( !m_stack.empty() && (*m_stack.top() >= min_idx) &&
+              (current.isEmpty() || (m_stack.size() != deg)) );
+
+     if (m_stack.size() == deg)
+      return current;
+
+     if (m_stack.empty())
+      return current;
+
+     bounded_restricted_term<NaviType,  valid_tag>
+      bstart(m_stack.top().thenBranch(),  deg - m_stack.size() - 1, max_idx),
+      bend;
+    bstart = std::max_element(bstart, bend);
+    dummy_append(m_stack, bstart.begin(), bstart.end());
+
+    return bstart.next();
+  }
+
+
+protected:
+  StackType& m_stack;
+  IdxType min_idx, max_idx;
+};
+
+
+template <class PolyType, class IteratorType, class ReferenceType,
+          class RHSIterator>
+class CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>:
+  public CDelayedCore <IteratorType, ReferenceType, RHSIterator> {
+
+  /// Base type 
+  typedef CDelayedCore <IteratorType, ReferenceType, RHSIterator> base;
+
+  typedef CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType,
+                       RHSIterator> self;
+public:
+  /// Constructor
+  CGenericCore(const PolyType& poly): 
+    base((IteratorType)poly.navigation()), m_indices(BoolePolyRing::blockRingBegin()), 
+    m_current_block(BoolePolyRing::blockRingBegin()),
+    m_deg_cache(poly.diagram().manager())  {    
+
+  
+    //  findTerminal(poly.navigation());   
+  }
+
+  // Default Constructor
+  CGenericCore(): base(), m_indices(), m_current_block(),
+                  m_deg_cache(PolyType().diagram().manager()) {}
+
+  /// Incrementation operation
+
+              //  typedef DelayedIterator base;
+              //  typedef CBlockIterator<base> self;
+              //  typedef typename base::stack_type stack_type;
+  typedef typename PolyType::navigator navigator;
+  typedef typename PolyType::size_type size_type;
+  typedef typename PolyType::idx_type idx_type;
+   /// Type for block indices
+  typedef std::vector<idx_type> block_idx_type;
+
+  typedef dstack<navigator> stack_type;
+
+  /// Type for block iterators
+  typedef typename block_idx_type::const_iterator block_iterator;
+
+
+//   CBlockIterator(navigator navi, unsigned* indices, 
+//                  const CBlockDegreeCache<>& deg_cache):
+//     base(),  m_indices(indices), m_deg_cache(deg_cache), 
+//     m_current_block(indices) {
+//     findTerminal(navi);   
+//   }
+
+  size_type currentBlockDegree(const navigator& navi) const {
+    return dd_cached_block_degree(m_deg_cache, navi, *m_current_block);
+  }
+  
+  void incrementBlock(navigator& navi) {
+    incrementBlock(navi, currentBlockDegree(navi));
+  }
+
+  void incrementBlock(navigator& navi, unsigned deg) {
+
+    while(deg > 0) {
+      --deg;
+      if ( currentBlockDegree(navi.thenBranch()) == deg){
+        assert(!navi.isConstant());
+        (this->m_iter).m_stack.push(navi);
+        navi.incrementThen(); 
+      }
+      else {
+        ++deg;
+        navi.incrementElse();
+        assert(!navi.isConstant());
+        (this->m_iter).m_stack.push(navi);
+      }
+    }
+  }
+
+
+  idx_type blockMin() const {
+    return ( m_current_block == m_indices? 0: *(m_current_block - 1) );
+  }
+
+  idx_type blockMax() const {
+    return *m_current_block;
+  }
+
+  void increment() {
+    ++(this->m_iter);
+    return;
+
+
+    // the zero term
+    if ((this->m_iter).empty())
+      return;
+
+    navigator current = (this->m_iter).m_stack.top(); 
+  
+    // the term one
+    if (!current.isValid()) {
+      *this = self();
+      return;
+    }
+
+    while (*current < blockMin())
+      --m_current_block;
+    ++m_current_block;
+
+
+    do {
+      --m_current_block;
+      blockMin();
+      blockMax();
+      deg_next_term<stack_type, navigator, unsigned>
+        nextop((this->m_iter).m_stack,  blockMin(), blockMax());
+  
+      current = nextop();
+
+    } while (!(this->m_iter).empty() && current.isEmpty());
+ 
+    findTerminal(current);
+
+    if ((this->m_iter).empty() && current.terminalValue()) {
+      *this = self();      ///     base::clear();
+      (this->m_iter).m_stack.push(navigator());
+    }
+ 
+  }
+
+  bool atBlockEnd(navigator navi) const {
+    return navi.isConstant() || (*navi >= blockMax());
+  }
+
+  // template <class IdxIterator>
+  void findTerminal(navigator navi) {
+    if (!navi.isConstant() ) 
+      incrementBlock(navi);
+
+    while (!navi.isConstant()  ) {
+      assert (blockMax() != CUDD_MAXINDEX);
+      ++m_current_block;
+
+      incrementBlock(navi);
+    }
+  }
+
+
+  // std::stack<navigator> base::m_stack;
+
+  block_iterator m_indices;
+  block_iterator m_current_block;
+
+  CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type,
+                          CTypes::manager_base> m_deg_cache; 
 };
 
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.5  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -60,6 +63,16 @@ struct dlex_tag {};
  * @brief Marker for ascending deg-rev-lex ordering.
  **/
 struct dp_asc_tag {};
+
+/**@class block_dlex_tag
+ * @brief Marker for block deg-lex ordering.
+ **/
+struct block_dlex_tag {};
+
+/**@class block_dp_asc_tag
+ * @brief Marker for ascending block deg-rev-lex ordering.
+ **/
+struct block_dp_asc_tag {};
 
 END_NAMESPACE_PBORI
 

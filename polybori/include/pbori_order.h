@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.6  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -53,7 +56,7 @@
 #include "LexOrder.h"
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"
-
+#include "BlockDegLexOrder.h"
 
 #ifndef pbori_order_h_
 #define pbori_order_h_
@@ -73,6 +76,12 @@ get_ordered_manager(ConstructorType& nvars, CTypes::ordercode_type order) {
   else if(order == CTypes::dp_asc)
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     DegRevLexAscOrder>(nvars) );
+  else if(order == CTypes::block_dlex)
+    return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
+    BlockDegLexOrder>(nvars) );
+//   else if(order == CTypes::block_dp_asc)
+//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
+//     DegRevLexAscOrder>(nvars) );
   else                        // default is lex order
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );

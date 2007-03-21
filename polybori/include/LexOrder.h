@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/03/21 08:55:09  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.14  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -142,6 +145,8 @@ class LexOrder:
   iterator leadIterator(const poly_type&) const;
   indirect_iterator leadIteratorBegin(const poly_type&) const;
   indirect_iterator leadIteratorEnd() const;
+  indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
+  indirect_exp_iterator leadExpIteratorEnd() const;
 
   /// Find next term (after iter) in polynomial according to current order
   iterator incrementIterator(iterator iter, const poly_type&) const;

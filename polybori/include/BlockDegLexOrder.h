@@ -1,14 +1,14 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file DegLexOrder.h
+/** @file BlockDegLexOrder.h
  *
  * @author Alexander Dreyer
  * @date 2006-05-18
  *
- * Defining Degree-lexicographical ordering.
+ * Defining Block Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2006 by
+ *   (c) 2007 by
  *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
@@ -19,35 +19,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.10  2007/03/21 08:55:09  dreyer
+ * Revision 1.1  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
- *
- * Revision 1.9  2007/03/19 16:49:39  dreyer
- * CHANGE: ordered iterators made more generic
- *
- * Revision 1.8  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.7  2006/10/05 12:51:31  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.6  2006/10/04 12:22:32  dreyer
- * ADD: getOrderCode()
- *
- * Revision 1.5  2006/09/13 15:07:04  dreyer
- * ADD: lead(sugar) and infrastructure
- *
- * Revision 1.4  2006/09/08 14:31:39  dreyer
- * ADD: COrderedIter and infrastructure for order-dependent iterator
- *
- * Revision 1.3  2006/09/05 11:10:44  dreyer
- * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
- *
- * Revision 1.2  2006/09/05 08:48:32  dreyer
- * ADD: BoolePolyRing::is(Total)DegreeOrder()
- *
- * Revision 1.1  2006/09/04 15:58:43  dreyer
- * ADD: DegLexOrder and preparations
  *
  * @endverbatim
 **/
@@ -59,17 +32,17 @@
 // include base order definitions
 #include "COrderBase.h"
 
-#ifndef DegLexOrder_h_
-#define DegLexOrder_h_
+#ifndef BlockDegLexOrder_h_
+#define BlockDegLexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class DegLexOrder
+/** @class BlockDegLexOrder
  * @brief This class defines ordering related functions.
  *
  *
  **/
-class DegLexOrder:
+class BlockDegLexOrder:
   public COrderBase {
 
  public:
@@ -78,31 +51,31 @@ class DegLexOrder:
   //-------------------------------------------------------------------------
 
   /// generic access to current type
-  typedef DegLexOrder self;
+  typedef BlockDegLexOrder self;
 
   /// @name define generic property markers
   //@{
-  typedef valid_tag symmetry_property;
-  typedef valid_tag degorder_property;
-  typedef valid_tag totaldegorder_property;
+  typedef valid_tag blockorder_property;
   typedef valid_tag descending_property;
-  typedef dlex_tag order_tag;
+  typedef block_dlex_tag order_tag;
   //@}
 
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
 
   /// Get order code
-  enum { order_code = CTypes::dlex };
+  enum { order_code = CTypes::block_dlex };
 
   /// Default Constructor
-  DegLexOrder(): base() {};
+  BlockDegLexOrder(): base(), m_indices() {
+    m_indices.push_back(CTypes::max_idx); 
+  };
 
   /// Copy Constructor
-  DegLexOrder(const self& rhs): base(rhs) {};
+  BlockDegLexOrder(const self& rhs): base(rhs), m_indices(rhs.m_indices) {};
 
   /// Destructor
-  ~DegLexOrder() {};
+  ~BlockDegLexOrder() {};
 
   /// Comparison of indices corresponding to variables
   comp_type compare(idx_type, idx_type) const;
@@ -132,11 +105,26 @@ class DegLexOrder:
   indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
   indirect_exp_iterator leadExpIteratorEnd() const;
 
+
   /// Find next term (after iter) in polynomial according to current order
   iterator incrementIterator(iterator iter, const poly_type&) const;
+
+  /// @name interface for block orderings
+  //@{
+  block_iterator blockBegin() const { return m_indices.begin(); }
+  block_iterator blockEnd() const { return m_indices.end(); }
+  void appendBlock(idx_type idx) { 
+    m_indices.back() = idx;
+    m_indices.push_back(CTypes::max_idx);
+  }
+  void clearBlocks() { m_indices.clear(); }
+  //@}
+
+private:
+  block_idx_type m_indices;
 };
 
 
 END_NAMESPACE_PBORI
 
-#endif // DegLexOrder_h_
+#endif // BlockDegLexOrder_h_

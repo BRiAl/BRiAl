@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.11  2007/03/19 16:49:39  dreyer
  * CHANGE: ordered iterators made more generic
  *
@@ -102,8 +105,11 @@ class COrderBase:
   typedef poly_type::bidirectional_iterator iterator;
 
 
-  /// Type of degree iterator
+  /// Type for sizes
   typedef poly_type::size_type size_type;
+
+  /// Type for indices
+  typedef poly_type::idx_type idx_type;
 
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
@@ -114,11 +120,20 @@ class COrderBase:
   typedef CIndirectIter<delayed_iterator, monom_type> indirect_iterator;
 
 
+
   /// Type of Boolean sets
   typedef BooleSet set_type;
 
   /// Type of Boolean monomials
   typedef BooleExponent exp_type;
+
+  typedef CIndirectIter<delayed_iterator, exp_type> indirect_exp_iterator;
+
+  /// Type for block indices
+  typedef std::vector<idx_type> block_idx_type;
+
+  /// Type for block iterators
+  typedef block_idx_type::const_iterator block_iterator;
 
   /// @name define generic property markers (default is invalid)
   //@{
@@ -167,9 +182,20 @@ class COrderBase:
   virtual iterator leadIterator(const poly_type&) const = 0;
   virtual indirect_iterator leadIteratorBegin(const poly_type&) const = 0;
   virtual indirect_iterator leadIteratorEnd() const = 0;
+  virtual indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const = 0;
+  virtual indirect_exp_iterator leadExpIteratorEnd() const = 0;
 
   /// Find next term (after iter) in polynomial according to current order
-  virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
+  virtual iterator incrementIterator(iterator iter, const poly_type&) const =0;
+
+  /// @name interface for block orderings
+  //@{
+  virtual block_iterator blockBegin() const { return block_iterator(); }
+  virtual block_iterator blockEnd() const { return block_iterator(); }
+  virtual void appendBlock(idx_type) const { }
+  virtual void clearBlocks() const { }
+  //@}
+
 
 protected:
   /// Get monomial from set of subsets of Boolean variables (internal use only)

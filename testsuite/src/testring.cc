@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.21  2007/03/21 08:55:10  dreyer
+// ADD: first version of block_dlex running
+//
 // Revision 1.20  2007/01/29 17:03:45  dreyer
 // ADD: toy sandbox for block orderings
 //
@@ -92,7 +95,7 @@
 # include "polybori.h"
 
 #include "CDegLexIter.h"
-#include "COrderedIter.h"
+  //#include "COrderedIter.h"
 
 
 
@@ -446,14 +449,14 @@ main(){
   std::cout << "min "<<*std::max_element(poly.degBegin(), poly.degEnd(), std::greater<unsigned>())
   <<std::endl;
 
-  COrderedIter<BooleMonomial> oStart(poly), oFinish;
+//   COrderedIter<BooleMonomial> oStart(poly), oFinish;
 
-  std::cout << "ordered Iter"<< std::endl;
+//   std::cout << "ordered Iter"<< std::endl;
 
-  while ((oStart != oFinish)){
-    std::cout << *oStart << ", ";
-    ++oStart;
-  }
+//   while ((oStart != oFinish)){
+//     std::cout << *oStart << ", ";
+//     ++oStart;
+//   }
 
 
 
@@ -470,14 +473,14 @@ main(){
 
 
   BoolePolyRing ring3(5);
-  COrderedIter<BooleMonomial> oStart2(poly);
+//   COrderedIter<BooleMonomial> oStart2(poly);
 
-  std::cout << "lex-ordered Iter"<< std::endl;
+//   std::cout << "lex-ordered Iter"<< std::endl;
 
-  while ((oStart2 != oFinish)){
-    std::cout << *oStart2 << ", ";
-    ++oStart2;
-  }
+//   while ((oStart2 != oFinish)){
+//     std::cout << *oStart2 << ", ";
+//     ++oStart2;
+//   }
 
   std::cout<< std::endl << "Testing dlex"<< std::endl;
   test_ordered(CTypes::dlex); 

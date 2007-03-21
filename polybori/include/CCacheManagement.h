@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/03/21 08:55:08  dreyer
+ * ADD: first version of block_dlex running
+ *
  * Revision 1.16  2006/12/09 10:46:18  dreyer
  * CHANGE added and used recursively cache variant of /=
  *
@@ -126,6 +129,9 @@ public:
 
   struct divisorsof_fixedpath: public ternary_cache_tag { };
   struct testwise_ternary: public ternary_cache_tag { };
+
+  struct block_degree: public binary_cache_tag { };
+  struct block_dlex_lead: public unary_cache_tag { };
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)
