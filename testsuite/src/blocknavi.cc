@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/03/28 12:34:57  dreyer
+ * ADD: added testsuite testcases for blockordering; Fixed errors in block-order
+ *
  * Revision 1.9  2007/03/21 08:55:10  dreyer
  * ADD: first version of block_dlex running
  *
@@ -78,7 +81,7 @@ void dummy_print2(Iterator start, Iterator finish) {
 }
 
 
-
+/*
 template <class DelayedIterator>
 class CBlockIterator:
   public DelayedIterator {
@@ -212,7 +215,7 @@ public:
 
   const CBlockDegreeCache<>& m_deg_cache;
 };
-
+*/
 
 
 
@@ -300,7 +303,7 @@ main(){
       deg_iterator> delayed_iterator;
 
 
-    
+#if 0    
     CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block,
     blockDegCache);
     /**/
@@ -311,7 +314,7 @@ main(){
       ++biter;
     }
     /**/
-
+#endif
     BoolePolynomial::ordered_iterator obegin(poly.orderedBegin()),
     oend(poly.orderedEnd());
 
@@ -355,6 +358,142 @@ main(){
     std::cout <<  Cudd_Regular( Cudd_Not(navi.operator->()))<<std::endl;
     std::cout <<  Cudd_Complement(navi.operator->())<<std::endl;
     */
+    std::cout << "Other polynomials (block-ordered)"<<std::endl;
+    //    poly =  x0*BoolePolynomial(x1 + x3) *BoolePolynomial(x2 + 1);
+     poly =  x0*BoolePolynomial(x4 + 1)*BoolePolynomial(x5 + 1);
+   // std::cout << poly <<std::endl;
+
+    BoolePolynomial::const_iterator lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout << "lex iteration " <<std::endl;
+
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin;
+    }
+    
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout << "ordered iteration " <<std::endl;
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin;
+    }
+
+    std::cout << (BoolePolynomial(x4 + 1)*BoolePolynomial(x5 + 1)) <<std::endl;
+    poly = (BoolePolynomial(x0 + 1)*BoolePolynomial(x2 + 1))*(BoolePolynomial(x4
+    + 1)*BoolePolynomial(x5 + 1)) ;
+
+    lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout << "lex iteration " <<std::endl;
+
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin;
+    }
+    
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout << "ordered iteration " <<std::endl;
+    int i = 0;
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin; ++i;
+    }
+
+    std::cout <<std::endl<< "next poly" <<std::endl;
+
+      poly =  BoolePolynomial(x0 + x1*x2)* BoolePolynomial(x4 + x5)
+      * BoolePolynomial(x6 + x7*x8);
+
+    lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout <<std::endl<< "lex iteration " <<std::endl;
+
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin;
+    }
+    
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout << "ordered iteration " <<std::endl;
+
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin; ++i;
+    }
+      poly =  BoolePolynomial(x0 + x1*x2+ x0*x2) * BoolePolynomial(x6 + x7*x8);
+    lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout <<std::endl<< "lex iteration " <<std::endl;
+
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin;
+    }
+    
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout  << "ordered iteration " <<std::endl;
+
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin;
+    }
+
+      poly =  BoolePolynomial(x0 ) * BoolePolynomial(x6 + x6*x8*x9 + x7*x8*x9);
+    lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout <<std::endl << "lex iteration " <<std::endl;
+
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin;
+    }
+    
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout << "ordered iteration " <<std::endl;
+
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin;
+    }
+
+    poly =  BoolePolynomial(x0 +1) * BoolePolynomial(x1 +1) *
+      BoolePolynomial(x2 +1)* BoolePolynomial(x3 +1) * BoolePolynomial(x4 +1) *
+      BoolePolynomial(x5 +1)* BoolePolynomial(x6 + 1)* BoolePolynomial(x7 + 1)*
+      BoolePolynomial(x8 + 1); 
+    lexbegin = (poly.begin()),
+    lexend = (poly.end());
+    std::cout <<std::endl << "lex iteration " <<std::endl;
+
+    i= 0;
+    while (lexbegin != lexend) {
+      std::cout << *lexbegin <<", "<<std::endl; std::cout.flush();
+      ++lexbegin; ++i;
+    }
+    
+    std::cout << "#terms:  "<<i <<std::endl;
+
+    obegin = (poly.orderedBegin()),
+    oend = (poly.orderedEnd());
+
+    std::cout << "ordered iteration " <<std::endl;
+    i= 0;
+    while (obegin != oend) {
+      std::cout << "> "<< *obegin <<" < , "<<std::endl; std::cout.flush();
+      ++obegin;; ++i;
+    }
+    std::cout << "#terms:  "<<i <<std::endl;
+
     std::cout << "Finished."<<std::endl;
   }
   catch (PBoRiError& err) {

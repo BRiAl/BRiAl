@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/03/28 12:34:57  dreyer
+ * ADD: added testsuite testcases for blockordering; Fixed errors in block-order
+ *
  * Revision 1.6  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -367,8 +370,11 @@ template <class StackType, class NaviType, class IdxType>
 class deg_next_term {
 public:
 
-  deg_next_term(StackType& thestack, IdxType mini, IdxType maxi):
-    m_stack(thestack), min_idx(mini), max_idx(maxi)/*, m_deg_cache(deg_cache)*/ {
+  deg_next_term(StackType& thestack, IdxType mini, IdxType maxi,
+                NaviType navi):
+    m_stack(thestack), min_idx(mini), max_idx(maxi)/*, m_deg_cache(deg_cache)*/ 
+    , m_navi(navi)
+{
 
     assert(mini < maxi);
   }
@@ -388,6 +394,20 @@ public:
       (!navi.isConstant()&&(*navi >= max_idx));
   }
 
+  void print() const {
+      std::cout << ":";
+      std::cout.flush();
+    StackType thestack( m_stack);
+    while (!thestack.empty()){
+      if (thestack.top().isValid())
+        std::cout << *(thestack.top()) << ", ";
+      else 
+        std::cout << "one";
+      std::cout.flush();
+      thestack.pop();
+    }
+  }
+
 
   NaviType operator()() {
 
@@ -395,7 +415,12 @@ public:
     unsigned deg = m_stack.size();
     NaviType current;
 
+    if (*m_stack.top() < min_idx)
+      return BoolePolynomial(false).navigation();
+
+    
     do {
+
       assert(!m_stack.empty());
       current = m_stack.top();
       m_stack.pop();
@@ -403,31 +428,53 @@ public:
       current.incrementElse();
 
       while (!current.isConstant() && *current < max_idx) {
-    
+
         m_stack.push(current);
         current.incrementThen();
       }
+
     } while ( !m_stack.empty() && (*m_stack.top() >= min_idx) &&
               (current.isEmpty() || (m_stack.size() != deg)) );
-
+  
      if (m_stack.size() == deg)
+       return current;
+
+     if (m_stack.empty() &&(deg == 0) )
       return current;
 
-     if (m_stack.empty())
-      return current;
+     if (m_stack.empty() )
+         current = m_navi;
+     else {
+       current = m_stack.top();
+       assert(!current.isConstant());
+       current.incrementThen();
+     }
 
+
+     while (!current.isConstant() && (*current < min_idx))
+       current.incrementElse();
+
+
+     if (*current < min_idx)
+       return BoolePolynomial(false).navigation();
+
+
+     assert(deg > m_stack.size()); 
      bounded_restricted_term<NaviType,  valid_tag>
-      bstart(m_stack.top().thenBranch(),  deg - m_stack.size() - 1, max_idx),
+      bstart(current,  deg - m_stack.size() - 1, max_idx),
       bend;
-    bstart = std::max_element(bstart, bend);
+     bstart = std::max_element(bstart, bend);
+
     dummy_append(m_stack, bstart.begin(), bstart.end());
 
+    //  std::cout << "bstart.next();"<<*bstart.next()<<std::endl;
     return bstart.next();
   }
 
 
 protected:
   StackType& m_stack;
+  NaviType(m_navi);
   IdxType min_idx, max_idx;
 };
 
@@ -445,17 +492,18 @@ class CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSI
 public:
   /// Constructor
   CGenericCore(const PolyType& poly): 
-    base((IteratorType)poly.navigation()), m_indices(BoolePolyRing::blockRingBegin()), 
+    base(/*(IteratorType)poly.navigation()*/), m_indices(BoolePolyRing::blockRingBegin()), 
     m_current_block(BoolePolyRing::blockRingBegin()),
-    m_deg_cache(poly.diagram().manager())  {    
+    m_deg_cache(poly.diagram().manager()), m_navi(poly.navigation()) {    
 
   
-    //  findTerminal(poly.navigation());   
+     findTerminal(poly.navigation());   
   }
 
   // Default Constructor
   CGenericCore(): base(), m_indices(), m_current_block(),
-                  m_deg_cache(PolyType().diagram().manager()) {}
+                  m_deg_cache(PolyType().diagram().manager()),
+                  m_navi(){}
 
   /// Incrementation operation
 
@@ -502,7 +550,6 @@ public:
         ++deg;
         navi.incrementElse();
         assert(!navi.isConstant());
-        (this->m_iter).m_stack.push(navi);
       }
     }
   }
@@ -517,8 +564,7 @@ public:
   }
 
   void increment() {
-    ++(this->m_iter);
-    return;
+
 
 
     // the zero term
@@ -535,20 +581,22 @@ public:
 
     while (*current < blockMin())
       --m_current_block;
-    ++m_current_block;
 
+   
+    ++m_current_block;
 
     do {
       --m_current_block;
-      blockMin();
-      blockMax();
+    
       deg_next_term<stack_type, navigator, unsigned>
-        nextop((this->m_iter).m_stack,  blockMin(), blockMax());
+        nextop((this->m_iter).m_stack,  blockMin(), blockMax(), m_navi);
   
       current = nextop();
 
     } while (!(this->m_iter).empty() && current.isEmpty());
- 
+    //   std::cout << "empty "<<(this->m_iter).empty() << " "<<current.isEmpty()<<std::endl;
+
+
     findTerminal(current);
 
     if ((this->m_iter).empty() && current.terminalValue()) {
@@ -580,6 +628,8 @@ public:
 
   block_iterator m_indices;
   block_iterator m_current_block;
+
+  navigator m_navi;
 
   CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type,
                           CTypes::manager_base> m_deg_cache; 

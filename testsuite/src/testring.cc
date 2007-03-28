@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.22  2007/03/28 12:34:57  dreyer
+// ADD: added testsuite testcases for blockordering; Fixed errors in block-order
+//
 // Revision 1.21  2007/03/21 08:55:10  dreyer
 // ADD: first version of block_dlex running
 //
@@ -469,11 +472,20 @@ main(){
     std::cout << *ordStart << ", ";
     ++ordStart;
   }
+  ordStart = (poly.orderedBegin());
+  ordFinish = (poly.orderedEnd());
+
+  std::cout << "ordered_ Iter"<< std::endl;
+
+  while ((ordStart != ordFinish)){
+    std::cout << *ordStart << ", ";
+    ++ordStart;
+  }
 
 
 
   BoolePolyRing ring3(5);
-//   COrderedIter<BooleMonomial> oStart2(poly);
+//   COrderedIter<BooleMonomial>  oStart2(poly);
 
 //   std::cout << "lex-ordered Iter"<< std::endl;
 
