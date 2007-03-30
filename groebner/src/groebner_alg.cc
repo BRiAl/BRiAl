@@ -11,7 +11,7 @@
 #include "nf.h"
 #include <algorithm>
 #include <set>
-
+#define DANGEROUS_FIXED_PATH 1
 #define HAVE_DLEX4_DATA 1
 
 #ifdef HAVE_DLEX4_DATA
@@ -82,21 +82,29 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
     return a_nav;
   }
   assert((*a_nav)==(*m_nav));
-  
+  #ifndef DANGEROUS_FIXED_PATH
   typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
     cache_mgr_type;
-
   cache_mgr_type cache_mgr;
+  #else
+//   typedef PBORI::CacheManager<CCacheTypes::divisorsof>
+  //  cache_mgr_type;
+  #endif
+  
 
 
-  
-  
-  MonomialSet::navigator cached =
+  MonomialSet::navigator cached;
+  #ifndef DANGEROUS_FIXED_PATH
+  cached =
     cache_mgr.find(a_nav, m_nav,n_nav);
-  
-  if (cached.isValid() ){
-     return cached;
-  }
+    if (cached.isValid() ){
+       return cached;
+    }
+  #else
+  //MonomialSet::navigator cached =
+    //cache_mgr.find(a_nav, m_nav);
+#endif
+
     
   // here it is theoretically possible to get answers which don't contain the fixed path n, but that doesn't matter in practice,
   // as it is optimization anyway
@@ -127,7 +135,11 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
       result=MonomialSet(index,then_path,else_path);
     }
   }
+#ifndef DANGEROUS_FIXED_PATH
   cache_mgr.insert(a_nav,m_nav,n_nav,result.navigation());
+#else
+ cache_mgr2.insert(a_nav,m_nav,result.navigation());
+#endif
   return result;
 }
 static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
