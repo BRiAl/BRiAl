@@ -38,7 +38,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def(boost::python::init<bool>())
   .def("__hash__", poly_hash)
   .def("__len__", &BoolePolynomial::length)
-  .def("__iter__", range(&BoolePolynomial::begin, &BoolePolynomial::end))
+  .def("__iter__", range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
 
   .def(self+=self)
   //.def(self*=self)
