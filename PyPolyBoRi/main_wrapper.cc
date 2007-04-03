@@ -34,6 +34,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .value("lp", COrderEnums::lp)
     .value("dlex", COrderEnums::dlex)
     .value("dp_asc",COrderEnums::dp_asc)
+    .value("block_dp_asc",COrderEnums::block_dp_asc)
+    .value("block_dlex",COrderEnums::block_dlex)
     ;
   
   /*  struct COrderEnums {
