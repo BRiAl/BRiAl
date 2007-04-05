@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/04/05 12:31:22  dreyer
+ * CHANGE: ordered iterator uses deep copy only if necessary
+ *
  * Revision 1.8  2007/04/05 10:49:52  dreyer
  * FIX: ordered iterator does deep copies now
  *
@@ -202,7 +205,7 @@ public:
   CIndirectIter(core_pointer rhs): p_iter(rhs) {}
 
   CIndirectIter(const CIndirectIter& rhs):
-    p_iter(rhs.p_iter->copy()) {}
+    p_iter(rhs.p_iter) {}
 
   // Destructor
   ~CIndirectIter() {}
@@ -212,7 +215,12 @@ public:
     return  p_iter->equality(rhs.p_iter->m_iter); }
 
   /// Incrementation
-  void increment() { p_iter->increment(); }
+  void increment() {
+    if (!p_iter.unique())
+      p_iter = core_pointer(p_iter->copy());
+
+    p_iter->increment(); 
+  }
 
   /// Dereferencing operation
   MonomType dereference() const { return p_iter->dereference(); }
