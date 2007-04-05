@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/04/05 15:38:32  dreyer
+ * CHANGE: experimenting with shared pointers
+ *
  * Revision 1.8  2007/04/05 10:49:52  dreyer
  * FIX: ordered iterator does deep copies now
  *
@@ -80,6 +83,10 @@ template <class IteratorType, class ReferenceType>
 class CAbstractIterCore {
 
 public:
+  typedef CAbstractIterCore<IteratorType, ReferenceType> iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+
   CAbstractIterCore(const IteratorType& iter): m_iter(iter) {}
   CAbstractIterCore(): m_iter() {}
 
@@ -99,7 +106,7 @@ public:
 
     return iter_type(m_iter).term(); 
   }
-  virtual CAbstractIterCore* copy() const = 0;
+  virtual core_pointer copy() const = 0;
 
   /// Store unterlying iterator temparily
   IteratorType m_iter;
@@ -217,11 +224,15 @@ public:
       }
     } 
   }
-  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
 
-    return new CGenericDegreeCore<invalid_tag, valid_tag, DescendingProperty, 
-      PolyType,  IteratorType, 
-      ReferenceType, RHSIterator>(*this);
+  typedef CAbstractIterCore<IteratorType, ReferenceType> iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+  core_pointer copy() const {
+
+    return core_pointer(new CGenericDegreeCore<invalid_tag, valid_tag,
+                        DescendingProperty,  
+                        PolyType,  IteratorType, 
+                        ReferenceType, RHSIterator>(*this));
   }
 private:
   void find_next(unsigned deg, valid_tag) {
@@ -372,10 +383,13 @@ public:
   void increment(){
     ++base::m_iter;
   }
-  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
 
-    return new CGenericCore<LexOrder, PolyType, IteratorType, ReferenceType,
-      RHSIterator>(*this);
+  typedef CAbstractIterCore<IteratorType, ReferenceType> iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+  core_pointer copy() const {
+
+    return core_pointer(new CGenericCore<LexOrder, PolyType, IteratorType, ReferenceType,
+                        RHSIterator>(*this));
   }
 
 
@@ -649,10 +663,11 @@ public:
 
   CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type,
                           CTypes::manager_base> m_deg_cache; 
+  typedef CAbstractIterCore<IteratorType, ReferenceType> iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+  core_pointer copy() const {
 
-  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
-
-    return new  CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>(*this);
+    return core_pointer(new  CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>(*this));
   }
 
 };

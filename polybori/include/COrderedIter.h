@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/04/05 15:38:33  dreyer
+ * CHANGE: experimenting with shared pointers
+ *
  * Revision 1.9  2007/04/05 12:31:22  dreyer
  * CHANGE: ordered iterator uses deep copy only if necessary
  *
@@ -216,8 +219,10 @@ public:
 
   /// Incrementation
   void increment() {
-    if (!p_iter.unique())
-      p_iter = core_pointer(p_iter->copy());
+    if (!p_iter.unique()) {
+      core_pointer tmp(p_iter->copy());
+      p_iter = tmp;
+    }
 
     p_iter->increment(); 
   }
