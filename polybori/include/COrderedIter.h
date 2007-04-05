@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/04/05 10:49:52  dreyer
+ * FIX: ordered iterator does deep copies now
+ *
  * Revision 1.7  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -197,6 +200,9 @@ public:
   // Default Constructor
 
   CIndirectIter(core_pointer rhs): p_iter(rhs) {}
+
+  CIndirectIter(const CIndirectIter& rhs):
+    p_iter(rhs.p_iter->copy()) {}
 
   // Destructor
   ~CIndirectIter() {}

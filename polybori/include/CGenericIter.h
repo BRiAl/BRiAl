@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/04/05 10:49:52  dreyer
+ * FIX: ordered iterator does deep copies now
+ *
  * Revision 1.7  2007/03/28 12:34:57  dreyer
  * ADD: added testsuite testcases for blockordering; Fixed errors in block-order
  *
@@ -96,6 +99,7 @@ public:
 
     return iter_type(m_iter).term(); 
   }
+  virtual CAbstractIterCore* copy() const = 0;
 
   /// Store unterlying iterator temparily
   IteratorType m_iter;
@@ -213,7 +217,12 @@ public:
       }
     } 
   }
+  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
 
+    return new CGenericDegreeCore<invalid_tag, valid_tag, DescendingProperty, 
+      PolyType,  IteratorType, 
+      ReferenceType, RHSIterator>(*this);
+  }
 private:
   void find_next(unsigned deg, valid_tag) {
     ++base::m_iter;
@@ -363,6 +372,13 @@ public:
   void increment(){
     ++base::m_iter;
   }
+  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
+
+    return new CGenericCore<LexOrder, PolyType, IteratorType, ReferenceType,
+      RHSIterator>(*this);
+  }
+
+
 };
 
 
@@ -633,6 +649,12 @@ public:
 
   CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type,
                           CTypes::manager_base> m_deg_cache; 
+
+  CAbstractIterCore<RHSIterator, ReferenceType>* copy() const {
+
+    return new  CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>(*this);
+  }
+
 };
 
 
