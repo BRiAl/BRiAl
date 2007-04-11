@@ -46,7 +46,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     dp_asc
   };
 };*/
-  def("get_order_code",BoolePolyRing::getOrderCode);  
+  def("get_order_code",&BoolePolyRing::getOrderCode);  
   def("print_ring_info", &BoolePolyRing::printInfo);
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
@@ -57,6 +57,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("one", &BoolePolyRing::one)
 //#endif
   .def("nVars", &BoolePolyRing::nVariables);
+  def("append_ring_block", &BoolePolyRing::appendRingBlock);
  
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
