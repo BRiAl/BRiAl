@@ -1049,6 +1049,27 @@ class DegOrderHelper{
       return false;
     }
 };
+class BlockOrderHelper{
+    public:
+    static bool irreducible_lead(const Monomial& m, const GroebnerStrategy& strat){
+      return PBORINAME::groebner::irreducible_lead(m,strat);
+          }
+    static Polynomial::ordered_iterator begin(const Polynomial & p){
+        return p.orderedBegin();
+    }
+    static Polynomial::ordered_iterator end(const Polynomial & p){
+        return p.orderedEnd();
+    }
+    static Polynomial nf(const GroebnerStrategy& strat, const Polynomial& p, const Monomial& m){
+        return nf3(strat,p,m);
+    }
+    typedef Polynomial::ordered_iterator iterator_type;
+    const static bool isDegreeOrder=false;
+    const static bool isLexicographicalOrder=false;
+    static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
+      return false;
+    }
+};
 int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
   if (ms.emptiness())
@@ -1384,6 +1405,8 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
         return red_tail_generic<LexHelper>(strat,p);
     if (BoolePolyRing::isDegreeOrder())
         return red_tail_generic<DegOrderHelper>(strat,p);
+    if (BoolePolyRing::isBlockOrder())
+        return red_tail_generic<BlockOrderHelper>(strat,p);
     return red_tail_general(strat,p);
 }
 #endif
