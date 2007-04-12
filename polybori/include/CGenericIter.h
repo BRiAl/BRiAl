@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/04/12 09:12:15  dreyer
+ * FIX: 1-polynomial now handles corretly by block ordering
+ *
  * Revision 1.9  2007/04/05 15:38:32  dreyer
  * CHANGE: experimenting with shared pointers
  *
@@ -107,6 +110,9 @@ public:
     return iter_type(m_iter).term(); 
   }
   virtual core_pointer copy() const = 0;
+  /// Equility check for compatible types
+
+  bool equal(const CAbstractIterCore& rhs) const { return (m_iter == rhs.m_iter); }
 
   /// Store unterlying iterator temparily
   IteratorType m_iter;
@@ -152,8 +158,8 @@ public:
   };
 
   /// Equility check for compatible types
-  template <class RhsType>
-  bool equal(const RhsType& rhs) const { return equality(rhs.base::m_iter); }
+  //  template <class RhsType>
+  //bool equal(const RhsType& rhs) const { return equality(rhs.base::m_iter); }
 
   /// Abstract function, inherited classes must provide incrementation
   //  virtual void increment() = 0;
@@ -528,6 +534,12 @@ public:
 
   
      findTerminal(poly.navigation());   
+
+
+    if ((this->m_iter).empty() && poly.navigation().terminalValue()) {
+      *this = self();      ///     base::clear();
+      (this->m_iter).m_stack.push(navigator());
+    }
   }
 
   // Default Constructor

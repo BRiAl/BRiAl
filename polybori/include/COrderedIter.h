@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/04/12 09:12:16  dreyer
+ * FIX: 1-polynomial now handles corretly by block ordering
+ *
  * Revision 1.10  2007/04/05 15:38:33  dreyer
  * CHANGE: experimenting with shared pointers
  *
@@ -213,9 +216,8 @@ public:
   // Destructor
   ~CIndirectIter() {}
 
-  template <class RhsType>
-  bool equal(const RhsType& rhs) const { 
-    return  p_iter->equality(rhs.p_iter->m_iter); }
+  bool equal(const CIndirectIter& rhs) const { 
+    return  p_iter->equal(*rhs.p_iter); }
 
   /// Incrementation
   void increment() {
