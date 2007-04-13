@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.63  2007/04/13 13:55:52  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.62  2007/03/21 09:33:07  dreyer
  * ADD: generic{Exp|}{Begin|End}(block_dlex_tag)
  *
@@ -262,11 +265,7 @@ class CIndirectIter;
 //template<class, class, class, class> class CGenericIter;
 template<class, class, class, class> class CDelayedTermIter;
 
-template<class OrderType, class PolyType, class MonomType, 
-         class IteratorType, 
-         class DelayedIterType = CDelayedTermIter<MonomType, change_assign<>, 
-                                                  project_ith<2>, IteratorType>
->
+template<class OrderType, class NavigatorType, class MonomType>
 class CGenericIter;
 
 
@@ -379,27 +378,27 @@ public:
 
   /// Iterator type for iterating over all exponents in ordering order
   //  typedef COrderedIter<exp_type> ordered_exp_iterator;
-  typedef CIndirectIter<delayed_bi_iterator, exp_type> ordered_exp_iterator;
+  typedef CIndirectIter<navigator, exp_type> ordered_exp_iterator;
 
   /// Iterator type for iterating over all monomials in ordering order
   //  typedef COrderedIter<monom_type> ordered_iterator;
-  typedef CIndirectIter<delayed_bi_iterator, monom_type> ordered_iterator;
+  typedef CIndirectIter<navigator, monom_type> ordered_iterator;
 
   /// @name Generic iterators for various orderings
   //@{
-  typedef CGenericIter<LexOrder, self, monom_type,  delayed_iterator, delayed_iterator> lex_iterator;
-  typedef CGenericIter<DegLexOrder, self, monom_type,  delayed_iterator, delayed_iterator> dlex_iterator;
-  typedef CGenericIter<DegRevLexAscOrder, self, monom_type, delayed_bi_iterator, delayed_bi_iterator> 
+  typedef CGenericIter<LexOrder, navigator, monom_type> lex_iterator;
+  typedef CGenericIter<DegLexOrder, navigator, monom_type> dlex_iterator;
+  typedef CGenericIter<DegRevLexAscOrder, navigator, monom_type> 
   dp_asc_iterator;
 
-  typedef CGenericIter<BlockDegLexOrder, self, monom_type, delayed_bi_iterator, delayed_bi_iterator> 
+  typedef CGenericIter<BlockDegLexOrder,  navigator, monom_type> 
   block_dlex_iterator;
 
-  typedef CGenericIter<LexOrder, self, exp_type,  delayed_iterator, delayed_iterator> lex_exp_iterator;
-  typedef CGenericIter<DegLexOrder, self, exp_type,  delayed_iterator, delayed_iterator> dlex_exp_iterator;
-  typedef CGenericIter<DegRevLexAscOrder, self, exp_type, delayed_bi_iterator, delayed_bi_iterator> 
+  typedef CGenericIter<LexOrder, navigator, exp_type> lex_exp_iterator;
+  typedef CGenericIter<DegLexOrder,  navigator, exp_type> dlex_exp_iterator;
+  typedef CGenericIter<DegRevLexAscOrder,  navigator, exp_type> 
   dp_asc_exp_iterator;
-  typedef CGenericIter<BlockDegLexOrder, self, exp_type, delayed_bi_iterator, delayed_bi_iterator> 
+  typedef CGenericIter<BlockDegLexOrder, navigator, exp_type> 
   block_dlex_exp_iterator;
   //@}
 

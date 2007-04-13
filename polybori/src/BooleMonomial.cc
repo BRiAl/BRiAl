@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.11  2006/11/21 16:06:40  dreyer
  * CHANGE: inlining added
  *
@@ -110,7 +113,6 @@ BooleMonomial&
 BooleMonomial::changeAssign(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::changeAssign(idx_type)" );
-
   m_poly.internalDiagram().changeAssign(idx);
 
   return *this;

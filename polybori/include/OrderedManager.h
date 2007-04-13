@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.21  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -102,6 +105,7 @@
 #include "CVariableNames.h"
 
 #include "CGenericIter.h"
+
   //#include "CIndirectIter.h"
 
 #include <vector>
@@ -141,6 +145,7 @@ public:
   typedef CTypes::ordercode_type ordercode_type;
   typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
+  typedef BoolePolynomial::navigator navigator;
   typedef BooleExponent exp_type;
   typedef poly_type::bidirectional_iterator iterator;
 
@@ -148,8 +153,8 @@ public:
                             change_assign<>, project_ith<2>, 
                             iterator> delayed_iterator;
 
-  typedef CIndirectIter< delayed_iterator, monom_type> ordered_iterator;
-  typedef CIndirectIter< delayed_iterator, exp_type> ordered_exp_iterator;
+  typedef CIndirectIter<navigator, monom_type> ordered_iterator;
+  typedef CIndirectIter<navigator, exp_type> ordered_exp_iterator;
  //@}
 
   /// Type for block indices

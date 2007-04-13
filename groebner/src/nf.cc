@@ -1324,6 +1324,10 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     else irr_p=p;
     int s,i;
     s=irr.size();
+
+//     std::cout <<BooleSet(p)<<std::endl;
+//     std::cout <<BooleSet(irr_p)<<std::endl;
+//     std::cout << "s,p,irr_p,len " <<std::endl<< s<<std::endl << " "<<p <<std::endl<<" " <<irr_p <<std::endl<<irr_p.length()<<std::endl;
     assert((s==irr_p.length())||(rest_is_irreducible));
     //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
     //for(i=0;i<s;i++){

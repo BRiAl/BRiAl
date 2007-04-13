@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/04/13 13:55:54  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.12  2007/01/11 17:08:04  dreyer
  * ADD: deg() and FirstIndex() for term iterators; deque instead of stack
  *
@@ -85,6 +88,10 @@
 #include "CTermIter.h"
 
 #include "CCuddLastIter.h"
+
+#include "BoolePolynomial.h"
+
+#include "CTermStack.h"
 
 USING_NAMESPACE_PBORI
 
@@ -237,7 +244,21 @@ main(){
     BoolePolynomial poly = (z + v*w) * (x*z) + y;
 
     std::cout << "poly:  "<<std::endl;
-    std::cout << poly <<std::endl;
+    //    std::cout << poly <<std::endl;
+    std::cout << "boolset:  "<<BooleSet(poly)<<std::endl;
+    std::cout << *poly.orderedBegin() <<std::endl;
+    std::cout << (*poly.orderedBegin()).exp() <<std::endl;
+    BooleMonomial one(true);
+    std::cout << "one: "<<one<<std::endl;
+    one.changeAssign(0);
+    std::cout << "changed: "<<BooleSet(one.diagram())<<std::endl;
+
+    std::cout << "fertig: "<<std::endl;
+
+    return 0;
+
+
+
 
     std::cout << "Navigation: "<<std::endl;
 
@@ -425,6 +446,62 @@ main(){
 
     
 
+    std::cout<<std::endl <<"Testing CTermStack..." <<std::endl;
+    std::cout << " poly "<<poly <<std::endl;
+
+    CTermStack<BoolePolynomial::navigator, std::bidirectional_iterator_tag> term_stack(poly.navigation());
+
+    std::cout << " top() "<< *term_stack.top() <<std::endl;
+    term_stack.followElse();
+    term_stack.decrementNode();
+    std::cout << " top() "<< *term_stack.top() <<std::endl;
+
+    std::copy(term_stack.begin(), term_stack.end(),
+    std::ostream_iterator<int>(cout, ", "));
+    std::cout << std::endl;
+    /*
+    term_stack.previousTerm();
+    term_stack.followElse();
+    term_stack.decrementNode();
+    std::cout << " top() "<< *term_stack.top() <<std::endl;
+
+    std::copy(term_stack.begin(), term_stack.end(),
+    std::ostream_iterator<int>(cout, ", "));
+    std::cout << std::endl;
+    */
+    /*
+    term_stack.incrementTerm();
+    std::cout << " top() "<< *term_stack.top() <<std::endl;
+
+    std::copy(term_stack.begin(), term_stack.end(),
+    std::ostream_iterator<int>(cout, ", "));
+    std::cout << std::endl;
+    */
+
+    std::cout<<std::endl <<"Testing CDegTermStack..." <<std::endl;
+
+    poly = x*y*z +y +z*w*v+1;
+
+    typedef CDegTermStack<BoolePolynomial::navigator, invalid_tag>
+      deg_term_type;
+
+    deg_term_type deg_term_stack(poly.navigation());
+
+    std::cout << " poly "<<poly <<std::endl;
+
+    deg_term_stack.firstTerm();
+
+    while (!deg_term_stack.equal(deg_term_type())) {
+      std::copy(deg_term_stack.begin(), deg_term_stack.end(),
+                std::ostream_iterator<int>(cout, ", "));
+      std::cout  <<std::endl;
+      
+      deg_term_stack.incrementTerm();
+    }
+
+
+//     std::copy(term_stack.rbegin(), term_stack.rend(),
+//     std::ostream_iterator<int>(cout, ", "));
     std::cout << "Finished."<<std::endl;
 
   }

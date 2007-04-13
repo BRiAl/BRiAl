@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.10  2007/04/12 09:12:15  dreyer
  * FIX: 1-polynomial now handles corretly by block ordering
  *
@@ -57,13 +60,14 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-#include "pbori_routines.h"
+  //#include "pbori_routines.h"
 
 #include "BoolePolynomial.h"
 
 
 #include "CRestrictedIter.h"
 #include "CDegreeCache.h"
+#include "CTermStack.h"
 #include <boost/iterator/iterator_facade.hpp>
 
 #ifndef CGenericIter_h_
@@ -78,9 +82,160 @@ class CBlockDegreeCache;
 template<class NaviType, class DescendingProperty>
 class bounded_restricted_term;
 
+
+
+
 // Empty class dummy
 class CIterCore { };
 
+
+#if 1
+// Abstract interface
+template <class NavigatorType, class ReferenceType>
+class CAbstractIterCore {
+
+public:
+  typedef CAbstractIterCore<NavigatorType, ReferenceType> self;
+  typedef PBORI_SHARED_PTR(self) core_pointer;
+  typedef const CTermStackBase<NavigatorType>& stack_access_type;
+
+
+  // CAbstractIterCore(const NavigatorType& navi): base(navi) {}
+  CAbstractIterCore() {}
+
+
+  /// Abstract function, inherited classes must provide incrementation
+  virtual void increment() = 0;
+
+   bool equal (const self& rhs) const {
+     return operator stack_access_type().equal(rhs);
+  }
+
+
+  /// Dereferencing operation @todo: optimied procedures for exp(monom)
+  ReferenceType dereference() const {
+
+    ReferenceType result(true);
+    stack_access_type theStack(*this);
+
+    typename CTermStackBase<NavigatorType>::const_iterator 
+      start(theStack.begin()), 
+      finish(theStack.end());
+
+    while (start != finish) {
+      result.changeAssign(*start);
+      ++start;
+    }
+    return result;
+  }
+
+  operator stack_access_type() const {
+    return getStack();
+  }
+
+  virtual core_pointer copy() const = 0;
+
+private:
+  virtual stack_access_type getStack() const = 0;
+};
+
+template <class OrderType, class NavigatorType> 
+struct CGenericCoreStackType;
+
+template <class NavigatorType> 
+struct CGenericCoreStackType<LexOrder, NavigatorType> {
+  typedef CTermStack<NavigatorType, boost::forward_traversal_tag> type;
+};
+
+
+template <class NavigatorType> 
+struct CGenericCoreStackType<DegLexOrder, NavigatorType> {
+  typedef CDegTermStack<NavigatorType, 
+                        valid_tag> type;
+};
+
+template <class NavigatorType> 
+struct CGenericCoreStackType<DegRevLexAscOrder, NavigatorType> {
+  typedef CDegTermStack<NavigatorType, 
+                        invalid_tag> type;
+};
+
+template <class NavigatorType> 
+struct CGenericCoreStackType<BlockDegLexOrder, NavigatorType> {
+  typedef CBlockTermStack<NavigatorType, valid_tag> type;
+};
+
+template <class OrderType, class NavigatorType, class ReferenceType>
+class CGenericCore:
+  public CAbstractIterCore<NavigatorType, ReferenceType>  {
+public:
+
+  typedef typename CGenericCoreStackType<OrderType, NavigatorType>::type
+  stack_type;
+
+  typedef CAbstractIterCore<NavigatorType, ReferenceType>  base;
+ 
+  typedef CGenericCore<OrderType, NavigatorType, ReferenceType> self;
+
+  typedef typename base::core_pointer core_pointer;
+
+  CGenericCore(const BoolePolynomial& poly):
+    base(), m_stack(poly.navigation()) {
+    m_stack.firstTerm();
+  }
+
+  CGenericCore(const self& rhs):
+    base(rhs), m_stack(rhs.m_stack) { }
+
+  CGenericCore(NavigatorType navi):
+    base(), m_stack(navi) {
+    m_stack.firstTerm();
+  }
+
+  CGenericCore(): base() {}
+
+  void increment() {
+    m_stack.incrementTerm();
+  }
+
+  core_pointer copy() const {
+    return core_pointer(new self(*this));
+  }
+
+  typename base::stack_access_type getStack() const {
+    return m_stack;
+  }
+
+  //private:
+  stack_type m_stack;
+};
+
+
+template<class OrderType, class NavigatorType, class ReferenceType>
+class CGenericIter: 
+  public boost::iterator_facade<
+  CGenericIter<OrderType, NavigatorType, ReferenceType>,
+  ReferenceType, std::forward_iterator_tag, ReferenceType
+  >,
+  public CGenericCore<OrderType, NavigatorType, ReferenceType> {
+
+public:
+
+  /// Generic access to base type
+  typedef CGenericCore<OrderType, NavigatorType, ReferenceType> base;
+
+  // Constructor
+  CGenericIter(const BoolePolynomial& poly): 
+    base(poly.navigation()) {}
+
+  CGenericIter(NavigatorType navi): 
+    base(navi) {}
+   
+  CGenericIter(): base() {}
+
+};
+
+#else 
 // Abstract interface
 template <class IteratorType, class ReferenceType>
 class CAbstractIterCore {
@@ -402,119 +557,6 @@ public:
 };
 
 
-template <class StackType, class NaviType, class IdxType>
-class deg_next_term {
-public:
-
-  deg_next_term(StackType& thestack, IdxType mini, IdxType maxi,
-                NaviType navi):
-    m_stack(thestack), min_idx(mini), max_idx(maxi)/*, m_deg_cache(deg_cache)*/ 
-    , m_navi(navi)
-{
-
-    assert(mini < maxi);
-  }
-
-
-
-  //CBlockDegreeCache<> m_deg_cache;
-
-  bool at_end(const NaviType& navi) const {
-    
-    return navi.isConstant()  || (*navi >= max_idx);
-  }
-
-  bool on_path(const NaviType& navi) const {
-
-    return (navi.isConstant() && navi.terminalValue()) ||
-      (!navi.isConstant()&&(*navi >= max_idx));
-  }
-
-  void print() const {
-      std::cout << ":";
-      std::cout.flush();
-    StackType thestack( m_stack);
-    while (!thestack.empty()){
-      if (thestack.top().isValid())
-        std::cout << *(thestack.top()) << ", ";
-      else 
-        std::cout << "one";
-      std::cout.flush();
-      thestack.pop();
-    }
-  }
-
-
-  NaviType operator()() {
-
-    assert(!m_stack.empty());
-    unsigned deg = m_stack.size();
-    NaviType current;
-
-    if (*m_stack.top() < min_idx)
-      return BoolePolynomial(false).navigation();
-
-    
-    do {
-
-      assert(!m_stack.empty());
-      current = m_stack.top();
-      m_stack.pop();
-
-      current.incrementElse();
-
-      while (!current.isConstant() && *current < max_idx) {
-
-        m_stack.push(current);
-        current.incrementThen();
-      }
-
-    } while ( !m_stack.empty() && (*m_stack.top() >= min_idx) &&
-              (current.isEmpty() || (m_stack.size() != deg)) );
-  
-     if (m_stack.size() == deg)
-       return current;
-
-     if (m_stack.empty() &&(deg == 0) )
-      return current;
-
-     if (m_stack.empty() )
-         current = m_navi;
-     else {
-       current = m_stack.top();
-       assert(!current.isConstant());
-       current.incrementThen();
-     }
-
-
-     while (!current.isConstant() && (*current < min_idx))
-       current.incrementElse();
-
-
-     if (*current < min_idx)
-       return BoolePolynomial(false).navigation();
-
-
-     assert(deg > m_stack.size()); 
-     bounded_restricted_term<NaviType,  valid_tag>
-      bstart(current,  deg - m_stack.size() - 1, max_idx),
-      bend;
-     bstart = std::max_element(bstart, bend);
-
-    dummy_append(m_stack, bstart.begin(), bstart.end());
-
-    //  std::cout << "bstart.next();"<<*bstart.next()<<std::endl;
-    return bstart.next();
-  }
-
-
-protected:
-  StackType& m_stack;
-  NaviType(m_navi);
-  IdxType min_idx, max_idx;
-};
-
-
 template <class PolyType, class IteratorType, class ReferenceType,
           class RHSIterator>
 class CGenericCore<BlockDegLexOrder, PolyType, IteratorType, ReferenceType, RHSIterator>:
@@ -716,7 +758,7 @@ public:
    CGenericIter(): base() {}
 
 };
-
+#endif
 
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.1  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -153,11 +156,11 @@ BlockDegLexOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadIteratorBegin(const poly_type& poly) const" );
 
-  //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, poly_type, delayed_iterator, monom_type, delayed_iterator>
+  typedef CGenericCore<self, navigator, monom_type>
     iterator_core; 
-  typedef CAbstractIterCore<COrderBase::delayed_iterator, monom_type> base_core;
+  typedef CAbstractIterCore<navigator, monom_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_iterator(core_pointer(new iterator_core(poly)));
 }
 
@@ -165,11 +168,11 @@ BlockDegLexOrder::indirect_iterator
 BlockDegLexOrder::leadIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadIteratorEnd() const" );
-
-  typedef CGenericCore<self, poly_type, delayed_iterator, monom_type, delayed_iterator>
+  typedef CGenericCore<self, navigator, monom_type>
     iterator_core; 
-  typedef CAbstractIterCore<delayed_iterator, monom_type> base_core;
+  typedef CAbstractIterCore<navigator, monom_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_iterator(core_pointer(new iterator_core()));
 }
 
@@ -179,11 +182,10 @@ BlockDegLexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
 
-  //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
-    iterator_core; 
-  typedef CAbstractIterCore<COrderBase::delayed_iterator, exp_type> base_core;
+  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+  typedef CAbstractIterCore<navigator, exp_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
 }
 
@@ -192,10 +194,10 @@ BlockDegLexOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadExpIteratorEnd() const" );
 
-  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
-    iterator_core; 
-  typedef CAbstractIterCore<delayed_iterator, exp_type> base_core;
+  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+  typedef CAbstractIterCore<navigator, exp_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_exp_iterator(core_pointer(new iterator_core()));
 }
 

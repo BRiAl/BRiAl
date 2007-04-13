@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.11  2007/04/12 09:12:16  dreyer
  * FIX: 1-polynomial now handles corretly by block ordering
  *
@@ -183,6 +186,64 @@ protected:
 };
 #endif
 
+//////////////////////////////////////
+/// HIER!
+/////////////////////////////////////
+#if 1
+
+template <class NavigatorType, class MonomType>
+class CIndirectIter:
+  public boost::iterator_facade<
+  CIndirectIter<NavigatorType, MonomType>,
+  MonomType, boost::forward_traversal_tag, MonomType
+  > {
+
+public:
+
+  typedef CIndirectIter<NavigatorType, MonomType> self;
+  typedef CAbstractIterCore<NavigatorType, MonomType> iterator_core;
+
+
+  /// Fix type of direct iterator
+  typedef NavigatorType navigator;
+ 
+  // Store shared pointer of iterator
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+  /// Extract plain Boolean type
+  typedef bool bool_type;
+
+  // Default Constructor
+
+  CIndirectIter(core_pointer rhs): p_iter(rhs) {}
+
+//   CIndirectIter(const self& rhs):
+//     p_iter(rhs.p_iter) {}
+
+  // Destructor
+  ~CIndirectIter() {}
+
+  bool equal(const CIndirectIter& rhs) const { 
+    return  p_iter->equal(*rhs.p_iter); }
+
+  /// Incrementation
+  void increment() {
+    if (!p_iter.unique()) {
+      core_pointer tmp(p_iter->copy());
+      p_iter = tmp;
+    }
+
+    p_iter->increment(); 
+  }
+
+  /// Dereferencing operation
+  MonomType dereference() const {  return p_iter->dereference(); }
+
+protected:
+  core_pointer p_iter;
+};
+
+#else
 
 template <class IteratorType, class MonomType>
 class CIndirectIter:
@@ -235,7 +296,7 @@ public:
 protected:
   core_pointer p_iter;
 };
-
+#endif 
 #if 0
 template<class MonomType>
 class COrderedIter {

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/04/13 13:55:54  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.13  2007/03/21 08:55:10  dreyer
  * ADD: first version of block_dlex running
  *
@@ -203,9 +206,9 @@ LexOrder::leadIteratorBegin(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorBegin(const poly_type& poly) const" );
 
   //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, poly_type, delayed_iterator, monom_type, delayed_iterator>
+  typedef CGenericCore<self, navigator, monom_type>
     iterator_core; 
-  typedef CAbstractIterCore<delayed_iterator, monom_type> base_core;
+  typedef CAbstractIterCore<navigator, monom_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
   return indirect_iterator(core_pointer(new iterator_core(poly)));
@@ -218,10 +221,10 @@ LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
 
   //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
-    iterator_core; 
-  typedef CAbstractIterCore<COrderBase::delayed_iterator, exp_type> base_core;
+  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+  typedef CAbstractIterCore<navigator, exp_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
 }
 
@@ -230,10 +233,11 @@ LexOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorEnd() const" );
 
-  typedef CGenericCore<self, poly_type, delayed_iterator, exp_type, delayed_iterator>
+  typedef CGenericCore<self, navigator, exp_type>
     iterator_core; 
-  typedef CAbstractIterCore<delayed_iterator, exp_type> base_core;
+  typedef CAbstractIterCore<navigator, exp_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
   return indirect_exp_iterator(core_pointer(new iterator_core()));
 }
 
@@ -242,9 +246,8 @@ LexOrder::leadIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorEnd() const" );
 
-  typedef CGenericCore<self, poly_type, delayed_iterator, monom_type, delayed_iterator>
-    iterator_core; 
-  typedef CAbstractIterCore<delayed_iterator, monom_type> base_core;
+  typedef CGenericCore<self, navigator, monom_type> iterator_core; 
+  typedef CAbstractIterCore<navigator, monom_type> base_core;
   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
   return indirect_iterator(core_pointer(new iterator_core()));

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/04/13 13:55:52  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.9  2006/11/29 13:40:03  dreyer
  * CHANGE: leadexp() made recursive and cached
  *
@@ -128,6 +131,8 @@ class BooleExponent {
 
   /// Copy constructor
   BooleExponent(const self&);
+
+  explicit BooleExponent(bool);
 
   /// Construct from Boolean monomial
   self& get(const monom_type&);

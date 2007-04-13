@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.9  2006/11/29 13:40:03  dreyer
  * CHANGE: leadexp() made recursive and cached
  *
@@ -76,6 +79,14 @@ BooleExponent::BooleExponent():
   m_data()  {
 
   PBORI_TRACE_FUNC( "BooleExponent()" );
+
+}
+
+// Default constructor
+BooleExponent::BooleExponent(bool):
+  m_data()  {
+
+  PBORI_TRACE_FUNC( "BooleExponent(bool)" );
 
 }
 

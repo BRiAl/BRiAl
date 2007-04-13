@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/04/13 13:55:54  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.10  2007/03/28 12:34:57  dreyer
  * ADD: added testsuite testcases for blockordering; Fixed errors in block-order
  *
@@ -493,6 +496,38 @@ main(){
       ++obegin;; ++i;
     }
     std::cout << "#terms:  "<<i <<std::endl;
+
+    std::cout << "Testing comparison  " <<std::endl;
+    monom1 = x1*x2*x6;
+    
+    monom2 = x1*x2*x7*x8;
+    std::cout <<  monom1<< " < " << monom2<<" " ;
+    std::cout <<  (monom1.exp() < monom2.exp()) <<std::endl;
+
+    BoolePolynomial p(1);
+
+    std::cout << "Testing != " <<std::endl;    std::cout.flush();
+
+    std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl;    std::cout.flush();
+
+ 
+    std::cout << "Testing== " <<std::endl;    std::cout.flush();
+
+   std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
+    std::cout.flush();
+
+
+    std::cout << "Switching to lex:  " <<std::endl;
+
+
+    BoolePolyRing::changeOrdering(CTypes::lp);
+
+    std::cout <<  monom1<< " < " << monom2<<" " ;
+    std::cout <<  (monom1 < monom2) <<std::endl;
+
+     std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl;
+    std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
+
 
     std::cout << "Finished."<<std::endl;
   }

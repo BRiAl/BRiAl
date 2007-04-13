@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.1  2006/10/24 08:44:04  dreyer
  * CHANGE: Added CVariableNames; variable names handled by OrderedManager
  *
@@ -80,6 +83,7 @@ public:
 
   /// Get name of variable with index idx
   const_reference operator[](idx_type idx) const { 
+
     if (idx >= m_data.size())
       return "UNDEF";
     return m_data[idx].c_str(); 

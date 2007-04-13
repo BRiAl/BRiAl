@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/04/13 13:55:53  dreyer
+ * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
+ *
  * Revision 1.12  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -113,11 +116,14 @@ class COrderBase:
 
   /// Type of Boolean monomials
   typedef BooleMonomial monom_type;
+
+  typedef BoolePolynomial::navigator navigator;
+
   typedef CDelayedTermIter<monom_type, 
                            change_assign<>, project_ith<2>, 
                            iterator> delayed_iterator;
 
-  typedef CIndirectIter<delayed_iterator, monom_type> indirect_iterator;
+  typedef CIndirectIter<navigator, monom_type> indirect_iterator;
 
 
 
@@ -127,7 +133,7 @@ class COrderBase:
   /// Type of Boolean monomials
   typedef BooleExponent exp_type;
 
-  typedef CIndirectIter<delayed_iterator, exp_type> indirect_exp_iterator;
+  typedef CIndirectIter<navigator, exp_type> indirect_exp_iterator;
 
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
