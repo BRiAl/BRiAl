@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/04/13 15:18:10  dreyer
+ * CHANGE: fine tuning
+ *
  * Revision 1.2  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -676,6 +679,10 @@ public:
     *this = tmp;
   }
 
+
+
+
+
 private:
   navigator m_start;
 };
@@ -827,15 +834,8 @@ public:
   }
   void firstTerm() {
     assert(!base::empty());
-    navigator navi = base::top();
-    base::pop();
-    assert(navi.isValid());
-    findTerminal(navi);   
-
-    if (base::empty() && navi.terminalValue()) {
-      *this = self();      ///     base::clear();
-        base::push(navigator());
-    }
+    findTerminal();
+    base::terminate();
   }
 
   // Default Constructor
@@ -870,25 +870,27 @@ public:
     return dd_cached_block_degree(m_deg_cache, navi, *m_current_block);
   }
   
-  void incrementBlock(navigator& navi) {
-    incrementBlock(navi, currentBlockDegree(navi));
+  bool nextOnThen(size_type deg, valid_tag) const {
+    return (currentBlockDegree(base::top().thenBranch()) + 1 == deg);
   }
 
-  void incrementBlock(navigator& navi, unsigned deg) {
+  bool nextOnThen(size_type deg, invalid_tag) const {
+    return !(currentBlockDegree(base::top().elseBranch())  ==  deg);
+  }
+
+  void incrementBlock() {
+    size_type deg = currentBlockDegree(base::top());
 
     while(deg > 0) {
-      --deg;
-
-      if ( currentBlockDegree(navi.thenBranch()) == deg){
-        assert(!navi.isConstant());
-
-       base::push(navi);
-        navi.incrementThen(); 
+  
+      if ( nextOnThen(deg, descending_property()) ){
+        --deg;
+        assert(!base::isConstant());
+        base::incrementThen(); 
       }
       else {
-        ++deg;
-        navi.incrementElse();
-        assert(!navi.isConstant());
+        base::incrementElse();
+        assert(!base::isConstant());
       }
     }
   }
@@ -904,20 +906,14 @@ public:
 
   void incrementTerm() {
 
-
-
-    // the zero term
-    if (base::empty())
-      return;
-
-    navigator current = base::top(); 
-  
-    // the term one
-    if (!current.isValid()) {
-      *this = self();
+    assert(!base::empty());
+    if (base::markedOne()) {
+      base::clearOne();
       return;
     }
 
+    navigator current = base::top(); 
+  
     while (*current < blockMin())
       --m_current_block;
 
@@ -936,33 +932,31 @@ public:
     //   std::cout << "empty "<<base::empty() << " "<<current.isEmpty()<<std::endl;
 
 
-    findTerminal(current);
+    base::push(current);
+    findTerminal();
 
-    if (base::empty() && current.terminalValue()) {
-      *this = self();      ///     base::clear();
-      base::push(navigator());
-    }
+    if(!base::empty())
+      base::terminate();
  
   }
 
-  bool atBlockEnd(navigator navi) const {
-    return navi.isConstant() || (*navi >= blockMax());
-  }
+//   bool atBlockEnd(navigator navi) const {
+//     return navi.isConstant() || (*navi >= blockMax());
+//   }
 
-  // template <class IdxIterator>
-  void findTerminal(navigator navi) {
-    assert(navi.isValid());
-    if (!navi.isConstant() ) 
-      incrementBlock(navi);
 
-    while (!navi.isConstant()  ) {
+  void findTerminal() {
+    assert(base::top().isValid());
+    if (!base::isConstant() ) 
+      incrementBlock();
+
+    while (!base::isConstant()  ) {
       assert (blockMax() != CUDD_MAXINDEX);
       ++m_current_block;
 
-      incrementBlock(navi);
+      incrementBlock();
     }
   }
-
 
   // std::stack<navigator> base::m_stack;
 
