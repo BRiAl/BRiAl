@@ -49,6 +49,7 @@ void export_bset(){
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("product", &BooleSet::product)
   .def("unateProduct", &BooleSet::unateProduct)
+  //.def("diagram", &BooleSet::diagram)
   //.def("weakDiv", &BooleSet::weakDiv)
   //.def("divide", &BooleSet::divide)
   .def("weakDivide", &BooleSet::weakDivide)

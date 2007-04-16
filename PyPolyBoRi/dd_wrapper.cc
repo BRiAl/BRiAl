@@ -44,6 +44,7 @@ static dd_type one_path(const dd_type& m_dd){
 void export_dd(){
   boost::python::class_<CTypes::dd_type>("DD")
   .def(boost::python::init <const CTypes::dd_type&>())
+  
   .def(boost::python::init <>())
  
   /*.def(self + self)

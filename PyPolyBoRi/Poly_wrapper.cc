@@ -82,6 +82,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("reducibleBy", &BoolePolynomial::reducibleBy)
 
   .def("lmDeg", &BoolePolynomial::lmDeg)
+  .def("constant", &BoolePolynomial::isConstant)
   .def("nNodes", &BoolePolynomial::nNodes)
   .def("nVars", &BoolePolynomial::nUsedVariables)
   .def("vars",&BoolePolynomial::usedVariables)
