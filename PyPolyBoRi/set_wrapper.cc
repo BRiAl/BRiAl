@@ -24,6 +24,7 @@ void export_bset(){
   boost::python::class_<BooleSet>("BooleSet")
   .def(boost::python::init <const BooleSet&>())
   .def(boost::python::init <const CTypes::dd_type&>())
+  .def(boost::python::init <const BooleSet::navigator& >())
   .def(boost::python::init <>())
  
   /*.def(self + self)
