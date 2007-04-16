@@ -1442,5 +1442,47 @@ Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p){
   return res;
 }
 
+Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
+    
+    if (p.isConstant()) return p;
+    //if (reductors.emptiness()) return p;
+    
+  MonomialSet::navigator p_nav=p.navigation();
+  idx_type p_index=*p_nav;
+  MonomialSet::navigator r_nav=reductors.navigation();
 
+  
+  while((*r_nav)<p_index){
+      
+      r_nav.incrementThen();
+  }
+  if (r_nav.isConstant())
+      return p;
+  typedef PBORI::CacheManager<CCacheTypes::ll_red_nf>
+    cache_mgr_type;
+  cache_mgr_type cache_mgr;
+  MonomialSet::navigator cached =
+    cache_mgr.find(p_nav,r_nav);
+  if (cached.isValid()) return MonomialSet(cached);
+  Polynomial res;
+  if ((*r_nav)==p_index){
+      
+    res=ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
+      +Polynomial(MonomialSet(r_nav.elseBranch()))*ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+   
+  } else{
+      assert((*r_nav)>p_index);
+      
+      res=
+      MonomialSet(
+        p_index,
+        ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav).diagram(),
+        ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav).diagram());
+      
+  }
+  cache_mgr.insert(p_nav,r_nav,res.navigation());
+  return res;
+
+    
+}
 END_NAMESPACE_PBORIGB

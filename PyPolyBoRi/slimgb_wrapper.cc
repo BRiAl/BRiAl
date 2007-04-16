@@ -38,5 +38,6 @@ void export_slimgb(){
   def("red_tail_short", red_tail_short);
   def("nf3_short", nf3_short);
   def("nf3", nf3);
+  def("ll_red_nf",ll_red_nf);
 }
 

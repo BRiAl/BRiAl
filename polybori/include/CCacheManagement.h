@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/04/16 12:38:05  bricken
+ * + ll_red_nf
+ *
  * Revision 1.17  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -113,6 +116,7 @@ public:
 
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
+  struct ll_red_nf: public binary_cache_tag { };
   struct exist_abstract: public binary_cache_tag { };
 
   struct degree: public unary_cache_tag { };
