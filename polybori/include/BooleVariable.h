@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/04/17 09:12:18  dreyer
+ * FIX: ambigious overload in var * poly
+ *
  * Revision 1.4  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -45,6 +48,7 @@
 
 // get BoolePolynomial's definition
 #include "BoolePolynomial.h"
+#include "BooleMonomial.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -86,6 +90,29 @@ class BooleVariable {
 private:
   BoolePolynomial m_poly;
 };
+
+/// Multiplication of variables by a polynomial
+inline BoolePolynomial
+operator*(const BooleVariable& lhs, 
+          const BoolePolynomial& rhs){
+
+  return BoolePolynomial(rhs) *= BooleMonomial(lhs);
+}
+
+inline BoolePolynomial
+operator*(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return BoolePolynomial(lhs) *= BooleMonomial(rhs);
+}
+
+/// Multiplication of monomials by a polynomial
+inline BooleMonomial
+operator*(const BooleVariable& lhs, 
+          const BooleVariable& rhs){
+
+  return BooleMonomial(lhs) *= BooleMonomial(rhs);
+}
 
 END_NAMESPACE_PBORI
 
