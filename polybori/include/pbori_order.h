@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/04/18 15:37:29  dreyer
+ * ADD: dp_asc now active
+ *
  * Revision 1.7  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -57,6 +60,7 @@
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"
 #include "BlockDegLexOrder.h"
+#include "BlockDegRevLexAscOrder.h"
 
 #ifndef pbori_order_h_
 #define pbori_order_h_
@@ -79,9 +83,9 @@ get_ordered_manager(ConstructorType& nvars, CTypes::ordercode_type order) {
   else if(order == CTypes::block_dlex)
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     BlockDegLexOrder>(nvars) );
-//   else if(order == CTypes::block_dp_asc)
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     DegRevLexAscOrder>(nvars) );
+  else if(order == CTypes::block_dp_asc)
+     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
+     BlockDegRevLexAscOrder>(nvars) );
   else                        // default is lex order
     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
     LexOrder>(nvars) );

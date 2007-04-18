@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.90  2007/04/18 15:37:29  dreyer
+ * ADD: dp_asc now active
+ *
  * Revision 1.89  2007/03/21 09:33:07  dreyer
  * ADD: generic{Exp|}{Begin|End}(block_dlex_tag)
  *
@@ -1063,6 +1066,19 @@ BoolePolynomial::genericEnd(block_dlex_tag) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(block_dlex_tag) const" );
   return block_dlex_iterator();
 }
+BoolePolynomial::block_dp_asc_iterator 
+BoolePolynomial::genericBegin(block_dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(block_dp_asc_tag) const" );
+  return block_dp_asc_iterator(*this);
+}
+
+BoolePolynomial::block_dp_asc_iterator
+BoolePolynomial::genericEnd(block_dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericEnd(block_dp_asc_tag) const" );
+  return block_dp_asc_iterator();
+}
 
 // Start of iteration over monomials in lex ordering
 BoolePolynomial::lex_exp_iterator 
@@ -1127,6 +1143,22 @@ BoolePolynomial::genericExpEnd(block_dlex_tag) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(block_dlex_tag) const" );
   return block_dlex_exp_iterator();
 }
+// Start of iteration over monomials in block deg-lex ordering
+BoolePolynomial::block_dp_asc_exp_iterator 
+BoolePolynomial::genericExpBegin(block_dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpBegin(block_dp_asc_tag) const" );
+  return block_dp_asc_exp_iterator(*this);
+}
+
+// Finish of iteration over monomials in block deg-lex ordering
+BoolePolynomial::block_dp_asc_exp_iterator
+BoolePolynomial::genericExpEnd(block_dp_asc_tag) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(block_dp_asc_tag) const" );
+  return block_dp_asc_exp_iterator();
+}
+
 
 // fetch list of terms
 void

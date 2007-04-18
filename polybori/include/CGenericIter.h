@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/04/18 15:37:28  dreyer
+ * ADD: dp_asc now active
+ *
  * Revision 1.11  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -163,6 +166,11 @@ struct CGenericCoreStackType<DegRevLexAscOrder, NavigatorType> {
 template <class NavigatorType> 
 struct CGenericCoreStackType<BlockDegLexOrder, NavigatorType> {
   typedef CBlockTermStack<NavigatorType, valid_tag> type;
+};
+
+template <class NavigatorType> 
+struct CGenericCoreStackType<BlockDegRevLexAscOrder, NavigatorType> {
+  typedef CBlockTermStack<NavigatorType, invalid_tag> type;
 };
 
 template <class OrderType, class NavigatorType, class ReferenceType>

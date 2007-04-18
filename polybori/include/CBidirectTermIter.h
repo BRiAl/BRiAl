@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/04/18 15:37:28  dreyer
+ * ADD: dp_asc now active
+ *
  * Revision 1.3  2006/09/13 15:07:04  dreyer
  * ADD: lead(sugar) and infrastructure
  *
@@ -49,19 +52,27 @@ BEGIN_NAMESPACE_PBORI
 
 template<class NavigatorType>
 class handle_else :
-  public std::stack<NavigatorType> {
+  public std::deque<NavigatorType> {
 public:
 
   typedef NavigatorType navigator_type;
-  typedef std::stack<NavigatorType> base;
+  typedef std::deque<NavigatorType> base;
 
   void operator()(const navigator_type& navi) {
 
-    while(!base::empty() && (*base::top() >= *navi) )
-      base::pop();
+    while(!base::empty() && (*top() >= *navi) )
+      base::pop_back();
 
-    base::push(navi);
+    base::push_back(navi);
+  }
+  void push(const navigator_type& navi) { base::push_back(navi); }
+  void pop() { base::pop_back(); }
 
+  const navigator_type& top() const { return base::back(); };
+
+  void append(const handle_else& rhs) {
+    assert(base::empty() || rhs.empty() || ((**rhs.begin()) > (*top())) );
+    base::insert(base::end(), rhs.begin(), rhs.end());
   }
 };
 

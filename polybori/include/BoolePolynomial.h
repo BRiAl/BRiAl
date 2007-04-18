@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.64  2007/04/18 15:37:28  dreyer
+ * ADD: dp_asc now active
+ *
  * Revision 1.63  2007/04/13 13:55:52  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -253,6 +256,7 @@ class LexOrder;
 class DegLexOrder;
 class DegRevLexAscOrder;
 class BlockDegLexOrder;
+class BlockDegRevLexAscOrder;
 
 class BooleMonomial;
 class BooleExponent;
@@ -393,6 +397,8 @@ public:
 
   typedef CGenericIter<BlockDegLexOrder,  navigator, monom_type> 
   block_dlex_iterator;
+  typedef CGenericIter<BlockDegRevLexAscOrder,  navigator, monom_type> 
+  block_dp_asc_iterator;
 
   typedef CGenericIter<LexOrder, navigator, exp_type> lex_exp_iterator;
   typedef CGenericIter<DegLexOrder,  navigator, exp_type> dlex_exp_iterator;
@@ -400,6 +406,8 @@ public:
   dp_asc_exp_iterator;
   typedef CGenericIter<BlockDegLexOrder, navigator, exp_type> 
   block_dlex_exp_iterator;
+  typedef CGenericIter<BlockDegRevLexAscOrder, navigator, exp_type> 
+  block_dp_asc_exp_iterator;
   //@}
 
 
@@ -569,6 +577,9 @@ public:
   dp_asc_iterator genericEnd(dp_asc_tag) const;
   block_dlex_iterator genericBegin(block_dlex_tag) const;
   block_dlex_iterator genericEnd(block_dlex_tag) const;
+  block_dp_asc_iterator genericBegin(block_dp_asc_tag) const;
+  block_dp_asc_iterator genericEnd(block_dp_asc_tag) const;
+
 
   lex_exp_iterator genericExpBegin(lex_tag) const;
   lex_exp_iterator genericExpEnd(lex_tag) const;
@@ -578,6 +589,8 @@ public:
   dp_asc_exp_iterator genericExpEnd(dp_asc_tag) const;
   block_dlex_exp_iterator genericExpBegin(block_dlex_tag) const;
   block_dlex_exp_iterator genericExpEnd(block_dlex_tag) const;
+  block_dp_asc_exp_iterator genericExpBegin(block_dp_asc_tag) const;
+  block_dp_asc_exp_iterator genericExpEnd(block_dp_asc_tag) const;
   //@}
 
   /// Navigate through structure
