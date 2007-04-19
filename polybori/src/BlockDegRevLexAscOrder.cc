@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/04/19 09:52:08  dreyer
+ * FIX: block dp_asc index comparison
+ *
  * Revision 1.1  2007/04/18 15:37:29  dreyer
  * ADD: dp_asc now active
  *
@@ -92,7 +95,8 @@ BlockDegRevLexAscOrder::compare(idx_type lhs, idx_type rhs) const {
   PBORI_TRACE_FUNC( 
     "BlockDegRevLexAscOrder::compare(monom_type, monom_type) const)" );
 
-  return generic_compare_3way(lhs, rhs, idx_comparer_type());
+  return block_deg_lex_idx_compare( lhs, rhs, blockBegin(), blockEnd(),
+                                    idx_comparer_type()  );
 }
 
 // Extraction of leading term

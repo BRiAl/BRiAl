@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/04/19 09:52:07  dreyer
+ * FIX: block dp_asc index comparison
+ *
  * Revision 1.1  2007/04/18 15:37:28  dreyer
  * ADD: dp_asc now active
  *
@@ -64,7 +67,7 @@ class BlockDegRevLexAscOrder:
   //@}
 
   /// Define binary predicate for index comparision
-  typedef std::less<idx_type> idx_comparer_type;
+  typedef std::greater<idx_type> idx_comparer_type;
 
   /// Get order code
   enum { order_code = CTypes::block_dlex };

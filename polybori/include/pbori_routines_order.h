@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/04/19 09:52:07  dreyer
+ * FIX: block dp_asc index comparison
+ *
  * Revision 1.8  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -601,5 +604,31 @@ block_dlex_compare(LhsIterator lhsStart, LhsIterator lhsFinish,
   return result;
 }
 
+
+///@note: no necessary for block_dlex, only for block_dp_asc
+template <class IdxType, class Iterator, class BinaryPredicate>
+CTypes::comp_type
+block_deg_lex_idx_compare(IdxType lhs, IdxType rhs, 
+                          Iterator start, Iterator finish,
+                          BinaryPredicate idx_comp) {
+
+  if (lhs == rhs)
+    return CTypes::equality;
+
+  Iterator lhsend = std::find_if(start, finish, 
+                                 std::bind2nd(std::greater<IdxType>(), lhs));
+
+
+  Iterator rhsend = std::find_if(start, finish, 
+                                 std::bind2nd(std::greater<IdxType>(), rhs));
+                                 
+  assert((lhsend != finish) && (rhsend != finish));
+
+  CTypes::comp_type result = generic_compare_3way( *lhsend, *rhsend,
+                                                   std::less<IdxType>() );
+
+  return ( result == CTypes::equality? 
+           generic_compare_3way(lhs, rhs, idx_comp): result );
+}
 
 END_NAMESPACE_PBORI
