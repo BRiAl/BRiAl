@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.91  2007/04/20 12:30:19  dreyer
+ * FIX: cast navigator -> BoolePolynomial now corrent
+ *
  * Revision 1.90  2007/04/18 15:37:29  dreyer
  * ADD: dp_asc now active
  *
@@ -320,6 +323,7 @@
 # include "BoolePolynomial.h"
 # include "BooleMonomial.h"
 # include "BooleExponent.h"
+# include "BooleSet.h"
 
 // get polynomial riung definition
 # include "BoolePolyRing.h"
@@ -385,6 +389,12 @@ BoolePolynomial::BoolePolynomial(const dd_type& rhs):
   m_dd(rhs)  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(const dd_type&)" );
+}
+// Constructor polynomial from existing navigator
+BoolePolynomial::BoolePolynomial(const navigator& rhs):
+  m_dd(BooleSet(rhs))  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(const navigator&)" );
 }
 
 // Constructor polynomial from exponent vector

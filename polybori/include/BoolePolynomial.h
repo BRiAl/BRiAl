@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.65  2007/04/20 12:30:18  dreyer
+ * FIX: cast navigator -> BoolePolynomial now corrent
+ *
  * Revision 1.64  2007/04/18 15:37:28  dreyer
  * ADD: dp_asc now active
  *
@@ -441,6 +444,9 @@ public:
 
   /// Construct polynomial from exponent vector
   BoolePolynomial(const exp_type&);
+
+  /// Construct polynomial from navigator
+  BoolePolynomial(const navigator&);
 
   /// Copy constructor
   BoolePolynomial(const self&);
