@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/04/23 15:40:59  dreyer
+ * FIX: compilation error due to protection
+ *
  * Revision 1.7  2007/04/23 15:32:17  dreyer
  * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
  *
@@ -513,7 +516,6 @@ public:
      }
   }
 
-protected:
   cached_deg<navigator> getDeg;
 };
 
