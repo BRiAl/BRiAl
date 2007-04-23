@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/04/23 15:32:17  dreyer
+ * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
+ *
  * Revision 1.2  2007/04/19 09:52:07  dreyer
  * FIX: block dp_asc index comparison
  *
@@ -74,6 +77,7 @@ class BlockDegRevLexAscOrder:
 
   /// Default Constructor
   BlockDegRevLexAscOrder(): base(), m_indices() {
+    m_indices.push_back(0); 
     m_indices.push_back(CTypes::max_idx); 
   };
 
@@ -117,13 +121,17 @@ class BlockDegRevLexAscOrder:
 
   /// @name interface for block orderings
   //@{
-  block_iterator blockBegin() const { return m_indices.begin(); }
+  block_iterator blockBegin() const { return m_indices.begin() + 1; }
   block_iterator blockEnd() const { return m_indices.end(); }
   void appendBlock(idx_type idx) { 
     m_indices.back() = idx;
     m_indices.push_back(CTypes::max_idx);
   }
-  void clearBlocks() { m_indices.clear(); }
+  void clearBlocks() {
+    m_indices.clear(); 
+    m_indices.push_back(0); 
+    m_indices.push_back(CTypes::max_idx); 
+  }
   //@}
 
 private:

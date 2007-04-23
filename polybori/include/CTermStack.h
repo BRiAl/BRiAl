@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/04/23 15:32:17  dreyer
+ * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
+ *
  * Revision 1.6  2007/04/22 19:47:21  dreyer
  * CHANGE: Code cleaned-up
  *
@@ -79,7 +82,7 @@ struct cached_deg {
   cached_deg(): m_deg_cache(BoolePolyRing::activeManager()) {}
 
   typename NavigatorType::size_type 
-  operator()(const NavigatorType& navi) const {
+  operator()(NavigatorType navi) const {
     return dd_cached_degree(m_deg_cache, navi);
   }
   CDegreeCache<> m_deg_cache;
@@ -100,34 +103,37 @@ public:
   typedef typename block_idx_type::const_iterator block_iterator;
 
   cached_block_deg():
-    m_indices(BoolePolyRing::blockRingBegin()), 
+    //  m_indices(BoolePolyRing::blockRingBegin()), 
     m_current_block(BoolePolyRing::blockRingBegin()),
     m_deg_cache(BoolePolyRing::activeManager()) { }
 
   typename NavigatorType::size_type 
-  operator()(const NavigatorType& navi) const {
+  operator()(NavigatorType navi) const {
     return dd_cached_block_degree(m_deg_cache, navi, max());
   }
 
   idx_type min() const {
-     return ( m_current_block == m_indices? 0: *(m_current_block - 1) );
+    assert(*m_current_block != 0); // assuming first element to be zero
+    return *(m_current_block - 1);
   }
 
   idx_type max() const {
     return *m_current_block;
   }
   self& operator++(){
+    assert(max() != CTypes::max_idx);
     ++m_current_block;
     return *this;
   }
 
   self& operator--(){
+    assert(min() != 0);
     --m_current_block;
     return *this;
   }
 
 private:
-  block_iterator m_indices;
+  //  block_iterator m_indices;
   block_iterator m_current_block;
 
   CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type, 
@@ -178,17 +184,18 @@ public:
                                    typename navigator::reference>
   const_reverse_iterator;
 
-protected:
-  void clear() { m_stack.clear(); }
-
-
+private:
   void pop() { m_stack.pop_back(); }
 
-public:
-  void push(const navigator& __x) { m_stack.push_back(__x); }
-  reference top() { return m_stack.back(); }
-  const_reference top() const { return m_stack.back(); }
+protected:
+  void push(navigator __x) { m_stack.push_back(__x); }
 
+  void clear() { m_stack.clear(); }
+  reference top() { return m_stack.back(); }
+
+public:
+  const_reference top() const { return m_stack.back(); }
+  idx_type index() const { return *top(); }
   bool_type empty() const { return m_stack.empty(); }
   size_type size() const { return m_stack.size(); }
 
@@ -282,7 +289,17 @@ public:
   void clearOne() {
     pop();
     assert(empty());
+  } 
+
+  void invalidate() {
+    push(BoolePolynomial(false).navigation());
   }
+
+  void restart(navigator navi) {
+    assert(empty());
+    push(navi);
+  }
+
   void print() const{
     std::cout <<"(";
     std::copy(begin(), end(), std::ostream_iterator<int>(cout, ", ")); 
@@ -303,8 +320,8 @@ private:
 
 
 
-template <class NavigatorType, class Category = std::forward_iterator_tag>
-class CTermStack :
+template <class NavigatorType, class Category>
+class CTermStack:
   public CTermStackBase<NavigatorType> {
 
 public:
@@ -361,14 +378,19 @@ public:
  
   bool isTermEnd() const {
     assert(!base::empty());
-    typename base::navigator navi(base::top());
-    
+    return checkEnd(base::top());
+  };
+
+  bool checkEnd(typename base::navigator navi) const { 
     while(!navi.isConstant()) {
       navi.incrementElse();
     }
     return navi.terminalValue();
-
-  };
+  }
+  bool checkEnd(const self& rhs) const {
+    assert(!rhs.empty());
+    return checkEnd(rhs.top());
+  }
 
   void incrementTerm() {
     assert(!base::empty());
@@ -464,7 +486,7 @@ inline void CTermStack<NavigatorType, Category>::previousTerm(
 template <class NavigatorType, class BlockProperty, class Category>
 class CDegStackBase;
 
-// @brief for pure degree stacks
+/// @brief for pure degree stacks
 template <class NavigatorType, class Category>
 class CDegStackBase<NavigatorType, invalid_tag, Category>:
   public CTermStack<NavigatorType, Category> {
@@ -474,15 +496,24 @@ public:
   typedef NavigatorType navigator;
 
   CDegStackBase(): base() {}
-  CDegStackBase(const navigator& navi): base(navi), getDeg() {}
+  CDegStackBase(navigator navi): base(navi), getDeg() {}
 
   bool atBegin() const { return base::empty(); }
-  template <class Type>
-  bool atEnd(const  Type& rhs) const { 
+ 
+  bool atEnd(const typename base::purestack_type& rhs) const {
     return rhs.isConstant();
-  }  
-  template <class Type>
-  bool checkEnd(const Type& rhs) const { return rhs.isTermEnd(); }
+  }
+
+  bool atEnd() const { return atEnd(*this); }
+
+  void gotoEnd()  {
+     assert(!base::empty());
+     while(!base::isConstant()) {
+       base::incrementElse();
+     }
+  }
+
+protected:
   cached_deg<navigator> getDeg;
 };
 
@@ -497,22 +528,27 @@ public:
   typedef typename base::idx_type idx_type;
 
   CDegStackBase(): base() {}
-  CDegStackBase(const navigator& navi): base(navi), block() {}
+  CDegStackBase(navigator navi): base(navi), block() {}
 
-  idx_type getDeg(const navigator& navi) const { return block(navi); }
+  idx_type getDeg(navigator navi) const { return block(navi); }
 
   bool atBegin() const { return base::empty() || (*base::top() < block.min()); }
 
-  template <class Type>
-  bool atEnd(const  Type& rhs) const { 
-    return rhs.isConstant() || (*rhs.top() >= block.max());
-
+  bool atEnd(const typename base::purestack_type& rhs) const {
+    return rhs.isConstant() || (rhs.index() >= block.max());
+  }
+  bool atEnd() const { 
+    return atEnd(*this);
   }
 
-  template <class Type>
-  bool checkEnd(const  Type& rhs) const {
+
+  bool checkEnd(const typename base::purestack_type& rhs) const {
     assert(!rhs.empty());
-    navigator navi(rhs.top());
+    return checkEnd(rhs.top());
+  }
+
+  bool checkEnd(navigator navi) const {
+
     while( (!navi.isConstant()) && (*navi < block.max()) ) {
       navi.incrementElse();
     }
@@ -550,14 +586,22 @@ public:
       base::incrementThen();
   }
 
+  void gotoEnd()  {
+     assert(!base::empty());
+     while( (!base::isConstant()) && (*base::top() < block.max()) ) {
+       base::incrementElse();
+     }
+  }
+
+protected:
   cached_block_deg<navigator> block;
 };
 
-template <class NavigatorType, class BlockProperty, class DescendingPropert>
+template <class NavigatorType, class BlockProperty, class DescendingProperty>
 class CProxTermStack;
 
 template <class NavigatorType, class BlockProperty>
-class CProxTermStack<NavigatorType, BlockProperty, valid_tag>:
+class CProxTermStack<NavigatorType, valid_tag, BlockProperty>:
   public CDegStackBase<NavigatorType, BlockProperty, 
                        std::forward_iterator_tag> {
 
@@ -586,7 +630,7 @@ public:
 
 
 template <class NavigatorType, class BlockProperty>
-class CProxTermStack<NavigatorType, BlockProperty, invalid_tag>:
+class CProxTermStack<NavigatorType, invalid_tag, BlockProperty>:
     public CDegStackBase<NavigatorType, BlockProperty, 
                          std::bidirectional_iterator_tag> {
 
@@ -605,6 +649,7 @@ public:
   void proximateTerm() { base::previousTerm(); }
 
   void incrementBranch() {
+    assert(!base::empty() && !base::isConstant());
 
     // if still in interior of a path
     if(!base::top().elseBranch().isEmpty()) {
@@ -623,24 +668,17 @@ public:
 template <class NavigatorType, class DescendingProperty, 
           class BlockProperty = invalid_tag>
 class CDegTermStack:
-  public CProxTermStack<NavigatorType, BlockProperty, DescendingProperty> {
+  public CProxTermStack<NavigatorType, DescendingProperty, BlockProperty> {
 
 public:
-  typedef CProxTermStack<NavigatorType, BlockProperty, DescendingProperty> base;
+  typedef CProxTermStack<NavigatorType, DescendingProperty, BlockProperty> base;
+  typedef CDegTermStack<NavigatorType, DescendingProperty, BlockProperty> self;
 
-  typedef NavigatorType navigator;
+  typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
-  typedef DescendingProperty descending_property;
-  typedef CDegTermStack<navigator, descending_property, BlockProperty> self;
-  typedef BoolePolynomial poly_type;
-  typedef typename poly_type::dd_type dd_type;
-
-
 
   CDegTermStack(): base(), m_start() {}
   CDegTermStack(navigator navi): base(navi), m_start(navi) {}
-
-
 
   void firstTerm() {
     findTerminal();
@@ -675,7 +713,7 @@ public:
     degTerm();
 
     if(base::empty()) {
-      base::push(m_start);
+      restart();
       findTerm(upperbound);
     }
     if(!base::empty())
@@ -687,66 +725,57 @@ public:
     size_type size = base::size() + 1;
 
     assert(!base::isConstant());
-
-    base::incrementThen();
-  
+    bool doloop;
     do {
-      base::decrementNode();
+      assert(!base::empty());
       base::proximateTerm();
-      if( base::empty() )
+
+      if (base::atBegin()) 
         return;
-  
-      while(!base::isConstant() && (base::size() < size) )
-        base::incrementBranch();
-  
-    } while  (!base::empty() && 
-              !(base::isTermEnd() && (base::size() == size) )  );
+
+        while (!base::atEnd() && (base::size() < size) ) {
+          base::incrementBranch();
+        }
+        base::gotoEnd();
+
+        if (doloop = (base::isInvalid() || (base::size() != size)) )
+          base::decrementNode();
+
+    } while (!base::empty() && doloop);
 
   }
 
  
   void decrementTerm() {}
 
-
-//   void findTerm(size_type upperbound){
-
-
-
-//     //    base::push(m_start);
-//     typename base::purestack_type max_elt(m_start);
-//     base::push(m_start);
-//     findTerm(max_elt, upperbound);
-
-//   }
-//   template <class Type>
-  void
-  findTerm(size_type upperbound) {
+  void findTerm(size_type upperbound) {
     assert(!base::empty());
-    typename base::purestack_type tmp, current(base::top());
+
+    typename base::purestack_type max_elt, current(base::top());
     base::decrementNode();
 
     typename base::size_comparer comp;
 
-    while (!current.empty() && (base::takeLast()|| (tmp.size() != upperbound)) ) {
+    while (!current.empty() && 
+           (base::takeLast() || (max_elt.size() != upperbound)) ) {
       
       while (!base::atEnd(current) && (current.size() < upperbound) )
         current.incrementThen();
       
       if (base::checkEnd(current)) {
-        if (comp(current.size(), tmp.size()))
-          tmp = current;
+        if (comp(current.size(), max_elt.size()))
+          max_elt = current;
         current.decrementNode();
       }
-      
       current.nextTerm();
     }
-    //    current =tmp;
+    base::append(max_elt);
 
-    base::append(tmp);
-    if(tmp.empty())
-      base::push(BoolePolynomial(false).navigation());
+    if(max_elt.empty())
+      base::invalidate();
   }
 
+  void restart() { base::restart(m_start); }
 
 private:
   navigator m_start;
@@ -761,264 +790,102 @@ class CBlockTermStack:
 
 public:
   typedef CDegTermStack<NavigatorType, DescendingProperty, valid_tag> base; 
+  typedef CBlockTermStack<NavigatorType, DescendingProperty> self;
 
-  typedef NavigatorType navigator;
+  typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
-  typedef DescendingProperty descending_property;
-  typedef CBlockTermStack<navigator, descending_property> self;
-  typedef BoolePolynomial poly_type;
-  typedef typename poly_type::dd_type dd_type;
-  typedef poly_type PolyType;
+  typedef typename navigator::idx_type idx_type;
+
+  /// Construct stack from navigator
+  CBlockTermStack(navigator navi): base(navi) { }
+
+  /// Default Constructor
+  CBlockTermStack(): base() {}
 
 
-  CBlockTermStack(navigator navi): 
-    base(navi),  m_navi(navi) {    
-
-  }
   void firstTerm() {
     assert(!base::empty());
     findTerminal();
     base::terminate();
   }
 
-  // Default Constructor
-  CBlockTermStack(): base(), m_navi(){}
 
 
-  typedef typename PolyType::idx_type idx_type;
+  void blockTerminal() { base::findTerminal(); }
 
-  typedef typename base::stack_type stack_type;
-
-
-//   size_type currentBlockDegree(const navigator& navi) const {
-//     return dd_cached_block_degree(m_deg_cache, navi, *m_current_block);
-//   }
-  
-  void incrementBlock() {
-    base::findTerminal();
-//     size_type deg = base::block(base::top());
-
-//     while(deg > 0) {
-  
-//       if ( base::maxOnThen(deg) ){
-//         --deg;
-//         assert(!base::isConstant());
-//         base::incrementThen(); 
-//       }
-//       else {
-//         assert(!base::isConstant());
-//         base::incrementElse();
-//         assert(!base::isConstant());
-//       }
-//     }
-  }
-
-
-//   idx_type blockMin() const {
-//     return ( m_current_block == m_indices? 0: *(m_current_block - 1) );
-//   }
-
-//   idx_type blockMax() const {
-//     return *m_current_block;
-//   }
-
- void incrementTerm() {
-
+  void incrementTerm() {
     assert(!base::empty());
+
     if (base::markedOne()) {
       base::clearOne();
       return;
     }
 
     navigator current = base::top(); 
-  
     while (*current < base::block.min())
       --base::block;
 
-   
-    ++base::block;
-
-    do {
+    incrementBlock();
+    while ( (base::size() > 1 ) && base::isInvalid()  ) {
       --base::block;
-    
-      degTerm();
-      assert(!base::empty()); 
-      current = base::top();
-      base::pop();
+      base::decrementNode();
+      incrementBlock();
+    }
 
-    } while (!base::empty() && current.isEmpty());
-
-    base::push(current);
     findTerminal();
 
     assert(!base::empty());
-
     base::terminate();
- 
-  }
-
-   bool isBlockEnd() const {
-     assert(!base::empty());
-     navigator navi(base::top());
-     while( (!navi.isConstant()) && (*navi < base::block.max()) ) {
-       navi.incrementElse();
-     }
-     return (navi.isConstant()? navi.terminalValue(): *navi >= base::block.max());
-   }
-
-  void gotoBlockEnd()  {
-     assert(!base::empty());
-     navigator navi(base::top());
-     while( (!base::isConstant()) && (*base::top() < base::block.max()) ) {
-       base::incrementElse();
-     }
   }
 
   void findTerminal() {
     assert(base::top().isValid());
+
     if (!base::isConstant() ) 
-      incrementBlock();
+      blockTerminal();
 
     while (!base::isConstant()  ) {
-      assert (base::block.max() != CUDD_MAXINDEX);
       ++base::block;
-
-      incrementBlock();
+      blockTerminal();
     }
   }
 
-
-
-  void degTerm();
-
-
+  void incrementBlock();
 
   using base::print;
-
-  navigator m_navi;
-
 
 };
 
 template <class NavigatorType, class DescendingProperty>
 inline void
-CBlockTermStack<NavigatorType, DescendingProperty>::degTerm() {
-
-  idx_type min_idx(base::block.min()), max_idx(base::block.max());
+CBlockTermStack<NavigatorType, DescendingProperty>::incrementBlock() {
 
   assert(!base::empty());
-    unsigned deg = base::size();
-    unsigned size = deg +1;
-    typedef navigator  NaviType;
-    NaviType current(m_navi);
+  size_type size = base::size() + 1;
 
-    if (*base::top() < min_idx) {
-      base::push(BoolePolynomial(false).navigation());
-      return;
-    }
+  if (*base::top() < base::block.min()) {
+    base::invalidate();
+    return;
+  }
    
-    bool notfound = true;; 
-    size_type prev;
-    bool blockended;
-    bool isFound;
+  base::degTerm();
 
+  if (base::size() == size) return;
 
-    do {
-      assert(!base::empty());
-      base::proximateTerm();
+  if (base::empty())
+    base::restart();
+  else {
+    assert(*base::top() < base::block.min());
+    base::incrementThen();
+  }
 
-      if ( !base::empty() && (notfound = (*base::top() >= min_idx)) ) {
-        while (!base::isConstant() && (base::size() <= deg) && 
-               (*base::top() < max_idx)) {
-          base::incrementBranch();
-        }
-        gotoBlockEnd();
-        current = base::top();
-        base::decrementNode();
-      }
-    } while ( !base::empty() && notfound &&
-              !(!current.isEmpty() && (base::size() == deg) ) );
+  while (!base::isConstant() && (*base::top() <  base::block.min()))
+    base::incrementElse();
 
-    if (base::size() == deg) {
-      base::push(current);
-      return;
-    }
-
-    if (base::empty())
-      base::push(m_navi);
-    else {
-      base::incrementThen();
-    }
-
-     while (!base::isConstant() && (*base::top() < min_idx))
-       base::incrementElse();
-
-     if (*base::top()  < min_idx) { 
-       base::pop();
-       base::push( BoolePolynomial(false).navigation());
-       return;
-     }
-
-     assert(deg >= base::size()); 
-
-     typename base::purestack_type tmp, max_elt(base::top());
-
-
-     unsigned upperbound(deg - base::size()+1);
-
-#if 0
-     typename base::size_comparer comp;    
-       
-
-     while (!max_elt.empty() && 
-            (base::takeLast() || (tmp.size() != upperbound)) ) {
-      
-       while (!base::atEnd(max_elt)&& (max_elt.size() < upperbound) 
-
-              /*max_elt.isConstant() && (max_elt.size() < upperbound) 
-                && (*max_elt.top() < max_idx)*/ )
-        max_elt.incrementThen();
-
-       navigator navi(max_elt.top());
-       while(!navi.isConstant() && (*navi < max_idx)) {
-         navi.incrementElse();
-       }
-     
-      if (navi.isTerminated() || 
-          (!navi.isConstant () &&(*navi >= max_idx)) ) {
-        if (comp(max_elt.size(), tmp.size())) {
-          tmp = max_elt;
-//           tmp.decrementNode();
-//           tmp.push(navi);
-        }
-        max_elt.decrementNode();
-      }
-      max_elt.nextTerm();
-     }
-     max_elt = tmp;
-       base::decrementNode();
-       base::append(max_elt);
-#else    
-       //   base::decrementNode();
-    base::findTerm(upperbound);
-#endif
-     //  base::decrementNode();
-     // base::append(max_elt);
-
-//     if(noterm)
-//        base::push(BoolePolynomial(false).navigation());
-//      else {
-       gotoBlockEnd();
-//        navigator navi = base::top();
-//        while(!navi.isConstant() && (*navi < max_idx)) {
-//          navi.incrementElse();
-//        }
-
-//        base::decrementNode();
-//        base::push(navi);
-//     }
-       
-
+  assert(size > base::size()); 
+  
+  base::findTerm(size - base::size());
+  base::gotoEnd();
 }
 
 END_NAMESPACE_PBORI

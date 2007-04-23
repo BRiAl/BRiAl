@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/04/23 15:32:17  dreyer
+ * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
+ *
  * Revision 1.1  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -68,6 +71,7 @@ class BlockDegLexOrder:
 
   /// Default Constructor
   BlockDegLexOrder(): base(), m_indices() {
+    m_indices.push_back(0); 
     m_indices.push_back(CTypes::max_idx); 
   };
 
@@ -111,13 +115,17 @@ class BlockDegLexOrder:
 
   /// @name interface for block orderings
   //@{
-  block_iterator blockBegin() const { return m_indices.begin(); }
+  block_iterator blockBegin() const { return m_indices.begin() + 1; }
   block_iterator blockEnd() const { return m_indices.end(); }
   void appendBlock(idx_type idx) { 
     m_indices.back() = idx;
     m_indices.push_back(CTypes::max_idx);
   }
-  void clearBlocks() { m_indices.clear(); }
+  void clearBlocks() { 
+    m_indices.clear(); 
+    m_indices.push_back(0); 
+    m_indices.push_back(CTypes::max_idx); 
+  }
   //@}
 
 private:
