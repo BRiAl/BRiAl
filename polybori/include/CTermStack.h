@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/04/23 15:47:54  dreyer
+ * FIX: compilation error due to protection (again)
+ *
  * Revision 1.8  2007/04/23 15:40:59  dreyer
  * FIX: compilation error due to protection
  *
@@ -194,9 +197,8 @@ protected:
   void push(navigator __x) { m_stack.push_back(__x); }
 
   void clear() { m_stack.clear(); }
-  reference top() { return m_stack.back(); }
-
 public:
+  reference top() { return m_stack.back(); }
   const_reference top() const { return m_stack.back(); }
   idx_type index() const { return *top(); }
   bool_type empty() const { return m_stack.empty(); }
