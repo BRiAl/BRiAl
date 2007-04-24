@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2007/04/24 07:44:14  dreyer
+ * FIX: Warning for ambigious overload on gcc 3.2
+ *
  * Revision 1.45  2006/12/07 08:22:52  dreyer
  * ADD/CHANGE: Lowlevel variant of existAbstract
  *
@@ -242,11 +245,8 @@ class CDDInterfaceBase {
   /// Destructor
   ~CDDInterfaceBase() {}
 
-  /// Casting operator to interfaced type
-  operator interfaced_type&() { return m_interfaced; }
-
   /// Constant casting operator to interfaced type
-    operator const interfaced_type&() const { return m_interfaced; }
+  operator const interfaced_type&() const { return m_interfaced; }
 
  protected:
   interfaced_type m_interfaced;
