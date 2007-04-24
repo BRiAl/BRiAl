@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/04/24 15:23:03  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.18  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -355,8 +358,6 @@ protected:
       m_stack.pop(); 
   }
 
-  /// Handle else-branches (for bidirectional iterators; ignored by default)
-  elsehandle_type handleElse;
 
 private: // Change? 
 protected:
@@ -367,6 +368,9 @@ public:
   forwardop_type forwardop;
   backwardop_type backwardop;
   termvalop_type termvalop;
+
+  /// Handle else-branches (for bidirectional iterators; ignored by default)
+  elsehandle_type handleElse;
 };
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/04/24 15:23:03  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.5  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -74,6 +77,9 @@ public:
   /// Type for representing indices
   typedef typename base::value_type idx_type;
 
+   /// Type for representing size
+  typedef typename base::size_type size_type;
+
   /// Type of decision diagram manager
   typedef typename CTypes::manager_type manager_type;
 
@@ -99,10 +105,10 @@ protected:
   /// Convert plain number to navigation type
   navigator toNode(idx_type idx) const {
 
-    if (idx < manager().nVariables())
+    if ((size_type)idx < manager().nVariables())
       return  navigator(manager().persistentVariable(idx));
-    else
-      return  navigator(manager().empty());
+
+    return  navigator(manager().empty());
   }
 };
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/04/24 15:23:03  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.18  2007/04/16 12:38:05  bricken
  * + ll_red_nf
  *
@@ -218,7 +221,9 @@ public:
 
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type){}
+  static node_type cache_dummy(internal_manager_type, node_type){
+    return NULL;
+  }
 };
 
 template <class CacheType>
@@ -247,7 +252,9 @@ public:
 
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type, node_type){}
+  static node_type cache_dummy(internal_manager_type, node_type, node_type){
+    return NULL;
+}
 };
 
 

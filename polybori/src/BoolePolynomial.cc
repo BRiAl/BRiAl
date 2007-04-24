@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.93  2007/04/24 15:23:04  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.92  2007/04/20 12:43:49  dreyer
  * CHANGE: added assertion to be save
  *
@@ -1250,7 +1253,7 @@ public:
   typedef std::binary_function<size_type, size_type, size_type> base;
 
   AddEliminationDegree(size_type min): 
-    m_min(min), base() {}
+    base(), m_min(min) {}
 
   size_type& operator()(size_type& rhs, size_type lhs) {
     ++rhs;

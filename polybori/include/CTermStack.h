@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/04/24 15:23:03  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.10  2007/04/24 11:45:39  dreyer
  * CHANGE: code clean up
  *
@@ -85,10 +88,9 @@ BEGIN_NAMESPACE_PBORI
 //////////////////////////////////////////////////////////
 template<class NavigatorType>
 struct cached_deg {
-
   cached_deg(): m_deg_cache(BoolePolyRing::activeManager()) {}
 
-  typename NavigatorType::size_type 
+  typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
     return dd_cached_degree(m_deg_cache, navi);
   }
@@ -101,6 +103,7 @@ template <class NavigatorType>
 class cached_block_deg {
 public:
   typedef typename NavigatorType::idx_type idx_type;
+
   typedef cached_block_deg<NavigatorType> self;
 
   /// Type for block indices
@@ -114,7 +117,7 @@ public:
     m_current_block(BoolePolyRing::blockRingBegin()),
     m_deg_cache(BoolePolyRing::activeManager()) { }
 
-  typename NavigatorType::size_type 
+  typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
     return dd_cached_block_degree(m_deg_cache, navi, max());
   }
@@ -529,11 +532,12 @@ public:
   typedef CTermStack<NavigatorType, Category> base;
   typedef NavigatorType navigator;
   typedef typename base::idx_type idx_type;
+  typedef typename base::size_type size_type;
 
   CDegStackCore(): base() {}
   CDegStackCore(navigator navi): base(navi), block() {}
 
-  idx_type getDeg(navigator navi) const { return block(navi); }
+  size_type getDeg(navigator navi) const { return block(navi); }
 
   bool atBegin() const { 
     return base::empty() || (base::index() < block.min()); 

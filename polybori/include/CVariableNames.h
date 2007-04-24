@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/04/24 15:23:04  dreyer
+ * FIX: minor changes fixing -Wall warnings
+ *
  * Revision 1.2  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -84,7 +87,7 @@ public:
   /// Get name of variable with index idx
   const_reference operator[](idx_type idx) const { 
 
-    if (idx >= m_data.size())
+    if (size_type(idx) >= m_data.size())
       return "UNDEF";
     return m_data[idx].c_str(); 
   }
