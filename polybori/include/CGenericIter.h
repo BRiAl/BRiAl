@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/04/24 13:25:27  bricken
+ * + virtual destructor
+ *
  * Revision 1.13  2007/04/24 11:45:39  dreyer
  * CHANGE: code clean up
  *
@@ -107,7 +110,7 @@ public:
 
   // CAbstractIterCore(const NavigatorType& navi): base(navi) {}
   CAbstractIterCore() {}
-
+  virtual ~CAbstractIterCore(){}
 
   /// Abstract function, inherited classes must provide incrementation
   virtual void increment() = 0;
