@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/04/24 11:45:39  dreyer
+ * CHANGE: code clean up
+ *
  * Revision 1.9  2007/04/23 15:47:54  dreyer
  * FIX: compilation error due to protection (again)
  *
@@ -62,8 +65,6 @@
 
 // include polybori properties
 #include "pbori_traits.h"
-
-  ///???
 
 #include "pbori_routines.h"
 
@@ -197,8 +198,10 @@ protected:
   void push(navigator __x) { m_stack.push_back(__x); }
 
   void clear() { m_stack.clear(); }
+
+  // reference top() { return m_stack.back(); }
+
 public:
-  reference top() { return m_stack.back(); }
   const_reference top() const { return m_stack.back(); }
   idx_type index() const { return *top(); }
   bool_type empty() const { return m_stack.empty(); }
@@ -249,9 +252,12 @@ public:
     assert(!top().isConstant());
 
     push(top());
-    top().incrementThen();
+    m_stack.back().incrementThen();
   }
-
+  void incrementElse() {
+    assert(!isConstant());
+    m_stack.back().incrementElse();
+  }
 
   void decrementNode() {
     assert(!empty());
@@ -297,12 +303,25 @@ public:
   } 
 
   void invalidate() {
-    push(BoolePolynomial(false).navigation());
+    push(BoolePolyRing::ringZero().navigation());
   }
 
   void restart(navigator navi) {
     assert(empty());
     push(navi);
+  }
+
+  bool atBegin() const { return empty(); }
+
+  bool atEnd() const { return atEnd(top()); }
+  bool atEnd(navigator navi) const { return navi.isConstant(); }
+
+  bool validEnd() const {  return validEnd(top()); }
+  bool validEnd(navigator navi) const { 
+    while(!navi.isConstant()) {
+      navi.incrementElse();
+    }
+    return navi.terminalValue();
   }
 
   void print() const{
@@ -351,23 +370,23 @@ public:
   /// Construct from initial navigator
   CTermStack(navigator navi): base(navi) { }
 
-  void firstTerm() {
+  void init() {
     followThen();
     terminate();
   }
 
-  void lastTerm() {
+  void initLast() {
     followElse();
     terminate();
   }
 
   void incrementElse() {
-    assert(!base::isConstant());
+    assert(!base::empty());
     handleElse(base::top());
-    base::top().incrementElse();
+    base::incrementElse();
   }
 
-  void nextTerm() {
+  void next() {
 
     bool invalid = true;
     while (!base::empty() && invalid) {
@@ -377,34 +396,19 @@ public:
     }
   }
 
-  void previousTerm() {
-    previousTerm(Category());
-  }
- 
-  bool isTermEnd() const {
-    assert(!base::empty());
-    return checkEnd(base::top());
-  };
-
-  bool checkEnd(typename base::navigator navi) const { 
-    while(!navi.isConstant()) {
-      navi.incrementElse();
-    }
-    return navi.terminalValue();
-  }
-  bool checkEnd(const self& rhs) const {
-    assert(!rhs.empty());
-    return checkEnd(rhs.top());
+  void previous() {
+    previous(Category());
   }
 
-  void incrementTerm() {
+
+  void increment() {
     assert(!base::empty());
     if (base::markedOne()) {
       base::clearOne();
       return;
     }
       
-    nextTerm();
+    next();
     if (!base::empty()) {
       followThen();
       terminate();
@@ -412,13 +416,13 @@ public:
 
   }
 
-   void decrementTerm() {
+   void decrement() {
 
     if (base::markedOne()) {
       base::clearOne();
     }
       
-    previousTerm();
+    previous();
     followElse();
     base::decrementNode();
 
@@ -435,15 +439,17 @@ public:
 
 
   void followElse() {
-    while( !base::isConstant() ) {       // if still in interior of a path
-      if(!base::top().elseBranch().isEmpty()) {
-        incrementElse();   // go in direction of last term, if possible
-      }
-      else
-        incrementThen();
-    } 
+    while( !base::isConstant() ) // if still in interior of a path
+      incrementValidElse();
   }
-
+  
+  void incrementValidElse() {
+    assert(!base::empty() && !base::isConstant());
+    if(!base::top().elseBranch().isEmpty())
+      incrementElse();          // go in direction of last term, if possible
+    else
+      incrementThen();
+  } 
 protected:
   void append(const CTermStack& rhs) {
     base::append(rhs);
@@ -451,8 +457,8 @@ protected:
   }
 
 private:
-  void previousTerm(std::forward_iterator_tag);
-  void previousTerm(std::bidirectional_iterator_tag);
+  void previous(std::forward_iterator_tag);
+  void previous(std::bidirectional_iterator_tag);
 
   void append(const CTermStack&, std::forward_iterator_tag){};
   void append(const CTermStack& rhs, std::bidirectional_iterator_tag){
@@ -462,11 +468,11 @@ private:
 
 
 template <class NavigatorType, class Category>
-inline void CTermStack<NavigatorType, Category>::previousTerm(
+inline void CTermStack<NavigatorType, Category>::previous(
   std::forward_iterator_tag) { }
 
 template <class NavigatorType, class Category>
-inline void CTermStack<NavigatorType, Category>::previousTerm(
+inline void CTermStack<NavigatorType, Category>::previous(
   std::bidirectional_iterator_tag) { 
 
   if(handleElse.empty()) {
@@ -478,7 +484,7 @@ inline void CTermStack<NavigatorType, Category>::previousTerm(
 
   assert(base::top().isValid());
 
-  while(!base::empty() && (*base::top() >= *navi) ) {
+  while(!base::empty() && (base::index() >= *navi) ) {
     base::decrementNode();
   }
 
@@ -489,27 +495,20 @@ inline void CTermStack<NavigatorType, Category>::previousTerm(
 
 
 template <class NavigatorType, class BlockProperty, class Category>
-class CDegStackBase;
+class CDegStackCore;
 
 /// @brief for pure degree stacks
 template <class NavigatorType, class Category>
-class CDegStackBase<NavigatorType, invalid_tag, Category>:
+class CDegStackCore<NavigatorType, invalid_tag, Category>:
   public CTermStack<NavigatorType, Category> {
 
 public:
   typedef CTermStack<NavigatorType, Category> base;
   typedef NavigatorType navigator;
 
-  CDegStackBase(): base() {}
-  CDegStackBase(navigator navi): base(navi), getDeg() {}
+  CDegStackCore(): base() {}
+  CDegStackCore(navigator navi): base(navi), getDeg() {}
 
-  bool atBegin() const { return base::empty(); }
- 
-  bool atEnd(const typename base::purestack_type& rhs) const {
-    return rhs.isConstant();
-  }
-
-  bool atEnd() const { return atEnd(*this); }
 
   void gotoEnd()  {
      assert(!base::empty());
@@ -523,7 +522,7 @@ public:
 
 /// @brief for block stacks
 template <class NavigatorType, class Category>
-class CDegStackBase<NavigatorType, valid_tag, Category> :
+class CDegStackCore<NavigatorType, valid_tag, Category> :
   public CTermStack<NavigatorType, Category> {
 
 public:
@@ -531,35 +530,30 @@ public:
   typedef NavigatorType navigator;
   typedef typename base::idx_type idx_type;
 
-  CDegStackBase(): base() {}
-  CDegStackBase(navigator navi): base(navi), block() {}
+  CDegStackCore(): base() {}
+  CDegStackCore(navigator navi): base(navi), block() {}
 
   idx_type getDeg(navigator navi) const { return block(navi); }
 
-  bool atBegin() const { return base::empty() || (*base::top() < block.min()); }
-
-  bool atEnd(const typename base::purestack_type& rhs) const {
-    return rhs.isConstant() || (rhs.index() >= block.max());
-  }
-  bool atEnd() const { 
-    return atEnd(*this);
+  bool atBegin() const { 
+    return base::empty() || (base::index() < block.min()); 
   }
 
-
-  bool checkEnd(const typename base::purestack_type& rhs) const {
-    assert(!rhs.empty());
-    return checkEnd(rhs.top());
+  bool atEnd() const { return atEnd(base::top()); }
+  bool atEnd(navigator navi) const {
+    return navi.isConstant() || (*navi >= block.max());
   }
 
-  bool checkEnd(navigator navi) const {
+  bool validEnd() const{ return validEnd(base::top()); }
+  bool validEnd(navigator navi) const {
 
-    while( (!navi.isConstant()) && (*navi < block.max()) ) {
+    while(!atEnd(navi))
       navi.incrementElse();
-    }
+
     return (navi.isConstant()? navi.terminalValue(): *navi >= block.max());
   }
 
-  void nextTerm() {
+  void next() {
 
     bool invalid = true;
     while (!atBegin() && invalid) {
@@ -569,7 +563,7 @@ public:
         base::decrementNode();
     }
   }
-  void previousTerm() {
+  void previous() {
 
     if( base::handleElse.empty() || (*base::handleElse.top() < block.min()) ) {
       while(!atBegin())
@@ -579,11 +573,11 @@ public:
     navigator navi =  base::handleElse.top();
     assert(base::top().isValid());
 
-    while(!atBegin() && (*base::top() >= *navi) ) {
+    while(!atBegin() && (base::index() >= *navi) ) {
       base::decrementNode();
     }
 
-    if (base::empty() || (*base::top() < *navi)) {
+    if (base::empty() || (base::index() < *navi)) {
       base::handleElse.pop();
       base::push(navi);
     }
@@ -592,7 +586,7 @@ public:
 
   void gotoEnd()  {
      assert(!base::empty());
-     while( (!base::isConstant()) && (*base::top() < block.max()) ) {
+     while( (!base::isConstant()) && (base::index() < block.max()) ) {
        base::incrementElse();
      }
   }
@@ -602,27 +596,27 @@ protected:
 };
 
 template <class NavigatorType, class BlockProperty, class DescendingProperty>
-class CProxTermStack;
+class CDegStackBase;
 
 template <class NavigatorType, class BlockProperty>
-class CProxTermStack<NavigatorType, valid_tag, BlockProperty>:
-  public CDegStackBase<NavigatorType, BlockProperty, 
+class CDegStackBase<NavigatorType, valid_tag, BlockProperty>:
+  public CDegStackCore<NavigatorType, BlockProperty, 
                        std::forward_iterator_tag> {
 
 public:
-  typedef CDegStackBase<NavigatorType, BlockProperty, 
+  typedef CDegStackCore<NavigatorType, BlockProperty, 
                         std::forward_iterator_tag> base;
 
   typedef typename base::size_type size_type;
   typedef std::greater<size_type> size_comparer;
 
 
-  CProxTermStack(): base() {}
-  CProxTermStack(NavigatorType navi): base(navi) {}
+  CDegStackBase(): base() {}
+  CDegStackBase(NavigatorType navi): base(navi) {}
 
   integral_constant<bool, false> takeLast;
 
-  void proximateTerm() { base::nextTerm(); }
+  void proximate() { base::next(); }
 
   void incrementBranch() { base::incrementThen(); }
 
@@ -634,34 +628,25 @@ public:
 
 
 template <class NavigatorType, class BlockProperty>
-class CProxTermStack<NavigatorType, invalid_tag, BlockProperty>:
-    public CDegStackBase<NavigatorType, BlockProperty, 
+class CDegStackBase<NavigatorType, invalid_tag, BlockProperty>:
+    public CDegStackCore<NavigatorType, BlockProperty, 
                          std::bidirectional_iterator_tag> {
 
 public:
-  typedef CDegStackBase<NavigatorType, BlockProperty, 
+  typedef CDegStackCore<NavigatorType, BlockProperty, 
                          std::bidirectional_iterator_tag> base;
   typedef typename base::size_type size_type;
   typedef std::greater_equal<size_type> size_comparer;
 
 
-  CProxTermStack(): base() {}
-  CProxTermStack(NavigatorType navi): base(navi) {}
+  CDegStackBase(): base() {}
+  CDegStackBase(NavigatorType navi): base(navi) {}
 
   integral_constant<bool, true> takeLast;
 
-  void proximateTerm() { base::previousTerm(); }
+  void proximate() { base::previous(); }
 
-  void incrementBranch() {
-    assert(!base::empty() && !base::isConstant());
-
-    // if still in interior of a path
-    if(!base::top().elseBranch().isEmpty()) {
-      base::incrementElse();   // go in direction of last term, if possible
-    }
-    else
-      base::incrementThen();
-  }
+  void incrementBranch() { base::incrementValidElse(); }
 
   bool maxOnThen(size_type deg) const {
     return !(base::getDeg(base::top().elseBranch())  ==  deg);
@@ -672,10 +657,10 @@ public:
 template <class NavigatorType, class DescendingProperty, 
           class BlockProperty = invalid_tag>
 class CDegTermStack:
-  public CProxTermStack<NavigatorType, DescendingProperty, BlockProperty> {
+  public CDegStackBase<NavigatorType, DescendingProperty, BlockProperty> {
 
 public:
-  typedef CProxTermStack<NavigatorType, DescendingProperty, BlockProperty> base;
+  typedef CDegStackBase<NavigatorType, DescendingProperty, BlockProperty> base;
   typedef CDegTermStack<NavigatorType, DescendingProperty, BlockProperty> self;
 
   typedef typename base::navigator navigator;
@@ -684,11 +669,11 @@ public:
   CDegTermStack(): base(), m_start() {}
   CDegTermStack(navigator navi): base(navi), m_start(navi) {}
 
-  void firstTerm() {
-    findTerminal();
+  void init() {
+    followDeg();
     base::terminate();    
   }
-  void findTerminal() {
+  void followDeg() {
     assert(!base::empty());
     
     size_type deg = base::getDeg(base::top());
@@ -705,7 +690,7 @@ public:
     }
   }
 
-  void incrementTerm() {
+  void increment() {
     assert(!base::empty());
     if (base::markedOne()) {
       base::clearOne();
@@ -732,7 +717,7 @@ public:
     bool doloop;
     do {
       assert(!base::empty());
-      base::proximateTerm();
+      base::proximate();
 
       if (base::atBegin()) 
         return;
@@ -750,7 +735,7 @@ public:
   }
 
  
-  void decrementTerm() {}
+  void decrement() {}
 
   void findTerm(size_type upperbound) {
     assert(!base::empty());
@@ -763,15 +748,15 @@ public:
     while (!current.empty() && 
            (base::takeLast() || (max_elt.size() != upperbound)) ) {
       
-      while (!base::atEnd(current) && (current.size() < upperbound) )
+      while (!base::atEnd(current.top()) && (current.size() < upperbound) )
         current.incrementThen();
       
-      if (base::checkEnd(current)) {
+      if (base::validEnd(current.top())) {
         if (comp(current.size(), max_elt.size()))
           max_elt = current;
         current.decrementNode();
       }
-      current.nextTerm();
+      current.next();
     }
     base::append(max_elt);
 
@@ -807,17 +792,13 @@ public:
   CBlockTermStack(): base() {}
 
 
-  void firstTerm() {
+  void init() {
     assert(!base::empty());
-    findTerminal();
+    followDeg();
     base::terminate();
   }
 
-
-
-  void blockTerminal() { base::findTerminal(); }
-
-  void incrementTerm() {
+  void increment() {
     assert(!base::empty());
 
     if (base::markedOne()) {
@@ -836,61 +817,56 @@ public:
       incrementBlock();
     }
 
-    findTerminal();
+    followDeg();
 
     assert(!base::empty());
     base::terminate();
   }
 
-  void findTerminal() {
+  void followBlockDeg() { base::followDeg(); }
+
+  void followDeg() {
     assert(base::top().isValid());
 
     if (!base::isConstant() ) 
-      blockTerminal();
+      followBlockDeg();
 
     while (!base::isConstant()  ) {
       ++base::block;
-      blockTerminal();
+      followBlockDeg();
     }
   }
 
-  void incrementBlock();
+  void incrementBlock() {
 
-  using base::print;
-
+    assert(!base::empty());
+    size_type size = base::size() + 1;
+    
+    if (base::index() < base::block.min()) {
+      base::invalidate();
+      return;
+    }
+    
+    base::degTerm();
+    
+    if (base::size() == size) return;
+    
+    if (base::empty())
+      base::restart();
+    else {
+      assert(base::index() < base::block.min());
+      base::incrementThen();
+    }
+    
+    while (!base::isConstant() && (base::index() <  base::block.min()))
+      base::incrementElse();
+    
+    assert(size > base::size()); 
+    
+    base::findTerm(size - base::size());
+    base::gotoEnd();
+  }
 };
-
-template <class NavigatorType, class DescendingProperty>
-inline void
-CBlockTermStack<NavigatorType, DescendingProperty>::incrementBlock() {
-
-  assert(!base::empty());
-  size_type size = base::size() + 1;
-
-  if (*base::top() < base::block.min()) {
-    base::invalidate();
-    return;
-  }
-   
-  base::degTerm();
-
-  if (base::size() == size) return;
-
-  if (base::empty())
-    base::restart();
-  else {
-    assert(*base::top() < base::block.min());
-    base::incrementThen();
-  }
-
-  while (!base::isConstant() && (*base::top() <  base::block.min()))
-    base::incrementElse();
-
-  assert(size > base::size()); 
-  
-  base::findTerm(size - base::size());
-  base::gotoEnd();
-}
 
 END_NAMESPACE_PBORI
 

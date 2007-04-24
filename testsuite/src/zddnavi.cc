@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/04/24 11:46:18  dreyer
+ * CHANGE: code clean up
+ *
  * Revision 1.13  2007/04/13 13:55:54  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -489,14 +492,14 @@ main(){
 
     std::cout << " poly "<<poly <<std::endl;
 
-    deg_term_stack.firstTerm();
+    deg_term_stack.init();
 
     while (!deg_term_stack.equal(deg_term_type())) {
       std::copy(deg_term_stack.begin(), deg_term_stack.end(),
                 std::ostream_iterator<int>(cout, ", "));
       std::cout  <<std::endl;
       
-      deg_term_stack.incrementTerm();
+      deg_term_stack.increment();
     }
 
 
