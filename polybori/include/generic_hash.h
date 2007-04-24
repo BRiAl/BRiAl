@@ -28,6 +28,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/04/24 14:16:57  dreyer
+ * FIX: uninitalized values
+ *
  * Revision 1.3  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *
@@ -203,7 +206,7 @@ generic_hash_function(Iterator start, Iterator finish, HashType hash,
   hash = 5381;
   
   while (start != finish) {
-    hash = hash = ((hash << 5) + hash) + *start;
+    hash = ((hash << 5) + hash) + *start;
     ++start;
   }
 
@@ -259,7 +262,7 @@ public:
   enum { mask = BitMask };
 
   hash_type operator()(iterator_type start, iterator_type finish) const {
-    hash_type hash;
+    hash_type hash = 0;
     hash = generic_hash_function(start, finish, hash, alg_tag() );
     return (hash & mask);
   }
