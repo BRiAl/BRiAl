@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/04/27 21:20:04  dreyer
+ * CHANGE: testing exponent iterator
+ *
  * Revision 1.10  2007/04/13 13:55:52  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -160,6 +163,9 @@ class BooleExponent {
 
   /// Prepare memory for exponents
   void reserve(size_type nsize) { m_data.reserve(nsize); }
+
+  /// Drop compoents from the nsize-th element on
+  void resize(size_type nsize) { m_data.resize(nsize); }
 
   /// Degree of the corresponding monomial
   size_type deg() const { return size(); }

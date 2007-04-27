@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/04/27 21:20:04  dreyer
+ * CHANGE: testing exponent iterator
+ *
  * Revision 1.12  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -203,6 +206,12 @@ public:
   typedef CIndirectIter<NavigatorType, MonomType> self;
   typedef CAbstractIterCore<NavigatorType, MonomType> iterator_core;
 
+  typedef typename iterator_core::const_iterator const_iterator;
+  typedef typename iterator_core::const_reverse_iterator 
+  const_reverse_iterator;
+  typedef typename iterator_core::size_type size_type;
+  typedef typename iterator_core::idx_type idx_type;
+
 
   /// Fix type of direct iterator
   typedef NavigatorType navigator;
@@ -239,6 +248,13 @@ public:
   /// Dereferencing operation
   MonomType dereference() const {  return p_iter->dereference(); }
 
+  const_iterator begin() const { return p_iter->begin(); }
+  const_iterator end() const { return p_iter->end(); }
+  const_reverse_iterator rbegin() const { return p_iter->rbegin(); }
+  const_reverse_iterator rend() const { return p_iter->rend(); }
+
+  size_type deg() const { return p_iter->deg(); }
+  idx_type firstIndex() const { return p_iter->firstIndex(); }
 protected:
   core_pointer p_iter;
 };

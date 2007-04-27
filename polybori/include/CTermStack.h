@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/04/27 21:20:04  dreyer
+ * CHANGE: testing exponent iterator
+ *
  * Revision 1.11  2007/04/24 15:23:03  dreyer
  * FIX: minor changes fixing -Wall warnings
  *
@@ -304,6 +307,10 @@ public:
     pop();
     assert(empty());
   } 
+
+  size_type deg() const {
+    return (markedOne()? 0: size());
+  }
 
   void invalidate() {
     push(BoolePolyRing::ringZero().navigation());

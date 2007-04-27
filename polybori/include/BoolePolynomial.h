@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.66  2007/04/27 21:20:04  dreyer
+ * CHANGE: testing exponent iterator
+ *
  * Revision 1.65  2007/04/20 12:30:18  dreyer
  * FIX: cast navigator -> BoolePolynomial now corrent
  *
@@ -254,6 +257,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
+
 // forward declarations
 class LexOrder;
 class DegLexOrder;
@@ -275,6 +279,8 @@ template<class, class, class, class> class CDelayedTermIter;
 template<class OrderType, class NavigatorType, class MonomType>
 class CGenericIter;
 
+template<class NavigatorType, class ExpType>
+class CExpIter;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -340,48 +346,7 @@ public:
                       project_ith<1>, integral_constant<size_type, 1> > 
   decrement_type;
 
-  /// Bidirectional iterator type (dereferencing to degree)
-  typedef CBidirectTermIter<size_type, navigator, 
-                            increment_type, decrement_type,
-                            integral_constant<size_type, 0> >
-  bidirectional_iterator;
 
-
-
-
-
-  /// Iterator type for iterating over all monomials
-  typedef CTermIter<monom_type, navigator, 
-                    change_assign<>, 
-                    change_assign<> >
-  const_iterator;
-
-  /// Iterator type for iterating all exponent vectors 
-  typedef CTermIter<exp_type, navigator, 
-                    inserts<>, 
-                    removes<>, project_ith<1> >
-  exp_iterator;
-
-  /// Iterator type for iterating all monomials (dereferencing to degree)
-  typedef CTermIter<size_type, navigator, 
-                    increment_type, decrement_type,
-                    integral_constant<size_type, 0> >
-  deg_iterator;
-
-  /// Iterator type, which extends deg_iterator with function term()
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<>, project_ith<2>, 
-                           deg_iterator> delayed_iterator;
-
-
-
-  //typedef CDelayedTermIter<monom_type, 
-  //                         change_assign<>, project_ith<2>, 
-  //                         deg_iterator> delayed_iterator;
-
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<>, project_ith<2>, 
-                           bidirectional_iterator> delayed_bi_iterator;
 
   /// Iterator type for iterating over all exponents in ordering order
   //  typedef COrderedIter<exp_type> ordered_exp_iterator;
@@ -413,6 +378,51 @@ public:
   block_dp_asc_exp_iterator;
   //@}
 
+  /// Bidirectional iterator type (dereferencing to degree)
+  typedef CBidirectTermIter<size_type, navigator, 
+                            increment_type, decrement_type,
+                            integral_constant<size_type, 0> >
+  bidirectional_iterator;
+
+
+
+
+
+  /// Iterator type for iterating over all monomials
+  //  typedef lex_iterator const_iterator;
+  typedef CTermIter<monom_type, navigator,
+                    change_assign<>,
+                    change_assign<> >
+  const_iterator;
+
+  /// Iterator type for iterating all exponent vectors 
+   //   typedef lex_exp_iterator exp_iterator;
+//    typedef CTermIter<exp_type, navigator,
+//                      inserts<>,
+//                      removes<>, project_ith<1> >
+//    exp_iterator;
+   typedef CExpIter<navigator, exp_type> exp_iterator;
+
+  /// Iterator type for iterating all monomials (dereferencing to degree)
+  typedef CTermIter<size_type, navigator, 
+                    increment_type, decrement_type,
+                    integral_constant<size_type, 0> >
+  deg_iterator;
+
+  /// Iterator type, which extends deg_iterator with function term()
+//   typedef CDelayedTermIter<monom_type, 
+//                            change_assign<>, project_ith<2>, 
+//                            deg_iterator> delayed_iterator;
+
+
+
+  //typedef CDelayedTermIter<monom_type, 
+  //                         change_assign<>, project_ith<2>, 
+  //                         deg_iterator> delayed_iterator;
+
+//   typedef CDelayedTermIter<monom_type, 
+//                            change_assign<>, project_ith<2>, 
+//                            bidirectional_iterator> delayed_bi_iterator;
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/04/27 21:20:04  dreyer
+ * CHANGE: testing exponent iterator
+ *
  * Revision 1.14  2007/04/24 13:25:27  bricken
  * + virtual destructor
  *
@@ -97,6 +100,32 @@ class bounded_restricted_term;
 // Empty class dummy
 class CIterCore { };
 
+template<class SequenceType>
+void get_term(BooleMonomial& monom, const SequenceType& seq) {
+
+  typename SequenceType::const_reverse_iterator start(seq.rbegin()), 
+    finish(seq.rend());
+
+  while (start != finish){
+    monom.changeAssign(*start);
+    ++start;
+  }
+}
+
+
+template<class SequenceType>
+void get_term(BooleExponent& termexp, const SequenceType& seq) {
+
+  termexp.reserve(seq.deg());
+  typename SequenceType::const_iterator start(seq.begin()), 
+    finish(seq.end());
+
+  while (start != finish){
+    termexp.push_back(*start);
+    ++start;
+  }
+}
+
 
 // Abstract interface
 template <class NavigatorType, class ReferenceType>
@@ -105,8 +134,14 @@ class CAbstractIterCore {
 public:
   typedef CAbstractIterCore<NavigatorType, ReferenceType> self;
   typedef PBORI_SHARED_PTR(self) core_pointer;
-  typedef const CTermStackBase<NavigatorType>& stack_access_type;
+  typedef CTermStackBase<NavigatorType> stack_type;
+  typedef const stack_type& stack_access_type;
 
+  typedef typename stack_type::const_iterator const_iterator;
+  typedef typename stack_type::const_reverse_iterator 
+  const_reverse_iterator;
+  typedef typename NavigatorType::size_type size_type;
+  typedef typename NavigatorType::idx_type idx_type;
 
   // CAbstractIterCore(const NavigatorType& navi): base(navi) {}
   CAbstractIterCore() {}
@@ -115,25 +150,28 @@ public:
   /// Abstract function, inherited classes must provide incrementation
   virtual void increment() = 0;
 
-   bool equal (const self& rhs) const {
+  bool equal (const self& rhs) const {
      return operator stack_access_type().equal(rhs);
   }
 
 
   /// Dereferencing operation @todo: optimied procedures for exp(monom)
   ReferenceType dereference() const {
-
+    ReferenceType result(true);
+    get_term(result, *this);
+    /*
     ReferenceType result(true);
     stack_access_type theStack(*this);
 
-    typename CTermStackBase<NavigatorType>::const_iterator 
-      start(theStack.begin()), 
-      finish(theStack.end());
+    typename CTermStackBase<NavigatorType>::const_reverse_iterator 
+      start(theStack.rbegin()), 
+      finish(theStack.rend());
 
     while (start != finish) {
       result.changeAssign(*start);
       ++start;
     }
+    */
     return result;
   }
 
@@ -143,6 +181,15 @@ public:
 
   virtual core_pointer copy() const = 0;
 
+  virtual const_iterator begin() const { return getStack().begin(); }
+  virtual const_iterator end() const { return getStack().end(); }
+  virtual const_reverse_iterator rbegin() const { return getStack().rbegin(); }
+  virtual const_reverse_iterator rend() const { return getStack().rend(); }
+  virtual size_type deg() const { return getStack().deg(); }
+  virtual idx_type firstIndex() const { 
+    assert(!getStack().empty()); 
+    return *begin(); 
+  }
 private:
   virtual stack_access_type getStack() const = 0;
 };
@@ -192,6 +239,12 @@ public:
 
   typedef typename base::core_pointer core_pointer;
 
+  typedef typename base::const_iterator const_iterator;
+  typedef typename base::const_reverse_iterator 
+  const_reverse_iterator;
+  typedef typename NavigatorType::size_type size_type;
+  typedef typename NavigatorType::idx_type idx_type;
+
   CGenericCore(const BoolePolynomial& poly):
     base(), m_stack(poly.navigation()) {
     m_stack.init();
@@ -218,7 +271,15 @@ public:
   typename base::stack_access_type getStack() const {
     return m_stack;
   }
-
+  const_iterator begin() const { return m_stack.begin(); }
+  const_iterator end() const { return m_stack.end(); }
+  const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
+  const_reverse_iterator rend() const { return m_stack.rend(); }
+  size_type deg() const { return m_stack.deg(); }
+  idx_type firstIndex() const { 
+    assert(!m_stack.empty()); 
+    return *begin(); 
+  }
   //private:
   stack_type m_stack;
 };
@@ -246,6 +307,124 @@ public:
    
   CGenericIter(): base() {}
 
+};
+
+
+
+
+
+
+
+
+/// temporarily here...
+  template<class Iterator, class Iterator2>
+  void test_it(Iterator start, Iterator finish,
+               Iterator2 start2, Iterator2 finish2)  {
+
+    while (start!=finish) {
+      std::cout << *start <<" ";
+      ++start;
+    }
+           std::cout <<"="<<std::endl;
+    while ((start2!= finish2)) {
+      std::cout << *start2 <<" ";
+      ++start2;
+    }
+    std::cout <<std::endl;
+
+  }
+
+
+template <class NavigatorType, class ExpType>
+class CExpIter : 
+  public boost::iterator_facade<
+  CExpIter<NavigatorType, ExpType>,
+  ExpType, std::forward_iterator_tag,  const ExpType&
+  > {
+
+public:
+  typedef CTermStack<NavigatorType, std::forward_iterator_tag> stack_type;
+  typedef typename NavigatorType::size_type size_type;
+  typedef typename NavigatorType::idx_type idx_type;
+
+//   CExpIter(const BoolePolynomial& poly):
+//     m_stack(poly.navigation()) {
+//     m_stack.init();
+//   }
+
+  CExpIter(NavigatorType navi):
+    m_stack(navi), m_exp() {
+    m_stack.init();
+
+    m_exp.reserve(m_stack.size());
+    get_term(m_exp, m_stack);
+  }
+
+  CExpIter(): m_stack(), m_exp()  {}
+
+  size_type deg() const { return m_stack.deg(); }
+  idx_type firstIndex() const { 
+    assert(!m_stack.empty()); 
+    return *m_stack.begin(); 
+  }
+
+  bool equal (const CExpIter& rhs) const {
+    return m_stack.equal(rhs.m_stack);
+  }
+
+
+  template<class SequenceType>
+  void get_term(BooleExponent& termexp, const SequenceType& seq) const {
+    
+    termexp.reserve(seq.deg());
+    typename SequenceType::const_iterator start(seq.begin()), 
+      finish(seq.end());
+
+    while (start != finish){
+      termexp.push_back(*start);
+      ++start;
+    }
+  }
+  template<class Iterator>
+  void get_term(BooleExponent& termexp, Iterator start, Iterator finish) const {
+    
+    while (start != finish){
+      termexp.push_back(*start);
+      ++start;
+    }
+  }
+  /// Dereferencing operation 
+  const ExpType& dereference() const {
+//     ExpType theexp(true);
+//     get_term(theexp, m_stack);
+//     return theexp;
+    return m_exp;
+  }
+
+
+
+  void increment() { 
+    assert(!m_stack.empty());
+    if (m_stack.markedOne()) {
+      m_stack.clearOne();
+    }
+    else {
+      m_stack.next();
+      m_exp.resize(m_stack.size()==0? 0: m_stack.size()-1);
+
+      if (!m_stack.empty()) {
+        m_stack.followThen();
+        m_stack.terminate();
+     }
+    }
+
+    get_term(m_exp, m_stack.begin()+m_exp.size(), m_stack.end());
+
+    //    test_it(m_stack.begin(), m_stack.end(), m_exp.begin(), m_exp.end());
+  }
+protected:
+  stack_type m_stack;
+  ExpType m_exp;
 };
 
 
