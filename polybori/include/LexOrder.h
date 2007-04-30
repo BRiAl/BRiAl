@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.15  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -142,14 +145,10 @@ class LexOrder:
     return leadExp(poly); }
 
   /// Initialize iterator corresponding to leading term
-  iterator leadIterator(const poly_type&) const;
   indirect_iterator leadIteratorBegin(const poly_type&) const;
   indirect_iterator leadIteratorEnd() const;
   indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
   indirect_exp_iterator leadExpIteratorEnd() const;
-
-  /// Find next term (after iter) in polynomial according to current order
-  iterator incrementIterator(iterator iter, const poly_type&) const;
 
 };
 

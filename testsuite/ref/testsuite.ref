@@ -1620,6 +1620,18 @@ ordered iteration
 > x(8) < , 
 > 1 < , 
 #terms:  512
+Testing comparison  
+x(1)*x(2)*x(6) < x(1)*x(2)*x(7)*x(8) 1
+Testing != 
+1
+Testing== 
+0
+Switching to lex:  
+x(1)*x(2)*x(6) < x(1)*x(2)*x(7)*x(8) 0
+Testing!= 
+1
+Testing== 
+0
 Finished.
 ----------------------
 Executing testsuite/errorcodes

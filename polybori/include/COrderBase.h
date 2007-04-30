@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.13  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -104,10 +107,6 @@ class COrderBase:
   /// Type of Boolean polynomials
   typedef BoolePolynomial poly_type;
 
-  /// Type of degree iterator
-  typedef poly_type::bidirectional_iterator iterator;
-
-
   /// Type for sizes
   typedef poly_type::size_type size_type;
 
@@ -119,13 +118,7 @@ class COrderBase:
 
   typedef BoolePolynomial::navigator navigator;
 
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<>, project_ith<2>, 
-                           iterator> delayed_iterator;
-
-  typedef CIndirectIter<navigator, monom_type> indirect_iterator;
-
-
+  typedef COrderedIter<navigator, monom_type> indirect_iterator;
 
   /// Type of Boolean sets
   typedef BooleSet set_type;
@@ -133,7 +126,7 @@ class COrderBase:
   /// Type of Boolean monomials
   typedef BooleExponent exp_type;
 
-  typedef CIndirectIter<navigator, exp_type> indirect_exp_iterator;
+  typedef COrderedIter<navigator, exp_type> indirect_exp_iterator;
 
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
@@ -185,14 +178,10 @@ class COrderBase:
   virtual exp_type leadExp(const poly_type&, size_type) const = 0;
 
   /// Initialize iterator corresponding to leading term
-  virtual iterator leadIterator(const poly_type&) const = 0;
   virtual indirect_iterator leadIteratorBegin(const poly_type&) const = 0;
   virtual indirect_iterator leadIteratorEnd() const = 0;
   virtual indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const = 0;
   virtual indirect_exp_iterator leadExpIteratorEnd() const = 0;
-
-  /// Find next term (after iter) in polynomial according to current order
-  virtual iterator incrementIterator(iterator iter, const poly_type&) const =0;
 
   /// @name interface for block orderings
   //@{

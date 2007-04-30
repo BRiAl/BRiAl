@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/04/30 15:20:32  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.11  2007/04/13 13:55:54  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -508,26 +511,29 @@ main(){
 
     std::cout << "Testing != " <<std::endl;    std::cout.flush();
 
-    std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl;    std::cout.flush();
-
+    std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl; 
+    std::cout.flush();
+    
  
     std::cout << "Testing== " <<std::endl;    std::cout.flush();
-
-   std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
+    
+    std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
     std::cout.flush();
-
-
+    
+    
     std::cout << "Switching to lex:  " <<std::endl;
-
-
+    
+    
     BoolePolyRing::changeOrdering(CTypes::lp);
-
+    
     std::cout <<  monom1<< " < " << monom2<<" " ;
     std::cout <<  (monom1 < monom2) <<std::endl;
 
-     std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl;
-    std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
+    std::cout << "Testing!= " <<std::endl;  
+    std::cout <<   (p.orderedBegin()!=p.orderedEnd())<<std::endl;
 
+    std::cout << "Testing== " <<std::endl;  
+    std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
 
     std::cout << "Finished."<<std::endl;
   }

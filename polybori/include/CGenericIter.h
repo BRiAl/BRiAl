@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/04/30 15:20:30  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.15  2007/04/27 21:20:04  dreyer
  * CHANGE: testing exponent iterator
  *
@@ -73,6 +76,7 @@
 // include basic definitions
 #include "pbori_defs.h"
   //#include "pbori_routines.h"
+#include "pbori_algo.h"
 
 #include "BoolePolynomial.h"
 
@@ -96,103 +100,79 @@ class bounded_restricted_term;
 
 
 
-
 // Empty class dummy
-class CIterCore { };
-
-template<class SequenceType>
-void get_term(BooleMonomial& monom, const SequenceType& seq) {
-
-  typename SequenceType::const_reverse_iterator start(seq.rbegin()), 
-    finish(seq.rend());
-
-  while (start != finish){
-    monom.changeAssign(*start);
-    ++start;
-  }
-}
+// class CIterCore { };
 
 
-template<class SequenceType>
-void get_term(BooleExponent& termexp, const SequenceType& seq) {
-
-  termexp.reserve(seq.deg());
-  typename SequenceType::const_iterator start(seq.begin()), 
-    finish(seq.end());
-
-  while (start != finish){
-    termexp.push_back(*start);
-    ++start;
-  }
-}
 
 
-// Abstract interface
-template <class NavigatorType, class ReferenceType>
-class CAbstractIterCore {
+// // Abstract interface
+// template <class NavigatorType, class ReferenceType>
+// class CAbstractIterCore {
 
-public:
-  typedef CAbstractIterCore<NavigatorType, ReferenceType> self;
-  typedef PBORI_SHARED_PTR(self) core_pointer;
-  typedef CTermStackBase<NavigatorType> stack_type;
-  typedef const stack_type& stack_access_type;
+// public:
+//   typedef CAbstractIterCore<NavigatorType, ReferenceType> self;
+//   typedef PBORI_SHARED_PTR(self) core_pointer;
+//   typedef CTermStackBase<NavigatorType> stack_type;
+//   typedef const stack_type& stack_access_type;
 
-  typedef typename stack_type::const_iterator const_iterator;
-  typedef typename stack_type::const_reverse_iterator 
-  const_reverse_iterator;
-  typedef typename NavigatorType::size_type size_type;
-  typedef typename NavigatorType::idx_type idx_type;
+//   typedef typename stack_type::const_iterator const_iterator;
+//   typedef typename stack_type::const_reverse_iterator 
+//   const_reverse_iterator;
+//   typedef typename NavigatorType::size_type size_type;
+//   typedef typename NavigatorType::idx_type idx_type;
 
-  // CAbstractIterCore(const NavigatorType& navi): base(navi) {}
-  CAbstractIterCore() {}
-  virtual ~CAbstractIterCore(){}
+//   // CAbstractIterCore(const NavigatorType& navi): base(navi) {}
+//   CAbstractIterCore() {}
+//   virtual ~CAbstractIterCore(){}
 
-  /// Abstract function, inherited classes must provide incrementation
-  virtual void increment() = 0;
+//   /// Abstract function, inherited classes must provide incrementation
+//   virtual void increment() = 0;
 
-  bool equal (const self& rhs) const {
-     return operator stack_access_type().equal(rhs);
-  }
+//   bool equal (const self& rhs) const {
+//      return operator stack_access_type().equal(rhs);
+//   }
 
 
-  /// Dereferencing operation @todo: optimied procedures for exp(monom)
-  ReferenceType dereference() const {
-    ReferenceType result(true);
-    get_term(result, *this);
-    /*
-    ReferenceType result(true);
-    stack_access_type theStack(*this);
 
-    typename CTermStackBase<NavigatorType>::const_reverse_iterator 
-      start(theStack.rbegin()), 
-      finish(theStack.rend());
+//   /// Dereferencing operation @todo: optimied procedures for exp(monom)
+//   ReferenceType dereference() const {
+//     ReferenceType result(true);
+//     get_term(result, *this);
+//     /*
+//     ReferenceType result(true);
+//     stack_access_type theStack(*this);
 
-    while (start != finish) {
-      result.changeAssign(*start);
-      ++start;
-    }
-    */
-    return result;
-  }
+//     typename CTermStackBase<NavigatorType>::const_reverse_iterator 
+//       start(theStack.rbegin()), 
+//       finish(theStack.rend());
 
-  operator stack_access_type() const {
-    return getStack();
-  }
+//     while (start != finish) {
+//       result.changeAssign(*start);
+//       ++start;
+//     }
+//     */
+//     return result;
+//   }
 
-  virtual core_pointer copy() const = 0;
+//   operator stack_access_type() const {
+//     return getStack();
+//   }
 
-  virtual const_iterator begin() const { return getStack().begin(); }
-  virtual const_iterator end() const { return getStack().end(); }
-  virtual const_reverse_iterator rbegin() const { return getStack().rbegin(); }
-  virtual const_reverse_iterator rend() const { return getStack().rend(); }
-  virtual size_type deg() const { return getStack().deg(); }
-  virtual idx_type firstIndex() const { 
-    assert(!getStack().empty()); 
-    return *begin(); 
-  }
-private:
-  virtual stack_access_type getStack() const = 0;
-};
+//   virtual core_pointer copy() const = 0;
+
+//   virtual const_iterator begin() const { return getStack().begin(); }
+//   virtual const_iterator end() const { return getStack().end(); }
+//   virtual const_reverse_iterator rbegin() const { return getStack().rbegin(); }
+//   virtual const_reverse_iterator rend() const { return getStack().rend(); }
+//   virtual size_type deg() const { return getStack().deg(); }
+//   virtual idx_type firstIndex() const { 
+//     assert(!getStack().empty()); 
+//     return *begin(); 
+//   }
+// private:
+//   virtual stack_access_type getStack() const = 0;
+// };
 
 template <class OrderType, class NavigatorType> 
 struct CGenericCoreStackType;
@@ -225,51 +205,113 @@ struct CGenericCoreStackType<BlockDegRevLexAscOrder, NavigatorType> {
   typedef CBlockTermStack<NavigatorType, invalid_tag> type;
 };
 
-template <class OrderType, class NavigatorType, class ReferenceType>
-class CGenericCore:
-  public CAbstractIterCore<NavigatorType, ReferenceType>  {
-public:
+// template <class OrderType, class NavigatorType, class ReferenceType>
+// class CGenericCore:
+//   public CAbstractIterCore<NavigatorType, ReferenceType>  {
+// public:
 
+//   typedef typename CGenericCoreStackType<OrderType, NavigatorType>::type
+//   stack_type;
+
+//   typedef CAbstractIterCore<NavigatorType, ReferenceType>  base;
+ 
+//   typedef CGenericCore<OrderType, NavigatorType, ReferenceType> self;
+
+//   typedef typename base::core_pointer core_pointer;
+
+//   typedef typename base::const_iterator const_iterator;
+//   typedef typename base::const_reverse_iterator 
+//   const_reverse_iterator;
+//   typedef typename NavigatorType::size_type size_type;
+//   typedef typename NavigatorType::idx_type idx_type;
+
+//   CGenericCore(const BoolePolynomial& poly):
+//     base(), m_stack(poly.navigation()) {
+//     m_stack.init();
+//   }
+
+//   CGenericCore(const self& rhs):
+//     base(rhs), m_stack(rhs.m_stack) { }
+
+//   CGenericCore(NavigatorType navi):
+//     base(), m_stack(navi) {
+//     m_stack.init();
+//   }
+
+//   CGenericCore(): base() {}
+
+//   void increment() {
+//     m_stack.increment();
+//   }
+
+//   core_pointer copy() const {
+//     return core_pointer(new self(*this));
+//   }
+
+//   typename base::stack_access_type getStack() const {
+//     return m_stack;
+//   }
+//   const_iterator begin() const { return m_stack.begin(); }
+//   const_iterator end() const { return m_stack.end(); }
+//   const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
+//   const_reverse_iterator rend() const { return m_stack.rend(); }
+//   size_type deg() const { return m_stack.deg(); }
+//   idx_type firstIndex() const { 
+//     assert(!m_stack.empty()); 
+//     return *begin(); 
+//   }
+//   //private:
+//   stack_type m_stack;
+// };
+
+
+template<class OrderType, class NavigatorType, class ReferenceType>
+class CGenericIter: 
+  public boost::iterator_facade<
+  CGenericIter<OrderType, NavigatorType, ReferenceType>,
+  ReferenceType, boost::forward_traversal_tag, ReferenceType
+  > {
+
+public:
   typedef typename CGenericCoreStackType<OrderType, NavigatorType>::type
   stack_type;
+  /// Generic access to base type
 
-  typedef CAbstractIterCore<NavigatorType, ReferenceType>  base;
- 
-  typedef CGenericCore<OrderType, NavigatorType, ReferenceType> self;
-
-  typedef typename base::core_pointer core_pointer;
-
-  typedef typename base::const_iterator const_iterator;
-  typedef typename base::const_reverse_iterator 
+  typedef typename stack_type::const_iterator const_iterator;
+  typedef typename stack_type::const_reverse_iterator 
   const_reverse_iterator;
   typedef typename NavigatorType::size_type size_type;
   typedef typename NavigatorType::idx_type idx_type;
 
-  CGenericCore(const BoolePolynomial& poly):
-    base(), m_stack(poly.navigation()) {
-    m_stack.init();
+
+  // Constructor
+   CGenericIter(const BoolePolynomial& poly): 
+     m_stack(poly.navigation()) {
+     m_stack.init(); 
+   }
+
+   CGenericIter(const CGenericIter& rhs): 
+     m_stack(rhs.m_stack) {
+   }
+
+  CGenericIter(NavigatorType navi): 
+    m_stack(navi) { 
+    m_stack.init(); 
   }
-
-  CGenericCore(const self& rhs):
-    base(rhs), m_stack(rhs.m_stack) { }
-
-  CGenericCore(NavigatorType navi):
-    base(), m_stack(navi) {
-    m_stack.init();
-  }
-
-  CGenericCore(): base() {}
+   
+  CGenericIter(): m_stack() {}
 
   void increment() {
     m_stack.increment();
   }
 
-  core_pointer copy() const {
-    return core_pointer(new self(*this));
+  bool equal (const CGenericIter& rhs) const {
+     return m_stack.equal(rhs.m_stack);
   }
-
-  typename base::stack_access_type getStack() const {
-    return m_stack;
+  ReferenceType dereference() const {
+    ReferenceType result(true);
+    get_term(result, m_stack);
+    return result;
   }
   const_iterator begin() const { return m_stack.begin(); }
   const_iterator end() const { return m_stack.end(); }
@@ -280,33 +322,9 @@ public:
     assert(!m_stack.empty()); 
     return *begin(); 
   }
-  //private:
+
+private:
   stack_type m_stack;
-};
-
-
-template<class OrderType, class NavigatorType, class ReferenceType>
-class CGenericIter: 
-  public boost::iterator_facade<
-  CGenericIter<OrderType, NavigatorType, ReferenceType>,
-  ReferenceType, std::forward_iterator_tag, ReferenceType
-  >,
-  public CGenericCore<OrderType, NavigatorType, ReferenceType> {
-
-public:
-
-  /// Generic access to base type
-  typedef CGenericCore<OrderType, NavigatorType, ReferenceType> base;
-
-  // Constructor
-  CGenericIter(const BoolePolynomial& poly): 
-    base(poly.navigation()) {}
-
-  CGenericIter(NavigatorType navi): 
-    base(navi) {}
-   
-  CGenericIter(): base() {}
-
 };
 
 
@@ -333,6 +351,120 @@ public:
     std::cout <<std::endl;
 
   }
+
+template <class NavigatorType, class ExpType>
+class CGenericIter2 : 
+  public boost::iterator_facade<
+  CGenericIter2<NavigatorType, ExpType>,
+  ExpType, std::forward_iterator_tag,  const ExpType&
+  > {
+
+public:
+  typedef CTermStack<NavigatorType, std::forward_iterator_tag> stack_type;
+  typedef typename NavigatorType::size_type size_type;
+  typedef typename NavigatorType::idx_type idx_type;
+
+//   CGenericIter2(const BoolePolynomial& poly):
+//     m_stack(poly.navigation()) {
+//     m_stack.init();
+//   }
+
+  CGenericIter2(NavigatorType navi):
+    m_stack(navi), m_exp(true) {
+    m_stack.init();
+
+    // m_exp.reserve(m_stack.size());
+
+
+    get_term(m_exp, m_stack);
+  }
+
+  CGenericIter2(): m_stack(), m_exp()  {}
+
+  size_type deg() const { return m_stack.deg(); }
+  idx_type firstIndex() const { 
+    assert(!m_stack.empty()); 
+    return *m_stack.begin(); 
+  }
+
+  bool equal (const CGenericIter2& rhs) const {
+    return m_stack.equal(rhs.m_stack);
+  }
+
+
+   template<class SequenceType>
+  void get_term(BooleMonomial& termexp, const SequenceType& seq) const {
+    
+     //    termexp.reserve(seq.deg());
+    typename SequenceType::const_iterator start(seq.begin()), 
+      finish(seq.end());
+
+    while (start != finish){
+      termexp.changeAssign(*start);
+      ++start;
+    }
+  }
+
+ template<class SequenceType>
+  void get_term(BooleExponent& termexp, const SequenceType& seq) const {
+    
+    termexp.reserve(seq.deg());
+    typename SequenceType::const_iterator start(seq.begin()), 
+      finish(seq.end());
+
+    while (start != finish){
+      termexp.push_back(*start);
+      ++start;
+    }
+  }
+  template<class Iterator>
+  void get_term(BooleExponent& termexp, Iterator start, Iterator finish) const {
+    
+    while (start != finish){
+      termexp.push_back(*start);
+      ++start;
+    }
+  }
+  /// Dereferencing operation 
+  const ExpType& dereference() const {
+//     ExpType theexp(true);
+//     get_term(theexp, m_stack);
+//     return theexp;
+    return m_exp;
+  }
+
+
+
+  void increment() {
+    m_stack.increment();
+
+
+ 
+//     assert(!m_stack.empty());
+//     if (m_stack.markedOne()) {
+//       m_stack.clearOne();
+//     }
+//     else {
+//       m_stack.next();
+//       m_exp.resize(m_stack.size()==0? 0: m_stack.size()-1);
+
+//       if (!m_stack.empty()) {
+//         m_stack.followThen();
+//         m_stack.terminate();
+//      }
+//     }
+//    m_exp.resize(0);
+
+    m_exp = ExpType(true);
+    get_term(m_exp, m_stack);
+
+    //    test_it(m_stack.begin(), m_stack.end(), m_exp.begin(), m_exp.end());
+  }
+protected:
+  stack_type m_stack;
+  ExpType m_exp;
+};
+
 
 
 template <class NavigatorType, class ExpType>

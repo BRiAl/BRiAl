@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.22  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -147,15 +150,11 @@ public:
   typedef BoolePolynomial poly_type;
   typedef BoolePolynomial::navigator navigator;
   typedef BooleExponent exp_type;
-  typedef poly_type::bidirectional_iterator iterator;
 
-   typedef CDelayedTermIter<monom_type, 
-                            change_assign<>, project_ith<2>, 
-                            iterator> delayed_iterator;
 
-  typedef CIndirectIter<navigator, monom_type> ordered_iterator;
-  typedef CIndirectIter<navigator, exp_type> ordered_exp_iterator;
- //@}
+  typedef COrderedIter<navigator, monom_type> ordered_iterator;
+  typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
+  //@}
 
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
@@ -235,16 +234,12 @@ public:
   virtual bool_type isDegreeReverseLexicograpical() const = 0;
 
   /// Initialize iterator corresponding to leading term
-  //  virtual iterator leadIterator(const poly_type&) const = 0;
   virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;
 
   virtual ordered_iterator leadIteratorEnd() const = 0;
   virtual ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const = 0;
 
   virtual ordered_exp_iterator leadExpIteratorEnd() const = 0;
-
-  /// Find next term (after iter) in polynomial according to current order
-  virtual iterator incrementIterator(iterator iter, const poly_type&) const = 0;
 
   /// Get numerical code for ordering
   virtual ordercode_type getOrderCode() const = 0;
@@ -307,7 +302,6 @@ public:
   typedef typename base::monom_type monom_type;
   typedef typename base::poly_type poly_type;
   typedef typename base::exp_type exp_type;
-  typedef typename base::iterator iterator;
   typedef typename base::ordered_iterator ordered_iterator;
   typedef typename base::ordered_exp_iterator ordered_exp_iterator;
   typedef typename base::ordercode_type ordercode_type;
@@ -440,10 +434,6 @@ public:
 
   ordered_exp_iterator leadExpIteratorEnd() const {
     return ordering.leadExpIteratorEnd();
-  }
-  /// Find next term (after iter) in polynomial according to current order
-  iterator incrementIterator(iterator iter, const poly_type& poly) const {
-    return ordering.incrementIterator(iter, poly);
   }
 
   /// Get numerical code for ordering

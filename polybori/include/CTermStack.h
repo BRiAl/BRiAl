@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.12  2007/04/27 21:20:04  dreyer
  * CHANGE: testing exponent iterator
  *
@@ -163,11 +166,16 @@ private:
  **/
 
 
-template <class NavigatorType>
-class CTermStackBase {
+template <class NavigatorType, class BaseType = internal_tag>
+class CTermStackBase:
+  public BaseType {
 
 public:
-  typedef CTermStackBase<NavigatorType> self;
+
+  template <class NavigatorType2, class BaseType2> 
+  friend class CTermStackBase;
+
+  typedef CTermStackBase<NavigatorType, BaseType> self;
 
   /// Get type of navigators
   typedef NavigatorType navigator;
@@ -236,10 +244,10 @@ public:
   typedef typename stack_type::value_type top_type;
 
   /// Default constructor
-  CTermStackBase(): m_stack() { }
+  CTermStackBase(): BaseType(), m_stack() { }
 
   /// Construct from initial navigator
-  CTermStackBase(navigator navi):  m_stack() {
+  CTermStackBase(navigator navi): BaseType(), m_stack() {
     push(navi);
   }
 
@@ -341,7 +349,8 @@ public:
   }
 protected:
 
-  void append(const self& rhs) { 
+  template <class TermStack>
+  void append(const TermStack& rhs) { 
     assert(empty() || rhs.empty() || ((*rhs.begin()) > (*top())) );
     m_stack.insert(m_stack.end(), rhs.m_stack.begin(), rhs.m_stack.end());
   }
@@ -354,16 +363,18 @@ private:
 
 
 
-template <class NavigatorType, class Category>
+template <class NavigatorType, class Category, class BaseType = internal_tag>
 class CTermStack:
-  public CTermStackBase<NavigatorType> {
+  public CTermStackBase<NavigatorType, BaseType> {
 
 public:
-  typedef CTermStackBase<NavigatorType> base;
-  typedef typename base::navigator navigator;
-  typedef CTermStack<NavigatorType, Category> self;
-  typedef self purestack_type;
+  typedef CTermStackBase<NavigatorType, BaseType> base;
+  typedef CTermStack<NavigatorType, Category, BaseType> self;
 
+  /// Defining a type for simple stacking of term elements
+  typedef CTermStack<NavigatorType, Category, internal_tag> purestack_type;
+
+  typedef typename base::navigator navigator;
   typedef typename on_same_type<Category, std::forward_iterator_tag, 
                                 project_ith<0>, 
                                 handle_else<NavigatorType> >::type
@@ -461,7 +472,8 @@ public:
       incrementThen();
   } 
 protected:
-  void append(const CTermStack& rhs) {
+  template <class TermStack>
+  void append(const TermStack& rhs) {
     base::append(rhs);
     append(rhs, Category());
   }
@@ -470,19 +482,22 @@ private:
   void previous(std::forward_iterator_tag);
   void previous(std::bidirectional_iterator_tag);
 
-  void append(const CTermStack&, std::forward_iterator_tag){};
-  void append(const CTermStack& rhs, std::bidirectional_iterator_tag){
+  template <class TermStack>
+  void append(const TermStack&, std::forward_iterator_tag){}
+
+  template <class TermStack>
+  void append(const TermStack& rhs, std::bidirectional_iterator_tag){
      handleElse.append(rhs.handleElse); 
-  };
+  }
 };
 
 
-template <class NavigatorType, class Category>
-inline void CTermStack<NavigatorType, Category>::previous(
+template <class NavigatorType, class Category, class BaseType>
+inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   std::forward_iterator_tag) { }
 
-template <class NavigatorType, class Category>
-inline void CTermStack<NavigatorType, Category>::previous(
+template <class NavigatorType, class Category, class BaseType>
+inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   std::bidirectional_iterator_tag) { 
 
   if(handleElse.empty()) {
@@ -504,16 +519,17 @@ inline void CTermStack<NavigatorType, Category>::previous(
 }
 
 
-template <class NavigatorType, class BlockProperty, class Category>
+template <class NavigatorType, class BlockProperty, class Category, class
+          BaseType = internal_tag>
 class CDegStackCore;
 
 /// @brief for pure degree stacks
-template <class NavigatorType, class Category>
-class CDegStackCore<NavigatorType, invalid_tag, Category>:
-  public CTermStack<NavigatorType, Category> {
+template <class NavigatorType, class Category, class BaseType>
+class CDegStackCore<NavigatorType, invalid_tag, Category, BaseType>:
+  public CTermStack<NavigatorType, Category, BaseType> {
 
 public:
-  typedef CTermStack<NavigatorType, Category> base;
+  typedef CTermStack<NavigatorType, Category, BaseType> base;
   typedef NavigatorType navigator;
 
   CDegStackCore(): base() {}
@@ -531,12 +547,12 @@ public:
 };
 
 /// @brief for block stacks
-template <class NavigatorType, class Category>
-class CDegStackCore<NavigatorType, valid_tag, Category> :
-  public CTermStack<NavigatorType, Category> {
+template <class NavigatorType, class Category, class BaseType>
+class CDegStackCore<NavigatorType, valid_tag, Category, BaseType> :
+  public CTermStack<NavigatorType, Category, BaseType> {
 
 public:
-  typedef CTermStack<NavigatorType, Category> base;
+  typedef CTermStack<NavigatorType, Category, BaseType> base;
   typedef NavigatorType navigator;
   typedef typename base::idx_type idx_type;
   typedef typename base::size_type size_type;
@@ -606,17 +622,18 @@ protected:
   cached_block_deg<navigator> block;
 };
 
-template <class NavigatorType, class BlockProperty, class DescendingProperty>
+template <class NavigatorType, class BlockProperty, class DescendingProperty,
+          class BaseType = internal_tag>
 class CDegStackBase;
 
-template <class NavigatorType, class BlockProperty>
-class CDegStackBase<NavigatorType, valid_tag, BlockProperty>:
+template <class NavigatorType, class BlockProperty, class BaseType>
+class CDegStackBase<NavigatorType, valid_tag, BlockProperty, BaseType>:
   public CDegStackCore<NavigatorType, BlockProperty, 
-                       std::forward_iterator_tag> {
+                       std::forward_iterator_tag, BaseType> {
 
 public:
   typedef CDegStackCore<NavigatorType, BlockProperty, 
-                        std::forward_iterator_tag> base;
+                        std::forward_iterator_tag, BaseType> base;
 
   typedef typename base::size_type size_type;
   typedef std::greater<size_type> size_comparer;
@@ -638,14 +655,14 @@ public:
 };
 
 
-template <class NavigatorType, class BlockProperty>
-class CDegStackBase<NavigatorType, invalid_tag, BlockProperty>:
+template <class NavigatorType, class BlockProperty, class BaseType>
+class CDegStackBase<NavigatorType, invalid_tag, BlockProperty, BaseType>:
     public CDegStackCore<NavigatorType, BlockProperty, 
-                         std::bidirectional_iterator_tag> {
+                         std::bidirectional_iterator_tag, BaseType> {
 
 public:
   typedef CDegStackCore<NavigatorType, BlockProperty, 
-                         std::bidirectional_iterator_tag> base;
+                         std::bidirectional_iterator_tag, BaseType> base;
   typedef typename base::size_type size_type;
   typedef std::greater_equal<size_type> size_comparer;
 
@@ -666,13 +683,13 @@ public:
 
 
 template <class NavigatorType, class DescendingProperty, 
-          class BlockProperty = invalid_tag>
+          class BlockProperty = invalid_tag, class BaseType = internal_tag>
 class CDegTermStack:
-  public CDegStackBase<NavigatorType, DescendingProperty, BlockProperty> {
+  public CDegStackBase<NavigatorType, DescendingProperty, BlockProperty, BaseType> {
 
 public:
-  typedef CDegStackBase<NavigatorType, DescendingProperty, BlockProperty> base;
-  typedef CDegTermStack<NavigatorType, DescendingProperty, BlockProperty> self;
+  typedef CDegStackBase<NavigatorType, DescendingProperty, BlockProperty, BaseType> base;
+  typedef CDegTermStack<NavigatorType, DescendingProperty, BlockProperty, BaseType> self;
 
   typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
@@ -784,13 +801,13 @@ private:
 
 
 //////////////////////////////////////////////////////////
-template <class NavigatorType, class DescendingProperty>
+template <class NavigatorType, class DescendingProperty, class BaseType = internal_tag>
 class CBlockTermStack:
-  public CDegTermStack<NavigatorType, DescendingProperty, valid_tag> {
+  public CDegTermStack<NavigatorType, DescendingProperty, valid_tag, BaseType> {
 
 public:
-  typedef CDegTermStack<NavigatorType, DescendingProperty, valid_tag> base; 
-  typedef CBlockTermStack<NavigatorType, DescendingProperty> self;
+  typedef CDegTermStack<NavigatorType, DescendingProperty, valid_tag, BaseType> base; 
+  typedef CBlockTermStack<NavigatorType, DescendingProperty, BaseType> self;
 
   typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;

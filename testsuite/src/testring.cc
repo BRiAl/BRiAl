@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.23  2007/04/30 15:20:32  dreyer
+// CHANGE: Switching from CTermIter to iterators based on CTermStack
+//
 // Revision 1.22  2007/03/28 12:34:57  dreyer
 // ADD: added testsuite testcases for blockordering; Fixed errors in block-order
 //
@@ -427,8 +430,8 @@ main(){
   std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
   std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
 
-  CDegLexIter<BoolePolynomial> iter(poly.degBegin(), poly.degEnd()),
-    finish;
+  BoolePolynomial::ordered_iterator iter(poly.orderedBegin()), 
+    finish(poly.orderedEnd());
 
 
   while (iter != finish){

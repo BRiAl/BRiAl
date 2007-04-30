@@ -96,15 +96,10 @@ class DegRevLexAscOrder:
   exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
-  iterator leadIterator(const poly_type&) const;
   indirect_iterator leadIteratorBegin(const poly_type&) const;
   indirect_iterator leadIteratorEnd() const;
   indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
   indirect_exp_iterator leadExpIteratorEnd() const;
-
-
-  /// Find next term (after iter) in polynomial according to current order
-  iterator incrementIterator(iterator iter, const poly_type&) const;
 };
 
 

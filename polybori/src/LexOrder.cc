@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/04/30 15:20:32  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.14  2007/04/13 13:55:54  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -191,27 +194,25 @@ LexOrder::leadExp(const poly_type& poly) const {
 }
 
 // Initialize iterator corresponding to leading term
-LexOrder::iterator
-LexOrder::leadIterator(const poly_type& poly) const {
-
-  PBORI_TRACE_FUNC( "LexOrder::leadIterator(const poly_type& poly) const" );
-
-  return generic_iteration<self, iterator>().leadIterator(poly);
-}
-
-// Initialize iterator corresponding to leading term
 LexOrder::indirect_iterator
 LexOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorBegin(const poly_type& poly) const" );
 
   //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, navigator, monom_type>
-    iterator_core; 
-  typedef CAbstractIterCore<navigator, monom_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CWrappedStack<  >
+//     iterator_core; 
 
-  return indirect_iterator(core_pointer(new iterator_core(poly)));
+
+
+//   typedef CTermStackBase<navigator, monom_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+
+//   return indirect_iterator(core_pointer(new iterator_core(poly)));
+
+
+  return CGenericOrderedIter<self, navigator, monom_type>(poly.navigation());
+
 }
 
 // Initialize iterator corresponding to leading term
@@ -221,11 +222,13 @@ LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
 
   //  return generic_iteration<self, iterator>().leadIterator(poly);
-  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
-  typedef CAbstractIterCore<navigator, exp_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+//   typedef CAbstractIterCore<navigator, exp_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+//   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation());
 }
 
 LexOrder::indirect_exp_iterator
@@ -233,12 +236,14 @@ LexOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorEnd() const" );
 
-  typedef CGenericCore<self, navigator, exp_type>
-    iterator_core; 
-  typedef CAbstractIterCore<navigator, exp_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, exp_type>
+//     iterator_core; 
+//   typedef CAbstractIterCore<navigator, exp_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_exp_iterator(core_pointer(new iterator_core()));
+//   return indirect_exp_iterator(core_pointer(new iterator_core()));
+  return CGenericOrderedIter<self, navigator, exp_type>();
+
 }
 
 LexOrder::indirect_iterator
@@ -246,24 +251,13 @@ LexOrder::leadIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorEnd() const" );
 
-  typedef CGenericCore<self, navigator, monom_type> iterator_core; 
-  typedef CAbstractIterCore<navigator, monom_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, monom_type> iterator_core; 
+//   typedef CAbstractIterCore<navigator, monom_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_iterator(core_pointer(new iterator_core()));
+//   return indirect_iterator(core_pointer(new iterator_core()));
+  return CGenericOrderedIter<self, navigator, monom_type>();
 }
-
-// Find next term (after iter) in polynomial according to current order
-LexOrder::iterator
-LexOrder::incrementIterator(iterator iter, const poly_type& poly) const {
-
-  PBORI_TRACE_FUNC(
-    "LexOrder::incrementIterator(iterator, const poly_type&) const" );
-
-  //  return ++iter;
-  return generic_iteration<self, iterator>().incrementIterator(iter, poly);
-}
-
 
 
 END_NAMESPACE_PBORI

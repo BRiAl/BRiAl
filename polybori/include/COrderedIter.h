@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.13  2007/04/27 21:20:04  dreyer
  * CHANGE: testing exponent iterator
  *
@@ -66,6 +69,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
+#include "pbori_algo.h"
 
  
 #include "BoolePolynomial.h"
@@ -129,82 +133,168 @@ public:
   virtual bool_type operator==(const self&) const = 0;
 };
 
-#if 0
-template <class IteratorType>
-class CIndirectIter {
-
-public:
-
-  /// Fix type of direct iterator
-  typedef IteratorType iterator_type;
- 
-  // Store shared pointer of iterator
-  typedef PBORI_SHARED_PTR(iterator_type) iterator_pointer;
-
-  /// Extract plain Boolean type
-  typedef typename iterator_type::bool_type bool_type;
-
-  /// @name Interface types for standard iterator access
-  //@{
-  typedef typename iterator_type::value_type value_type;
-  typedef typename iterator_type::iterator_category iterator_category;
-  //  typedef typename iterator::difference_type difference_type;
-  typedef typename iterator_type::pointer pointer;
-  typedef typename iterator_type::reference reference;
-  //@}
-
-  /// Generic access to type of *this
-  typedef CIndirectIter<iterator_type> self;
-
-  // Default Constructor
-  CIndirectIter() {}
-
-  // Destructor
-  ~CIndirectIter() {}
-
-  /// Constant dereference operator
-  reference operator*() const { return **p_iter; }
-
-  /// Prefix increment operator
-  self& operator++()  { 
-    ++(*p_iter); 
-    return *this;
-  }
-
-  /// Postfix increment operator
-  self operator++(int) {  return (*p_iter)++;  }
-
-  /// Equality test
-  bool_type operator !=(const self& rhs) const {
-    return (*p_iter) != (*rhs.p_iter);
-  }
-
-  /// Inequality test
-  bool_type operator==(const self& rhs) const  {
-    return (*p_iter) == (*rhs.p_iter);
-  }
-
-protected:
-  iterator_pointer p_iter;
-};
-#endif
 
 //////////////////////////////////////
 /// HIER!
 /////////////////////////////////////
-#if 1
+
+
+// template <class NavigatorType, class MonomType>
+// class CIndirectIter:
+//   public boost::iterator_facade<
+//   CIndirectIter<NavigatorType, MonomType>,
+//   MonomType, boost::forward_traversal_tag, MonomType
+//   > {
+
+// public:
+
+//   typedef CIndirectIter<NavigatorType, MonomType> self;
+//   typedef CAbstractIterCore<NavigatorType, MonomType> iterator_core;
+
+//   typedef typename iterator_core::const_iterator const_iterator;
+//   typedef typename iterator_core::const_reverse_iterator 
+//   const_reverse_iterator;
+//   typedef typename iterator_core::size_type size_type;
+//   typedef typename iterator_core::idx_type idx_type;
+
+
+//   /// Fix type of direct iterator
+//   typedef NavigatorType navigator;
+ 
+//   // Store shared pointer of iterator
+//   typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+//   /// Extract plain Boolean type
+//   typedef bool bool_type;
+
+//   // Default Constructor
+
+//   CIndirectIter(core_pointer rhs): p_iter(rhs) {}
+
+// //   CIndirectIter(const self& rhs):
+// //     p_iter(rhs.p_iter) {}
+
+//   // Destructor
+//   ~CIndirectIter() {}
+
+//   bool equal(const CIndirectIter& rhs) const { 
+//     return  p_iter->equal(*rhs.p_iter); }
+
+//   /// Incrementation
+//   void increment() {
+//     if (!p_iter.unique()) {
+//       core_pointer tmp(p_iter->copy());
+//       p_iter = tmp;
+//     }
+
+//     p_iter->increment(); 
+//   }
+
+//   /// Dereferencing operation
+//   MonomType dereference() const {  return p_iter->dereference(); }
+
+//   const_iterator begin() const { return p_iter->begin(); }
+//   const_iterator end() const { return p_iter->end(); }
+//   const_reverse_iterator rbegin() const { return p_iter->rbegin(); }
+//   const_reverse_iterator rend() const { return p_iter->rend(); }
+
+//   size_type deg() const { return p_iter->deg(); }
+//   idx_type firstIndex() const { return p_iter->firstIndex(); }
+// protected:
+//   core_pointer p_iter;
+// };
+
+
+
+template <class NavigatorType>
+class CAbstractStackBase {
+public:
+  typedef NavigatorType navigator;
+
+  typedef CAbstractStackBase<NavigatorType> self;
+  typedef CTermStackBase<NavigatorType, self> iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+  virtual void increment() = 0;
+  virtual core_pointer copy() const = 0;
+
+  virtual ~CAbstractStackBase() {}
+};
+
+
+
+template <class StackType>
+class CWrappedStack:
+  public StackType {
+public:
+  typedef StackType base;
+  typedef CWrappedStack<StackType> self;
+
+  typedef typename base::navigator navigator;
+
+  typedef typename base::iterator_core iterator_core;
+  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
+
+  CWrappedStack(navigator navi): base(navi) {
+    base::init();
+  }
+  CWrappedStack(): base() {}
+  CWrappedStack(const self& rhs): StackType(rhs) {}
+
+
+  core_pointer copy() const {
+    return core_pointer(new self(*this));
+  }
+
+};
+
+
+template<class SequenceType>
+void get_term(BooleMonomial& monom, const SequenceType& seq) {
+
+  typename SequenceType::const_reverse_iterator start(seq.rbegin()), 
+    finish(seq.rend());
+
+  while (start != finish){
+    monom.changeAssign(*start);
+    ++start;
+  }
+}
+
+
+template<class SequenceType>
+void get_term(BooleExponent& termexp, const SequenceType& seq) {
+
+  termexp.reserve(seq.deg());
+  typename SequenceType::const_iterator start(seq.begin()), 
+    finish(seq.end());
+
+  while (start != finish){
+    termexp.push_back(*start);
+    ++start;
+  }
+}
+
+
+template<class SequenceType>
+void get_term(typename CTypes::size_type& termdeg, const SequenceType& seq) {
+
+  termdeg = seq.deg();
+}
 
 template <class NavigatorType, class MonomType>
-class CIndirectIter:
+class COrderedIter:
   public boost::iterator_facade<
-  CIndirectIter<NavigatorType, MonomType>,
-  MonomType, boost::forward_traversal_tag, MonomType
+  COrderedIter<NavigatorType, MonomType>,
+  MonomType, std::forward_iterator_tag, MonomType
   > {
 
 public:
 
-  typedef CIndirectIter<NavigatorType, MonomType> self;
-  typedef CAbstractIterCore<NavigatorType, MonomType> iterator_core;
+  typedef COrderedIter<NavigatorType, MonomType> self;
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef CTermStackBase<NavigatorType, stack_base> iterator_core;
+
 
   typedef typename iterator_core::const_iterator const_iterator;
   typedef typename iterator_core::const_reverse_iterator 
@@ -224,15 +314,15 @@ public:
 
   // Default Constructor
 
-  CIndirectIter(core_pointer rhs): p_iter(rhs) {}
+  COrderedIter(core_pointer rhs): p_iter(rhs) {}
 
 //   CIndirectIter(const self& rhs):
 //     p_iter(rhs.p_iter) {}
 
   // Destructor
-  ~CIndirectIter() {}
+  ~COrderedIter() {}
 
-  bool equal(const CIndirectIter& rhs) const { 
+  bool equal(const self& rhs) const { 
     return  p_iter->equal(*rhs.p_iter); }
 
   /// Incrementation
@@ -245,8 +335,13 @@ public:
     p_iter->increment(); 
   }
 
+
   /// Dereferencing operation
-  MonomType dereference() const {  return p_iter->dereference(); }
+  MonomType dereference() const { 
+    MonomType result;
+    get_term(result, *p_iter);
+    return result;
+  }
 
   const_iterator begin() const { return p_iter->begin(); }
   const_iterator end() const { return p_iter->end(); }
@@ -254,159 +349,73 @@ public:
   const_reverse_iterator rend() const { return p_iter->rend(); }
 
   size_type deg() const { return p_iter->deg(); }
-  idx_type firstIndex() const { return p_iter->firstIndex(); }
+  idx_type firstIndex() const { return *begin(); }
 protected:
   core_pointer p_iter;
 };
 
-#else
 
-template <class IteratorType, class MonomType>
-class CIndirectIter:
-  public boost::iterator_facade<
-  CIndirectIter<IteratorType, MonomType>,
-  MonomType, boost::forward_traversal_tag, MonomType
-  > {
+template <class OrderType, class NavigatorType> 
+struct CGenericOrderedIterType;
 
+template <class NavigatorType> 
+struct CGenericOrderedIterType<LexOrder, NavigatorType> {
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef CWrappedStack<
+    CTermStack<NavigatorType, std::forward_iterator_tag, stack_base> > type;
+};
+
+
+template <class NavigatorType> 
+struct CGenericOrderedIterType<DegLexOrder, NavigatorType> {
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef  CWrappedStack<
+    CDegTermStack<NavigatorType, valid_tag, 
+                        invalid_tag, stack_base> > type;
+};
+
+template <class NavigatorType> 
+struct CGenericOrderedIterType<DegRevLexAscOrder, NavigatorType> {
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef  CWrappedStack<
+    CDegTermStack<NavigatorType,  invalid_tag, 
+                        invalid_tag, stack_base> > type;
+};
+
+template <class NavigatorType> 
+struct CGenericOrderedIterType<BlockDegLexOrder, NavigatorType> {
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef CWrappedStack< CBlockTermStack<NavigatorType, valid_tag,
+  stack_base> > type; 
+};
+
+template <class NavigatorType> 
+struct CGenericOrderedIterType<BlockDegRevLexAscOrder, NavigatorType> {
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef  CWrappedStack<
+    CBlockTermStack<NavigatorType, invalid_tag, stack_base> > type;
+};
+
+template <class OrderType, class NavigatorType, class MonomType>
+class CGenericOrderedIter:
+  public COrderedIter<NavigatorType, MonomType> {
 public:
 
+  typedef typename CGenericOrderedIterType<OrderType, NavigatorType>::type
+  ordered_iter_type;
+  typedef COrderedIter<NavigatorType, MonomType> base;
+  typedef typename base::iterator_core iterator_core;
+  typedef typename base::core_pointer core_pointer;
 
-  typedef CAbstractIterCore<IteratorType, MonomType> iterator_core;
+
+  CGenericOrderedIter(NavigatorType navi): 
+    base( core_pointer(new ordered_iter_type(navi)) ) {}
+
+  CGenericOrderedIter(const CGenericOrderedIter& rhs): base(rhs) {}
+  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()) ) {}
 
 
-  /// Fix type of direct iterator
-  typedef IteratorType iterator_type;
- 
-  // Store shared pointer of iterator
-  typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
-
-  /// Extract plain Boolean type
-  typedef typename iterator_type::bool_type bool_type;
-
-  // Default Constructor
-
-  CIndirectIter(core_pointer rhs): p_iter(rhs) {}
-
-  CIndirectIter(const CIndirectIter& rhs):
-    p_iter(rhs.p_iter) {}
-
-  // Destructor
-  ~CIndirectIter() {}
-
-  bool equal(const CIndirectIter& rhs) const { 
-    return  p_iter->equal(*rhs.p_iter); }
-
-  /// Incrementation
-  void increment() {
-    if (!p_iter.unique()) {
-      core_pointer tmp(p_iter->copy());
-      p_iter = tmp;
-    }
-
-    p_iter->increment(); 
-  }
-
-  /// Dereferencing operation
-  MonomType dereference() const { return p_iter->dereference(); }
-
-protected:
-  core_pointer p_iter;
 };
-#endif 
-#if 0
-template<class MonomType>
-class COrderedIter {
-
-public:
-  //  typedef BoolePolyRing::manager_type 
-
-  typedef OrderedManagerBase<Cudd> manager_type;
-
-  /// Fix type for polynomials
-  typedef BoolePolynomial poly_type;
-
-  /// Fix type for sizes
-  typedef typename poly_type::size_type size_type;
-
-  /// Fix type for Boolean values
-  typedef typename poly_type::bool_type bool_type;
-
-  /// Fix type for decision diagram navigations
-  typedef typename poly_type::navigator navigator;
-
-  /// Fix type for monomials
-  // typedef  poly_type::monom_type monom_type;
-  typedef MonomType monom_type;
-
-  /// Set type for terms
-  typedef monom_type term_type;
-
-  /// Fix type for (bidirectional) iterating over terms
-  typedef poly_type::bidirectional_iterator iterator;
-
-  /// @name Interface types for standard iterator access
-  //@{
-  typedef term_type value_type;
-  typedef std::forward_iterator_tag iterator_category;
-  typedef typename iterator::difference_type difference_type;
-  typedef void pointer;
-  typedef value_type reference;
-  //@}
-
-  /// Get type, this is inherited from
-  typedef CDelayedTermIter<monom_type, 
-                           change_assign<monom_type>, project_ith<2>, 
-                           iterator> delayed_term_iterator;
-
-  /// Generic access to type of *this
-  typedef COrderedIter self;
-
-  // Constructor
-  COrderedIter(const poly_type& poly): 
-    m_mgr(BoolePolyRing::activeManager()),
-    m_iter(BoolePolyRing::activeManager().leadIterator(poly)), 
-    m_poly(poly) {
-
-  }
-  // Constructor
-  COrderedIter(): 
-    m_mgr(BoolePolyRing::activeManager()),
-    m_iter(), m_poly() {
-
-  }
-  /// Constant dereference operator
-  reference operator*() const {
-    return delayed_term_iterator(m_iter).term();
-  }
-
-  /// Prefix increment operator
-  self& operator++() {
-    m_iter = m_mgr.incrementIterator(m_iter, m_poly);
-    return *this; 
-  }
-
-  self operator++(int) {
-    self result(*this);
-    operator++();
-    return result;
-  }
-
-
-  bool_type operator!=(const self& rhs) const {
-    return (m_iter != rhs.m_iter);
-  }
-
-  bool_type operator==(const self& rhs) const {
-    return (m_iter == rhs.m_iter);
-  }
-
-private:
-  iterator m_iter;
-  poly_type m_poly;
-  const manager_type& m_mgr;
-};
-#endif
-
 
 END_NAMESPACE_PBORI
 

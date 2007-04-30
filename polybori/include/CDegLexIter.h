@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/04/30 15:20:30  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.3  2006/09/08 14:31:38  dreyer
  * ADD: COrderedIter and infrastructure for order-dependent iterator
  *
@@ -47,7 +50,7 @@
 #define CDegLexIter_h_
 
 BEGIN_NAMESPACE_PBORI
-
+#if 0
 template<class PolyType, class PolyDegIter = typename PolyType::deg_iterator>
 class CDegLexIter {
 
@@ -140,7 +143,7 @@ private:
   delayed_term_iterator m_iter, m_start, m_finish;
 };
 
-
+#endif
 
 END_NAMESPACE_PBORI
 

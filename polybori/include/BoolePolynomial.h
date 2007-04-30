@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.67  2007/04/30 15:20:30  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.66  2007/04/27 21:20:04  dreyer
  * CHANGE: testing exponent iterator
  *
@@ -267,10 +270,13 @@ class BlockDegRevLexAscOrder;
 
 class BooleMonomial;
 class BooleExponent;
-template<class> class COrderedIter;
+
 
 template <class IteratorType, class MonomType>
 class CIndirectIter;
+
+template <class IteratorType, class MonomType>
+class COrderedIter;
 
 
 //template<class, class, class, class> class CGenericIter;
@@ -281,6 +287,8 @@ class CGenericIter;
 
 template<class NavigatorType, class ExpType>
 class CExpIter;
+template<class NavigatorType, class ExpType>
+class CGenericIter2;
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
@@ -350,11 +358,11 @@ public:
 
   /// Iterator type for iterating over all exponents in ordering order
   //  typedef COrderedIter<exp_type> ordered_exp_iterator;
-  typedef CIndirectIter<navigator, exp_type> ordered_exp_iterator;
+  typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
 
   /// Iterator type for iterating over all monomials in ordering order
   //  typedef COrderedIter<monom_type> ordered_iterator;
-  typedef CIndirectIter<navigator, monom_type> ordered_iterator;
+  typedef COrderedIter<navigator, monom_type> ordered_iterator;
 
   /// @name Generic iterators for various orderings
   //@{
@@ -378,51 +386,14 @@ public:
   block_dp_asc_exp_iterator;
   //@}
 
-  /// Bidirectional iterator type (dereferencing to degree)
-  typedef CBidirectTermIter<size_type, navigator, 
-                            increment_type, decrement_type,
-                            integral_constant<size_type, 0> >
-  bidirectional_iterator;
-
-
-
-
-
   /// Iterator type for iterating over all monomials
-  //  typedef lex_iterator const_iterator;
-  typedef CTermIter<monom_type, navigator,
-                    change_assign<>,
-                    change_assign<> >
-  const_iterator;
+  typedef lex_iterator const_iterator;
 
   /// Iterator type for iterating all exponent vectors 
-   //   typedef lex_exp_iterator exp_iterator;
-//    typedef CTermIter<exp_type, navigator,
-//                      inserts<>,
-//                      removes<>, project_ith<1> >
-//    exp_iterator;
-   typedef CExpIter<navigator, exp_type> exp_iterator;
+  typedef CExpIter<navigator, exp_type> exp_iterator;
 
   /// Iterator type for iterating all monomials (dereferencing to degree)
-  typedef CTermIter<size_type, navigator, 
-                    increment_type, decrement_type,
-                    integral_constant<size_type, 0> >
-  deg_iterator;
-
-  /// Iterator type, which extends deg_iterator with function term()
-//   typedef CDelayedTermIter<monom_type, 
-//                            change_assign<>, project_ith<2>, 
-//                            deg_iterator> delayed_iterator;
-
-
-
-  //typedef CDelayedTermIter<monom_type, 
-  //                         change_assign<>, project_ith<2>, 
-  //                         deg_iterator> delayed_iterator;
-
-//   typedef CDelayedTermIter<monom_type, 
-//                            change_assign<>, project_ith<2>, 
-//                            bidirectional_iterator> delayed_bi_iterator;
+  typedef CGenericIter<LexOrder, navigator, size_type> deg_iterator;
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;

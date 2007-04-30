@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/04/30 15:20:32  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.14  2007/04/24 11:46:18  dreyer
  * CHANGE: code clean up
  *
@@ -247,20 +250,7 @@ main(){
     BoolePolynomial poly = (z + v*w) * (x*z) + y;
 
     std::cout << "poly:  "<<std::endl;
-    //    std::cout << poly <<std::endl;
-    std::cout << "boolset:  "<<BooleSet(poly)<<std::endl;
-    std::cout << *poly.orderedBegin() <<std::endl;
-    std::cout << (*poly.orderedBegin()).exp() <<std::endl;
-    BooleMonomial one(true);
-    std::cout << "one: "<<one<<std::endl;
-    one.changeAssign(0);
-    std::cout << "changed: "<<BooleSet(one.diagram())<<std::endl;
-
-    std::cout << "fertig: "<<std::endl;
-
-    return 0;
-
-
+    std::cout << poly <<std::endl;
 
 
     std::cout << "Navigation: "<<std::endl;

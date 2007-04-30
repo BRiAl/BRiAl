@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/04/30 15:20:31  dreyer
+ * CHANGE: Switching from CTermIter to iterators based on CTermStack
+ *
  * Revision 1.2  2007/04/19 09:52:08  dreyer
  * FIX: block dp_asc index comparison
  *
@@ -147,40 +150,32 @@ BlockDegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
   return leadExp(poly);
 }
 
-
-// Initialize iterator corresponding to leading term
-BlockDegRevLexAscOrder::iterator
-BlockDegRevLexAscOrder::leadIterator(const poly_type& poly) const {
-
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIterator(const poly_type& poly) const" );
-
-  return iterator();//generic_iteration<self, iterator>().leadIterator(poly);  
-}
-
 // Initialize iterator corresponding to leading term
 BlockDegRevLexAscOrder::indirect_iterator
 BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const" );
 
-  typedef CGenericCore<self, navigator, monom_type>
-    iterator_core; 
-  typedef CAbstractIterCore<navigator, monom_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, monom_type>
+//     iterator_core; 
+//   typedef CAbstractIterCore<navigator, monom_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_iterator(core_pointer(new iterator_core(poly)));
+//   return indirect_iterator(core_pointer(new iterator_core(poly)));
+  return CGenericOrderedIter<self, navigator, monom_type>(poly.navigation());
 }
 
 BlockDegRevLexAscOrder::indirect_iterator
 BlockDegRevLexAscOrder::leadIteratorEnd() const {
 
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIteratorEnd() const" );
-  typedef CGenericCore<self, navigator, monom_type>
-    iterator_core; 
-  typedef CAbstractIterCore<navigator, monom_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIteratorEnd() const" );
+//   typedef CGenericCore<self, navigator, monom_type>
+//     iterator_core; 
+//   typedef CAbstractIterCore<navigator, monom_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_iterator(core_pointer(new iterator_core()));
+//   return indirect_iterator(core_pointer(new iterator_core()));
+  return CGenericOrderedIter<self, navigator, monom_type>();
 }
 
 // Initialize iterator corresponding to leading term
@@ -189,11 +184,12 @@ BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const" );
 
-  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
-  typedef CAbstractIterCore<navigator, exp_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+//   typedef CAbstractIterCore<navigator, exp_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+//   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation());
 }
 
 BlockDegRevLexAscOrder::indirect_exp_iterator
@@ -201,21 +197,13 @@ BlockDegRevLexAscOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadExpIteratorEnd() const" );
 
-  typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
-  typedef CAbstractIterCore<navigator, exp_type> base_core;
-  typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
+//   typedef CAbstractIterCore<navigator, exp_type> base_core;
+//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-  return indirect_exp_iterator(core_pointer(new iterator_core()));
+//   return indirect_exp_iterator(core_pointer(new iterator_core()));
+  return CGenericOrderedIter<self, navigator, exp_type>();
 }
 
-// Find next term (after iter) in polynomial according to current order
-BlockDegRevLexAscOrder::iterator
-BlockDegRevLexAscOrder::incrementIterator(iterator iter, const poly_type& poly) const {
-
-  PBORI_TRACE_FUNC(
-    "BlockDegRevLexAscOrder::incrementIterator(iterator, const poly_type&) const" );
-
- return iterator();//generic_iteration<self, iterator>().incrementIterator(iter, poly);
-}
 
 END_NAMESPACE_PBORI
