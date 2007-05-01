@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2007/05/01 06:55:15  bricken
+ * + candidate for lead
+ *
  * Revision 1.25  2006/12/14 13:48:04  dreyer
  * FIX: Slowdown on sculptor, due to unnecessary return + copy
  *
@@ -529,8 +532,14 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
 
   // Go to next branch
   if ( max_degree_on_then(deg_mgr, navi, degree, prop) ) {
-    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, navi.thenBranch(), 
-                                    init, degree - 1, prop).change(*navi);
+    NaviType then_branch=navi.thenBranch();
+    init = dd_recursive_degree_lead(cache_mgr, deg_mgr, then_branch, 
+        init, degree - 1, prop);
+    if  ((navi.elseBranch().isEmpty())&& (init.navigation()==then_branch))
+        init=navi;
+    else
+      init=init.change(*navi);
+                                    
   }
   else {
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, navi.elseBranch(), 
