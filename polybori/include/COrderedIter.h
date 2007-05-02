@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CDegLexIter.h
+/** @file COrderedIter.h
  *
  * @author Alexander Dreyer
  * @date 2006-09-06
@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/05/02 14:27:43  dreyer
+ * FIX: typo in docu
+ *
  * Revision 1.14  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
