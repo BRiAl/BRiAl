@@ -11,6 +11,7 @@
 #include "monomial_wrapper.h"
 #include "set_wrapper.h"
 #include "out_helper.h"
+#include "test_util.h"
 using namespace boost::python;
 using namespace std;
 
@@ -31,6 +32,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_dd();
   export_poly();
   export_nav();
+  export_test_util();
   enum_<COrderEnums::ordercodes>("OrderCode")
     .value("lp", COrderEnums::lp)
     .value("dlex", COrderEnums::dlex)
