@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/05/03 16:04:45  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.19  2007/04/24 15:23:03  dreyer
  * FIX: minor changes fixing -Wall warnings
  *
@@ -80,9 +83,6 @@
 **/
 //*****************************************************************************
 
-// get standard header
-#include <stack>
-
 // include basic definitions
 #include "pbori_defs.h"
 
@@ -92,38 +92,15 @@
 // include polybori properties
 #include "pbori_traits.h"
 
+
+// include boost's interator facade
+#include <boost/iterator/iterator_facade.hpp>
+
+
 #ifndef CTermIter_h_
 #define CTermIter_h_
 
 BEGIN_NAMESPACE_PBORI
-
-
-template <class _Tp, class _Sequence = std::deque<_Tp> >
-class dstack {
-
-  typedef typename _Sequence::value_type _Sequence_value_type;
-
-public:
-  typedef typename _Sequence::value_type      value_type;
-  typedef typename _Sequence::size_type       size_type;
-  typedef          _Sequence                  container_type;
-
-  typedef typename _Sequence::reference       reference;
-  typedef typename _Sequence::const_reference const_reference;
-protected:
-  _Sequence c;
-public:
-  dstack() : c() {}
-  explicit dstack(const _Sequence& __s) : c(__s) {}
-
-  bool empty() const { return c.empty(); }
-  size_type size() const { return c.size(); }
-  reference top() { return c.back(); }
-  const_reference top() const { return c.back(); }
-  void push(const value_type& __x) { c.push_back(__x); }
-  void pop() { c.pop_back(); }
-  const_reference bottom() const {  return c.front();  }
-};
 
 
 /** @class CTermIter
@@ -132,247 +109,100 @@ public:
  *
  **/
 
-template <class TermType, class NavigatorType, 
-          class ForwardOp, class BackwardOp, 
-          class TerminalValueOp = project_ith<2>,
-          class ElseHandler = project_ith<0> >
-class CTermIter {
+template <class StackType, class TermGeneratorType>
+class CTermIter: 
+  public boost::iterator_facade<
+  CTermIter<StackType, TermGeneratorType>,
+  typename TermGeneratorType::value_type,
+  typename StackType::iterator_category, 
+  typename TermGeneratorType::result_type
+  > {
 
 public:
 
-  /// Type for boolean results
-  typedef TermType term_type;
+  /// Define type for storing current path (term) in stack of nodes 
+  typedef StackType stack_type;
+  
+  /// Get type of navigators
+  typedef typename stack_type::navigator navigator;
 
   /// Type for indices
-  typedef typename pbori_traits<term_type>::idx_type idx_type;
-
-  /// Type for hashing
-  typedef typename pbori_traits<term_type>::hash_type hash_type;
+  typedef typename navigator::idx_type idx_type;
 
   /// Type for Boolean results
-  typedef typename pbori_traits<term_type>::bool_type bool_type;
+  typedef typename navigator::bool_type bool_type;
 
   /// Type for lengths
-  typedef typename pbori_traits<term_type>::size_type size_type;
+  typedef typename navigator::size_type size_type;
 
-  /// Get type of navigators
-  typedef NavigatorType navigator_type;
-  typedef navigator_type navigator;
+  /// Type for functional, which generates actual term, for current path
+  typedef TermGeneratorType term_generator;
 
-  /// Get operational, which changes the current term on forward steps
-  typedef ForwardOp forwardop_type;
-
-   /// Get operational, which changes the current term on backward steps
-  typedef BackwardOp backwardop_type;
-
-  /// Get operational, which generates terminal value corresponding to Boolean
-  typedef TerminalValueOp termvalop_type;
-
-  /// Get operational, which handles else branches (ignored by default)
-  typedef ElseHandler elsehandle_type;
-
-  /// Return type of dereferencing operator
-  typedef term_type value_type;
-
-  /// Get type of *this
-  typedef CTermIter<term_type, navigator_type, 
-                    forwardop_type, backwardop_type, termvalop_type,
-                    elsehandle_type> self;
-
-  /// @name Interface types for standard iterator access
+  /// @name Iterators over current term (without explicite construction)
   //@{
-  typedef std::forward_iterator_tag iterator_category;
-  typedef typename std::iterator_traits<navigator_type>::difference_type 
-  difference_type;
-  typedef void pointer;
-  typedef const value_type reference;
+  typedef typename stack_type::const_iterator const_iterator;
+  typedef typename stack_type::const_reverse_iterator 
+  const_reverse_iterator;
   //@}
 
-  /// Define type for stacking
-  //  typedef std::stack<navigator_type> stack_type;
-  typedef dstack<navigator_type> stack_type;
-
-  /// result type of top()
-  typedef typename stack_type::value_type top_type;
-
-  /// Default constructor
-  CTermIter(): 
-    m_stack(), m_value( termvalop_type()(value_type(), false) ), 
-    forwardop(), backwardop(), termvalop(), handleElse() { 
+  /// Copy constructor
+  CTermIter(const CTermIter& rhs): 
+    m_stack(rhs.m_stack), m_getTerm(rhs.m_getTerm) {
   }
 
-  /// Construct from initial navigator
-  CTermIter(navigator_type navi, 
-            forwardop_type fop_ = forwardop_type(), 
-            backwardop_type bop_ = backwardop_type(), 
-            termvalop_type tvop_ = termvalop_type() ):
-    m_stack(), m_value(),  forwardop(fop_), backwardop(bop_), 
-    termvalop(tvop_), handleElse()   {
-
-    if (navi.isValid()){
-      followThen(navi);
-      terminate(navi);
-    }
-    else 
-      m_value = termvalop(m_value, false);
+  /// Construct from navigator over decision diagram
+  CTermIter(navigator navi, term_generator get_term = term_generator()): 
+    m_stack(navi), m_getTerm(get_term) { 
+    m_stack.init(); 
   }
 
-  /// Copy Constructor
-  CTermIter(const self& rhs):
-    m_stack(rhs.m_stack), m_value(rhs.m_value),  
-    forwardop(rhs.forwardop), backwardop(rhs.backwardop),
-    termvalop(rhs.termvalop), handleElse(rhs.handleElse)  {};
+  ///  Default constructor   
+  CTermIter(): m_stack(), m_getTerm() {}
 
   /// Destructor
-  ~CTermIter() {};
+  ~CTermIter() {}
 
-  /// Constant dereference operator
-  reference operator*() const { return m_value; }
-
-  /// Equality test (assume iterators from same instance)
-  bool_type operator==(const self& rhs) const {
-    if(empty() || rhs.empty())
-      return (empty() && rhs.empty());
-    else
-      return top() == rhs.top(); 
+  /// Incrementation operation
+  void increment() {
+    m_stack.increment();
   }
 
-  /// Nonequality test
-  bool_type operator!=(const self& rhs) const { return !(*this == rhs);  }
+  /// Equality test
+  bool_type equal (const CTermIter& rhs) const {
+     return m_stack.equal(rhs.m_stack);
+  }
 
-  /// Get element on stack
-  const top_type& top() const { return m_stack.top(); }
+  /// Dereferencing of the iterator
+  typename term_generator::result_type dereference() const {
+    return m_getTerm(m_stack);
+  }
 
-  /// Get element on stack
-  top_type& top() { return m_stack.top(); }
+  /// @name Interface for iteration over term without constructing
+  //@{
+  const_iterator begin() const { return m_stack.begin(); }
+  const_iterator end() const { return m_stack.end(); }
+  const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
+  const_reverse_iterator rend() const { return m_stack.rend(); }
+  //@}
 
   /// Get degree of current term
-  size_type deg() const { 
+  size_type deg() const { return m_stack.deg(); }
 
-    if(top().isValid())
-      return m_stack.size();
-    else 
-      return 0;
-  }
-
-  /// Get first index
+  /// Get first index of current term 
   idx_type firstIndex() const { 
-    assert(!empty());
-    return *(m_stack.bottom()); 
+    assert(!m_stack.empty()); 
+    return *begin(); 
   }
-
-  /// Check whether stack is empty
-  bool empty() const { return m_stack.empty(); }
-
-  /// Prefix increment operator
-  self& operator++() {
-   
-    if (!empty()){              //  Iterations not finished yet
-      navigator_type navi = top();
-      if ( !navi.isValid() ){   //  Case: final iteration
-        clear();        //  reset value
-      }
-      else {
-        // Go back to begin of next path
-        nextElse(navi);
-      
-        if( !terminate(navi) ) {
-          while( !m_stack.empty() && navi.isConstant() && 
-                 !navi.terminalValue() ){
-            navi = top();
-            nextElse(navi);
-          }
-
-          // Find end of current path
-          followThen(navi);
-        }
-        terminate(navi);
-      }
-    }
-    return *this;
-  }
-
-  /// Postfix increment operator
-  self operator++(int) { 
-    self tmp(*this); 
-    operator++(); 
-    return tmp;
-  };
 
 protected:
+  /// The functional which defines the dereferecing operation
+  term_generator m_getTerm;
 
-  void followThen(navigator_type& navi) {
-    while(!navi.isConstant()){
-      m_stack.push(navi);
-      m_value = forwardop(m_value, *navi);
-      navi.incrementThen(); 
-    }
-  }
-
-  void nextElse(navigator_type& navi) {
-    m_value = backwardop(m_value, *navi);
-
-    handleElse(navi);
-
-    m_stack.pop();
-    navi.incrementElse();
-  }
-
-  void nextThen(navigator_type& navi) {
-    m_stack.push(navi);
-    m_value = forwardop(m_value, *navi);
-    navi.incrementThen();
-  }
-
-  bool terminate(const navigator_type& navi) {
-    if ( m_stack.empty() && navi.isConstant() ) { // Constant monomial
-
-      if (navi.terminalValue()) { // Case: Monomial one
-        m_value = termvalop(m_value, true);
-        m_stack.push(navigator_type()); // One more iteration for showing 1
-      }
-      else                      // Case: Monomial zero
-        clear();
-
-      return true;
-    }
-    return false;
-  }
-
-  void clear() {
-    m_value = termvalop(m_value, false);
-    m_stack = stack_type();
-    handleElse = elsehandle_type();
-  }
-
-  const stack_type& getStack() const { return m_stack; }
-
-  void popToIndex(idx_type idx) {
-
-    if(top().isValid())
-      while(!m_stack.empty() && (*m_stack.top() >=  idx) ) {
-        m_value = backwardop(m_value, *m_stack.top());
-        m_stack.pop();
-      }
-    else
-      m_stack.pop(); 
-  }
-
-
-private: // Change? 
-protected:
-  /// @todo: change to private, temporarily, e.g. for block iteration
-public:
+  /// The stack, which carries the current path
   stack_type m_stack;
-  value_type m_value;
-  forwardop_type forwardop;
-  backwardop_type backwardop;
-  termvalop_type termvalop;
-
-  /// Handle else-branches (for bidirectional iterators; ignored by default)
-  elsehandle_type handleElse;
 };
 
 END_NAMESPACE_PBORI
 
 #endif
+

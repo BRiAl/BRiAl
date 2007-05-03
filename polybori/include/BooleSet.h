@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/05/03 16:04:45  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.22  2006/12/07 08:22:52  dreyer
  * ADD/CHANGE: Lowlevel variant of existAbstract
  *
@@ -98,8 +101,7 @@
 
 // include polybori functionals
 #include "pbori_func.h"
-// include polybori iterator
-#include "CTermIter.h"
+
 
 
 #ifndef BooleSet_h_
@@ -110,6 +112,14 @@ BEGIN_NAMESPACE_PBORI
 /// Forward declaration of monomial type
 class BooleMonomial;
 class BooleExponent;
+
+template<class OrderType, class NavigatorType, class MonomType>
+class CGenericIter;
+// temporarily
+class LexOrder;
+
+//template<class OrderType, class NavigatorType, class MonomType>
+//class CGenericIter;
 
 class BooleSet:
   public CTypes::dd_type {
@@ -128,16 +138,18 @@ public:
   typedef BooleExponent exp_type; 
 
   /// Iterator type for iterating all monomials
-  typedef CTermIter<term_type, navigator, 
-                    change_assign<>,
-                    change_assign<> >
-  const_iterator;
+//   typedef CTermIter<term_type, navigator, 
+//                     change_assign<>,
+//                     change_assign<> >
+//   const_iterator;
+  typedef CGenericIter<LexOrder, navigator, term_type> const_iterator;
 
   /// Iterator type for iterating all exponent vectors 
-  typedef CTermIter<exp_type, navigator, 
-                    inserts<>, 
-                    removes<>, project_ith<1> >
-  exp_iterator;
+  typedef CGenericIter<LexOrder, navigator, exp_type> exp_iterator;
+//  typedef CTermIter<exp_type, navigator, 
+//                     inserts<>, 
+//                     removes<>, project_ith<1> >
+//   exp_iterator;
 
   /// Default constructor
   BooleSet();

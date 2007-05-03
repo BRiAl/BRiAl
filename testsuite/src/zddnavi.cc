@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/05/03 16:04:47  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.15  2007/04/30 15:20:32  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -155,16 +158,12 @@ operator<<(std::ostream& os, const variables_list& varlist) {
   return os;
 }
 
-#include "CBidirectTermIter.h"
+
 
 void testiter(const BoolePolynomial& poly) {
-
-
-  typedef CBidirectTermIter<BoolePolynomial::monom_type, 
-    BoolePolynomial::navigator, 
-                    change_assign<>, 
-                    change_assign<> >
-  const_iterator;
+    std::cout << "TEMPORARILY OUT OF ORDER"<<std::endl;
+#if 0
+  typedef BoolePolynomial::const_iterator const_iterator;
 
     const_iterator start(poly.navigation()), finish;
 
@@ -225,6 +224,8 @@ void testiter(const BoolePolynomial& poly) {
     ++start;
     std::cout << "++ "<<std::endl;
     std::cout << "*iter "<< *start<<std::endl;
+
+#endif
 }
 
 
@@ -304,10 +305,7 @@ main(){
 
     std::cout <<std::endl <<std::endl<<"Test Term iteration "<<std::endl;
 
-    typedef CTermIter<BooleMonomial, CCuddNavigator, 
-      change_assign<BooleMonomial>, change_assign<BooleMonomial> >
-      term_iterator;
-
+    typedef BoolePolynomial::const_iterator term_iterator;
        poly += x*z*w;
     std::cout << poly <<std::endl;
     term_iterator iter(poly.navigation());
@@ -356,9 +354,10 @@ main(){
     iter = poly.navigation();
 
     std::cout << *iter <<std::endl;
-    ++iter;
+    /* ++iter;
 
     std::cout << *iter <<std::endl;
+    */
     std::cout << std::endl<< "Testing last term" <<std::endl;
     poly = x*y + x*w;
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/05/03 16:04:45  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.13  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -373,6 +376,7 @@ public:
 
   /// Defining a type for simple stacking of term elements
   typedef CTermStack<NavigatorType, Category, internal_tag> purestack_type;
+  typedef Category iterator_category;
 
   typedef typename base::navigator navigator;
   typedef typename on_same_type<Category, std::forward_iterator_tag, 

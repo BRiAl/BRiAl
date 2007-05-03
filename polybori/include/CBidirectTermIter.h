@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/05/03 16:04:45  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.4  2007/04/18 15:37:28  dreyer
  * ADD: dp_asc now active
  *
@@ -44,6 +47,7 @@
 
 // Get forward term iterator
 #include "CTermIter.h"
+
 
 #ifndef CBidirectTermIter_h_
 #define CBidirectTermIter_h_
@@ -76,6 +80,7 @@ public:
   }
 };
 
+#if 0
 /** @class CBidirectTermIter
  * @brief This class defines an iterator for the monomials in a Boolean
  * polynomial.
@@ -209,6 +214,8 @@ protected:
   }
 
 };
+
+#endif
 
 END_NAMESPACE_PBORI
 

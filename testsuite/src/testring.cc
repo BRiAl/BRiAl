@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.24  2007/05/03 16:04:47  dreyer
+// CHANGE: new-style CTermIter integrated
+//
 // Revision 1.23  2007/04/30 15:20:32  dreyer
 // CHANGE: Switching from CTermIter to iterators based on CTermStack
 //
@@ -319,9 +322,10 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
 
 template<class Iterator>
 void print_iter(Iterator start, Iterator end) {
+
   int i = 0;
   while ((start != end)&& (i < 10)){
-    std::cout << *start << ", ";
+    std::cout << *start << ", ";std::cout.flush();
     ++start;
     ++i;
   }
@@ -513,6 +517,8 @@ main(){
   std::cout<< std::endl << "Testing hard-coded iteration for " <<poly<<
   std::endl; 
   std::cout<< "lex"<<std::endl;
+
+
   print_iter(poly.genericBegin(lex_tag()), poly.genericEnd(lex_tag()) );
   
   std::cout<< "dlex"<<std::endl;

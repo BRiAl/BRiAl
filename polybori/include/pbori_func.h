@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/05/03 16:04:46  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.35  2006/10/27 16:24:54  dreyer
  * ADD: some maybe useful stuff
  *
@@ -989,6 +992,14 @@ public:
 private:
   const map_type& m_map;
 };
+
+
+/** @class get_base
+ *  @brief Declaration, which can be used to define base classes for
+ *  inheritance of classes in advance.
+ **/
+template <class NewType>
+struct pbori_base;
 
 END_NAMESPACE_PBORI
 

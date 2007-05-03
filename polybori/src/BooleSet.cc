@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/05/03 16:04:46  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.30  2006/12/07 13:54:33  dreyer
  * CHANGE: fine-tuning
  *
@@ -136,6 +139,9 @@
 # include "pbori_routines.h"
 # include "CDDOperations.h"
 # include "CCacheManagement.h"
+
+// include polybori iterator
+#include "CGenericIter.h"
 
 BEGIN_NAMESPACE_PBORI
 

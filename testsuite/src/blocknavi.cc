@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/05/03 16:04:46  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.12  2007/04/30 15:20:32  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -297,30 +300,9 @@ main(){
       decrement_type;
     typedef BoolePolynomial::navigator navigator;
     // Iterator type for iterating all monomials (dereferencing to degree)
-    typedef CTermIter<size_type, navigator, 
-      increment_type, decrement_type,
-      integral_constant<size_type, 0> >
-      deg_iterator;
-
-    typedef BooleMonomial monom_type;
-    // Iterator type, which extends deg_iterator with function term()
-    typedef CDelayedTermIter<monom_type, 
-      change_assign<>, project_ith<2>, 
-      deg_iterator> delayed_iterator;
 
 
-#if 0    
-    CBlockIterator<delayed_iterator> biter(poly.navigation(), next_block,
-    blockDegCache);
-    /**/
-    delayed_iterator bstop;
-    while (biter != bstop) {
-      biter.print();
-      std::cout << " "<<  biter.term() <<std::endl;
-      ++biter;
-    }
-    /**/
-#endif
+
     BoolePolynomial::ordered_iterator obegin(poly.orderedBegin()),
     oend(poly.orderedEnd());
 

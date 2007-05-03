@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2007/05/03 16:04:46  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.27  2006/12/14 16:08:19  dreyer
  * FIX: forgotten typename
  *
@@ -388,6 +391,7 @@ limited_distance(IteratorType start, IteratorType finish, SizeType limit) {
   return result;
 }
 
+#if 0
 // Forward declaration of CTermIter template
 template <class, class, class, class, class, class> class CTermIter;
 
@@ -404,6 +408,7 @@ limited_length(NaviType navi, SizeType limit) {
 
   return limited_distance(iterator(navi), iterator(), limit);
 }
+#endif
 
 /// A first version
 /// Function templates extracting minimal elements of dd wrt. inclusion

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/05/03 16:04:46  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.7  2006/10/04 13:09:56  dreyer
  * ADD: added compile-time optimied iterators and genericBegin/genericEnd
  *
@@ -57,5 +60,5 @@
 #include "PBoRiError.h"
 
 #include "CGenericIter.h"
-
+#include "CExpIter.h"
 #endif // of #ifndef polybori_h_

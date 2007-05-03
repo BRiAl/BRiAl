@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.68  2007/05/03 16:04:45  dreyer
+ * CHANGE: new-style CTermIter integrated
+ *
  * Revision 1.67  2007/04/30 15:20:30  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -257,6 +260,7 @@
 #include "pbori_tags.h"
 #include "BooleSet.h"
 
+#include "CTermIter.h"
 
 BEGIN_NAMESPACE_PBORI
 
