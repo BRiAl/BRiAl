@@ -5,7 +5,8 @@
  * @author Alexander Dreyer
  * @date 2007-05-03
  *
- * 
+ * This file defines the template class CStackSelector, whose only use is to
+ * generate the correct (term-)stack type for a given ordering.
  *
  * @par Copyright:
  *   (c) 2007 by
@@ -19,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/05/03 16:09:06  dreyer
+ * ADD: file description
+ *
  * Revision 1.1  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
