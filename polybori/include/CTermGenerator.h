@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/05/04 15:52:06  dreyer
+ * CHANGE: temporarily deactivated get_tail_term
+ *
  * Revision 1.3  2007/05/04 15:26:27  dreyer
  * CHANGE: Optimized version for monomial term generation
  *
@@ -50,8 +53,8 @@ BEGIN_NAMESPACE_PBORI
 template <class TermType, class BehaviourTag = type_tag<TermType> >
 class CTermGeneratorBase;
 
-template <class TermType, class BehaviourTag>
-class CTermGeneratorBase {
+template <class TermType>
+class CTermGeneratorBase<TermType, type_tag<BooleMonomial> >{
 
 public:
   typedef TermType value_type;
@@ -84,8 +87,16 @@ public:
   result_type operator()(const SequenceType& seq) const{
 
     value_type result;
-    get_tail_term(result, seq.tail(), seq.rend());
+    //    get_tail_term(result, seq.tail(), seq.rend());
 
+    typename SequenceType::const_reverse_iterator 
+      start(seq.rbegin()), finish(seq.rend());
+
+    while (start != finish){
+      result.changeAssign(*start);
+      ++start;
+    }
+    
     return result;
   }
 };
