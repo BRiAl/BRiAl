@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/05/04 15:26:27  dreyer
+ * CHANGE: Optimized version for monomial term generation
+ *
  * Revision 1.2  2007/05/04 08:34:54  dreyer
  * Fix: Slowdown removed (due to wrong variable order in CTermGeneratorBase
  *
@@ -35,6 +38,8 @@
 
 // include polybori functionals
 #include "pbori_func.h"
+
+#include "BooleSet.h"
 
 #ifndef CTermGenerator_h_
 #define CTermGenerator_h_
@@ -52,17 +57,35 @@ public:
   typedef TermType value_type;
   typedef value_type result_type;
 
-  template <class SequenceType>
-  result_type operator()(const SequenceType& seq) const{
 
-    value_type result(true);
-    typename SequenceType::const_reverse_iterator 
-      start(seq.rbegin()), finish(seq.rend());
+  template <class ResultType,  class Iterator>
+  void get_tail_term__(ResultType& result, 
+                       Iterator start, Iterator finish) const {
+    
     
     while (start != finish){
       result.changeAssign(*start);
       ++start;
     }
+    
+  }
+  
+  template <class ResultType, class PairType, class Iterator>
+  void get_tail_term(ResultType& result, 
+                     const PairType& both, Iterator finish) const {
+    
+    result = BooleSet(both.first);
+    get_tail_term__(result, both.second, finish);
+    
+  }
+
+
+  template <class SequenceType>
+  result_type operator()(const SequenceType& seq) const{
+
+    value_type result;
+    get_tail_term(result, seq.tail(), seq.rend());
+
     return result;
   }
 };

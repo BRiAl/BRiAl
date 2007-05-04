@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/05/04 15:26:27  dreyer
+ * CHANGE: Optimized version for monomial term generation
+ *
  * Revision 1.22  2006/12/04 12:48:16  dreyer
  * CHANGE: cached and recursive lead() and leadexp() refined, generalized
  *
@@ -124,6 +127,7 @@ class BooleMonomial {
  public:
   template <class, class> friend class CDDOperations;
   friend class COrderBase;
+  template <class, class> friend class CTermGeneratorBase;
 
   //-------------------------------------------------------------------------
   // types definitions

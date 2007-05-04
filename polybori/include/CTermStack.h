@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/05/04 15:26:27  dreyer
+ * CHANGE: Optimized version for monomial term generation
+ *
  * Revision 1.14  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -68,6 +71,7 @@
 // get standard header
 #include <stack>
 #include <iterator>
+#include <utility> // for std::pair
 
 // include basic definitions
 #include "pbori_defs.h"
@@ -175,8 +179,7 @@ class CTermStackBase:
 
 public:
 
-  template <class NavigatorType2, class BaseType2> 
-  friend class CTermStackBase;
+  template <class, class> friend class CTermStackBase;
 
   typedef CTermStackBase<NavigatorType, BaseType> self;
 
@@ -202,6 +205,10 @@ public:
                                    typename navigator::reference>
   const_iterator;
 
+  typedef typename stack_type::const_iterator stack_iterator;
+
+  typedef typename stack_type::const_reverse_iterator stack_reverse_iterator;
+
   typedef boost::indirect_iterator<typename stack_type::const_reverse_iterator,
                                    typename navigator::value_type, 
                                    boost::use_default, 
@@ -224,24 +231,32 @@ public:
   bool_type empty() const { return m_stack.empty(); }
   size_type size() const { return m_stack.size(); }
 
-  const_iterator begin() const { 
-    if (markedOne())
-      return end();
-    else
-      return m_stack.begin(); 
-  }
-
+  const_iterator begin() const { return internalBegin(); }
   const_iterator end() const { return m_stack.end(); }
 
-  const_reverse_iterator rbegin() const {
-    if (markedOne())
-      return rend();
-    else
-      return m_stack.rbegin(); 
-  }
+  const_reverse_iterator rbegin() const { return internalRBegin(); }
 
   const_reverse_iterator rend() const { return m_stack.rend(); }
 
+
+  std::pair<navigator, const_reverse_iterator> tail() const {
+    navigator tail(BoolePolyRing::ringOne().navigation());
+
+    stack_reverse_iterator current(internalRBegin()),
+      finish(m_stack.rend());
+
+    assert((current == finish) || current->isValid());
+    while ((current != finish) &&
+           (current->thenBranch() == tail) && 
+           (current->elseBranch().isEmpty()) ) {
+      assert(current->isValid());
+      tail = *current;
+      ++current; 
+
+    }
+
+    return std::make_pair(tail, current);
+  }
 
   /// result type of top()
   typedef typename stack_type::value_type top_type;
@@ -351,6 +366,20 @@ public:
     std::cout <<")";
   }
 protected:
+
+  stack_iterator internalBegin() const { 
+    if (markedOne())
+      return m_stack.end();
+    else
+      return m_stack.begin(); 
+  }
+
+  stack_reverse_iterator internalRBegin() const { 
+    if (markedOne())
+      return m_stack.rend();
+    else
+      return m_stack.rbegin(); 
+  }
 
   template <class TermStack>
   void append(const TermStack& rhs) { 
