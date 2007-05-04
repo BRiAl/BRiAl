@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/05/04 08:34:54  dreyer
+ * Fix: Slowdown removed (due to wrong variable order in CTermGeneratorBase
+ *
  * Revision 1.1  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -53,8 +56,8 @@ public:
   result_type operator()(const SequenceType& seq) const{
 
     value_type result(true);
-    typename SequenceType::const_iterator 
-      start(seq.begin()), finish(seq.end());
+    typename SequenceType::const_reverse_iterator 
+      start(seq.rbegin()), finish(seq.rend());
     
     while (start != finish){
       result.changeAssign(*start);
