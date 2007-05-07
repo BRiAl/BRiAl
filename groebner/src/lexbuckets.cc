@@ -76,7 +76,7 @@ LexBucket& LexBucket::operator+=(const Polynomial& p){
     increaseTailStart(tail_start+var_group_size);
   }
 
-  
+  return *this;
   
 }
 void LexBucket::increaseTailStart(idx_type new_start){

@@ -24,11 +24,15 @@
 #include <map>
 #endif
 
+
+
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
 
 
 BEGIN_NAMESPACE_PBORIGB
+
+#define LL_RED_FOR_GROEBNER 1
 
 class PairStatusSet{
 public:
@@ -123,6 +127,7 @@ public:
   MonomialSet minimalLeadingTerms;
   MonomialSet leadingTerms11;
   MonomialSet leadingTerms00;
+  MonomialSet llReductor;
   boost::shared_ptr<CacheManager> cache;
   bool enabledLog;
    unsigned int reductionSteps;
@@ -163,6 +168,7 @@ public:
 		else
 			optLazy=true;
 		reduceByTailReduced=false;
+        llReductor=Polynomial(1).diagram();
 	}
 
     Polynomial nextSpoly(){

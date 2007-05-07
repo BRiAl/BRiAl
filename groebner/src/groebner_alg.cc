@@ -445,6 +445,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   averageLength=orig.averageLength;
   enabledLog=orig.enabledLog;
   reduceByTailReduced=orig.reduceByTailReduced;
+  llReductor=orig.llReductor;
   this->pairs.strat=this;
   this->reducibleUntil=orig.reducibleUntil;
 }
@@ -1845,11 +1846,97 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 
      }
 }
-int GroebnerStrategy::addGenerator(const BoolePolynomial& p, bool is_impl,std::vector<int>* impl_v){
-  
+
+
+MonomialSet recursivelyInsert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
+    //MonomialSet::navigation nav=m.navigator();
+    if (idx>*m){
+        return MonomialSet(*m,recursivelyInsert(p,idx,m.thenBranch()),m.elseBranch());
+    } else{
+        assert(idx<*m);
+        return MonomialSet(idx,m,p);
+    }
+}
+void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
+    Monomial lm=p.lead();
+    assert (!(m.emptiness()));
+    idx_type lead_index=*(lm.begin());
+    Exponent red_lead=*m.expBegin();
+    if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
+        //this->log("linear lead reductor\n");
+        p=ll_red_nf(p,m);
+        assert(p.lead()==lm);
+        m=ll_red_nf(m,MonomialSet(p.diagram())).diagram();
+        //assert(ll_red_nf(m+m.lead(),m)==m+m.lead());
+         m=recursivelyInsert(
+           p.navigation().elseBranch(),
+           lead_index,m.navigation());
+    }
+}
+int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){
+
+    Polynomial p=p_arg;
+#ifdef LL_RED_FOR_GROEBNER
+    {
+
+        if (BoolePolyRing::isLexicographical()){
+            //Monomial p_lm=p.lead();
+
+            if ((!(is_impl))&&(p.lead().deg()==1)){
+                addPolynomialToReductor(p,llReductor);
+                // //assert not Polynomial(reductors).isZero()
+                // /*idx_type lead_index=*(p_lm.begin());
+                // 
+                // //cout<<"llReductor:"<<(Polynomial)llReductor<<endl;
+                // //assert(((Polynomial) llReductor.diff(Monomial(red_lead).diagram())).usedVariables().GCD(Monomial(red_lead)).deg()==0);
+                // if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
+                //   
+                //     //cout<<"reduced p:"<<p<<endl;
+                //     assert(p.usedVariablesExp().GCD(red_lead).deg()==0);
+                //     llReductor=ll_red_nf(Polynomial(llReductor),MonomialSet(p.diagram())).diagram();
+                // 
+                //     //red_lead=[i for i in Polynomial(reductors).lead() if i<lead_index]
+                //     
+                //     MonomialSet::navigator red_nav=llReductor.navigation();
+                //     Exponent front;
+                //     while(*red_nav<lead_index){
+                //         front.push_back(*red_nav);
+                //         red_nav.incrementThen();
+                //     }
+                //     Monomial front_m(front);
+                //     llReductor=front_m*(Variable(lead_index)* Polynomial((MonomialSet(red_nav)))+(p-p.lead()));
+                //     */
+                //     /*
+                //     Exponent red_front;
+                //     Exponent::const_iterator it=red_lead.begin();
+                //     Exponent::const_iterator end=red_lead.end(); 
+                //     
+                //     while(it!=end){
+                //         idx_type index=*it;
+                //         if (index<lead_index)
+                //           red_front.push_back(index);
+                //         it++;
+                //     }
+                //     Monomial red_front_m(red_front);
+                // 
+                //     Polynomial divisibles=red_front_m*(Polynomial(llReductor)/red_front_m);
+                //     llReductor=
+                //         (((Monomial)Variable(lead_index))*divisibles+(Polynomial(llReductor)+divisibles)+red_front_m*(p+p.lead())).diagram();
+                //     */
+
+
+            
+
+
+
+            }
+        }
+    }
+#endif
   MonomialSet ext_prod_terms;
   PolyEntry e(p);
   Monomial lm=e.lm;
+
   Polynomial lm_as_poly=lm;
   idx_type idx_from_navigation=*lm_as_poly.navigation();
   if (reducibleUntil<idx_from_navigation)
