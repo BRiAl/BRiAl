@@ -34,6 +34,20 @@
 
 
 BEGIN_NAMESPACE_PBORIGB
+void GroebnerStrategy::llReduceAll(){
+    int i;
+    Exponent ll_e=*(llReductor.expBegin());
+    for(i=0;i<generators.size();i++){
+        if (ll_e.GCD(generators[i].tailVariables).deg()>0){
+            Polynomial tail=generators[i].tail;
+            tail=ll_red_nf(tail,llReductor);
+            if (tail!=generators[i].tail){
+                generators[i].p=tail+generators[i].lm;
+                generators[i].recomputeInformation();
+            }
+        }
+    }
+}
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 //static MonomialSet minimal_elements_cudd_style(MonomialSet m);
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod);

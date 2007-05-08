@@ -120,6 +120,7 @@ public:
   void addAsYouWish(const Polynomial& p);
   void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
   bool variableHasValue(idx_type i);
+  void llReduceAll();
   PairManager pairs;
   bool reduceByTailReduced;
   PolyEntryVector generators;
