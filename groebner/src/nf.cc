@@ -11,6 +11,11 @@
 #include "lexbuckets.h"
 #include <iostream>
 #include <COrderedIter.h>
+#ifdef HAVE_NTL
+#include <NTL/GF2.h>
+#include <NTL/mat_GF2.h>
+NTL_CLIENT
+#endif
 using std::cout;
 using std::endl;
 
@@ -1485,4 +1490,64 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
 
     
 }
+
+#ifdef HAVE_NTL
+using std::vector;
+vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
+    vector<Polynomial> polys;
+    int i;
+    MonomialSet terms;
+    for(i=0;i<orig_system.size();i++){
+        Polynomial p=orig_system[i];
+        if (!(p.isZero())){
+            p=ll_red_nf(p,llReductor);
+            if (!(p.isZero())){
+                p=nf3(*this,p,p.lead());
+                if (!(p.isZero())){
+                    p=red_tail(*this,p);
+                    terms=terms.unite(p.diagram());
+                    polys.push_back(p);
+                }
+            }
+        }
+    }
+    if (polys.size()==0) return vector<Polynomial>();
+    typedef std::map<int,Monomial> to_term_map_type;
+    typedef Exponent::idx_map_type from_term_map_type;
+    
+    int rows=polys.size();
+    int cols=terms.size();
+    mat_GF2 mat(INIT_SIZE,rows,cols);
+    std::vector<Exponent> terms_as_exp(terms.size());
+    std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
+    std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
+    from_term_map_type from_term_map;
+    to_term_map_type to_term_map;
+    for (i=0;i<terms_as_exp.size();i++){
+        from_term_map[terms_as_exp[i]]=i;
+        to_term_map[i]=Monomial(terms_as_exp[i]);
+    }
+    for(i=0;i<polys.size();i++){
+        Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
+        Polynomial::exp_iterator end=polys[i].expEnd();
+        while(it!=end){
+            mat[i][from_term_map[*it]]=1;
+            it++;
+        }
+    }
+    polys.clear();
+    int rank=gauss(mat);
+    for(i=0;i<rank;i++){
+        int j;
+        vector<Monomial> p_t;
+        for(j=0;j<cols;j++){
+            if (mat[i][j]==1){
+                p_t.push_back(to_term_map[j]);
+            }
+        }
+        polys.push_back(add_up_monomials(p_t,0,p_t.size()));
+    }
+    return polys;
+}
+#endif
 END_NAMESPACE_PBORIGB

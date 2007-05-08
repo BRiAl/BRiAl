@@ -38,7 +38,7 @@ void GroebnerStrategy::llReduceAll(){
     int i;
     Exponent ll_e=*(llReductor.expBegin());
     for(i=0;i<generators.size();i++){
-        if (ll_e.GCD(generators[i].tailVariables).deg()>0){
+        if ((generators[i].minimal)&&(ll_e.GCD(generators[i].tailVariables).deg()>0)){
             Polynomial tail=generators[i].tail;
             tail=ll_red_nf(tail,llReductor);
             if (tail!=generators[i].tail){

@@ -182,6 +182,7 @@ public:
       if (this->enabledLog)
           std::cout<<c<<endl;
   }
+  std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
   void symmGB_F2();
   int suggestPluginVariable();
   protected:
