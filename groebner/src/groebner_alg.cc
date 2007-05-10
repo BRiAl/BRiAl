@@ -1664,7 +1664,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     return result;
 }
 #else
-#define MIN_ELEMENTS_BINARY 1
+//#define MIN_ELEMENTS_BINARY 1
 #ifdef MIN_ELEMENTS_BINARY
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
@@ -1698,7 +1698,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         m=minimal_elements_cudd_style_unary(m);
         result.resize(m.length());
         std::copy(m.expBegin(),m.expEnd(),result.begin());
-        //return minimal_elements_internal3(m);
+ 
         
     }
     return result;
