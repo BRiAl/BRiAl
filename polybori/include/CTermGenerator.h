@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/05/10 14:58:30  dreyer
+ * CHANGE: removed unnecessary condition
+ *
  * Revision 1.6  2007/05/10 13:36:05  dreyer
  * ADD: compile-time switch -D PBORI_NO_TERMS_BY_TAIL
  *
@@ -101,11 +104,12 @@ public:
 #ifndef PBORI_NO_TERMS_BY_TAIL
     typename BooleSet::navigator navi(result.diagram().navigation());
 
-    while((start != finish) && (!start->isConstant()) && 
+    assert((start == finish) || !start->isConstant());
+    while((start != finish) && 
           (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
       navi = *start;
       ++start;
-    }
+     }
 
     result = value_type(BooleSet(navi));
 #endif
