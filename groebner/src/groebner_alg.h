@@ -158,7 +158,7 @@ public:
 		optRedTailDegGrowth=true;
 		chainCriterions=0;
 		enabledLog=false;
-        optLL=false;
+        optLL=true;//false;
 		optBrutalReductions=true;
 		variableChainCriterions=0;
 		extendedProductCriterions=0;

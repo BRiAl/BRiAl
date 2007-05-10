@@ -2114,10 +2114,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     
     std::vector<Polynomial> impl;
     MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
-    if (e.length==1){
-        assert(e.p.length()==1);
-        monomials=monomials.unite(e.p.diagram());
-    }
+
     if(divisors_from_minimal.emptiness()){
        
         
@@ -2180,6 +2177,12 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
             addGenerator(implication,true,&implication_indices));
         //addGeneratorDelayed(implication);
     }
+    
+    if (e.length==1){
+        assert(e.p.length()==1);
+        monomials=monomials.unite(e.p.diagram());
+    }
+    
     return s;
 }
 #if 0

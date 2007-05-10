@@ -1296,9 +1296,14 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
   while(!(p.isZero())){
     
     //res+=lm;
-
-     // p=mod_mon_set(p.diagram(),strat.monomials);
-      //if (p.isZero()) break;
+     {
+       Polynomial p_bak=p;
+       p=mod_mon_set(p.diagram(),strat.monomials);
+       p=ll_red_nf(p,strat.llReductor);
+       p=mod_mon_set(p.diagram(),strat.monomials);
+       if (p_bak!=p) changed=true;
+     if (p.isZero()) break;
+     }
     //p-=lm;
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);
@@ -1331,28 +1336,12 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     int s,i;
     s=irr.size();
 
-//     std::cout <<BooleSet(p)<<std::endl;
-//     std::cout <<BooleSet(irr_p)<<std::endl;
-//     std::cout << "s,p,irr_p,len " <<std::endl<< s<<std::endl << " "<<p <<std::endl<<" " <<irr_p <<std::endl<<irr_p.length()<<std::endl;
     assert((s==irr_p.length())||(rest_is_irreducible));
-    //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
-    //for(i=0;i<s;i++){
-    //    res_vec.push_back(irr[i]);
-    //}
+
     res_vec.push_back(irr_p);
-    //p=p-irr_p;
+
     p=Polynomial(p.diagram().diff(irr_p.diagram()));
     if(p.isZero()) break;
-    //Monomial lm=p.lead();
-    //res_vec.push_back(lm);
-    
-    
-    //p=Polynomial(p.diagram().diff(lm.diagram()));
-    //if (!(Helper::isDegreeOrder))
-    //    p=nf3(strat,p, rest_lead);
-    //else{
-    //    p=nf3_degree_order(strat,p,rest_lead);
-    //}
     p=Helper::nf(strat,p,rest_lead);
     changed=true;
   }
