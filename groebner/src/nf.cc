@@ -1604,7 +1604,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 }
 Polynomial GroebnerStrategy::nf(Polynomial p){
     if (p.isZero()) return p;
-    if (BoolePolyRing::isDegreeOrder) return nf3_degree_order(*this,p,p.lead());
+    if (BoolePolyRing::isDegreeOrder()) return nf3_degree_order(*this,p,p.lead());
     else return nf3(*this,p,p.lead());
 }
 END_NAMESPACE_PBORIGB
