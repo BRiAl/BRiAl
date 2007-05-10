@@ -129,6 +129,7 @@ public:
   MonomialSet leadingTerms11;
   MonomialSet leadingTerms00;
   MonomialSet llReductor;
+  MonomialSet monomials;
   boost::shared_ptr<CacheManager> cache;
   bool enabledLog;
    unsigned int reductionSteps;
@@ -329,6 +330,7 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& c
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
 MonomialSet contained_variables_cudd_style(const MonomialSet& m);
 MonomialSet minimal_elements_cudd_style(MonomialSet m);
+MonomialSet minimal_elements_cudd_style_unary(MonomialSet m);
 END_NAMESPACE_PBORIGB
 
 #endif

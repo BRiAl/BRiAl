@@ -436,6 +436,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  monomials=orig.monomials;
   optLL=orig.optLL;
   optDelayNonMinimals=orig.optDelayNonMinimals;
   optBrutalReductions=orig.optBrutalReductions;
@@ -1663,6 +1664,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     return result;
 }
 #else
+#ifdef MIN_ELEMENTS_BINARY
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
     Exponent exp;//=lm.exp();
@@ -1680,6 +1682,29 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     }
     return result;
 }
+#else
+
+static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
+    std::vector<Exponent> result;
+    Exponent exp;//=lm.exp();
+    if (!(m.divisorsOf(lm).emptiness())){
+        result.push_back(exp);
+    } else {
+        Monomial v;
+        m=divide_monomial_divisors_out(m,lm);
+        //mod=divide_monomial_divisors_out(mod,lm);
+        m=mod_mon_set(m,mod);
+        m=minimal_elements_cudd_style_unary(m);
+        result.resize(m.length());
+        std::copy(m.expBegin(),m.expEnd(),result.begin());
+        //return minimal_elements_internal3(m);
+        
+    }
+    return result;
+}
+#endif
+
+
 #endif
 #endif
 
@@ -1710,6 +1735,44 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
 
   return impl;
 }
+
+
+
+MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
+
+  if (m.emptiness()) return m;
+  
+  if (m.ownsOne()) return ((Polynomial) 1).diagram();
+
+  MonomialSet::navigator m_nav=m.navigation();
+  MonomialSet::navigator ms0=m_nav.elseBranch();
+  MonomialSet::navigator ms1=m_nav.thenBranch();
+
+  
+  typedef PBORI::CacheManager<CCacheTypes::minimal_elements>
+    cache_mgr_type;
+
+
+
+  cache_mgr_type cache_mgr;
+  PBORI::BoolePolynomial::navigator cached =
+    cache_mgr.find(m_nav);
+
+
+      
+  if (cached.isValid() ){
+      return cached;
+  }
+  
+  MonomialSet minimal_else=minimal_elements(ms0);
+  MonomialSet minimal_then=minimal_elements(mod_mon_set(ms1,minimal_else));
+
+  MonomialSet result= MonomialSet(*m_nav,minimal_then,minimal_else);//result0.unite(result1.change(index));
+
+  cache_mgr.insert(m.navigation(), result.navigation());
+  return result;
+}
+
 MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   Polynomial p_mod=mod;
   if (m.emptiness()) return m;
@@ -2048,6 +2111,10 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     
     std::vector<Polynomial> impl;
     MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
+    if (e.length==1){
+        assert(e.p.length()==1);
+        monomials=monomials.unite(e.p.diagram());
+    }
     if(divisors_from_minimal.emptiness()){
        
         

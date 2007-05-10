@@ -1297,7 +1297,8 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     
     //res+=lm;
 
-    
+      p=mod_mon_set(p.diagram(),strat.monomials);
+      if (p.isZero()) break;
     //p-=lm;
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);
@@ -1571,7 +1572,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   {
       if (MonomialSet(v).ownsOne()) return MonomialSet();
   }
-  typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
+  typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
     cache_mgr_type;
   cache_mgr_type cache_mgr;
   MonomialSet::navigator cached =

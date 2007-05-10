@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/05/10 07:29:32  bricken
+ * + new minimal elements
+ *
  * Revision 1.19  2007/04/24 15:23:03  dreyer
  * FIX: minor changes fixing -Wall warnings
  *
@@ -116,6 +119,7 @@ public:
   struct divide: public binary_cache_tag { };
 
   struct minimal_mod: public binary_cache_tag { };
+  struct minimal_elements: public unary_cache_tag { };
 
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
@@ -126,7 +130,9 @@ public:
 
 
   struct mod_varset: public binary_cache_tag { };
-  struct mod_deg2_set: public binary_cache_tag { };
+  //struct mod_deg2_set: public binary_cache_tag { };
+  typedef mod_varset mod_deg2_set;
+  typedef mod_varset mod_mon_set;
   
   struct contained_deg2: public unary_cache_tag { };
   struct contained_variables: public unary_cache_tag { };
