@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/05/10 13:36:05  dreyer
+ * ADD: compile-time switch -D PBORI_NO_TERMS_BY_TAIL
+ *
  * Revision 1.5  2007/05/10 13:12:56  dreyer
  * CHANGE: using optimized term generation in term-iterator's dereferencing
  *
@@ -91,9 +94,11 @@ public:
 
     value_type result(true);
 
+
     typename SequenceType::stack_reverse_iterator 
       start(seq.stackRBegin()), finish(seq.stackREnd());
 
+#ifndef PBORI_NO_TERMS_BY_TAIL
     typename BooleSet::navigator navi(result.diagram().navigation());
 
     while((start != finish) && (!start->isConstant()) && 
@@ -103,6 +108,7 @@ public:
     }
 
     result = value_type(BooleSet(navi));
+#endif
 
     while (start != finish){
       result.changeAssign(**start);
