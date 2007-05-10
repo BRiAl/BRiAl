@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/05/10 13:12:56  dreyer
+ * CHANGE: using optimized term generation in term-iterator's dereferencing
+ *
  * Revision 1.15  2007/05/04 15:26:27  dreyer
  * CHANGE: Optimized version for monomial term generation
  *
@@ -231,19 +234,19 @@ public:
   bool_type empty() const { return m_stack.empty(); }
   size_type size() const { return m_stack.size(); }
 
-  const_iterator begin() const { return internalBegin(); }
-  const_iterator end() const { return m_stack.end(); }
+  const_iterator begin() const { return stackBegin(); }
+  const_iterator end() const { return stackEnd(); }
 
-  const_reverse_iterator rbegin() const { return internalRBegin(); }
+  const_reverse_iterator rbegin() const { return stackRBegin(); }
 
-  const_reverse_iterator rend() const { return m_stack.rend(); }
+  const_reverse_iterator rend() const { return stackREnd(); }
 
 
   std::pair<navigator, const_reverse_iterator> tail() const {
     navigator tail(BoolePolyRing::ringOne().navigation());
 
-    stack_reverse_iterator current(internalRBegin()),
-      finish(m_stack.rend());
+    stack_reverse_iterator current(stackRBegin()),
+      finish(stackREnd());
 
     assert((current == finish) || current->isValid());
     while ((current != finish) &&
@@ -365,21 +368,29 @@ public:
     std::copy(begin(), end(), std::ostream_iterator<int>(cout, ", ")); 
     std::cout <<")";
   }
-protected:
 
-  stack_iterator internalBegin() const { 
+  stack_iterator stackBegin() const { 
     if (markedOne())
       return m_stack.end();
     else
       return m_stack.begin(); 
   }
 
-  stack_reverse_iterator internalRBegin() const { 
+  stack_iterator stackEnd() const {
+    return m_stack.end();
+  }
+
+  stack_reverse_iterator stackRBegin() const { 
     if (markedOne())
       return m_stack.rend();
     else
       return m_stack.rbegin(); 
   }
+
+  stack_reverse_iterator stackREnd() const {
+    return m_stack.rend();
+  }
+protected:
 
   template <class TermStack>
   void append(const TermStack& rhs) { 

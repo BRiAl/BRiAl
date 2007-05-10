@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/05/10 13:12:56  dreyer
+ * CHANGE: using optimized term generation in term-iterator's dereferencing
+ *
  * Revision 1.4  2007/05/04 15:52:06  dreyer
  * CHANGE: temporarily deactivated get_tail_term
  *
@@ -86,14 +89,23 @@ public:
   template <class SequenceType>
   result_type operator()(const SequenceType& seq) const{
 
-    value_type result;
-    //    get_tail_term(result, seq.tail(), seq.rend());
+    value_type result(true);
 
-    typename SequenceType::const_reverse_iterator 
-      start(seq.rbegin()), finish(seq.rend());
+    typename SequenceType::stack_reverse_iterator 
+      start(seq.stackRBegin()), finish(seq.stackREnd());
+
+    typename BooleSet::navigator navi(result.diagram().navigation());
+
+    while((start != finish) && (!start->isConstant()) && 
+          (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
+      navi = *start;
+      ++start;
+    }
+
+    result = value_type(BooleSet(navi));
 
     while (start != finish){
-      result.changeAssign(*start);
+      result.changeAssign(**start);
       ++start;
     }
     

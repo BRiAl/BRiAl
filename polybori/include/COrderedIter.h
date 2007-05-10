@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/05/10 13:12:56  dreyer
+ * CHANGE: using optimized term generation in term-iterator's dereferencing
+ *
  * Revision 1.16  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -86,6 +89,7 @@
 #include <algorithm>
 
 #include "CStackSelector.h"
+#include "CTermGenerator.h"
 
 #ifndef COrderedIter_h_
 #define COrderedIter_h_
@@ -182,6 +186,8 @@ public:
   typedef CAbstractStackBase<NavigatorType> stack_base;
   typedef CTermStackBase<NavigatorType, stack_base> iterator_core;
 
+  /// Type for functional, which generates actual term, for current path
+  typedef CTermGenerator<MonomType> term_generator;
 
   typedef typename iterator_core::const_iterator const_iterator;
   typedef typename iterator_core::const_reverse_iterator 
@@ -201,7 +207,9 @@ public:
 
   // Default Constructor
 
-  COrderedIter(core_pointer rhs): p_iter(rhs) {}
+  COrderedIter(core_pointer rhs, 
+               term_generator getTerm = term_generator()):
+    p_iter(rhs), m_getTerm(getTerm) {}
 
   // Destructor
   ~COrderedIter() {}
@@ -234,7 +242,12 @@ public:
 
   size_type deg() const { return p_iter->deg(); }
   idx_type firstIndex() const { return *begin(); }
+
 protected:
+  /// The functional which defines the dereferecing operation
+  term_generator m_getTerm;
+
+  /// A shared pointer to the stack, which carries the current path
   core_pointer p_iter;
 };
 
