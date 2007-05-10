@@ -1664,6 +1664,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     return result;
 }
 #else
+#define MIN_ELEMENTS_BINARY 1
 #ifdef MIN_ELEMENTS_BINARY
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
@@ -1764,12 +1765,14 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
       return cached;
   }
   
-  MonomialSet minimal_else=minimal_elements(ms0);
-  MonomialSet minimal_then=minimal_elements(mod_mon_set(ms1,minimal_else));
+  MonomialSet minimal_else=minimal_elements_cudd_style_unary(ms0);
+  MonomialSet minimal_then=minimal_elements_cudd_style_unary(mod_mon_set(ms1,minimal_else));
+  MonomialSet result;
+  if ((minimal_else.navigation()==ms0) &&(minimal_then.navigation()==ms1)) result=m;
+  else
+    result= MonomialSet(*m_nav,minimal_then,minimal_else);//result0.unite(result1.change(index));
 
-  MonomialSet result= MonomialSet(*m_nav,minimal_then,minimal_else);//result0.unite(result1.change(index));
-
-  cache_mgr.insert(m.navigation(), result.navigation());
+  cache_mgr.insert(m_nav, result.navigation());
   return result;
 }
 

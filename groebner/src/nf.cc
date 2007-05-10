@@ -1297,8 +1297,8 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     
     //res+=lm;
 
-      p=mod_mon_set(p.diagram(),strat.monomials);
-      if (p.isZero()) break;
+     // p=mod_mon_set(p.diagram(),strat.monomials);
+      //if (p.isZero()) break;
     //p-=lm;
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);
@@ -1560,18 +1560,26 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   MonomialSet::navigator v=vs.navigation();
   idx_type a_index=*a;
   idx_type v_index=*v;
-  if (a.isConstant()) return as;
+  if (vs.ownsOne()) return MonomialSet();
+  if (a.isConstant()) {
+     // if (!(vs.ownsOne()))
+          return as;
+      //else return MonomialSet();
+  }
+  
+  
   while((v_index=*v)<(a_index=*a)){
         v.incrementElse();
     }
   if (v.isConstant()) {
-      if (v.isTerminated()) return MonomialSet();
-      else
+      //if (v.isTerminated()) return MonomialSet();
+      //else
           return as;
-  } else 
+  } 
+  /*else 
   {
       if (MonomialSet(v).ownsOne()) return MonomialSet();
-  }
+  }*/
   typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
     cache_mgr_type;
   cache_mgr_type cache_mgr;
