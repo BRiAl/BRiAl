@@ -160,9 +160,7 @@ static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
    assert(m.reducibleBy(n));
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
-static MonomialSet var_set(MonomialSet as){
-  MonomialSet::navigator a=as.navigation();
-}
+
 MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
   MonomialSet::navigator a=as.navigation();
   MonomialSet::navigator v=vs.navigation();
@@ -438,6 +436,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms00(orig.leadingTerms00),
   lm2Index(orig.lm2Index), exp2Index(orig.exp2Index)
 {
+  optLL=orig.optLL;
   optDelayNonMinimals=orig.optDelayNonMinimals;
   optBrutalReductions=orig.optBrutalReductions;
   cache=orig.cache;
@@ -1891,7 +1890,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
 
     Polynomial p=p_arg;
 #ifdef LL_RED_FOR_GROEBNER
-    {
+    if (optLL){
 
         if (BoolePolyRing::isLexicographical()){
             //Monomial p_lm=p.lead();

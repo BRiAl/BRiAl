@@ -1502,7 +1502,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
         if (!(p.isZero())){
             p=ll_red_nf(p,llReductor);
             if (!(p.isZero())){
-                p=nf3(*this,p,p.lead());
+                p=nf(p);
                 if (!(p.isZero())){
                     p=red_tail(*this,p);
                     terms=terms.unite(p.diagram());
@@ -1517,6 +1517,9 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     
     int rows=polys.size();
     int cols=terms.size();
+    if (this->enabledLog){
+        std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
+    }
     mat_GF2 mat(INIT_SIZE,rows,cols);
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
@@ -1550,4 +1553,49 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     return polys;
 }
 #endif
+
+MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
+  MonomialSet::navigator a=as.navigation();
+  MonomialSet::navigator v=vs.navigation();
+  idx_type a_index=*a;
+  idx_type v_index=*v;
+  if (a.isConstant()) return as;
+  while((v_index=*v)<(a_index=*a)){
+        v.incrementElse();
+    }
+  if (v.isConstant()) {
+      if (v.isTerminated()) return MonomialSet();
+      else
+          return as;
+  } else 
+  {
+      if (MonomialSet(v).ownsOne()) return MonomialSet();
+  }
+  typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
+    cache_mgr_type;
+  cache_mgr_type cache_mgr;
+  MonomialSet::navigator cached =
+    cache_mgr.find(a, v);
+  if (cached.isValid()) return cached;
+  MonomialSet result;
+  if (a_index==v_index){
+    result=MonomialSet(a_index,
+    mod_mon_set(mod_mon_set(a.thenBranch(), v.thenBranch()),v.elseBranch()),
+    mod_mon_set(a.elseBranch(),v.elseBranch())
+    );
+    
+  } else {
+    assert(v_index>a_index);
+    result=MonomialSet(a_index,
+      mod_mon_set(a.thenBranch(),v),
+      mod_mon_set(a.elseBranch(), v));
+  }
+  cache_mgr.insert(a,v,result.navigation());
+  return result;
+}
+Polynomial GroebnerStrategy::nf(Polynomial p){
+    if (p.isZero()) return p;
+    if (BoolePolyRing::isDegreeOrder) return nf3_degree_order(*this,p,p.lead());
+    else return nf3(*this,p,p.lead());
+}
 END_NAMESPACE_PBORIGB

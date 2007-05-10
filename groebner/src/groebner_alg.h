@@ -141,6 +141,7 @@ public:
   int averageLength;
   bool optRedTail;
   bool optLazy;
+  bool optLL;
   bool optDelayNonMinimals;
   bool optBrutalReductions;
   bool optExchange;
@@ -156,6 +157,7 @@ public:
 		optRedTailDegGrowth=true;
 		chainCriterions=0;
 		enabledLog=false;
+        optLL=false;
 		optBrutalReductions=true;
 		variableChainCriterions=0;
 		extendedProductCriterions=0;
@@ -183,6 +185,7 @@ public:
           std::cout<<c<<endl;
   }
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
+  Polynomial nf(Polynomial p);
   void symmGB_F2();
   int suggestPluginVariable();
   protected:
