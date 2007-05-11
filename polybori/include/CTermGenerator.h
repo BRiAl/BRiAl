@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/05/11 11:29:03  dreyer
+ * CHANGE: space
+ *
  * Revision 1.7  2007/05/10 14:58:30  dreyer
  * CHANGE: removed unnecessary condition
  *
@@ -109,7 +112,7 @@ public:
           (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
       navi = *start;
       ++start;
-     }
+    }
 
     result = value_type(BooleSet(navi));
 #endif
