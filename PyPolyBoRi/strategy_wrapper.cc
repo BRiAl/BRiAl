@@ -131,11 +131,15 @@ void export_strategy(){
   
   .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
+#ifdef HAVE_NTL
+  .def("noroStep", &GroebnerStrategy::noroStep)
+#endif
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readonly("llReductor",&GroebnerStrategy::llReductor)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
+  .def_readwrite("optLL",&GroebnerStrategy::optLL)
   .def_readwrite("optBrutalReductions",&GroebnerStrategy::optBrutalReductions)
   .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
   .def_readwrite("optExchange",&GroebnerStrategy::optExchange)

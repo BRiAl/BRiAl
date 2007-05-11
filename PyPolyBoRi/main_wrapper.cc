@@ -12,6 +12,9 @@
 #include "set_wrapper.h"
 #include "out_helper.h"
 #include "test_util.h"
+#ifdef HAVE_NTL
+#include "ntl_wrapper.h"
+#endif
 using namespace boost::python;
 using namespace std;
 
@@ -33,6 +36,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_poly();
   export_nav();
   export_test_util();
+  #ifdef HANVE_NTL
+  export_ntl();
+  #endif
   enum_<COrderEnums::ordercodes>("OrderCode")
     .value("lp", COrderEnums::lp)
     .value("dlex", COrderEnums::dlex)
