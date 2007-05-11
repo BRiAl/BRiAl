@@ -1299,8 +1299,12 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
      {
        Polynomial p_bak=p;
        p=mod_mon_set(p.diagram(),strat.monomials);
-       p=ll_red_nf(p,strat.llReductor);
-       p=mod_mon_set(p.diagram(),strat.monomials);
+       if (strat.optLL){
+         Polynomial p_bak2=p;
+         p=ll_red_nf(p,strat.llReductor);
+         if (p_bak2!=p)
+             p=mod_mon_set(p.diagram(),strat.monomials);
+       }
        if (p_bak!=p) changed=true;
      if (p.isZero()) break;
      }
@@ -1564,7 +1568,8 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
       //if (v.isTerminated()) return MonomialSet();
       //else
           return as;
-  } 
+  }
+  if (v==a) return MonomialSet(); 
   /*else 
   {
       if (MonomialSet(v).ownsOne()) return MonomialSet();

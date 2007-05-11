@@ -1955,63 +1955,7 @@ void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){
 
     Polynomial p=p_arg;
-#ifdef LL_RED_FOR_GROEBNER
-    if (optLL){
 
-        if (BoolePolyRing::isLexicographical()){
-            //Monomial p_lm=p.lead();
-
-            if ((!(is_impl))&&(p.lead().deg()==1)){
-                addPolynomialToReductor(p,llReductor);
-                // //assert not Polynomial(reductors).isZero()
-                // /*idx_type lead_index=*(p_lm.begin());
-                // 
-                // //cout<<"llReductor:"<<(Polynomial)llReductor<<endl;
-                // //assert(((Polynomial) llReductor.diff(Monomial(red_lead).diagram())).usedVariables().GCD(Monomial(red_lead)).deg()==0);
-                // if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
-                //   
-                //     //cout<<"reduced p:"<<p<<endl;
-                //     assert(p.usedVariablesExp().GCD(red_lead).deg()==0);
-                //     llReductor=ll_red_nf(Polynomial(llReductor),MonomialSet(p.diagram())).diagram();
-                // 
-                //     //red_lead=[i for i in Polynomial(reductors).lead() if i<lead_index]
-                //     
-                //     MonomialSet::navigator red_nav=llReductor.navigation();
-                //     Exponent front;
-                //     while(*red_nav<lead_index){
-                //         front.push_back(*red_nav);
-                //         red_nav.incrementThen();
-                //     }
-                //     Monomial front_m(front);
-                //     llReductor=front_m*(Variable(lead_index)* Polynomial((MonomialSet(red_nav)))+(p-p.lead()));
-                //     */
-                //     /*
-                //     Exponent red_front;
-                //     Exponent::const_iterator it=red_lead.begin();
-                //     Exponent::const_iterator end=red_lead.end(); 
-                //     
-                //     while(it!=end){
-                //         idx_type index=*it;
-                //         if (index<lead_index)
-                //           red_front.push_back(index);
-                //         it++;
-                //     }
-                //     Monomial red_front_m(red_front);
-                // 
-                //     Polynomial divisibles=red_front_m*(Polynomial(llReductor)/red_front_m);
-                //     llReductor=
-                //         (((Monomial)Variable(lead_index))*divisibles+(Polynomial(llReductor)+divisibles)+red_front_m*(p+p.lead())).diagram();
-                //     */
-
-
-            
-
-
-
-            }
-        }
-    }
-#endif
   MonomialSet ext_prod_terms;
   PolyEntry e(p);
   Monomial lm=e.lm;
@@ -2182,6 +2126,16 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
         assert(e.p.length()==1);
         monomials=monomials.unite(e.p.diagram());
     }
+    
+    #ifdef LL_RED_FOR_GROEBNER
+    if (optLL){
+
+            if ((e.lmDeg==1) &&(*(e.p.navigation())==*(e.lm.diagram().navigation()))){
+                addPolynomialToReductor(e.p,llReductor);
+            }
+    }
+    #endif
+    
     
     return s;
 }
