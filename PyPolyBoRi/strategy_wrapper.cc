@@ -138,6 +138,7 @@ void export_strategy(){
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readonly("llReductor",&GroebnerStrategy::llReductor)
+  .def_readonly("monomials",&GroebnerStrategy::monomials)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
   .def_readwrite("optLL",&GroebnerStrategy::optLL)
   .def_readwrite("optBrutalReductions",&GroebnerStrategy::optBrutalReductions)
