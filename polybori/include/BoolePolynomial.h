@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.69  2007/05/11 11:38:42  dreyer
+ * ADD: started pbori_algorithms.h and term_accumulation()
+ *
  * Revision 1.68  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -248,6 +251,9 @@
 
 // get standard map functionality
 #include <map>
+
+// get standard algorithmic functionalites
+#include <algorithm>
 
 // include basic definitions and decision diagram interface
 #include "CDDInterface.h"
@@ -691,10 +697,6 @@ operator%(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
 
   return BoolePolynomial(lhs) %= rhs;
 }
-
-/// Compute spoly of two polynomials
-BoolePolynomial 
-spoly(const BoolePolynomial&, const BoolePolynomial&);
 
 /// Equality check (with constant lhs)
 inline BoolePolynomial::bool_type

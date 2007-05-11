@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/05/11 11:38:42  dreyer
+ * ADD: started pbori_algorithms.h and term_accumulation()
+ *
  * Revision 1.8  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -61,4 +64,6 @@
 
 #include "CGenericIter.h"
 #include "CExpIter.h"
+
+#include "pbori_algorithms.h"
 #endif // of #ifndef polybori_h_

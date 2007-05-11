@@ -8,6 +8,9 @@
  * This file includes some templates of simple transformations and similar
  * procedures. 
  *
+ * @note This file carries pure template routines. Algorithms, which make
+ * explicite use of PolyBoRi classes can be found in pbori_algorithms.h
+ *
  * @par Copyright:
  *   (c) 2006 by
  *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
@@ -20,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/05/11 11:38:42  dreyer
+ * ADD: started pbori_algorithms.h and term_accumulation()
+ *
  * Revision 1.28  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *

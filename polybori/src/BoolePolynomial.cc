@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.95  2007/05/11 11:38:42  dreyer
+ * ADD: started pbori_algorithms.h and term_accumulation()
+ *
  * Revision 1.94  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -1210,18 +1213,6 @@ BoolePolynomial::leadFirst() const {
   PBORI_TRACE_FUNC("BoolePolynomial::leadFirst() const" ); 
 
   return BoolePolyRing::activeManager().leadFirst(*this);
-}
-
-/// Compute spoly of two polynomials
-BoolePolynomial 
-spoly(const BoolePolynomial& first, const BoolePolynomial& second){
-
-   BooleMonomial lead1(first.lead()), lead2(second.lead());
-
-   BooleMonomial prod = lead1;
-   prod *= lead2;
-
-   return ( first * (prod / lead1) ) + ( second * (prod / lead2) );
 }
 
 // Stream output for Boolean polynomials
