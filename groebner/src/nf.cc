@@ -1441,7 +1441,8 @@ Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p){
   return res;
 }
 
-Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
+
+template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
     
     if (p.isConstant()) return p;
     //if (reductors.emptiness()) return p;
@@ -1465,10 +1466,13 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
   if (cached.isValid()) return MonomialSet(cached);
   Polynomial res;
   if ((*r_nav)==p_index){
-      
+    if (have_redsb){  
     res=ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
       +Polynomial(MonomialSet(r_nav.elseBranch()))*ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
-   
+   }else{
+    res=ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
+         +ll_red_nf(Polynomial(MonomialSet(r_nav.elseBranch())),r_nav.thenBranch())*ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+   }
   } else{
       assert((*r_nav)>p_index);
       
@@ -1484,7 +1488,12 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
 
     
 }
-
+Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
+    return ll_red_nf_generic<true>(p,reductors);
+}
+Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
+    return ll_red_nf_generic<false>(p,reductors);
+}
 #ifdef HAVE_NTL
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){

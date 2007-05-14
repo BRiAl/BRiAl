@@ -1927,10 +1927,10 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 }
 
 
-MonomialSet recursivelyInsert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
+MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
     //MonomialSet::navigation nav=m.navigator();
     if (idx>*m){
-        return MonomialSet(*m,recursivelyInsert(p,idx,m.thenBranch()),m.elseBranch());
+        return MonomialSet(*m,recursively_insert(p,idx,m.thenBranch()),m.elseBranch());
     } else{
         assert(idx<*m);
         return MonomialSet(idx,m,p);
@@ -1947,7 +1947,7 @@ void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
         assert(p.lead()==lm);
         m=ll_red_nf(m,MonomialSet(p.diagram())).diagram();
         //assert(ll_red_nf(m+m.lead(),m)==m+m.lead());
-         m=recursivelyInsert(
+         m=recursively_insert(
            p.navigation().elseBranch(),
            lead_index,m.navigation());
     }

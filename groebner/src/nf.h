@@ -73,6 +73,8 @@ Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead);
 Polynomial nf3_short(const GroebnerStrategy& strat, Polynomial p);
 Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p);
 Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors);
+
+Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors);
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
 END_NAMESPACE_PBORIGB
 #endif
