@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/05/14 08:28:23  dreyer
+ * ADD: compiler-switches for overwriting cache defaults
+ *
  * Revision 1.13  2006/10/24 08:44:04  dreyer
  * CHANGE: Added CVariableNames; variable names handled by OrderedManager
  *
@@ -80,6 +83,22 @@
 // get standard map functionality
 #include <map>
 
+
+#ifndef PBORI_UNIQUE_SLOTS
+#  define PBORI_UNIQUE_SLOTS CUDD_UNIQUE_SLOTS // initial size of subtables
+#endif
+
+#ifndef PBORI_CACHE_SLOTS
+#  define PBORI_CACHE_SLOTS CUDD_CACHE_SLOTS   // default size of the cache
+#endif
+
+#ifndef PBORI_MAX_MEMORY
+#  define PBORI_MAX_MEMORY 0    // target maximum memory occupation
+                                // if PBORI_MAX_MEMORY == 0 then
+                                // guess based on the available memory  
+#endif
+
+
 BEGIN_NAMESPACE_PBORI
 
 
@@ -124,9 +143,13 @@ class CDDManagerBase<Cudd, StorageType> {
   typedef std::map<idx_type, dd_base> persistent_cache_type;
 
   /// Default constructor
-   CDDManagerBase(size_type nvars = 0): 
-     m_interfaced(0, nvars), m_variables() {  }
-
+  CDDManagerBase(size_type nvars = 0,
+                 size_type numSlots = PBORI_UNIQUE_SLOTS,
+                 size_type cacheSize = PBORI_CACHE_SLOTS,
+                 unsigned long maxMemory = PBORI_MAX_MEMORY): 
+    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory),
+    m_variables() {  }
+  
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
     m_interfaced(rhs.m_interfaced), m_variables() {
