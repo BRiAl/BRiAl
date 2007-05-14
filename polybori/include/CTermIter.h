@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/05/14 08:44:07  dreyer
+ * ADD: isOne()/isZero() to term iterators
+ *
  * Revision 1.20  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -184,6 +187,12 @@ public:
   const_reverse_iterator rbegin() const { return m_stack.rbegin(); }
   const_reverse_iterator rend() const { return m_stack.rend(); }
   //@}
+
+  /// Determine whether term is one (without explicit constructing)
+  bool_type isOne() const { return m_stack.isOne(); }
+
+  /// Determine whether term is zero (without explicit constructing)
+  bool_type isZero() const { return m_stack.isZero(); }
 
   /// Get degree of current term
   size_type deg() const { return m_stack.deg(); }

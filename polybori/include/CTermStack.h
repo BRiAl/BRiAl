@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/05/14 08:44:07  dreyer
+ * ADD: isOne()/isZero() to term iterators
+ *
  * Revision 1.16  2007/05/10 13:12:56  dreyer
  * CHANGE: using optimized term generation in term-iterator's dereferencing
  *
@@ -241,26 +244,6 @@ public:
 
   const_reverse_iterator rend() const { return stackREnd(); }
 
-
-  std::pair<navigator, const_reverse_iterator> tail() const {
-    navigator tail(BoolePolyRing::ringOne().navigation());
-
-    stack_reverse_iterator current(stackRBegin()),
-      finish(stackREnd());
-
-    assert((current == finish) || current->isValid());
-    while ((current != finish) &&
-           (current->thenBranch() == tail) && 
-           (current->elseBranch().isEmpty()) ) {
-      assert(current->isValid());
-      tail = *current;
-      ++current; 
-
-    }
-
-    return std::make_pair(tail, current);
-  }
-
   /// result type of top()
   typedef typename stack_type::value_type top_type;
 
@@ -349,6 +332,9 @@ public:
     assert(empty());
     push(navi);
   }
+
+  bool isOne() const { return markedOne(); }
+  bool isZero() const { return empty(); }
 
   bool atBegin() const { return empty(); }
 
