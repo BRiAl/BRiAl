@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.96  2007/05/14 08:10:59  dreyer
+ * ADD: added poly / poly and poly % poly
+ *
  * Revision 1.95  2007/05/11 11:38:42  dreyer
  * ADD: started pbori_algorithms.h and term_accumulation()
  *
@@ -375,6 +378,7 @@
 #include "CGenericIter.h"
 #include "CExpIter.h"
 
+#include "LexOrder.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -570,6 +574,15 @@ BoolePolynomial::operator/=(const exp_type& rhs) {
           self()));
 }
 
+// Polynomial Division
+BoolePolynomial&
+BoolePolynomial::operator/=(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const self&)" );
+
+  return operator/=(rhs.firstTerm());
+}
+
 // Modulus
 BoolePolynomial&
 BoolePolynomial::operator%=(const monom_type& rhs) {
@@ -579,6 +592,15 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
   m_dd.diffAssign(  rhs.diagram().support() );
 
   return *this;
+}
+
+// Polynomial Modulus
+BoolePolynomial&
+BoolePolynomial::operator%=(const self& rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const self&)" );
+
+  return operator-=(rhs * (*this / rhs));
 }
 
 // tests whether polynomial can be reduced by rhs
@@ -929,6 +951,15 @@ BoolePolynomial::firstEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::firstEnd() const" );
   return m_dd.firstEnd();
+}
+
+// Lexicographical leading term
+BoolePolynomial::monom_type
+BoolePolynomial::firstTerm() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::firstTerm() const" );
+
+  return LexOrder().lead(*this);
 }
 
 // Start of degrees

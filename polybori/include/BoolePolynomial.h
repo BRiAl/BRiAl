@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.70  2007/05/14 08:10:59  dreyer
+ * ADD: added poly / poly and poly % poly
+ *
  * Revision 1.69  2007/05/11 11:38:42  dreyer
  * ADD: started pbori_algorithms.h and term_accumulation()
  *
@@ -279,6 +282,7 @@ class BlockDegLexOrder;
 class BlockDegRevLexAscOrder;
 
 class BooleMonomial;
+class BooleVariable;
 class BooleExponent;
 
 
@@ -348,6 +352,9 @@ public:
 
   /// Fix type for treatment of monomials
   typedef BooleMonomial monom_type; 
+
+  /// Fix type for treatment of monomials
+  typedef BooleVariable var_type; 
 
   /// Fix type for treatment of exponent vectors
   typedef BooleExponent exp_type; 
@@ -458,7 +465,9 @@ public:
   self& operator*=(const self&);
   self& operator/=(const monom_type&);
   self& operator/=(const exp_type&);
+  self& operator/=(const self&);
   self& operator%=(const monom_type&);
+  self& operator%=(const self&);
   //@}
 
   /// @name Logical operations
@@ -545,6 +554,9 @@ public:
 
   /// Finish of first term 
   first_iterator firstEnd() const;
+
+  /// Get of first lexicographic term 
+  monom_type firstTerm() const;
 
   /// Start of degrees
   deg_iterator degBegin() const;
@@ -685,8 +697,9 @@ operator*(const BoolePolynomial& lhs, const BoolePolynomial& rhs){
 }
 
 /// Division by monomial (skipping remainder)
+template <class RHSType>
 inline BoolePolynomial
-operator/(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
+operator/(const BoolePolynomial& lhs, const RHSType& rhs){
 
   return BoolePolynomial(lhs) /= rhs;
 }
@@ -694,6 +707,13 @@ operator/(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
 /// Modulus monomial (division remainder)
 inline BoolePolynomial
 operator%(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
+
+  return BoolePolynomial(lhs) %= rhs;
+}
+
+/// Modulus monomial (division remainder)
+inline BoolePolynomial
+operator%(const BoolePolynomial& lhs, const BoolePolynomial& rhs){
 
   return BoolePolynomial(lhs) %= rhs;
 }

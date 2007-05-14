@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/05/14 08:10:59  dreyer
+ * ADD: added poly / poly and poly % poly
+ *
  * Revision 1.5  2007/04/17 09:12:18  dreyer
  * FIX: ambigious overload in var * poly
  *
@@ -112,6 +115,21 @@ operator*(const BooleVariable& lhs,
           const BooleVariable& rhs){
 
   return BooleMonomial(lhs) *= BooleMonomial(rhs);
+}
+
+/// Division of a polynomial by a variable (forcing monomial variant)
+inline BoolePolynomial
+operator/=(BoolePolynomial& lhs, const BooleVariable& rhs){
+
+  return lhs /= BooleMonomial(rhs);
+}
+
+/// Division of a polynomial by a variable (forcing monomial variant)
+inline BoolePolynomial
+operator/(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs / BooleMonomial(rhs);
 }
 
 END_NAMESPACE_PBORI
