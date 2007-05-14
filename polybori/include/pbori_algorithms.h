@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/05/14 16:09:40  dreyer
+ * Fix: removed infinite recursion in specialized case
+ *
  * Revision 1.1  2007/05/11 11:38:42  dreyer
  * ADD: started pbori_algorithms.h and term_accumulation()
  *
@@ -75,7 +78,7 @@ template <class ValueType>
 ValueType 
 term_accumulate(BoolePolynomial::const_iterator first, 
                 BoolePolynomial::const_iterator last, ValueType init) {
-  return term_accumulate(first, last, init);
+  return std::accumulate(first, last, init);
 }
 
 
