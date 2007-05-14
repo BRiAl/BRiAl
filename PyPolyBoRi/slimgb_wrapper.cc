@@ -40,5 +40,7 @@ void export_slimgb(){
   def("nf3", nf3);
   def("mod_mon_set", mod_mon_set);
   def("ll_red_nf",ll_red_nf);
+  def("ll_red_nf_noredsb",ll_red_nf_noredsb);
+  def("recursively_insert",recursively_insert);
 }
 
