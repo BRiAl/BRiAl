@@ -1485,11 +1485,11 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
   Polynomial res;
   if ((*r_nav)==p_index){
     if (have_redsb){  
-    res=ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
-      +Polynomial(MonomialSet(r_nav.elseBranch()))*ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+    res=ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
+      +Polynomial(MonomialSet(r_nav.elseBranch()))*ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
    }else{
-    res=ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
-         +ll_red_nf(Polynomial(MonomialSet(r_nav.elseBranch())),r_nav.thenBranch())*ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+    res=ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
+         +ll_red_nf_generic<have_redsb>(Polynomial(MonomialSet(r_nav.elseBranch())),r_nav.thenBranch())*ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
    }
   } else{
       assert((*r_nav)>p_index);
@@ -1497,8 +1497,8 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
       res=
       MonomialSet(
         p_index,
-        ll_red_nf(MonomialSet(p_nav.thenBranch()),r_nav).diagram(),
-        ll_red_nf(MonomialSet(p_nav.elseBranch()),r_nav).diagram());
+        ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav).diagram(),
+        ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav).diagram());
       
   }
   cache_mgr.insert(p_nav,r_nav,res.navigation());
