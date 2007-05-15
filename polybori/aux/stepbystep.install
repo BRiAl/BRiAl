@@ -1,0 +1,173 @@
+# installation protocol, no install script
+
+setenv SRCPATH /m/scratch/supertmp/dreyer/pbori_step_by_step/
+setenv INSTPATH $SRCPATH/usr
+
+setenv PYPATH $INSTPATH
+
+#works for linux and solaris
+setenv PLATFORM $OSTYPE 
+
+setenv \
+SINGROOT :ext:$USER@monty.mathematik.uni-kl.de:/usr/local/Singular/cvsroot
+
+cd $SRCPATH
+
+wget http://www.python.org/ftp/python/2.4.4/Python-2.4.4.tar.bz2
+
+wget http://downloads.sourceforge.net/boost/boost-jam-3.1.14.tgz
+
+wget http://downloads.sourceforge.net/boost/boost_1_33_1.tar.bz2
+
+wget http://downloads.sourceforge.net/scons/scons-0.96.1.tar.gz
+
+# alternative: prebuild distri-rpms or src-rpms from above sites
+
+
+#bzcat Python-2.4.4.tar.bz2 | tar -xf -
+#bzcat boost_1_33_1.tar.bz2 | tar -xf -
+#zcat scons-0.96.1.tar.gz | tar -xf -
+#zcat boost-jam-3.1.14.tgz | tar -xf -
+#    XOR 
+tar -xvjf Python-2.4.4.tar.bz2
+tar -xvzf boost-jam-3.1.14.tgz
+tar -xvjf boost_1_33_1.tar.bz2.tar.bz2    
+tar -xvzf scons-0.96.1.tar.gz   
+
+
+# see: 
+cd Python-2.4.4/
+
+./configure --prefix=$PYPATH
+
+
+make
+
+make install
+
+cd ..
+
+cd $PYPATH/bin
+
+# adding new python to path (best add to .login, .cshrc or .bashrc!)
+setenv PATH `pwd`:$PATH
+
+cd ../lib
+
+# if LD_LIBRARY_PATH exists 
+# Note: if a custom installed compiler is used, make sure, that its libs are
+# also in LD_LIBRARY_PATH, if necessary
+setenv LD_LIBRARY_PATH `pwd`:$LD_LIBRARY_PATH
+
+# else 
+#setenv LD_LIBRARY_PATH `pwd`
+
+cd ../..
+
+# see: http://www.boost.org/doc/html/jam/building.html
+cd boost-jam-3.1.14 
+
+# should state: using toolset 'gcc'
+./build.sh
+
+# bin.$PLATFORM/bjam is built
+
+cd bin.$PLATFORM
+
+# adding bjam to path
+setenv PATH `pwd`:$PATH
+
+
+# see: http://www.scons.org/doc/0.96.1/HTML/scons-user/x166.html
+
+cd scons-0.96.1
+
+python setup.py install --prefix=$INSTPATH 
+
+cd ..
+
+
+# see: http://www.boost.org/more/getting_started/unix-variants.html
+
+cd boost_1_33_1 
+
+bjam --prefix=$INSTPATH -sPYTHON_ROOT=$PYPATH install
+
+
+cd $INSTPATH/lib
+
+ln -s libboost_python-gcc.a libboost_python.a
+
+ln -s libboost_python-gcc.so libboost_python.so
+
+cd ../include
+
+ln -s boost-1_33_1/boost boost
+
+cd $SRCPATH
+
+# getting PolyBoRi
+# Note: checkout may fail, due to capacity overload of the server
+
+cvs -d $SINGROOT checkout PolyBoRi 
+
+# "find PolyBoRi -name "*" | wc -l" should by about 5800
+
+# hier ggf  Cudd/Makefile auf Plattform anpassen!
+# may add -f PIC here 
+cd PolyBoRi/Cudd
+make
+make objlib
+
+cd ..
+
+# hier ggf  extra/Makefile auf Plattform anpassen!
+# may add -f PIC here 
+cd extra
+make
+
+cd ..
+
+# in directoy PolyBoRi...
+
+# The following may need adjustment:
+# For instance, if you are using a custom installation of gcc, you may have to
+# add its lib directory to LIBPATH before building 
+# (*and* to enviroment variable LD_LIBRARY_PATH)
+#
+# Note: add -lrt to LINKFLAGS, if compiler complains about
+# undefined reference to `fdatasync'
+#
+# symbol <unknown>: offset * is non-aligned -> -fPIC into CCFLAGS
+#
+# "-export-dynamic -pthread" may be removed on solaris
+#
+# SConstruct file may need patch to get right g++ binary, if there are several 
+# Quick fix: add "env['ENV']['PATH']=os.environ["PATH"]"
+
+( echo 'CPPPATH=["'$INSTPATH'/include", "'$PYPATH'/include"]';\
+  echo 'LIBPATH=["'$INSTPATH'/lib", "'$PYPATH'/lib"]'; \
+  echo 'CCFLAGS="""-g -O3 -fPIC -ftemplate-depth-100 -ansi --pedantic -Wno-long-long -pg """' ;\
+ echo 'LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg "' ; \
+ echo 'PYPREFIX="'$PYPATH'"'; \
+ echo '#LIBS=["util"]' ) >custom.py
+
+
+
+# the system library "util" may be needed on some systems 
+# (in this case remove the hash in the last line)
+
+# building PolyBoRi (don't forget the dot!)
+scons .
+
+# faster alternative using 3 threads: scons -j 3 .
+
+# testing some small tests:
+
+cd testsuite/py
+
+python tests_for_unsat.py -q QuickTestCase
+
+
+
+
