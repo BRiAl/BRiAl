@@ -32,6 +32,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
+  .def(init<const BoolePolynomial::navigator &>())
   .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())
