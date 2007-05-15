@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/05/15 15:08:26  dreyer
+ * Fix: broken equal()
+ *
  * Revision 1.17  2007/05/14 08:44:07  dreyer
  * ADD: isOne()/isZero() to term iterators
  *
@@ -260,10 +263,11 @@ public:
 
   /// Equality test (assume iterators from same instance)
   bool_type equal(const self& rhs) const {
+
     if(empty() || rhs.empty())
       return (empty() && rhs.empty());
     else
-      return top() == rhs.top(); 
+      return (m_stack == rhs.m_stack);
   }
 
   void incrementThen() {
