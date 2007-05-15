@@ -20,6 +20,7 @@ using std::cout;
 using std::endl;
 
 BEGIN_NAMESPACE_PBORIGB
+static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
 static bool irreducible_lead(Monomial lm, const GroebnerStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
@@ -997,6 +998,9 @@ bool operator() (const Exponent& e){
 private:
     const GroebnerStrategy* strat;
 };
+
+
+
 class LexHelper{
     public:
     static bool irreducible_lead(const Monomial& m, const GroebnerStrategy& strat){
@@ -1031,6 +1035,9 @@ class LexHelper{
       else return false;
       
     }
+    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
+        return term_accumulate(it,end,Polynomial(0));
+    }
 };
 
 class DegOrderHelper{
@@ -1053,6 +1060,10 @@ class DegOrderHelper{
     static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
       return false;
     }
+    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
+          return add_up_monomials(vec);
+      }
+    
 };
 class BlockOrderHelper{
     public:
@@ -1074,6 +1085,9 @@ class BlockOrderHelper{
     static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
       return false;
     }
+    static Polynomial  sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
+            return add_up_monomials(vec);
+        }
 };
 int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
@@ -1127,7 +1141,7 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   
 }
 
-static Polynomial add_up_monomials(std::vector<Monomial>& res_vec, int start, int end){
+static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec, int start, int end){
     //we assume the polynomials to be pairwise different
     int s=end-start;
     if (s==0) return Polynomial();
@@ -1136,7 +1150,7 @@ static Polynomial add_up_monomials(std::vector<Monomial>& res_vec, int start, in
     return Polynomial(add_up_monomials(res_vec,start,start+h).diagram().unite(add_up_monomials(res_vec,start+h,end).diagram()));
     //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
 }
-static Polynomial add_up_monomials(std::vector<Monomial>& res_vec){
+static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
     if (s==0) return Polynomial();
@@ -1311,6 +1325,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //p-=lm;
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);
+    typename Helper::iterator_type it_orig=it;
     typename Helper::iterator_type end=Helper::end(p);
     bool rest_is_irreducible=false;
     //typedef  (typename Helper::iterator_type) it_type;
@@ -1332,7 +1347,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
     if ((it!=end) &&(!(rest_is_irreducible))) {
-        irr_p=add_up_monomials(irr);
+        irr_p=Helper::sum_range(irr,it_orig,it);//add_up_monomials(irr);
         rest_lead=*it;
         
         }
