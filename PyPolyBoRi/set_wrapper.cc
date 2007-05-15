@@ -27,24 +27,7 @@ void export_bset(){
   .def(boost::python::init <const BooleSet::navigator& >())
   .def(boost::python::init <>())
  
-  /*.def(self + self)
-  .def(self | self)
-  .def(self * self)
-  .def(self & self)
-  .def(self += self)
-  .def(self |= self)
-  .def(self *= self)
-  .def(self &= self)
-  .def(self==self)
-  .def(self!=self)
-  .def(self<=self)
-  .def(self>=self)
-  .def(self<self)
-  .def(self>self)*/
-  //.def(self-self)
-  //.def(self-=self)
-  //.def("printToStdout", &BooleSet::print)
-  //.def("count", &BooleSet::count)
+
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("product", &BooleSet::product)
@@ -68,6 +51,5 @@ void export_bset(){
   .def("navigation", &BooleSet::navigation)
   .def("__contains__", &BooleSet::owns)
   .def("intersect", &BooleSet::intersect);
-  //.def("ite", &BooleSet::ite)
-  //.def("printMinterm", &BooleSet::printMinterm);
+
 }
