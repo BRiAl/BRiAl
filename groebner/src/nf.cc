@@ -1035,8 +1035,11 @@ class LexHelper{
       else return false;
       
     }
-    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
-        return term_accumulate(it,end,Polynomial(0));
+    static Polynomial sum_range(std::vector<Monomial>& vec,const iterator_type& it, const iterator_type& end){
+        if (vec.size()==1) return vec[0];
+        if (it!=end)
+            return term_accumulate(it,end,Polynomial(0));
+        else return 0;
     }
 };
 
