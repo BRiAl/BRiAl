@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/05/16 07:10:55  bricken
+ * + reduced recursion branches for multiplication
+ *
  * Revision 1.26  2007/05/01 06:55:15  bricken
  * + candidate for lead
  *
@@ -326,13 +329,16 @@ dd_multiply_recursively(const CacheType& cache_mgr,
       init = dd_type(index, res11.navigation(), res00.navigation());
     } else
 #endif
-      {
+    { 
+        bool as1_zero=false;
         if (as0 == as1)
           bs1 = init.navigation();
-        else if (bs0 == bs1)
+        else if (bs0 == bs1){
           as1 = init.navigation();
-
+          as1_zero=true;  
+        }
         // Do recursion
+        #if 0
         init = dd_type(index,  
                          (dd_multiply_recursively(cache_mgr, as0, bs1, init) 
                          + dd_multiply_recursively(cache_mgr, as1, bs1, init)
@@ -340,7 +346,22 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                                                    as1, bs0, init)).diagram(),
                          dd_multiply_recursively(cache_mgr, 
                                                  as0, bs0, init).diagram() );
+        #else
         
+        if (as1_zero){
+            init = dd_type(index,  
+                             dd_multiply_recursively(cache_mgr, as0, bs1, init).diagram(),
+                             dd_multiply_recursively(cache_mgr, 
+                                                     as0, bs0, init).diagram() );
+        } else{
+            PolyType bs01=(PolyType(bs0)+PolyType(bs1));
+            init=dd_type(index,(dd_multiply_recursively(cache_mgr,bs01.navigation(),as1,init)+ 
+                    dd_multiply_recursively(cache_mgr, as0, bs1, init)).diagram(),
+                dd_multiply_recursively(cache_mgr, 
+                  as0, bs0, init).diagram());
+          }
+        
+        #endif
       }
     // Insert in cache
     cache_mgr.insert(firstNavi, secondNavi, init.navigation());
