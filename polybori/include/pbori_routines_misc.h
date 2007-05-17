@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/05/17 17:09:10  bricken
+ * + reverted last changes partially
+ *
  * Revision 1.28  2007/05/16 11:47:49  bricken
  * + more special cases
  *
@@ -359,7 +362,7 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                              dd_multiply_recursively(cache_mgr, 
                                                      as0, bs0, init).diagram() );
         } else{
-            if (bs0==zero_ptr){
+            /*if (bs0==zero_ptr){
                 //WARNING: here we use uniqueness of nodes
                 if (bs1==zero_ptr){
                     //init=0, which is init
@@ -368,13 +371,13 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                     PolyType as01=(PolyType(as0)+PolyType(as1));
                     init=dd_type(index,dd_multiply_recursively(cache_mgr,as01.navigation(),bs1,init).diagram(),init.diagram());
                 }
-            } else {
+            } else {*/
             PolyType bs01=(PolyType(bs0)+PolyType(bs1));
             init=dd_type(index,(dd_multiply_recursively(cache_mgr,bs01.navigation(),as1,init)+ 
                     dd_multiply_recursively(cache_mgr, as0, bs1, init)).diagram(),
                 dd_multiply_recursively(cache_mgr, 
                   as0, bs0, init).diagram());
-            }
+            //}
           }
         
         #endif
