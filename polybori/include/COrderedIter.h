@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/05/18 11:48:38  dreyer
+ * ADD: sophisticated term_accumulate
+ *
  * Revision 1.17  2007/05/10 13:12:56  dreyer
  * CHANGE: using optimized term generation in term-iterator's dereferencing
  *
@@ -140,38 +143,38 @@ public:
 };
 
 
-template<class SequenceType>
-void get_term(BooleMonomial& monom, const SequenceType& seq) {
+// template<class SequenceType>
+// void get_term(BooleMonomial& monom, const SequenceType& seq) {
 
-  typename SequenceType::const_reverse_iterator start(seq.rbegin()), 
-    finish(seq.rend());
+//   typename SequenceType::const_reverse_iterator start(seq.rbegin()), 
+//     finish(seq.rend());
 
-  while (start != finish){
-    monom.changeAssign(*start);
-    ++start;
-  }
-}
-
-
-template<class SequenceType>
-void get_term(BooleExponent& termexp, const SequenceType& seq) {
-
-  termexp.reserve(seq.deg());
-  typename SequenceType::const_iterator start(seq.begin()), 
-    finish(seq.end());
-
-  while (start != finish){
-    termexp.push_back(*start);
-    ++start;
-  }
-}
+//   while (start != finish){
+//     monom.changeAssign(*start);
+//     ++start;
+//   }
+// }
 
 
-template<class SequenceType>
-void get_term(typename CTypes::size_type& termdeg, const SequenceType& seq) {
+// template<class SequenceType>
+// void get_term(BooleExponent& termexp, const SequenceType& seq) {
 
-  termdeg = seq.deg();
-}
+//   termexp.reserve(seq.deg());
+//   typename SequenceType::const_iterator start(seq.begin()), 
+//     finish(seq.end());
+
+//   while (start != finish){
+//     termexp.push_back(*start);
+//     ++start;
+//   }
+// }
+
+
+// template<class SequenceType>
+// void get_term(typename CTypes::size_type& termdeg, const SequenceType& seq) {
+
+//   termdeg = seq.deg();
+// }
 
 template <class NavigatorType, class MonomType>
 class COrderedIter:
@@ -227,12 +230,16 @@ public:
     p_iter->increment(); 
   }
 
+  /// Determine whether term is one (without explicit constructing)
+  bool_type isOne() const { return p_iter->isOne(); }
+
+  /// Determine whether term is zero (without explicit constructing)
+  bool_type isZero() const { return p_iter->isZero(); }
 
   /// Dereferencing operation
   MonomType dereference() const { 
-    MonomType result;
-    get_term(result, *p_iter);
-    return result;
+
+    return CTermGenerator<MonomType>()(*p_iter);
   }
 
   const_iterator begin() const { return p_iter->begin(); }
@@ -242,6 +249,11 @@ public:
 
   size_type deg() const { return p_iter->deg(); }
   idx_type firstIndex() const { return *begin(); }
+
+  /// Get navigator of term start
+  navigator navigation() const {
+    return p_iter->navigation();
+  }
 
 protected:
   /// The functional which defines the dereferecing operation

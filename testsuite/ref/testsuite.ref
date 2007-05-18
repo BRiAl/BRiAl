@@ -1940,6 +1940,42 @@ x(0)*x(1) + x(2)
 x(0) + x(1) + x(2)
 Finished.
 ----------------------
+Executing testsuite/termaccu
+----------------------
+Testing leading terms
+x*y + z +x*z +y*z: 
+x(0)*x(1) + x(0)*x(2) + x(1)*x(2) + x(2)
+Result (lex-ordered): 
+x(0)*x(1) + x(0)*x(2) + x(1)*x(2) + x(2)
+Result (current order): 
+x(0)*x(1) + x(0)*x(2) + x(1)*x(2) + x(2)
+Test iter: 
+x(0)*x(1)==x(0)*x(2)
+0
+x(0)*x(2)==x(1)*x(2)
+0
+x(1)*x(2)==x(2)
+0
+Test ordered iter: 
+x(0)*x(1)==x(0)*x(2)
+0
+x(0)*x(2)==x(1)*x(2)
+0
+x(1)*x(2)==x(2)
+0
+Testing sophisticated accumulation: 
+Correct result:       x(0)*x(2) + x(1)*x(2)
+Sophisticated result: x(0)*x(2) + x(1)*x(2)
+testing...       x(0)*x(2) + x(0)*x(4) + x(1)*x(2) + x(1)*x(4) + x(1)
+lower x(0)*x(2) + x(0)*x(4)
+x(0)*x(2) + x(0)*x(4)
+testing...       x(0)*x(1) + x(0)*x(2) + x(1)*x(2) + 1
+summing >= x(0)*x(2) .. <  1
+x(0)*x(2) + x(1)*x(2)
+summing >= x(0)*x(2) .. <  0
+x(0)*x(2) + x(1)*x(2) + 1
+Finished.
+----------------------
 Executing testsuite/monomial
 ----------------------
 Testing Boolean monomials

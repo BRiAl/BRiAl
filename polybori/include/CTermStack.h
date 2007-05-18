@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/05/18 11:48:39  dreyer
+ * ADD: sophisticated term_accumulate
+ *
  * Revision 1.18  2007/05/15 15:08:26  dreyer
  * Fix: broken equal()
  *
@@ -246,6 +249,11 @@ public:
   const_reverse_iterator rbegin() const { return stackRBegin(); }
 
   const_reverse_iterator rend() const { return stackREnd(); }
+
+  /// Get navigator of stack start
+  navigator navigation() const {
+    return *m_stack.begin();
+  }
 
   /// result type of top()
   typedef typename stack_type::value_type top_type;

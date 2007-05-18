@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/05/18 11:48:39  dreyer
+ * ADD: sophisticated term_accumulate
+ *
  * Revision 1.8  2007/05/11 11:29:03  dreyer
  * CHANGE: space
  *
@@ -72,34 +75,10 @@ public:
   typedef TermType value_type;
   typedef value_type result_type;
 
-
-  template <class ResultType,  class Iterator>
-  void get_tail_term__(ResultType& result, 
-                       Iterator start, Iterator finish) const {
-    
-    
-    while (start != finish){
-      result.changeAssign(*start);
-      ++start;
-    }
-    
-  }
-  
-  template <class ResultType, class PairType, class Iterator>
-  void get_tail_term(ResultType& result, 
-                     const PairType& both, Iterator finish) const {
-    
-    result = BooleSet(both.first);
-    get_tail_term__(result, both.second, finish);
-    
-  }
-
-
   template <class SequenceType>
   result_type operator()(const SequenceType& seq) const{
 
-    value_type result(true);
-
+    value_type result(!seq.isZero());
 
     typename SequenceType::stack_reverse_iterator 
       start(seq.stackRBegin()), finish(seq.stackREnd());

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2007/05/18 11:48:39  dreyer
+ * ADD: sophisticated term_accumulate
+ *
  * Revision 1.21  2007/05/14 08:44:07  dreyer
  * ADD: isOne()/isZero() to term iterators
  *
@@ -201,6 +204,11 @@ public:
   idx_type firstIndex() const { 
     assert(!m_stack.empty()); 
     return *begin(); 
+  }
+
+  /// Get navigator of term start
+  navigator navigation() const {
+    return m_stack.navigation();
   }
 
 protected:

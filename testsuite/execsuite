@@ -8,6 +8,9 @@
 #
 # Author: Alexander Dreyer, 2006
 # $Log$
+# Revision 1.7  2007/05/18 11:48:39  dreyer
+# ADD: sophisticated term_accumulate
+#
 # Revision 1.6  2006/03/30 08:52:32  dreyer
 # ADD: execsuite may be called from othere directories
 #
@@ -80,7 +83,7 @@ if $runonly; then
   echo "---------------------" 
 
   find $srcdir -type f -name '*.cc' -print | \
-    sed -e "s/.cc/$exe/" -e "s|$srcdir|$thisdir|"| while read i
+    sed -e "s/[.]cc/$exe/" -e "s|$srcdir|$thisdir|"| while read i
   do
     echo "----------------------" 
     echo "Executing $i"
