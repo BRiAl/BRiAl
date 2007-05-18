@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/05/18 14:28:06  dreyer
+ * CHANGE: some optimizations
+ *
  * Revision 1.3  2007/05/18 11:48:39  dreyer
  * ADD: sophisticated term_accumulate
  *
@@ -81,27 +84,27 @@ lower_term_accumulate(NaviType navi,
   
   assert(*lstart >= *navi);
 
-  ValueType resthen, reselse;
+  ValueType resthen, reselse, result;
   if (*lstart > *navi) {
     resthen = navi.thenBranch();
     reselse = lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
+    result = BooleSet(*navi, resthen.navigation(), reselse.navigation());
   }
   else  {
     assert(*lstart == *navi);
     ++lstart;
     resthen = lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init);
-    reselse = BoolePolynomial(false).navigation();
+    result = resthen.diagram().change(*navi);
   }
 
-  return  BooleSet(*navi, resthen.navigation(), reselse.navigation());
+  return  result;
 }
 
 
 template <class UpperIterator, class NaviType, class ValueType>
 ValueType 
 upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
-                        NaviType navi, 
-                        ValueType init) {
+                      NaviType navi, ValueType init) {
 
    if (ustart == ufinish){
      return true;
@@ -117,26 +120,25 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
    ValueType reselse = navi.elseBranch();
 
    return BooleSet(*navi, resthen.navigation(), reselse.navigation());
-
 }
 
-///@note: assuming lstart .. lfinish not marking the term one
+///@note: assuming lstart .. lfinish *not* marking the term one
 template <class UpperIterator, class NaviType, class LowerIterator, 
           class ValueType>
 ValueType 
 term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi, 
                 LowerIterator lstart, LowerIterator lfinish, ValueType init) {
 
-  if (ustart == ufinish)
-    return true;
 
   if (lstart == lfinish)
     return upper_term_accumulate(ustart, ufinish, navi, init);
 
+  if (ustart == ufinish)
+    return true;
+
   while (*navi < *ustart)
     navi.incrementElse();
   ++ustart;
-  
 
   
   if (navi.isConstant())
@@ -144,20 +146,23 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
 
   assert(*lstart >= *navi);
 
-  ValueType resthen, reselse;
+  ValueType resthen, reselse, result;
   if (*lstart > *navi) {
     resthen = upper_term_accumulate(ustart, ufinish, navi.thenBranch(), init);
     reselse = lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
+
+    result = BooleSet(*navi, resthen.navigation(), reselse.navigation());
   }
   else  {
     assert(*lstart == *navi);
     ++lstart;
     resthen = term_accumulate(ustart, ufinish, navi.thenBranch(),
                               lstart, lfinish, init);
-    reselse = BoolePolynomial(false).navigation() ;
+ 
+    result = resthen.diagram().change(*navi);
   }
 
-  return BooleSet(*navi, resthen.navigation(), reselse.navigation());
+  return result;
 }
 
 
@@ -172,10 +177,21 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
   if(last.isOne())
     return upper_term_accumulate(first.begin(), first.end(), 
                                  first.navigation(), init) + ValueType(1);
-
+  
   ValueType result = term_accumulate(first.begin(), first.end(), 
                                      first.navigation(),
                                      last.begin(), last.end(), init);
+
+  
+  // alternative
+  /*  ValueType result = upper_term_accumulate(first.begin(), first.end(), 
+                                           first.navigation(), init);
+
+
+  result = lower_term_accumulate(result.navigation(),
+                                 last.begin(), last.end(), init);
+
+  */
 
   assert(result == std::accumulate(first, last, init) ); 
 
