@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/05/18 16:10:27  dreyer
+ * CHANGE: term_accumulate optimized more
+ *
  * Revision 1.4  2007/05/18 14:28:06  dreyer
  * CHANGE: some optimizations
  *
@@ -75,6 +78,8 @@ ValueType
 lower_term_accumulate(NaviType navi, 
                       LowerIterator lstart, LowerIterator lfinish, 
                       ValueType init) {
+
+  /// @todo Maybe recursive caching is efficient here.
   if (lstart == lfinish){
     return BoolePolynomial(false);
   }
@@ -84,17 +89,28 @@ lower_term_accumulate(NaviType navi,
   
   assert(*lstart >= *navi);
 
-  ValueType resthen, reselse, result;
+  ValueType result;
   if (*lstart > *navi) {
-    resthen = navi.thenBranch();
-    reselse = lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
-    result = BooleSet(*navi, resthen.navigation(), reselse.navigation());
+
+    ValueType reselse = 
+      lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
+
+//     if(reselse.isZero())
+//       return BooleSet(navi.thenBranch()).change(*navi);
+
+    // Note: result == BooleSet(navi) holds only in trivial cases, so testing
+    // reselse.navigation() == navi.elseBranch() is almost always false
+    // Hence, checking reselse.navigation() == navi.elseBranch() for returning
+    // navi, instead of result yields too much overhead.
+    result = BooleSet(*navi, navi.thenBranch(), reselse.navigation());
   }
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    resthen = lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init);
-    result = resthen.diagram().change(*navi);
+    BooleSet resthen = lower_term_accumulate(navi.thenBranch(), lstart, lfinish,
+                                      init).navigation();
+
+    result = resthen.change(*navi);
   }
 
   return  result;
@@ -106,20 +122,25 @@ ValueType
 upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
                       NaviType navi, ValueType init) {
 
-   if (ustart == ufinish){
-     return true;
-   }
+  // Note: Recursive caching, wrt. a navigator representing the term
+  // corresponding to ustart .. ufinish cannot be efficient here, because
+  // dereferencing the term is as expensive as this procedure in whole. (Maybe
+  // the generation of the BooleSet in the final line could be cached somehow.)
 
-   while (*navi < *ustart)
-     navi.incrementElse();
-   ++ustart;
+  if (ustart == ufinish)
+    return true;
+  
+  while (*navi < *ustart)
+    navi.incrementElse();
+  ++ustart;
+  NaviType navithen = navi.thenBranch();
+  ValueType resthen = upper_term_accumulate(ustart, ufinish, navithen, init);
 
-   ValueType resthen = upper_term_accumulate(ustart, ufinish,
-                                             navi.thenBranch(), init);
+  // The following condition holds quite often, so computation time may be saved
+  if (navithen == resthen.navigation())
+    return BooleSet(navi);
 
-   ValueType reselse = navi.elseBranch();
-
-   return BooleSet(*navi, resthen.navigation(), reselse.navigation());
+  return BooleSet(*navi, resthen.navigation(), navi.elseBranch());
 }
 
 ///@note: assuming lstart .. lfinish *not* marking the term one
@@ -146,20 +167,22 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
 
   assert(*lstart >= *navi);
 
-  ValueType resthen, reselse, result;
+  ValueType result;
   if (*lstart > *navi) {
-    resthen = upper_term_accumulate(ustart, ufinish, navi.thenBranch(), init);
-    reselse = lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
+    ValueType resthen = 
+      upper_term_accumulate(ustart, ufinish, navi.thenBranch(), init);
+    ValueType reselse = 
+      lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
 
     result = BooleSet(*navi, resthen.navigation(), reselse.navigation());
   }
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    resthen = term_accumulate(ustart, ufinish, navi.thenBranch(),
-                              lstart, lfinish, init);
+    BooleSet resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
+                                       lstart, lfinish, init).navigation();
  
-    result = resthen.diagram().change(*navi);
+    result = resthen.change(*navi);
   }
 
   return result;

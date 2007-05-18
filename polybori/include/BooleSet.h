@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2007/05/18 16:10:27  dreyer
+ * CHANGE: term_accumulate optimized more
+ *
  * Revision 1.23  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -130,6 +133,9 @@ public:
 
   /// Generic access to base type
   typedef CTypes::dd_type base;
+
+  /// Generic access to underlying diagram type
+  typedef base dd_type;
 
   /// Type of terms
   typedef BooleMonomial term_type;
