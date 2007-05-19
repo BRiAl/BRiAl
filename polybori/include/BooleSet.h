@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2007/05/19 08:43:03  dreyer
+ * CHANGE: remove unnecessary casts
+ *
  * Revision 1.24  2007/05/18 16:10:27  dreyer
  * CHANGE: term_accumulate optimized more
  *
@@ -247,6 +250,9 @@ public:
 
   /// Compute existential abstraction
   self existAbstract(const self& rhs) const;
+
+  /// Access internal decision diagram
+  const dd_type& diagram() const { return dynamic_cast<const dd_type&>(*this); }
 };
 
 

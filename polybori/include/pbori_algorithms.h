@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/05/19 08:43:03  dreyer
+ * CHANGE: remove unnecessary casts
+ *
  * Revision 1.5  2007/05/18 16:10:27  dreyer
  * CHANGE: term_accumulate optimized more
  *
@@ -81,11 +84,11 @@ lower_term_accumulate(NaviType navi,
 
   /// @todo Maybe recursive caching is efficient here.
   if (lstart == lfinish){
-    return BoolePolynomial(false);
+    return false;
   }
   
   if (navi.isConstant())
-    return BooleSet(navi);
+    return navi;
   
   assert(*lstart >= *navi);
 
@@ -107,10 +110,10 @@ lower_term_accumulate(NaviType navi,
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    BooleSet resthen = lower_term_accumulate(navi.thenBranch(), lstart, lfinish,
-                                      init).navigation();
+    ValueType resthen = 
+      lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init);
 
-    result = resthen.change(*navi);
+    result = resthen.diagram().change(*navi);
   }
 
   return  result;
@@ -179,10 +182,10 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    BooleSet resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
-                                       lstart, lfinish, init).navigation();
+    ValueType resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
+                                        lstart, lfinish, init);
  
-    result = resthen.change(*navi);
+    result = resthen.diagram().change(*navi);
   }
 
   return result;
