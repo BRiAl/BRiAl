@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2007/05/20 09:44:40  dreyer
+ * ADD: BooleSet(true/false)
+ *
  * Revision 1.25  2007/05/19 08:43:03  dreyer
  * CHANGE: remove unnecessary casts
  *
@@ -178,6 +181,9 @@ public:
 
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, navigator);
+
+  /// Construct one or zero set from constant
+  BooleSet(bool_type);
 
   /// Construct from navigator node
   BooleSet(navigator);

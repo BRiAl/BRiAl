@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/05/20 09:44:40  dreyer
+ * ADD: BooleSet(true/false)
+ *
  * Revision 1.6  2007/05/19 08:43:03  dreyer
  * CHANGE: remove unnecessary casts
  *
@@ -141,7 +144,7 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
 
   // The following condition holds quite often, so computation time may be saved
   if (navithen == resthen.navigation())
-    return BooleSet(navi);
+    return navi;
 
   return BooleSet(*navi, resthen.navigation(), navi.elseBranch());
 }

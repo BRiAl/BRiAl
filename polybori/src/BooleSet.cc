@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/05/20 09:44:40  dreyer
+ * ADD: BooleSet(true/false)
+ *
  * Revision 1.31  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -154,6 +157,14 @@ BooleSet::BooleSet():
   base( BoolePolyRing::ringZero() )  {
 
   PBORI_TRACE_FUNC( "BooleSet()" );
+
+}
+
+// Default constructor
+BooleSet::BooleSet(bool_type isOne):
+  base(isOne? BoolePolyRing::ringOne() : BoolePolyRing::ringZero())  {
+
+  PBORI_TRACE_FUNC( "BooleSet(bool_type)" );
 
 }
 
