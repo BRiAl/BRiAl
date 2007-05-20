@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/05/20 16:03:24  dreyer
+ * CHANGE: more fine tuning
+ *
  * Revision 1.8  2007/05/20 15:22:55  dreyer
  * CHANGE fine tuning
  *
@@ -116,10 +119,10 @@ lower_term_accumulate(NaviType navi,
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    ValueType resthen = 
-      lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init);
+    BooleSet resthen = 
+      lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init).diagram();
 
-    result = resthen.diagram().change(*navi);
+    result = resthen.change(*navi);
   }
 
   return  result;
@@ -188,10 +191,10 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
   else  {
     assert(*lstart == *navi);
     ++lstart;
-    ValueType resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
-                                        lstart, lfinish, init);
+     BooleSet resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
+                                        lstart, lfinish, init).diagram();
  
-    result = resthen.diagram().change(*navi);
+    result = resthen.change(*navi);
   }
 
   return result;
