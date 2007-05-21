@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/05/21 16:07:55  dreyer
+ * CHANGE: temporarily deactivated some things with curious side-effects
+ *
  * Revision 1.32  2007/05/20 09:44:40  dreyer
  * ADD: BooleSet(true/false)
  *
@@ -160,6 +163,7 @@ BooleSet::BooleSet():
 
 }
 
+/*
 // Default constructor
 BooleSet::BooleSet(bool_type isOne):
   base(isOne? BoolePolyRing::ringOne() : BoolePolyRing::ringZero())  {
@@ -167,6 +171,7 @@ BooleSet::BooleSet(bool_type isOne):
   PBORI_TRACE_FUNC( "BooleSet(bool_type)" );
 
 }
+*/
 
 // Construct new node (using navigator nodes)
 BooleSet::BooleSet(idx_type idx, navigator first, navigator second):

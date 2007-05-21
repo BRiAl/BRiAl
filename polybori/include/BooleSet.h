@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/05/21 16:07:54  dreyer
+ * CHANGE: temporarily deactivated some things with curious side-effects
+ *
  * Revision 1.26  2007/05/20 09:44:40  dreyer
  * ADD: BooleSet(true/false)
  *
@@ -183,7 +186,9 @@ public:
   BooleSet(idx_type idx, navigator);
 
   /// Construct one or zero set from constant
-  BooleSet(bool_type);
+  //  BooleSet(bool_type);
+  /// @todo  temporarily deactivated, as it slow downs procedures like
+  /// term_accumulate, needs check, what happens to inlinings etc. in this case
 
   /// Construct from navigator node
   BooleSet(navigator);

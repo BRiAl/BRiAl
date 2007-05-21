@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.97  2007/05/21 16:07:54  dreyer
+ * CHANGE: temporarily deactivated some things with curious side-effects
+ *
  * Revision 1.96  2007/05/14 08:10:59  dreyer
  * ADD: added poly / poly and poly % poly
  *
@@ -406,6 +409,7 @@ BoolePolynomial::BoolePolynomial(const dd_type& rhs):
 
   PBORI_TRACE_FUNC( "BoolePolynomial(const dd_type&)" );
 }
+
 // Constructor polynomial from existing navigator
 BoolePolynomial::BoolePolynomial(const navigator& rhs):
   m_dd(BooleSet(rhs))  {
