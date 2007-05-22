@@ -39,8 +39,10 @@ import os
 
 #opts.Add("SINGULAR_HOME")
 opts.Add('PBP', 'PolyBoRi python', "python")
-env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
+#opts.Add('USERLIBS', 'additional libs', [])
 
+env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
+#USERLIBS=env["USERLIBS"]
 if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
 

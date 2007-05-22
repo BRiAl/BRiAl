@@ -81,12 +81,17 @@ def DoxyfileParse(file_contents):
          data.pop(k)
 
       # items in the following list will be kept as lists and not converted to strings
-      if k in ["INPUT", "FILE_PATTERNS", "EXCLUDE_PATTERNS"]:
+      from re import sub
+      
+      if k=="INPUT":
+          data[k]=v
+          continue
+      if k in ["FILE_PATTERNS", "EXCLUDE_PATTERNS"]:
          continue
 
       if len(v) == 1:
          data[k] = v[0]
-
+   #print "parsed Data", data
    return data
 
 def DoxySourceScan(node, env, path):
@@ -95,10 +100,7 @@ def DoxySourceScan(node, env, path):
    any files used to generate docs to the list of source files.
    """
    default_file_patterns = [
-      '*.c', '*.cc', '*.cxx', '*.cpp', '*.c++', '*.java', '*.ii', '*.ixx',
-      '*.ipp', '*.i++', '*.inl', '*.h', '*.hh ', '*.hxx', '*.hpp', '*.h++',
-      '*.idl', '*.odl', '*.cs', '*.php', '*.php3', '*.inc', '*.m', '*.mm',
-      '*.py',
+     '*.cc', '*.h'
    ]
 
    default_exclude_patterns = [
@@ -116,8 +118,10 @@ def DoxySourceScan(node, env, path):
 
    file_patterns = data.get("FILE_PATTERNS", default_file_patterns)
    exclude_patterns = data.get("EXCLUDE_PATTERNS", default_exclude_patterns)
-
+   #print "INPUT", data["INPUT"]
    for node in data.get("INPUT", []):
+      node=node.replace("../","")#dirty hack
+      #print "PATH IS BLABLA",node
       if os.path.isfile(node):
          sources.append(node)
       elif os.path.isdir(node):
@@ -132,10 +136,12 @@ def DoxySourceScan(node, env, path):
                   if pattern_check and not exclude_check:
                      sources.append(filename)
          else:
+            #print "skjgkjdsgkjdsgkj"
             for pattern in file_patterns:
                sources.extend(glob.glob("/".join([node, pattern])))
 
    sources = map( lambda path: env.File(path), sources )
+   #print "SOURCES:",sources
    return sources
 
 
@@ -157,8 +163,7 @@ def DoxyEmitter(source, target, env):
    data = DoxyfileParse(source[0].get_contents())
 
    targets = []
-   out_dir = data.get("OUTPUT_DIRECTORY", ".")
-
+   out_dir = "doc/"+data.get("OUTPUT_DIRECTORY", ".")
    # add our output locations
    for (k, v) in output_formats.items():
       if data.get("GENERATE_" + k, v[0]) == "YES":
