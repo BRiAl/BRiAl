@@ -8,6 +8,7 @@ USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
 USERLIBS=[]
 PYPREFIX="/sw"
 SINGULAR_HOME=None
+PBP="python"
 #TODO: use opts.Add instead of the import of custom.py
 #see http://www.scons.org/doc/production/HTML/scons-user/x1445.html
 try:
@@ -24,6 +25,7 @@ try:
         USERLIBS=custom.LIBS
     if "SINGULAR_HOME" in dir(custom):
         SINGULAR_HOME=custom.SINGULAR_HOME
+    
 except:
     pass
 
@@ -36,6 +38,7 @@ import os
 
 
 #opts.Add("SINGULAR_HOME")
+opts.Add('PBP', 'PolyBoRi python', "python")
 env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
 
 if (env['PLATFORM']=="darwin"):
@@ -140,7 +143,7 @@ Default(libpb)
 gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]
 gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
-print "gb:", gb, dir(gb)
+#print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
     gb=gb[0]
@@ -172,13 +175,13 @@ if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
-        env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
+        pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
             CPPPATH=CPPPATH)
     else:
         #print "l:", l
-        env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
+        pypb=env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
@@ -240,6 +243,23 @@ if HAVE_PYTHON_EXTENSION:
      #       env.CNF(f[:-4])
     add_cnf_dir(env,"testsuite/py/data/gcp_large")
     add_cnf_dir(env,"testsuite/py/data/bejing")
+    #if isinstance(pypb,list):
+    #    pypb=pypb[0]
+    def pypb_emitter(target,source,env):
+        env.Depends(target,pypb)
+        return (target, source)
+
+    bld = Builder(action = "$PBP doc/python/genpythondoc.py $SOURCE $TARGET",
+                  emitter = pypb_emitter)
+
+    # Add the new Builder to the list of builders
+    env['BUILDERS']['PYTHONDOC'] = bld
+
+    # Generate foo.vds from foo.txt using mk_vds
+    env.PYTHONDOC(target="doc/python/PyPolyBoRi.html", source='PyPolyBoRi/PyPolyBoRi.so')
+    env.PYTHONDOC(target="doc/python/nf.html", source='testsuite/py/nf.py')
+    env.PYTHONDOC(target="doc/python/ll.html", source='testsuite/py/ll.py')
+    #bld=Builder("cd")
 else:
     print "no python extension"
     
