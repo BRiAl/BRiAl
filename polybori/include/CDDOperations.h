@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/05/22 11:05:28  dreyer
+ * FIX: ambigous overload
+ *
  * Revision 1.4  2006/11/27 16:25:14  dreyer
  * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
  *
@@ -89,7 +92,7 @@ public:
 #ifdef PBORI_USEDVARS_BY_SUPPORT
 
   /// @todo: check here
-  return dd_last_lexicographical_term(dd.support(), type_tag<OutputType>());
+  return dd_last_lexicographical_term(dd.support(), type_tag<MonomType>());
 
 #else
 

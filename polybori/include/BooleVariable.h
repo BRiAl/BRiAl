@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/05/22 11:05:28  dreyer
+ * FIX: ambigous overload
+ *
  * Revision 1.6  2007/05/14 08:10:59  dreyer
  * ADD: added poly / poly and poly % poly
  *
@@ -50,7 +53,7 @@
 #include "pbori_defs.h"
 
 // get BoolePolynomial's definition
-#include "BoolePolynomial.h"
+#include "BoolePolyRing.h"
 #include "BooleMonomial.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -81,19 +84,24 @@ class BooleVariable {
   typedef BooleVariable self;
 
   /// Constructor idx-th variable of active ring
-  BooleVariable(idx_type idx = 0);
+  BooleVariable(idx_type idx = 0):
+    m_poly( BoolePolyRing::ringVariable(idx) ) {}
 
   /// Copy constructor
-  BooleVariable(const self&);
+  BooleVariable(const self& rhs):  
+    m_poly(rhs.m_poly) {}
 
-  operator const BoolePolynomial&() const;
+  /// Cast to polynomial type
+  operator const BoolePolynomial&() const { return m_poly; }
 
+  /// Get index of the variable
   idx_type index() const { return *m_poly.firstBegin(); }
 
 private:
   BoolePolynomial m_poly;
 };
 
+/**/
 /// Multiplication of variables by a polynomial
 inline BoolePolynomial
 operator*(const BooleVariable& lhs, 
@@ -102,11 +110,20 @@ operator*(const BooleVariable& lhs,
   return BoolePolynomial(rhs) *= BooleMonomial(lhs);
 }
 
+/// Multiplication of a polynomial by a variable
 inline BoolePolynomial
 operator*(const BoolePolynomial& lhs, 
           const BooleVariable& rhs){
 
   return BoolePolynomial(lhs) *= BooleMonomial(rhs);
+}
+
+/// Multiplication of a polynomial by a variable with assignment
+inline BoolePolynomial&
+operator*=(BoolePolynomial& lhs, 
+           const BooleVariable& rhs){
+
+  return lhs *= BooleMonomial(rhs);
 }
 
 /// Multiplication of monomials by a polynomial
@@ -130,6 +147,23 @@ operator/(const BoolePolynomial& lhs,
           const BooleVariable& rhs){
 
   return lhs / BooleMonomial(rhs);
+}
+
+
+/// Remainder of division of a polynomial by a variable 
+inline BoolePolynomial
+operator%(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs % BooleMonomial(rhs);
+}
+
+/// Remainder of division of a polynomial by a variable (with assignment)
+inline BoolePolynomial&
+operator%=(BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs %= BooleMonomial(rhs);
 }
 
 END_NAMESPACE_PBORI

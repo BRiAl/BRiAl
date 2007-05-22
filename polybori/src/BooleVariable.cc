@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/05/22 11:05:28  dreyer
+ * FIX: ambigous overload
+ *
  * Revision 1.3  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -38,14 +41,14 @@
 # include "BooleVariable.h"
 
 // get ring definitions
-# include "BoolePolyRing.h"
+  //# include "BoolePolyRing.h"
 
 BEGIN_NAMESPACE_PBORI
 
 //-------------------------------------------------------------------------
 // Constructors and destructor
 //------------------------------------------------------------------------
-
+/*
 // Default constructor
 BooleVariable::BooleVariable(idx_type idx):
   m_poly( BoolePolyRing::ringVariable(idx) )  {
@@ -53,6 +56,7 @@ BooleVariable::BooleVariable(idx_type idx):
   PBORI_TRACE_FUNC( "BooleVariable(idx_type)" );
 
 }
+
 
 // Copy constructor
 BooleVariable::BooleVariable(const self& rhs) :
@@ -68,6 +72,6 @@ BooleVariable::operator const BoolePolynomial&() const {
 
   return m_poly;
 }
-
+*/
 
 END_NAMESPACE_PBORI

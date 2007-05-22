@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/05/22 11:05:28  dreyer
+ * FIX: ambigous overload
+ *
  * Revision 1.31  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -479,7 +482,8 @@ END_NAMESPACE_PBORI
   || defined(PBORI_USEDVARS_HIGHLEVEL)|| defined(PBORI_USEDVARS_BY_SUPPORT)\
   || defined(PBORI_USEDVARS_EXTRA)
 #else
-# define PBORI_USEDVARS_EXTRA
+# define PBORI_USEDVARS_BY_SUPPORT
+//PBORI_USEDVARS_EXTRA
 #endif 
 
 #endif // of #ifndef pbori_defs_h_

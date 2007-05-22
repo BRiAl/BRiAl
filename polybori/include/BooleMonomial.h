@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2007/05/22 11:05:28  dreyer
+ * FIX: ambigous overload
+ *
  * Revision 1.23  2007/05/04 15:26:27  dreyer
  * CHANGE: Optimized version for monomial term generation
  *
@@ -279,8 +282,6 @@ class BooleMonomial {
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_poly.diagram(); }
 
-  /// Save getting of decision diagram representing 
-  // self& get(const dd_type&) { if () }
 
 protected:
 
@@ -360,5 +361,6 @@ BooleMonomial::bool_type
 greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
 
 END_NAMESPACE_PBORI
+
 
 #endif // of BooleMonomial_h_
