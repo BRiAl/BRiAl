@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/05/22 10:33:53  bricken
+ * + pbori cache macros to cache opts file
+ *
  * Revision 1.14  2007/05/14 08:28:23  dreyer
  * ADD: compiler-switches for overwriting cache defaults
  *
@@ -73,7 +76,7 @@
 
 #ifndef CDDManager_h_
 #define CDDManager_h_
-
+#include "cacheopts.h"
 // load basic definitions
 #include "pbori_defs.h"
 

@@ -39,9 +39,18 @@ import os
 
 #opts.Add("SINGULAR_HOME")
 opts.Add('PBP', 'PolyBoRi python', "python")
+pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
+for m in pbori_cache_macros:
+    opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
+
 #opts.Add('USERLIBS', 'additional libs', [])
 
 env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
+cache_opts_file=open("polybori/include/cacheopts.h","w")
+for m in pbori_cache_macros:
+    if env.get(m,None):
+        cache_opts_file.write("#define "+m+" " +str(env[m])+"\n")
+cache_opts_file.close()
 #USERLIBS=env["USERLIBS"]
 if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
