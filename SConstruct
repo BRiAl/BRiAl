@@ -36,7 +36,7 @@ import os
 
 
 #opts.Add("SINGULAR_HOME")
-env=Environment(options=opts)
+env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
 
 if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
@@ -110,6 +110,7 @@ for c in PYTHONSEARCH:
         print "Python.h found in " + c.incdir
         env.Append(CPPPATH=[c.incdir])
         env.Append(LIBPATH=[c.staticlibdir])
+        #pop it?
         break
 
 
@@ -162,7 +163,7 @@ for t in tests_gb:
         ["testsuite/src/" + t +".cc"] +[libpb, gb], 
         CPPPATH=CPPPATH)
 
-LIBS=env['LIBS']+['boost_python',"polybori", "groebner","extra"]
+LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
 
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
@@ -243,6 +244,11 @@ else:
     print "no python extension"
     
 HAVE_SINGULAR_EXTENSION=True
+
+
+env.Doxygen (source=["doc/doxygen.conf"])
+#env.Doxygen (source=["groebner/doc/doxygen.conf"])
+#dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
 
 import subprocess
 #import re
