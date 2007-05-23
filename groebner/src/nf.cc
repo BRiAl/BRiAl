@@ -1573,6 +1573,85 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     }
     return polys;
 }
+
+using std::vector;
+vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
+    vector<Polynomial> extendable_system=orig_system;
+    vector<Polynomial> polys;
+    int i;
+    MonomialSet terms;
+    MonomialSet leads_from_strat;
+    for(i=0;i<extendable_system.size();i++){
+        Polynomial p=extendable_system[i];
+        Polynomial::const_iterator it=p.begin();
+        Polynomial::const_iterator end=p.end();
+        bool from_strat=(i>=orig_system.size());
+        while(it!=end){
+            Monomial m=*it;
+            if ((!(from_strat)) && (!(terms.owns(m)))){
+                int index=select1(*this,m);
+                if (index>=0){
+                    leads_from_strat=leads_from_strat.unite(m.diagram());
+                    Monomial m2=m/generators[index].lm;
+                    Polynomial p2=m2*generators[index].p;
+                    extendable_system.push_back(p2);
+                }
+            }
+            from_strat=false;
+            it++;
+        }
+        terms=terms.unite(p.diagram());
+        polys.push_back(p);
+    }
+    if (polys.size()==0) return vector<Polynomial>();
+    typedef std::map<int,Monomial> to_term_map_type;
+    typedef Exponent::idx_map_type from_term_map_type;
+    
+    int rows=polys.size();
+    int cols=terms.size();
+    if (this->enabledLog){
+        std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
+    }
+    mat_GF2 mat(INIT_SIZE,rows,cols);
+    std::vector<Exponent> terms_as_exp(terms.size());
+    std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
+    std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
+    from_term_map_type from_term_map;
+    to_term_map_type to_term_map;
+    for (i=0;i<terms_as_exp.size();i++){
+        from_term_map[terms_as_exp[i]]=i;
+        to_term_map[i]=Monomial(terms_as_exp[i]);
+    }
+    for(i=0;i<polys.size();i++){
+        Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
+        Polynomial::exp_iterator end=polys[i].expEnd();
+        while(it!=end){
+            mat[i][from_term_map[*it]]=1;
+            it++;
+        }
+    }
+    polys.clear();
+    int rank=gauss(mat);
+    //std::cout<<"rank:"<<rank<<std::endl;
+    for(i=0;i<rank;i++){
+        int j;
+        vector<Monomial> p_t;
+        bool from_strat=false;
+        for(j=0;j<cols;j++){
+            if (mat[i][j]==1){
+                if (p_t.size()==0){
+                    if (leads_from_strat.owns(to_term_map[j])) {
+                        from_strat=true;break;
+                    }
+                }
+                p_t.push_back(to_term_map[j]);
+            }
+        }
+        if (!(from_strat))
+            polys.push_back(add_up_monomials(p_t,0,p_t.size()));
+    }
+    return polys;
+}
 #endif
 
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){

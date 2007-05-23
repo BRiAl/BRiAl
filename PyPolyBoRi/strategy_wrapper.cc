@@ -133,6 +133,7 @@ void export_strategy(){
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
 #ifdef HAVE_NTL
   .def("noroStep", &GroebnerStrategy::noroStep)
+  .def("faugereStepDense", &GroebnerStrategy::faugereStepDense)
 #endif
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
