@@ -1,6 +1,8 @@
 #$Id$
 opts = Options('custom.py')
 BOOST_WORKS=False
+HAVE_DOXYGEN=True
+
 import sys
 from glob import glob
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
@@ -25,6 +27,8 @@ try:
         USERLIBS=custom.LIBS
     if "SINGULAR_HOME" in dir(custom):
         SINGULAR_HOME=custom.SINGULAR_HOME
+    if "HAVE_DOXYGEN" in dir(custom):
+        HAVE_DOXYGEN=custom.HAVE_DOXYGEN
     
 except:
     pass
@@ -45,7 +49,13 @@ for m in pbori_cache_macros:
 
 #opts.Add('USERLIBS', 'additional libs', [])
 
-env=Environment(options=opts,tools = ["default", "doxygen"], toolpath = '.')
+tools =  ["default"]
+
+if HAVE_DOXYGEN:
+    tools = ["default", "doxygen"]
+
+env=Environment(options=opts,tools = tools, toolpath = '.')
+
 cache_opts_file=open("polybori/include/cacheopts.h","w")
 for m in pbori_cache_macros:
     if env.get(m,None):
@@ -92,7 +102,10 @@ env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPPATH=["./Cudd/include","extra"])
 env.Append(LIBPATH=["polybori","groebner","extra"])
+
 env['ENV']['HOME']=os.environ["HOME"]
+env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
+
 #if env['PLATFORM']=="darwin":
 #        env.Append(LIBPATH="/sw/lib")
 #        env.Append(CPPPATH="/sw/include")
@@ -277,9 +290,10 @@ else:
 HAVE_SINGULAR_EXTENSION=True
 
 
-env.Doxygen (source=["doc/doxygen.conf"])
-#env.Doxygen (source=["groebner/doc/doxygen.conf"])
-#dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
+if HAVE_DOXYGEN:
+    env.Doxygen (source=["doc/doxygen.conf"])
+#    env.Doxygen (source=["groebner/doc/doxygen.conf"])
+#    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
 
 import subprocess
 #import re
