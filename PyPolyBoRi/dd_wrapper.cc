@@ -85,8 +85,8 @@ void export_dd(){
   .def("union",&CTypes::dd_type::unite)
   .def("navigation", &dd_type::navigation)
   .def("intersect", &CTypes::dd_type::intersect)
-  .def("cofactor0", &dd_type::cofactor0)
-  .def("cofactor1", &dd_type::cofactor1)
+  //.def("cofactor0", &dd_type::cofactor0)
+  //.def("cofactor1", &dd_type::cofactor1)
     //  .def("existAbstract", &dd_type::existAbstract)
   .def("onePath", one_path)
   .def("ite", &CTypes::dd_type::ite);
