@@ -104,8 +104,10 @@ env.Append(CPPPATH=["./Cudd/include","extra"])
 env.Append(LIBPATH=["polybori","groebner","extra"])
 
 env['ENV']['HOME']=os.environ["HOME"]
-env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
-
+try:
+    env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
+except KeyError:
+    pass
 #if env['PLATFORM']=="darwin":
 #        env.Append(LIBPATH="/sw/lib")
 #        env.Append(CPPPATH="/sw/include")
