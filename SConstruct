@@ -112,7 +112,7 @@ env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
 #workaround for linux
 #env.Append(LIBPATH=".")
 
-env.Append(LIBS=["m","extra"])
+env.Append(LIBS=["m","extra"]+USERLIBS)
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:
@@ -190,7 +190,7 @@ for t in tests_gb:
         ["testsuite/src/" + t +".cc"] +[libpb, gb], 
         CPPPATH=CPPPATH)
 
-LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]
+LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]+USERLIBS
 
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
