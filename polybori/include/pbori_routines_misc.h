@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/05/24 14:01:30  dreyer
+ * CHANGE: Recursive routine for usedVariables()
+ *
  * Revision 1.29  2007/05/17 17:09:10  bricken
  * + reverted last changes partially
  *
@@ -807,10 +810,32 @@ dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
                                       init).diagram() );
   }
   
-
   return init;
 }
 
+/// Function templates for determining the degree of a decision diagram
+/// with the help of cache (e. g. CDegreeCache)
+template <class CacheType, class NaviType, class MonomType>
+MonomType
+cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
 
+  if (navi.isConstant()) // No need for caching of constant nodes' degrees
+    return MonomType();
+ 
+  // Look whether result was cached before
+  NaviType cached_result = cache.find(navi);
+  if (cached_result.isValid())
+    return MonomType(cached_result);
+  
+  MonomType result = cached_used_vars(cache, navi.thenBranch(), init);
+  result *= cached_used_vars(cache, navi.elseBranch(), init);
+
+  result.changeAssign(*navi);
+
+  // Write result to cache
+  cache.insert(navi, result.diagram().navigation());
+ 
+  return result;
+}
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/05/24 14:01:30  dreyer
+ * CHANGE: Recursive routine for usedVariables()
+ *
  * Revision 1.5  2007/05/22 11:05:28  dreyer
  * FIX: ambigous overload
  *
@@ -45,6 +48,9 @@
 #include "cudd.h"
 #include "extrafwd.h"
 
+#include "pbori_routines.h"
+#include "CCacheManagement.h"
+
 #ifndef CDDOperations_h_
 #define CDDOperations_h_
 
@@ -69,82 +75,8 @@ public:
   typedef typename DDType::navigator navigator;
   typedef MonomType monom_type;
 
-#ifdef PBORI_USEDVARS_EXTRA
-
-  /// using cudd/extra
-
-    //  monom_type result;
-    
-    int* pIdx = Cudd_SupportIndex( dd.manager().getManager(), 
-                                  ((const ZDD &) dd).getNode() );
-
-    monom_type result( (DDType)ZDD( &dd.manager(),
-                Extra_zddCombination( dd.manager().getManager(), 
-                                      pIdx, dd.nVariables()) ));
-
-
-    FREE(pIdx);
-
-    return result;
-
-#else 
-
-#ifdef PBORI_USEDVARS_BY_SUPPORT
-
-  /// @todo: check here
-  return dd_last_lexicographical_term(dd.support(), type_tag<MonomType>());
-
-#else
-
-  // default value is the one monomial
-  monom_type result(true);
-
-# ifdef PBORI_USEDVARS_HIGHLEVEL
-
-  // define iterator type for storing used variables (on forward branches)
-  typedef CTermIter< std::set<idx_type>, navigator, 
-    inserts< std::set<idx_type> >, project_ith<1>, project_ith<1> >
-  the_iterator;
-
-  // initialize iteration
-  the_iterator start(dd.navigation());
-
-  // collect all indices during iteration
-  while( !start.empty() ){ ++start; }
-
-  typename the_iterator::reference indices(*start);
-
-# elif defined(PBORI_USEDVARS_BY_TRANSFORM) // variant of highlevel
-
-  typedef std::set<idx_type> path_type;
-  path_type indices;
-
-  dd_transform( dd.navigation(), dummy_iterator(),
-                dummy_iterator(),
-                insert_second_to_list<path_type,
-                   dummy_iterator,idx_type>(indices),
-                project_ith<1, 2>(),  
-                project_ith<1>()
-                );
-
-# elif defined(PBORI_USEDVARS_BY_IDX) // using internal variant
-
-  // Get indices of used variables
-  std::vector<idx_type> indices(0);
-  dd.usedIndices(indices);
-
-# endif
-
-  // generate monomial from indices
-  PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-    outiter(result);
-  copy(indices.rbegin(), indices.rend(), outiter);
-
-  return result;
-#endif
-
-#endif
-
+  CCacheManagement<CCacheTypes::used_variables> cache_mgr(dd.manager());
+  return cached_used_vars(cache_mgr, dd.navigation(),  MonomType());
 }
 
 };

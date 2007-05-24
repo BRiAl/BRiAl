@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/05/24 14:01:30  dreyer
+ * CHANGE: Recursive routine for usedVariables()
+ *
  * Revision 1.20  2007/05/10 07:29:32  bricken
  * + new minimal elements
  *
@@ -142,6 +145,8 @@ public:
 
   struct divisorsof_fixedpath: public ternary_cache_tag { };
   struct testwise_ternary: public ternary_cache_tag { };
+
+  struct used_variables: public unary_cache_tag { };
 
   struct block_degree: public binary_cache_tag { };
   struct block_dlex_lead: public unary_cache_tag { };
