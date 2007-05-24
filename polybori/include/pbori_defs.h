@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/05/24 11:27:16  dreyer
+ * Fix: changed default
+ *
  * Revision 1.32  2007/05/22 11:05:28  dreyer
  * FIX: ambigous overload
  *
@@ -482,7 +485,7 @@ END_NAMESPACE_PBORI
   || defined(PBORI_USEDVARS_HIGHLEVEL)|| defined(PBORI_USEDVARS_BY_SUPPORT)\
   || defined(PBORI_USEDVARS_EXTRA)
 #else
-# define PBORI_USEDVARS_BY_SUPPORT
+# define PBORI_USEDVARS_BY_IDX
 //PBORI_USEDVARS_EXTRA
 #endif 
 
