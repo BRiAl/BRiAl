@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/05/24 15:52:59  dreyer
+ * Fix: wrong computation (wrong cast sequence navigator->DdNode*->bool)
+ *
  * Revision 1.30  2007/05/24 14:01:30  dreyer
  * CHANGE: Recursive routine for usedVariables()
  *
@@ -824,8 +827,11 @@ cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
  
   // Look whether result was cached before
   NaviType cached_result = cache.find(navi);
+
+  typedef typename MonomType::poly_type poly_type;
   if (cached_result.isValid())
-    return MonomType(cached_result);
+    return CDDOperations<typename MonomType::dd_type, 
+    MonomType>().getMonomial(poly_type(cached_result).diagram());
   
   MonomType result = cached_used_vars(cache, navi.thenBranch(), init);
   result *= cached_used_vars(cache, navi.elseBranch(), init);
