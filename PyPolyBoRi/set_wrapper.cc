@@ -21,6 +21,9 @@ void changeAssign(BooleSet& c, BooleSet::idx_type idx){
 
 
 void export_bset(){
+
+  typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
+
   boost::python::class_<BooleSet>("BooleSet")
   .def(boost::python::init <const BooleSet&>())
   .def(boost::python::init <const CTypes::dd_type&>())
@@ -49,7 +52,7 @@ void export_bset(){
   .def("nSupport", &BooleSet::nSupport)
   .def("union",&BooleSet::unite)
   .def("navigation", &BooleSet::navigation)
-  .def("__contains__", &BooleSet::owns)
+  .def("__contains__", (owns_func_type) &BooleSet::owns)
   .def("intersect", &BooleSet::intersect);
 
 }

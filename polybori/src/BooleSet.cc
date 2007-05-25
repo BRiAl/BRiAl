@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/05/25 12:35:32  dreyer
+ * ADD: BooleSet::owns(const exp_type&) const
+ *
  * Revision 1.33  2007/05/21 16:07:55  dreyer
  * CHANGE: temporarily deactivated some things with curious side-effects
  *
@@ -223,7 +226,7 @@ BooleSet::add(const term_type& rhs) const {
   return self(*this).addAssign(rhs);
 }
 
-// Check whether rhs is includes in *this
+// Check whether rhs is included in *this
 BooleSet::bool_type
 BooleSet::owns(const term_type& rhs) const {
 
@@ -232,7 +235,14 @@ BooleSet::owns(const term_type& rhs) const {
   return !(intersect(rhs.diagram()).emptiness());
 }
 
+// Check whether rhs is included in *this
+BooleSet::bool_type
+BooleSet::owns(const exp_type& rhs) const {
 
+  PBORI_TRACE_FUNC( "BooleSet::owns(const exp_type&) const" );
+
+  return dd_owns(navigation(), rhs.begin(), rhs.end());
+}
 // Start of iteration over monomials
 BooleSet::const_iterator 
 BooleSet::begin() const {

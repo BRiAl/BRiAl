@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2007/05/25 12:35:32  dreyer
+ * ADD: BooleSet::owns(const exp_type&) const
+ *
  * Revision 1.27  2007/05/21 16:07:54  dreyer
  * CHANGE: temporarily deactivated some things with curious side-effects
  *
@@ -226,8 +229,11 @@ public:
   /// Add given monomial to sets 
   self add(const term_type&) const;
 
-  /// Check whether rhs is includes in *this
+  /// Check whether rhs is included in *this
   bool_type owns(const term_type&) const;
+
+  /// Check whether rhs is included in *this
+  bool_type owns(const exp_type&) const;
 
   /// Get last term (wrt. lexicographical order)
   term_type lastLexicographicalTerm() const; 

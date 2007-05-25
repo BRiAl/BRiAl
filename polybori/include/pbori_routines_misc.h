@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/05/25 12:35:32  dreyer
+ * ADD: BooleSet::owns(const exp_type&) const
+ *
  * Revision 1.31  2007/05/24 15:52:59  dreyer
  * Fix: wrong computation (wrong cast sequence navigator->DdNode*->bool)
  *
@@ -816,8 +819,8 @@ dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
   return init;
 }
 
-/// Function templates for determining the degree of a decision diagram
-/// with the help of cache (e. g. CDegreeCache)
+/// Function templates for determining the used variables of a decision diagram
+/// with the help of cache
 template <class CacheType, class NaviType, class MonomType>
 MonomType
 cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
@@ -843,5 +846,25 @@ cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
  
   return result;
 }
+
+template <class NaviType, class Iterator>
+bool
+dd_owns(NaviType navi, Iterator start, Iterator finish) {
+
+  if (start == finish) {
+    while(!navi.isConstant())
+      navi.incrementElse();
+    return navi.terminalValue();
+  }
+
+  while(!navi.isConstant() && (*start > *navi) )
+    navi.incrementElse();
+
+  if (navi.isConstant() || (*start != *navi))
+    return false;
+
+  return dd_owns(navi.thenBranch(), ++start, finish);
+}
+
 
 END_NAMESPACE_PBORI
