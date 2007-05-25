@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.98  2007/05/25 11:38:00  dreyer
+ * ADD: cast int -> BoolePolynomial, which obeyes %2
+ *
  * Revision 1.97  2007/05/21 16:07:54  dreyer
  * CHANGE: temporarily deactivated some things with curious side-effects
  *
@@ -401,6 +404,13 @@ BoolePolynomial::BoolePolynomial(bool_type isOne):
   m_dd(isOne? BoolePolyRing::ringOne() : BoolePolyRing::ringZero() )  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(bool_type)" );
+}
+
+// Construct polynomial from a constant value
+BoolePolynomial::BoolePolynomial(int value):
+  m_dd( BoolePolynomial( bool_type(value % 2) ).diagram()  )  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(int)" );
 }
 
 // Constructor polynomial from existing decision diagram

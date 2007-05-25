@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.71  2007/05/25 11:37:59  dreyer
+ * ADD: cast int -> BoolePolynomial, which obeyes %2
+ *
  * Revision 1.70  2007/05/14 08:10:59  dreyer
  * ADD: added poly / poly and poly % poly
  *
@@ -436,6 +439,9 @@ public:
 
   /// Construct polynomial from a constant value 0 or 1
   BoolePolynomial(bool_type);
+
+  /// Construct polynomial from a constant value
+  BoolePolynomial(int);
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
