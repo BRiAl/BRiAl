@@ -1578,20 +1578,28 @@ using std::vector;
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
     vector<Polynomial> extendable_system=orig_system;
     vector<Polynomial> polys;
+    vector<Monomial> leads_from_strat_vec;
     int i;
     MonomialSet terms;
     MonomialSet leads_from_strat;
     for(i=0;i<extendable_system.size();i++){
-        Polynomial p=extendable_system[i];
+        Polynomial p_orig=extendable_system[i];
+        
+        
+        if (p_orig.isZero()) continue;
+        Polynomial p=mod_mon_set(p_orig.diagram(),monomials);
         Polynomial::const_iterator it=p.begin();
         Polynomial::const_iterator end=p.end();
+        
         bool from_strat=(i>=orig_system.size());
+        //if ((from_strat)&&(p_orig!=p) &&(p_orig.leadExp()!=p.leadExp())) from_strat=false;
         while(it!=end){
             Monomial m=*it;
             if ((!(from_strat)) && (!(terms.owns(m)))){
                 int index=select1(*this,m);
                 if (index>=0){
-                    leads_from_strat=leads_from_strat.unite(m.diagram());
+                    leads_from_strat_vec.push_back(m);
+                    //leads_from_strat=leads_from_strat.unite(m.diagram());
                     Monomial m2=m/generators[index].lm;
                     Polynomial p2=m2*generators[index].p;
                     extendable_system.push_back(p2);
@@ -1603,6 +1611,8 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
         terms=terms.unite(p.diagram());
         polys.push_back(p);
     }
+    
+    leads_from_strat=add_up_monomials(leads_from_strat_vec);
     if (polys.size()==0) return vector<Polynomial>();
     typedef std::map<int,Monomial> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
