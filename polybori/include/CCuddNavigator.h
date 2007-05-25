@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/05/25 11:37:15  dreyer
+ * CHANGE: typo
+ *
  * Revision 1.16  2007/05/25 08:25:08  dreyer
  * Fix: workaround to break unwanted cast sequence navigator -> .. -> bool
  *
@@ -194,7 +197,7 @@ public:
   bool_type isEmpty() const { return isConstant() && !terminalValue(); }
 
 private: 
-  /// Should never ne done 
+  /// Should never be done 
   /// (this is to break cast sequence self -> access_type -> bool)
   /// @todo Avoid this, by removing cast to access_type
   operator bool() const { assert(false); return isValid(); }
