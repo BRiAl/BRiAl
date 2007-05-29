@@ -1144,24 +1144,29 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   
 }
 
-static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec, int start, int end){
+template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec, int start, int end){
     //we assume the polynomials to be pairwise different
     int s=end-start;
     if (s==0) return Polynomial();
     if (s==1) return Polynomial(res_vec[start]);
     int h=s/2;
-    return Polynomial(add_up_monomials(res_vec,start,start+h).diagram().unite(add_up_monomials(res_vec,start+h,end).diagram()));
+    return add_up_generic(res_vec,start,start+h)+add_up_generic(res_vec,start+h,end);
     //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
 }
-static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec){
+template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
     if (s==0) return Polynomial();
-    if (s==1) return Polynomial(res_vec[0]);
+    if (s==1) return (Polynomial) res_vec[0];
     int h=s/2;
     
-    return Polynomial(add_up_monomials(res_vec,0,h).diagram().unite(add_up_monomials(res_vec,h,s).diagram()));
+    return add_up_generic(res_vec,0,h)+add_up_generic(res_vec,h,s);
 }
+
+Polynomial add_up_monomials(const std::vector<Monomial>& res_vec){
+   return add_up_generic(res_vec);
+}
+
 
 
 static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec, int start, int end){
@@ -1569,7 +1574,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
                 p_t.push_back(to_term_map[j]);
             }
         }
-        polys.push_back(add_up_monomials(p_t,0,p_t.size()));
+        polys.push_back(add_up_monomials(p_t));//,0,p_t.size()));
     }
     return polys;
 }
@@ -1588,31 +1593,30 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
         
         if (p_orig.isZero()) continue;
         Polynomial p=mod_mon_set(p_orig.diagram(),monomials);
-        Polynomial::const_iterator it=p.begin();
-        Polynomial::const_iterator end=p.end();
+        MonomialSet new_terms=p.diagram().diff(terms);
+        MonomialSet::const_iterator it=new_terms.begin();
+        MonomialSet::const_iterator end=new_terms.end();
         
-        bool from_strat=(i>=orig_system.size());
+        //bool from_strat=(i>=orig_system.size());
         //if ((from_strat)&&(p_orig!=p) &&(p_orig.leadExp()!=p.leadExp())) from_strat=false;
         while(it!=end){
             Monomial m=*it;
-            if ((!(from_strat)) && (!(terms.owns(m)))){
-                int index=select1(*this,m);
-                if (index>=0){
+            
+            int index=select1(*this,m);
+            if (index>=0){
                     leads_from_strat_vec.push_back(m);
                     //leads_from_strat=leads_from_strat.unite(m.diagram());
                     Monomial m2=m/generators[index].lm;
                     Polynomial p2=m2*generators[index].p;
                     extendable_system.push_back(p2);
-                }
             }
-            from_strat=false;
             it++;
         }
-        terms=terms.unite(p.diagram());
+        terms=terms.unite(new_terms);
         polys.push_back(p);
     }
     
-    leads_from_strat=add_up_monomials(leads_from_strat_vec);
+    leads_from_strat=terms.diff(mod_mon_set(terms,minimalLeadingTerms));//add_up_monomials(leads_from_strat_vec).diagram().unite(this->monomials);
     if (polys.size()==0) return vector<Polynomial>();
     typedef std::map<int,Monomial> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
@@ -1658,7 +1662,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
             }
         }
         if (!(from_strat))
-            polys.push_back(add_up_monomials(p_t,0,p_t.size()));
+            polys.push_back(add_up_monomials(p_t));//,0,p_t.size()));
     }
     return polys;
 }
