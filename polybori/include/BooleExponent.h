@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/05/29 12:52:48  dreyer
+ * ADD: BooleExponenet::popFirst()
+ *
  * Revision 1.11  2007/04/27 21:20:04  dreyer
  * CHANGE: testing exponent iterator
  *
@@ -267,6 +270,13 @@ class BooleExponent {
 
   /// Compute the greatest common divisor
   self GCD(const self&) const;
+
+  /// Removes the first index from exponent
+  self& popFirst() { 
+    assert(!m_data.empty());
+    m_data.erase(m_data.begin());
+    return *this; 
+  }
 
   /// Print current polynomial to output stream
   ostream_type& print(ostream_type&) const;
