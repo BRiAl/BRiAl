@@ -9,6 +9,7 @@
 
 #include "nf.h"
 #include "lexbuckets.h"
+#include <LexOrder.h>
 #include <iostream>
 #include <COrderedIter.h>
 #ifdef HAVE_NTL
@@ -1163,8 +1164,141 @@ template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec){
     return add_up_generic(res_vec,0,h)+add_up_generic(res_vec,h,s);
 }
 
-Polynomial add_up_monomials(const std::vector<Monomial>& res_vec){
-   return add_up_generic(res_vec);
+class LexOrderGreaterComparer{
+    LexOrder o;
+public:
+    bool operator() (const Monomial& m1, const Monomial& m2){
+        return o.compare(m1,m2)==BoolePolyRing::greater_than;
+    }
+    bool operator() (const Exponent& m1, const Exponent& m2){
+        return o.compare(m1,m2)==BoolePolyRing::greater_than;
+    }
+};
+static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int start, int end){
+    assert(end<=vec.size());
+    assert(start>=0);
+    int d=end-start;
+    assert(d>=0);
+    if (d<=2){
+        switch(d){
+            case 0:return MonomialSet();
+            case 1:return vec[start].diagram();
+            case 2: 
+              return (vec[start]+vec[start+1]).diagram();
+        }
+
+    
+    }
+    
+    //more than two monomial, lex sorted, so if first is  constant, all are constant
+    if (vec[start].isOne()) return Polynomial(end-start).diagram();
+    assert (!(vec[start].isOne()));
+    idx_type idx=*vec[start].begin();
+    int limes=end;
+    vec[start].popFirst();
+    for(limes=start+1;limes<end;limes++){
+        if (vec[limes].isOne()||(*vec[limes].begin()!=idx)){
+            assert((vec[limes].isOne())||(*vec[limes].begin()>idx));
+            break;
+        } else 
+           vec[limes].popFirst();
+            //vec[limes].changeAssign(idx);
+    }
+    
+    return MonomialSet(idx,add_up_lex_sorted_monomials(vec,start,limes),add_up_lex_sorted_monomials(vec,limes,end));
+}
+
+
+static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int start, int end){
+    assert(end<=vec.size());
+    assert(start>=0);
+    int d=end-start;
+    assert(d>=0);
+    if (d<=2){
+        switch(d){
+            case 0:return MonomialSet();
+            case 1:return Monomial(vec[start]).diagram();
+            case 2: 
+              Polynomial res=Monomial(vec[start])+Monomial(vec[start+1]);
+              return MonomialSet(res.diagram());
+        }
+
+    
+    }
+    
+    //more than two monomial, lex sorted, so if first is  constant, all are constant
+    if (vec[start].deg()==0) return Polynomial(end-start).diagram();
+    assert (!(vec[start].deg()==0));
+    idx_type idx=*vec[start].begin();
+    int limes=end;
+    vec[start].popFirst();
+    for(limes=start+1;limes<end;limes++){
+        if ((vec[limes].deg()==0)||(*vec[limes].begin()!=idx)){
+            assert((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
+            break;
+        } else 
+           vec[limes].popFirst();
+            //vec[limes].changeAssign(idx);
+    }
+    
+    return MonomialSet(idx,add_up_lex_sorted_exponents(vec,start,limes),add_up_lex_sorted_exponents(vec,limes,end));
+}
+
+static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_iterator>& vec, int start, int end){
+    assert(end<=vec.size());
+    assert(start>=0);
+    int d=end-start;
+    assert(d>=0);
+    if (d<=2){
+        switch(d){
+            case 0:return MonomialSet();
+            case 1:return vec[start];
+            case 2: 
+              Polynomial res=Polynomial(vec[start])+Polynomial(vec[start+1]);
+              return MonomialSet(res.diagram());
+        }
+
+    
+    }
+    
+    //more than two monomial, lex sorted, so if first is  constant, all are constant
+    if (vec[start].isConstant()) return Polynomial(end-start).diagram();
+    assert (!(vec[start].isConstant()));
+    idx_type idx=*vec[start];
+    int limes=end;
+    vec[start]++;
+    for(limes=start+1;limes<end;limes++){
+        if (vec[limes].isConstant()||(*vec[limes]!=idx)){
+            assert((vec[limes].isTerminated())||(*vec[limes]>idx));
+            break;
+        } else 
+           vec[limes]++;
+            //vec[limes].changeAssign(idx);
+    }
+    
+    return MonomialSet(idx,add_up_lex_sorted_monomial_navs(vec,start,limes),add_up_lex_sorted_monomial_navs(vec,limes,end));
+}
+
+Polynomial add_up_monomials(const std::vector<Monomial>& vec){
+    return add_up_generic(vec);
+    std::vector<Monomial> vec_sorted=vec;
+    std::sort(vec_sorted.begin(),vec_sorted.end(),LexOrderGreaterComparer());
+    
+    int i;
+
+    std::vector<Monomial::const_iterator> vec_sorted_nav(vec_sorted.size());
+    for(i=0;i<vec_sorted.size();i++){
+        vec_sorted_nav[i]=vec_sorted[i].begin();
+    }
+    return add_up_lex_sorted_monomial_navs(vec_sorted_nav,0,vec_sorted_nav.size());
+}
+Polynomial add_up_exponents(const std::vector<Exponent>& vec){
+    //return add_up_generic(vec);
+    std::vector<Exponent> vec_sorted=vec;
+    std::sort(vec_sorted.begin(),vec_sorted.end(),LexOrderGreaterComparer());
+    
+   
+    return add_up_lex_sorted_exponents(vec_sorted,0,vec_sorted.size());
 }
 
 
@@ -1538,7 +1672,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
         }
     }
     if (polys.size()==0) return vector<Polynomial>();
-    typedef std::map<int,Monomial> to_term_map_type;
+    typedef std::map<int,Exponent> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
     
     int rows=polys.size();
@@ -1551,10 +1685,10 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
     from_term_map_type from_term_map;
-    to_term_map_type to_term_map;
+    //to_term_map_type to_term_map;
     for (i=0;i<terms_as_exp.size();i++){
         from_term_map[terms_as_exp[i]]=i;
-        to_term_map[i]=Monomial(terms_as_exp[i]);
+        //to_term_map[i]=terms_as_exp[i]);
     }
     for(i=0;i<polys.size();i++){
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
@@ -1568,13 +1702,13 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     int rank=gauss(mat);
     for(i=0;i<rank;i++){
         int j;
-        vector<Monomial> p_t;
+        vector<Exponent> p_t;
         for(j=0;j<cols;j++){
             if (mat[i][j]==1){
-                p_t.push_back(to_term_map[j]);
+                p_t.push_back(terms_as_exp[j]);
             }
         }
-        polys.push_back(add_up_monomials(p_t));//,0,p_t.size()));
+        polys.push_back(add_up_exponents(p_t));//,0,p_t.size()));
     }
     return polys;
 }
@@ -1629,12 +1763,21 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     mat_GF2 mat(INIT_SIZE,rows,cols);
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
+    std::vector<Exponent> terms_as_exp_lex(terms_as_exp);
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
+    std::vector<int> ring_order2lex(terms_as_exp.size());
+    std::vector<int> lex_order2ring(terms_as_exp.size());
     from_term_map_type from_term_map;
-    to_term_map_type to_term_map;
+    //to_term_map_type to_term_map;
     for (i=0;i<terms_as_exp.size();i++){
         from_term_map[terms_as_exp[i]]=i;
-        to_term_map[i]=Monomial(terms_as_exp[i]);
+        //to_term_map[i]=Monomial(terms_as_exp[i]);
+    }
+    for (i=0;i<terms_as_exp_lex.size();i++){
+        int ring_pos=from_term_map[terms_as_exp_lex[i]];
+        ring_order2lex[ring_pos]=i;
+        lex_order2ring[i]=ring_pos;
+        //to_term_map[i]=Monomial(terms_as_exp[i]);
     }
     for(i=0;i<polys.size();i++){
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
@@ -1647,22 +1790,32 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     polys.clear();
     int rank=gauss(mat);
     //std::cout<<"rank:"<<rank<<std::endl;
+    if (this->enabledLog){
+        std::cout<<"finished gauss"<<std::endl;
+    }
     for(i=0;i<rank;i++){
         int j;
-        vector<Monomial> p_t;
+        vector<int> p_t_i;
+        
         bool from_strat=false;
         for(j=0;j<cols;j++){
             if (mat[i][j]==1){
-                if (p_t.size()==0){
-                    if (leads_from_strat.owns(to_term_map[j])) {
+                if (p_t_i.size()==0){
+                    if (leads_from_strat.owns(terms_as_exp[j])) {
                         from_strat=true;break;
                     }
                 }
-                p_t.push_back(to_term_map[j]);
+                p_t_i.push_back(ring_order2lex[j]);
             }
         }
-        if (!(from_strat))
-            polys.push_back(add_up_monomials(p_t));//,0,p_t.size()));
+        if (!(from_strat)){
+            vector<Exponent> p_t(p_t_i.size());
+            std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
+            for(j=0;j<p_t_i.size();j++){
+                p_t[j]=terms_as_exp_lex[p_t_i[j]];
+            }
+            polys.push_back(add_up_lex_sorted_exponents(p_t,0,p_t.size()));
+        }
     }
     return polys;
 }
