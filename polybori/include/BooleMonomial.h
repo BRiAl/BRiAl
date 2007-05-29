@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2007/05/29 10:33:47  dreyer
+ * ADD: BooleMonomial::popFirst()
+ *
  * Revision 1.24  2007/05/22 11:05:28  dreyer
  * FIX: ambigous overload
  *
@@ -282,6 +285,12 @@ class BooleMonomial {
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_poly.diagram(); }
 
+  /// Removes the first variables from monomial
+  self& popFirst() { 
+    assert(!m_poly.isConstant());
+    return *this = dd_type(m_poly.diagram().manager(),
+                           m_poly.navigation().thenBranch()); 
+  }
 
 protected:
 
