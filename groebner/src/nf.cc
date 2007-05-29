@@ -1604,7 +1604,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
             
             int index=select1(*this,m);
             if (index>=0){
-                    leads_from_strat_vec.push_back(m);
+                    //leads_from_strat_vec.push_back(m);
                     //leads_from_strat=leads_from_strat.unite(m.diagram());
                     Monomial m2=m/generators[index].lm;
                     Polynomial p2=m2*generators[index].p;
