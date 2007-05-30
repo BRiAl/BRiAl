@@ -1281,16 +1281,7 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
 
 Polynomial add_up_monomials(const std::vector<Monomial>& vec){
     return add_up_generic(vec);
-    std::vector<Monomial> vec_sorted=vec;
-    std::sort(vec_sorted.begin(),vec_sorted.end(),LexOrderGreaterComparer());
-    
-    int i;
 
-    std::vector<Monomial::const_iterator> vec_sorted_nav(vec_sorted.size());
-    for(i=0;i<vec_sorted.size();i++){
-        vec_sorted_nav[i]=vec_sorted[i].begin();
-    }
-    return add_up_lex_sorted_monomial_navs(vec_sorted_nav,0,vec_sorted_nav.size());
 }
 Polynomial add_up_exponents(const std::vector<Exponent>& vec){
     //return add_up_generic(vec);
