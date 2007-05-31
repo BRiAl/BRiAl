@@ -7,6 +7,10 @@ import sys
 from glob import glob
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
+
+m4ri=["grayflex.cc", "packedmatrix.cc","watch.cc",
+"brilliantrussian.cc", "matrix.cc"]
+m4ri=["M4RI/"+m for m in m4ri]
 USERLIBS=[]
 PYPREFIX="/sw"
 SINGULAR_HOME=None
@@ -167,8 +171,8 @@ Default(libpb)
 
 
 gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
-gb_src=["./groebner/src/"+ source for source in gb_src]
-gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
+gb_src=["./groebner/src/"+ source for source in gb_src]+m4ri
+gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb],CPPDEFINES=["PACKED"])
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
@@ -193,7 +197,7 @@ for t in tests_gb:
         CPPPATH=CPPPATH)
 
 LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]+USERLIBS
-
+#env["CPPDEFINES"].Append("Packed")
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
       env.CNF(f[:-4])
