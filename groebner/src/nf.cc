@@ -17,6 +17,11 @@
 #include <NTL/mat_GF2.h>
 NTL_CLIENT
 #endif
+#ifdef HAVE_M4RI
+
+#include "../../M4RI/m4ri.h"
+
+#endif
 using std::cout;
 using std::endl;
 
@@ -1646,6 +1651,7 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<false>(p,reductors);
 }
+
 #ifdef HAVE_NTL
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
@@ -1675,7 +1681,9 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     if (this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
+
     mat_GF2 mat(INIT_SIZE,rows,cols);
+
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
@@ -1707,7 +1715,8 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     }
     return polys;
 }
-
+#endif
+#if  defined(HAVE_NTL) || defined(HAVE_M4RI)
 using std::vector;
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
     vector<Polynomial> extendable_system=orig_system;
@@ -1755,7 +1764,11 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     if (this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
+    #ifndef HAVE_M4RI
     mat_GF2 mat(INIT_SIZE,rows,cols);
+    #else
+    packedmatrix* mat=createPackedMatrix(rows,cols);
+    #endif
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
     std::vector<Exponent> terms_as_exp_lex(terms_as_exp);
@@ -1778,12 +1791,20 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
+            #ifndef HAVE_M4RI
             mat[i][from_term_map[*it]]=1;
+            #else
+            writePackedCell(mat,i,from_term_map[*it],1);
+            #endif
             it++;
         }
     }
     polys.clear();
+    #ifndef HAVE_M4RI
     int rank=gauss(mat);
+    #else
+    int rank=gaussianPacked(mat, YES);
+    #endif
     //std::cout<<"rank:"<<rank<<std::endl;
     if (this->enabledLog){
         std::cout<<"finished gauss"<<std::endl;
@@ -1794,7 +1815,11 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
         
         bool from_strat=false;
         for(j=0;j<cols;j++){
+            #ifndef HAVE_M4RI
             if (mat[i][j]==1){
+            #else
+            if(readPackedCell(mat,i,j)==1){
+            #endif
                 if (p_t_i.size()==0){
                     if (leads_from_strat.owns(terms_as_exp[j])) {
                         from_strat=true;break;
@@ -1810,8 +1835,12 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
             polys.push_back(add_up_lex_sorted_exponents(p_t,0,p_t.size()));
+            assert(!(polys[polys.size()-1].isZero()));
         }
     }
+    #ifdef HAVE_M4RI
+    destroyPackedMatrix(mat);
+    #endif
     return polys;
 }
 #endif
