@@ -21,7 +21,7 @@ using std::cout;
 using std::endl;
 
 BEGIN_NAMESPACE_PBORIGB
-static Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
+Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
 static bool irreducible_lead(Monomial lm, const GroebnerStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
@@ -1280,6 +1280,10 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
 }
 
 Polynomial add_up_monomials(const std::vector<Monomial>& vec){
+    return add_up_generic(vec);
+
+}
+Polynomial add_up_polynomials(const std::vector<Polynomial>& vec){
     return add_up_generic(vec);
 
 }
