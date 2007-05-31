@@ -104,6 +104,7 @@ conf = Configure(env)
 env.Append(CPPPATH=USER_CPPPATH)
 env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
+env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 env.Append(CPPPATH=["./Cudd/include","extra"])
 env.Append(LIBPATH=["polybori","groebner","extra"])
 
@@ -172,7 +173,7 @@ Default(libpb)
 
 gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]+m4ri
-gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb],CPPDEFINES=["PACKED"])
+gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
