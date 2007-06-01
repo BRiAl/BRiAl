@@ -1731,6 +1731,11 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
         
         if (p_orig.isZero()) continue;
         Polynomial p=mod_mon_set(p_orig.diagram(),monomials);
+        if (optLL){
+            Polynomial p_bak2=p;
+            p=ll_red_nf(p,llReductor);
+            if (p!=p_bak2) p=mod_mon_set(p.diagram(),monomials);
+        }
         MonomialSet new_terms=p.diagram().diff(terms);
         MonomialSet::const_iterator it=new_terms.begin();
         MonomialSet::const_iterator end=new_terms.end();
@@ -1804,6 +1809,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     int rank=gauss(mat);
     #else
     int rank=gaussianPacked(mat, YES);
+    //int rank=simpleFourRussiansPackedFlex(mat, YES, 8);
     #endif
     //std::cout<<"rank:"<<rank<<std::endl;
     if (this->enabledLog){
