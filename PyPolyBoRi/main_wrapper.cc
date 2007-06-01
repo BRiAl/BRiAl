@@ -15,6 +15,9 @@
 #ifdef HAVE_NTL
 #include "ntl_wrapper.h"
 #endif
+#ifdef HAVE_M4RI
+#include "../M4RI/grayflex.h"
+#endif
 using namespace boost::python;
 using namespace std;
 
@@ -24,10 +27,17 @@ USING_NAMESPACE_PBORI
 void print_variable(const BooleVariable & p){
   ((const BoolePolynomial&) p).print(cout);
 }
+bool have_degree_order(){
+    return BoolePolyRing::isDegreeOrder();
+}
 
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
-  BoolePolyRing r; //workaround for having a current_ring
+  BoolePolyRing r;
+  #ifdef HAVE_M4RI
+  buildAllCodes();
+  #endif
+   //workaround for having a current_ring
   implicitly_convertible<BooleVariable,BooleMonomial>();
   implicitly_convertible<BooleVariable,BoolePolynomial>();
   implicitly_convertible<BooleSet,CTypes::dd_type>();
@@ -67,7 +77,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 //#endif
   .def("nVars", &BoolePolyRing::nVariables);
   def("append_ring_block", &BoolePolyRing::appendRingBlock);
- 
+  def("have_degree_order", have_degree_order);
   boost::python::class_<BooleVariable>("Variable")
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
