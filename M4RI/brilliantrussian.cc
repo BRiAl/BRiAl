@@ -17,11 +17,11 @@
 ******************************************************************************/
 
 #include "brilliantrussian.h"
-#include "cpucycles.h"
+//#include "cpucycles.h"
 #include <stdlib.h>
 
-extern unsigned long long tcc;
-extern unsigned long long twc;
+//extern unsigned long long tcc;
+//extern unsigned long long twc;
 
 int forceNonZero2PackedFlex(packedmatrix *m, int xstart, int xstop, int y) {
   int i;
@@ -68,7 +68,7 @@ void combineFlex( packedmatrix * s1, int row1, int startblock1,
 	          packedmatrix * s2, int row2, int startblock2,
 	          packedmatrix * dest, int row3, int startblock3 ) {
   int wide=s1->width - startblock1;
-  long cc = 0;
+  //long cc = 0;
 
   word *b1_ptr = s1->values + startblock1 + s1->rowswap[row1];
   word *b2_ptr = s2->values + startblock2 + s2->rowswap[row2];
@@ -77,7 +77,7 @@ void combineFlex( packedmatrix * s1, int row1, int startblock1,
 
   if( dest == s1 && row1 == row3 && startblock1 == startblock3) {
 
-    cc = cpucycles();
+    //cc = cpucycles();
     b3_ptr = b1_ptr;
 
     while(wide>=4) {
@@ -112,8 +112,8 @@ void combineFlex( packedmatrix * s1, int row1, int startblock1,
       break;
     }
 
-    tcc += (cpucycles() - cc);
-    twc += s1->width - startblock1;
+    //tcc += (cpucycles() - cc);
+    //twc += s1->width - startblock1;
 
     return;
 
