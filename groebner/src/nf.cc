@@ -1808,8 +1808,8 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
-    int rank=gaussianPacked(mat, YES);
-    //int rank=simpleFourRussiansPackedFlex(mat, YES, 8);
+    //int rank=gaussianPacked(mat, YES);
+    int rank=simpleFourRussiansPackedFlex(mat, YES, 12);
     #endif
     //std::cout<<"rank:"<<rank<<std::endl;
     if (this->enabledLog){
