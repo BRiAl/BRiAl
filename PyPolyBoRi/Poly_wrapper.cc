@@ -85,6 +85,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("deg", &BoolePolynomial::deg)
   .def("lmDivisors", &BoolePolynomial::lmDivisors)
   .def("lead", &BoolePolynomial::lead)
+  .def("firstTerm", &BoolePolynomial::firstTerm)
   .def("reducibleBy", &BoolePolynomial::reducibleBy)
 
   .def("lmDeg", &BoolePolynomial::lmDeg)
