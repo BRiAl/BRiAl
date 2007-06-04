@@ -121,6 +121,7 @@ public:
   void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
   bool variableHasValue(idx_type i);
   void llReduceAll();
+  void treat_m_p_1_case(const PolyEntry& e);
   PairManager pairs;
   bool reduceByTailReduced;
   PolyEntryVector generators;
@@ -130,6 +131,7 @@ public:
   MonomialSet leadingTerms00;
   MonomialSet llReductor;
   MonomialSet monomials;
+  MonomialSet monomials_plus_one;
   boost::shared_ptr<CacheManager> cache;
   bool enabledLog;
    unsigned int reductionSteps;

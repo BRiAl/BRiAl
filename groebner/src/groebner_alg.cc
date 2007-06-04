@@ -34,6 +34,18 @@
 
 
 BEGIN_NAMESPACE_PBORIGB
+void GroebnerStrategy::treat_m_p_1_case(const PolyEntry& e){
+    if (e.length==2){
+        assert(e.p.length()==2);
+        Polynomial::const_iterator it=e.p.begin();
+        assert(it!=e.p.end());
+        it++;
+        assert(it!=e.p.end());
+        if (it->deg()==0){
+            monomials_plus_one=monomials_plus_one.unite(e.lm.diagram());
+        }
+    }
+}
 void GroebnerStrategy::llReduceAll(){
     int i;
     Exponent ll_e=*(llReductor.expBegin());
@@ -44,6 +56,9 @@ void GroebnerStrategy::llReduceAll(){
             if (tail!=generators[i].tail){
                 generators[i].p=tail+generators[i].lm;
                 generators[i].recomputeInformation();
+                if (generators[i].length==1) monomials=monomials.unite(generators[i].p.diagram());
+                treat_m_p_1_case(generators[i]);
+
             }
         }
     }
@@ -428,7 +443,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   
 }
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
-:pairs(orig.pairs),
+:pairs(orig.pairs),monomials_plus_one(orig.monomials_plus_one),
 generators(orig.generators),
 leadingTerms(orig.leadingTerms),
 minimalLeadingTerms(orig.minimalLeadingTerms),
@@ -1010,8 +1025,12 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (generators[i].p!=new_p){
           generators[i].p=new_p;
           generators[i].recomputeInformation();
-          if ((generators[i].length==2)&&(generators[i].ecart()==0))
+          if (generators[i].length==1) monomials=monomials.unite(new_p.diagram());
+          if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
+            treat_m_p_1_case(generators[i]);
+
+          }
           others.insert(i);
           
         }
@@ -2125,7 +2144,8 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     if (e.length==1){
         assert(e.p.length()==1);
         monomials=monomials.unite(e.p.diagram());
-    }
+    } else treat_m_p_1_case(e);
+
     
     #ifdef LL_RED_FOR_GROEBNER
     if (optLL){
@@ -2327,6 +2347,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
         Polynomial reduced=red_tail(*this,generators[index].p);
         generators[index].p=reduced;
         generators[index].recomputeInformation();
+        //if (generators[index].length==1) strat.monomials=strat.monomials.unite(reduced.diagram());
         result.push_back(reduced);
         i--;
     }

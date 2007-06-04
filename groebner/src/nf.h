@@ -76,6 +76,7 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors);
 
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors);
 Polynomial add_up_polynomials(const std::vector<Polynomial>& vec);
+Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones);
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
 END_NAMESPACE_PBORIGB
 #endif

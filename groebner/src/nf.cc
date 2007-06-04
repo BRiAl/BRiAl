@@ -1455,11 +1455,15 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
      {
        Polynomial p_bak=p;
        p=mod_mon_set(p.diagram(),strat.monomials);
+       
+       //p=plug_1(p,strat.monomials_plus_one);
        if (strat.optLL){
          Polynomial p_bak2=p;
          p=ll_red_nf(p,strat.llReductor);
-         if (p_bak2!=p)
+         if (p_bak2!=p){
              p=mod_mon_set(p.diagram(),strat.monomials);
+             //p=plug_1(p,strat.monomials_plus_one);
+         }
        }
        if (p_bak!=p) changed=true;
      if (p.isZero()) break;
@@ -1652,6 +1656,62 @@ Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<false>(p,reductors);
 }
 
+Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
+    MonomialSet::navigator m_nav=m_plus_ones.navigation();
+    
+    if (m_nav.isConstant()){
+        return p;
+    }
+    Polynomial::navigator p_nav=p.navigation();
+    if (p_nav.isConstant()) return p;
+    idx_type p_index=*p_nav;
+    while(p_index>*m_nav){
+        assert(!(m_nav.isConstant()));
+        m_nav.incrementElse();
+    }
+    assert (p_index=*p_nav);
+    typedef PBORI::CacheManager<CCacheTypes::plug_1>
+      cache_mgr_type;
+    cache_mgr_type cache_mgr;
+    MonomialSet::navigator cached =
+      cache_mgr.find(p_nav,m_nav);
+    if (cached.isValid()) return MonomialSet(cached);
+    MonomialSet res;
+    if (p_index==*m_nav){  
+    MonomialSet m1(m_nav.thenBranch());
+    MonomialSet m0(m_nav.elseBranch());
+    MonomialSet p1=p_nav.thenBranch();
+    MonomialSet p1_irr_s1=mod_mon_set(p1,m1);
+    MonomialSet p1_red_s1=p1.diff(p1_irr_s1);
+    MonomialSet p0=p_nav.elseBranch();
+    Polynomial res0=do_plug_1(p1_red_s1,m1)+do_plug_1(p0,m0);
+    Polynomial res1=do_plug_1(p1_irr_s1,m0);
+    res=MonomialSet(p_index,res1.diagram(),res0.diagram());
+    } else {
+        assert(p_index<*m_nav);
+        res=MonomialSet(p_index,do_plug_1(p_nav.thenBranch(),m_plus_ones).diagram(),do_plug_1(p_nav.elseBranch(),m_plus_ones).diagram());
+    }
+    cache_mgr.insert(p_nav,m_nav,res.navigation());
+    
+    return res;
+}
+
+Polynomial plug_1_top(const Polynomial& p, const MonomialSet& m_plus_ones){
+    Polynomial  irr=mod_mon_set(p.diagram(),m_plus_ones);
+    Polynomial red=p.diagram().diff(irr);
+    return irr+do_plug_1(red,m_plus_ones);
+}
+Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
+    Polynomial p1,p2;
+    p1=p;
+    p2=plug_1_top(p1,m_plus_ones);
+    while(p1!=p2){
+        Polynomial h=p2;
+        p2=plug_1_top(p1,m_plus_ones);
+        p1=h;
+    }
+    return p2;
+}
 #ifdef HAVE_NTL
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
@@ -1809,7 +1869,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     int rank=gauss(mat);
     #else
     //int rank=gaussianPacked(mat, YES);
-    int rank=simpleFourRussiansPackedFlex(mat, YES, 12);
+    int rank=simpleFourRussiansPackedFlex(mat, YES, 16);
     #endif
     //std::cout<<"rank:"<<rank<<std::endl;
     if (this->enabledLog){
