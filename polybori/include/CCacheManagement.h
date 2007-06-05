@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2007/06/05 05:43:54  bricken
+ * + plug_1
+ *
  * Revision 1.21  2007/05/24 14:01:30  dreyer
  * CHANGE: Recursive routine for usedVariables()
  *
@@ -127,6 +130,7 @@ public:
   struct multiplesof: public binary_cache_tag { };
   struct divisorsof: public binary_cache_tag { };
   struct ll_red_nf: public binary_cache_tag { };
+  struct plug_1: public binary_cache_tag { };
   struct exist_abstract: public binary_cache_tag { };
 
   struct degree: public unary_cache_tag { };
