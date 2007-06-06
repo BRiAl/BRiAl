@@ -57,7 +57,7 @@ void GroebnerStrategy::llReduceAll(){
                 generators[i].p=tail+generators[i].lm;
                 generators[i].recomputeInformation();
                 if (generators[i].length==1) monomials=monomials.unite(generators[i].p.diagram());
-                treat_m_p_1_case(generators[i]);
+                //treat_m_p_1_case(generators[i]);
 
             }
         }
@@ -1028,7 +1028,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
           if (generators[i].length==1) monomials=monomials.unite(new_p.diagram());
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
-            treat_m_p_1_case(generators[i]);
+            //treat_m_p_1_case(generators[i]);
 
           }
           others.insert(i);
@@ -2144,7 +2144,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     if (e.length==1){
         assert(e.p.length()==1);
         monomials=monomials.unite(e.p.diagram());
-    } else treat_m_p_1_case(e);
+    } //else treat_m_p_1_case(e);
 
     
     #ifdef LL_RED_FOR_GROEBNER
