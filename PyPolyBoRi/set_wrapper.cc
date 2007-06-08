@@ -13,7 +13,9 @@
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
+
 #include "set_wrapper.h"
+typedef CTypes::dd_type dd_type;
 void changeAssign(BooleSet& c, BooleSet::idx_type idx){
   c.changeAssign(idx);
 }
@@ -24,7 +26,7 @@ void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
 
-  boost::python::class_<BooleSet>("BooleSet")
+  boost::python::class_<BooleSet, bases<dd_type> >("BooleSet")
   .def(boost::python::init <const BooleSet&>())
   .def(boost::python::init <const CTypes::dd_type&>())
   .def(boost::python::init <const BooleSet::navigator& >())
@@ -34,19 +36,13 @@ void export_bset(){
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("product", &BooleSet::product)
-  .def("unateProduct", &BooleSet::unateProduct)
-  //.def("diagram", &BooleSet::diagram)
-  //.def("weakDiv", &BooleSet::weakDiv)
-  //.def("divide", &BooleSet::divide)
+  //.def("unateProduct", &BooleSet::unateProduct)
   .def("weakDivide", &BooleSet::weakDivide)
   .def("divide", &BooleSet::divide)
-  //.def("printCover", &BooleSet::printCover)
   .def("diff", &BooleSet::diff)
-  //.def("diffConst", &BooleSet::diffConst)
   .def("subset1",&BooleSet::subset1)
   .def("subset0",&BooleSet::subset0)
   .def("change", &BooleSet::change)
-  //.def("changeAssign", changeAssign)
   .def("empty", &BooleSet::emptiness)
   .def("nNodes", &BooleSet::nNodes)
   .def("nSupport", &BooleSet::nSupport)
