@@ -40,7 +40,10 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
    //workaround for having a current_ring
   implicitly_convertible<BooleVariable,BooleMonomial>();
   implicitly_convertible<BooleVariable,BoolePolynomial>();
+  implicitly_convertible<BooleMonomial,BoolePolynomial>();
+  implicitly_convertible<int,BoolePolynomial>();
   implicitly_convertible<BooleSet,CTypes::dd_type>();
+  implicitly_convertible<CTypes::dd_type,BooleSet>();
   def("change_ordering",&BoolePolyRing::changeOrdering);
   export_dd();
   export_poly();
