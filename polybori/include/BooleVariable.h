@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/06/11 14:23:30  bricken
+ * + var==var
+ *
  * Revision 1.7  2007/05/22 11:05:28  dreyer
  * FIX: ambigous overload
  *
@@ -96,7 +99,9 @@ class BooleVariable {
 
   /// Get index of the variable
   idx_type index() const { return *m_poly.firstBegin(); }
-
+bool operator== (const self& other){
+      return m_poly==other.m_poly;
+  }
 private:
   BoolePolynomial m_poly;
 };
