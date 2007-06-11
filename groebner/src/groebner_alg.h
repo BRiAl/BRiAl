@@ -189,6 +189,7 @@ public:
   }
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
   std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
+  std::vector<Polynomial> faugereStepDenseModified(const std::vector<Polynomial>&);
   Polynomial nf(Polynomial p);
   void symmGB_F2();
   int suggestPluginVariable();
