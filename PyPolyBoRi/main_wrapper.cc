@@ -90,10 +90,14 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<BooleVariable::idx_type>())
   .def(self*self)
   .def(self+self)
-  .def("__str__", streamable_as_str<BooleVariable>)
-  .def("__repr__", streamable_as_str<BooleVariable>)
   .def(self+int())
   .def(int()+self)
+  .def(self==self)
+  .def("__str__", streamable_as_str<BooleVariable>)
+  .def("__repr__", streamable_as_str<BooleVariable>)
+  .def("__hash__", &BooleVariable::index)
+
+  
     .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();
