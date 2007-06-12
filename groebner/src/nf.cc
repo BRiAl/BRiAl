@@ -2051,8 +2051,8 @@ vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polyn
 */
 static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat){
     if (polys.size()==0) return;
-    typedef std::map<int,Monomial> to_term_map_type;
-    typedef Exponent::idx_map_type from_term_map_type;
+    //typedef std::map<int,Monomial> to_term_map_type;
+    //typedef Exponent::idx_map_type from_term_map_type;
     
     int rows=polys.size();
     int cols=terms.size();
@@ -2085,6 +2085,114 @@ static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, Mono
     #ifdef HAVE_M4RI
     destroyPackedMatrix(mat);
     #endif
+}
+
+
+static void 
+linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat_vec)
+{
+    MonomialSet     terms_unique;
+    vector < Monomial > terms_unique_vec;
+    MonomialSet     terms_step1;
+    int             i;
+
+
+    vector < pair < Polynomial, Monomial > >polys_lm;
+    polys_lm.resize(polys.size());
+    for (i = 0; i < polys.size(); i++) {
+        if (!(polys[i].isZero()))
+            polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
+    }
+std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess());
+    if (polys_lm.size() == 0)
+        return;
+    Monomial        last;
+    if (polys_lm[0].second.deg() == 0) {
+        assert(polys_lm[0].first.isOne());
+        //vector < Polynomial > res_one;
+        polys.resize(1);
+        polys[0] = 1;
+
+        return;
+    }
+    vector < Polynomial > polys_triangular;
+    vector < Polynomial > polys_rest;
+
+    {
+vector < pair < Polynomial, Monomial > >::iterator it = polys_lm.begin();
+vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
+
+        while (it != end) {
+            if (it->second != last) {
+                last = it->second;
+                polys_triangular.push_back(it->first);
+        assert(std::   find(terms_unique_vec.first(), terms_unique_vec.last(), it->second) == terms_unique_vec.last());
+                terms_unique_vec.push_back(it->second);
+                terms_step1.unite(it->first.diagram());
+            } else
+                polys_rest.push_back(it->second);
+            it++;
+        }
+    }
+    terms_unique = add_up_monomials(terms_unique_vec);
+    assert(terms_step1.diff(terms).emptiness());
+    assert(polys_triangular.size()!=0);
+    
+    {
+        int rows=polys_triangular.size();
+        int cols=terms_step1.size();
+        if (strat.enabledLog){
+            std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
+        }
+        #ifndef HAVE_M4RI
+        mat_GF2 mat(INIT_SIZE,rows,cols);
+        #else
+        packedmatrix* mat_step1=createPackedMatrix(rows,cols);
+        #endif
+        vector<Exponent> terms_as_exp_step1;
+        vector<Exponent> terms_as_exp_lex_step1;
+        vector<int> ring_order2lex_step1;
+        vector<int> lex_order2ring_step1;
+        from_term_map_type from_term_map_step1;
+        setup_order_tables(terms_as_exp_step1,terms_as_exp_lex_step1,ring_order2lex_step1,lex_order2ring_step1,from_term_map_step1, terms_step1);
+        fill_matrix(mat_step1,polys_triangular,from_term_map_step1);
+
+        polys_triangular.clear();
+        #ifndef HAVE_M4RI
+        int rank=gauss(mat_step1);
+        #else
+        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, 16);
+        #endif
+        #ifndef NDEBUG
+        //sort rows
+        int pivot_row=0;
+        vector<int> row_start(rows);
+        assert(cols>=rows);
+        vector<int> compactified_columns2old_columns(cols-rows);
+        for(i=0;i<cols;i++){
+            int j;
+            for(j=pivot_row;j<rows;j++){
+                if(readPackedCell(mat_step1,j,i)==1){
+                    if (j!=pivot_row)
+                        rowSwapPacked(mat_step1,j,pivot_row);
+                    row_start[pivot_row]=i;
+                    pivot_row++;
+                    
+                    break;
+                }
+            }
+            if (j==rows){
+                compactified_columns2old_columns[i-pivot_row]=i;
+            }
+            
+        }
+        assert(pivot_row==rows);
+        #endif
+        if (strat.enabledLog){
+            std::cout<<"finished gauss"<<std::endl;
+        }
+    }
+
 }
 vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polynomial>& orig_system){
 
