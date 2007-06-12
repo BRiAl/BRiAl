@@ -1896,159 +1896,7 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,pack
     }
 }
 
-/*
-vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polynomial>& orig_system){
-    vector<Polynomial> extendable_system=orig_system;
-    //vector<Polynomial> polys;
-    vector<Monomial> leads_from_strat_vec;
-    int i;
-    MonomialSet terms;
-    MonomialSet leads_from_strat;
-  
-    vector<pair<Polynomial,Monomial> > polys_lm;
-    for(i=0;i<extendable_system.size();i++){
-        Polynomial p_orig=extendable_system[i];
-        
-        
-        if (p_orig.isZero()) continue;
-        Polynomial p=mod_mon_set(p_orig.diagram(),monomials);
-        if (optLL){
-            Polynomial p_bak2=p;
-            p=ll_red_nf(p,llReductor);
-            if (p!=p_bak2) p=mod_mon_set(p.diagram(),monomials);
-        }
-        MonomialSet new_terms=p.diagram().diff(terms);
-        MonomialSet::const_iterator it=new_terms.begin();
-        MonomialSet::const_iterator end=new_terms.end();
-        
-        //bool from_strat=(i>=orig_system.size());
-        //if ((from_strat)&&(p_orig!=p) &&(p_orig.leadExp()!=p.leadExp())) from_strat=false;
-        while(it!=end){
-            Monomial m=*it;
-            
-            int index=select1(*this,m);
-            if (index>=0){
-                    //leads_from_strat_vec.push_back(m);
-                    //leads_from_strat=leads_from_strat.unite(m.diagram());
-                    Monomial m2=m/generators[index].lm;
-                    Polynomial p2=m2*generators[index].p;
-                    extendable_system.push_back(p2);
-            }
-            it++;
-        }
-        terms=terms.unite(new_terms);
-        if (!(p.isZero()))
-            polys_lm.push_back(pair<Polynomial,Monomial>(p,p.lead()));
-    }
-    
 
-    
-    
-    
-    leads_from_strat=terms.diff(mod_mon_set(terms,minimalLeadingTerms));//add_up_monomials(leads_from_strat_vec).diagram().unite(this->monomials);
-    if (polys_lm.size()==0) return vector<Polynomial>();
-    Monomial last;
-    if (polys_lm[0].second.deg()==0){
-        assert(polys_lm[0].first.isOne());
-        vector<Polynomial> res_one;
-        res_one.push_back(1);
-        return res_one;
-    }
-    vector<Polynomial> polys_triangular;
-    vector<Polynomial> polys_rest;
-    
-    {
-     vector<pair<Polynomial,Monomial> >::iterator it=polys_lm.begin();
-     vector<pair<Polynomial,Monomial> >::iterator end=polys_lm.end();
-     
-     while(it!=end){
-         if (it->second!=last){
-             last=it->second;
-             polys_triangular.push_back(it->first);
-                 } else polys_rest.push_back(it->second);
-             it++;
-     }
-    }
-
-    
-    int rows=polys_lm.size();
-    int cols=terms.size();
-    if (this->enabledLog){
-        std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
-    }
-    #ifndef HAVE_M4RI
-    mat_GF2 mat(INIT_SIZE,rows,cols);
-    #else
-    packedmatrix* mat=createPackedMatrix(rows,cols);
-    #endif
-    vector<Exponent> terms_as_exp;
-
-    vector<Exponent> terms_as_exp_lex;
-    vector<int> ring_order2lex;
-    vector<int> lex_order2ring;
-    from_term_map_type from_term_map;
-    setup_order_tables(terms_as_exp,terms_as_exp_lex,ring_order2lex,lex_order2ring,from_term_map, terms);
-    
-    //to_term_map_type to_term_map;
-
-    for(i=0;i<polys.size();i++){
-        Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
-        Polynomial::exp_iterator end=polys[i].expEnd();
-        while(it!=end){
-            #ifndef HAVE_M4RI
-            mat[i][from_term_map[*it]]=1;
-            #else
-            writePackedCell(mat,i,from_term_map[*it],1);
-            #endif
-            it++;
-        }
-    }
-    polys.clear();
-    #ifndef HAVE_M4RI
-    int rank=gauss(mat);
-    #else
-    //int rank=gaussianPacked(mat, YES);
-    int rank=simpleFourRussiansPackedFlex(mat, YES, 16);
-    #endif
-    //std::cout<<"rank:"<<rank<<std::endl;
-    if (this->enabledLog){
-        std::cout<<"finished gauss"<<std::endl;
-    }
-    for(i=0;i<rank;i++){
-        int j;
-        vector<int> p_t_i;
-        
-        bool from_strat=false;
-        for(j=0;j<cols;j++){
-            #ifndef HAVE_M4RI
-            if (mat[i][j]==1){
-            #else
-            if(readPackedCell(mat,i,j)==1){
-            #endif
-                if (p_t_i.size()==0){
-                    if (leads_from_strat.owns(terms_as_exp[j])) {
-                        from_strat=true;break;
-                    }
-                }
-                p_t_i.push_back(ring_order2lex[j]);
-            }
-        }
-        if (!(from_strat)){
-            vector<Exponent> p_t(p_t_i.size());
-            std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
-            for(j=0;j<p_t_i.size();j++){
-                p_t[j]=terms_as_exp_lex[p_t_i[j]];
-            }
-            polys.push_back(add_up_lex_sorted_exponents(p_t,0,p_t.size()));
-            assert(!(polys[polys.size()-1].isZero()));
-        }
-    }
-    #ifdef HAVE_M4RI
-    destroyPackedMatrix(mat);
-    #endif
-    return polys;
-}
-*/
 static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat){
     if (polys.size()==0) return;
  
@@ -2090,6 +1938,8 @@ static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, Mono
 static void 
 linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat_vec)
 {
+    
+    const int russian_k=16;
     MonomialSet     terms_unique;
     vector < Monomial > terms_unique_vec;
     MonomialSet     terms_step1;
@@ -2138,17 +1988,16 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;
     int remaining_cols;
+    packedmatrix* mat_step1;
     {
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
         if (strat.enabledLog){
             std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
-        #ifndef HAVE_M4RI
-        mat_GF2 mat(INIT_SIZE,rows,cols);
-        #else
-        packedmatrix* mat_step1=createPackedMatrix(rows,cols);
-        #endif
+
+        mat_step1=createPackedMatrix(rows,cols);
+
         vector<Exponent> terms_as_exp_step1;
         vector<Exponent> terms_as_exp_lex_step1;
         vector<int> ring_order2lex_step1;
@@ -2231,10 +2080,16 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             if (terms_unique.owns(e)){
                 int index=eliminated2row_number[e];//...translate e->line number;
                 writePackedCell(mat_step2_factor,i,index,1);
+            } else{
+                int index=from_term_map_step2[e];
+                writePackedCell(mat_step2,i,index,1);
             }
             it++;
         }
     }
+    
+    packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,russian_k);
+    destroyPackedMatrix(mat_step1);
 
 }
 vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polynomial>& orig_system){
