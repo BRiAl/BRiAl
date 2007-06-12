@@ -2051,8 +2051,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polyn
 */
 static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat){
     if (polys.size()==0) return;
-    //typedef std::map<int,Monomial> to_term_map_type;
-    //typedef Exponent::idx_map_type from_term_map_type;
+ 
     
     int rows=polys.size();
     int cols=terms.size();
@@ -2137,7 +2136,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     terms_unique = add_up_monomials(terms_unique_vec);
     assert(terms_step1.diff(terms).emptiness());
     assert(polys_triangular.size()!=0);
-    
+    from_term_map_type eliminated2row_number;
+    int remaining_cols;
     {
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
@@ -2163,18 +2163,20 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         #else
         int rank=simpleFourRussiansPackedFlex(mat_step1, YES, 16);
         #endif
-        #ifndef NDEBUG
+        
         //sort rows
         int pivot_row=0;
         vector<int> row_start(rows);
         assert(cols>=rows);
-        vector<int> compactified_columns2old_columns(cols-rows);
+        remaining_cols=cols-rows;
+        vector<int> compactified_columns2old_columns(remaining_cols);
         for(i=0;i<cols;i++){
             int j;
             for(j=pivot_row;j<rows;j++){
                 if(readPackedCell(mat_step1,j,i)==1){
                     if (j!=pivot_row)
                         rowSwapPacked(mat_step1,j,pivot_row);
+                    eliminated2row_number[terms_as_exp_step1[i]]=pivot_row;
                     row_start[pivot_row]=i;
                     pivot_row++;
                     
@@ -2182,14 +2184,55 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                 }
             }
             if (j==rows){
+                assert(i>=pivot_row);
                 compactified_columns2old_columns[i-pivot_row]=i;
             }
             
         }
         assert(pivot_row==rows);
-        #endif
+        
+        //delete columns
+        packedmatrix* transposed_step1=transposePacked(mat_step1);
+        destroyPackedMatrix(mat_step1);
+        
+        for(i=0;i<remaining_cols;i++){
+            int source=compactified_columns2old_columns[i];
+            assert(i<=source);
+            if (i!=source) rowSwapPacked(transposed_step1,source,i);
+        }
+        packedmatrix* sub_step1=copySubMatrixPacked(transposed_step1,0,0,remaining_cols-1,rows-1);
+        destroyPackedMatrix(transposed_step1);
+        mat_step1=transposePacked(sub_step1);
+        destroyPackedMatrix(sub_step1);
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
+        }
+    }
+    MonomialSet terms_step2=terms.diff(terms_unique);
+    int rows_step2=polys_rest.size();
+    int cols_step2=terms_step2.size();
+    packedmatrix* mat_step2=createPackedMatrix(rows_step2,cols_step2);
+    packedmatrix* mat_step2_factor=createPackedMatrix(rows_step2,remaining_cols);
+    
+    vector<Exponent> terms_as_exp_step2;
+    vector<Exponent> terms_as_exp_lex_step2;
+    vector<int> ring_order2lex_step2;
+    vector<int> lex_order2ring_step2;
+    from_term_map_type from_term_map_step2;
+    setup_order_tables(terms_as_exp_step2,terms_as_exp_lex_step2,ring_order2lex_step2,lex_order2ring_step2,from_term_map_step2, terms_step2);
+    
+    
+    for(i=0;i<polys_rest.size();i++){
+        Polynomial::exp_iterator it=polys_rest[i].expBegin();
+        Polynomial::exp_iterator end=polys_rest[i].expEnd();
+        
+        while(it!=end){
+            Exponent e=*it;
+            if (terms_unique.owns(e)){
+                int index=eliminated2row_number[e];//...translate e->line number;
+                writePackedCell(mat_step2_factor,i,index,1);
+            }
+            it++;
         }
     }
 
