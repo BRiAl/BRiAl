@@ -1947,7 +1947,7 @@ linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, Mon
 
 
     vector < pair < Polynomial, Monomial > >polys_lm;
-    polys_lm.resize(polys.size());
+    //polys_lm.resize(polys.size());
     for (i = 0; i < polys.size(); i++) {
         if (!(polys[i].isZero()))
             polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
@@ -1960,6 +1960,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess())
         assert(polys_lm[0].first.isOne());
         //vector < Polynomial > res_one;
         polys.resize(1);
+        std::cout<<"have 1"<<std::endl;
         polys[0] = 1;
 
         return;
@@ -1975,9 +1976,9 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             if (it->second != last) {
                 last = it->second;
                 polys_triangular.push_back(it->first);
-        assert(std::   find(terms_unique_vec.first(), terms_unique_vec.last(), it->second) == terms_unique_vec.last());
+        assert(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
                 terms_unique_vec.push_back(it->second);
-                terms_step1.unite(it->first.diagram());
+                terms_step1=terms_step1.unite(it->first.diagram());
             } else
                 polys_rest.push_back(it->second);
             it++;
@@ -2070,7 +2071,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     int rows_step2=polys_rest.size();
     int cols_step2=terms_step2.size();
     packedmatrix* mat_step2=createPackedMatrix(rows_step2,cols_step2);
-    packedmatrix* mat_step2_factor=createPackedMatrix(rows_step2,remaining_cols);
+    packedmatrix* mat_step2_factor=createPackedMatrix(rows_step2,mat_step1->rows);
     
     vector<Exponent> terms_as_exp_step2;
     vector<Exponent> terms_as_exp_lex_step2;
@@ -2100,7 +2101,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     for(i=0;i<remaining_cols;i++){
         remaining_col2new_col[i]=from_term_map_step2[terms_as_exp_step1[compactified_columns2old_columns[i]]];
     }
-
+    assert(mat_step2_factor->cols==mat_step1->rows);
+    assert(mat_step1->cols==remaining_cols);
     packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,russian_k);
     destroyPackedMatrix(mat_step1);
     assert(polys_rest.size()==eliminated->rows);
