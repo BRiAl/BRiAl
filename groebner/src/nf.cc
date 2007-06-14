@@ -1854,7 +1854,9 @@ void fill_matrix(packedmatrix* mat,vector<Polynomial> polys, from_term_map_type 
             #ifndef HAVE_M4RI
             mat[i][from_term_map[*it]]=1;
             #else
-            writePackedCell(mat,i,from_term_map[*it],1);
+            from_term_map_type::const_iterator from_it=from_term_map.find(*it);
+            assert(from_it!=from_term_map.end());
+            writePackedCell(mat,i,from_it->second,1);
             #endif
             it++;
         }
@@ -1864,6 +1866,7 @@ void fill_matrix(packedmatrix* mat,vector<Polynomial> polys, from_term_map_type 
 void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,packedmatrix* mat,const vector<int>& ring_order2lex, const vector<Exponent>& terms_as_exp,const vector<Exponent>& terms_as_exp_lex,int rank){
     int cols=mat->cols;
     int rows=mat->rows;
+    
     int i;
     for(i=0;i<rank;i++){
         int j;
@@ -1929,12 +1932,31 @@ static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, Mono
         std::cout<<"finished gauss"<<std::endl;
     }
     translate_back(polys, leads_from_strat, mat,ring_order2lex, terms_as_exp,terms_as_exp_lex,rank);
+    
     #ifdef HAVE_M4RI
     destroyPackedMatrix(mat);
     #endif
 }
 
-
+static void printPackedMatrixMB(packedmatrix* mat){
+    int i,j;
+    for(i=0;i<mat->rows;i++){
+        for(j=0;j<mat->cols;j++){
+            std::cout<<(int)readPackedCell(mat,i,j);
+        }
+        std::cout<<std::endl;
+    }
+}
+static packedmatrix* transposePackedMB(packedmatrix* mat){
+    packedmatrix* res=createPackedMatrix(mat->cols,mat->rows);
+    int i,j;
+    for(i=0;i<mat->rows;i++){
+        for(j=0;j<mat->cols;j++){
+            writePackedCell(res,j,i,readPackedCell(mat,i,j));
+        }
+    }
+    return res;
+}
 static void 
 linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat)
 {
@@ -1960,7 +1982,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess())
         assert(polys_lm[0].first.isOne());
         //vector < Polynomial > res_one;
         polys.resize(1);
-        std::cout<<"have 1"<<std::endl;
+        //std::cout<<"have 1"<<std::endl;
         polys[0] = 1;
 
         return;
@@ -1980,10 +2002,11 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                 terms_unique_vec.push_back(it->second);
                 terms_step1=terms_step1.unite(it->first.diagram());
             } else
-                polys_rest.push_back(it->second);
+                polys_rest.push_back(it->first);
             it++;
         }
     }
+    polys.clear();
     terms_unique = add_up_monomials(terms_unique_vec);
     assert(terms_step1.diff(terms).emptiness());
     assert(polys_triangular.size()!=0);
@@ -1992,6 +2015,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     packedmatrix* mat_step1;
     vector<int> compactified_columns2old_columns;
     int rows_step1;
+    vector<int> row_start;
     //vector<Polynomial> result;
     vector<Exponent> terms_as_exp_step1;
     {
@@ -1999,7 +2023,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         int cols=terms_step1.size();
         rows_step1=rows;
         if (strat.enabledLog){
-            std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
+            std::cout<<"STEP1: ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
 
         mat_step1=createPackedMatrix(rows,cols);
@@ -2015,14 +2039,17 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         polys_triangular.clear();
          
         //optimize: call back subst directly
-        int rank=gaussianPacked(mat_step1,YES);
+        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, 16);//gaussianPacked(mat_step1,YES);
+        if (strat.enabledLog){
+            std::cout<<"finished gauss"<<std::endl;
+        }
         assert(rank==rows);
         ///(mat_step1, YES, 16);
         
         
         //sort rows
         int pivot_row=0;
-        vector<int> row_start(rows);
+        row_start.resize(rows);
         assert(cols>=rows);
         remaining_cols=cols-rows;
         compactified_columns2old_columns.resize(remaining_cols);
@@ -2032,6 +2059,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                 if(readPackedCell(mat_step1,j,i)==1){
                     if (j!=pivot_row)
                         rowSwapPacked(mat_step1,j,pivot_row);
+                    
                     eliminated2row_number[terms_as_exp_step1[i]]=pivot_row;
                     row_start[pivot_row]=i;
                     pivot_row++;
@@ -2046,30 +2074,37 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             
         }
         assert(pivot_row==rows);
-        
+        // std::cout<<"before translate"<<std::endl;
+        // printPackedMatrixMB(mat_step1);
         translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
         
-        //delete columns
-        packedmatrix* transposed_step1=transposePacked(mat_step1);
-        destroyPackedMatrix(mat_step1);
         
+        // std::cout<<"after translate"<<std::endl;
+        //     printPackedMatrixMB(mat_step1);
+        //delete columns
+        packedmatrix* transposed_step1=transposePackedMB(mat_step1);
+        destroyPackedMatrix(mat_step1);
+        // std::cout<<"before swap"<<std::endl;
+        //  printPackedMatrixMB(transposed_step1);
         for(i=0;i<remaining_cols;i++){
             int source=compactified_columns2old_columns[i];
             assert(i<=source);
+            assert(source<=transposed_step1->rows);
             if (i!=source) rowSwapPacked(transposed_step1,source,i);
+            
         }
+        // std::cout<<"before submat"<<std::endl;
+        // printPackedMatrixMB(transposed_step1);
         packedmatrix* sub_step1=copySubMatrixPacked(transposed_step1,0,0,remaining_cols-1,rows-1);
         destroyPackedMatrix(transposed_step1);
-        mat_step1=transposePacked(sub_step1);
+        mat_step1=transposePackedMB(sub_step1);
         destroyPackedMatrix(sub_step1);
         
-        if (strat.enabledLog){
-            std::cout<<"finished gauss"<<std::endl;
-        }
+
     }
     MonomialSet terms_step2=terms.diff(terms_unique);
-    int rows_step2=polys_rest.size();
-    int cols_step2=terms_step2.size();
+    const int rows_step2=polys_rest.size();
+    const int cols_step2=terms_step2.size();
     packedmatrix* mat_step2=createPackedMatrix(rows_step2,cols_step2);
     packedmatrix* mat_step2_factor=createPackedMatrix(rows_step2,mat_step1->rows);
     
@@ -2084,48 +2119,85 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     for(i=0;i<polys_rest.size();i++){
         Polynomial::exp_iterator it=polys_rest[i].expBegin();
         Polynomial::exp_iterator end=polys_rest[i].expEnd();
-        
+        //std:cout<<"write poly"<<std::endl;
+        int len;
         while(it!=end){
             Exponent e=*it;
             if (terms_unique.owns(e)){
-                int index=eliminated2row_number[e];//...translate e->line number;
+                
+                
+                from_term_map_type::const_iterator from_it=eliminated2row_number.find(e);
+                assert(terms_as_exp_step1[row_start[from_it->second]]==e);
+                assert(from_it!=eliminated2row_number.end());
+        
+                
+                
+                
+                int index=from_it->second;//...translate e->line number;
                 writePackedCell(mat_step2_factor,i,index,1);
+                //std::cout<<"writing into factor mat:"<<i<<":"<<index<<std::endl;
             } else{
-                int index=from_term_map_step2[e];
+                
+                
+                from_term_map_type::const_iterator from_it=from_term_map_step2.find(e);
+                assert(from_it!=from_term_map_step2.end());
+                int index=from_it->second;
                 writePackedCell(mat_step2,i,index,1);
+                //std::cout<<"writing:"<<i<<":"<<index<<std::endl;
             }
             it++;
+            len++;
         }
+        //std::cout<<"len:1"<<std::endl;
     }
     vector<int> remaining_col2new_col(remaining_cols);
     for(i=0;i<remaining_cols;i++){
         remaining_col2new_col[i]=from_term_map_step2[terms_as_exp_step1[compactified_columns2old_columns[i]]];
     }
     assert(mat_step2_factor->cols==mat_step1->rows);
+    assert(mat_step1->rows==terms_unique.size());
     assert(mat_step1->cols==remaining_cols);
+    // std::cout<<"step1 matrix"<<std::endl;
+    // printPackedMatrixMB(mat_step1);
     packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,russian_k);
     destroyPackedMatrix(mat_step1);
     assert(polys_rest.size()==eliminated->rows);
+    assert(mat_step2->rows==eliminated->rows);
     for(i=0;i<polys_rest.size();i++){
         int j;
         assert(remaining_cols==eliminated->cols);
         for(j=0;j<remaining_cols;j++){
-            if (readPackedCell(eliminated,i,j)==1)
-                writePackedCell(mat_step2,i,remaining_col2new_col[j],readPackedCell(mat_step2,i,remaining_col2new_col[j])^1);
+            if (readPackedCell(eliminated,i,j)==1){
+                assert(terms_as_exp_step2[remaining_col2new_col[j]]==terms_as_exp_step1[compactified_columns2old_columns[j]]);
+                //writePackedCell(mat_step2,i,remaining_col2new_col[j],readPackedCell(mat_step2,i,remaining_col2new_col[j])^1);
+                if (readPackedCell(mat_step2,i,remaining_col2new_col[j])==1){
+                    writePackedCell(mat_step2,i,remaining_col2new_col[j],0);
+                        } else writePackedCell(mat_step2,i,remaining_col2new_col[j],1);
+            }
         }
     }
+    // std::cout<<"eliminated matrix"<<std::endl;
+    // printPackedMatrixMB(eliminated);
     destroyPackedMatrix(eliminated);
     
-    
+     if (strat.enabledLog){
+            std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
+        }
     int rank_step2=simpleFourRussiansPackedFlex(mat_step2, YES, 16);
-
+        
+        if (strat.enabledLog){
+            std::cout<<"finished gauss"<<std::endl;
+        }
+    // std::cout<<"step2matrix"<<std::endl;
+    // printPackedMatrixMB(mat_step2);
+    // std::cout<<"res before:"<<polys.size()<<std::endl;
     translate_back(polys, leads_from_strat, mat_step2,ring_order2lex_step2, terms_as_exp_step2,terms_as_exp_lex_step2,rank_step2);
-    
+    //std::cout<<"res after:"<<polys.size()<<std::endl;
     destroyPackedMatrix(mat_step2);
     
 
 }
-vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polynomial>& orig_system){
+/*vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polynomial>& orig_system){
 
    
 
@@ -2210,7 +2282,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDenseModified(const vector<Polyn
     destroyPackedMatrix(mat);
     #endif
     return polys;
-}
+}*/
 
 
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
@@ -2222,7 +2294,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step(*this,polys,terms,leads_from_strat);
+    linalg_step_modified(*this,polys,terms,leads_from_strat);
     //leads_from_strat=terms.diff(mod_mon_set(terms,minimalLeadingTerms));
 
 
