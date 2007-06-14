@@ -16,6 +16,8 @@
 #include "ntl_wrapper.h"
 #endif
 #ifdef HAVE_M4RI
+#define PACKED 1
+#include "../M4RI/packedmatrix.h"
 #include "../M4RI/grayflex.h"
 #endif
 using namespace boost::python;
@@ -36,6 +38,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   BoolePolyRing r;
   #ifdef HAVE_M4RI
   buildAllCodes();
+  
+  setupPackingMasks();
   #endif
    //workaround for having a current_ring
   implicitly_convertible<BooleVariable,BooleMonomial>();
