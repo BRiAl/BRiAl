@@ -20,7 +20,7 @@ NTL_CLIENT
 #ifdef HAVE_M4RI
 
 #include "../../M4RI/m4ri.h"
-
+const int M4RI_MAXKAY = 16;
 #endif
 using std::cout;
 using std::endl;
@@ -1957,6 +1957,23 @@ static packedmatrix* transposePackedMB(packedmatrix* mat){
     }
     return res;
 }
+
+static int log2_floor(int n){
+    int i;
+    for(i=0;TWOPOW(i)<=n;i++){}
+    return i-1;
+}
+static int optimal_k_for_multiplication(int a,int b,int c){
+    int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(b)));
+    std::cout<<"optimal k for multiplication:"<<res<<std::endl;
+    return res;
+}
+static int optimal_k_for_gauss(int m, int n){
+    int l=std::min(n,m);
+    int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(l)+1-log2_floor(log2_floor(l))));
+    std::cout<<"optimal k for gauss:"<<res<<std::endl;
+    return res;
+}
 static void 
 linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat)
 {
@@ -2039,7 +2056,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         polys_triangular.clear();
          
         //optimize: call back subst directly
-        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, 16);//gaussianPacked(mat_step1,YES);
+        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, optimal_k_for_gauss(mat_step1->rows,mat_step1->cols));//gaussianPacked(mat_step1,YES);
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
         }
@@ -2073,16 +2090,24 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             }
             
         }
+        if (strat.enabledLog){
+            std::cout<<"finished sort"<<std::endl;
+        }
         assert(pivot_row==rows);
         // std::cout<<"before translate"<<std::endl;
         // printPackedMatrixMB(mat_step1);
         translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
         
-        
+        if (strat.enabledLog){
+            std::cout<<"finished translate"<<std::endl;
+        }
         // std::cout<<"after translate"<<std::endl;
         //     printPackedMatrixMB(mat_step1);
         //delete columns
         packedmatrix* transposed_step1=transposePacked(mat_step1);
+        if (strat.enabledLog){
+            std::cout<<"finished transpose"<<std::endl;
+        }
         destroyPackedMatrix(mat_step1);
         // std::cout<<"before swap"<<std::endl;
         //  printPackedMatrixMB(transposed_step1);
@@ -2093,11 +2118,20 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             if (i!=source) rowSwapPacked(transposed_step1,source,i);
             
         }
+        if (strat.enabledLog){
+            std::cout<<"finished permute"<<std::endl;
+        }
         // std::cout<<"before submat"<<std::endl;
         // printPackedMatrixMB(transposed_step1);
         packedmatrix* sub_step1=copySubMatrixPacked(transposed_step1,0,0,remaining_cols-1,rows-1);
+        if (strat.enabledLog){
+            std::cout<<"finished submat"<<std::endl;
+        }
         destroyPackedMatrix(transposed_step1);
         mat_step1=transposePacked(sub_step1);
+        if (strat.enabledLog){
+            std::cout<<"finished transpose"<<std::endl;
+        }
         destroyPackedMatrix(sub_step1);
         
 
@@ -2150,6 +2184,11 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
         //std::cout<<"len:1"<<std::endl;
     }
+    
+    if (strat.enabledLog){
+        std::cout<<"iterate over rest polys"<<std::endl;
+    }
+    
     vector<int> remaining_col2new_col(remaining_cols);
     for(i=0;i<remaining_cols;i++){
         remaining_col2new_col[i]=from_term_map_step2[terms_as_exp_step1[compactified_columns2old_columns[i]]];
@@ -2159,7 +2198,13 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step1->cols==remaining_cols);
     // std::cout<<"step1 matrix"<<std::endl;
     // printPackedMatrixMB(mat_step1);
-    packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,russian_k);
+    if (strat.enabledLog){
+        std::cout<<"start mult"<<std::endl;
+    }
+    packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,optimal_k_for_multiplication(mat_step2_factor->rows,mat_step2_factor->cols,mat_step1->cols));
+    if (strat.enabledLog){
+        std::cout<<"end mult"<<std::endl;
+    }
     destroyPackedMatrix(mat_step1);
     assert(polys_rest.size()==eliminated->rows);
     assert(mat_step2->rows==eliminated->rows);
@@ -2183,7 +2228,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
      if (strat.enabledLog){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    int rank_step2=simpleFourRussiansPackedFlex(mat_step2, YES, 16);
+    int rank_step2=simpleFourRussiansPackedFlex(mat_step2, YES, optimal_k_for_gauss(mat_step2->rows,mat_step2->cols));
         
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
