@@ -2058,7 +2058,9 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         polys_triangular.clear();
          
         //optimize: call back subst directly
-        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, optimal_k_for_gauss(mat_step1->rows,mat_step1->cols,strat));//gaussianPacked(mat_step1,YES);
+        int rank=simpleFourRussiansPackedFlexEverySubmatFullRank
+        (mat_step1, YES,
+          optimal_k_for_gauss(mat_step1->rows,mat_step1->cols,strat));//gaussianPacked(mat_step1,YES);
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
         }

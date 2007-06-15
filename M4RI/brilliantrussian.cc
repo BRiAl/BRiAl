@@ -293,6 +293,64 @@ int doAByteColumnFlex(packedmatrix *m, int full, int k, int ai,
   return submatrixrank;
 }
 
+
+
+int doAByteColumnFlexEverySubmatFullRank(packedmatrix *m, int full, int k, int ai, 
+		      packedmatrix *tablepacked, int *lookuppacked) {
+  int submatrixrank;
+  const int mythree=1;
+  /*
+   * Stage 1: Denote the first column to be processed in a given
+   * iteration as a_i . Then, perform Gaussian elimination on the
+   * first 3k rows after and including the i-th row to produce an
+   * identity matrix in $a_{(i,i)} ... a_{(i+k-1),(i+k-1)}$ , and
+   * zeroes in $a_{(i+k),i} ... a_{(i+3k-1),(i+k-1)}$.
+   */
+
+  submatrixrank=prepPackedFlex(m, ai, k);
+
+
+  if (submatrixrank!=k) return submatrixrank;
+
+  /*
+   * Stage 2: Construct a table consisting of the 2^k binary strings of
+   * length k in a Gray Code.  Thus with only 2^k vector additions, all
+   * possible linear combinations of these k rows have been
+   * precomputed.
+   */
+
+  makeTablePackedFlex(m, ai, k, tablepacked, lookuppacked, 0);
+
+
+  /*
+   * Stage 3: One can rapidly process the remaining rows from i + 3k
+   * until row m (the last row) by using the table. For example,
+   * suppose the jth row has entries $a_{(j,i)} ... a_{(j,i+k-1)}$ in
+   * the columns being processed. Selecting the row of the table
+   * associated with this k-BIT string, and adding it to row j will
+   * force the k columns to zero, and adjust the remaining columns
+   * from i + k to n in the appropriate way, as if Gaussian
+   * Elimination had been performed.
+  */
+
+  processPackedFlex(m, ai+k*mythree, m->rows-1, ai, k,
+		    tablepacked, lookuppacked);
+
+  /* While the above form of the algorithm will reduce a system of
+   * boolean linear equations to unit upper triangular form, and thus
+   * permit a system to be solved with back substitution, the M4RI
+   * algorithm can also be used to invert a matrix, or put the system
+   * into reduced row echelon form (RREF). Simply run Stage 3 on rows
+   * 0 ... i - 1 as well as on rows i + 3k · · · m. This only affects
+   * the complexity slightly, changing the 2.5 coeffcient to 3
+   */
+
+  if (full==YES) processPackedFlex(m, 0, ai-1, ai, k, 
+				   tablepacked, lookuppacked);
+
+  return submatrixrank;
+}
+
 int fourRussiansPackedFlex(packedmatrix *m, int full, int k, 
 		       packedmatrix *tablepacked, int *lookuppacked) {
   int i;
@@ -324,6 +382,38 @@ int fourRussiansPackedFlex(packedmatrix *m, int full, int k,
   return rank; 
 }
 
+
+int fourRussiansPackedFlexEverySubmatFullRank(packedmatrix *m, int full, int k, 
+		       packedmatrix *tablepacked, int *lookuppacked) {
+  int i;
+  int submatrixrank = 0;
+  int stop=min(m->rows, m->cols);
+  int lastokay=-1;
+  
+
+  int rank = 0;
+  const int mythree=1;
+  for (i=0; i<stop; i+=k) {
+    // not enough room for M4RI left.
+    if ( ((i+k*mythree-1)>=m->rows) || ((i+k-1)>=m->cols) ) {
+      return rank + gaussianPackedDelayed(m, lastokay+1, full);
+    }
+    
+    submatrixrank=doAByteColumnFlexEverySubmatFullRank(m, full, k, i, tablepacked, lookuppacked);
+
+    if (submatrixrank!=k) {
+      // not full rank, use Gaussian elimination :-(
+      return rank + gaussianPackedDelayed(m, lastokay+1, full);
+    } 
+
+    lastokay=i+k-1;
+
+    rank += submatrixrank;
+  }
+  
+  return rank; 
+}
+
 int simpleFourRussiansPackedFlex(packedmatrix *m, int full, int k) {
   int size=m->cols;
   int twokay=TWOPOW(k);
@@ -333,6 +423,24 @@ int simpleFourRussiansPackedFlex(packedmatrix *m, int full, int k) {
   int *mylookups=(int *)safeCalloc(twokay, sizeof(int));
 
   int rank=fourRussiansPackedFlex(m, full, k, mytable, mylookups);
+
+  free(mylookups);
+
+  destroyPackedMatrix(mytable);
+  
+  return rank;
+}
+
+
+int simpleFourRussiansPackedFlexEverySubmatFullRank(packedmatrix *m, int full, int k) {
+  int size=m->cols;
+  int twokay=TWOPOW(k);
+
+  packedmatrix *mytable=createPackedMatrix(twokay, size);
+
+  int *mylookups=(int *)safeCalloc(twokay, sizeof(int));
+
+  int rank=fourRussiansPackedFlexEverySubmatFullRank(m, full, k, mytable, mylookups);
 
   free(mylookups);
 
