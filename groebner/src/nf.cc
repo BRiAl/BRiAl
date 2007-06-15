@@ -1963,15 +1963,17 @@ static int log2_floor(int n){
     for(i=0;TWOPOW(i)<=n;i++){}
     return i-1;
 }
-static int optimal_k_for_multiplication(int a,int b,int c){
+static int optimal_k_for_multiplication(int a,int b,int c,const GroebnerStrategy& strat){
     int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(b)));
-    std::cout<<"optimal k for multiplication:"<<res<<std::endl;
+    if (strat.enabledLog)
+        std::cout<<"optimal k for multiplication:"<<res<<std::endl;
     return res;
 }
-static int optimal_k_for_gauss(int m, int n){
+static int optimal_k_for_gauss(int m, int n, const GroebnerStrategy& strat){
     int l=std::min(n,m);
     int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(l)+1-log2_floor(log2_floor(l))));
-    std::cout<<"optimal k for gauss:"<<res<<std::endl;
+    if (strat.enabledLog)
+        std::cout<<"optimal k for gauss:"<<res<<std::endl;
     return res;
 }
 static void 
@@ -2056,7 +2058,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         polys_triangular.clear();
          
         //optimize: call back subst directly
-        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, optimal_k_for_gauss(mat_step1->rows,mat_step1->cols));//gaussianPacked(mat_step1,YES);
+        int rank=simpleFourRussiansPackedFlex(mat_step1, YES, optimal_k_for_gauss(mat_step1->rows,mat_step1->cols,strat));//gaussianPacked(mat_step1,YES);
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
         }
@@ -2201,7 +2203,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     if (strat.enabledLog){
         std::cout<<"start mult"<<std::endl;
     }
-    packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,optimal_k_for_multiplication(mat_step2_factor->rows,mat_step2_factor->cols,mat_step1->cols));
+    packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,optimal_k_for_multiplication(mat_step2_factor->rows,mat_step2_factor->cols,mat_step1->cols,strat));
     if (strat.enabledLog){
         std::cout<<"end mult"<<std::endl;
     }
@@ -2228,7 +2230,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
      if (strat.enabledLog){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    int rank_step2=simpleFourRussiansPackedFlex(mat_step2, YES, optimal_k_for_gauss(mat_step2->rows,mat_step2->cols));
+    int rank_step2=simpleFourRussiansPackedFlex(mat_step2, YES, optimal_k_for_gauss(mat_step2->rows,mat_step2->cols,strat));
         
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;
