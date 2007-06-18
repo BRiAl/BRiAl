@@ -320,7 +320,7 @@ void rowClearPackedOffset(packedmatrix *m, int row, int coloffset) {
   }
 }
 
-
+#define VECTORIZING_HACK 1
 /**********************************************************************/
 /* this adds rows sourcerow and destrow and stores the total in row
    destrow, but only begins at the column coloffset */
@@ -337,11 +337,42 @@ void rowAddPackedOffset( packedmatrix *m, int sourcerow, int destrow,
   if (coloffset%RADIX)
     temp &= (ONE<<(RADIX - (coloffset%RADIX))) - ONE;
   xorPackedBlock(m, destrow, startblock*RADIX, temp);
-
+#ifndef VECTORIZING_HACK
   for ( i=startblock+1; i < (m->width); i++ ) {
     temp=readPackedBlock(m, sourcerow, i*RADIX);
     xorPackedBlock(m, destrow, i*RADIX, temp);
   }
+#else
+  int block;
+  
+  int truerow_source=m->rowswap[sourcerow];
+  int truerow_dest=m->rowswap[destrow];
+  startblock=startblock+1;
+
+  const int end_block=m->width-startblock;
+  const int vector_size=32;
+  word buffer[vector_size];
+  word* base_dest=m->values+truerow_dest+startblock;
+  word* base_source=m->values+truerow_source+startblock;
+  for(i=0;i<end_block/vector_size;i++){
+      base_source+=vector_size;
+      base_dest+=vector_size;
+      for(block=0;block<vector_size;block++){
+          buffer[block]=base_source[block]^base_dest[block];
+      }
+      for(block=0;block<vector_size;block++){
+          base_dest[block]=buffer[block];
+        }
+      startblock+=vector_size;
+  }
+  
+  
+  for ( i=startblock; i < (m->width); i++ ) {
+    temp=readPackedBlock(m, sourcerow, i*RADIX);
+    xorPackedBlock(m, destrow, i*RADIX, temp);
+  }
+  
+#endif
 }
 
 
