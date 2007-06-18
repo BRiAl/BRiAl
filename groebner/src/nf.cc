@@ -1964,14 +1964,14 @@ static int log2_floor(int n){
     return i-1;
 }
 static int optimal_k_for_multiplication(int a,int b,int c,const GroebnerStrategy& strat){
-    int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(b)));
+    int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(b)));
     if (strat.enabledLog)
         std::cout<<"optimal k for multiplication:"<<res<<std::endl;
     return res;
 }
 static int optimal_k_for_gauss(int m, int n, const GroebnerStrategy& strat){
     int l=std::min(n,m);
-    int res=std::min(M4RI_MAXKAY,std::max(0,log2_floor(l)+1-log2_floor(log2_floor(l))));
+    int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(l)+1-log2_floor(log2_floor(l))));
     if (strat.enabledLog)
         std::cout<<"optimal k for gauss:"<<res<<std::endl;
     return res;
