@@ -355,8 +355,7 @@ void rowAddPackedOffset( packedmatrix *m, int sourcerow, int destrow,
   word* base_dest=m->values+truerow_dest+startblock;
   word* base_source=m->values+truerow_source+startblock;
   for(i=0;i<end_block/vector_size;i++){
-      base_source+=vector_size;
-      base_dest+=vector_size;
+
       for(block=0;block<vector_size;block++){
           buffer[block]=base_source[block]^base_dest[block];
       }
@@ -364,6 +363,8 @@ void rowAddPackedOffset( packedmatrix *m, int sourcerow, int destrow,
           base_dest[block]=buffer[block];
         }
       startblock+=vector_size;
+      base_source+=vector_size;
+      base_dest+=vector_size;
   }
   
   
