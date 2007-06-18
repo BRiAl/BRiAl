@@ -320,7 +320,7 @@ void rowClearPackedOffset(packedmatrix *m, int row, int coloffset) {
   }
 }
 
-#define VECTORIZING_HACK 1
+//#define VECTORIZING_HACK 1
 /**********************************************************************/
 /* this adds rows sourcerow and destrow and stores the total in row
    destrow, but only begins at the column coloffset */
