@@ -24,6 +24,15 @@
 #include <string.h>
 #include "packedmatrix.h"
 
+/* Dreyer, ITWM:
+ * Workaround: old gcc 3.3.3
+ * seems to have problems in optimizing long function names
+ */
+#define simpleFourRussiansPackedFlexEverySubmatFullRank  f1_pbm4
+#define fourRussiansPackedFlexEverySubmatFullRank f2_pbm4
+
+
+
 #define TWOPOW(i) (1<<(i))
 
 /** 
@@ -151,6 +160,7 @@ packedmatrix *invertPackedFlexRussian(packedmatrix *m, packedmatrix *identity, i
 packedmatrix *m4rmPacked(packedmatrix *A, packedmatrix *B, int k);
 
 packedmatrix *m4rmTransposePacked(packedmatrix *A, packedmatrix *B, int k);
+
 int simpleFourRussiansPackedFlexEverySubmatFullRank(packedmatrix *m, int full, int k);
 
 #endif //BRILLIANTRUSSIAN_H
