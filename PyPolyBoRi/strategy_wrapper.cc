@@ -144,6 +144,7 @@ void export_strategy(){
   .def_readonly("monomials",&GroebnerStrategy::monomials)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
   .def_readwrite("optLL",&GroebnerStrategy::optLL)
+  .def_readwrite("optLinearAlgebraInLastBlock",&GroebnerStrategy::optLinearAlgebraInLastBlock)
   .def_readwrite("optBrutalReductions",&GroebnerStrategy::optBrutalReductions)
   .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
   .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
