@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/06/21 11:35:58  dreyer
+ * ADD: lastBlockBegin
+ *
  * Revision 1.35  2007/03/21 08:55:09  dreyer
  * ADD: first version of block_dlex running
  *
@@ -537,7 +540,18 @@ void BoolePolyRing::clearRingBlocks() {
   return activeManager().clearBlocks();
 }
 
+BoolePolyRing::idx_type
+BoolePolyRing::lastBlockStart() {
 
+  PBORI_TRACE_FUNC( "BoolePolyRing::lastBlockStart() const");
+  if (isBlockOrder()) {
+    return *(blockRingEnd() - 2);
+  }
+  else if (isLexicographical()) {
+    return CTypes::max_idx;
+  }
+  return 0;
+}
 
 void
 BoolePolyRing::clearCache() {

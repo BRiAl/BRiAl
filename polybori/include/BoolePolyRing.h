@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/06/21 11:35:57  dreyer
+ * ADD: lastBlockBegin
+ *
  * Revision 1.34  2007/03/21 08:55:08  dreyer
  * ADD: first version of block_dlex running
  *
@@ -355,6 +358,8 @@ protected: public:
   static block_iterator blockRingEnd();
   static void appendRingBlock(idx_type idx);
   static void clearRingBlocks();
+
+  static idx_type lastBlockStart();
   //@}
 };
 
