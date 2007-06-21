@@ -453,6 +453,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
 {
   monomials=orig.monomials;
   optLL=orig.optLL;
+  optLinearAlgebraInLastBlock=orig.optLinearAlgebraInLastBlock;
   optDelayNonMinimals=orig.optDelayNonMinimals;
   optBrutalReductions=orig.optBrutalReductions;
   cache=orig.cache;

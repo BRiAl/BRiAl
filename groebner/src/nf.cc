@@ -828,7 +828,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     
     to_reduce.push(to_push);
   }
-  
+  const idx_type last_block_start=BoolePolyRing::lastBlockStart();
   while (!(to_reduce.empty())){
 
     std::vector<PolynomialSugar> curr;
@@ -836,6 +836,30 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     to_reduce.pop();
 
     Monomial lm=curr[0].lead();
+    #ifdef HAVE_M4RI
+    if (strat.optLinearAlgebraInLastBlock){
+        if (!(lm.deg()==0)){
+            
+            if((*(lm.begin()))>=last_block_start){
+                strat.log("switching to la\n");
+                std::vector<Polynomial> la;
+                la.push_back(curr[0].value());
+                while(!(to_reduce.empty())){
+                    la.push_back(to_reduce.top().value());
+                    to_reduce.pop();
+                }
+                la=strat.faugereStepDense(la);
+                
+                //result.insert(result.size(),la.begin(),la.end());
+                for(i=0;i<la.size();i++){
+                    result.push_back(la[i]);
+                }
+                return result;
+                
+            }
+        }
+    }
+    #endif 
     while ((!(to_reduce.empty())) && (to_reduce.top().lead()==lm)){
       curr.push_back(to_reduce.top());
       to_reduce.pop();
