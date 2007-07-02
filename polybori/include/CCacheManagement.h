@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/07/02 11:36:30  bricken
+ * + interpolate
+ *
  * Revision 1.22  2007/06/05 05:43:54  bricken
  * + plug_1
  *
@@ -137,6 +140,7 @@ public:
 
 
   struct mod_varset: public binary_cache_tag { };
+  struct interpolate: public binary_cache_tag { };
   //struct mod_deg2_set: public binary_cache_tag { };
   typedef mod_varset mod_deg2_set;
   typedef mod_varset mod_mon_set;
