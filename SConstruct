@@ -47,6 +47,7 @@ import os
 
 #opts.Add("SINGULAR_HOME")
 opts.Add('PBP', 'PolyBoRi python', "python")
+opts.Add('CXX', 'C++ Compiler', "g++")
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
@@ -119,7 +120,7 @@ except KeyError:
 #workaround for linux
 #env.Append(LIBPATH=".")
 
-env.Append(LIBS=["m","extra"]+USERLIBS)
+env.Append(LIBS=["m"]+USERLIBS)
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:
