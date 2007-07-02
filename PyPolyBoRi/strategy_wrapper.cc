@@ -174,5 +174,7 @@ void export_strategy(){
   def("set_variable_name",&BoolePolyRing::setRingVariableName);
   def("mod_var_set",mod_var_set);
   def("interpolate",interpolate);
+  def("interpolate_smallest_lex",interpolate_smallest_lex);
+  
   def("contained_vars",contained_variables_cudd_style);
 }

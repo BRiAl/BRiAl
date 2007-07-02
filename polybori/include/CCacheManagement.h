@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2007/07/02 14:15:08  bricken
+ * +smallest lex
+ *
  * Revision 1.23  2007/07/02 11:36:30  bricken
  * + interpolate
  *
@@ -141,6 +144,8 @@ public:
 
   struct mod_varset: public binary_cache_tag { };
   struct interpolate: public binary_cache_tag { };
+  struct interpolate_smallest_lex: public binary_cache_tag { };
+  
   //struct mod_deg2_set: public binary_cache_tag { };
   typedef mod_varset mod_deg2_set;
   typedef mod_varset mod_mon_set;
