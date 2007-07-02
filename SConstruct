@@ -172,7 +172,7 @@ if isinstance(libpb,list):
 Default(libpb)
 
 
-gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc")
+gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]+m4ri
 gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 #print "gb:", gb, dir(gb)

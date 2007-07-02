@@ -14,6 +14,7 @@
 #include <groebner_alg.h>
 #include <BoolePolyRing.h>
 #include "slimgb_wrapper.h"
+#include "interpolate.h"
 //#include <iostream>
 //#include "polybori.h"
 //#include "pbori_defs.h"
@@ -172,5 +173,6 @@ void export_strategy(){
   def("mult_fast_sim_C",mult_fast_sim);
   def("set_variable_name",&BoolePolyRing::setRingVariableName);
   def("mod_var_set",mod_var_set);
+  def("interpolate",interpolate);
   def("contained_vars",contained_variables_cudd_style);
 }
