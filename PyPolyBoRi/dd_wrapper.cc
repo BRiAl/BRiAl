@@ -67,7 +67,7 @@ void export_dd(){
   //.def("count", &CTypes::dd_type::count)
   .def("__len__", &dd_type::length)
   .def("product", &CTypes::dd_type::product)
-  .def("countDouble",&dd_type::countDouble)
+  .def("sizeDouble",&dd_type::sizeDouble)
   .def("unateProduct", &CTypes::dd_type::unateProduct)
   //.def("weakDiv", &CTypes::dd_type::weakDiv)
   //.def("divide", &CTypes::dd_type::divide)
