@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2007/07/03 11:46:51  bricken
+ * + countDouble
+ *
  * Revision 1.46  2007/04/24 07:44:14  dreyer
  * FIX: Warning for ambigious overload on gcc 3.2
  *
@@ -721,6 +724,9 @@ class CDDInterface<ZDD>:
   /// Returns number of terms
   size_type size() const {
     return m_interfaced.Count();
+  }
+  double sizeDouble() const {
+    return m_interfaced.CountDouble();
   }
 
   /// Returns number of terms (deprecated)
