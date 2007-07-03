@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/07/03 07:21:07  dreyer
+ * Fix: ambigious overload var*monom
+ *
  * Revision 1.8  2007/06/11 14:23:30  bricken
  * + var==var
  *
@@ -113,6 +116,14 @@ operator*(const BooleVariable& lhs,
           const BoolePolynomial& rhs){
 
   return BoolePolynomial(rhs) *= BooleMonomial(lhs);
+}
+
+/// Multiplication of variables by a monomial
+inline BoolePolynomial
+operator*(const BooleVariable& lhs, 
+          const BooleMonomial& rhs){
+
+  return BooleMonomial(lhs) * rhs;
 }
 
 /// Multiplication of a polynomial by a variable
