@@ -53,6 +53,8 @@ void export_monomial(){
   //.def("__len__", &BooleMonomial::length)
   //.def(self+=self)
   .def(self*=self)
+  .def(BooleVariable()*self)
+  .def(self*BooleVariable())
   .def(self/self)
   .def(self/=self)
   //.def("tuple",mon2tuple)
@@ -78,6 +80,7 @@ void export_monomial(){
   //.def("isOne", &BooleMonomial::isOne)
   
   .def("deg", &BooleMonomial::deg)
+  .def("__len__", &BooleMonomial::deg)
   .def("divisors", &BooleMonomial::divisors)
   .def("multiples", &BooleMonomial::multiples)
   //.def("reducibleBy", &BooleMonomial::reducibleBy)
