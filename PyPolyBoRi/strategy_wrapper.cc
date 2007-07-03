@@ -175,6 +175,6 @@ void export_strategy(){
   def("mod_var_set",mod_var_set);
   def("interpolate",interpolate);
   def("interpolate_smallest_lex",interpolate_smallest_lex);
-  
+  def("zeroes",zeroes);
   def("contained_vars",contained_variables_cudd_style);
 }
