@@ -129,15 +129,29 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
     MonomialSet to_one0=to_one.subset0(index);
     MonomialSet to_zerou=to_zero1.unite(to_zero0);
     MonomialSet to_oneu=to_one1.unite(to_one0);
+    
     MonomialSet result;
     if (to_zerou.intersect(to_oneu).emptiness()){
         //std::cout<<"then branch"<<std::endl;
         result=interpolate_smallest_lex(to_zerou,to_oneu);
     } else {
-        Polynomial p0=interpolate_smallest_lex(to_zero0,to_one0);
-        MonomialSet affected=to_zero1.unite(to_one1);
-        affected=affected.diff(zeroes(p0,affected));
-        Polynomial p1=interpolate_smallest_lex(to_zero1.Xor(affected),to_one1.Xor(affected));
+        MonomialSet united0=to_zero0.unite(to_one0);
+        MonomialSet to_one1_not_in0=to_one1.diff(united0);
+        MonomialSet to_zero1_not_in0=to_zero1.diff(united0);
+        
+        to_zero1=to_zero1.diff(to_zero1_not_in0);
+        //to_zero0=to_zero0.unite(to_zero1_not_in0);
+        
+        to_one1=to_one1.diff(to_one1_not_in0);
+        //to_one0=to_one0.unite(to_one1_not_in0);
+        
+        Polynomial p1=interpolate_smallest_lex(to_zero1.intersect(to_zero0).unite(to_one1.intersect(to_one0)),to_one1.intersect(to_zero0).unite(to_zero1.intersect(to_one0)));
+        
+        
+        MonomialSet not_affected=to_zero1_not_in0.unite(to_one1_not_in0);
+        not_affected=zeroes(p1,not_affected);
+        Polynomial p0=interpolate_smallest_lex(to_zero0.unite(not_affected.intersect(to_zero1_not_in0)).unite(to_one1_not_in0.diff(not_affected)),
+                to_one0.unite(not_affected.intersect(to_one1_not_in0)).unite(to_zero1_not_in0.diff(not_affected)));
         result=MonomialSet(index,p1.diagram(),p0.diagram());
         //std::cout<<"else branch"<<std::endl;
     }
