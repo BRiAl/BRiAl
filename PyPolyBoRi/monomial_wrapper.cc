@@ -86,6 +86,7 @@ void export_monomial(){
   //.def("reducibleBy", &BooleMonomial::reducibleBy)
   .def("__str__", streamable_as_str<BooleMonomial>)
   .def("__repr__", streamable_as_str<BooleMonomial>)
+  .def("divisors", &BooleMonomial::divisors)
   //.def("lmDeg", &BooleMonomial::lmDeg)
 
   //.def("totalDegree", &BooleMonomial::totalDeg)

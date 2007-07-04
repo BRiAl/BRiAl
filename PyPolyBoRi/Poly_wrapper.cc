@@ -97,6 +97,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("diagram", diagram, return_internal_reference<1>())
   .def("navigation", &BoolePolynomial::navigation)
   .def("elength", &BoolePolynomial::eliminationLength)
+  .def("hasConstantPart", &BoolePolynomial::hasConstantPart)
   .def("plot",plot)
   .def("__len__", &BoolePolynomial::length)
   .def("__str__", streamable_as_str<BoolePolynomial>)
@@ -105,6 +106,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
+  
   //implicitly_convertible<BooleVariable,BooleMonomial>();
   //implicitly_convertible<BooleVariable,BoolePolynomial>();
   
