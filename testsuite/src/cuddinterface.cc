@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.6  2006/04/21 16:17:12  dreyer
  * ADD template class CTermIter<>
  *
@@ -60,12 +63,12 @@ main(){
   std::cout << "Testing cudd interface" <<std::endl;   
 
   try {
-    CDDManager<Cudd> man(3);
+    CDDManager<CTypes::manager_base> man(3);
 
-    CDDInterface<ZDD> dd0 (man.ddVariable(0));
+    CTypes::dd_type dd0 (man.ddVariable(0));
     std::cout << dd0;
 
-    CDDInterface<ZDD> dd1 ( man.ddVariable(1));
+    CTypes::dd_type dd1 ( man.ddVariable(1));
     std::cout << dd1;
 
     dd0.unateProductAssign(dd1);

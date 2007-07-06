@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.20  2006/11/29 16:37:35  dreyer
  * CHANGE: updated testsuite
  *
@@ -344,7 +347,7 @@ main(){
 
    std::cout << "newnode "<< 0 << " " <<poly << " " << poly2<<std::endl;
 
-   CDDInterface<ZDD> ddtest(0, poly.diagram(), poly2.diagram());
+   CTypes::dd_type ddtest(0, poly.diagram(), poly2.diagram());
    std::cout <<  "result " << BoolePolynomial(ddtest) <<std::endl;
 
 

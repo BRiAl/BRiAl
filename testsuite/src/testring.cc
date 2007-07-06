@@ -20,6 +20,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.25  2007/07/06 18:46:31  dreyer
+// ADD: rewritten C++-Interface for Cudd
+//
 // Revision 1.24  2007/05/03 16:04:47  dreyer
 // CHANGE: new-style CTermIter integrated
 //
@@ -359,16 +362,16 @@ main(){
 
   int verbosity = 2;
   std::cout << "Variable 0:"<<std::endl;
-  ((ZDD)ring.variable(0)).print(3, verbosity);
+  ((CTypes::dd_base)ring.variable(0)).print(3, verbosity);
 
   std::cout << "Variable 1:"<<std::endl;
-  ((ZDD)ring.variable(1)).print(3, verbosity);
+  ((CTypes::dd_base)ring.variable(1)).print(3, verbosity);
 
   std::cout << "Variable 2:"<<std::endl;
-  ((ZDD)ring.variable(2)).print(3, verbosity);
+  ((CTypes::dd_base)ring.variable(2)).print(3, verbosity);
 
   std::cout << "Variable 3:"<<std::endl;
-  ((ZDD)ring.variable(3)).print(3, verbosity);
+  ((CTypes::dd_base)ring.variable(3)).print(3, verbosity);
 
   BoolePolyRing::printInfo();
 

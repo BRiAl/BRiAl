@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.16  2007/05/03 16:04:47  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -258,11 +261,11 @@ main(){
 
     BoolePolynomial::navigator navi = poly.navigation();
 
-    std::list<CDDInterface<ZDD> > theList;
+    std::list<CTypes::dd_type > theList;
 
     dd_transform( navi, BoolePolyRing::ringOne(),  
                   std::back_inserter(theList),
-                  change_idx<CDDInterface<ZDD> >() );
+                  change_idx<CTypes::dd_type >() );
 
     std::copy(theList.begin(), theList.end(), 
               std::ostream_iterator<BoolePolynomial>(std::cout, "\n") );
@@ -271,7 +274,7 @@ main(){
     std::cout <<std::endl<< "Printing via dd_transform: "<<std::endl;
     dd_transform( navi, BoolePolyRing::ringOne(), 
                   std::ostream_iterator<BoolePolynomial>(std::cout, ""),
-                  change_idx<CDDInterface<ZDD>, int> () );
+                  change_idx<CTypes::dd_type, int> () );
 
     std::cout <<std::endl<< "Storing via dd_transform: "<<std::endl;
 

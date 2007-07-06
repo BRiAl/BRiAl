@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.2  2007/05/18 11:48:39  dreyer
  * ADD: sophisticated term_accumulate
  *
@@ -121,6 +124,7 @@ main(){
     poly = x*z + x*w+ y*z + y*w + y;
 
     start = poly.orderedBegin();
+    ++start;
     start2 = start;
     ++start2;
     ++start2;
@@ -131,7 +135,7 @@ main(){
       lower_term_accumulate(start.navigation(),
                         start2.begin(), start2.end(), BoolePolynomial(0))  <<std::endl;
 
-
+    std::cout << "summing >= "<<*start <<" .. <  "<<*start2 << std::endl;
     std::cout<<  term_accumulate(start, start2, BoolePolynomial(0))
       <<std::endl;
     

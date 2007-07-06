@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.5  2006/07/14 09:02:49  dreyer
  * ADD: greater_variable()
  *
@@ -82,7 +85,20 @@ main(){
 
     std::cout << "var(2) > var(1)" <<std::endl;
     std::cout << greater_variable(2, 1) <<std::endl;
+
+    std::cout << "poly *= var" <<std::endl;
+    std::cout <<  (poly *= BooleVariable(0)) << std::endl;
+    std::cout << "poly % var" <<std::endl;
+    std::cout <<  (poly % BooleVariable(0)) << std::endl;
+
+    std::cout << "poly %= var" <<std::endl;
+    std::cout <<  (poly %= BooleVariable(0)) << std::endl;
     std::cout << "Finished."<<std::endl;
+
+
+    std::cout << "var * monom" <<std::endl;
+    std::cout <<  (BooleVariable(0)  * BooleMonomial(BooleVariable(1)))<<
+      std::endl;
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

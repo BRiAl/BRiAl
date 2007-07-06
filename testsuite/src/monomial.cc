@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.6  2006/11/03 10:22:59  dreyer
  * FIX: bug at comparison between monomials, extended workaround
  *
@@ -256,6 +259,21 @@ main(){
     std::cout <<monom1 <<" > " << monom2 <<std::endl;
 
     std::cout << (monom1.exp() > monom2.exp() ) <<std::endl;
+
+    std::cout << "Testing popFirst."<<std::endl;
+
+    BooleExponent exp1(monom1.exp());
+    std::cout << (monom1) <<std::endl;
+    monom1.popFirst();
+
+    std::cout << (monom1) <<std::endl;
+
+    std::cout << "Testing BooleExponent.popFirst()"<<std::endl;
+
+    std::cout << (exp1) <<std::endl;
+    exp1.popFirst();
+
+    std::cout << (exp1) <<std::endl;
 
     std::cout << "Finished."<<std::endl;
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/07/06 18:46:31  dreyer
+ * ADD: rewritten C++-Interface for Cudd
+ *
  * Revision 1.13  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -502,7 +505,7 @@ main(){
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
     std::cout.flush();
     
-    
+    std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl; 
     std::cout << "Switching to lex:  " <<std::endl;
     
     
@@ -518,6 +521,7 @@ main(){
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
 
     std::cout << "Finished."<<std::endl;
+    std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl;
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
