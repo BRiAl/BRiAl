@@ -11,6 +11,7 @@
 #include "CDDInterface.h"
 #include "polybori.h"
 #include "interpolate.h"
+#include "groebner_alg.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -51,6 +52,7 @@ void export_bset(){
   .def("union",&BooleSet::unite)
   .def("navigation", &BooleSet::navigation)
   .def("includeDivisors",include_divisors)
+  .def("minimalElements",minimal_elements)
   .def("__contains__", (owns_func_type) &BooleSet::owns)
   .def("intersect", &BooleSet::intersect);
 

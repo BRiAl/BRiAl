@@ -33,6 +33,7 @@
 BEGIN_NAMESPACE_PBORIGB
 
 #define LL_RED_FOR_GROEBNER 1
+MonomialSet minimal_elements(const MonomialSet& s);
 
 class PairStatusSet{
 public:
