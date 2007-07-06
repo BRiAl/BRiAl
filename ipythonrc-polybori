@@ -32,8 +32,10 @@ execute from sys import path
 execute path.append(PBHOME+"/PyPolyBoRi")
 execute path.append(PBHOME+"/testsuite/py")
 execute from PyPolyBoRi import *
+execute r=Ring(10000)
+execute x=Variable
 #import_all PyPolyBoRi
-
+from blocks import declare_ring, HigherOrderBlock,AlternatingBlock,Block
 
 # from ... import ...
 #import_some
