@@ -21,7 +21,7 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-class CTypes{
+class GBTypes{
   typedef polybori::BoolePolynomial poly_type;
   typedef polybori::BooleMonomial monom_type;
 };
