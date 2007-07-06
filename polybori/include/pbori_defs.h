@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.33  2007/05/24 11:27:16  dreyer
  * Fix: changed default
  *
@@ -410,6 +413,10 @@ struct CAuxTypes {
   typedef const char* vartext_type;
 };
 
+class CCuddZDD;
+class CCuddInterface;
+
+
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
  *
@@ -434,7 +441,8 @@ struct CTypes:
   //@}
 
   /// Type of underlying binary decicion diagrams 
-  typedef ZDD dd_base;
+  typedef CCuddZDD dd_base;
+  //  typedef ZDD dd_base;
 
   /// Type of interface to binary decicion diagrams 
   typedef CDDInterface<dd_base> dd_type;
@@ -443,7 +451,8 @@ struct CTypes:
   typedef ZDDvector ddvector_type;
 
   /// Variables manager base type
-  typedef Cudd manager_base;
+  typedef CCuddInterface manager_base;
+  // typedef Cudd manager_base;
 
   /// Manage variables to be used by polynomials over Boolean ring
   //  typedef CDDManager<Cudd>  manager_type;

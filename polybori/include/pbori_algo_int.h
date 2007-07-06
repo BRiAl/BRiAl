@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.5  2006/08/18 19:47:15  dreyer
  * change finished low-level variant of minimal_elements also for lnegth()==2
  *
@@ -471,12 +474,13 @@ template <class  DDType>
 class dd_operations;
 
 template<>
-class dd_operations<CDDInterface<ZDD>::navigator> {
+class dd_operations<CTypes::dd_type::navigator> {
 public:
   typedef DdManager* manager_type;
-  typedef CDDInterface<ZDD>::navigator node_type;
-  typedef CDDInterface<ZDD>::idx_type idx_type;
-  typedef CDDInterface<ZDD>::size_type size_type;
+  typedef CTypes::dd_type dd_type;
+  typedef dd_type::navigator node_type;
+  typedef dd_type::idx_type idx_type;
+  typedef dd_type::size_type size_type;
 
   dd_operations(manager_type man): mgr(man) {}
   void replacingUnite(node_type& newNode,

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.5  2006/10/06 12:52:01  dreyer
  * ADD easy_equility_property and used in lex_compare
  *
@@ -44,6 +47,7 @@
 // include basic definitions
 #include "pbori_defs.h"
 #include "pbori_tags.h"
+#include "CCuddInterface.h"
 
 #ifndef pbori_traits_h_
 #define pbori_traits_h_
@@ -157,6 +161,54 @@ class pbori_binary_traits:
   public equality_property<invalid_tag>{
 };
 
+
+
+
+template <class MgrType>
+struct manager_traits;
+
+template <>
+struct manager_traits<Cudd> {
+  typedef ZDD dd_base;
+  typedef Cudd* core_type;
+  typedef Cudd& tmp_ref;
+};
+
+template <>
+struct manager_traits<Cudd*> :
+  public manager_traits<Cudd> {
+};
+
+template <>
+struct manager_traits<DdManager*> :
+  public manager_traits<Cudd> {
+};
+
+template <>
+struct manager_traits<CCuddInterface> {
+  typedef CCuddZDD dd_base;
+  typedef CCuddInterface::mgr_ptr core_type;
+  typedef CCuddInterface tmp_ref;
+};
+
+template <>
+struct manager_traits<CCuddInterface::mgr_ptr> :
+  public manager_traits<CCuddInterface> {
+};
+
+
+template <class ZDDType>
+struct zdd_traits;
+ 
+template <>
+struct zdd_traits<ZDD>  {
+  typedef Cudd manager_base;
+};
+
+template <>
+struct zdd_traits<CCuddZDD>  {
+  typedef CCuddInterface manager_base;
+};
 
 END_NAMESPACE_PBORI
 

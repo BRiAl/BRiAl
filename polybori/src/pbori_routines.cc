@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.6  2006/11/24 14:49:01  dreyer
  * CHANGE: divisorsOf (less recursions/cache-lookups)
  *
@@ -164,3 +167,4 @@ pboriCudd_zddUnionXor(
 // }
 
 END_NAMESPACE_PBORI
+

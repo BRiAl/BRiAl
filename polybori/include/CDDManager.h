@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/07/06 14:04:21  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.15  2007/05/22 10:33:53  bricken
  * + pbori cache macros to cache opts file
  *
@@ -79,9 +82,12 @@
 #include "cacheopts.h"
 // load basic definitions
 #include "pbori_defs.h"
+#include "pbori_traits.h"
 
 // get decision diagram definitions.
 #include "CDDInterface.h"
+
+#include "CCuddInterface.h"
 
 // get standard map functionality
 #include <map>
@@ -105,24 +111,44 @@
 BEGIN_NAMESPACE_PBORI
 
 
-/** @class CDDManagerBase<Cudd, StorageType>
+inline ZDD
+fetch_diagram(const Cudd& mgr, const ZDD& rhs) {
+  return ZDD(&const_cast<Cudd&>(mgr), rhs.getNode());
+}
+
+template <class MgrType, class DDType>
+inline const DDType&
+fetch_diagram(const MgrType& mgr, const DDType& rhs) {
+  return rhs;
+}
+
+inline Cudd&
+fetch_manager(const Cudd& mgr) {
+  return const_cast<Cudd&>(mgr);
+}
+
+template <class MgrType>
+inline const MgrType&
+fetch_manager(const MgrType& mgr) {
+  return mgr;
+}
+
+
+/** @class CDDManagerBase<CuddLikeManType, StorageType>
  *
  * @brief this specialization of the template class CDDManager gives an
- * interface to Cudd's ZDD manager (StorageType = Cudd) or a reference of the
- * latter (StorageType = Cudd&).
+ * interface to Cudd-like ZDD manager (StorageType = CuddLikeManType) or a
+ * reference of the latter (StorageType = CuddLikeManType&).
  *
+ * @note Currently CuddLikeManType may be Cudd or CCuddInterface
+ * @todo This may need clean up and/or generalization
  **/
-
-
-template <class ManType, class StorageType>
-class CDDManagerBase;
-
-template <class StorageType>
-class CDDManagerBase<Cudd, StorageType> {
+template <class CuddLikeManType, class StorageType>
+class CDDManagerBase {
  public:
   
-  /// Interfacing Cudd's zero-suppressed decision diagram type
-  typedef Cudd interfaced_type;
+  /// Interfacing Cudd's or CCuddInterces's zero-suppressed decision diagram type
+  typedef CuddLikeManType interfaced_type;
 
   /// Storing interfaced_type or reference of it
   typedef StorageType interfaced_store;
@@ -137,8 +163,8 @@ class CDDManagerBase<Cudd, StorageType> {
   typedef CTypes::idx_type idx_type;
 
   /// Define raw type for decision diagrams
-  typedef ZDD dd_base;
-
+  typedef typename manager_traits<interfaced_type>::dd_base dd_base;
+  
   /// Define type for decision diagrams
   typedef CDDInterface<dd_base> dd_type;
 
@@ -157,7 +183,7 @@ class CDDManagerBase<Cudd, StorageType> {
   CDDManagerBase(const self& rhs): 
     m_interfaced(rhs.m_interfaced), m_variables() {
     
-    persistent_cache_type::const_iterator start(rhs.m_variables.begin()),
+    typename persistent_cache_type::const_iterator start(rhs.m_variables.begin()),
       finish(rhs.m_variables.end());
 
     // explicit copy, since pointer to manager in dd_base has to be consistent
@@ -168,8 +194,8 @@ class CDDManagerBase<Cudd, StorageType> {
   }
 
   /// Constructor from given ring
-  CDDManagerBase(interfaced_type& rhs): 
-    m_interfaced(rhs), m_variables() {  }
+  CDDManagerBase(const interfaced_type& rhs): 
+    m_interfaced(fetch_manager(rhs)), m_variables() {  }
 
   /// Extract manager from given decision diagram
   CDDManagerBase(const dd_type& dd): 
@@ -180,7 +206,7 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Get decision diagram, from the same manager, but different wrapper 
   dd_base fetchDiagram(const dd_base& rhs) const {
-    return dd_base(&m_interfaced, rhs.getNode());
+    return fetch_diagram(m_interfaced, rhs);
   }
 
   /// Access nvar-th managed variable
@@ -195,7 +221,7 @@ class CDDManagerBase<Cudd, StorageType> {
 
   /// Access nvar-th managed variable
   dd_base persistentVariable(idx_type nvar) {
-    persistent_cache_type::iterator iter = m_variables.find(nvar);
+    typename persistent_cache_type::iterator iter = m_variables.find(nvar);
 
     if (iter != m_variables.end())
       return (*iter).second;
@@ -281,6 +307,7 @@ public:
  *
  **/
 
+
 template<>
 class CDDManager<Cudd>:
   public CDDManagerBase<Cudd, Cudd> { 
@@ -289,6 +316,70 @@ public:
 
   typedef Cudd manager_type;
   typedef Cudd storage_type;
+  typedef CDDManagerBase<manager_type, storage_type> base;
+  typedef CDDManager<storage_type> self;
+
+  /// Construct new decision diagramm manager
+  CDDManager(size_type nvars = 0): 
+    base(nvars) { }
+
+  // Destructor
+  ~CDDManager() { }
+
+};
+
+
+/** @class CDDManager<CCuddInterface&>
+ *
+ * @brief this specialization of the template class CDDManager gives an
+ * interface to CCuddInterface's ZDD manager reference.
+ *
+ **/
+
+template<>
+class CDDManager<CCuddInterface&>:
+  public CDDManagerBase<CCuddInterface, const CCuddInterface&> { 
+
+public:
+
+  typedef CCuddInterface manager_type;
+  typedef const CCuddInterface& storage_type;
+  typedef CDDManagerBase<manager_type, storage_type> base;
+  typedef CDDManager<CCuddInterface&> self;
+
+  /// Constructor reference of given manager
+  CDDManager(const manager_type& rhs): 
+    base(rhs) { }
+
+  /// Extract manager from given decision diagram
+  CDDManager(const dd_type& dd): 
+    base(dd) { }
+
+  /// Copy constructor
+  CDDManager(const self& rhs): 
+    base(rhs) { }
+
+  // Destructor
+  ~CDDManager() { }
+
+};
+
+
+/** @class CDDManager<CCuddInterface>
+ *
+ * @brief this specialization of the template class CDDManager gives an
+ * interface to CCuddInterface's ZDD manager.
+ *
+ **/
+
+template<>
+class CDDManager<CCuddInterface>:
+  public CDDManagerBase<CCuddInterface, CCuddInterface> { 
+
+public:
+
+  typedef CCuddInterface manager_type;
+  typedef CCuddInterface storage_type;
   typedef CDDManagerBase<manager_type, storage_type> base;
   typedef CDDManager<storage_type> self;
 

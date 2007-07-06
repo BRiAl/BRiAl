@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.10  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -441,10 +444,11 @@ BooleExponent::multiples(const self& multipliers) const {
 
 
   poly_type theZero(false);
-  dd_type result = cudd_generate_multiples( BoolePolyRing::activeManager().manager() , //theZero.diagram().manager(),
+  dd_type result = cudd_generate_multiples(theZero.diagram().manager(),
+                                            // BoolePolyRing::activeManager().manager() , //theZero.diagram().manager(),
                                             m_data.rbegin(), m_data.rend(),
                                             multipliers.rbegin(),
-                                            multipliers.rend() );
+                                           multipliers.rend());
 
 
    return result;

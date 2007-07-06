@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/07/06 14:04:21  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.17  2007/05/25 11:37:15  dreyer
  * CHANGE: typo
  *
@@ -85,6 +88,9 @@
 // include basic definitions
 #include "pbori_defs.h"
 #include "pbori_tags.h"
+
+#include "CCuddInterface.h"
+
 
 #ifndef CCuddNavigator_h_
 #define CCuddNavigator_h_

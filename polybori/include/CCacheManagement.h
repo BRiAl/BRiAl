@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/07/06 14:04:21  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.26  2007/07/06 08:24:44  bricken
  * + include_divsors
  *
@@ -226,6 +229,29 @@ private:
   internal_manager_type m_mgr;
 };
 
+class mycudd_manager_storage {
+public:
+  /// Set  manager type
+  typedef CCuddInterface manager_type;
+
+  /// Set type of Cudd's nodes
+  typedef DdNode* node_type;
+
+  /// Constructor
+  mycudd_manager_storage(const manager_type& mgr): 
+    m_mgr(mgr.getManager()) {}
+
+  /// Set type of Cudd's internal manager type
+  typedef DdManager* internal_manager_type;
+
+  /// Accessing operator
+  internal_manager_type operator()() const { return m_mgr; }
+
+private:
+  /// Store (pointer) to internal manager
+  internal_manager_type m_mgr;
+};
+
 template <class ManagerType, class CacheType, unsigned ArgumentLength>
 class CCacheManBase;
 
@@ -388,6 +414,107 @@ public:
 
 };
 
+
+
+/// temporarily
+
+
+template <class CacheType>
+class CCacheManBase<CCuddInterface, CacheType, 1> :
+  protected mycudd_manager_storage {
+
+public:
+  /// Set base type
+  typedef mycudd_manager_storage base;
+
+  /// Constructor
+  CCacheManBase(const manager_type& mgr): base(mgr) {}
+
+  /// Find cached value wrt. given node
+  node_type find(node_type node) const {
+    return cuddCacheLookup1Zdd(base::operator()(), cache_dummy, node);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(node_type node, node_type result) const {
+    Cudd_Ref(result);
+    cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
+    Cudd_Deref(result);
+  }
+
+private:
+  /// Define unique static function, as marker for Cudd cache
+  static node_type cache_dummy(internal_manager_type, node_type){
+    return NULL;
+  }
+};
+
+
+
+
+template <class CacheType>
+class CCacheManBase<CCuddInterface, CacheType, 2> :
+  protected mycudd_manager_storage {
+
+public:
+
+  /// Set base type
+  typedef mycudd_manager_storage base;
+
+  /// Constructor
+  CCacheManBase(const manager_type& mgr): base(mgr) {}
+
+  /// Find cached value wrt. given node
+  node_type find(node_type first, node_type second) const {
+    return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(node_type first, node_type second, node_type result) const {
+    Cudd_Ref(result);
+    cuddCacheInsert2(base::operator()(), cache_dummy, first, second, result);
+    Cudd_Deref(result);
+  }
+
+private:
+  /// Define unique static function, as marker for Cudd cache
+  static node_type cache_dummy(internal_manager_type, node_type, node_type){
+    return NULL;
+}
+};
+
+
+template <class CacheType>
+class CCacheManBase<CCuddInterface, CacheType, 3> :
+  protected mycudd_manager_storage {
+
+public:
+
+  /// Set base type
+  typedef mycudd_manager_storage base;
+
+  /// Constructor
+  CCacheManBase(const manager_type& mgr): base(mgr) {}
+
+  /// Find cached value wrt. given node
+  node_type find(node_type first, node_type second, node_type third) const {
+    return cuddCacheLookupZdd(base::operator()(), (ptruint)GENERIC_DD_TAG, 
+                              first, second, third);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(node_type first, node_type second, node_type third, 
+              node_type result) const {
+    Cudd_Ref(result);
+    cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
+                    first, second, third, result);
+    Cudd_Deref(result);
+  }
+
+private:
+  enum { GENERIC_DD_TAG =
+         cudd_tag_number<count_tags<CacheType>::value>::value };
+};
 
 END_NAMESPACE_PBORI
 

@@ -23,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.29  2007/05/11 11:38:42  dreyer
  * ADD: started pbori_algorithms.h and term_accumulation()
  *
@@ -121,9 +124,11 @@
 
 // get polybori's functionals
 #include "pbori_func.h"
+#include "pbori_traits.h"
 
 // temporarily
 #include "cudd.h"
+#include "CCuddInterface.h"
 
 #ifndef pbori_algo_h_
 #define pbori_algo_h_
@@ -497,10 +502,21 @@ dd_minimal_elements(NaviType navi, DDType dd, DDType& multiples) {
   return dd;
 }
 
+template <class MgrType>
+inline const MgrType&
+get_mgr_core(const MgrType& rhs) { 
+  return rhs;
+}
+inline Cudd*
+get_mgr_core(const Cudd& rhs) { 
+  return &const_cast<Cudd&>(rhs);
+}
+
+
 /// temporarily (needs to be more generic)
 template<class ManagerType, class ReverseIterator, class MultReverseIterator>
-ZDD
-cudd_generate_multiples(ManagerType& mgr, 
+typename manager_traits<ManagerType>::dd_base
+cudd_generate_multiples(const ManagerType& mgr, 
                         ReverseIterator start, ReverseIterator finish,
                         MultReverseIterator multStart, 
                         MultReverseIterator multFinish) {
@@ -556,16 +572,19 @@ cudd_generate_multiples(ManagerType& mgr,
 
     Cudd_Deref(prev);
 
-    return ZDD(&mgr, prev);
+    typedef typename manager_traits<ManagerType>::dd_base dd_base;
+    return dd_base(get_mgr_core(mgr), prev);
   }
+
+
 
 /// temporarily (needs to be more generic)
 template<class ManagerType, class ReverseIterator>
-ZDD
-cudd_generate_divisors(ManagerType& mgr, 
+typename manager_traits<ManagerType>::dd_base
+cudd_generate_divisors(const ManagerType& mgr, 
                        ReverseIterator start, ReverseIterator finish) {
 
-
+  typedef typename manager_traits<ManagerType>::dd_base dd_base;
     DdNode* prev= (mgr.getManager())->one;
 
     Cudd_Ref(prev);
@@ -582,8 +601,8 @@ cudd_generate_divisors(ManagerType& mgr,
     }
 
     Cudd_Deref(prev);
- 
-    return ZDD(&mgr, prev);
+    ///@todo Next line needs generalization 
+      return dd_base(get_mgr_core(mgr), prev);
 
 }
 

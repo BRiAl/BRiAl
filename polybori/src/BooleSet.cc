@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/07/06 14:04:22  dreyer
+ * ADD: newly written C++_interface for Cudd
+ *
  * Revision 1.34  2007/05/25 12:35:32  dreyer
  * ADD: BooleSet::owns(const exp_type&) const
  *
@@ -385,7 +388,7 @@ BooleSet::minimalElements() const {
   resultMultiples, indices.rbegin(), indices.rend(),  
                                         apply);
   // std::cerr<< "aft"<<std::endl;
-base res = ZDD( &manager(), result );
+  base res = CTypes::dd_base( managerCore(), result );
 
 
   Cudd_Deref(result);

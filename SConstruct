@@ -198,7 +198,7 @@ for t in tests_gb:
         ["testsuite/src/" + t +".cc"] +[libpb, gb], 
         CPPPATH=CPPPATH)
 
-LIBS=env['LIBS']+['boost_python',"polybori", "groebner"]+USERLIBS
+LIBS=["polybori"]+env['LIBS']+['boost_python', "groebner"]+USERLIBS
 #env["CPPDEFINES"].Append("Packed")
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
