@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.49  2007/07/06 18:45:52  dreyer
+ * Fix: disabled support()
+ *
  * Revision 1.48  2007/07/06 14:04:21  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -625,18 +628,23 @@ class CDDInterface:
     return Cudd_SupportSize(manager().getManager(), m_interfaced.getNode());
   }
 
+#if 1
   /// Get multiples of used variables
   self support() const {
 
-    /*
-    BDD supp( &manager(), 
-              Cudd_Support(manager().getManager(), m_interfaced.getNode()) );
+//    BDD supp( &manager(), 
+    DdNode* tmp = Cudd_Support(manager().getManager(), m_interfaced.getNode());
+    Cudd_Ref(tmp);
+ 
+    self result = interfaced_type(m_interfaced.manager(),  
+      Cudd_zddPortFromBdd(manager().getManager(), tmp));
+    Cudd_RecursiveDeref(manager().getManager(), tmp);        
+//    return supp.PortToZdd();
 
-    return supp.PortToZdd();
-    */
-    assert(false);
-
+//    assert(false);
+    return result;
   }
+#endif
 
   /// Get used variables (assuming indices of zero length)
   template<class VectorLikeType>
