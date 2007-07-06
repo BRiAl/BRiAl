@@ -39,14 +39,17 @@ static dd_type one_path(const dd_type& m_dd){
 
   return leadterm;
 }
-
+unsigned long dd_hash(const dd_type& d){
+    return BoolePolynomial(d).lmHash();
+}
 
 void export_dd(){
   boost::python::class_<CTypes::dd_type>("DD")
   .def(boost::python::init <const CTypes::dd_type&>())
   
   .def(boost::python::init <>())
- 
+  .def(self==self)
+  .def("__hash__",dd_hash)
   /*.def(self + self)
   .def(self | self)
   .def(self * self)
