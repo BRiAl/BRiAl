@@ -159,4 +159,23 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
     cache_mgr.insert(to_zero.navigation(),to_one.navigation(),result.navigation());
     return result;
 }
+
+MonomialSet include_divisors(const MonomialSet& m){
+    MonomialSet::navigator nav=m.navigation();
+    if (nav.isConstant()) return m;
+    typedef PBORI::CacheManager<CCacheTypes::include_divisors>
+      cache_mgr_type;
+    cache_mgr_type cache_mgr;
+    MonomialSet::navigator cached=cache_mgr.find(nav);
+    if (cached.isValid() ){
+       return cached;
+    }
+    MonomialSet::navigator tb=nav.thenBranch();
+    MonomialSet::navigator eb=nav.elseBranch();
+    MonomialSet itb=include_divisors(tb);
+    MonomialSet r0=include_divisors(eb).unite(itb);
+    MonomialSet result=MonomialSet(*nav,itb,r0);
+    cache_mgr.insert(nav,result.navigation());
+    return result;
+}
 END_NAMESPACE_PBORIGB

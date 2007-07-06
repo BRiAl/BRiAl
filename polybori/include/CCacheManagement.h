@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2007/07/06 08:24:44  bricken
+ * + include_divsors
+ *
  * Revision 1.25  2007/07/03 09:58:06  bricken
  * + new tag
  *
@@ -149,6 +152,8 @@ public:
   struct interpolate: public binary_cache_tag { };
   struct zeroes: public binary_cache_tag { };
   struct interpolate_smallest_lex: public binary_cache_tag { };
+  
+  struct include_divisors: public unary_cache_tag { };
   
   //struct mod_deg2_set: public binary_cache_tag { };
   typedef mod_varset mod_deg2_set;
