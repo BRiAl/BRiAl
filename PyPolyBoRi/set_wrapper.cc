@@ -10,9 +10,11 @@
 #include <iostream>
 #include "CDDInterface.h"
 #include "polybori.h"
+#include "interpolate.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
+USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
 typedef CTypes::dd_type dd_type;
@@ -48,6 +50,7 @@ void export_bset(){
   .def("nSupport", &BooleSet::nSupport)
   .def("union",&BooleSet::unite)
   .def("navigation", &BooleSet::navigation)
+  .def("includeDivisors",include_divisors)
   .def("__contains__", (owns_func_type) &BooleSet::owns)
   .def("intersect", &BooleSet::intersect);
 
