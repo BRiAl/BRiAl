@@ -820,8 +820,8 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   Polynomial result;
 
   if (cached.isValid() ){
-    result = (CDDInterface<ZDD>)
-      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+    result = (PBORI::CTypes::dd_type)
+      PBORI::CTypes::dd_base(a.diagram().managerCore(),
                                cached);
   }
   else {
@@ -878,7 +878,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
   Polynomial result;
 
   if (cached.isValid() ){
-    result = (CDDInterface<ZDD>)
+    result = (PBORI::CTypes::dd_type)
       PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
                                cached);
   }
