@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/07/09 14:15:32  dreyer
+ * Fix: removed performance issue
+ *
  * Revision 1.4  2007/07/09 11:30:50  dreyer
  * Fix: dynamic extension of variable names
  *
@@ -90,25 +93,26 @@ public:
   /// Get name of variable with index idx
   const_reference operator[](idx_type idx) const { 
 
-    if (size_type(idx) >= m_data.size())
+    if UNLIKELY(size_type(idx) >= m_data.size())
       return undefName();
     return m_data[idx].c_str(); 
   }
 
   /// Get writable reference to name of variable with index idx
-  reference operator[](idx_type idx) { 
-    idx_type nlen = (idx_type)m_data.size();
+  void set(idx_type idx, const varname_type& varname) { 
 
-    if (idx >= nlen) {
-      m_data.resize(size_type(idx) + 1);
-      reset(nlen);
+    size_type nlen = m_data.size();
+
+    if UNLIKELY((size_type)idx >= nlen) {
+      m_data.resize((size_type)idx + 1);
+      reset((idx_type)nlen);
     }
 
-    return (m_data[idx] = undefName());
+    m_data[idx] = varname;
   }
 
 protected:
-  const_reference undefName() const {  return "UNDEF"; }
+  static const_reference undefName() {  return "UNDEF"; }
 
 private:
   storage_type m_data;

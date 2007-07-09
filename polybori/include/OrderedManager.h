@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2007/07/09 14:15:32  dreyer
+ * Fix: removed performance issue
+ *
  * Revision 1.23  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -246,7 +249,7 @@ public:
 
   /// Set name of variable with index idx
   void setVariableName(idx_type idx, const_varname_reference varname) {
-    m_names[idx] = varname;
+    m_names.set(idx, varname);
   }
 
   /// Get name of variable with index idx

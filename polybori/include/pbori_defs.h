@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/07/09 14:15:32  dreyer
+ * Fix: removed performance issue
+ *
  * Revision 1.34  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -133,6 +136,15 @@
 
 #ifndef pbori_defs_h_
 #define pbori_defs_h_
+
+/// For optimizing if-branches
+#ifdef __GNUC__
+#define LIKELY(expression) (__builtin_expect(!!(expression), 1))
+#define UNLIKELY(expression) (__builtin_expect(!!(expression), 0))
+#else
+#define LIKELY(expression) (expression)
+#define UNLIKELY(expression) (expression)
+#endif 
 
 /// Name the project
 #define PBORINAME polybori
