@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/07/09 11:30:50  dreyer
+ * Fix: dynamic extension of variable names
+ *
  * Revision 1.3  2007/04/24 15:23:04  dreyer
  * FIX: minor changes fixing -Wall warnings
  *
@@ -82,34 +85,47 @@ public:
   CVariableNames(const self& rhs): m_data(rhs.m_data) { }
 
   /// Set default variable names
-  void reset();
+  void reset(idx_type idx = 0);
 
   /// Get name of variable with index idx
   const_reference operator[](idx_type idx) const { 
 
     if (size_type(idx) >= m_data.size())
-      return "UNDEF";
+      return undefName();
     return m_data[idx].c_str(); 
   }
 
   /// Get writable reference to name of variable with index idx
   reference operator[](idx_type idx) { 
-    return m_data[idx];
+    idx_type nlen = (idx_type)m_data.size();
+
+    if (idx >= nlen) {
+      m_data.resize(size_type(idx) + 1);
+      reset(nlen);
+    }
+
+    return (m_data[idx] = undefName());
   }
+
+protected:
+  const_reference undefName() const {  return "UNDEF"; }
 
 private:
   storage_type m_data;
 };
 
-inline void CVariableNames::reset() {
+inline 
+void CVariableNames::reset(idx_type idx) {
 
-  idx_type nlen = m_data.size();
-  for (idx_type idx = 0; idx < nlen; ++idx){
+  idx_type nlen = (idx_type)m_data.size();
+
+  for (; idx < nlen; ++idx){
     std::ostringstream sstrg; 
     sstrg << "x(" << idx << ')';
     m_data[idx] = sstrg.str();
   }
 }
+
 
 END_NAMESPACE_PBORI
 
