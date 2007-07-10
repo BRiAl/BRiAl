@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/07/10 14:53:27  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.18  2007/05/18 11:48:38  dreyer
  * ADD: sophisticated term_accumulate
  *
@@ -212,7 +215,7 @@ public:
 
   COrderedIter(core_pointer rhs, 
                term_generator getTerm = term_generator()):
-    p_iter(rhs), m_getTerm(getTerm) {}
+    m_getTerm(getTerm), p_iter(rhs) {}
 
   // Destructor
   ~COrderedIter() {}

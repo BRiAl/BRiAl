@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/07/10 14:53:28  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.22  2007/05/18 11:48:39  dreyer
  * ADD: sophisticated term_accumulate
  *
@@ -153,17 +156,17 @@ public:
 
   /// Copy constructor
   CTermIter(const CTermIter& rhs): 
-    m_stack(rhs.m_stack), m_getTerm(rhs.m_getTerm) {
+    m_getTerm(rhs.m_getTerm), m_stack(rhs.m_stack) {
   }
 
   /// Construct from navigator over decision diagram
   CTermIter(navigator navi, term_generator get_term = term_generator()): 
-    m_stack(navi), m_getTerm(get_term) { 
+    m_getTerm(get_term), m_stack(navi) {
     m_stack.init(); 
   }
 
   ///  Default constructor   
-  CTermIter(): m_stack(), m_getTerm() {}
+  CTermIter():  m_getTerm(), m_stack() {}
 
   /// Destructor
   ~CTermIter() {}

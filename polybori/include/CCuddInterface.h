@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/07/10 14:53:27  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.1  2007/07/06 14:04:21  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -251,7 +254,8 @@ protected:
     return checkedResult(func(getManager(), getNode(), idx) );
   }
 
-  self apply(ternary_function func, const self& first, const self& second) const {
+  self apply(ternary_function func, 
+             const self& first, const self& second) const {
     checkSameManager(first);
     checkSameManager(second);
     return checkedResult(func(getManager(), getNode(), 
@@ -287,6 +291,16 @@ protected:
 
 
 
+#define PB_CUDDMGR_READ(funcname) funcname() const { \
+  return Cudd_ ## funcname(getManager()); }
+
+#define PB_CUDDMGR_SWITCH(funcname) void funcname()  { \
+  Cudd_ ## funcname(getManager()); }
+
+#define PB_CUDDMGR_SET2(funcname, thetype) void funcname(thetype arg)  {  \
+    Cudd_ ## funcname(getManager(), arg); }
+
+#define PB_CUDDMGR_SET(funcname) PB_CUDDMGR_SET2(funcname, int)
 
 
 class CCuddInterface {
@@ -304,145 +318,213 @@ public:
 
   typedef  myDD::mgr_ptr mgr_ptr;
   mgr_ptr p;
-
+  typedef int idx_type;
+  typedef CCuddZDD dd_type;
+  typedef DdNode * (*unary_int_function)(DdManager *, int);
+  typedef DdNode * (*void_function)(DdManager *);
+  typedef DdNode* node_type;
 public:
-    CCuddInterface(
-      unsigned int numVars = 0,
-      unsigned int numVarsZ = 0,
-      unsigned int numSlots = CUDD_UNIQUE_SLOTS,
-      unsigned int cacheSize = CUDD_CACHE_SLOTS,
-      unsigned long maxMemory = 0);
-    CCuddInterface(const CCuddInterface& x);
+  CCuddInterface(unsigned int numVars = 0,
+                 unsigned int numVarsZ = 0,
+                 unsigned int numSlots = CUDD_UNIQUE_SLOTS,
+                 unsigned int cacheSize = CUDD_CACHE_SLOTS,
+                 unsigned long maxMemory = 0):
+    p (new mycapsule(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {}
+
+  CCuddInterface(const CCuddInterface& x):  p(x.p) {}
 
   CCuddInterface(mgr_ptr rhs): p(rhs) {};
 
-    ~CCuddInterface();
-    PFC setHandler(PFC newHandler);
-    PFC getHandler() const;
+  ~CCuddInterface() {}
 
-    DdManager *getManager() const {return p->manager;}
+  PFC setHandler(PFC newHandler) {
+    PFC oldHandler = p->errorHandler;
+    p->errorHandler = newHandler;
+    return oldHandler;
+  }
 
+  PFC getHandler() const {  return p->errorHandler; }
 
-    inline void makeVerbose() {p->verbose = 1;}
-    inline void makeTerse() {p->verbose = 0;}
-    inline int isVerbose() const {return p->verbose;}
-    inline void checkReturnValue(const DdNode *result) const;
-    inline void checkReturnValue(const int result) const;
-    CCuddInterface& operator=(const CCuddInterface& right);
-    void info() const;
+  DdManager *getManager() const {return p->manager;}
+  mgr_ptr managerCore() const {return p;}
+  
+  void makeVerbose() {p->verbose = 1;}
+  void makeTerse() {p->verbose = 0;}
+  int isVerbose() const {return p->verbose;}
+  void checkReturnValue(const DdNode *result) const;
+  void checkReturnValue(const int result) const;
 
-    CCuddZDD zddVar(int index) const;
-    CCuddZDD zddOne(int i) const;
-    CCuddZDD zddZero() const;
+  CCuddInterface& operator=(const CCuddInterface& right) {
+    p = right.p;
+    return *this;
+  }
 
-    void AutodynEnableZdd(Cudd_ReorderingType method);
-    void AutodynDisableZdd();
-    int ReorderingStatusZdd(Cudd_ReorderingType * method) const;
-    int zddRealignmentEnabled() const;
-    void zddRealignEnable();
-    void zddRealignDisable();
+  void info() const { checkedResult(Cudd_PrintInfo(getManager(),stdout)); }
 
-    unsigned int ReadCacheSlots() const;
-    double ReadCacheUsedSlots() const;
-    double ReadCacheLookUps() const;
-    double ReadCacheHits() const;
-    unsigned int ReadMinHit() const;
-    void SetMinHit(unsigned int hr);
-    unsigned int ReadLooseUpTo() const;
-    void SetLooseUpTo(unsigned int lut);
-    unsigned int ReadMaxCache() const;
-    unsigned int ReadMaxCacheHard() const;
-    void SetMaxCacheHard(unsigned int mc);
-    int ReadSize() const;
-    int ReadZddSize() const;
-    unsigned int ReadSlots() const;
-    unsigned int ReadKeys() const;
-    unsigned int ReadDead() const;
-    unsigned int ReadMinDead() const;
-    int ReadReorderings() const;
-    long ReadReorderingTime() const;
-    int ReadGarbageCollections() const;
-    long ReadGarbageCollectionTime() const;
-    int ReadSiftMaxVar() const;
-    void SetSiftMaxVar(int smv);
-    int ReadSiftMaxSwap() const;
-    void SetSiftMaxSwap(int sms);
-    double ReadMaxGrowth() const;
-    void SetMaxGrowth(double mg);
+  CCuddZDD zddVar(idx_type idx) const { return apply(Cudd_zddIthVar, idx); }
+  CCuddZDD zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
+  CCuddZDD zddZero() const { return apply(Cudd_ReadZero); }
 
-    MtrNode * ReadZddTree() const;
-    void SetZddTree(MtrNode * tree);
-    void FreeZddTree();
+  PB_CUDDMGR_SET2(AutodynEnableZdd, Cudd_ReorderingType)
 
-    int ReadPermZdd(int i) const;
+  PB_CUDDMGR_SWITCH(AutodynDisableZdd);
 
-    int ReadInvPermZdd(int i) const;
+  int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
+    return Cudd_ReorderingStatusZdd(getManager(), method);
+  }
+  int PB_CUDDMGR_READ(zddRealignmentEnabled);
 
-    int GarbageCollectionEnabled() const;
-    void EnableGarbageCollection();
-    void DisableGarbageCollection();
-    int DeadAreCounted() const;
-    void TurnOnCountDead();
-    void TurnOffCountDead();
-    int ReadRecomb() const;
-    void SetRecomb(int recomb);
-    int ReadSymmviolation() const;
-    void SetSymmviolation(int symmviolation);
-    int ReadArcviolation() const;
-    void SetArcviolation(int arcviolation);
-    int ReadPopulationSize() const;
-    void SetPopulationSize(int populationSize);
-    int ReadNumberXovers() const;
-    void SetNumberXovers(int numberXovers);
-    unsigned long ReadMemoryInUse() const;
-    long ReadPeakNodeCount() const;
+  PB_CUDDMGR_SWITCH(zddRealignEnable)
+  PB_CUDDMGR_SWITCH(zddRealignDisable)
 
-    long zddReadNodeCount() const;
-    void AddHook(DD_HFP f, Cudd_HookType where);
-    void RemoveHook(DD_HFP f, Cudd_HookType where);
-    int IsInHook(DD_HFP f, Cudd_HookType where) const;
-    void EnableReorderingReporting();
-    void DisableReorderingReporting();
-    int ReorderingReporting();
-    int ReadErrorCode() const;
-    void ClearErrorCode();
-    FILE *ReadStdout() const;
-    void SetStdout(FILE *);
-    FILE *ReadStderr() const;
-    void SetStderr(FILE *);
-    unsigned int ReadNextReordering() const;
-    double ReadSwapSteps() const;
-    unsigned int ReadMaxLive() const;
-    void SetMaxLive(unsigned int);
-    unsigned long ReadMaxMemory() const;
-    void SetMaxMemory(unsigned long);
+  unsigned int PB_CUDDMGR_READ(ReadCacheSlots)
+  double PB_CUDDMGR_READ(ReadCacheUsedSlots)
+  double PB_CUDDMGR_READ(ReadCacheLookUps)
+  double PB_CUDDMGR_READ(ReadCacheHits)
+  unsigned int PB_CUDDMGR_READ(ReadMinHit)
+  PB_CUDDMGR_SET2(SetMinHit, unsigned int)
 
-    void DebugCheck();
-    void CheckKeys();
-    MtrNode * MakeTreeNode(unsigned int low, unsigned int size, unsigned int type);
-    // void Harwell(FILE * fp, ADD* E, ADD** x, ADD** y, ADD** xn, ADD** yn_, int * nx, int * ny, int * m, int * n, int bx, int sx, int by, int sy, int pr);
-    void PrintLinear();
-    int ReadLinear(int x, int y);
+  unsigned int PB_CUDDMGR_READ(ReadLooseUpTo)
 
-    void ReduceHeap(Cudd_ReorderingType heuristic, int minsize);
-    void ShuffleHeap(int * permutation);
-    void SymmProfile(int lower, int upper) const;
-    unsigned int Prime(unsigned int pr) const;
-    int SharingSize(DD* nodes, int n) const;
+  PB_CUDDMGR_SET2(SetLooseUpTo, unsigned int)
+  unsigned int PB_CUDDMGR_READ(ReadMaxCache)
+  unsigned int PB_CUDDMGR_READ(ReadMaxCacheHard)
 
-    int NextNode(DdGen * gen, BDD * nnode);
+  PB_CUDDMGR_SET2(SetMaxCacheHard, unsigned int)
 
-    void PrintVersion(FILE * fp) const;
-    double AverageDistance() const;
-    long Random();
-    void Srandom(long seed);
-    MtrNode * MakeZddTreeNode(unsigned int low, unsigned int size, unsigned int type);
-    void zddPrintSubtable() const;
-    void zddReduceHeap(Cudd_ReorderingType heuristic, int minsize);
-    void zddShuffleHeap(int * permutation);
-    void zddSymmProfile(int lower, int upper) const;
+  int PB_CUDDMGR_READ(ReadZddSize)
+  unsigned int PB_CUDDMGR_READ(ReadSlots)
+  unsigned int PB_CUDDMGR_READ(ReadKeys)
+  unsigned int PB_CUDDMGR_READ(ReadDead)
+  unsigned int PB_CUDDMGR_READ(ReadMinDead)
+  int PB_CUDDMGR_READ(ReadReorderings)
+  long PB_CUDDMGR_READ(ReadReorderingTime)
+  int PB_CUDDMGR_READ(ReadGarbageCollections)
+  long PB_CUDDMGR_READ(ReadGarbageCollectionTime)
+  int  PB_CUDDMGR_READ(ReadSiftMaxVar)
+    
+  int PB_CUDDMGR_READ(ReadSiftMaxSwap)
+  double PB_CUDDMGR_READ(ReadMaxGrowth)
 
+  PB_CUDDMGR_SET(SetSiftMaxVar)
+  PB_CUDDMGR_SET(SetSiftMaxSwap)
+  PB_CUDDMGR_SET2(SetMaxGrowth, double)
 
+  MtrNode * PB_CUDDMGR_READ(ReadZddTree)
+  PB_CUDDMGR_SET2(SetZddTree, MtrNode*)
+  PB_CUDDMGR_SWITCH(FreeZddTree)
+  int ReadPermZdd(int i) const { return Cudd_ReadPermZdd(getManager(), i); }
+
+  int ReadInvPermZdd(int i) const { 
+    return Cudd_ReadInvPermZdd(getManager(), i); 
+  }
+
+  int PB_CUDDMGR_READ(GarbageCollectionEnabled)
+
+  PB_CUDDMGR_SWITCH(EnableGarbageCollection)
+  PB_CUDDMGR_SWITCH(DisableGarbageCollection) 
+  int PB_CUDDMGR_READ(DeadAreCounted)
+  PB_CUDDMGR_SWITCH(TurnOnCountDead)
+  PB_CUDDMGR_SWITCH(TurnOffCountDead)
+  int PB_CUDDMGR_READ(ReadRecomb)
+
+  PB_CUDDMGR_SET(SetRecomb)
+  int PB_CUDDMGR_READ(ReadSymmviolation);
+  PB_CUDDMGR_SET(SetSymmviolation)
+  int PB_CUDDMGR_READ(ReadArcviolation)
+  PB_CUDDMGR_SET(SetArcviolation)
+  int PB_CUDDMGR_READ(ReadPopulationSize)
+
+  PB_CUDDMGR_SET(SetPopulationSize)
+  int PB_CUDDMGR_READ(ReadNumberXovers)
+  PB_CUDDMGR_SET(SetNumberXovers)
+  unsigned long PB_CUDDMGR_READ(ReadMemoryInUse)
+  long PB_CUDDMGR_READ(ReadPeakNodeCount)
+
+  long PB_CUDDMGR_READ(zddReadNodeCount);
+
+  void AddHook(DD_HFP f, Cudd_HookType where) { 
+    checkedResult(Cudd_AddHook(getManager(), f, where));
+  }
+  void RemoveHook(DD_HFP f, Cudd_HookType where) { 
+    checkedResult(Cudd_RemoveHook(getManager(), f, where)); 
+  }
+  int IsInHook(DD_HFP f, Cudd_HookType where) const { 
+    return Cudd_IsInHook(getManager(), f, where); 
+  }
+  void EnableReorderingReporting() { 
+    checkedResult(Cudd_EnableReorderingReporting(getManager())); 
+  }
+  void DisableReorderingReporting() { 
+    checkedResult(Cudd_DisableReorderingReporting(getManager())); 
+  }
+  int PB_CUDDMGR_READ(ReorderingReporting)
+  int PB_CUDDMGR_READ(ReadErrorCode)
+  PB_CUDDMGR_SWITCH(ClearErrorCode) 
+
+  FILE* PB_CUDDMGR_READ(ReadStdout)
+  PB_CUDDMGR_SET2(SetStdout, FILE*)
+  FILE* PB_CUDDMGR_READ(ReadStderr)
+  PB_CUDDMGR_SET2(SetStderr, FILE*)
+
+  unsigned int PB_CUDDMGR_READ(ReadNextReordering)
+
+  double PB_CUDDMGR_READ(ReadSwapSteps)
+  unsigned int PB_CUDDMGR_READ(ReadMaxLive)
+  PB_CUDDMGR_SET2(SetMaxLive, unsigned int)
+  unsigned long PB_CUDDMGR_READ(ReadMaxMemory)
+
+  PB_CUDDMGR_SET2(SetMaxMemory, unsigned long)
+
+  void DebugCheck(){ checkedResult(Cudd_DebugCheck(getManager())); }
+  void CheckKeys(){ checkedResult(Cudd_CheckKeys(getManager())); }
+  void PrintLinear() { checkedResult(Cudd_PrintLinear(getManager())); }
+
+  int ReadLinear(int x, int y) { return Cudd_ReadLinear(getManager(), x, y); }
+
+   unsigned int Prime(unsigned int pr) const { return Cudd_Prime(pr); }
+
+  int SharingSize(DD* nodes, int n) const; // inlined below
+  
+  void PrintVersion(FILE * fp) const { cout.flush(); Cudd_PrintVersion(fp); }
+
+  double PB_CUDDMGR_READ(AverageDistance)
+
+  MtrNode * MakeZddTreeNode(unsigned int low, 
+                            unsigned int size, unsigned int type) {
+    return Cudd_MakeZddTreeNode(getManager(), low, size, type);
+  }
+  void zddPrintSubtable() const{ 
+    cout.flush();
+    Cudd_zddPrintSubtable(getManager());
+  }
+
+  void zddReduceHeap(Cudd_ReorderingType heuristic, int minsize) {
+    checkedResult(Cudd_zddReduceHeap(getManager(), heuristic, minsize));
+  }
+  void zddShuffleHeap(int * permutation) { 
+    checkedResult(Cudd_zddShuffleHeap(getManager(), permutation));
+  }
+  void zddSymmProfile(int lower, int upper) const {
+    Cudd_zddSymmProfile(getManager(), lower, upper);
+  }
+
+protected:
+
+  dd_type checkedResult(node_type result) const  { 
+    checkReturnValue(result);
+    return dd_type(managerCore(), result);
+  }
+  idx_type checkedResult(idx_type result) const  { 
+    checkReturnValue(result);
+    return result;
+  }
+  dd_type apply(unary_int_function func, idx_type idx) const  { 
+    return checkedResult(func(getManager(), idx) );
+  }
+  dd_type apply(void_function func) const { 
+    return checkedResult(func(getManager()) );
+  }
 }; // CCuddInterface
 
 
@@ -451,86 +533,6 @@ public:
 // Members of class CCuddInterface
 // ---------------------------------------------------------------------------
 
-inline
-CCuddInterface::CCuddInterface(
-  unsigned int numVars,
-  unsigned int numVarsZ,
-  unsigned int numSlots,
-  unsigned int cacheSize,
-  unsigned long maxMemory)  :
-  p (new mycapsule(numVars,numVarsZ,numSlots,cacheSize,maxMemory))
-{
-//   p = new capsule;
-//     p->manager = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
-//     p->errorHandler = mydefaultError;
-//     p->verbose = 0;		// initially terse
-//     p->ref = 1;
-
-} // CCuddInterface::CCuddInterface
-
-inline
-CCuddInterface::CCuddInterface(
-               const CCuddInterface& x): p(x.p)
-{
-//     p = x.p;
-//     x.p->ref++;
-
-} // CCuddInterface::CCuddInterface
-
-inline
-CCuddInterface::~CCuddInterface()
-{
-//     if (--p->ref == 0) {
-// 	int retval = Cudd_CheckZeroRef(getManager());
-// 	if (retval != 0) {
-// 	    cerr << retval << " unexpected non-zero reference counts\n";
-// 	} else if (p->verbose) {
-// 	    cerr << "All went well\n";
-// 	}
-// 	Cudd_Quit(getManager());
-// 	delete p;
-//     }
-
-} // CCuddInterface::~CCuddInterface
-
-inline
-CCuddInterface&
-CCuddInterface::operator=(
-  const CCuddInterface& right)
-{
-  p = right.p;
-//     right.p->ref++;
-//     if (--p->ref == 0) {	// disconnect self
-// 	int retval = Cudd_CheckZeroRef(getManager());
-// 	if (retval != 0) {
-// 	    cerr << retval << " unexpected non-zero reference counts\n";
-// 	}
-// 	Cudd_Quit(getManager());
-// 	delete p;
-//     }
-//     p = right.p;
-    return *this;
-
-} // CCuddInterface::operator=
-
-inline
-PFC
-CCuddInterface::setHandler(
-  PFC newHandler)
-{
-    PFC oldHandler = p->errorHandler;
-    p->errorHandler = newHandler;
-    return oldHandler;
-
-} // Cudd::setHandler
-
-inline
-PFC
-CCuddInterface::getHandler() const
-{
-    return p->errorHandler;
-
-} // CCuddInterface::getHandler
 
 
 inline void
@@ -562,142 +564,21 @@ CCuddInterface::checkReturnValue(
 
 } // Cudd::checkReturnValue
 
-
-inline void
-CCuddInterface::info() const
-{
-    cout.flush();
-    int retval = Cudd_PrintInfo(getManager(),stdout);
-    this->checkReturnValue(retval);
-
-} // Cudd::info
-
-
-inline CCuddZDD
-CCuddInterface::zddVar(
-  int index) const
-{
-    DdNode *result = Cudd_zddIthVar(getManager(),index);
-    this->checkReturnValue(result);
-    return CCuddZDD(p, result);
-
-} // CCuddInterface::zddVar
-
-
-inline CCuddZDD
-CCuddInterface::zddOne(
-  int i) const
-{
-    DdNode *result = Cudd_ReadZddOne(getManager(),i);
-    this->checkReturnValue(result);
-    return CCuddZDD(p, result);
-
-} // CCuddInterface::zddOne
-
-
-inline CCuddZDD
-CCuddInterface::zddZero() const
-{
-    DdNode *result = Cudd_ReadZero(getManager());
-    this->checkReturnValue(result);
-    return CCuddZDD(p, result);
-
-} // CCuddInterface::zddZero
-
-
-
-// inline void
-// CCuddInterface::zddVarsFromBddVars(
-//   int multiplicity)
-// {
-//     int result = Cudd_zddVarsFromBddVars(getManager(), multiplicity);
-//     this->checkReturnValue(result);
-
-// } // Cudd::zddVarsFromBddVars
-
-
-
-inline void
-CCuddInterface::AutodynEnableZdd(
-  Cudd_ReorderingType method)
-{
-    Cudd_AutodynEnableZdd(getManager(), method);
-
-} // Cudd::AutodynEnableZdd
-
-
-inline void
-CCuddInterface::AutodynDisableZdd()
-{
-    Cudd_AutodynDisableZdd(getManager());
-
-} // Cudd::AutodynDisableZdd
-
-
 inline int
-CCuddInterface::ReorderingStatusZdd(
-  Cudd_ReorderingType * method) const
+CCuddInterface::SharingSize(
+  DD* nodes,
+  int n) const
 {
-    return Cudd_ReorderingStatusZdd(getManager(), method);
+    DdNode **nodeArray = ALLOC(DdNode *,n);
+    for (int i = 0; i < n; i++) {
+	nodeArray[i] = nodes[i].getNode();
+    }
+    int result = Cudd_SharingSize(nodeArray, n);
+    FREE(nodeArray);
+    this->checkReturnValue(result > 0);
+    return result;
 
-} // Cudd::ReorderingStatusZdd
-
-
-inline int
-CCuddInterface::zddRealignmentEnabled() const
-{
-    return Cudd_zddRealignmentEnabled(getManager());
-
-} // CCuddInterface::zddRealignmentEnabled
-
-
-inline void
-CCuddInterface::zddRealignEnable()
-{
-    Cudd_zddRealignEnable(getManager());
-
-} // CCuddInterface::zddRealignEnable
-
-
-inline void
-CCuddInterface::zddRealignDisable()
-{
-    Cudd_zddRealignDisable(getManager());
-
-} // CCuddInterface::zddRealignDisable
-
-
-inline FILE *
-CCuddInterface::ReadStdout() const
-{
-    return Cudd_ReadStdout(getManager());
-
-} // Cudd::ReadStdout
-
-inline void
-CCuddInterface::SetStdout(FILE *fp)
-{
-    Cudd_SetStdout(getManager(), fp);
-
-} // Cudd::SetStdout
-
-
-inline FILE *
-CCuddInterface::ReadStderr() const
-{
-    return Cudd_ReadStderr(getManager());
-
-} // Cudd::ReadStderr
-
-
-inline void
-CCuddInterface::SetStderr(FILE *fp)
-{
-    Cudd_SetStderr(getManager(), fp);
-
-} // Cudd::SetStderr
-
-
+} // Cudd::SharingSize
 
 // ---------------------------------------------------------------------------
 // Members of class myDD
@@ -772,21 +653,21 @@ myDD::checkReturnValue(
 	DdManager *mgr = getManager();
 	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
 	switch (errType) {
-	CUDD_MEMORY_OUT:
+	case CUDD_MEMORY_OUT:
 	    ddMgr->errorHandler("Out of memory.");
 	    break;
-	CUDD_TOO_MANY_NODES:
+	case CUDD_TOO_MANY_NODES:
 	    break;
-	CUDD_MAX_MEM_EXCEEDED:
+	case CUDD_MAX_MEM_EXCEEDED:
 	    ddMgr->errorHandler("Maximum memory exceeded.");
 	    break;
-	CUDD_INVALID_ARG:
+	case CUDD_INVALID_ARG:
 	    ddMgr->errorHandler("Invalid argument.");
 	    break;
-	CUDD_INTERNAL_ERROR:
+	case CUDD_INTERNAL_ERROR:
 	    ddMgr->errorHandler("Internal error.");
 	    break;
-	CUDD_NO_ERROR:
+	case CUDD_NO_ERROR:
 	default:
 	    ddMgr->errorHandler("Unexpected error.");
 	    break;
@@ -805,21 +686,21 @@ myDD::checkReturnValue(
 	DdManager *mgr = getManager();
 	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
 	switch (errType) {
-	CUDD_MEMORY_OUT:
+	case CUDD_MEMORY_OUT:
 	    ddMgr->errorHandler("Out of memory.");
 	    break;
-	CUDD_TOO_MANY_NODES:
+	case CUDD_TOO_MANY_NODES:
 	    break;
-	CUDD_MAX_MEM_EXCEEDED:
+	case CUDD_MAX_MEM_EXCEEDED:
 	    ddMgr->errorHandler("Maximum memory exceeded.");
 	    break;
-	CUDD_INVALID_ARG:
+	case CUDD_INVALID_ARG:
 	    ddMgr->errorHandler("Invalid argument.");
 	    break;
-	CUDD_INTERNAL_ERROR:
+	case CUDD_INTERNAL_ERROR:
 	    ddMgr->errorHandler("Internal error.");
 	    break;
-	CUDD_NO_ERROR:
+	case CUDD_NO_ERROR:
 	default:
 	    ddMgr->errorHandler("Unexpected error.");
 	    break;
