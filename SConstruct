@@ -223,7 +223,7 @@ if HAVE_PYTHON_EXTENSION:
     polybori_modules=pyroot+"polybori/"
     testsuite_py="testsuite/py/"
     Default(env.Install(polybori_modules, pypb))
-    for f in Split("ll.py nf.py gbrefs.py blocks.py specialsets.py"):
+    for f in Split("ll.py nf.py gbrefs.py blocks.py specialsets.py aes.py coding.py"):
         Default(env.Install(polybori_modules, testsuite_py+f))
     
     to_append_for_profile=[]
@@ -285,7 +285,7 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py")])
+    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py aes.py coding.py")])
     #bld=Builder("cd")
 else:
     print "no python extension"
