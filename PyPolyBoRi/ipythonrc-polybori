@@ -29,9 +29,8 @@ import_mod cmath
 # load the real math functions in the global namespace for convenience
 execute PBHOME="/Users/michael/sing/PolyBoRi"
 execute from sys import path
-execute path.append(PBHOME+"/PyPolyBoRi")
-execute path.append(PBHOME+"/testsuite/py")
-execute from PyPolyBoRi import *
+execute path.append(PBHOME+"/pyroot")
+execute from polybori.PyPolyBoRi import *
 execute r=Ring(10000)
 execute x=Variable
 #import_all PyPolyBoRi
