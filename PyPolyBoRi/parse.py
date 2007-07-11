@@ -3,7 +3,7 @@ from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
 #from itertools import enumerate
 #import math
 import operator
-from PyPolyBoRi import *
+from polybori.PyPolyBoRi import *
 try:
     set
 except NameError:

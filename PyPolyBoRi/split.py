@@ -1,4 +1,4 @@
-from PyPolyBoRi import *
+from polybori.PyPolyBoRi import *
 saver=0
 def term_sort_key(t):
     return max([e for e in t]+[-1])
