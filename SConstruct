@@ -2,8 +2,9 @@
 opts = Options('custom.py')
 BOOST_WORKS=False
 HAVE_DOXYGEN=True
-
+pyroot="pyroot/"
 import sys
+from os import sep
 from glob import glob
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
@@ -218,6 +219,13 @@ if HAVE_PYTHON_EXTENSION:
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
+    Default(pypb)
+    polybori_modules=pyroot+"polybori/"
+    testsuite_py="testsuite/py/"
+    Default(env.Install(polybori_modules, pypb))
+    for f in Split("ll.py nf.py gbrefs.py blocks.py specialsets.py"):
+        Default(env.Install(polybori_modules, testsuite_py+f))
+    
     to_append_for_profile=[]
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
@@ -228,24 +236,13 @@ if HAVE_PYTHON_EXTENSION:
     from StringIO import StringIO
     from cnf2ideal import gen_clauses, process_input,convert_file_PB
     def cnf2py_build_function(target,source,env):
-        #print target, source
-        #assert len(source)==1
-        #assert len(target)==1
         target=target[0]
         source=source[0]
-        #print dir(source)
-        #print source.path
-        #print dir(source.dir)
         inp=process_input(open(source.path))
         
-        clauses=gen_clauses(inp)#StringIO(source.read())))
-        
-        
-        #print target.name, source.name
+        clauses=gen_clauses(inp)
         out=open(target.path,"w")
         convert_file_PB(clauses,source.name,False, out)
-        #out.close()
-        
         return None
     bld = Builder(action = cnf2py_build_function,
                      suffix = '.py',
@@ -271,26 +268,24 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF(f[:-4])
     for f in glob("testsuite/py/data/gcp_large/*.cnf"):
         env.CNF(f[:-4])
-     #   for f in glob("testsuite/py/data/gcp_large/*.cnf"):
-     #       env.CNF(f[:-4])
+
     add_cnf_dir(env,"testsuite/py/data/gcp_large")
     add_cnf_dir(env,"testsuite/py/data/bejing")
-    #if isinstance(pypb,list):
-    #    pypb=pypb[0]
+
     def pypb_emitter(target,source,env):
         env.Depends(target,pypb)
         return (target, source)
 
-    bld = Builder(action = "$PBP doc/python/genpythondoc.py $SOURCE $TARGET",
+    bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
                   emitter = pypb_emitter)
 
     # Add the new Builder to the list of builders
     env['BUILDERS']['PYTHONDOC'] = bld
 
     # Generate foo.vds from foo.txt using mk_vds
-    env.PYTHONDOC(target="doc/python/PyPolyBoRi.html", source='PyPolyBoRi/PyPolyBoRi.so')
-    env.PYTHONDOC(target="doc/python/nf.html", source='testsuite/py/nf.py')
-    env.PYTHONDOC(target="doc/python/ll.html", source='testsuite/py/ll.py')
+    #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
+        
+    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py")])
     #bld=Builder("cd")
 else:
     print "no python extension"
@@ -316,15 +311,18 @@ if HAVE_SINGULAR_EXTENSION:
     
     wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
     if env['PLATFORM']=="darwin":
-        env.LoadableModule('Singular/polybori_module', wrapper_files,
+        pypb=env.LoadableModule('Singular/polybori_module', wrapper_files,
             LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
             LIBS=LIBS,LDMODULESUFFIX=".so",
             CPPPATH=SING_INCLUDES+CPPPATH)
     else:
         #print "l:", l
-        env.SharedLibrary('Singular/polybori_module', wrapper_files,
+        pypb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
             CPPPATH=SING_INCLUDES+CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
+    Default(singpb)
+    
+    
   
