@@ -1,14 +1,14 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file CCuddInterface
  *
- * @author 
- * @date 
+ * @author Alexander Dreyer
+ * @date 2007-07-05
  *
  * 
  *
  * @par Copyright:
- *   (c) by
+ *   (c) 2007 by
  *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
  *   Fraunhofer Institute for Industrial Mathematics (ITWM)
  *   D-67663 Kaiserslautern, Germany
@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/07/12 15:32:31  dreyer
+ * CHANGE: cleanup using preprocessor meta-programming
+ *
  * Revision 1.2  2007/07/10 14:53:27  dreyer
  * CHANGE: clean-up
  *
@@ -42,6 +45,10 @@
 #include <boost/weak_ptr.hpp>
 
 #include <boost/intrusive_ptr.hpp>
+
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/facilities/expand.hpp>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -151,6 +158,18 @@ public:
 
 }; // myDD
 
+#define PB_ZDD_APPLY(count, data, funcname) \
+  self funcname(data rhs) const {    \
+    return apply(BOOST_PP_CAT(Cudd_zdd, funcname), rhs); }
+
+#define PB_ZDD_OP_ASSIGN(count, data, op) \
+  self& operator BOOST_PP_CAT(op, =)(const self& other) { \
+    return *this = (*this op other); }
+
+#define PB_ZDD_OP(count, data, op) \
+  self operator op(const self& other) const { return data(other); }
+
+
 class CCuddZDD : public myDD {
     friend class CCuddInterface;
 public:
@@ -161,16 +180,11 @@ public:
 
   CCuddZDD(mgr_ptr bddManager, DdNode *bddNode): base(bddManager,bddNode) {}
 
-//   CCuddZDD(boost::shared_ptr<mycapsule> bddManager, DdNode *bddNode): base(bddManager,bddNode) {}
-
   CCuddZDD(const CCuddInterface& bddManager, DdNode *bddNode);//inlined below
   CCuddZDD(CCuddInterface* bddManager, DdNode *bddNode);//inlined below
 
   CCuddZDD(): base() {}
   CCuddZDD(const self &from): base(from) {}
-
-  // temporarily
-  //  CCuddZDD(const ZDD &from): myDD(from) {}
 
   ~CCuddZDD();                     // inlined below
   self& operator=(const self& right); // inlined below
@@ -191,50 +205,37 @@ public:
     return (other <= *this); 
   }
   bool operator<(const self& rhs) const { 
-    return (*this != rhs) && (*this <= rhs);  }
+    return (*this != rhs) && (*this <= rhs);  
+  }
   bool operator>(const self& other) const { 
-    return (*this != other) && (*this >= other); }
+    return (*this != other) && (*this >= other); 
+  }
 
   bool isZero() const { return node == Cudd_ReadZero(getManager()); }
 
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Intersect, (*)(&))
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Union, (+)(|))
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Diff, (-))
 
-  self operator*(const self& other) const          { return Intersect(other); }
-  self& operator*=(const self& other)       { return *this = (*this * other); }
-  self operator&(const self& other) const          { return Intersect(other); }
-  self& operator&=(const self& other)       { return *this = (*this & other); }
-  self operator+(const self& other) const              { return Union(other); }
-  self& operator+=(const self& other)       { return *this = (*this + other); }
-  self operator|(const self& other) const              { return Union(other); }
-  self& operator|=(const self& other)       { return *this = (*this | other); }
-  self operator-(const self& other) const               { return Diff(other); }
-  self& operator-=(const self& other)       { return *this = (*this - other); }
-  int Count() const                         { return memApply(Cudd_zddCount); }
-  double CountDouble() const          { return memApply(Cudd_zddCountDouble); }
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP_ASSIGN, BOOST_PP_NIL, (*)(&)(+)(|)(-))
 
-  self Product(const self& g) const       { return apply(Cudd_zddProduct, g); }
-  self UnateProduct(const self& g) const { 
-    return apply(Cudd_zddUnateProduct, g); }
-  self WeakDiv(const self& g) const       { return apply(Cudd_zddWeakDiv, g); } 
-  self Divide(const self& g) const         { return apply(Cudd_zddDivide, g); }
-  self WeakDivF(const self& g) const     { return apply(Cudd_zddWeakDivF, g); } 
-  self DivideF(const self& g) const       { return apply(Cudd_zddDivideF, g); } 
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const self&, 
+    (Product)(UnateProduct)(WeakDiv)(Divide)(WeakDivF)(DivideF)
+    (Union)(Intersect)(Diff)(DiffConst)
+  )
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, int, (Subset1)(Subset0)(Change))
 
-  double CountMinterm(int path) const;
-  //   BDD PortToBdd() const;
   self Ite(const self& g, const self& h) const { 
-    return apply(Cudd_zddIte, g, h); }
-  self Union(const self& Q) const           { return apply(Cudd_zddUnion, Q); }
-  self Intersect(const self& Q) const   { return apply(Cudd_zddIntersect, Q); }
-  self Diff(const self& Q) const             { return apply(Cudd_zddDiff, Q); }
-  self DiffConst(const self& Q) const   { return apply(Cudd_zddDiffConst, Q); }
+    return apply(Cudd_zddIte, g, h); 
+  }
+  void PrintMinterm() const { apply(Cudd_zddPrintMinterm); }
+  void PrintCover() const  { apply(Cudd_zddPrintCover); }
+  int Count() const { return memApply(Cudd_zddCount); }
+  double CountDouble() const { return memApply(Cudd_zddCountDouble); }
 
-  self Subset1(int var) const           { return apply(Cudd_zddSubset1, var); }
-  self Subset0(int var) const           { return apply(Cudd_zddSubset0, var); }
-  self Change(int var) const             { return apply(Cudd_zddChange, var); }
-
-  void PrintMinterm() const                    { apply(Cudd_zddPrintMinterm); }
-
-  void PrintCover() const                        { apply(Cudd_zddPrintCover); }
+  double CountMinterm(int path) const { 
+    return memChecked(Cudd_zddCountMinterm(getManager(), getNode(), path));
+  }
 
 protected:
   typedef DD_CTFP binary_function;
@@ -289,18 +290,18 @@ protected:
 
 }; //CCuddZDD
 
+#undef PB_ZDD_APPLY
+#undef PB_ZDD_OP_ASSIGN
+#undef PB_ZDD_OP
 
+#define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
+  return BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
 
-#define PB_CUDDMGR_READ(funcname) funcname() const { \
-  return Cudd_ ## funcname(getManager()); }
+#define PB_CUDDMGR_SWITCH(count, data, funcname) void funcname() { \
+    BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
 
-#define PB_CUDDMGR_SWITCH(funcname) void funcname()  { \
-  Cudd_ ## funcname(getManager()); }
-
-#define PB_CUDDMGR_SET2(funcname, thetype) void funcname(thetype arg)  {  \
-    Cudd_ ## funcname(getManager(), arg); }
-
-#define PB_CUDDMGR_SET(funcname) PB_CUDDMGR_SET2(funcname, int)
+#define PB_CUDDMGR_SET(count, data, funcname)  void funcname(data arg) { \
+    BOOST_PP_CAT(Cudd_, funcname)(getManager(), arg); }
 
 
 class CCuddInterface {
@@ -365,83 +366,69 @@ public:
   CCuddZDD zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
   CCuddZDD zddZero() const { return apply(Cudd_ReadZero); }
 
-  PB_CUDDMGR_SET2(AutodynEnableZdd, Cudd_ReorderingType)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, unsigned int, 
+    (SetMinHit)(SetLooseUpTo)(SetMaxCacheHard)(SetMaxLive) )
 
-  PB_CUDDMGR_SWITCH(AutodynDisableZdd);
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, int, 
+    (SetSiftMaxVar)(SetSiftMaxSwap)(SetRecomb)(SetSymmviolation)
+    (SetArcviolation)(SetPopulationSize)(SetNumberXovers)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, FILE*, (SetStdout)(SetStderr))
+
+  PB_CUDDMGR_SET(BOOST_PP_NIL, Cudd_ReorderingType, AutodynEnableZdd)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, MtrNode*, SetZddTree)
 
   int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
     return Cudd_ReorderingStatusZdd(getManager(), method);
   }
-  int PB_CUDDMGR_READ(zddRealignmentEnabled);
+  PB_CUDDMGR_READ(BOOST_PP_NIL, int, zddRealignmentEnabled);
 
-  PB_CUDDMGR_SWITCH(zddRealignEnable)
-  PB_CUDDMGR_SWITCH(zddRealignDisable)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SWITCH, BOOST_PP_NIL, 
+    (zddRealignEnable)(zddRealignDisable)
+    (AutodynDisableZdd)(FreeZddTree)
+    (EnableGarbageCollection)(DisableGarbageCollection)
+    (TurnOnCountDead)(TurnOffCountDead)(ClearErrorCode)  
+  )
 
-  unsigned int PB_CUDDMGR_READ(ReadCacheSlots)
-  double PB_CUDDMGR_READ(ReadCacheUsedSlots)
-  double PB_CUDDMGR_READ(ReadCacheLookUps)
-  double PB_CUDDMGR_READ(ReadCacheHits)
-  unsigned int PB_CUDDMGR_READ(ReadMinHit)
-  PB_CUDDMGR_SET2(SetMinHit, unsigned int)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, double,
+    (ReadCacheUsedSlots)(ReadCacheLookUps)(ReadCacheHits) 
+    (ReadSwapSteps)(ReadMaxGrowth)(AverageDistance)
+  )
 
-  unsigned int PB_CUDDMGR_READ(ReadLooseUpTo)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, unsigned int,
+    (ReadCacheSlots)(ReadMinHit)(ReadLooseUpTo)(ReadMaxCache)
+    (ReadMaxCacheHard)(ReadSlots)(ReadKeys)(ReadDead)(ReadMinDead)
+    (ReadNextReordering)(ReadMaxLive)
+  )
 
-  PB_CUDDMGR_SET2(SetLooseUpTo, unsigned int)
-  unsigned int PB_CUDDMGR_READ(ReadMaxCache)
-  unsigned int PB_CUDDMGR_READ(ReadMaxCacheHard)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, int,
+    (ReadZddSize)(ReadReorderings)(ReadSiftMaxVar)
+    (ReadSiftMaxSwap)(ReadGarbageCollections)(GarbageCollectionEnabled)
+    (DeadAreCounted)(ReadRecomb)
+    (ReadPopulationSize)(ReadSymmviolation)(ReadArcviolation)
+    (ReadNumberXovers)(ReorderingReporting)(ReadErrorCode)
+  )
 
-  PB_CUDDMGR_SET2(SetMaxCacheHard, unsigned int)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, long,
+    (ReadReorderingTime)(ReadGarbageCollectionTime)
+    (ReadPeakNodeCount)(zddReadNodeCount)
+  )
 
-  int PB_CUDDMGR_READ(ReadZddSize)
-  unsigned int PB_CUDDMGR_READ(ReadSlots)
-  unsigned int PB_CUDDMGR_READ(ReadKeys)
-  unsigned int PB_CUDDMGR_READ(ReadDead)
-  unsigned int PB_CUDDMGR_READ(ReadMinDead)
-  int PB_CUDDMGR_READ(ReadReorderings)
-  long PB_CUDDMGR_READ(ReadReorderingTime)
-  int PB_CUDDMGR_READ(ReadGarbageCollections)
-  long PB_CUDDMGR_READ(ReadGarbageCollectionTime)
-  int  PB_CUDDMGR_READ(ReadSiftMaxVar)
-    
-  int PB_CUDDMGR_READ(ReadSiftMaxSwap)
-  double PB_CUDDMGR_READ(ReadMaxGrowth)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, unsigned long, 
+    (ReadMemoryInUse)(ReadMaxMemory) )
 
-  PB_CUDDMGR_SET(SetSiftMaxVar)
-  PB_CUDDMGR_SET(SetSiftMaxSwap)
-  PB_CUDDMGR_SET2(SetMaxGrowth, double)
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
 
-  MtrNode * PB_CUDDMGR_READ(ReadZddTree)
-  PB_CUDDMGR_SET2(SetZddTree, MtrNode*)
-  PB_CUDDMGR_SWITCH(FreeZddTree)
+  PB_CUDDMGR_READ(BOOST_PP_NIL, MtrNode*, ReadZddTree)
+
   int ReadPermZdd(int i) const { return Cudd_ReadPermZdd(getManager(), i); }
 
   int ReadInvPermZdd(int i) const { 
     return Cudd_ReadInvPermZdd(getManager(), i); 
   }
-
-  int PB_CUDDMGR_READ(GarbageCollectionEnabled)
-
-  PB_CUDDMGR_SWITCH(EnableGarbageCollection)
-  PB_CUDDMGR_SWITCH(DisableGarbageCollection) 
-  int PB_CUDDMGR_READ(DeadAreCounted)
-  PB_CUDDMGR_SWITCH(TurnOnCountDead)
-  PB_CUDDMGR_SWITCH(TurnOffCountDead)
-  int PB_CUDDMGR_READ(ReadRecomb)
-
-  PB_CUDDMGR_SET(SetRecomb)
-  int PB_CUDDMGR_READ(ReadSymmviolation);
-  PB_CUDDMGR_SET(SetSymmviolation)
-  int PB_CUDDMGR_READ(ReadArcviolation)
-  PB_CUDDMGR_SET(SetArcviolation)
-  int PB_CUDDMGR_READ(ReadPopulationSize)
-
-  PB_CUDDMGR_SET(SetPopulationSize)
-  int PB_CUDDMGR_READ(ReadNumberXovers)
-  PB_CUDDMGR_SET(SetNumberXovers)
-  unsigned long PB_CUDDMGR_READ(ReadMemoryInUse)
-  long PB_CUDDMGR_READ(ReadPeakNodeCount)
-
-  long PB_CUDDMGR_READ(zddReadNodeCount);
 
   void AddHook(DD_HFP f, Cudd_HookType where) { 
     checkedResult(Cudd_AddHook(getManager(), f, where));
@@ -458,23 +445,6 @@ public:
   void DisableReorderingReporting() { 
     checkedResult(Cudd_DisableReorderingReporting(getManager())); 
   }
-  int PB_CUDDMGR_READ(ReorderingReporting)
-  int PB_CUDDMGR_READ(ReadErrorCode)
-  PB_CUDDMGR_SWITCH(ClearErrorCode) 
-
-  FILE* PB_CUDDMGR_READ(ReadStdout)
-  PB_CUDDMGR_SET2(SetStdout, FILE*)
-  FILE* PB_CUDDMGR_READ(ReadStderr)
-  PB_CUDDMGR_SET2(SetStderr, FILE*)
-
-  unsigned int PB_CUDDMGR_READ(ReadNextReordering)
-
-  double PB_CUDDMGR_READ(ReadSwapSteps)
-  unsigned int PB_CUDDMGR_READ(ReadMaxLive)
-  PB_CUDDMGR_SET2(SetMaxLive, unsigned int)
-  unsigned long PB_CUDDMGR_READ(ReadMaxMemory)
-
-  PB_CUDDMGR_SET2(SetMaxMemory, unsigned long)
 
   void DebugCheck(){ checkedResult(Cudd_DebugCheck(getManager())); }
   void CheckKeys(){ checkedResult(Cudd_CheckKeys(getManager())); }
@@ -482,13 +452,11 @@ public:
 
   int ReadLinear(int x, int y) { return Cudd_ReadLinear(getManager(), x, y); }
 
-   unsigned int Prime(unsigned int pr) const { return Cudd_Prime(pr); }
+  unsigned int Prime(unsigned int pr) const { return Cudd_Prime(pr); }
 
   int SharingSize(DD* nodes, int n) const; // inlined below
   
   void PrintVersion(FILE * fp) const { cout.flush(); Cudd_PrintVersion(fp); }
-
-  double PB_CUDDMGR_READ(AverageDistance)
 
   MtrNode * MakeZddTreeNode(unsigned int low, 
                             unsigned int size, unsigned int type) {
@@ -528,6 +496,9 @@ protected:
 }; // CCuddInterface
 
 
+#undef PB_CUDDMGR_READ
+#undef PB_CUDDMGR_SWITCH
+#undef PB_CUDDMGR_SET
 
 // ---------------------------------------------------------------------------
 // Members of class CCuddInterface
@@ -617,19 +588,7 @@ myDD::myDD(const myDD &from) {
 
 } // DD::DD
 
-// inline
-// myDD::myDD(const MyDD &from) {
-//   ddMgr = from.manager();
-//   node = from.getNode();
-//     if (node != 0) {
-// 	Cudd_Ref(node);
-// 	if (ddMgr->isVerbose()) {
-// 	    cout << "Copy DD constructor for node " << hex << long(node) <<
-// 		" ref = " << Cudd_Regular(node)->ref << "\n";
-// 	}
-//     }
 
-// } // DD::DD
 inline DdManager *
 myDD::checkSameManager(
   const myDD &other) const
