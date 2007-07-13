@@ -28,9 +28,8 @@ class VariableIndexException{
 static void translator(VariableIndexException const& x) {
     PyErr_SetString( PyExc_IndexError, "Wrong VariableIndex");
 }
-class VariableBlock {
+template <bool reverse> class VariableBlock {
 public:
-    bool reverse;
     idx_type size;
     idx_type start_index;
     idx_type offset;
@@ -40,20 +39,32 @@ public:
         }
         return BooleVariable(reverse?offset+start_index+size-1-i:i-start_index+offset );
     }
-    VariableBlock(idx_type size, idx_type start_index,idx_type offset,bool reverse){
+    VariableBlock(idx_type size, idx_type start_index,idx_type offset){
         this->size=size;
         this->start_index=start_index;
         this->offset=offset;
-        this->reverse=reverse;
+        
     }
     VariableBlock(){}
 };
-
+boost::python::object variable_block(idx_type size,idx_type start_index,idx_type offset,bool reverse){
+    if (reverse) return boost::python::object(VariableBlock<true>(size,start_index,offset));
+    else return boost::python::object(VariableBlock<false>(size,start_index,offset));
+    
+}
 void export_variable_block(){
-    boost::python::class_<VariableBlock>("VariableBlock")
-    .def(init<const VariableBlock&>())    
-    .def(init<idx_type,idx_type,idx_type,bool>())
-    .def("__call__",&VariableBlock::get);
+    def("VariableBlock",variable_block);
+    boost::python::class_<VariableBlock<true> >("VariableBlockTrue")
+    .def(init<const VariableBlock<true>&>())    
+    .def(init<idx_type,idx_type,idx_type>())
+    .def("__call__",&VariableBlock<true>::get);
     boost::python::register_exception_translator<
               VariableIndexException>(translator);
+    
+    boost::python::class_<VariableBlock<false> >("VariableBlockFalse")
+        .def(init<const VariableBlock<false>&>())    
+        .def(init<idx_type,idx_type,idx_type>())
+        .def("__call__",&VariableBlock<false>::get);
+        boost::python::register_exception_translator<
+                  VariableIndexException>(translator);
 }
