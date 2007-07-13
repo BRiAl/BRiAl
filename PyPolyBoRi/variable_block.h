@@ -8,4 +8,3 @@
  */
 
 void export_variable_block();
-

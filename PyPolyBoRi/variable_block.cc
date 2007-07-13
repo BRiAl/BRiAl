@@ -1,7 +1,7 @@
 #include <boost/python.hpp>
 #include <polybori.h>
 
-
+#include <boost/type_traits.hpp>
 //#include <iostream>
 //#include "polybori.h"
 //#include "pbori_defs.h"
@@ -52,19 +52,27 @@ boost::python::object variable_block(idx_type size,idx_type start_index,idx_type
     else return boost::python::object(VariableBlock<false>(size,start_index,offset));
     
 }
-void export_variable_block(){
-    def("VariableBlock",variable_block);
-    boost::python::class_<VariableBlock<true> >("VariableBlockTrue")
-    .def(init<const VariableBlock<true>&>())    
+
+template <class ValueType, class StringType>
+void export_variable_block_bool(ValueType, StringType str) {
+
+  boost::python::class_<VariableBlock<ValueType::value> >(str)
+    .def(init<const VariableBlock<ValueType::value>&>())    
     .def(init<idx_type,idx_type,idx_type>())
-    .def("__call__",&VariableBlock<true>::get);
+    .def("__call__",&VariableBlock<ValueType::value>::get);
     boost::python::register_exception_translator<
               VariableIndexException>(translator);
-    
-    boost::python::class_<VariableBlock<false> >("VariableBlockFalse")
-        .def(init<const VariableBlock<false>&>())    
-        .def(init<idx_type,idx_type,idx_type>())
-        .def("__call__",&VariableBlock<false>::get);
-        boost::python::register_exception_translator<
-                  VariableIndexException>(translator);
+
+}
+
+void export_variable_block_init(){
+    def("VariableBlock",variable_block);
+}
+
+// Note: Wrapping the def(...) leads to better performance (for unknown reasons)
+void export_variable_block(){
+  export_variable_block_init();
+  export_variable_block_bool(boost::true_type(), "VariableBlockTrue");
+  export_variable_block_bool(boost::false_type(), "VariableBlockFalse");
+
 }
