@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/07/13 15:05:23  dreyer
+ * CHANGE: cleaned up once more
+ *
  * Revision 1.3  2007/07/12 15:32:31  dreyer
  * CHANGE: cleanup using preprocessor meta-programming
  *
@@ -49,9 +52,49 @@
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/facilities/expand.hpp>
-
+#include <boost/preprocessor/stringize.hpp>
 BEGIN_NAMESPACE_PBORI
 
+#define PB_BINARY_FUNC_CALL(count, funcname, arg_pair)                        \
+  BOOST_PP_EXPAND(funcname(BOOST_PP_SEQ_HEAD(arg_pair),                       \
+                           BOOST_PP_SEQ_HEAD(BOOST_PP_SEQ_TAIL(arg_pair))))
+
+template<unsigned ErrorNumber>
+struct cudd_error_traits {
+  typedef const char* result_type;
+
+  result_type operator()() const;
+};
+
+
+#if 0
+template<>
+inline const char* cudd_error_traits<CUDD_MEMORY_OUT>::operator()() const {
+  return "Out of memory.";
+}
+#endif
+
+
+#define PB_CUDD_ERROR_TRAITS(errcode, errstr)                                \
+  template<> inline cudd_error_traits<errcode>::result_type                  \
+  cudd_error_traits<errcode>::operator()() const {                           \
+    return BOOST_PP_STRINGIZE(errstr); }
+
+
+
+
+//PB_CUDD_ERROR_TRAITS(0, 0,  (CUDD_MEMORY_OUT)("Out of memory.")  )
+
+BOOST_PP_SEQ_FOR_EACH( PB_BINARY_FUNC_CALL, PB_CUDD_ERROR_TRAITS, 
+                       ((CUDD_MEMORY_OUT)(Out of memory.))
+                       ((CUDD_TOO_MANY_NODES)(Too many nodes.))
+                       ((CUDD_MAX_MEM_EXCEEDED)(Maximum memory exceeded.))
+                       ((CUDD_INVALID_ARG)(Invalid argument.))
+                       ((CUDD_INTERNAL_ERROR)(Internal error.))
+                       ((CUDD_NO_ERROR)(Unexpected error.))
+                       )
+
+#undef PB_CUDD_ERROR_TRAITS
 
 inline void
 mydefaultError(
@@ -61,6 +104,34 @@ mydefaultError(
     exit(1);
 
 } // defaultError
+
+
+template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
+struct handle_error {
+  static bool found(unsigned err) {
+    if UNLIKELY(err == ErrorNumber) {
+      mydefaultError(cudd_error_traits<ErrorNumber>()());
+      return true;
+    }
+    return false;        
+  }
+
+  void operator()(unsigned err) const {
+    if (!found(err))
+      handle_error<ErrorNumber-1>()(err);
+  }
+};
+
+struct handle_cudd_error:
+  public  handle_error<> {};
+
+template<>
+struct handle_error<0> {
+  void operator()(unsigned err) const {
+    if LIKELY(err == 0)
+      mydefaultError(cudd_error_traits<0>()());
+  }
+};
 
 
 class mycapsule {
@@ -138,9 +209,15 @@ public: // temporarily
   DdNode *node;
 
     inline DdManager * checkSameManager(const myDD &other) const;
-    inline void checkReturnValue(const DdNode *result) const;
-    inline void checkReturnValue(const int result, const int expected = 1)
-	const;
+
+  void checkReturnValue(const DdNode *result) const {
+    checkReturnValue(result != NULL);
+  }
+  void checkReturnValue(const int result, const int expected = 1) const {
+    if UNLIKELY(result != expected)
+      handle_cudd_error()(Cudd_ReadErrorCode( getManager() ));
+  } 
+
 public:
     myDD(mgr_ptr ddManager, DdNode *ddNode);
     myDD();
@@ -330,7 +407,8 @@ public:
                  unsigned int numSlots = CUDD_UNIQUE_SLOTS,
                  unsigned int cacheSize = CUDD_CACHE_SLOTS,
                  unsigned long maxMemory = 0):
-    p (new mycapsule(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {}
+    p (new mycapsule(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {
+  }
 
   CCuddInterface(const CCuddInterface& x):  p(x.p) {}
 
@@ -352,8 +430,19 @@ public:
   void makeVerbose() {p->verbose = 1;}
   void makeTerse() {p->verbose = 0;}
   int isVerbose() const {return p->verbose;}
-  void checkReturnValue(const DdNode *result) const;
-  void checkReturnValue(const int result) const;
+
+
+  void checkReturnValue(const DdNode *result) const {
+    checkReturnValue(result != NULL);
+  }
+  void checkReturnValue(const int result) const {
+    if UNLIKELY(result == 0) {
+      typedef handle_error<CUDD_MEMORY_OUT> handle_type;
+      if ( !handle_type::found(Cudd_ReadErrorCode(getManager())) )
+        mydefaultError(cudd_error_traits<CUDD_INTERNAL_ERROR>()());
+    }
+ } 
+
 
   CCuddInterface& operator=(const CCuddInterface& right) {
     p = right.p;
@@ -506,34 +595,34 @@ protected:
 
 
 
-inline void
-CCuddInterface::checkReturnValue(
-  const DdNode *result) const
-{
-    if (result == 0) {
-	if (Cudd_ReadErrorCode(getManager()) == CUDD_MEMORY_OUT) {
-	    p->errorHandler("Out of memory.");
-	} else {
-	    p->errorHandler("Internal error.");
-	}
-    }
+// inline void
+// CCuddInterface::checkReturnValue(
+//   const DdNode *result) const
+// {
+//     if (result == 0) {
+// 	if (Cudd_ReadErrorCode(getManager()) == CUDD_MEMORY_OUT) {
+// 	    p->errorHandler("Out of memory.");
+// 	} else {
+// 	    p->errorHandler("Internal error.");
+// 	}
+//     }
 
-} // Cudd::checkReturnValue
+// } // Cudd::checkReturnValue
 
 
-inline void
-CCuddInterface::checkReturnValue(
-  const int result) const
-{
-    if (result == 0) {
-	if (Cudd_ReadErrorCode(getManager()) == CUDD_MEMORY_OUT) {
-	    p->errorHandler("Out of memory.");
-	} else {
-	    p->errorHandler("Internal error.");
-	}
-    }
+// inline void
+// CCuddInterface::checkReturnValue(
+//   const int result) const
+// {
+//     if (result == 0) {
+// 	if (Cudd_ReadErrorCode(getManager()) == CUDD_MEMORY_OUT) {
+// 	    p->errorHandler("Out of memory.");
+// 	} else {
+// 	    p->errorHandler("Internal error.");
+// 	}
+//     }
 
-} // Cudd::checkReturnValue
+// } // Cudd::checkReturnValue
 
 inline int
 CCuddInterface::SharingSize(
@@ -603,70 +692,6 @@ myDD::checkSameManager(
 
 } // DD::checkSameManager
 
-
-inline void
-myDD::checkReturnValue(
-  const DdNode *result) const
-{
-    if (result == 0) {
-	DdManager *mgr = getManager();
-	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
-	switch (errType) {
-	case CUDD_MEMORY_OUT:
-	    ddMgr->errorHandler("Out of memory.");
-	    break;
-	case CUDD_TOO_MANY_NODES:
-	    break;
-	case CUDD_MAX_MEM_EXCEEDED:
-	    ddMgr->errorHandler("Maximum memory exceeded.");
-	    break;
-	case CUDD_INVALID_ARG:
-	    ddMgr->errorHandler("Invalid argument.");
-	    break;
-	case CUDD_INTERNAL_ERROR:
-	    ddMgr->errorHandler("Internal error.");
-	    break;
-	case CUDD_NO_ERROR:
-	default:
-	    ddMgr->errorHandler("Unexpected error.");
-	    break;
-	}
-    }
-
-} // DD::checkReturnValue
-
-
-inline void
-myDD::checkReturnValue(
-  const int result,
-  const int expected) const
-{
-    if (result != expected) {
-	DdManager *mgr = getManager();
-	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
-	switch (errType) {
-	case CUDD_MEMORY_OUT:
-	    ddMgr->errorHandler("Out of memory.");
-	    break;
-	case CUDD_TOO_MANY_NODES:
-	    break;
-	case CUDD_MAX_MEM_EXCEEDED:
-	    ddMgr->errorHandler("Maximum memory exceeded.");
-	    break;
-	case CUDD_INVALID_ARG:
-	    ddMgr->errorHandler("Invalid argument.");
-	    break;
-	case CUDD_INTERNAL_ERROR:
-	    ddMgr->errorHandler("Internal error.");
-	    break;
-	case CUDD_NO_ERROR:
-	default:
-	    ddMgr->errorHandler("Unexpected error.");
-	    break;
-	}
-    }
-
-} // DD::checkReturnValue
 
 
 inline myDD::mgr_ptr
