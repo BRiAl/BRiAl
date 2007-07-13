@@ -206,7 +206,7 @@ def add_cnf_dir(env,directory):
       env.CNF(f[:-4])
 if HAVE_PYTHON_EXTENSION:
  
-    wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "variable_block.cc","monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
             LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
@@ -223,7 +223,7 @@ if HAVE_PYTHON_EXTENSION:
     polybori_modules=pyroot+"polybori/"
     testsuite_py="testsuite/py/"
     Default(env.Install(polybori_modules, pypb))
-    for f in Split("ll.py nf.py gbrefs.py blocks.py specialsets.py aes.py coding.py"):
+    for f in Split("ll.py nf.py statistics.py randompoly.py gbrefs.py blocks.py specialsets.py aes.py coding.py"):
         Default(env.Install(polybori_modules, testsuite_py+f))
     
     to_append_for_profile=[]
@@ -285,7 +285,7 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py aes.py coding.py")])
+    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py statistics.py randompoly.py blocks.py PyPolyBoRi.so specialsets.py aes.py coding.py")])
     #bld=Builder("cd")
 else:
     print "no python extension"

@@ -5,7 +5,7 @@
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
 #include "navigator_wrap.h"
-
+#include "variable_block.h"
 //#include "pairs.h"
 #include "strategy_wrapper.h"
 #include "monomial_wrapper.h"
@@ -106,6 +106,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_strategy();
   export_monomial();
   export_bset();
+  export_variable_block();
    }
 #ifdef PB_STATIC_PROFILING_VERSION
 int main(int argc,char* argv[]){
