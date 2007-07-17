@@ -153,6 +153,7 @@ public:
   bool optRedTailDegGrowth;
   bool optStepBounded;
   bool optLinearAlgebraInLastBlock;
+  bool optRedTailInLastBlock;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
 
@@ -172,6 +173,11 @@ public:
 		optStepBounded=false;
 		optAllowRecursion=true;
         optLinearAlgebraInLastBlock=true;
+        if (BoolePolyRing::isBlockOrder())
+            optRedTailInLastBlock=true;
+        else 
+            optRedTailInLastBlock=false;
+
 		if (BoolePolyRing::isDegreeOrder())
 			optLazy=false;
 		else
@@ -193,7 +199,7 @@ public:
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
   std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
   //std::vector<Polynomial> faugereStepDenseModified(const std::vector<Polynomial>&);
-  Polynomial nf(Polynomial p);
+  Polynomial nf(Polynomial p) const;
   void symmGB_F2();
   int suggestPluginVariable();
   protected:

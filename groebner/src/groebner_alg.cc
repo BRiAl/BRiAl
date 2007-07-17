@@ -453,6 +453,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
 {
   monomials=orig.monomials;
   optLL=orig.optLL;
+  optRedTailInLastBlock=orig.optRedTailInLastBlock;
   optLinearAlgebraInLastBlock=orig.optLinearAlgebraInLastBlock;
   optDelayNonMinimals=orig.optDelayNonMinimals;
   optBrutalReductions=orig.optBrutalReductions;
@@ -2485,6 +2486,23 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
     assert(!(leadingTerms.divisorsOf(p.leadExp()).emptiness()));
   }
 }
+Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
+    Polynomial::navigator nav=p.navigation();
+    idx_type last=BoolePolyRing::lastBlockStart();
+    if ((*nav)>=last) //includes constant polynomials
+        return p;
+    while ((*nav)<last){
+        nav.incrementElse();
+    }
+    if (nav.isConstant()){
+        //we don't check for strat containing one at this point
+        return p;
+    }
+    Polynomial l1(*nav);
+    Polynomial l2=strat.nf(l1);
+    if (!(l2.isZero())) l2=red_tail(strat,l2);
+    return p+(l1+l2);
+}
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     //if (p.isZero()) return;
     Exponent lm_exp=p.leadExp();
@@ -2513,7 +2531,11 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
         if (optRedTail)
             pr=red_tail(*this,p);
         else 
-            pr=p;
+            {   if (optRedTailInLastBlock)
+                    pr=red_tail_in_last_block(*this,p);
+                else
+                    pr=p;
+            }
         if (pr!=p){
             el=pr.eliminationLength();
             if (std::find_if(

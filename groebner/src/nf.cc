@@ -2338,7 +2338,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   cache_mgr.insert(a,v,result.navigation());
   return result;
 }
-Polynomial GroebnerStrategy::nf(Polynomial p){
+Polynomial GroebnerStrategy::nf(Polynomial p) const{
     if (p.isZero()) return p;
     if (BoolePolyRing::isDegreeOrder()) return nf3_degree_order(*this,p,p.lead());
     else return nf3(*this,p,p.lead());
