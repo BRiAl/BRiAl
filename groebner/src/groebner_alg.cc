@@ -880,7 +880,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
 
   if (cached.isValid() ){
     result = (PBORI::CTypes::dd_type)
-      PBORI::CTypes::dd_base(&PBORI::BoolePolyRing::activeManager().manager(),
+      PBORI::CTypes::dd_base(get_mgr_core(PBORI::BoolePolyRing::activeManager().manager()),
                                cached);
   }
   else {

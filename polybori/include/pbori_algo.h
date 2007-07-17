@@ -23,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/07/17 15:57:00  dreyer
+ * ADD: header file for CCuddZDD; clean-up
+ *
  * Revision 1.30  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -512,6 +515,11 @@ get_mgr_core(const Cudd& rhs) {
   return &const_cast<Cudd&>(rhs);
 }
 
+///@todo merge with extract_manager
+inline CCuddInterface::mgr_ptr
+get_mgr_core(const CCuddInterface& mgr) {
+  return mgr.managerCore();
+}
 
 /// temporarily (needs to be more generic)
 template<class ManagerType, class ReverseIterator, class MultReverseIterator>

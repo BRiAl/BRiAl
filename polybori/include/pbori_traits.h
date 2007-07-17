@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/17 15:57:00  dreyer
+ * ADD: header file for CCuddZDD; clean-up
+ *
  * Revision 1.6  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -47,7 +50,12 @@
 // include basic definitions
 #include "pbori_defs.h"
 #include "pbori_tags.h"
-#include "CCuddInterface.h"
+// #include "CCuddInterface.h"
+
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/facilities/expand.hpp>
+#include <boost/preprocessor/stringize.hpp>
 
 #ifndef pbori_traits_h_
 #define pbori_traits_h_
@@ -184,17 +192,17 @@ struct manager_traits<DdManager*> :
   public manager_traits<Cudd> {
 };
 
-template <>
-struct manager_traits<CCuddInterface> {
-  typedef CCuddZDD dd_base;
-  typedef CCuddInterface::mgr_ptr core_type;
-  typedef CCuddInterface tmp_ref;
+template <class CuddLike>
+struct manager_traits {
+  typedef typename CuddLike::dd_type dd_base;
+  typedef typename CuddLike::mgr_ptr core_type;
+  typedef typename CuddLike::tmp_ref tmp_ref;
 };
 
-template <>
-struct manager_traits<CCuddInterface::mgr_ptr> :
-  public manager_traits<CCuddInterface> {
-};
+// template <>
+// struct manager_traits<CCuddInterface::mgr_ptr> :
+//   public manager_traits<CCuddInterface> {
+// };
 
 
 template <class ZDDType>
@@ -209,6 +217,37 @@ template <>
 struct zdd_traits<CCuddZDD>  {
   typedef CCuddInterface manager_base;
 };
+
+
+#define PB_BINARY_FUNC_CALL(count, funcname, arg_pair)                        \
+  BOOST_PP_EXPAND(funcname(BOOST_PP_SEQ_HEAD(arg_pair),                       \
+                           BOOST_PP_SEQ_HEAD(BOOST_PP_SEQ_TAIL(arg_pair))))
+
+template<unsigned ErrorNumber>
+struct cudd_error_traits {
+  typedef const char* result_type;
+
+  result_type operator()() const;
+};
+
+
+
+
+#define PB_CUDD_ERROR_TRAITS(errcode, errstr)                                \
+  template<> inline cudd_error_traits<errcode>::result_type                  \
+  cudd_error_traits<errcode>::operator()() const {                           \
+    return BOOST_PP_STRINGIZE(errstr); }
+
+BOOST_PP_SEQ_FOR_EACH( PB_BINARY_FUNC_CALL, PB_CUDD_ERROR_TRAITS, 
+                       ((CUDD_MEMORY_OUT)(Out of memory.))
+                       ((CUDD_TOO_MANY_NODES)(Too many nodes.))
+                       ((CUDD_MAX_MEM_EXCEEDED)(Maximum memory exceeded.))
+                       ((CUDD_INVALID_ARG)(Invalid argument.))
+                       ((CUDD_INTERNAL_ERROR)(Internal error.))
+                       ((CUDD_NO_ERROR)(Unexpected error.))
+                       )
+
+#undef PB_CUDD_ERROR_TRAITS
 
 END_NAMESPACE_PBORI
 

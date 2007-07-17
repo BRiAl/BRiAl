@@ -1,4 +1,4 @@
-/// -*- c++ -*-
+// -*- c++ -*-
 //*****************************************************************************
 /** @file 
  *
@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/07/17 15:56:59  dreyer
+ * ADD: header file for CCuddZDD; clean-up
+ *
  * Revision 1.35  2007/06/21 11:35:57  dreyer
  * ADD: lastBlockBegin
  *

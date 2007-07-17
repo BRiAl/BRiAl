@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/07/17 15:57:00  dreyer
+ * ADD: header file for CCuddZDD; clean-up
+ *
  * Revision 1.36  2007/05/03 16:04:46  dreyer
  * CHANGE: new-style CTermIter integrated
  *
@@ -1000,6 +1003,17 @@ private:
  **/
 template <class NewType>
 struct pbori_base;
+
+
+
+template <class DDType>
+class get_node {
+
+public:
+  typename DDType::node_type operator()(const DDType& rhs) const {
+    return rhs.getNode();
+  }
+};
 
 END_NAMESPACE_PBORI
 
