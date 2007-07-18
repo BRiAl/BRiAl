@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/07/18 18:57:00  dreyer
+ * Fix: Another mysterious performance issue
+ *
  * Revision 1.4  2007/07/18 15:46:14  dreyer
  * CHANGE: added documentation
  *
@@ -124,10 +127,28 @@ protected:
 };
 
 
-class CCuddCore:
-  public CCuddTypes {
+class CCuddCore {
 
 public:
+  typedef CCuddTypes::errorfunc_type errorfunc_type;
+  typedef CCuddTypes::large_size_type large_size_type;
+  typedef CCuddTypes::refcount_type refcount_type;
+
+  typedef CCuddTypes::node_type node_type;
+  typedef CCuddTypes::mgrcore_type mgrcore_type;
+
+  typedef CCuddTypes::unary_int_function unary_int_function;
+  typedef CCuddTypes::void_function void_function;
+
+  typedef CCuddTypes::binary_function binary_function;
+  typedef CCuddTypes::binary_int_function binary_int_function;
+  typedef CCuddTypes::ternary_function ternary_function;
+ 
+  typedef CCuddTypes::int_unary_function int_unary_function;
+
+  typedef CCuddTypes::size_type size_type;
+  typedef CCuddTypes::idx_type idx_type;
+
   typedef CCuddCore self;
   typedef boost::intrusive_ptr<self> mgrcore_ptr;
 
@@ -181,8 +202,23 @@ void intrusive_ptr_release(CCuddCore * p) {
   std::cout << text << " for node " << node <<  \
   " ref = " << refCount() << std::endl;
 
-class CCuddDD:
-  public CCuddTypes {
+class CCuddDD {
+public:
+
+  typedef CCuddTypes::node_type node_type;
+  typedef CCuddTypes::mgrcore_type mgrcore_type;
+
+  typedef CCuddTypes::unary_int_function unary_int_function;
+  typedef CCuddTypes::void_function void_function;
+
+  typedef CCuddTypes::binary_function binary_function;
+  typedef CCuddTypes::binary_int_function binary_int_function;
+  typedef CCuddTypes::ternary_function ternary_function;
+ 
+  typedef CCuddTypes::int_unary_function int_unary_function;
+
+  typedef CCuddTypes::size_type size_type;
+  typedef CCuddTypes::idx_type idx_type;
 
 protected:
 
@@ -254,6 +290,7 @@ protected:
   /// Raw pointer to decision diagram node
   node_type node;
 }; // CCuddDD
+
 
 #define PB_ZDD_APPLY(count, data, funcname) \
   self funcname(data rhs) const {    \
