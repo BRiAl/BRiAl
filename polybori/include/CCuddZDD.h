@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/07/18 15:11:00  dreyer
+ * CHANGE: simplified handle_error
+ *
  * Revision 1.2  2007/07/18 07:17:26  dreyer
  * CHANGE: some clean-ups
  *
@@ -54,34 +57,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
-template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
-struct handle_error {
-  static bool found(unsigned err) {
-    if UNLIKELY(err == ErrorNumber) {
-      defaultError(cudd_error_traits<ErrorNumber>()());
-      return true;
-    }
-    return false;        
-  }
-
-  void operator()(unsigned err) const {
-    if (!found(err))
-      handle_error<ErrorNumber-1>()(err);
-  }
-};
-
-struct handle_cudd_error:
-  public  handle_error<> {};
-
-template<>
-struct handle_error<0> {
-  void operator()(unsigned err) const {
-    if LIKELY(err == 0)
-      defaultError(cudd_error_traits<0>()());
-  }
-};
-
 class CCuddTypes :
   public CAuxTypes {
 
@@ -95,6 +70,48 @@ public:
   typedef node_type (*unary_int_function)(mgrcore_type, int);
   typedef node_type (*void_function)(mgrcore_type);
 };
+
+
+template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
+struct handle_error {
+  typedef CCuddTypes::errorfunc_type errorfunc_type;
+
+  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
+
+  bool found(unsigned err) const {
+    if UNLIKELY(err == ErrorNumber) {
+      m_errfunc(cudd_error_traits<ErrorNumber>()());
+      return true;
+    }
+    return false;        
+  }
+
+  void operator()(unsigned err) const {
+    if UNLIKELY(err == ErrorNumber) 
+      m_errfunc(cudd_error_traits<ErrorNumber>()());
+    else
+      reinterpret_cast<const handle_error<ErrorNumber - 1>&>(*this)(err);
+  }
+
+protected: 
+  const errorfunc_type m_errfunc;
+};
+
+
+template<>
+struct handle_error<0> {
+  typedef CCuddTypes::errorfunc_type errorfunc_type;
+
+  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
+
+  void operator()(unsigned err) const {
+    if LIKELY(err == 0)
+      m_errfunc(cudd_error_traits<0>()());
+  }
+protected: 
+  errorfunc_type m_errfunc;
+};
+
 
 class CCuddCore:
   public CCuddTypes {
@@ -174,7 +191,7 @@ public: // temporarily
   }
   void checkReturnValue(const int result, const int expected = 1) const {
     if UNLIKELY(result != expected)
-      handle_cudd_error()(Cudd_ReadErrorCode( getManager() ));
+      handle_error<>(ddMgr->errorHandler)(Cudd_ReadErrorCode( getManager() ));
   } 
 
 public:

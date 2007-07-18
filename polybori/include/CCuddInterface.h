@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/07/18 15:11:00  dreyer
+ * CHANGE: simplified handle_error
+ *
  * Revision 1.7  2007/07/18 07:36:34  dreyer
  * CHANGE: some clean-ups
  *
@@ -139,9 +142,8 @@ public:
   }
   void checkReturnValue(const int result) const {
     if UNLIKELY(result == 0) {
-      typedef handle_error<CUDD_MEMORY_OUT> handle_type;
-      if ( !handle_type::found(Cudd_ReadErrorCode(getManager())) )
-        defaultError(cudd_error_traits<CUDD_INTERNAL_ERROR>()());
+      handle_error<CUDD_MEMORY_OUT> tmp(pMgr->errorHandler);
+      tmp(Cudd_ReadErrorCode(getManager()));
     }
   } 
 
