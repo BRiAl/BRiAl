@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file BoolePolynomial.h
  *
  * @author Alexander Dreyer
  * @date 2006-03-10
@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.72  2007/07/18 07:17:26  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.71  2007/05/25 11:37:59  dreyer
  * ADD: cast int -> BoolePolynomial, which obeyes %2
  *

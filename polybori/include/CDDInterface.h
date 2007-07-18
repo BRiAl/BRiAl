@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.51  2007/07/18 07:17:26  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.50  2007/07/17 15:57:00  dreyer
  * ADD: header file for CCuddZDD; clean-up
  *
@@ -233,7 +236,7 @@ extract_manager(const Cudd& mgr) {
   return &const_cast<Cudd&>(mgr);
 }
 
-inline CCuddInterface::mgr_ptr
+inline CCuddInterface::mgrcore_ptr
 extract_manager(const CCuddInterface& mgr) {
   return mgr.managerCore();
 }

@@ -5,7 +5,8 @@
  * @author Alexander Dreyer
  * @date 2007-07-05
  *
- * 
+ * This files defines a replacement for the desicion diagram manager of CUDD's
+ * C++ interface.
  *
  * @par Copyright:
  *   (c) 2007 by
@@ -19,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/07/18 07:17:26  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.5  2007/07/17 15:56:59  dreyer
  * ADD: header file for CCuddZDD; clean-up
  *
@@ -48,6 +52,8 @@
 
 BEGIN_NAMESPACE_PBORI
 
+/// @func Define templates for generating member functions from CUDD procedures
+//@{
 #define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
   return BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
 
@@ -56,23 +62,30 @@ BEGIN_NAMESPACE_PBORI
 
 #define PB_CUDDMGR_SET(count, data, funcname)  void funcname(data arg) { \
     BOOST_PP_CAT(Cudd_, funcname)(getManager(), arg); }
+//@}
 
-class CCuddInterface {
-  friend class CCuddDD;
-  friend class CCuddZDD;
+/** @class CCuddInterface
+ * @brief This class defines a C++ interface to @c CUDD's decicion diagram
+ * manager.
+ *
+ * The purpose of this wrapper is just to provide an efficient and save way of
+ * handling the decision diagram management. It corrects some short-commings of
+ * CUDD's built-in interface.
+ **/
+
+class CCuddInterface:
+  public CCuddTypes {
 
 public:
-  typedef CCuddZDD::mgr_ptr mgr_ptr;
-  mgr_ptr p;
-  typedef CCuddInterface self;
-  typedef int idx_type;
-  typedef unsigned int size_type;
+
+  /// @name adopt global type definitions
+  //@{
+  typedef CCuddCore core_type;
+  typedef core_type::mgrcore_ptr mgrcore_ptr;
   typedef CCuddZDD dd_type;
 
-  typedef DdNode* node_type;
-
-  typedef node_type (*unary_int_function)(DdManager *, int);
-  typedef node_type (*void_function)(DdManager *);
+  typedef CCuddInterface self;
+  //@}
   typedef self tmp_ref;
 
   typedef boost::scoped_array<node_type> node_array;
@@ -82,29 +95,29 @@ public:
                  size_type numSlots = CUDD_UNIQUE_SLOTS,
                  size_type cacheSize = CUDD_CACHE_SLOTS,
                  unsigned long maxMemory = 0):
-    p (new CCuddCore(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {
+    pMgr (new core_type(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {
   }
 
-  CCuddInterface(const CCuddInterface& x):  p(x.p) {}
+  CCuddInterface(const self& rhs):  pMgr(rhs.pMgr) {}
 
-  CCuddInterface(mgr_ptr rhs): p(rhs) {};
+  CCuddInterface(mgrcore_ptr rhs): pMgr(rhs) {};
 
   ~CCuddInterface() {}
 
-  PFC setHandler(PFC newHandler) {
-    PFC oldHandler = p->errorHandler;
-    p->errorHandler = newHandler;
+  errorfunc_type setHandler(errorfunc_type newHandler) {
+    errorfunc_type oldHandler = pMgr->errorHandler;
+    pMgr->errorHandler = newHandler;
     return oldHandler;
   }
 
-  PFC getHandler() const {  return p->errorHandler; }
+  errorfunc_type getHandler() const {  return pMgr->errorHandler; }
 
-  DdManager *getManager() const {return p->manager;}
-  mgr_ptr managerCore() const {return p;}
+  mgrcore_type getManager() const { return pMgr->manager; }
+  mgrcore_ptr managerCore() const { return pMgr; }
   
-  void makeVerbose() {p->verbose = 1;}
-  void makeTerse() {p->verbose = 0;}
-  int isVerbose() const {return p->verbose;}
+  void makeVerbose() { pMgr->verbose = true; }
+  void makeTerse() { pMgr->verbose = false; }
+  int isVerbose() const { return pMgr->verbose; }
 
 
   void checkReturnValue(const node_type result) const {
@@ -118,8 +131,8 @@ public:
     }
   } 
 
-  CCuddInterface& operator=(const CCuddInterface& right) {
-    p = right.p;
+  self& operator=(const self & right) {
+    pMgr = right.pMgr;
     return *this;
   }
 
@@ -180,16 +193,18 @@ public:
     (ReadPeakNodeCount)(zddReadNodeCount)
   )
 
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, unsigned long, 
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, large_size_type, 
     (ReadMemoryInUse)(ReadMaxMemory) )
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
 
   PB_CUDDMGR_READ(BOOST_PP_NIL, MtrNode*, ReadZddTree)
 
-  int ReadPermZdd(int i) const { return Cudd_ReadPermZdd(getManager(), i); }
+  idx_type ReadPermZdd(idx_type i) const { 
+    return Cudd_ReadPermZdd(getManager(), i); 
+  }
 
-  int ReadInvPermZdd(int i) const { 
+  idx_type ReadInvPermZdd(idx_type i) const { 
     return Cudd_ReadInvPermZdd(getManager(), i); 
   }
 
@@ -259,6 +274,9 @@ protected:
   dd_type apply(void_function func) const { 
     return checkedResult(func(getManager()) );
   }
+
+private:
+  mgrcore_ptr pMgr;
 }; // CCuddInterface
 
 

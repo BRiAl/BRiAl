@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/07/18 07:17:27  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.7  2007/07/17 15:57:00  dreyer
  * ADD: header file for CCuddZDD; clean-up
  *
@@ -195,7 +198,7 @@ struct manager_traits<DdManager*> :
 template <class CuddLike>
 struct manager_traits {
   typedef typename CuddLike::dd_type dd_base;
-  typedef typename CuddLike::mgr_ptr core_type;
+  typedef typename CuddLike::mgrcore_ptr core_type;
   typedef typename CuddLike::tmp_ref tmp_ref;
 };
 

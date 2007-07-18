@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/07/18 07:17:26  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.1  2007/07/17 15:56:59  dreyer
  * ADD: header file for CCuddZDD; clean-up
  *
@@ -79,15 +82,32 @@ struct handle_error<0> {
   }
 };
 
+class CCuddTypes :
+  public CAuxTypes {
 
-class CCuddCore {
 public:
-  DdManager *manager;
-  PFC errorHandler;
-  int verbose;
-  long int ref;
-  typedef unsigned int size_type;
+  typedef DdNode* node_type;
   typedef unsigned long large_size_type;
+  typedef DdManager* mgrcore_type;
+  typedef PFC errorfunc_type;
+  typedef long int refcount_type;
+
+  typedef node_type (*unary_int_function)(mgrcore_type, int);
+  typedef node_type (*void_function)(mgrcore_type);
+};
+
+class CCuddCore:
+  public CCuddTypes {
+
+public:
+  typedef CCuddCore self;
+  typedef boost::intrusive_ptr<self> mgrcore_ptr;
+
+  mgrcore_type manager;
+  errorfunc_type errorHandler;
+  bool verbose;
+  refcount_type ref;
+
   CCuddCore(size_type numVars = 0,
             size_type numVarsZ = 0,
             size_type numSlots = CUDD_UNIQUE_SLOTS,
@@ -138,10 +158,10 @@ class CCuddDD {
 
 public: // temporarily
 
-  typedef boost::intrusive_ptr<CCuddCore> mgr_ptr;
+  typedef boost::intrusive_ptr<CCuddCore> mgrcore_ptr;
   typedef DdNode* node_type;
   typedef CTypes::size_type size_type;
-  mgr_ptr ddMgr;
+  mgrcore_ptr ddMgr;
   node_type node;
 
   void checkSameManager(const CCuddDD &other) const {
@@ -160,7 +180,7 @@ public: // temporarily
 public:
 
   /// Construct diagram from raw CUDD elements
-  CCuddDD(mgr_ptr ddManager, node_type ddNode): 
+  CCuddDD(mgrcore_ptr ddManager, node_type ddNode): 
     ddMgr(ddManager), node(ddNode) {
     if (node) Cudd_Ref(node);
     PB_DD_VERBOSE("Standard DD constructor");
@@ -176,10 +196,10 @@ public:
   } 
 
   /// Default constructor
-  CCuddDD(): ddMgr(mgr_ptr()), node(NULL) {}
+  CCuddDD(): ddMgr(mgrcore_ptr()), node(NULL) {}
 
  
-  mgr_ptr manager() const { return ddMgr; }
+  mgrcore_ptr manager() const { return ddMgr; }
   DdManager* getManager() const { return ddMgr->manager; }
 
   node_type getNode() const{  return node; }
@@ -210,9 +230,9 @@ public:
   typedef CCuddZDD self;
   typedef int idx_type;
   typedef CCuddDD base;
-  typedef base::mgr_ptr mgr_ptr;
+  typedef base::mgrcore_ptr mgrcore_ptr;
 
-  CCuddZDD(mgr_ptr bddManager, DdNode *bddNode): base(bddManager, bddNode) {}
+  CCuddZDD(mgrcore_ptr bddManager, DdNode *bddNode): base(bddManager, bddNode) {}
 
   CCuddZDD(): base() {}
   CCuddZDD(const self &from): base(from) {}
