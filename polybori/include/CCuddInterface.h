@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/18 07:36:34  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.6  2007/07/18 07:17:26  dreyer
  * CHANGE: some clean-ups
  *
@@ -52,7 +55,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/// @func Define templates for generating member functions from CUDD procedures
+/// @name Define templates for generating member functions from CUDD procedures
 //@{
 #define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
   return BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
@@ -78,18 +81,16 @@ class CCuddInterface:
 
 public:
 
-  /// @name adopt global type definitions
+  /// @name Generic names for related data types
   //@{
+  typedef CCuddInterface self;
   typedef CCuddCore core_type;
   typedef core_type::mgrcore_ptr mgrcore_ptr;
   typedef CCuddZDD dd_type;
-
-  typedef CCuddInterface self;
-  //@}
   typedef self tmp_ref;
+  //@}
 
-  typedef boost::scoped_array<node_type> node_array;
-
+  /// Initialize CUDD-like decision diagram manager
   CCuddInterface(size_type numVars = 0,
                  size_type numVarsZ = 0,
                  size_type numSlots = CUDD_UNIQUE_SLOTS,
@@ -98,27 +99,40 @@ public:
     pMgr (new core_type(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {
   }
 
-  CCuddInterface(const self& rhs):  pMgr(rhs.pMgr) {}
+  /// Copy constructor
+  CCuddInterface(const self& rhs): pMgr(rhs.pMgr) {}
 
+  /// Construct interface for already initialized manager
   CCuddInterface(mgrcore_ptr rhs): pMgr(rhs) {};
 
+  /// Destructor
   ~CCuddInterface() {}
 
+  /// Define function for error handling
   errorfunc_type setHandler(errorfunc_type newHandler) {
     errorfunc_type oldHandler = pMgr->errorHandler;
     pMgr->errorHandler = newHandler;
     return oldHandler;
   }
 
+  /// Extract function for error handling
   errorfunc_type getHandler() const {  return pMgr->errorHandler; }
 
+  /// Get pure CUDD structure
   mgrcore_type getManager() const { return pMgr->manager; }
+
+  /// Get (shared) pointer to initialized manager
   mgrcore_ptr managerCore() const { return pMgr; }
-  
+
+  /// @name Manage eloquence
+  //@{
   void makeVerbose() { pMgr->verbose = true; }
   void makeTerse() { pMgr->verbose = false; }
-  int isVerbose() const { return pMgr->verbose; }
+  bool isVerbose() const { return pMgr->verbose; }
+  //@}
 
+  /// Print statistical information
+  void info() const { checkedResult(Cudd_PrintInfo(getManager(),stdout)); }
 
   void checkReturnValue(const node_type result) const {
     checkReturnValue(result != NULL);
@@ -131,15 +145,19 @@ public:
     }
   } 
 
+  /// Assignment operation 
   self& operator=(const self & right) {
     pMgr = right.pMgr;
     return *this;
   }
 
-  void info() const { checkedResult(Cudd_PrintInfo(getManager(),stdout)); }
-
+  /// Get ZDD variable 
   CCuddZDD zddVar(idx_type idx) const { return apply(Cudd_zddIthVar, idx); }
+
+  /// Get 1-terminal for ZDDs
   CCuddZDD zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
+
+  /// Get 0-terminal for ZDDs
   CCuddZDD zddZero() const { return apply(Cudd_ReadZero); }
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, size_type, 
@@ -157,9 +175,7 @@ public:
   PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
   PB_CUDDMGR_SET(BOOST_PP_NIL, MtrNode*, SetZddTree)
 
-  int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
-    return Cudd_ReorderingStatusZdd(getManager(), method);
-  }
+
   PB_CUDDMGR_READ(BOOST_PP_NIL, int, zddRealignmentEnabled);
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SWITCH, BOOST_PP_NIL, 
@@ -199,6 +215,10 @@ public:
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
 
   PB_CUDDMGR_READ(BOOST_PP_NIL, MtrNode*, ReadZddTree)
+
+  int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
+    return Cudd_ReorderingStatusZdd(getManager(), method);
+  }
 
   idx_type ReadPermZdd(idx_type i) const { 
     return Cudd_ReadPermZdd(getManager(), i); 
@@ -253,8 +273,10 @@ public:
   }
 
   int SharingSize(dd_type* nodes, int nlen) const {
+    typedef boost::scoped_array<node_type> node_array;
     node_array nodeArray(new node_type[nlen]);
     std::transform(nodes, nodes + nlen, nodeArray.get(), get_node<dd_type>());
+
     return checkedResult(Cudd_SharingSize(nodeArray.get(), nlen));
   }
 

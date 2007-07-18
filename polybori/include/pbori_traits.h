@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/07/18 07:36:34  dreyer
+ * CHANGE: some clean-ups
+ *
  * Revision 1.8  2007/07/18 07:17:27  dreyer
  * CHANGE: some clean-ups
  *
@@ -203,7 +206,7 @@ struct manager_traits {
 };
 
 // template <>
-// struct manager_traits<CCuddInterface::mgr_ptr> :
+// struct manager_traits<CCuddInterface::mgrcore_ptr> :
 //   public manager_traits<CCuddInterface> {
 // };
 
