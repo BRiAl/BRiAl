@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2007-07-05
  *
- * This files defines a replacement for the desicion diagram manager of CUDD's
+ * This files defines a replacement for the decision diagram manager of CUDD's
  * C++ interface.
  *
  * @par Copyright:
@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/07/18 15:46:14  dreyer
+ * CHANGE: added documentation
+ *
  * Revision 1.8  2007/07/18 15:11:00  dreyer
  * CHANGE: simplified handle_error
  *
@@ -75,8 +78,12 @@ BEGIN_NAMESPACE_PBORI
  * manager.
  *
  * The purpose of this wrapper is just to provide an efficient and save way of
- * handling the decision diagram management. It corrects some short-commings of
+ * handling the decision diagram management. It corrects some short-comings of
  * CUDD's built-in interface.
+ *
+ * @attention This class is intented for internal use only. 
+ * Use the highlevel classes CDDManager<CCuddInterface> or BoolePolyRing
+ * instead.
  **/
 
 class CCuddInterface:
@@ -162,62 +169,10 @@ public:
   /// Get 0-terminal for ZDDs
   CCuddZDD zddZero() const { return apply(Cudd_ReadZero); }
 
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, size_type, 
-    (SetMinHit)(SetLooseUpTo)(SetMaxCacheHard)(SetMaxLive) )
 
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, int, 
-    (SetSiftMaxVar)(SetSiftMaxSwap)(SetRecomb)(SetSymmviolation)
-    (SetArcviolation)(SetPopulationSize)(SetNumberXovers)
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, FILE*, (SetStdout)(SetStderr))
-
-  PB_CUDDMGR_SET(BOOST_PP_NIL, Cudd_ReorderingType, AutodynEnableZdd)
-  PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
-  PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
-  PB_CUDDMGR_SET(BOOST_PP_NIL, MtrNode*, SetZddTree)
-
-
-  PB_CUDDMGR_READ(BOOST_PP_NIL, int, zddRealignmentEnabled);
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SWITCH, BOOST_PP_NIL, 
-    (zddRealignEnable)(zddRealignDisable)
-    (AutodynDisableZdd)(FreeZddTree)
-    (EnableGarbageCollection)(DisableGarbageCollection)
-    (TurnOnCountDead)(TurnOffCountDead)(ClearErrorCode)  
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, double,
-    (ReadCacheUsedSlots)(ReadCacheLookUps)(ReadCacheHits) 
-    (ReadSwapSteps)(ReadMaxGrowth)(AverageDistance)
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, size_type,
-    (ReadCacheSlots)(ReadMinHit)(ReadLooseUpTo)(ReadMaxCache)
-    (ReadMaxCacheHard)(ReadSlots)(ReadKeys)(ReadDead)(ReadMinDead)
-    (ReadNextReordering)(ReadMaxLive)
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, int,
-    (ReadZddSize)(ReadReorderings)(ReadSiftMaxVar)
-    (ReadSiftMaxSwap)(ReadGarbageCollections)(GarbageCollectionEnabled)
-    (DeadAreCounted)(ReadRecomb)
-    (ReadPopulationSize)(ReadSymmviolation)(ReadArcviolation)
-    (ReadNumberXovers)(ReorderingReporting)(ReadErrorCode)
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, long,
-    (ReadReorderingTime)(ReadGarbageCollectionTime)
-    (ReadPeakNodeCount)(zddReadNodeCount)
-  )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, large_size_type, 
-    (ReadMemoryInUse)(ReadMaxMemory) )
-
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
-
-  PB_CUDDMGR_READ(BOOST_PP_NIL, MtrNode*, ReadZddTree)
-
+  /// @name Member functions mimicking/interfacing with CUDD procedures 
+  /// @note See preprocessor generated members below
+  //@{
   int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
     return Cudd_ReorderingStatusZdd(getManager(), method);
   }
@@ -282,19 +237,83 @@ public:
     return checkedResult(Cudd_SharingSize(nodeArray.get(), nlen));
   }
 
-protected:
+  /// @note Preprocessor generated members
+  /// @code
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, size_type, 
+    (SetMinHit)(SetLooseUpTo)(SetMaxCacheHard)(SetMaxLive) )
 
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, int, 
+    (SetSiftMaxVar)(SetSiftMaxSwap)(SetRecomb)(SetSymmviolation)
+    (SetArcviolation)(SetPopulationSize)(SetNumberXovers)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SET, FILE*, (SetStdout)(SetStderr))
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SWITCH, BOOST_PP_NIL, 
+    (zddRealignEnable)(zddRealignDisable)
+    (AutodynDisableZdd)(FreeZddTree)
+    (EnableGarbageCollection)(DisableGarbageCollection)
+    (TurnOnCountDead)(TurnOffCountDead)(ClearErrorCode)  
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, double,
+    (ReadCacheUsedSlots)(ReadCacheLookUps)(ReadCacheHits) 
+    (ReadSwapSteps)(ReadMaxGrowth)(AverageDistance)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, size_type,
+    (ReadCacheSlots)(ReadMinHit)(ReadLooseUpTo)(ReadMaxCache)
+    (ReadMaxCacheHard)(ReadSlots)(ReadKeys)(ReadDead)(ReadMinDead)
+    (ReadNextReordering)(ReadMaxLive)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, int,
+    (zddRealignmentEnabled)(ReadZddSize)(ReadReorderings)(ReadSiftMaxVar)
+    (ReadSiftMaxSwap)(ReadGarbageCollections)(GarbageCollectionEnabled)
+    (DeadAreCounted)(ReadRecomb)
+    (ReadPopulationSize)(ReadSymmviolation)(ReadArcviolation)
+    (ReadNumberXovers)(ReorderingReporting)(ReadErrorCode)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, long,
+    (ReadReorderingTime)(ReadGarbageCollectionTime)
+    (ReadPeakNodeCount)(zddReadNodeCount)
+  )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, large_size_type, 
+    (ReadMemoryInUse)(ReadMaxMemory) )
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
+
+  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, MtrNode*, (ReadZddTree))
+
+  PB_CUDDMGR_SET(BOOST_PP_NIL, Cudd_ReorderingType, AutodynEnableZdd)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, MtrNode*, SetZddTree)
+  /** @endcode */
+  /// 
+  //@}
+
+protected:
+  /// Generate check result of previous node operation and convert 
   dd_type checkedResult(node_type result) const  { 
     checkReturnValue(result);
     return dd_type(managerCore(), result);
   }
+
+  /// Generate check numerical result of previous operation
   idx_type checkedResult(idx_type result) const  { 
     checkReturnValue(result);
     return result;
   }
+
+  /// Apply function to given index
   dd_type apply(unary_int_function func, idx_type idx) const  { 
     return checkedResult(func(getManager(), idx) );
   }
+
+  /// Call function 
   dd_type apply(void_function func) const { 
     return checkedResult(func(getManager()) );
   }

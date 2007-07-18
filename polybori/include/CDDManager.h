@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file CDDManager.h
  *
  * @author Alexander Dreyer
  * @date  2006-03-20
@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/07/18 15:46:14  dreyer
+ * CHANGE: added documentation
+ *
  * Revision 1.16  2007/07/06 14:04:21  dreyer
  * ADD: newly written C++_interface for Cudd
  *
