@@ -201,6 +201,14 @@ for t in tests_gb:
 
 LIBS=["polybori"]+env['LIBS']+['boost_python', "groebner"]+USERLIBS
 #env["CPPDEFINES"].Append("Packed")
+
+testsuite_py="testsuite/py/"
+installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("ll.py check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py specialsets.py aes.py coding.py")]
+installable_python_modules_pypb=[("PyPolyBoRi/PyPolyBoRi.so", "PyPolyBoRi.so")]
+
+installable_python_modules=installable_python_modules_tp+installable_python_modules_pypb
+
+
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
       env.CNF(f[:-4])
@@ -221,10 +229,10 @@ if HAVE_PYTHON_EXTENSION:
             #SHLIBPREFIX="")
     Default(pypb)
     polybori_modules=pyroot+"polybori/"
-    testsuite_py="testsuite/py/"
-    Default(env.Install(polybori_modules, pypb))
-    for f in Split("ll.py nf.py statistics.py randompoly.py gbrefs.py blocks.py specialsets.py aes.py coding.py"):
-        Default(env.Install(polybori_modules, testsuite_py+f))
+
+    #Default(env.Install(polybori_modules, pypb))
+    for (f,n) in installable_python_modules:
+        Default(env.Install(polybori_modules, f))
     
     to_append_for_profile=[]
     #to_append_for_profile=File('/lib/libutil.a')
@@ -285,7 +293,7 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for f in Split("ll.py nf.py gbrefs.py statistics.py randompoly.py blocks.py PyPolyBoRi.so specialsets.py aes.py coding.py")])
+    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for (a,f) in installable_python_modules])
     #bld=Builder("cd")
 else:
     print "no python extension"
