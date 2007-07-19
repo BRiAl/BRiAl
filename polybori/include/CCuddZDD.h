@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/07/19 11:41:47  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.5  2007/07/18 18:57:00  dreyer
  * Fix: Another mysterious performance issue
  *
@@ -61,197 +64,48 @@
 
 #include "pbori_func.h"
 #include "pbori_traits.h"
+#include "CCuddCore.h"
 
 BEGIN_NAMESPACE_PBORI
 
-class CCuddTypes :
-  public CAuxTypes {
-
-public:
-  typedef unsigned long large_size_type;
-  typedef long int refcount_type;
-
-  typedef DdNode* node_type;
-  typedef DdManager* mgrcore_type;
-
-  typedef PFC errorfunc_type;
-  typedef node_type (*unary_int_function)(mgrcore_type, int);
-  typedef node_type (*void_function)(mgrcore_type);
-
-  typedef DD_CTFP binary_function;
-  typedef node_type (*binary_int_function)(mgrcore_type, node_type, int);
-  typedef 
-  node_type (*ternary_function)(mgrcore_type, node_type, node_type, node_type);
-
-  typedef int (*int_unary_function)(mgrcore_type, node_type);
-};
-
-template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
-struct handle_error {
-  typedef CCuddTypes::errorfunc_type errorfunc_type;
-
-  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
-
-  bool found(unsigned err) const {
-    if UNLIKELY(err == ErrorNumber) {
-      m_errfunc(cudd_error_traits<ErrorNumber>()());
-      return true;
-    }
-    return false;        
-  }
-
-  void operator()(unsigned err) const {
-    if UNLIKELY(err == ErrorNumber) 
-      m_errfunc(cudd_error_traits<ErrorNumber>()());
-    else
-      reinterpret_cast<const handle_error<ErrorNumber - 1>&>(*this)(err);
-  }
-
-protected: 
-  const errorfunc_type m_errfunc;
-};
-
-
-template<>
-struct handle_error<0> {
-  typedef CCuddTypes::errorfunc_type errorfunc_type;
-
-  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
-
-  void operator()(unsigned err) const {
-    if LIKELY(err == 0)
-      m_errfunc(cudd_error_traits<0>()());
-  }
-protected: 
-  errorfunc_type m_errfunc;
-};
-
-
-class CCuddCore {
-
-public:
-  typedef CCuddTypes::errorfunc_type errorfunc_type;
-  typedef CCuddTypes::large_size_type large_size_type;
-  typedef CCuddTypes::refcount_type refcount_type;
-
-  typedef CCuddTypes::node_type node_type;
-  typedef CCuddTypes::mgrcore_type mgrcore_type;
-
-  typedef CCuddTypes::unary_int_function unary_int_function;
-  typedef CCuddTypes::void_function void_function;
-
-  typedef CCuddTypes::binary_function binary_function;
-  typedef CCuddTypes::binary_int_function binary_int_function;
-  typedef CCuddTypes::ternary_function ternary_function;
- 
-  typedef CCuddTypes::int_unary_function int_unary_function;
-
-  typedef CCuddTypes::size_type size_type;
-  typedef CCuddTypes::idx_type idx_type;
-
-  typedef CCuddCore self;
-  typedef boost::intrusive_ptr<self> mgrcore_ptr;
-
-  mgrcore_type manager;
-  errorfunc_type errorHandler;
-  bool verbose;
-  refcount_type ref;
-
-  CCuddCore(size_type numVars = 0,
-            size_type numVarsZ = 0,
-            size_type numSlots = CUDD_UNIQUE_SLOTS,
-            size_type cacheSize = CUDD_CACHE_SLOTS,
-            large_size_type maxMemory = 0):  ref(0) {
-    manager = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
-    errorHandler = defaultError;
-    verbose = 0;		// initially terse
-  }
-
-  ~CCuddCore(){ erase(); }
-
-  void erase() {
-
-    if (--(ref) == 0){
-      int retval = Cudd_CheckZeroRef(manager);
-      if (retval != 0) {
-        std::cerr << retval << " unexpected non-zero reference counts\n";
-      } else if (verbose) {
-        std::cerr << "All went well\n";
-      }
-      Cudd_Quit(manager);
-    }
-  }
-};
-
-inline
-void intrusive_ptr_add_ref(CCuddCore* p){
-    ++(p->ref);
-}
-
-inline
-void intrusive_ptr_release(CCuddCore * p) {
-  p->erase();
-}
-
-
-
-// ---------------------------------------------------------------------------
-// Class CCuddDD
-// ---------------------------------------------------------------------------
+/// Define code for verbosity 
 #define PB_DD_VERBOSE(text) if (ddMgr->verbose) \
   std::cout << text << " for node " << node <<  \
   " ref = " << refCount() << std::endl;
 
-class CCuddDD {
-public:
+/** @class CCuddDDBase
+ * @brief This template class defines a C++ interface to @c CUDD's decision
+ * diagram structure.
+ *
+ * The purpose of this wrapper is just to provide an efficient and save way of
+ * handling the decision diagrams. It corrects some short-comings of
+ * CUDD's built-in interface.
+ *
+ * @attention This template class is intented for internal use only, e.g. as
+ * base class for CCuddZDD.
+ **/
 
-  typedef CCuddTypes::node_type node_type;
-  typedef CCuddTypes::mgrcore_type mgrcore_type;
-
-  typedef CCuddTypes::unary_int_function unary_int_function;
-  typedef CCuddTypes::void_function void_function;
-
-  typedef CCuddTypes::binary_function binary_function;
-  typedef CCuddTypes::binary_int_function binary_int_function;
-  typedef CCuddTypes::ternary_function ternary_function;
- 
-  typedef CCuddTypes::int_unary_function int_unary_function;
-
-  typedef CCuddTypes::size_type size_type;
-  typedef CCuddTypes::idx_type idx_type;
-
-protected:
-
-  /// Test, whether both operands 
-  void checkSameManager(const CCuddDD &other) const {
-    if (getManager() != other.getManager()) 
-      ddMgr->errorHandler("Operands come from different manager.");
-  }
-
-  /// Check whether decision diagram operation in computing result was valid
-  void checkReturnValue(const node_type result) const {
-    checkReturnValue(result != NULL);
-  }
-
-  /// Check whether previous decision diagram operation for validity
-  void checkReturnValue(const int result, const int expected = 1) const {
-    if UNLIKELY(result != expected)
-      handle_error<>(ddMgr->errorHandler)(Cudd_ReadErrorCode( getManager() ));
-  } 
+template <class DiagramType>
+class CCuddDDBase {
 
 public:
+  /// Name type of *this
+  typedef DiagramType diagram_type;
+  typedef CCuddDDBase self;
+  PB_DECLARE_CUDD_TYPES(CCuddCore)
+
   /// Define shared pointer type for handling the decision diagram manager
-  typedef boost::intrusive_ptr<CCuddCore> mgrcore_ptr;
+  typedef typename CCuddCore::mgrcore_ptr mgrcore_ptr;
 
   /// Construct diagram from raw CUDD elements
-  CCuddDD(mgrcore_ptr ddManager, node_type ddNode): 
+  CCuddDDBase(mgrcore_ptr ddManager, node_type ddNode): 
     ddMgr(ddManager), node(ddNode) {
     if (node) Cudd_Ref(node);
     PB_DD_VERBOSE("Standard DD constructor");
   }
 
   /// Copy constructor
-  CCuddDD(const CCuddDD& from): 
+  CCuddDDBase(const self& from): 
     ddMgr(from.ddMgr), node(from.node) {
     if (node) {
       Cudd_Ref(node);
@@ -260,7 +114,7 @@ public:
   } 
 
   /// Default constructor
-  CCuddDD(): ddMgr(mgrcore_ptr()), node(NULL) {}
+  CCuddDDBase(): ddMgr(mgrcore_ptr()), node(NULL) {}
 
   /// Get (shared) pointer to decision diagram manager
   mgrcore_ptr manager() const { return ddMgr; }
@@ -283,8 +137,77 @@ public:
     return Cudd_Regular(node)->ref;
   }
 
+  /// Test whether diagram represents the empty set
+  bool isZero() const { return node == Cudd_ReadZero(getManager()); }
+
 protected:
-  /// (Shared) pointer to decsion diagram management
+
+  /// Test, whether both operands 
+  void checkSameManager(const diagram_type& other) const {
+    if (getManager() != other.getManager()) 
+      ddMgr->errorHandler("Operands come from different manager.");
+  }
+
+  /// Check whether decision diagram operation in computing result was valid
+  void checkReturnValue(const node_type result) const {
+    checkReturnValue(result != NULL);
+  }
+
+  /// Check whether previous decision diagram operation for validity
+  void checkReturnValue(const int result, const int expected = 1) const {
+    if UNLIKELY(result != expected)
+      handle_error<>(ddMgr->errorHandler)(Cudd_ReadErrorCode( getManager() ));
+  } 
+
+   /// @name Apply CUDD procedures to nodes
+  //@{
+  diagram_type apply(binary_function func, const diagram_type& rhs) const {
+    checkSameManager(rhs);
+    return checkedResult(func(getManager(), getNode(), rhs.getNode()));
+  }
+
+  diagram_type apply(binary_int_function func, idx_type idx) const {
+    return checkedResult(func(getManager(), getNode(), idx) );
+  }
+
+  diagram_type apply(ternary_function func, 
+             const diagram_type& first, const diagram_type& second) const {
+    checkSameManager(first);
+    checkSameManager(second);
+    return checkedResult(func(getManager(), getNode(), 
+                              first.getNode(), second.getNode()) );
+  }
+
+  idx_type apply(int_unary_function func) const {
+    return checkedResult(func(getManager(), getNode()) );
+  }
+  //@}
+
+  /// @name Test results from CUDD procedures for validity
+  //@{
+  diagram_type checkedResult(node_type result) const {
+    checkReturnValue(result);
+    return diagram_type(manager(), result);
+  }
+
+  idx_type checkedResult(idx_type result) const {
+    checkReturnValue(result);
+    return result;
+  }
+
+  template <class ResultType>
+  ResultType memApply(ResultType (*func)(DdManager *, node_type)) const {
+    return memChecked(func(getManager(), getNode()) );
+  }
+
+  template <class ResultType>
+  ResultType memChecked(ResultType result) const {
+    checkReturnValue(result != (ResultType) CUDD_OUT_OF_MEM);
+    return result;
+  }
+  // @}
+
+  /// (Smart) pointer to decsion diagram management
   mgrcore_ptr ddMgr;
 
   /// Raw pointer to decision diagram node
@@ -305,12 +228,11 @@ protected:
 
 
 /** @class CCuddZDD
- * @brief This class defines a C++ interface to @c CUDD's decicion diagram
- * structure.
+ * @brief This class defines a C++ interface to @c CUDD's zero-suppressed
+ * decision diagram structure.
  *
  * The purpose of this wrapper is just to provide an efficient and save way of
- * handling the decision diagrams. It corrects some short-comings of
- * CUDD's built-in interface.
+ * handling the decision diagrams. It extends CCuddDD for handling ZDDs.
  *
  * @attention This class is intented for internal use only. 
  * Use the highlevel classes CDDInterface<CCuddZDD>, BoolePolynomial, BooleSet,
@@ -318,7 +240,7 @@ protected:
  **/
 
 class CCuddZDD : 
-  public CCuddDD {
+  public CCuddDDBase<CCuddZDD> {
     friend class CCuddInterface;
 
 public:
@@ -326,7 +248,7 @@ public:
   typedef CCuddZDD self;
 
   /// Name the type, which self is inherited from
-  typedef CCuddDD base;
+  typedef CCuddDDBase<self> base;
  
   /// Construct ZDD from manager core and node
   CCuddZDD(mgrcore_ptr mgr, node_type bddNode): base(mgr, bddNode) {}
@@ -363,8 +285,6 @@ public:
   bool operator>(const self& other) const { 
     return (*this != other) && (*this >= other); 
   }
-
-  bool isZero() const { return node == Cudd_ReadZero(getManager()); }
   //@}
 
   /// @note Preprocessor generated members
@@ -410,53 +330,6 @@ public:
 
 protected:
 
-  /// @name Apply CUDD procedures to nodes
-  //@{
-  self apply(binary_function func, const self& rhs) const {
-    checkSameManager(rhs);
-    return checkedResult(func(getManager(), getNode(), rhs.getNode()));
-  }
-
-  self apply(binary_int_function func, idx_type idx) const {
-    return checkedResult(func(getManager(), getNode(), idx) );
-  }
-
-  self apply(ternary_function func, 
-             const self& first, const self& second) const {
-    checkSameManager(first);
-    checkSameManager(second);
-    return checkedResult(func(getManager(), getNode(), 
-                              first.getNode(), second.getNode()) );
-  }
-
-  idx_type apply(int_unary_function func) const {
-    return checkedResult(func(getManager(), getNode()) );
-  }
-  //@}
-
-  /// @name Test results from CUDD procedures for validity
-  //@{
-  self checkedResult(node_type result) const {
-    checkReturnValue(result);
-    return self(manager(), result);
-  }
-
-  idx_type checkedResult(idx_type result) const {
-    checkReturnValue(result);
-    return result;
-  }
-
-  template <class ResultType>
-  ResultType memApply(ResultType (*func)(DdManager *, node_type)) const {
-    return memChecked(func(getManager(), getNode()) );
-  }
-
-  template <class ResultType>
-  ResultType memChecked(ResultType result) const {
-    checkReturnValue(result != (ResultType) CUDD_OUT_OF_MEM);
-    return result;
-  }
-  // @}
 
   /// Derefering current diagram node, if unused
   void deref() {

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/07/19 11:41:47  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.9  2007/07/18 15:46:14  dreyer
  * CHANGE: added documentation
  *
@@ -86,10 +89,11 @@ BEGIN_NAMESPACE_PBORI
  * instead.
  **/
 
-class CCuddInterface:
-  public CCuddTypes {
+class CCuddInterface {
 
 public:
+
+  PB_DECLARE_CUDD_TYPES(CCuddCore)
 
   /// @name Generic names for related data types
   //@{

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/07/19 11:41:48  dreyer
+ * CHANGE: clean-up
+ *
  * Revision 1.9  2007/07/18 07:36:34  dreyer
  * CHANGE: some clean-ups
  *
@@ -203,7 +206,69 @@ struct manager_traits {
   typedef typename CuddLike::dd_type dd_base;
   typedef typename CuddLike::mgrcore_ptr core_type;
   typedef typename CuddLike::tmp_ref tmp_ref;
+
+  typedef unsigned long large_size_type;
+  typedef long int refcount_type;
+
+  typedef CTypes::idx_type idx_type;
+  typedef CTypes::size_type size_type;
+
+  typedef DdNode* node_type;
+  typedef DdManager* mgrcore_type;
+
+  typedef PFC errorfunc_type;
+  typedef node_type (*unary_int_function)(mgrcore_type, int);
+  typedef node_type (*void_function)(mgrcore_type);
+
+  typedef DD_CTFP binary_function;
+  typedef node_type (*binary_int_function)(mgrcore_type, node_type, int);
+  typedef 
+  node_type (*ternary_function)(mgrcore_type, node_type, node_type, node_type);
+
+  typedef int (*int_unary_function)(mgrcore_type, node_type);
 };
+
+template <class CuddLike>
+struct mgrcore_traits;
+
+template<>
+struct mgrcore_traits<Cudd> {
+
+  typedef unsigned long large_size_type;
+  typedef long int refcount_type;
+
+  typedef CTypes::idx_type idx_type;
+  typedef CTypes::size_type size_type;
+
+  typedef DdNode* node_type;
+  typedef DdManager* mgrcore_type;
+
+  typedef PFC errorfunc_type;
+  typedef node_type (*unary_int_function)(mgrcore_type, int);
+  typedef node_type (*void_function)(mgrcore_type);
+
+  typedef DD_CTFP binary_function;
+  typedef node_type (*binary_int_function)(mgrcore_type, node_type, int);
+  typedef 
+  node_type (*ternary_function)(mgrcore_type, node_type, node_type, node_type);
+
+  typedef int (*int_unary_function)(mgrcore_type, node_type);
+};
+
+#define PB_DECLARE_CUDD_TYPES(fromspace) \
+  typedef fromspace::errorfunc_type errorfunc_type;           \
+  typedef fromspace::large_size_type large_size_type;         \
+  typedef fromspace::refcount_type refcount_type;             \
+  typedef fromspace::node_type node_type;                     \
+  typedef fromspace::mgrcore_type mgrcore_type;               \
+  typedef fromspace::unary_int_function unary_int_function;   \
+  typedef fromspace::void_function void_function;             \
+  typedef fromspace::binary_function binary_function;         \
+  typedef fromspace::binary_int_function binary_int_function; \
+  typedef fromspace::ternary_function ternary_function;       \
+  typedef fromspace::int_unary_function int_unary_function;   \
+  typedef fromspace::size_type size_type;\
+  typedef fromspace::idx_type idx_type;
 
 // template <>
 // struct manager_traits<CCuddInterface::mgrcore_ptr> :
