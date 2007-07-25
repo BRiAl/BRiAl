@@ -1,3 +1,4 @@
+# Emacs edit mode for this file is -*- python -*-
 #$Id$
 opts = Options('custom.py')
 BOOST_WORKS=False
@@ -72,8 +73,9 @@ if (env['PLATFORM']=="darwin"):
     applelink.generate(env)
 
 
-cudd_libs=Split("obj cudd dddmp mtr st cuddutil epd")
-#cudd_libs=Split("obj cudd dddmp mtr st util epd")
+# todo: More generic?
+machtype = os.environ['MACHTYPE']
+IS_x64 = ((machtype == "x86_64") | (machtype == "ia64"))
 
 
 HAVE_PYTHON_EXTENSION=1
@@ -107,8 +109,9 @@ env.Append(CPPPATH=USER_CPPPATH)
 env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=["./polybori/include"])
 env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-env.Append(CPPPATH=["./Cudd/include","extra"])
-env.Append(LIBPATH=["polybori","groebner","extra"])
+env.Append(LIBPATH=["polybori","groebner"])
+
+##env.Append(RPATH = pyroot+"polybori/")
 
 env['ENV']['HOME']=os.environ["HOME"]
 try:
@@ -122,22 +125,25 @@ except KeyError:
 #env.Append(LIBPATH=".")
 
 env.Append(LIBS=["m"]+USERLIBS)
+
+
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:
-    env.Append(CCFLAGS=Split("-O3 -ftemplate-depth-100 -ansi --pedantic"))
+    env.Append(CCFLAGS=Split("-O3 -ansi --pedantic -DHAVE_IEEE_754 -DBSD"))
 
+try:
+    env.Append(CXXFLAGS=Split(custom.CXXFLAGS))
+except:
+    env.Append(CXXFLAGS=Split("-ftemplate-depth-100"))
+    
 try:
     env.Append(LINKFLAGS=Split(custom.LINKFLAGS))
 except:
     pass
 
-#env.Append(CCFLAGS=Split("-g -ftemplate-depth-100 -ansi"))
 
-for l in cudd_libs:
-    env.Append(LIBPATH=["./Cudd/"+l])
-    env.Append(LIBS=[l])
-    
+
 
 HAVE_PYTHON_EXTENSION=0
 for c in PYTHONSEARCH:
@@ -158,6 +164,34 @@ else:
 
 env = conf.Finish()
 
+######################################################################
+# Stuff for building Cudd library
+######################################################################
+
+env.Append(LIBPATH=["."])
+
+if IS_x64:
+    env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
+env.Append(CPPDEFINES=["DHAVE_IEEE_754", "DBSD"])
+
+cudd_resources = ['Cudd/obj/cuddObj.cc'] + glob('Cudd/util/*.c')
+env.Append(CPPPATH=['Cudd/obj', 'Cudd/util'])
+
+for cudddir in Split("cudd dddmp mtr st epd"):
+    env.Append(CPPPATH=['Cudd/' + cudddir])
+    cudd_resources += glob('Cudd/' + cudddir + '/' + cudddir + '*.c')
+
+for file in ['Cudd/util/saveimage.c']+ glob('Cudd/util/test*.c') + glob('Cudd/dddmp/*DdNode*.c'):
+    cudd_resources.remove(file)
+
+cudd_files = env.SharedObject(cudd_resources)
+
+pbCudd = env.StaticLibrary('pboriCudd', cudd_resources)
+#env.Append(LIBPATH=["./Cudd/"])
+
+Default(pbCudd)
+
+######################################################################
 
 pb_src=Split("""BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc
     CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc
@@ -189,24 +223,26 @@ tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface",
 tests_gb=["strategy_initialization"]
 CPPPATH=env['CPPPATH']+['./groebner/src']
 print env['CCFLAGS']
+print env['CXXFLAGS']
 for t in tests_pb:
     env.Program("testsuite/"+t, 
-        ["testsuite/src/" + t +".cc"] +[libpb], 
+        ["testsuite/src/" + t +".cc"] + [libpb], LIBS = pbCudd,
         CPPPATH=CPPPATH)
 
 for t in tests_gb:
     env.Program("testsuite/"+t, 
-        ["testsuite/src/" + t +".cc"] +[libpb, gb], 
+        ["testsuite/src/" + t +".cc"] + [libpb, gb], LIBS = pbCudd, 
         CPPPATH=CPPPATH)
 
 LIBS=["polybori"]+env['LIBS']+['boost_python', "groebner"]+USERLIBS
+
 #env["CPPDEFINES"].Append("Packed")
 
 testsuite_py="testsuite/py/"
 installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("ll.py check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py specialsets.py aes.py coding.py")]
 installable_python_modules_pypb=[("PyPolyBoRi/PyPolyBoRi.so", "PyPolyBoRi.so")]
 
-installable_python_modules=installable_python_modules_tp+installable_python_modules_pypb
+installable_python_modules = installable_python_modules_tp + installable_python_modules_pypb
 
 
 def add_cnf_dir(env,directory):
@@ -216,13 +252,15 @@ if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "variable_block.cc","monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
-        pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi', wrapper_files,
+        pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi',
+            wrapper_files + cudd_files,
             LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
             CPPPATH=CPPPATH)
     else:
         #print "l:", l
-        pypb=env.SharedLibrary('PyPolyBoRi/PyPolyBoRi', wrapper_files,
+        pypb=env.SharedLibrary('PyPolyBoRi/PyPolyBoRi',
+            wrapper_files + cudd_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
@@ -238,7 +276,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS=LIBS+["python"+c.version]+USERLIBS,
+            LIBS=LIBS+["python"+c.version]+USERLIBS+pbCudd,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
     sys.path.append("testsuite/py")
     from StringIO import StringIO
