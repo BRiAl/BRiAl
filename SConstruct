@@ -114,6 +114,7 @@ env.Append(LIBPATH=["polybori","groebner"])
 
 ##env.Append(RPATH = pyroot+"polybori/")
 
+
 env['ENV']['HOME']=os.environ["HOME"]
 try:
     env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
@@ -165,33 +166,45 @@ else:
 
 env = conf.Finish()
 
+# Resoruces for including anything into the PyPolyBoRi shared library
+shared_resources = []
+
 ######################################################################
 # Stuff for building Cudd library
 ######################################################################
 
-env.Append(LIBPATH=["."])
-
+cudd_path = 'Cudd/'
+cudd_name = 'pboriCudd'
 if IS_x64:
     env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
 env.Append(CPPDEFINES=["DHAVE_IEEE_754", "DBSD"])
+env.Append(LIBPATH=[cudd_path])
 
-cudd_resources = ['Cudd/obj/cuddObj.cc'] + glob('Cudd/util/*.c')
-env.Append(CPPPATH=['Cudd/obj', 'Cudd/util'])
+cudd_resources = [cudd_path + 'obj/cuddObj.cc'] + glob(cudd_path + 'util/*.c')
 
+env.Append(CPPPATH=[cudd_path + 'obj', cudd_path + 'util'])
 for cudddir in Split("cudd dddmp mtr st epd"):
-    env.Append(CPPPATH=['Cudd/' + cudddir])
-    cudd_resources += glob('Cudd/' + cudddir + '/' + cudddir + '*.c')
+    env.Append(CPPPATH=[cudd_path + cudddir])
+    cudd_resources += glob(cudd_path + cudddir + '/' + cudddir + '*.c')
 
-for file in ['Cudd/util/saveimage.c']+ glob('Cudd/util/test*.c') + glob('Cudd/dddmp/*DdNode*.c'):
+cudd_excludes = [cudd_path + 'util/saveimage.c']
+cudd_excludes += glob(cudd_path + 'util/test*.c')
+cudd_excludes += glob(cudd_path +'dddmp/*DdNode*.c')
+
+for file in cudd_excludes:
     cudd_resources.remove(file)
 
 cudd_files = env.SharedObject(cudd_resources)
 
-pbCudd = env.StaticLibrary('pboriCudd', cudd_resources)
-#env.Append(LIBPATH=["./Cudd/"])
+libCudd = env.StaticLibrary(cudd_path + cudd_name, cudd_resources)
 
-Default(pbCudd)
+Default(libCudd)
 
+shared_resources += cudd_files
+
+print  (libCudd[0]) 
+######################################################################
+# Stuff for building PolyBoRi's C++ part
 ######################################################################
 
 pb_src=Split("""BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc
@@ -207,6 +220,11 @@ if isinstance(libpb,list):
     libpb=libpb[0]
 Default(libpb)
 
+shared_resources += pb_src
+
+######################################################################
+# Stuff for building Groebner library
+######################################################################
 
 gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src=["./groebner/src/"+ source for source in gb_src]+m4ri
@@ -216,6 +234,8 @@ gb=env.StaticLibrary("groebner/groebner", gb_src+[libpb])
 if isinstance(gb,list):
     gb=gb[0]
 Default(gb)
+
+shared_resources += gb_src
 
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
@@ -227,16 +247,18 @@ print env['CCFLAGS']
 print env['CXXFLAGS']
 for t in tests_pb:
     env.Program("testsuite/"+t, 
-        ["testsuite/src/" + t +".cc"] + [libpb], LIBS = pbCudd,
+        ["testsuite/src/" + t +".cc"] + [libpb] + libCudd, 
         CPPPATH=CPPPATH)
 
 for t in tests_gb:
     env.Program("testsuite/"+t, 
-        ["testsuite/src/" + t +".cc"] + [libpb, gb], LIBS = pbCudd, 
+        ["testsuite/src/" + t +".cc"] + [libpb, gb]+ libCudd, 
         CPPPATH=CPPPATH)
 
-LIBS=["polybori"]+env['LIBS']+['boost_python', "groebner"]+USERLIBS
 
+LIBS = env['LIBS']+['boost_python']+USERLIBS
+
+LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
 
 testsuite_py="testsuite/py/"
@@ -254,15 +276,15 @@ if HAVE_PYTHON_EXTENSION:
     wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "variable_block.cc","monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi',
-            wrapper_files + cudd_files,
+            wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
             CPPPATH=CPPPATH)
     else:
         #print "l:", l
         pypb=env.SharedLibrary('PyPolyBoRi/PyPolyBoRi',
-            wrapper_files + cudd_files,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
+            wrapper_files + shared_resources,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
@@ -277,7 +299,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS=LIBS+["python"+c.version]+USERLIBS+pbCudd,
+            LIBS = LIBS_static + ["python"+c.version] + USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
     sys.path.append("testsuite/py")
     from StringIO import StringIO
