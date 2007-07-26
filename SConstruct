@@ -1,6 +1,7 @@
 # Emacs edit mode for this file is -*- python -*-
 #$Id$
 opts = Options('custom.py')
+import tarfile
 BOOST_WORKS=False
 HAVE_DOXYGEN=True
 pyroot="pyroot/"
@@ -69,13 +70,13 @@ for m in pbori_cache_macros:
         cache_opts_file.write("#define "+m+" " +str(env[m])+"\n")
 cache_opts_file.close()
 #USERLIBS=env["USERLIBS"]
-if (env['PLATFORM']=="darwin"):
-    applelink.generate(env)
+#if applelink in dir():
+#    applelink.generate(env)
 
 
 # todo: More generic?
-machtype = os.environ['MACHTYPE']
-IS_x64 = ((machtype == "x86_64") | (machtype == "ia64"))
+#machtype =""# os.environ['MACHTYPE']
+IS_x64 = (2**32).__class__==int#((machtype == "x86_64") | (machtype == "ia64"))
 
 
 HAVE_PYTHON_EXTENSION=1
@@ -371,4 +372,29 @@ if HAVE_SINGULAR_EXTENSION:
     Default(singpb)
     
     
-  
+
+def build_tgz(version="0.01"):
+    prefix="PolyBoRi-"+str(version)
+    tar=tarfile.open(prefix+".tgz","w:gz")
+    def addfiletotar(tar,name,tarname=None):
+        if tarname is None:
+            tarname=name
+        tar.add(name,prefix+"/"+tarname)
+    for (f,n) in installable_python_modules_tp:
+        addfiletotar(tar,f)
+    addfiletotar(tar,"groebner")
+    addfiletotar(tar,"Cudd")
+    addfiletotar(tar,"polybori")
+    addfiletotar(tar,"PyPolyBoRi")
+    addfiletotar(tar,"SConstruct")
+    addfiletotar(tar,"README")
+    addfiletotar(tar,"doc")
+    addfiletotar(tar,"pyroot")
+    addfiletotar(tar,"M4RI")
+    addfiletotar(tar,"doxygen.py")
+    addfiletotar(tar,"testsuite/py/check_claims.py")
+    addfiletotar(tar,"testsuite/py/rundata.py")
+    addfiletotar(tar,"testsuite/py/cnf2ideal.py")
+    tar.close()
+#build_tgz()
+
