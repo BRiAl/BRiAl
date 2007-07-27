@@ -23,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/07/27 15:15:21  dreyer
+ * CHANGE: using alternative for term_accumulate (uses add-cache)
+ *
  * Revision 1.33  2007/07/27 14:38:40  dreyer
  * CHANGE: Addition internally inlined
  *
@@ -847,6 +850,7 @@ pboriCuddZddUnionXor(MgrType zdd, NodeType P, NodeType Q) {
 template <class MgrType, class NodeType>
 NodeType
 pboriCudd_zddUnionXor(MgrType dd, NodeType P, NodeType Q) {
+
   NodeType res;
   do {
     dd->reordered = 0;

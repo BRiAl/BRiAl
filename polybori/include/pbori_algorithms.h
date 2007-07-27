@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/07/27 15:15:21  dreyer
+ * CHANGE: using alternative for term_accumulate (uses add-cache)
+ *
  * Revision 1.9  2007/05/20 16:03:24  dreyer
  * CHANGE: more fine tuning
  *
@@ -209,6 +212,7 @@ template <class InputIterator, class ValueType>
 ValueType 
 term_accumulate(InputIterator first, InputIterator last, ValueType init) {
 
+#ifdef PBORI_ALT_TERM_ACCUMULATE
   if(last.isOne())
     return upper_term_accumulate(first.begin(), first.end(), 
                                  first.navigation(), init) + ValueType(1);
@@ -231,6 +235,18 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
   assert(result == std::accumulate(first, last, init) ); 
 
   return result;
+
+#else
+
+
+  ValueType result = upper_term_accumulate(first.begin(), first.end(), 
+                                           first.navigation(), init) +
+                             upper_term_accumulate(last.begin(), last.end(), 
+                                                 last.navigation(), init);
+  assert(result == std::accumulate(first, last, init) ); 
+
+  return result;
+#endif
 }
 
 
