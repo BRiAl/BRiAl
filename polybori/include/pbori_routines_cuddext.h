@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/07/27 14:38:40  dreyer
+ * CHANGE: Addition internally inlined
+ *
  * Revision 1.3  2006/10/30 13:30:33  dreyer
  * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
  *
@@ -38,9 +41,7 @@
 
 
 BEGIN_NAMESPACE_PBORI
-#ifdef PBORI_LOWLEVEL_XOR 
-extern "C" {
-  extern DdNode * pboriCudd_zddUnionXor (DdManager *dd, DdNode *P, DdNode *Q);
-}
-#endif
+
+  // currently at external header file pbori_algo.h
+
 END_NAMESPACE_PBORI

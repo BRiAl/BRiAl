@@ -23,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/07/27 14:38:40  dreyer
+ * CHANGE: Addition internally inlined
+ *
  * Revision 1.32  2007/07/18 07:17:27  dreyer
  * CHANGE: some clean-ups
  *
@@ -134,6 +137,7 @@
 
 // temporarily
 #include "cudd.h"
+#include "cuddInt.h"
 #include "CCuddInterface.h"
 
 #ifndef pbori_algo_h_
@@ -754,6 +758,104 @@ increment_iteratorlike(IteratorLike iter) {
 
   return increment_iteratorlike(iter, iterator_category());
 }
+
+#ifdef PBORI_LOWLEVEL_XOR 
+
+// dummy for cuddcache (implemented in pbori_routines.cc)
+DdNode* 
+pboriCuddZddUnionXor__(DdManager *, DdNode *, DdNode *);
+
+
+/// The following should be made more generic 
+/// @todo This is still Cudd-like style, should be rewritten with PolyBoRi's
+/// cache wrapper, which would the dependency on cuddInt.h
+template <class MgrType, class NodeType>
+NodeType
+pboriCuddZddUnionXor(MgrType zdd, NodeType P, NodeType Q) {
+
+  int		p_top, q_top;
+  NodeType empty = DD_ZERO(zdd), t, e, res;
+  MgrType table = zdd;
+  
+  statLine(zdd);
+  
+  if (P == empty)
+    return(Q); 
+  if (Q == empty)
+    return(P);
+  if (P == Q)
+    return(empty);
+
+  /* Check cache */
+  res = cuddCacheLookup2Zdd(table, pboriCuddZddUnionXor__, P, Q);
+  if (res != NULL)
+    return(res);
+  
+  if (cuddIsConstant(P))
+    p_top = P->index;
+  else
+    p_top = P->index;/* zdd->permZ[P->index]; */
+  if (cuddIsConstant(Q))
+    q_top = Q->index;
+  else
+    q_top = Q->index; /* zdd->permZ[Q->index]; */
+  if (p_top < q_top) {
+    e = pboriCuddZddUnionXor(zdd, cuddE(P), Q);
+    if (e == NULL) return (NULL);
+    Cudd_Ref(e);
+    res = cuddZddGetNode(zdd, P->index, cuddT(P), e);
+    if (res == NULL) {
+      Cudd_RecursiveDerefZdd(table, e);
+      return(NULL);
+    }
+    Cudd_Deref(e);
+  } else if (p_top > q_top) {
+    e = pboriCuddZddUnionXor(zdd, P, cuddE(Q));
+    if (e == NULL) return(NULL);
+    Cudd_Ref(e);
+    res = cuddZddGetNode(zdd, Q->index, cuddT(Q), e);
+    if (res == NULL) {
+      Cudd_RecursiveDerefZdd(table, e);
+      return(NULL);
+    }
+    Cudd_Deref(e);
+  } else {
+    t = pboriCuddZddUnionXor(zdd, cuddT(P), cuddT(Q));
+    if (t == NULL) return(NULL);
+    Cudd_Ref(t);
+    e = pboriCuddZddUnionXor(zdd, cuddE(P), cuddE(Q));
+    if (e == NULL) {
+      Cudd_RecursiveDerefZdd(table, t);
+      return(NULL);
+    }
+    Cudd_Ref(e);
+    res = cuddZddGetNode(zdd, P->index, t, e);
+    if (res == NULL) {
+      Cudd_RecursiveDerefZdd(table, t);
+      Cudd_RecursiveDerefZdd(table, e);
+      return(NULL);
+    }
+    Cudd_Deref(t);
+    Cudd_Deref(e);
+  }
+  
+  cuddCacheInsert2(table, pboriCuddZddUnionXor__, P, Q, res);
+  
+  return(res);
+} /* end of pboriCuddZddUnionXor */
+
+template <class MgrType, class NodeType>
+NodeType
+pboriCudd_zddUnionXor(MgrType dd, NodeType P, NodeType Q) {
+  NodeType res;
+  do {
+    dd->reordered = 0;
+    res = pboriCuddZddUnionXor(dd, P, Q);
+    } while (dd->reordered == 1);
+  return(res);
+}
+
+#endif
 
 END_NAMESPACE_PBORI
 

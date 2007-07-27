@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.52  2007/07/27 14:38:40  dreyer
+ * CHANGE: Addition internally inlined
+ *
  * Revision 1.51  2007/07/18 07:17:26  dreyer
  * CHANGE: some clean-ups
  *
@@ -221,14 +224,6 @@
 #include "pbori_traits.h"
 
 BEGIN_NAMESPACE_PBORI
-
-// Declare lowlevel union-xor
-#ifdef PBORI_LOWLEVEL_XOR 
-extern "C" {
-  extern DdNode * pboriCudd_zddUnionXor (DdManager *dd, DdNode *P, DdNode *Q);
-
-}
-#endif
 
 
 inline Cudd*

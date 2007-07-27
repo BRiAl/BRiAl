@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/07/27 14:38:40  dreyer
+ * CHANGE: Addition internally inlined
+ *
  * Revision 1.7  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -58,113 +61,9 @@
 
 BEGIN_NAMESPACE_PBORI
 
-#ifdef PBORI_LOWLEVEL_XOR 
-/* The following should be made more generic */
-extern "C" {
-DdNode *
-pboriCuddZddUnionXor(
-  DdManager * zdd,
-  DdNode * P,
-  DdNode * Q)
-{
-    int		p_top, q_top;
-    DdNode	*empty = DD_ZERO(zdd), *t, *e, *res;
-    DdManager	*table = zdd;
-
-    statLine(zdd);
-
-    if (P == empty)
-	return(Q); 
-    if (Q == empty)
-	return(P);
-    if (P == Q)
-      return(empty);
-
-    /* Check cache */
-    res = cuddCacheLookup2Zdd(table, pboriCuddZddUnionXor, P, Q);
-    if (res != NULL)
-	return(res);
-
-    if (cuddIsConstant(P))
-	p_top = P->index;
-    else
-      p_top = P->index;/* zdd->permZ[P->index]; */
-    if (cuddIsConstant(Q))
-	q_top = Q->index;
-    else
-      q_top = Q->index; /* zdd->permZ[Q->index]; */
-    if (p_top < q_top) {
-	e = pboriCuddZddUnionXor(zdd, cuddE(P), Q);
-	if (e == NULL) return (NULL);
-	Cudd_Ref(e);
-	res = cuddZddGetNode(zdd, P->index, cuddT(P), e);
-	if (res == NULL) {
-	    Cudd_RecursiveDerefZdd(table, e);
-	    return(NULL);
-	}
-	Cudd_Deref(e);
-    } else if (p_top > q_top) {
-	e = pboriCuddZddUnionXor(zdd, P, cuddE(Q));
-	if (e == NULL) return(NULL);
-	Cudd_Ref(e);
-	res = cuddZddGetNode(zdd, Q->index, cuddT(Q), e);
-	if (res == NULL) {
-	    Cudd_RecursiveDerefZdd(table, e);
-	    return(NULL);
-	}
-	Cudd_Deref(e);
-    } else {
-	t = pboriCuddZddUnionXor(zdd, cuddT(P), cuddT(Q));
-	if (t == NULL) return(NULL);
-	Cudd_Ref(t);
-	e = pboriCuddZddUnionXor(zdd, cuddE(P), cuddE(Q));
-	if (e == NULL) {
-	    Cudd_RecursiveDerefZdd(table, t);
-	    return(NULL);
-	}
-	Cudd_Ref(e);
-	res = cuddZddGetNode(zdd, P->index, t, e);
-	if (res == NULL) {
-	    Cudd_RecursiveDerefZdd(table, t);
-	    Cudd_RecursiveDerefZdd(table, e);
-	    return(NULL);
-	}
-	Cudd_Deref(t);
-	Cudd_Deref(e);
-    }
-
-    cuddCacheInsert2(table, pboriCuddZddUnionXor, P, Q, res);
-
-    return(res);
-
-} /* end of pboriCuddZddUnionXor */
-
-DdNode *
-pboriCudd_zddUnionXor(
-  DdManager * dd,
-  DdNode * P,
-  DdNode * Q)
-{
-    DdNode *res;
-
-    do {
-	dd->reordered = 0;
-	res = pboriCuddZddUnionXor(dd, P, Q);
-    } while (dd->reordered == 1);
-    return(res);
-
-} /* end of Cudd_zddIntersect */
-
-} /* end of extern "C" */
-
-#endif
-
-// CCuddNavigator
-// static_dd_first_divisors_of(Cudd& mgr,
-//                             CCuddNavigator navi, CCuddNavigator start) {
-//   return dd_first_divisors_of(CacheManager<CCacheTypes::divisorsof>(), 
-//                               navi, start, CCuddGetNode(mgr) ); 
-// }
+// dummy for cuddcache
+DdNode* 
+pboriCuddZddUnionXor__(DdManager *, DdNode *, DdNode *){ return NULL; }
 
 END_NAMESPACE_PBORI
 
