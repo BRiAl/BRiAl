@@ -1463,6 +1463,7 @@ static int get_table_entry4(int p_code, int pos){
         default:
             cerr<<"using tables with forbidden order"<<endl;
     }
+    return 0;
 }
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
