@@ -132,7 +132,7 @@ env.Append(LIBS=["m"]+USERLIBS)
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:
-    env.Append(CCFLAGS=Split("-O3 -ansi --pedantic -DHAVE_IEEE_754 -DBSD"))
+    env.Append(CCFLAGS=Split("-O3 -ansi --pedantic"))
 
 try:
     env.Append(CXXFLAGS=Split(custom.CXXFLAGS))
@@ -177,7 +177,8 @@ cudd_path = 'Cudd/'
 cudd_name = 'pboriCudd'
 if IS_x64:
     env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
-env.Append(CPPDEFINES=["DHAVE_IEEE_754", "DBSD"])
+env.Append(CPPDEFINES=["HAVE_IEEE_754", "BSD"])
+
 env.Append(LIBPATH=[cudd_path])
 
 cudd_resources = [cudd_path + 'obj/cuddObj.cc'] + glob(cudd_path + 'util/*.c')
