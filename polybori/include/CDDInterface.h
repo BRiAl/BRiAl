@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.53  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.52  2007/07/27 14:38:40  dreyer
  * CHANGE: Addition internally inlined
  *
@@ -819,16 +822,17 @@ private:
                     navigator thenNavi, navigator elseNavi) const {
     assert(idx < *thenNavi);
     assert(idx < *elseNavi); 
-    return cuddZddGetNode(mgr.getManager(), idx, thenNavi, elseNavi);
+    return cuddZddGetNode(mgr.getManager(), idx, 
+                          thenNavi.getNode(), elseNavi.getNode());
   }
 
   interfaced_type newDiagram(const manager_base& mgr, navigator navi) const { 
-    return interfaced_type(extract_manager(mgr), navi);
+    return interfaced_type(extract_manager(mgr), navi.getNode());
   }
 
   self fromTemporaryNode(const navigator& navi) const { 
-    Cudd_Deref(navi);
-    return self(manager(), navi);
+    navi.decRef();
+    return self(manager(), navi.getNode());
   }
 
 
@@ -840,10 +844,10 @@ private:
 
   interfaced_type newNodeDiagram(const manager_base& mgr, 
                                  idx_type idx, navigator navi) const {
-    Cudd_Ref(navi);
+    navi.incRef();
     interfaced_type result =
       newDiagram(mgr, newNode(mgr, idx, navi, navi) );
-    Cudd_Deref(navi);
+    navi.decRef();
     return result;
   }
 };

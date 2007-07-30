@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2007/07/30 15:19:38  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.25  2007/05/29 10:33:47  dreyer
  * ADD: BooleMonomial::popFirst()
  *
@@ -173,7 +176,7 @@ class BooleMonomial {
   //  typedef generate_index_map<self>::type idx_map_type;
 
   typedef std::map<self, idx_type, symmetric_composition<
-    std::less<poly_type::navigator::access_type>, 
+    std::less<poly_type::navigator>, 
     navigates<poly_type> > > idx_map_type;
 
   /// The property whether the equality check is easy is inherited from dd_type

@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.73  2007/07/30 15:19:38  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.72  2007/07/18 07:17:26  dreyer
  * CHANGE: some clean-ups
  *
@@ -429,9 +432,9 @@ public:
 
   /// Type for index maps
   typedef std::map<self, idx_type, symmetric_composition<
-    std::less<navigator::access_type>, navigates<self> > > idx_map_type;
+    std::less<navigator>, navigates<self> > > idx_map_type;
   typedef std::map<self, std::vector<self>, symmetric_composition<
-    std::less<navigator::access_type>, navigates<self> > > poly_vec_map_type;
+    std::less<navigator>, navigates<self> > > poly_vec_map_type;
 
   //-------------------------------------------------------------------------
   // constructors and destructor

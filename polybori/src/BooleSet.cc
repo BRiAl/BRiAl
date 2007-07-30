@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.35  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -388,13 +391,12 @@ BooleSet::minimalElements() const {
   resultMultiples, indices.rbegin(), indices.rend(),  
                                         apply);
   // std::cerr<< "aft"<<std::endl;
-  base res = CTypes::dd_base( managerCore(), result );
+  base res = CTypes::dd_base( managerCore(), result.getNode() );
 
 
-  Cudd_Deref(result);
-  Cudd_RecursiveDerefZdd(manager().getManager(), resultMultiples);
+  result.decRef();
+  resultMultiples.recursiveDecRef(manager().getManager());
   return res;
-
 }
 
 

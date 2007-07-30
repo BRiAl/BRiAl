@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.6  2007/07/06 14:04:22  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -52,6 +55,53 @@
 #define pbori_algo_int_h_
 
 BEGIN_NAMESPACE_PBORI
+
+
+
+inline void 
+inc_ref(DdNode* node) {  
+  Cudd_Ref(node); 
+}
+
+template<class NaviType>
+inline void 
+inc_ref(const NaviType & navi) {
+  navi.incRef();
+}
+
+inline void 
+dec_ref(DdNode* node) {  
+  Cudd_Deref(node); 
+}
+
+template<class NaviType>
+inline void 
+dec_ref(const NaviType & navi) {
+  navi.decRef();
+}
+
+inline DdNode* 
+do_get_node(DdNode* node) {  
+  return node; 
+}
+
+template<class NaviType>
+inline DdNode*
+do_get_node(const NaviType & navi) {
+  return navi.getNode();
+}
+
+template <class MgrType>
+inline void 
+recursive_dec_ref(const MgrType& mgr, DdNode* node) {  
+  Cudd_RecursiveDerefZdd(mgr, node);
+}
+
+template <class MgrType, class NaviType>
+inline void 
+recursive_dec_ref(const MgrType& mgr, const NaviType & navi) {
+  navi.recursiveDecRef(mgr);
+}
 
 // template<class NaviType, class SizeType, class ManagerType>
 // NaviType
@@ -129,7 +179,7 @@ indexed_term_multiples(NaviType navi,
         finish(indices.rend());
 
 
-      Cudd_Ref(multiples);
+      inc_ref(multiples);
 
       while(start != finish){
         
@@ -258,8 +308,8 @@ minimal_of_two_terms(NaviType navi, NaviType& multiples,
 NaviType tmp2 = prepend_multiples_wrt_indices(elseMult, *navi, 
                                            idxStart, idxFinish, apply);
 
-Cudd_Ref(tmp2);
-Cudd_Deref(elseMult);
+tmp2.incRef();
+elseMult.decRef();
  elseMult = tmp2;
     // std::cerr<< "h1"<<std::endl;
 
@@ -437,27 +487,30 @@ prepend_multiples_wrt_indices(NaviType navi, SizeType minIdx,
   return navi;
 }
 
-
 template<class FunctionType, class ManagerType, class NodeType>
 void apply_assign_cudd_function(FunctionType func, ManagerType& mgr,
                                 NodeType& first, const NodeType& second) {
 
     NodeType newNode;
-    newNode = func(mgr, first, second);
-    Cudd_Ref(newNode);
-    Cudd_RecursiveDerefZdd(mgr, first);
+    newNode = func(mgr, do_get_node(first),  do_get_node(second));
+    inc_ref(newNode);
+    recursive_dec_ref(mgr, first);
     first = newNode;
 }
 
-template<class FunctionType, class ManagerType, class NodeType>
-void apply_replacing_cudd_function(FunctionType func, ManagerType& mgr,
-                                   NodeType& newNode,
-                                   NodeType& first, NodeType& second) {
 
-    newNode = func(mgr, first, second);
-    Cudd_Ref(newNode);
-    Cudd_RecursiveDerefZdd(mgr, first);
-    Cudd_RecursiveDerefZdd(mgr, second);
+
+template<class FunctionType, class ManagerType, class ResultType, 
+         class NodeType>
+void apply_replacing_cudd_function(FunctionType func, ManagerType& mgr,
+                                   ResultType& newNode,
+                                   const NodeType& first, 
+                                   const NodeType& second) {
+
+  newNode = func(mgr, do_get_node(first), do_get_node(second));
+  inc_ref(newNode);
+  recursive_dec_ref(mgr, first);
+  recursive_dec_ref(mgr, second);
 }
 
 template<class FunctionType, class ManagerType, class NodeType>
@@ -465,8 +518,8 @@ NodeType apply_cudd_function(FunctionType func, ManagerType& mgr,
                              const NodeType& first, const NodeType& second) {
 
     NodeType newNode;
-    newNode = func(mgr, first, second);
-    Cudd_Ref(newNode);
+    newNode = func(mgr, do_get_node(first), do_get_node(second));
+    inc_ref(newNode);
     return newNode;
 }
 
@@ -478,78 +531,78 @@ class dd_operations<CTypes::dd_type::navigator> {
 public:
   typedef DdManager* manager_type;
   typedef CTypes::dd_type dd_type;
-  typedef dd_type::navigator node_type;
+  typedef dd_type::navigator navigator;
   typedef dd_type::idx_type idx_type;
   typedef dd_type::size_type size_type;
 
   dd_operations(manager_type man): mgr(man) {}
-  void replacingUnite(node_type& newNode,
-                      node_type& first, node_type& second) const {
-
-    apply_replacing_cudd_function(Cudd_zddUnion, mgr,
-                                  newNode, first, second);
+  void replacingUnite(navigator& newNode,
+                      const navigator& first, const navigator& second) const {
+ 
+    apply_replacing_cudd_function(Cudd_zddUnion, mgr, newNode, first, second);
   }
 
-  void uniteAssign(node_type& first, const node_type& second) const {
+  void uniteAssign(navigator& first, const navigator& second) const {
     apply_assign_cudd_function(Cudd_zddUnion, mgr, first, second);
   }
-  void diffAssign(node_type& first, const node_type& second) const {
+  void diffAssign(navigator& first, const navigator& second) const {
     apply_assign_cudd_function(Cudd_zddDiff, mgr, first, second);
   }
-  node_type diff(const node_type& first, const node_type& second) const {
+  navigator diff(const navigator& first, const navigator& second) const {
     return apply_cudd_function(Cudd_zddDiff, mgr, first, second);
   }
-  void replacingNode(node_type& newNode, idx_type idx, 
-                     node_type& first, node_type& second) const {
+  void replacingNode(navigator& newNode, idx_type idx, 
+                     navigator& first, navigator& second) const {
 
-    newNode = cuddZddGetNode(mgr, idx, first, second);
-    Cudd_Ref(newNode);
-    Cudd_RecursiveDerefZdd(mgr, first);
-    Cudd_RecursiveDerefZdd(mgr, second);
+    newNode = cuddZddGetNode(mgr, idx, first.getNode(), second.getNode());
+    newNode.incRef();
+    recursive_dec_ref(mgr, first);
+    recursive_dec_ref(mgr, second);
   }
  
   void newNodeAssign(idx_type idx, 
-                     node_type& thenNode, const node_type& elseNode) const {
-    node_type newNode = cuddZddGetNode(mgr, idx, thenNode, elseNode);
-    Cudd_Ref(newNode);
+                     navigator& thenNode, const navigator& elseNode) const {
+    navigator newNode = cuddZddGetNode(mgr, idx, 
+                                       thenNode.getNode(), elseNode.getNode());
+    newNode.incRef();
     //Cudd_Deref(thenNode);   
-    Cudd_RecursiveDerefZdd(mgr, thenNode);
+    recursive_dec_ref(mgr, thenNode);
     thenNode = newNode;
   }
 
-  void multiplesAssign(node_type& node, idx_type idx) const {
+  void multiplesAssign(navigator& node, idx_type idx) const {
     newNodeAssign(idx, node, node);
   }
 
-  void productAssign(node_type& node, idx_type idx) const {
-    node_type emptyset = Cudd_ReadZero(mgr);
+  void productAssign(navigator& node, idx_type idx) const {
+    navigator emptyset = Cudd_ReadZero(mgr);
     newNodeAssign(idx, node, emptyset);
   }
 
-  void assign(node_type& first, const node_type& second) const {
+  void assign(navigator& first, const navigator& second) const {
 
     first = second;
-    Cudd_Ref(first);
+    first.incRef();
   }
-  void replace(node_type& first, const node_type& second) const {
-    Cudd_RecursiveDerefZdd(mgr, first);
+  void replace(navigator& first, const navigator& second) const {
+    recursive_dec_ref(mgr, first);
     first = second;
   }
 
-  size_type nSupport(const node_type& node) const {
-    return Cudd_SupportSize(mgr, node);
+  size_type nSupport(const navigator& node) const {
+    return Cudd_SupportSize(mgr, node.getNode());
   }
-  size_type length(const node_type& node) const {
-    return Cudd_zddCount(mgr, node);
+  size_type length(const navigator& node) const {
+    return Cudd_zddCount(mgr, node.getNode());
   }
 
-  node_type& newNode(node_type& node) const {
-    Cudd_Ref(node);
+  navigator& newNode(navigator& node) const {
+    node.incRef();
     return node;
   }
 
-  void kill(node_type& node) const {
-    Cudd_RecursiveDerefZdd(mgr, node);
+  void kill(navigator& node) const {
+    recursive_dec_ref(mgr, node);
   }
 protected:
   manager_type mgr;
@@ -635,7 +688,7 @@ dd_minimal_elements(NaviType navi,DDType2& multiples,
         
         // int nmax = dd.nVariables();
         
-        Cudd_Ref(multiples);
+        inc_ref(multiples);
         
 
         NaviType tmp,tmpnavi;

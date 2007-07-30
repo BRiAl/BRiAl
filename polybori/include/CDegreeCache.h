@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.6  2007/04/24 15:23:03  dreyer
  * FIX: minor changes fixing -Wall warnings
  *
@@ -149,10 +152,19 @@ public:
   node_type find(input_node_type navi) const{ 
     return node_type(base::find(navi)); }
 
+  node_type find(navi_type navi) const{ 
+    return node_type(base::find(navi)); }
+
   /// Store cached degree wrt. given navigator
   void insert(input_node_type navi, size_type deg) const {
     base::insert(navi, node_type(deg));
   }
+
+  /// Store cached degree wrt. given navigator
+  void insert(navi_type navi, size_type deg) const {
+    base::insert(navi, node_type(deg));
+  }
+
 };
 
 
@@ -196,8 +208,16 @@ public:
   node_type find(input_node_type navi, idx_type idx) const{ 
     return node_type(base::find(navi, node_type(idx))); }
 
+  node_type find(navi_type navi, idx_type idx) const{ 
+    return node_type(base::find(navi, node_type(idx))); }
+
   /// Store cached degree wrt. given navigator
   void insert(input_node_type navi, idx_type idx, size_type deg) const {
+    base::insert(navi, node_type(idx), node_type(deg));
+  }
+
+  /// Store cached degree wrt. given navigator
+  void insert(navi_type navi, idx_type idx, size_type deg) const {
     base::insert(navi, node_type(idx), node_type(deg));
   }
 };

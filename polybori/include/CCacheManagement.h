@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2007/07/30 15:19:38  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.27  2007/07/06 14:04:21  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -214,6 +217,9 @@ public:
   /// Set type of Cudd's nodes
   typedef DdNode* node_type;
 
+  typedef CCuddNavigator navigator;
+
+
   /// Constructor
   cudd_manager_storage(const manager_type& mgr): 
     m_mgr(mgr.getManager()) {}
@@ -236,7 +242,7 @@ public:
 
   /// Set type of Cudd's nodes
   typedef DdNode* node_type;
-
+  typedef CCuddNavigator navigator;
   /// Constructor
   mycudd_manager_storage(const manager_type& mgr): 
     m_mgr(mgr.getManager()) {}
@@ -271,11 +277,21 @@ public:
     return cuddCacheLookup1Zdd(base::operator()(), cache_dummy, node);
   }
 
+  /// Find cached value wrt. given node (for navigator type)
+  navigator find(navigator node) const { 
+    return find(node.getNode()); 
+  }
+
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
     Cudd_Ref(result);
     cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
     Cudd_Deref(result);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(navigator node, navigator result) const {
+    insert(node.getNode(), result.getNode());
   }
 
 private:
@@ -301,12 +317,21 @@ public:
   node_type find(node_type first, node_type second) const {
     return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
   }
+  /// Find cached value wrt. given node (for navigator type)
+  navigator find(navigator first, navigator second) const { 
+    return find(first.getNode(), second.getNode());
+  }
 
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
     Cudd_Ref(result);
     cuddCacheInsert2(base::operator()(), cache_dummy, first, second, result);
     Cudd_Deref(result);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(navigator first, navigator second, navigator result) const {
+    insert(first.getNode(), second.getNode(), result.getNode());
   }
 
 private:
@@ -335,6 +360,11 @@ public:
                               first, second, third);
   }
 
+  /// Find cached value wrt. given node (for navigator type)
+  navigator find(navigator first, navigator second, navigator third) const {
+    return find(first.getNode(), second.getNode(), third.getNode());
+  }
+
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type third, 
               node_type result) const {
@@ -342,6 +372,12 @@ public:
     cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
                     first, second, third, result);
     Cudd_Deref(result);
+  }
+  /// Store cached value wrt. given node  
+  void insert(navigator first, navigator second, navigator third, 
+              navigator result) const {
+    insert(first.getNode(), second.getNode(), third.getNode(), 
+           result.getNode());  
   }
 
 private:
@@ -391,6 +427,7 @@ public:
 
   /// Define node type
   typedef typename base::node_type node_type;
+  typedef typename base::navigator navigator;
 
   /// Constructor and default constructor
   CCommutativeCacheManagement(const manager_type& mgr):
@@ -404,12 +441,23 @@ public:
       return base::find(second, first);
   }
 
+  /// Find cached value wrt. given node (for navigator type)
+  navigator find(navigator first, navigator second) const {
+    return find(first.getNode(), second.getNode());
+  }
+
+
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
     if ( std::less<node_type>()(first, second) )
       base::insert(first, second, result);
     else
       base::insert(second, first, result);   
+  }
+
+  /// Store cached value wrt. given node (for navigator type)
+  void insert(navigator first, navigator second, navigator result) const {
+    insert(first.getNode(), second.getNode(), result.getNode());
   }
 
 };
@@ -435,11 +483,19 @@ public:
     return cuddCacheLookup1Zdd(base::operator()(), cache_dummy, node);
   }
 
+  /// Find cached value wrt. given node (for navigator type)
+  navigator find(navigator node) const { return find(node.getNode()); }
+
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
     Cudd_Ref(result);
     cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
     Cudd_Deref(result);
+  }
+
+  /// Store cached value wrt. given node  
+  void insert(navigator node, navigator result) const {
+    insert(node.getNode(), result.getNode());
   }
 
 private:
@@ -468,6 +524,9 @@ public:
   node_type find(node_type first, node_type second) const {
     return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
   }
+  navigator find(navigator first, navigator second) const {
+    return find(first.getNode(), second.getNode());
+  }
 
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
@@ -476,6 +535,10 @@ public:
     Cudd_Deref(result);
   }
 
+  /// Store cached value wrt. given node (for navigator type)
+  void insert(navigator first, navigator second, navigator result) const {
+    insert(first.getNode(), second.getNode(), result.getNode());
+  }
 private:
   /// Define unique static function, as marker for Cudd cache
   static node_type cache_dummy(internal_manager_type, node_type, node_type){
@@ -502,6 +565,10 @@ public:
                               first, second, third);
   }
 
+  navigator find(navigator first, navigator second, navigator third) const {
+    return find(first.getNode(), second.getNode(), third.getNode());
+  }
+
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type third, 
               node_type result) const {
@@ -509,6 +576,12 @@ public:
     cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
                     first, second, third, result);
     Cudd_Deref(result);
+  }
+  /// Store cached value wrt. given node  
+  void insert(navigator first, navigator second, navigator third, 
+              navigator result) const {
+    insert(first.getNode(), second.getNode(), third.getNode(), 
+           result.getNode());
   }
 
 private:

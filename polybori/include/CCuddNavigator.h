@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.18  2007/07/06 14:04:21  dreyer
  * ADD: newly written C++_interface for Cudd
  *
@@ -112,8 +115,8 @@ public:
   /// Cudd's node pointer
   typedef CTypes::dd_base dd_base;
 
-  /// Type for accessing node pointer
-  typedef const pointer_type access_type;
+  /// Type for constantly accessing node pointer
+  typedef const pointer_type const_access_type;
 
   /// Type for indices
   typedef CTypes::idx_type idx_type;
@@ -154,47 +157,43 @@ public:
   ~CCuddNavigator() {}
 
   /// Increment in @i then direction
-  self& incrementThen();
+  self& incrementThen();        // inlined below
 
   /// Increment in @i then direction
-  self thenBranch() const;
+  self thenBranch() const { return self(*this).incrementThen(); }
 
   /// Increment in @i else direction
-  self& incrementElse();
+  self& incrementElse();        // inlined below
 
   /// Increment in @i else direction
-  self elseBranch() const;
+  self elseBranch() const { return self(*this).incrementElse(); }
 
   /// Constant dereference operator
-  reference operator*() const;
+  reference operator*() const;  // inlined below
 
   /// Constant pointer access operator
-  access_type operator->() const;
+  const_access_type operator->() const { return pNode; }
 
   /// Constant pointer access operator
-  operator access_type() const { 
-    return operator->(); 
-  }
-
-
+  const_access_type getNode() const { return pNode; }
 
   /// Constant pointer access operator
-  hash_type hash() const;
+  hash_type hash() const { return reinterpret_cast<long>(pNode); }
 
   /// Equality test
-  bool_type operator==(const self&) const;
+  bool_type operator==(const self& rhs) const { return (pNode == rhs.pNode); }
 
   /// Nonequality test
-  bool_type operator!=(const self&) const;
+  bool_type operator!=(const self& rhs) const { return (pNode != rhs.pNode); }
 
   /// Check whether constant node was reached
-  bool_type isConstant() const;
+  bool_type isConstant() const; // inlined below
 
   /// Check whether terminal node marks end of path
-  bool_type terminalValue() const;
+  bool_type terminalValue() const; // inlined below
 
   /// Check whether *this is not the default iterator self() (NULL pointer)
-  bool_type isValid() const;
+  bool_type isValid() const { return (pNode != NULL); }
 
   /// Check whether end of path was reached
   bool_type isTerminated() const { return isConstant() && terminalValue(); }
@@ -202,12 +201,27 @@ public:
   /// Check whether dead end was reached
   bool_type isEmpty() const { return isConstant() && !terminalValue(); }
 
-private: 
-  /// Should never be done 
-  /// (this is to break cast sequence self -> access_type -> bool)
-  /// @todo Avoid this, by removing cast to access_type
-  operator bool() const { assert(false); return isValid(); }
+  /// @name Pointer-like comparision operations
+  //@{
+  bool_type operator<(const self& rhs) const { return (pNode < rhs.pNode); }
+  bool_type operator<=(const self& rhs) const { return (pNode <= rhs.pNode); }
+  bool_type operator>(const self& rhs) const { return (pNode > rhs.pNode); }
+  bool_type operator>=(const self& rhs) const { return (pNode >= rhs.pNode); }
+  //@}
 
+  /// Force incrementation of reference count
+  void incRef() const {  Cudd_Ref(pNode); }
+
+  /// Force decrementation of reference count
+  void decRef() const {  Cudd_Deref(pNode); }
+
+  /// Force recursive decrementation of reference count
+  template <class MgrType>
+  void recursiveDecRef(const MgrType& mgr) const {
+    Cudd_RecursiveDerefZdd(mgr, pNode); 
+  }
+
+private: 
   /// Store node pointer
   pointer_type pNode;
 };
@@ -221,39 +235,6 @@ CCuddNavigator::operator*() const {
   PBORI_TRACE_FUNC( "CCuddNavigator::operator*() const" );
   assert(isValid());
   return Cudd_Regular(pNode)->index;
-}
-
-// constant pointer access operator
-inline const CCuddNavigator::pointer_type
-CCuddNavigator::operator->() const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::operator->() const" );
-  return pNode;
-}
-
-// constant pointer access operator
-inline CCuddNavigator::hash_type
-CCuddNavigator::hash() const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::hash() const" );
-  return reinterpret_cast<long>(pNode);
-}
-
-// equality test
-inline CCuddNavigator::bool_type 
-CCuddNavigator::operator==(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::operator==(const self&) const" );
-
-  return (pNode == rhs.pNode);
-}
-
-// nonequality test
-inline CCuddNavigator::bool_type 
-CCuddNavigator::operator!=(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::operator!=(const self&) const" );
-  return (pNode != rhs.pNode);
 }
 
 // whether constant node was reached
@@ -273,15 +254,6 @@ CCuddNavigator::terminalValue() const {
   return Cudd_V(pNode);
 }
 
-// whether iterator is at end
-inline CCuddNavigator::bool_type 
-CCuddNavigator::isValid() const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::isValid()() const" );
-
-  // convention: all non-Null pointers are valid 
-  return (pNode != NULL);
-}
 
 // increment in then direction
 inline CCuddNavigator&
@@ -295,16 +267,6 @@ CCuddNavigator::incrementThen() {
   return *this;
 }
 
-// go to then direction
-inline CCuddNavigator
-CCuddNavigator::thenBranch() const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::thenBranch() const" );
-
-  self copy(*this);
-  return copy.incrementThen();
-}
-
 // increment in else direction
 inline CCuddNavigator&
 CCuddNavigator::incrementElse() {
@@ -316,17 +278,6 @@ CCuddNavigator::incrementElse() {
 
   return *this;
 }
-
-// go to else direction
-inline CCuddNavigator
-CCuddNavigator::elseBranch() const {
-
-  PBORI_TRACE_FUNC( "CCuddNavigator::ielseBranch() const" );
-
-  self copy(*this);
-  return copy.incrementElse();
-}
-
 
 END_NAMESPACE_PBORI
 

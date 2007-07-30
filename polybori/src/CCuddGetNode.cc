@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/07/30 15:19:39  dreyer
+ * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
+ *
  * Revision 1.1  2006/08/09 12:52:32  dreyer
  * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
  *
@@ -73,11 +76,11 @@ CCuddGetNode::operator()(idx_type idx, const node_type& oldnode,
       (elsenode == oldnode.elseBranch()) ) {
 
     // Reuse oldnode again -> increment reference count
-    Cudd_Ref(oldnode); 
+    oldnode.incRef(); 
 
     // elsenode and thennode are not used any more -> decrease reference count 
-    Cudd_Deref(elsenode); 
-    Cudd_Deref(thennode);
+    elsenode.decRef(); 
+    thennode.decRef();
     return oldnode;
   }
 
@@ -96,20 +99,21 @@ CCuddGetNode::operator()(idx_type idx,
   // Note: assuming thennode.isValid() and elsenode.isValid(), and reference
   // count was increased for application of this operator
   node_type result =  cuddZddGetNode( mgr.getManager(), 
-                                      idx, thennode, elsenode );
+                                      idx, thennode.getNode(), 
+                                      elsenode.getNode() );
 
   if(!result.isValid()){
-    Cudd_RecursiveDerefZdd(mgr.getManager(), thennode);
-    Cudd_RecursiveDerefZdd(mgr.getManager(), elsenode);
+    thennode.recursiveDecRef(mgr.getManager());
+    elsenode.recursiveDecRef(mgr.getManager());
     return result;
   }
 
   // Mark as new node
-  Cudd_Ref(result); 
+  result.incRef(); 
 
   // elsenode and thennode are not used any more -> decrease reference count
-  Cudd_Deref(elsenode); 
-  Cudd_Deref(thennode); 
+  elsenode.decRef(); 
+  thennode.decRef(); 
 
   return result;
 }
@@ -121,7 +125,7 @@ CCuddGetNode::operator()(const node_type& oldnode) const {
   PBORI_TRACE_FUNC( "CCuddGetNode::operator()(const node_type&) const" );
 
   // Mark as new node
-  Cudd_Ref(oldnode); 
+  oldnode.incRef(); 
 
   return oldnode;
 }
