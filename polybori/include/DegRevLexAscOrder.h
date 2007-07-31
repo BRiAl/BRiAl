@@ -60,7 +60,7 @@ class DegRevLexAscOrder:
   //@}
 
   /// Get order code
-  enum { order_code = CTypes::dp_asc  };
+  enum { order_code = CTypes::dp_asc, baseorder_code = order_code };
 
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;

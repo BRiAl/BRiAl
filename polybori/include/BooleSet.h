@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.28  2007/05/25 12:35:32  dreyer
  * ADD: BooleSet::owns(const exp_type&) const
  *
@@ -264,6 +267,17 @@ public:
 
   /// Test whether the empty set is included
   using base::ownsOne;
+
+  /// Test, whether we have one term only
+  bool_type isSingleton() const { return dd_is_singleton(navigation()); }
+
+  /// Test, whether we have one or two terms only
+  bool_type isSingletonOrPair() const { 
+    return dd_is_singleton_or_pair(navigation()); 
+  }
+
+  /// Test, whether we have two terms only
+  bool_type isPair() const { return dd_is_pair(navigation()); }
 
   /// Compute existential abstraction
   self existAbstract(const self& rhs) const;

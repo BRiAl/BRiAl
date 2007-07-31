@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.11  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -96,7 +99,7 @@ class DegLexOrder:
   typedef std::less<idx_type> idx_comparer_type;
 
   /// Get order code
-  enum { order_code = CTypes::dlex };
+  enum { order_code = CTypes::dlex, baseorder_code = order_code };
 
   /// Default Constructor
   DegLexOrder(): base() {};

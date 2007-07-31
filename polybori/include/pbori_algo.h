@@ -23,6 +23,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.34  2007/07/27 15:15:21  dreyer
  * CHANGE: using alternative for term_accumulate (uses add-cache)
  *
@@ -859,7 +862,50 @@ pboriCudd_zddUnionXor(MgrType dd, NodeType P, NodeType Q) {
   return(res);
 }
 
-#endif
+#endif // PBORI_LOWLEVEL_XOR 
+
+
+template <class NaviType>
+bool
+dd_is_singleton(NaviType navi) {
+
+  while(!navi.isConstant()) {
+    if (!navi.elseBranch().isEmpty())
+      return false;
+    navi.incrementThen();
+  }
+  return true;
+}
+
+template <class NaviType, class BooleConstant>
+BooleConstant
+dd_pair_check(NaviType navi, BooleConstant allowSingleton) {
+
+  while(!navi.isConstant()) {
+
+    if (!navi.elseBranch().isEmpty())
+      return dd_is_singleton(navi.elseBranch()) && 
+        dd_is_singleton(navi.thenBranch());
+
+    navi.incrementThen();
+  }
+  return allowSingleton;//();
+}
+
+
+template <class NaviType>
+bool
+dd_is_singleton_or_pair(NaviType navi) {
+
+  return dd_pair_check(navi, true);
+}
+
+template <class NaviType>
+bool
+dd_is_pair(NaviType navi) {
+
+  return dd_pair_check(navi, false);
+}
 
 END_NAMESPACE_PBORI
 

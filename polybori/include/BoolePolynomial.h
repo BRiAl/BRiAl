@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.74  2007/07/31 07:43:49  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.73  2007/07/30 15:19:38  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -636,6 +639,17 @@ public:
 
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_dd; }
+
+  /// Test, whether we have one term only
+  bool_type isSingleton() const { return dd_is_singleton(navigation()); }
+
+  /// Test, whether we have one or two terms only
+  bool_type isSingletonOrPair() const { 
+    return dd_is_singleton_or_pair(navigation()); 
+  }
+
+  /// Test, whether we have two terms only
+  bool_type isPair() const { return dd_is_pair(navigation()); }
 
 protected:
 

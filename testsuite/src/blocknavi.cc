@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.14  2007/07/06 18:46:31  dreyer
  * ADD: rewritten C++-Interface for Cudd
  *
@@ -506,6 +509,42 @@ main(){
     std::cout.flush();
     
     std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl; 
+
+
+
+
+
+    BoolePolyRing::block_iterator start(BoolePolyRing::blockRingBegin()), 
+      finish(BoolePolyRing::blockRingEnd());
+
+    std::cout << "Upper blocks endpints: ";
+
+    while (start != finish) {
+      std::cout << *start <<", ";
+      ++start;
+    }
+    std::cout<< std::endl << "lieInSameBlock(0, 3): "<<
+      BoolePolyRing::lieInSameBlock(0, 3) << std::endl;
+
+    std::cout << "lieInSameBlock(0, 4): "<<
+      BoolePolyRing::lieInSameBlock(0, 4) << std::endl;
+
+    std::cout << "lieInSameBlock(4,5): "<<
+      BoolePolyRing::lieInSameBlock(4,5) << std::endl;
+
+    std::cout << "lieInSameBlock(4,6): "<<
+      BoolePolyRing::lieInSameBlock(4,6) << std::endl;
+
+    std::cout << "lieInSameBlock(3,1000): "<<
+      BoolePolyRing::lieInSameBlock(3,1000) << std::endl;
+
+    std::cout << "lieInSameBlock(7,1000): "<<
+      BoolePolyRing::lieInSameBlock(7,1000) << std::endl;
+
+    std::cout << std::endl;
+
+
+
     std::cout << "Switching to lex:  " <<std::endl;
     
     
@@ -520,9 +559,14 @@ main(){
     std::cout << "Testing== " <<std::endl;  
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
 
-    std::cout << "Finished."<<std::endl;
     std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl;
-  }
+
+    std::cout << "base order code: "<<BoolePolyRing::getBaseOrderCode()
+              << std::endl;
+ 
+
+    std::cout << "Finished."<<std::endl;
+ }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  

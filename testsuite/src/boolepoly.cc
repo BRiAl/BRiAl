@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2007/07/31 07:43:51  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.21  2007/07/06 18:46:31  dreyer
  * ADD: rewritten C++-Interface for Cudd
  *
@@ -341,16 +344,26 @@ main(){
 
   std::cout <<  "test newnode."<<std::endl;
 
-   poly = y*z + z + w;
+  poly = y*z + z + w;
 
-   poly2 =  w +v ;
-
-   std::cout << "newnode "<< 0 << " " <<poly << " " << poly2<<std::endl;
-
-   CTypes::dd_type ddtest(0, poly.diagram(), poly2.diagram());
-   std::cout <<  "result " << BoolePolynomial(ddtest) <<std::endl;
-
-
+  poly2 =  w +v ;
+  
+  std::cout << "newnode "<< 0 << " " <<poly << " " << poly2<<std::endl;
+  
+  CTypes::dd_type ddtest(0, poly.diagram(), poly2.diagram());
+  std::cout <<  "result " << BoolePolynomial(ddtest) <<std::endl;
+  
+  std::cout <<  "additional properties: " <<std::endl;
+  std::cout << (x*y + 0).isSingleton() <<std::endl;
+  std::cout << (x*y + 1).isSingleton() <<std::endl;
+  std::cout << (x*y + 0).isSingletonOrPair() <<std::endl;
+  std::cout << (x*y + 1).isSingletonOrPair() <<std::endl;
+  std::cout << (x*y + x + 0).isSingletonOrPair() <<std::endl;
+  std::cout << (x*y + x + 1).isSingletonOrPair() <<std::endl;
+  std::cout << (x*y + 0).isPair() <<std::endl;
+  std::cout << (x*y + 1).isPair() <<std::endl;
+  std::cout << (x*y + x + 0).isPair() <<std::endl;
+  std::cout << (x*y + x + 1).isPair() <<std::endl;
   std::cout <<std::endl<<  "Finished."<<std::endl;
 
  }

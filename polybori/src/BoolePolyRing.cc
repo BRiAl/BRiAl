@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.36  2007/06/21 11:35:58  dreyer
  * ADD: lastBlockBegin
  *
@@ -442,12 +445,17 @@ BoolePolyRing::getOrderCode() {
   PBORI_TRACE_FUNC( "BoolePolyRing::getOrderCode()" );
   return activeManager().getOrderCode() ;
 }
+BoolePolyRing::ordercode_type
+BoolePolyRing::getBaseOrderCode() {
 
+  PBORI_TRACE_FUNC( "BoolePolyRing::getBaseOrderCode()" );
+  return activeManager().getBaseOrderCode() ;
+}
 // test whether we deal with a degree-ordering
 BoolePolyRing::bool_type 
 BoolePolyRing::ascendingVariables() {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
+  PBORI_TRACE_FUNC( "BoolePolyRing::ascendingVariables()" );
   return activeManager().ascendingVariables() ;
 }
 
@@ -455,8 +463,16 @@ BoolePolyRing::ascendingVariables() {
 BoolePolyRing::bool_type 
 BoolePolyRing::descendingVariables() {
 
-  PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
+  PBORI_TRACE_FUNC( "BoolePolyRing::descendingVariables()" );
   return activeManager().descendingVariables() ;
+}
+
+// test whether two indices are in the same block
+BoolePolyRing::bool_type 
+BoolePolyRing::lieInSameBlock(idx_type first, idx_type second) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing::lieInSameBlock()" );
+  return activeManager().lieInSameBlock(first, second);
 }
 
 // order-dependent comparison

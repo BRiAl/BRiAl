@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/07/31 07:43:49  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.36  2007/07/17 15:56:59  dreyer
  * ADD: header file for CCuddZDD; clean-up
  *
@@ -312,8 +315,15 @@ class BoolePolyRing:
   /// Test whether variables are in descending order
   static bool_type descendingVariables();
 
-  ///  Get numerical code for current ordering
+  /// Get numerical code for current ordering
   static ordercode_type getOrderCode();
+
+  /// Get numerical code for current base ordering 
+  /// (the same for non-block orderings)
+  static ordercode_type getBaseOrderCode();
+
+  /// Check, whether two indices are in the same block 
+  static bool_type lieInSameBlock(idx_type, idx_type);
 
   /// @name Comparison of monomials-like types
   //@{

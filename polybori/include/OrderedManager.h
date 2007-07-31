@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.24  2007/07/09 14:15:32  dreyer
  * Fix: removed performance issue
  *
@@ -119,6 +122,27 @@
 #define OrderedManager_h_
 
 BEGIN_NAMESPACE_PBORI
+
+template <class IdxType, class OrderType>
+bool
+lie_in_same_block(IdxType, IdxType, const OrderType&,
+                  invalid_tag) { // not a block order 
+  return true;
+}
+
+
+template <class IdxType, class OrderType>
+bool
+lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
+                  valid_tag) { // is block order 
+  if (second < first)
+    std::swap(first, second);
+  
+  typename OrderType::block_iterator upper(order.blockBegin());
+  while (first >= *upper)    // Note: convention, last element is max_idx
+     ++upper;
+  return (second < *upper);
+}
 
 /** @class OrderedManagerBase
  * @brief This class adds an interface for orderings to CDDManager<>.
@@ -247,6 +271,9 @@ public:
   /// Get numerical code for ordering
   virtual ordercode_type getOrderCode() const = 0;
 
+  /// Get numerical code for base ordering (the same for non-block orderings)
+  virtual ordercode_type getBaseOrderCode() const = 0 ;
+
   /// Set name of variable with index idx
   void setVariableName(idx_type idx, const_varname_reference varname) {
     m_names.set(idx, varname);
@@ -263,6 +290,10 @@ public:
   virtual void appendBlock(idx_type) = 0;
   virtual void clearBlocks() = 0;
   //@}
+
+  /// Check, whether two indices are in the same block 
+  /// (true for nonblock orderings)
+  virtual bool_type lieInSameBlock(idx_type, idx_type) const = 0;
 
 private:
   /// Stores names of variables
@@ -443,6 +474,12 @@ public:
   ordercode_type getOrderCode() const {
     return order_type::order_code;
   }
+
+  /// Get numerical code for base ordering (the same for non-block orderings)
+  ordercode_type getBaseOrderCode() const {
+    return order_type::baseorder_code;
+  }
+
   /// @name interface for block orderings
   //@{
   block_iterator blockBegin() const { return ordering.blockBegin(); }
@@ -450,6 +487,13 @@ public:
   void appendBlock(idx_type idx) { ordering.appendBlock(idx); }
   void clearBlocks() { ordering.clearBlocks();  }
   //@}
+
+  /// Check, whether two indices are in the same block 
+  /// (true for nonblock orderings)
+  bool_type lieInSameBlock(idx_type first, idx_type second) const {
+    return lie_in_same_block(first, second, *this,
+                             typename properties_type::blockorder_property());
+  }
 
 protected:
   order_type ordering;

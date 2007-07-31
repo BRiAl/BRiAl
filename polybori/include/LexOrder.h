@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/07/31 07:43:50  dreyer
+ * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
+ *
  * Revision 1.16  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *
@@ -108,7 +111,7 @@ class LexOrder:
   //@}
 
   /// Get order code
-  enum { order_code = CTypes::lp  };
+  enum { order_code = CTypes::lp, baseorder_code = order_code };
 
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
