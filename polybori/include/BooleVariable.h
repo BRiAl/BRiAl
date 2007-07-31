@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/07/31 14:26:29  dreyer
+ * CHANCE: BooleVariable, now uses persistent variables
+ *
  * Revision 1.9  2007/07/03 07:21:07  dreyer
  * Fix: ambigious overload var*monom
  *
@@ -91,7 +94,7 @@ class BooleVariable {
 
   /// Constructor idx-th variable of active ring
   BooleVariable(idx_type idx = 0):
-    m_poly( BoolePolyRing::ringVariable(idx) ) {}
+    m_poly( BoolePolyRing::persistentRingVariable(idx) ) {}
 
   /// Copy constructor
   BooleVariable(const self& rhs):  
@@ -102,7 +105,9 @@ class BooleVariable {
 
   /// Get index of the variable
   idx_type index() const { return *m_poly.firstBegin(); }
-bool operator== (const self& other){
+
+  /// Equality check
+  bool operator== (const self& other){
       return m_poly==other.m_poly;
   }
 private:
