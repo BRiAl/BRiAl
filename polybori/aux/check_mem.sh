@@ -32,4 +32,6 @@ RSSnew=`echo $DATA | awk '{print $4}'`
 done
 
 
-echo VSZ $VSZ RSS $RSS
+VSZ=`units -t -o %.2f ${VSZ}kibi 1mebi`
+RSS=`units -t -o %.2f ${RSS}kibi 1mebi`
+echo VSZ $VSZ MB RSS $RSS MB
