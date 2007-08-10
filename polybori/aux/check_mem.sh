@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 $@ &
 
@@ -32,6 +32,6 @@ RSSnew=`echo $DATA | awk '{print $4}'`
 done
 
 
-VSZ=`units -t -o %.2f ${VSZ}kibi 1mebi`
-RSS=`units -t -o %.2f ${RSS}kibi 1mebi`
-echo VSZ $VSZ MB RSS $RSS MB
+#VSZ=`units -t -o %.2f ${VSZ}kibi 1mebi`
+#RSS=`units -t -o %.2f ${RSS}kibi 1mebi`
+echo VSZ $VSZ bytes RSS $RSS bytes

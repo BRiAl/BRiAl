@@ -8,7 +8,6 @@ $@ &
 
 PID=$!
 
-#echo $PID 
 
 PROCESS=1
 
@@ -33,7 +32,9 @@ DIFF=$(($STARTnew - $START))
 notdone=$PROCESSnew
 
 if [ $DIFF -ge $MAXSECONDS ]
-    then echo "% TIMEOUT after $DIFF seconds! Process time: $PROCESSnew" ; notdone=""
+    then echo "% TIMEOUT after $DIFF seconds!" 
+    notdone=""
+    kill -9 $PID 
 fi
 
 done
