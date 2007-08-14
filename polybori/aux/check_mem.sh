@@ -34,4 +34,4 @@ done
 
 #VSZ=`units -t -o %.2f ${VSZ}kibi 1mebi`
 #RSS=`units -t -o %.2f ${RSS}kibi 1mebi`
-echo VSZ $VSZ bytes RSS $RSS bytes
+echo VSZ $VSZ KB RSS $RSS KB
