@@ -326,6 +326,7 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF("testsuite/py/data/uuf50/uuf50_"+str(i))
     for i in xrange(1,11):
         env.CNF("testsuite/py/data/uuf75/uuf75_"+str(i))
+    env.CNF("testsuite/py/data/uuf100/uuf100_01")
     for i in xrange(6,11):
         env.CNF("testsuite/py/data/phole/hole"+str(i))
     for i in xrange(4,6):
