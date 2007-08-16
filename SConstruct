@@ -177,8 +177,9 @@ cudd_path = 'Cudd/'
 cudd_name = 'pboriCudd'
 if IS_x64:
     env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
-env.Append(CPPDEFINES=["HAVE_IEEE_754", "BSD"])
-
+env.Append(CPPDEFINES=["HAVE_IEEE_754"])
+if not env['PLATFORM']=="darwin":
+    env.Append(CPPDEFINES=["BSD"])
 env.Append(LIBPATH=[cudd_path])
 
 cudd_resources = [cudd_path + 'obj/cuddObj.cc'] + glob(cudd_path + 'util/*.c')
@@ -326,8 +327,6 @@ if HAVE_PYTHON_EXTENSION:
         env.CNF("testsuite/py/data/uuf50/uuf50_"+str(i))
     for i in xrange(1,11):
         env.CNF("testsuite/py/data/uuf75/uuf75_"+str(i))
-    env.CNF("testsuite/py/data/uuf100/uuf100_01")
-    env.CNF("testsuite/py/data/uuf125/uuf125_1")
     for i in xrange(6,11):
         env.CNF("testsuite/py/data/phole/hole"+str(i))
     for i in xrange(4,6):
