@@ -332,6 +332,9 @@ if HAVE_PYTHON_EXTENSION:
     for i in xrange(4,6):
         env.CNF("testsuite/py/data/hanoi/hanoi"+str(i))
 
+    env.CNF("testsuite/py/data/uuf100/uuf100_01")
+    env.CNF("testsuite/py/data/uuf125/uuf125_1")
+
     for f in glob("testsuite/py/data/blocksworld/*.cnf"):
         env.CNF(f[:-4])
         
