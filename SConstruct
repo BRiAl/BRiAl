@@ -63,7 +63,7 @@ if HAVE_DOXYGEN:
     tools = ["default", "doxygen"]
 
 env=Environment(options=opts,tools = tools, toolpath = '.')
-
+#print env.Dump()
 cache_opts_file=open("polybori/include/cacheopts.h","w")
 for m in pbori_cache_macros:
     if env.get(m,None):
@@ -264,7 +264,9 @@ LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
 
 testsuite_py="testsuite/py/"
-installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("ll.py check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py specialsets.py aes.py coding.py")]
+installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("""ll.py
+check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py
+specialsets.py aes.py coding.py memusage.py """)]
 installable_python_modules_pypb=[("PyPolyBoRi/PyPolyBoRi.so", "PyPolyBoRi.so")]
 
 installable_python_modules = installable_python_modules_tp + installable_python_modules_pypb
