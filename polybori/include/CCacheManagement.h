@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/08/27 12:44:02  bricken
+ * + new factorization/disabled at the moment
+ *
  * Revision 1.31  2007/08/27 11:26:24  bricken
  * + used counters
  *
@@ -192,7 +195,7 @@ public:
   struct block_dlex_lead: public unary_cache_tag { };
   
   struct has_factor_x_plus_y: public ternary_cache_tag { };
-  struct left_equals_right_x_branch: public ternary_cache_tag { };
+  struct left_equals_right_x_branch_and_r_has_fac_x: public ternary_cache_tag { };
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)
@@ -213,11 +216,11 @@ template<>
 class count_tags<CCacheTypes::testwise_ternary>:
   public increment_count_tags<CCacheTypes::divisorsof_fixedpath>{ };
 template<>
-class count_tags<CCacheTypes::left_equals_right_x_branch>:
+class count_tags<CCacheTypes::left_equals_right_x_branch_and_r_has_fac_x>:
   public increment_count_tags<CCacheTypes::testwise_ternary>{ };
 template<>
 class count_tags<CCacheTypes::has_factor_x_plus_y>:
-  public increment_count_tags<CCacheTypes::left_equals_right_x_branch>{ };
+  public increment_count_tags<CCacheTypes::left_equals_right_x_branch_and_r_has_fac_x>{ };
 // generate tag number (special pattern with 4 usable bits)
 // 18 bits are already used
 template <unsigned Counted, unsigned Offset = 18>
