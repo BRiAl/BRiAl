@@ -98,7 +98,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
     MonomialSet::navigator nav=m.navigation();
     idx_type min_idx=std::min(x.index(),y.index());
     
-    while((nav.elseBranch().isEmpty()) && (!(nav.isConstant())) &&(*nav<min_idx)){
+    while((!(nav.isConstant())) && (nav.elseBranch().isEmpty()) && (*nav<min_idx)){
         nav.incrementThen();
     }
 
