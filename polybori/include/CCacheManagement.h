@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/08/27 10:31:51  bricken
+ * + more funs with cache
+ *
  * Revision 1.28  2007/07/30 15:19:38  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -153,7 +156,11 @@ public:
 
   struct degree: public unary_cache_tag { };
 
-
+  struct has_factor_x: public binary_cache_tag { };
+  struct has_factor_x_plus_one: public binary_cache_tag { };
+  struct has_factor_x_plus_y: public ternary_cache_tag { };
+  struct left_equals_right_x_branch: public ternary_cache_tag { };
+  
   struct mod_varset: public binary_cache_tag { };
   struct interpolate: public binary_cache_tag { };
   struct zeroes: public binary_cache_tag { };
