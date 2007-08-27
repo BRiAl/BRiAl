@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/08/27 09:57:43  bricken
+ * + equality test const
+ *
  * Revision 1.10  2007/07/31 14:26:29  dreyer
  * CHANCE: BooleVariable, now uses persistent variables
  *
@@ -107,8 +110,11 @@ class BooleVariable {
   idx_type index() const { return *m_poly.firstBegin(); }
 
   /// Equality check
-  bool operator== (const self& other){
+  bool operator== (const self& other) const{
       return m_poly==other.m_poly;
+  }
+  bool operator!= (const self& other) const{
+        return m_poly!=other.m_poly;
   }
 private:
   BoolePolynomial m_poly;
