@@ -141,7 +141,7 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
     if (m.emptiness()) return true;
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
-    while((nav.elseBranch().isEmpty()) && (!(nav.isConstant())) &&(*nav<x_idx)){
+    while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
         nav.incrementThen();
     }
 
