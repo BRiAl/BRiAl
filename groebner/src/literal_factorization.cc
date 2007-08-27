@@ -185,7 +185,7 @@ static bool has_factor_x_plus_one(const MonomialSet& m, const Variable& x){
 static bool has_factor_x_plus_y(const MonomialSet& m, const Variable& x,const Variable& y){
     return do_has_factor_x_plus_y(m,x,y)==1;
 }
-//#define ELEMENTAR_FACTORIZATION 1
+#define ELEMENTAR_FACTORIZATION 1
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
   assert(!(p.isZero()));
   Exponent lead_variables=p.leadExp();
