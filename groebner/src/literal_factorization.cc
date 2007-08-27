@@ -13,10 +13,10 @@
 BEGIN_NAMESPACE_PBORIGB
 
 static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
-    if (m.emptiness()) return true;
+    if (m.emptiness()) return 1;
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
-    while((nav.elseBranch().isEmpty()) && (!(nav.isConstant())) &&(*nav<x_idx)){
+    while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
         nav.incrementThen();
     }
 
