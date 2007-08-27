@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/08/27 11:26:24  bricken
+ * + used counters
+ *
  * Revision 1.30  2007/08/27 11:07:14  bricken
  * + more funs with cache
  *
@@ -209,7 +212,12 @@ struct increment_count_tags {
 template<>
 class count_tags<CCacheTypes::testwise_ternary>:
   public increment_count_tags<CCacheTypes::divisorsof_fixedpath>{ };
-
+template<>
+class count_tags<CCacheTypes::left_equals_right_x_branch>:
+  public increment_count_tags<CCacheTypes::testwise_ternary>{ };
+template<>
+class count_tags<CCacheTypes::has_factor_x_plus_y>:
+  public increment_count_tags<CCacheTypes::left_equals_right_x_branch>{ };
 // generate tag number (special pattern with 4 usable bits)
 // 18 bits are already used
 template <unsigned Counted, unsigned Offset = 18>
