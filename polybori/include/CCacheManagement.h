@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/08/27 11:07:14  bricken
+ * + more funs with cache
+ *
  * Revision 1.29  2007/08/27 10:31:51  bricken
  * + more funs with cache
  *
@@ -158,8 +161,7 @@ public:
 
   struct has_factor_x: public binary_cache_tag { };
   struct has_factor_x_plus_one: public binary_cache_tag { };
-  struct has_factor_x_plus_y: public ternary_cache_tag { };
-  struct left_equals_right_x_branch: public ternary_cache_tag { };
+
   
   struct mod_varset: public binary_cache_tag { };
   struct interpolate: public binary_cache_tag { };
@@ -185,6 +187,9 @@ public:
 
   struct block_degree: public binary_cache_tag { };
   struct block_dlex_lead: public unary_cache_tag { };
+  
+  struct has_factor_x_plus_y: public ternary_cache_tag { };
+  struct left_equals_right_x_branch: public ternary_cache_tag { };
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)
