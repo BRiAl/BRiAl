@@ -245,6 +245,10 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 while(other_it!=other_end){
                     
                     idx_type v2=*other_it;
+                    if (BoolePolyRing::compare(v, v2)!=BoolePolyRing::greater_than){
+                        ++other_it;
+                        continue;
+                    }
                     #ifdef ELEMENTAR_FACTORIZATION
                     Variable v2_var(v2);
                     #endif
