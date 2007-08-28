@@ -80,6 +80,17 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
             if (cached.isValid() ){
                    return cached;
             }
+            
+            typedef PBORI::CacheManager<CCacheTypes::has_factor_x>
+                 cache_mgr_type_fac;
+            
+            cache_mgr_type_fac cache_mgr_fac;
+            cached=cache_mgr_fac.find(nav_r, ((Polynomial) x).diagram().navigation());
+            if (cached.isValid()&& cached.isEmpty()){
+                   return cached;
+            }
+            
+            
             Polynomial res0=do_left_equals_right_x_branch_and_r_has_fac_x(nav_l.elseBranch(),nav_r.elseBranch(),x);
             Polynomial res=res0;
             if (res0==1){
