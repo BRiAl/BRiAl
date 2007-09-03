@@ -34,7 +34,7 @@ BEGIN_NAMESPACE_PBORIGB
 
 #define LL_RED_FOR_GROEBNER 1
 MonomialSet minimal_elements(const MonomialSet& s);
-
+Polynomial map_every_x_to_x_plus_one(Polynomial p);
 class PairStatusSet{
 public:
   typedef boost::dynamic_bitset<> bitvector_type;

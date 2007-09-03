@@ -178,4 +178,5 @@ void export_strategy(){
   def("interpolate_smallest_lex",interpolate_smallest_lex);
   def("zeroes",zeroes);
   def("contained_vars",contained_variables_cudd_style);
+  def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one);
 }
