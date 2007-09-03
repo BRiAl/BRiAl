@@ -2163,84 +2163,35 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     
     return s;
 }
-#if 0
-void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
-  
-  const Polynomial &p=e.p;
-  Monomial factor;
-  const LiteralFactorization& fac_orig=e.literal_factors;
-  if (fac_orig.factors.size()>0){
-    LiteralFactorization::map_type::const_iterator it=fac_orig.factors.begin();
-    LiteralFactorization::map_type::const_iterator end=fac_orig.factors.end();
-    while(it!=end){
-        if (it->second==0)
-            factor*=Variable(it->first);
-        it++;
+
+
+Polynomial map_every_x_to_x_plus_one(Polynomial p){
+    if (p.isConstant()) return p;
+    
+    
+    MonomialSet::navigator nav=p.diagram().navigation();
+    idx_type idx=*nav;
+
+    typedef PBORI::CacheManager<CCacheTypes::map_every_x_to_x_plus_one>
+         cache_mgr_type;
+    
+    cache_mgr_type cache_mgr;
+    MonomialSet::navigator cached=cache_mgr.find(nav);
+    if (cached.isValid() ){
+           return cached;
     }
     
-  }
-  /*Polynomial p_divided=p;
-  Monomial::const_iterator m_b=factor.begin();
-  Monomial::const_iterator m_e=factor.end();
-  while(m_b!=m_e){
-    p_divided=((BooleSet)p_divided).subset1(*m_b);
-    m_b++;
-  }*/
-  Polynomial negation=Polynomial(true)-p/factor;
-  if (!(negation.isZero())){
-  LiteralFactorization fac_neg(negation);
-  if (!(fac_neg.trivial())){
-    this->log("!!!!!!!!!!!!!!!!!");
-    this->log("found new implications");
+    Polynomial then_mapped=map_every_x_to_x_plus_one(nav.thenBranch());
+    Polynomial res0=map_every_x_to_x_plus_one(nav.elseBranch())+Polynomial(then_mapped);
+    Polynomial res=MonomialSet(idx,map_every_x_to_x_plus_one(nav.thenBranch()).diagram(),res0.diagram());
 
-    LiteralFactorization::map_type::const_iterator nb= fac_neg.factors.begin();
-    LiteralFactorization::map_type::const_iterator ne= fac_neg.factors.end();
-    while(nb!=ne){
-      
-      idx_type var=nb->first;
-      bool val=1-nb->second;
-      this->addGeneratorDelayed(factor*(Variable(var)+Polynomial(val)));
-      nb++;
-    }
-    LiteralFactorization::var2var_map_type::const_iterator vnb= fac_neg.var2var_map.begin();
-    LiteralFactorization::var2var_map_type::const_iterator vne= fac_neg.var2var_map.end();
-    while(vnb!=vne){
-      
-      idx_type var=vnb->first;
-      idx_type val=vnb->second;
-      this->addGeneratorDelayed(factor*(Variable(var)+Variable(val)+Polynomial(true)));
-      vnb++;
-    }
-    if (!(fac_neg.rest.isOne()))
-        this->addGeneratorDelayed(factor*(Polynomial(true)-fac_neg.rest));
-  } else {
-    /*
-    LiteralFactorization fac_p(p);
-    if (!(fac_p.trivial()) &&(!(fac_p.rest.isOne()))){
-      LiteralFactorization fac_res_neg(fac_p.rest+Polynomial(true));
-      if(!(fac_res_neg.trivial())){
-        cout<<"!!!!!!!!!!!!!!!!!"<<endl;
-        cout<<"found nested new implications"<<endl;
-
-      }
-    }
-    */
-  }
-  }
-  
+    cache_mgr.insert(nav,res.diagram().navigation());
+    return res;
 }
-#endif
 static Polynomial opposite_logic_mapping(Polynomial p){
-  Exponent e=p.usedVariablesExp();
-  Exponent::const_iterator it=e.begin();
-  Exponent::const_iterator end=e.end();
-  while (it!=end){
-    p=p+(Polynomial) p.diagram().subset1(*it);
-    it++;
-  }
-  p=p+1;
-  return p;
+    return map_every_x_to_x_plus_one(p)+1;
 }
+
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
   //cout<<"p_opp"<<p_opp<<endl;

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/09/03 13:43:09  bricken
+ * + changed implementation for opposite_logic
+ *
  * Revision 1.32  2007/08/27 12:44:02  bricken
  * + new factorization/disabled at the moment
  *
@@ -182,6 +185,8 @@ public:
   
   struct contained_deg2: public unary_cache_tag { };
   struct contained_variables: public unary_cache_tag { };
+
+  struct map_every_x_to_x_plus_one: public unary_cache_tag { };
 
   struct dlex_lead: public unary_cache_tag { };
   struct dp_asc_lead: public unary_cache_tag { };
