@@ -245,7 +245,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 while(other_it!=other_end){
                     
                     idx_type v2=*other_it;
-                    if (BoolePolyRing::compare(v, v2)!=BoolePolyRing::greater_than){
+                    if (UNLIKELY(BoolePolyRing::compare(v, v2)!=BoolePolyRing::greater_than)){
                         ++other_it;
                         continue;
                     }
