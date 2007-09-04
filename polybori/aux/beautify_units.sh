@@ -9,7 +9,7 @@ do
 datanum=`echo $data|sed -e "s/_*sec//"`
 
 
-DATASTR="`units -t -o %.3f ${datanum}s 1s`\\\\secunit/"
+DATASTR="`units -t -o %.2f ${datanum}s 1s`\\\\secunit/"
 
 for DATASTART in "\([^.0-9]\)$data/\1" "^$data/"
 do
