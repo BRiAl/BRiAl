@@ -283,7 +283,7 @@ if HAVE_PYTHON_EXTENSION:
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
             LIBS=LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=CPPPATH)
+            CPPPATH=CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
     else:
         #print "l:", l
         pypb=env.SharedLibrary('PyPolyBoRi/PyPolyBoRi',
@@ -390,7 +390,7 @@ if HAVE_SINGULAR_EXTENSION:
         pypb=env.LoadableModule('Singular/polybori_module', wrapper_files,
             LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
             LIBS=LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=SING_INCLUDES+CPPPATH)
+            CPPPATH=SING_INCLUDES+CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
     else:
         #print "l:", l
         pypb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
