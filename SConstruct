@@ -5,6 +5,7 @@ import tarfile
 BOOST_WORKS=False
 HAVE_DOXYGEN=True
 pyroot="pyroot/"
+
 import sys
 from os import sep
 from glob import glob
@@ -51,6 +52,8 @@ import os
 #opts.Add("SINGULAR_HOME")
 opts.Add('PBP', 'PolyBoRi python', "python")
 opts.Add('CXX', 'C++ Compiler', "g++")
+opts.Add('DEVEL_PREFIX', 'development version installation directory', '')
+
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
@@ -184,11 +187,15 @@ env.Append(LIBPATH=[cudd_path])
 
 cudd_resources = [cudd_path + 'obj/cuddObj.cc'] + glob(cudd_path + 'util/*.c')
 
+cudd_headers = [ cudd_path + hd
+                 for hd in ['obj/cuddObj.hh', 'util/util.h', 'cudd/cuddInt.h'] ]
+
 env.Append(CPPPATH=[cudd_path + 'obj', cudd_path + 'util'])
 for cudddir in Split("cudd dddmp mtr st epd"):
     env.Append(CPPPATH=[cudd_path + cudddir])
     cudd_resources += glob(cudd_path + cudddir + '/' + cudddir + '*.c')
-
+    cudd_headers += [cudd_path + cudddir + '/' + cudddir + '.h']
+    
 cudd_excludes = [cudd_path + 'util/saveimage.c']
 cudd_excludes += glob(cudd_path + 'util/test*.c')
 cudd_excludes += glob(cudd_path +'dddmp/*DdNode*.c')
@@ -196,15 +203,16 @@ cudd_excludes += glob(cudd_path +'dddmp/*DdNode*.c')
 for file in cudd_excludes:
     cudd_resources.remove(file)
 
-cudd_files = env.SharedObject(cudd_resources)
+cudd_shared = env.SharedObject(cudd_resources)
 
 libCudd = env.StaticLibrary(cudd_path + cudd_name, cudd_resources)
-
 Default(libCudd)
 
-shared_resources += cudd_files
+shared_resources += cudd_shared
 
-print  (libCudd[0]) 
+libCuddShared = env.SharedLibrary(cudd_path + cudd_name, cudd_shared)
+Default(libCuddShared)
+
 ######################################################################
 # Stuff for building PolyBoRi's C++ part
 ######################################################################
@@ -222,7 +230,12 @@ if isinstance(libpb,list):
     libpb=libpb[0]
 Default(libpb)
 
-shared_resources += pb_src
+pb_shared = env.SharedObject(pb_src)
+shared_resources += pb_shared
+
+libpbShared = env.SharedLibrary("polybori/polybori", pb_shared)
+Default(libpbShared)
+
 
 ######################################################################
 # Stuff for building Groebner library
@@ -237,7 +250,11 @@ if isinstance(gb,list):
     gb=gb[0]
 Default(gb)
 
-shared_resources += gb_src
+gb_shared = env.SharedObject(gb_src)
+shared_resources += gb_shared
+
+libgbShared = env.SharedLibrary("groebner/groebner", gb_shared)
+Default(libgbShared)
 
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
@@ -293,17 +310,19 @@ if HAVE_PYTHON_EXTENSION:
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
     Default(pypb)
+
+   
     polybori_modules=pyroot+"polybori/"
 
     #Default(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
         Default(env.Install(polybori_modules, f))
     
-    to_append_for_profile=[]
+    to_append_for_profile = [libpb, gb] + libCudd
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS = LIBS_static + ["python"+c.version] + USERLIBS,
+            LIBS = LIBS + ["python"+c.version] + USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
     sys.path.append("testsuite/py")
     from StringIO import StringIO
@@ -321,22 +340,29 @@ if HAVE_PYTHON_EXTENSION:
                      suffix = '.py',
                      src_suffix = '.cnf')
     env.Append(BUILDERS={'CNF' : bld})
+
+    datapath = 'testsuite/py/data/'
+    cnffiles = []
+
     for i in xrange(1,1001):
-        env.CNF("testsuite/py/data/uf20/uf20_"+str(i))
+        cnffiles += glob(datapath + "uf20/uf20_" + str(i) + ".cnf")
     for i in xrange(1,101):
-        env.CNF("testsuite/py/data/flat30_60/flat30_"+str(i))
+        cnffiles += glob(datapath + "flat30_60/flat30_" + str(i) + ".cnf")
     for i in xrange(1,101):
-        env.CNF("testsuite/py/data/uuf50/uuf50_"+str(i))
+        cnffiles += glob(datapath + "uuf50/uuf50_" + str(i) + ".cnf")
     for i in xrange(1,11):
-        env.CNF("testsuite/py/data/uuf75/uuf75_"+str(i))
+        cnffiles += glob(datapath + "uuf75/uuf75_" + str(i) + ".cnf")
     for i in xrange(6,11):
-        env.CNF("testsuite/py/data/phole/hole"+str(i))
+        cnffiles += glob(datapath + "phole/hole" + str(i) + ".cnf")
     for i in xrange(4,6):
-        env.CNF("testsuite/py/data/hanoi/hanoi"+str(i))
+        cnffiles += glob(datapath + "hanoi/hanoi" + str(i) + ".cnf")
 
-    env.CNF("testsuite/py/data/uuf100/uuf100_01")
-    env.CNF("testsuite/py/data/uuf125/uuf125_1")
+    for filename in ['uuf100/uuf100_01', 'uuf125/uuf125_1']:
+        cnffiles += glob(datapath + filename + ".cnf")
 
+    for filename in cnffiles:
+        env.CNF(filename)
+        
     for f in glob("testsuite/py/data/blocksworld/*.cnf"):
         env.CNF(f[:-4])
         
@@ -347,6 +373,7 @@ if HAVE_PYTHON_EXTENSION:
 
     add_cnf_dir(env,"testsuite/py/data/gcp_large")
     add_cnf_dir(env,"testsuite/py/data/bejing")
+
 
     def pypb_emitter(target,source,env):
         env.Depends(target,pypb)
@@ -427,3 +454,17 @@ def build_tgz(version="0.01"):
     tar.close()
 #build_tgz()
 
+
+
+# Installation for development purposes
+develinstpath = env['DEVEL_PREFIX']
+if develinstpath:
+    develinstdir = develinstpath + '/'
+    devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
+    env.Install(develinstdir + 'lib', devellibs)
+    env.Install(develinstdir + 'include/polybori', glob('polybori/include/*.h'))
+    env.Install(develinstdir + 'include/polybori/groebner',
+                glob('groebner/src/*.h'))
+    env.Install(develinstdir + 'include/cudd', cudd_headers)
+    
+    env.Alias('devel-install', develinstdir)
