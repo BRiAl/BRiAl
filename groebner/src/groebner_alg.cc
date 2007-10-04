@@ -2026,8 +2026,9 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
        
         //other_terms=other_terms.unite(ot2);
     }
-    intersecting_terms=this->leadingTerms.diff(other_terms);
-    intersecting_terms=intersecting_terms.diff(ot2);
+    //we assume that no variable of lm does divide a monomial in other_terms
+    intersecting_terms=mod_mon_set(this->leadingTerms,other_terms);
+    intersecting_terms=mod_mon_set(intersecting_terms,ot2);
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
