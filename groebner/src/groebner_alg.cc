@@ -1715,7 +1715,8 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         result.push_back(exp);
     } else {
         Monomial v;
-        m=divide_monomial_divisors_out(m,lm);
+        m=m.existAbstract(lm.diagram());
+        mod=mod.existAbstract(lm.diagram());
         //mod=divide_monomial_divisors_out(mod,lm);
         m=mod_mon_set(m,mod);
         m=minimal_elements_cudd_style_unary(m);
@@ -2009,6 +2010,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     it++;
     
     }
+    //other_terms=((Polynomial)other_terms%(Polynomial) e.lm).diagram();
     
     MonomialSet ot2;
     if ((is11)||(is00)){
@@ -2020,15 +2022,15 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
-            ext_prod_terms=divide_monomial_divisors_out(ot2,lm).diff(other_terms);
+            ext_prod_terms=ot2.existAbstract(lm.diagram()).diff(other_terms);
             other_terms=other_terms.unite(ext_prod_terms);
         }
        
         //other_terms=other_terms.unite(ot2);
     }
     //we assume that no variable of lm does divide a monomial in other_terms
-    intersecting_terms=mod_mon_set(this->leadingTerms,other_terms);
-    intersecting_terms=mod_mon_set(intersecting_terms,ot2);
+    intersecting_terms=this->leadingTerms.diff(other_terms);
+    intersecting_terms=intersecting_terms.diff(ot2);
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
