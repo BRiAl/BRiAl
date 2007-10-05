@@ -114,7 +114,7 @@ int main(int argc,char* argv[]){
   initPyPolyBoRi();
   PyRun_SimpleString("from sys import path");
   PyRun_SimpleString("path.append('.')");
-  PyRun_SimpleString("path.append('../testsuite/py')");
+  PyRun_SimpleString("path.append('../pyroot')");
   PyRun_SimpleString("import toprofile");
   Py_Finalize();
   return 0;
