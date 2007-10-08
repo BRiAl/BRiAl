@@ -214,8 +214,8 @@ slib=env.SharedLibrary
 if env['PLATFORM']=="darwin":
     slib=env.LoadableModule
 
-libCuddShared = slib(cudd_path + cudd_name, cudd_shared)
-Default(libCuddShared)
+libCuddShared = slib(cudd_path + cudd_name, list(shared_resources))
+#Default(libCuddShared)
 
 ######################################################################
 # Stuff for building PolyBoRi's C++ part
@@ -237,8 +237,8 @@ Default(libpb)
 pb_shared = env.SharedObject(pb_src)
 shared_resources += pb_shared
 
-libpbShared = slib("polybori/polybori", pb_shared)
-Default(libpbShared)
+libpbShared = slib("polybori/polybori", list(shared_resources))
+#Default(libpbShared)
 
 
 ######################################################################
@@ -257,8 +257,8 @@ Default(gb)
 gb_shared = env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib("groebner/groebner", gb_shared)
-Default(libgbShared)
+libgbShared = slib("groebner/groebner", list(shared_resources))
+#Default(libgbShared)
 
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
