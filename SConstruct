@@ -210,7 +210,11 @@ Default(libCudd)
 
 shared_resources += cudd_shared
 
-libCuddShared = env.SharedLibrary(cudd_path + cudd_name, cudd_shared)
+slib=env.SharedLibrary
+if env['PLATFORM']=="darwin":
+    slib=env.LoadableModule
+
+libCuddShared = slib(cudd_path + cudd_name, cudd_shared)
 Default(libCuddShared)
 
 ######################################################################
@@ -233,7 +237,7 @@ Default(libpb)
 pb_shared = env.SharedObject(pb_src)
 shared_resources += pb_shared
 
-libpbShared = env.SharedLibrary("polybori/polybori", pb_shared)
+libpbShared = slib("polybori/polybori", pb_shared)
 Default(libpbShared)
 
 
@@ -253,7 +257,7 @@ Default(gb)
 gb_shared = env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = env.SharedLibrary("groebner/groebner", gb_shared)
+libgbShared = slib("groebner/groebner", gb_shared)
 Default(libgbShared)
 
 
