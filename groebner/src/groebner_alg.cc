@@ -1997,7 +1997,8 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
-  
+  MonomialSet critical_terms_base;
+  MonomialSet ot2;
   if (!((is00 && (leadingTerms==leadingTerms00))||(is11 && (leadingTerms==leadingTerms11)))){
     
     if (is11)
@@ -2012,7 +2013,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     }
     //other_terms=((Polynomial)other_terms%(Polynomial) e.lm).diagram();
     
-    MonomialSet ot2;
+    
     if ((is11)||(is00)){
         
         if (is00)
@@ -2031,12 +2032,12 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     //we assume that no variable of lm does divide a monomial in other_terms
     
     //diff suffices if we start from minimal leads
-    intersecting_terms=this->minimalLeadingTerms.diff(other_terms);
-    intersecting_terms=mod_mon_set(intersecting_terms,ot2);
+    intersecting_terms=this->leadingTerms.diff(other_terms);
+    intersecting_terms=intersecting_terms.diff(ot2);//mod_mon_set(intersecting_terms,ot2);
     assert (!((!(p.isOne())) && is00 && is11));
   }
           
-  
+  critical_terms_base=mod_mon_set(intersecting_terms.intersect(minimalLeadingTerms),ot2);
   this->easyProductCriterions+=this->minimalLeadingTerms.length()-intersecting_terms.length();
   
  
@@ -2077,7 +2078,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   //Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
   
   
-   treatNormalPairs(s,intersecting_terms,other_terms, ext_prod_terms);
+   treatNormalPairs(s,critical_terms_base,other_terms, ext_prod_terms);
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in leadingTerms
     
