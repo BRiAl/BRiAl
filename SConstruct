@@ -327,7 +327,7 @@ if HAVE_PYTHON_EXTENSION:
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
             LIBS = LIBS + ["python"+c.version] + USERLIBS,
-            CPPPATH=CPPPATH, CPPDEFINES=["PB_STATIC_PROFILING_VERSION"])
+            CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
     sys.path.append("testsuite/py")
     from StringIO import StringIO
     from cnf2ideal import gen_clauses, process_input,convert_file_PB
