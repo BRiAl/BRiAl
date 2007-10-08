@@ -1,13 +1,10 @@
-import PyPolyBoRi
-##import warnings
-##warnings.simplefilter('ignore', RuntimeWarning) 
+#import PyPolyBoRi
 
 from sys import path
 #print path
 
 from polybori.gbrefs import load_data, clean_data, my_import
 
-##warnings.simplefilter('default', RuntimeWarning)
 
 #from data import stas1 as data
 from polybori.nf import *

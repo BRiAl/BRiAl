@@ -287,11 +287,14 @@ LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 testsuite_py="testsuite/py/"
 installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("""ll.py
 check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py
-specialsets.py aes.py coding.py memusage.py """)]
-installable_python_modules_pypb=[("PyPolyBoRi/PyPolyBoRi.so", "PyPolyBoRi.so")]
+specialsets.py aes.py coding.py memusage.py PyPolyBoRi.py""")]
 
-installable_python_modules = installable_python_modules_tp + installable_python_modules_pypb
+installable_dynamic_python_modules = [("PyPolyBoRi/PyPolyBoRi.so",
+                                       "dynamic/PyPolyBoRi.so")]
 
+installable_python_modules = installable_python_modules_tp
+
+all_installable_python_modules = installable_python_modules + installable_dynamic_python_modules
 
 def add_cnf_dir(env,directory):
   for f in glob(directory+"/*.cnf"):
@@ -317,11 +320,15 @@ if HAVE_PYTHON_EXTENSION:
 
    
     polybori_modules=pyroot+"polybori/"
-
+    polybori_dynamic_modules = polybori_modules + 'dynamic/'
+    
     #Default(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
         Default(env.Install(polybori_modules, f))
-    
+
+    for (f,n) in installable_dynamic_python_modules:
+        Default(env.Install(polybori_dynamic_modules, f))
+        
     to_append_for_profile = [libpb, gb] + libCudd
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program('PyPolyBoRi/profiled', wrapper_files+to_append_for_profile,
@@ -392,7 +399,7 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for (a,f) in installable_python_modules])
+    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for (a,f) in all_installable_python_modules])
     #bld=Builder("cd")
 else:
     print "no python extension"
