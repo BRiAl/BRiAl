@@ -910,6 +910,9 @@ static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_
 
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type & len){
   //cout<<"red complete"<<endl;
+  if (reductor.length==2){
+      return reduce_by_binom(p,reductor.p);
+  }
   MonomialSet rewriteable_terms_divided=p.diagram();
   Exponent::const_iterator it=reductor.lmExp.begin();
   Exponent::const_iterator end=reductor.lmExp.end();
