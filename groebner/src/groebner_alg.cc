@@ -712,35 +712,20 @@ static Polynomial cancel_monomial_in_tail(const Polynomial& p, const Monomial & 
 
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom){
   assert(binom.length()==2);
-  Monomial p_lead=p.lead();
+  
   Monomial bin_lead=binom.lead();
-  Monomial bin_last=(binom-bin_lead).lead();
+  Monomial bin_last=*(++(binom.orderedBegin()));
   
-  //Polynomial p_reducible_base=p;
-  Monomial::const_iterator it=bin_lead.begin();
-  Monomial::const_iterator end=bin_lead.end();
-  BooleSet dividing_terms
-    //=BooleSet(p/m);
-    =BooleSet(p);
-  
-  while(it!=end){
-    dividing_terms=dividing_terms.subset1(*it);
-    it++;
-  }
-  
-  
-  
-  Polynomial canceled_lead(BooleSet(p).diff(dividing_terms.unateProduct(bin_lead.diagram())));
+  MonomialSet dividing_terms=((MonomialSet)p).multiplesOf(bin_lead);
   
   Monomial b_p_gcd=bin_last.GCD(bin_lead);
   
-  Polynomial first_mult_half=dividing_terms.unateProduct(BooleSet(Polynomial(b_p_gcd)));
-  Polynomial multiplied=(bin_last/b_p_gcd)*first_mult_half;
+  Monomial divide_by=bin_lead/b_p_gcd;
+  Monomial multiply_by=bin_last/b_p_gcd;
   
-  Polynomial res=multiplied+canceled_lead;
-  //cout<<"p:"<<p<<endl;
-  //cout<<"res:"<<res<<endl;
-  return res;
+  Polynomial rewritten=((Polynomial) dividing_terms)/divide_by;
+  return p-dividing_terms+rewritten*multiply_by;
+  
 }
 
 
