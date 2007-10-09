@@ -70,7 +70,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
         assert(p.reducibleBy(*g));
         assert(!(g->isZero()));
         if (strat.generators[index].length==2)
-          p=reduce_by_binom(p,strat.generators[index].p);
+          p=reduce_complete(p,strat.generators[index].p);
         else{
           if (strat.generators[index].deg==1){
             //implies lmDeg==1, ecart=0
@@ -248,7 +248,17 @@ Polynomial nf3_degree_order(const GroebnerStrategy& strat, Polynomial p, Monomia
  			&& (lead!=strat.generators[index].lm)))
 
 {     wlen_type dummy;
-      p=reduce_complete(p,strat.generators[index],dummy);
+      #ifndef NDEBUG
+      Polynomial p_old=p;
+      #endif
+      
+      assert(deg=p.lmDeg());
+      Polynomial pg=p.gradedPart(deg);
+      p=p-pg+reduce_complete(pg,strat.generators[index],dummy);
+      //p=reduce_complete(p,strat.generators[index],dummy);
+      #ifndef NDEBUG
+      assert(p.isZero()||p.lead()<p_old.lead());
+      #endif
 
     } else{
       p+=(exp-strat.generators[index].lmExp)*(*g);
