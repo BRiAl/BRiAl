@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/10/09 10:30:51  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.7  2007/07/30 15:19:39  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -220,6 +223,51 @@ public:
   void insert(navi_type navi, idx_type idx, size_type deg) const {
     base::insert(navi, node_type(idx), node_type(deg));
   }
+};
+
+template <class TagType, 
+          class DDType = typename CTypes::dd_type,
+          class ManagerType = typename CTypes::manager_base>
+class CDegreeArgumentCache:
+  public CCacheManagement<TagType, 2, ManagerType> {
+
+public:
+  /// @name Define generic access to data types
+  //@{
+  typedef ManagerType manager_type;
+  typedef DDType dd_type;
+  typedef TagType tag_type;
+  typedef CCacheManagement<tag_type, 2, manager_type> base;
+  typedef CDegreeArgumentCache<tag_type, dd_type, manager_type> self;
+  //@}
+
+  /// @name Adopt type definitions
+  //@{
+  typedef typename base::node_type node_type;
+  typedef typename dd_type::size_type size_type;
+  typedef typename dd_type::navigator navi_type;
+  typedef CIndexHandle<navi_type> degree_node_type;
+  //@}
+
+  /// Constructor
+  CDegreeArgumentCache(const manager_type& mgr): base(mgr) {}
+
+  /// Copy Constructor
+  CDegreeArgumentCache(const self& rhs): base(rhs) {}
+
+  /// Destructor
+  ~CDegreeArgumentCache() {}
+
+  /// Find cached degree wrt. given navigator
+  navi_type find(navi_type navi, size_type deg) const{ 
+    return base::find(navi, degree_node_type(deg)); 
+  }
+
+  /// Store cached degree wrt. given navigator
+  void insert(navi_type navi, size_type deg, navi_type result) const {
+    base::insert(navi, degree_node_type(deg), result);
+  }
+
 };
 
 

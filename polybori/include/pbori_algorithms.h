@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/10/09 10:30:52  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.10  2007/07/27 15:15:21  dreyer
  * CHANGE: using alternative for term_accumulate (uses add-cache)
  *
@@ -142,8 +145,9 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
   // dereferencing the term is as expensive as this procedure in whole. (Maybe
   // the generation of the BooleSet in the final line could be cached somehow.)
 
+  // assuming (ustart .. ufinish) never means zero
   if (ustart == ufinish)
-    return true;
+     return true;
   
   while (*navi < *ustart)
     navi.incrementElse();
@@ -239,10 +243,15 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
 #else
 
 
+  if(first.isZero())
+    return first.navigation();
+
   ValueType result = upper_term_accumulate(first.begin(), first.end(), 
-                                           first.navigation(), init) +
-                             upper_term_accumulate(last.begin(), last.end(), 
-                                                 last.navigation(), init);
+                                           first.navigation(), init);
+  if(!last.isZero())
+    result += upper_term_accumulate(last.begin(), last.end(), 
+                                    last.navigation(), init);
+
   assert(result == std::accumulate(first, last, init) ); 
 
   return result;

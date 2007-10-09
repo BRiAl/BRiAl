@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/10/09 10:30:52  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.32  2007/05/25 12:35:32  dreyer
  * ADD: BooleSet::owns(const exp_type&) const
  *
@@ -864,6 +867,40 @@ dd_owns(NaviType navi, Iterator start, Iterator finish) {
     return false;
 
   return dd_owns(navi.thenBranch(), ++start, finish);
+}
+
+
+template <class CacheType, class NaviType, class DegType, class SetType>
+SetType
+dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,  
+               SetType init) {
+
+
+  if (deg == 0) {
+    while(!navi.isConstant())
+      navi.incrementElse();
+    return SetType(navi);
+  }
+
+  if(navi.isConstant())
+    return SetType();
+
+  // Look whether result was cached before
+  NaviType cached = cache.find(navi, deg);
+
+  if (cached.isValid())
+    return SetType(cached);
+
+  SetType result = 
+    SetType(*navi,  
+            dd_graded_part(cache, navi.thenBranch(), deg - 1, init),
+            dd_graded_part(cache, navi.elseBranch(), deg, init)
+            );
+
+  // store result for later reuse
+  cache.insert(navi, deg, result.navigation());
+
+  return result;
 }
 
 

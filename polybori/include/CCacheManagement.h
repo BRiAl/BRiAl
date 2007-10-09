@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/10/09 10:30:51  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.33  2007/09/03 13:43:09  bricken
  * + changed implementation for opposite_logic
  *
@@ -200,7 +203,11 @@ public:
   struct block_dlex_lead: public unary_cache_tag { };
   
   struct has_factor_x_plus_y: public ternary_cache_tag { };
-  struct left_equals_right_x_branch_and_r_has_fac_x: public ternary_cache_tag { };
+  struct left_equals_right_x_branch_and_r_has_fac_x:
+    public ternary_cache_tag { };
+
+  struct graded_part: public binary_cache_tag { };
+
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)

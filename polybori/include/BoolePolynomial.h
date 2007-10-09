@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.75  2007/10/09 10:30:51  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.74  2007/07/31 07:43:49  dreyer
  * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
  *
@@ -527,6 +530,9 @@ public:
 
   /// Total degree of the leading term
   size_type lmTotalDeg() const;
+
+  /// Get tart of  of given degree
+  self gradedPart(size_type deg) const;
 
   /// Number of nodes in the decision diagram
   size_type nNodes() const;

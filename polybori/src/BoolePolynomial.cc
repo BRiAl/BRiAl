@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.99  2007/10/09 10:30:52  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.98  2007/05/25 11:38:00  dreyer
  * ADD: cast int -> BoolePolynomial, which obeyes %2
  *
@@ -837,6 +840,17 @@ BoolePolynomial::lmTotalDeg() const {
   // No weighted degrees yet, so map to non-weighted variant
   return lmDeg();
 }
+
+// Get part of  of given degree
+BoolePolynomial
+BoolePolynomial::gradedPart(size_type deg) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(size_type) const" );
+  typedef CDegreeArgumentCache<CCacheTypes::graded_part> cache_type;
+  return dd_graded_part(cache_type(m_dd.manager()), 
+                        navigation(), deg, set_type());
+}
+
 
 // Number of nodes in the decision diagram
 BoolePolynomial::size_type

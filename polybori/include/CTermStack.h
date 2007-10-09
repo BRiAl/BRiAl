@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/10/09 10:30:52  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.19  2007/05/18 11:48:39  dreyer
  * ADD: sophisticated term_accumulate
  *
@@ -252,6 +255,7 @@ public:
 
   /// Get navigator of stack start
   navigator navigation() const {
+    assert(m_stack.begin() != m_stack.end());
     return *m_stack.begin();
   }
 

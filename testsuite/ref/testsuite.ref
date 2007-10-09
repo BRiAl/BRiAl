@@ -55,7 +55,6 @@ x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) + 1
   next: 
 0
 0
-0
 
 Testing last term
 poly x(0)*x(1) + x(0)*x(4)
@@ -79,41 +78,7 @@ last term 2, 4, last term via BoolSet: x(2)*x(4)
 
  Testing decrement...
 poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
-*iter x(0)*x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(3)*x(4)
--- 
-*iter x(1)*x(2)*x(3)*x(4)
--- 
-*iter x(0)*x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(4)
--- 
-*iter x(2)*x(3)*x(4)
--- 
-*iter x(1)*x(2)*x(3)*x(4)
--- 
-*iter x(0)*x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(1)*x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(4)
-++ 
-*iter 1
--- 
-*iter x(2)*x(4)
--- 
-*iter x(2)*x(3)*x(4)
-++ 
-*iter x(2)*x(4)
+TEMPORARILY OUT OF ORDER
  Testing additional properties...
 poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
 term length: 5
@@ -455,7 +420,15 @@ var(1) > var(2)
 1
 var(2) > var(1)
 0
+poly *= var
+x(0)*x(1) + x(0)
+poly % var
+0
+poly %= var
+0
 Finished.
+var * monom
+x(0)*x(1)
 ----------------------
 Executing testsuite/cuddinterface
 ----------------------
@@ -1626,12 +1599,23 @@ Testing !=
 1
 Testing== 
 0
+last begin: 6
+Upper blocks endpints: 4, 6, 65535, 
+lieInSameBlock(0, 3): 1
+lieInSameBlock(0, 4): 0
+lieInSameBlock(4,5): 1
+lieInSameBlock(4,6): 0
+lieInSameBlock(3,1000): 0
+lieInSameBlock(7,1000): 1
+
 Switching to lex:  
 x(1)*x(2)*x(6) < x(1)*x(2)*x(7)*x(8) 0
 Testing!= 
 1
 Testing== 
 0
+last begin: 65535
+base order code: 0
 Finished.
 ----------------------
 Executing testsuite/errorcodes
@@ -1880,8 +1864,26 @@ result x(0)*x(1)*x(2) + x(0)*x(1) + x(1)*x(3) + x(3)*x(4)
 test newnode.
 newnode 0 x(1)*x(2) + x(2) + x(4) x(3) + x(4)
 result x(0)*x(1)*x(2) + x(0)*x(2) + x(0)*x(4) + x(3) + x(4)
-
-Finished.
+additional properties: 
+1
+0
+1
+1
+1
+0
+0
+1
+1
+0
+graded part: 
+x(0)
+1
+x(0)*x(1)
+1
+x(0) + x(2)
+1
+x(1)*x(2)
+1
 
 Finished.
 ----------------------
@@ -1967,8 +1969,9 @@ Testing sophisticated accumulation:
 Correct result:       x(0)*x(2) + x(1)*x(2)
 Sophisticated result: x(0)*x(2) + x(1)*x(2)
 testing...       x(0)*x(2) + x(0)*x(4) + x(1)*x(2) + x(1)*x(4) + x(1)
-lower x(0)*x(2) + x(0)*x(4)
-x(0)*x(2) + x(0)*x(4)
+lower x(0)*x(2) + x(0)*x(4) + x(1)*x(2)
+summing >= x(0)*x(4) .. <  x(1)*x(4)
+x(0)*x(4) + x(1)*x(2)
 testing...       x(0)*x(1) + x(0)*x(2) + x(1)*x(2) + 1
 summing >= x(0)*x(2) .. <  1
 x(0)*x(2) + x(1)*x(2)
@@ -2048,6 +2051,12 @@ x(0)*x(4) < x(0)
 0
 x(0)*x(4) > x(0)
 1
+Testing popFirst.
+x(0)*x(4)
+x(4)
+Testing BooleExponent.popFirst()
+(0, 4)
+(4)
 Finished.
 -------------------
 Testsuite finished.

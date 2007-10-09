@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/10/09 10:30:53  dreyer
+ * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
+ *
  * Revision 1.22  2007/07/31 07:43:51  dreyer
  * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
  *
@@ -364,7 +367,18 @@ main(){
   std::cout << (x*y + 1).isPair() <<std::endl;
   std::cout << (x*y + x + 0).isPair() <<std::endl;
   std::cout << (x*y + x + 1).isPair() <<std::endl;
-  std::cout <<std::endl<<  "Finished."<<std::endl;
+
+
+  std::cout <<  "graded part: " <<std::endl;
+  std::cout << (x*y + x + 1).gradedPart(1) <<std::endl;
+  std::cout << ((x*y + x + 1).gradedPart(1)  == x)<<std::endl;
+  std::cout << (x*y + x + 1).gradedPart(2) <<std::endl;
+  std::cout << ((x*y + x + 1).gradedPart(2) == x*y)<<std::endl;
+  std::cout << (x*y + x + z).gradedPart(1) <<std::endl;
+  std::cout << ((x*y + x + z).gradedPart(1) == (x+z))<<std::endl;
+  std::cout << (x+ y*z +z).gradedPart(2) <<std::endl;
+  std::cout << ((x+ y*z +z).gradedPart(2) == y*z)<<std::endl;
+
 
  }
   catch (PBoRiError& err) {
