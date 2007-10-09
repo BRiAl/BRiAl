@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2007/10/09 12:16:50  dreyer
+ * ADD: apply_mapping
+ *
  * Revision 1.23  2007/10/09 10:30:53  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -379,6 +382,14 @@ main(){
   std::cout << (x+ y*z +z).gradedPart(2) <<std::endl;
   std::cout << ((x+ y*z +z).gradedPart(2) == y*z)<<std::endl;
 
+
+  std::cout <<  "mapping: " <<std::endl;
+
+  BoolePolynomial map = (x* (y + w) + v);
+  poly = x*y +x +y;
+  std::cout <<  "map: "<<map << " poly: "<< poly<<std::endl;
+  std::cout <<  apply_mapping(poly, map) <<std::endl;
+  std::cout <<  (apply_mapping(poly, map) == (v*w+v+w) )<<std::endl;
 
  }
   catch (PBoRiError& err) {

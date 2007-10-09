@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/10/09 12:16:49  dreyer
+ * ADD: apply_mapping
+ *
  * Revision 1.33  2007/10/09 10:30:52  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -869,7 +872,7 @@ dd_owns(NaviType navi, Iterator start, Iterator finish) {
   return dd_owns(navi.thenBranch(), ++start, finish);
 }
 
-
+// determine the part of a polynomials of a given degree
 template <class CacheType, class NaviType, class DegType, class SetType>
 SetType
 dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,  
@@ -902,6 +905,5 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 
   return result;
 }
-
 
 END_NAMESPACE_PBORI

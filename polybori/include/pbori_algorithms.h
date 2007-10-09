@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/10/09 12:16:49  dreyer
+ * ADD: apply_mapping
+ *
  * Revision 1.11  2007/10/09 10:30:52  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -258,6 +261,52 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
 #endif
 }
 
+
+// determine the part of a polynomials of a given degree
+template <class CacheType, class NaviType, class SetType>
+SetType
+dd_mapping(const CacheType& cache, NaviType navi, NaviType map, SetType init) {
+
+  if (navi.isConstant())
+    return navi;
+
+  while (*map > *navi) {
+    assert(!map.isConstant());
+    map.incrementThen();
+  }
+
+  assert(*navi == *map);
+
+  NaviType cached = cache.find(navi, map);
+
+  // look whether computation was done before
+  if (cached.isValid())
+    return SetType(cached);
+
+  SetType result = 
+    SetType(*(map.elseBranch()),  
+            dd_mapping(cache, navi.thenBranch(), map.thenBranch(), init),
+            dd_mapping(cache, navi.elseBranch(), map.thenBranch(), init)
+            );
+
+
+  // store result for later reuse
+  cache.insert(navi, map, result.navigation());
+
+  return result;
+}
+
+
+template <class PolyType, class MapType>
+PolyType
+apply_mapping(const PolyType& poly, const MapType& map) {
+
+  CCacheManagement<typename CCacheTypes::mapping> 
+    cache(poly.diagram().manager());
+
+  return dd_mapping(cache, poly.navigation(), map.navigation(), 
+                    typename PolyType::set_type()); 
+}
 
 
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/10/09 12:16:49  dreyer
+ * ADD: apply_mapping
+ *
  * Revision 1.34  2007/10/09 10:30:51  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -207,7 +210,7 @@ public:
     public ternary_cache_tag { };
 
   struct graded_part: public binary_cache_tag { };
-
+  struct mapping: public binary_cache_tag { };
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)
