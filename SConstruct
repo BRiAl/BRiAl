@@ -285,7 +285,9 @@ LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
 
 testsuite_py="testsuite/py/"
-installable_python_modules_tp=[(testsuite_py+f,f) for f in Split("""ll.py
+installable_python_modules_tp=[]
+
+documentable_python_modules = [(pyroot+'polybori/', f) for f in Split("""ll.py
 check_claims.py nf.py gbrefs.py statistics.py randompoly.py blocks.py
 specialsets.py aes.py coding.py memusage.py PyPolyBoRi.py""")]
 
@@ -399,7 +401,9 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target="doc/python/polybori.html",source=[polybori_modules+f for (a,f) in all_installable_python_modules])
+    env.PYTHONDOC(target="doc/python/polybori.html",
+                  source=[polybori_modules + f for (a,f) in
+                          documentable_python_modules + installable_dynamic_python_modules]) 
     #bld=Builder("cd")
 else:
     print "no python extension"

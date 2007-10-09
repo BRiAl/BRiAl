@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/10/09 15:07:27  dreyer
+ * ADD: mapping;   CHANGE: shared python modules to pyroot
+ *
  * Revision 1.12  2007/10/09 12:16:49  dreyer
  * ADD: apply_mapping
  *
@@ -306,6 +309,30 @@ apply_mapping(const PolyType& poly, const MapType& map) {
 
   return dd_mapping(cache, poly.navigation(), map.navigation(), 
                     typename PolyType::set_type()); 
+}
+
+
+template <class MonomType, class PolyType>
+PolyType
+generate_mapping(MonomType& fromVars, MonomType& toVars, PolyType init) {
+
+  if(fromVars.isConstant()) {
+    assert(fromVars.isOne() && toVars.isOne());
+    return fromVars;
+  }
+
+  MonomType varFrom = fromVars.firstVariable();
+  MonomType varTo = toVars.firstVariable();
+  fromVars.popFirst();
+  toVars.popFirst();
+  return (varFrom * generate_mapping(fromVars, toVars, init)) + varTo;
+}
+
+template <class PolyType, class MonomType>
+PolyType
+mapping(PolyType poly, MonomType fromVars, MonomType toVars) {
+
+  return apply_mapping(poly, generate_mapping(fromVars, toVars, PolyType()) );
 }
 
 

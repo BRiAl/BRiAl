@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.76  2007/10/09 15:07:27  dreyer
+ * ADD: mapping;   CHANGE: shared python modules to pyroot
+ *
  * Revision 1.75  2007/10/09 10:30:51  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -531,7 +534,7 @@ public:
   /// Total degree of the leading term
   size_type lmTotalDeg() const;
 
-  /// Get tart of  of given degree
+  /// Get part of given degree
   self gradedPart(size_type deg) const;
 
   /// Number of nodes in the decision diagram

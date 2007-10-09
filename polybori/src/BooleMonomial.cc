@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/10/09 15:07:27  dreyer
+ * ADD: mapping;   CHANGE: shared python modules to pyroot
+ *
  * Revision 1.12  2007/04/13 13:55:53  dreyer
  * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
  *
@@ -351,4 +354,11 @@ BooleMonomial::exp() const {
   return  exp_type().get(*this);
 }
 
+// Get first variable
+BooleMonomial::var_type
+BooleMonomial::firstVariable() const {
+
+  PBORI_TRACE_FUNC( "BooleMonomial::firstVariable() const" );
+  return var_type(firstIndex());
+}
 END_NAMESPACE_PBORI

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2007/10/09 15:07:30  dreyer
+ * ADD: mapping;   CHANGE: shared python modules to pyroot
+ *
  * Revision 1.24  2007/10/09 12:16:50  dreyer
  * ADD: apply_mapping
  *
@@ -387,9 +390,11 @@ main(){
 
   BoolePolynomial map = (x* (y + w) + v);
   poly = x*y +x +y;
-  std::cout <<  "map: "<<map << " poly: "<< poly<<std::endl;
-  std::cout <<  apply_mapping(poly, map) <<std::endl;
-  std::cout <<  (apply_mapping(poly, map) == (v*w+v+w) )<<std::endl;
+  std::cout << "map: "<<map << " poly: "<< poly<<std::endl;
+  std::cout << apply_mapping(poly, map) <<std::endl;
+  std::cout << (apply_mapping(poly, map) == (v*w+v+w) )<<std::endl;
+  std::cout << mapping(poly, x*y, v*w) <<std::endl;
+  std::cout << (apply_mapping(poly, map) == mapping(poly, x*y, v*w))<<std::endl;
 
  }
   catch (PBoRiError& err) {

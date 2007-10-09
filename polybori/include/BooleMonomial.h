@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/10/09 15:07:27  dreyer
+ * ADD: mapping;   CHANGE: shared python modules to pyroot
+ *
  * Revision 1.26  2007/07/30 15:19:38  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -260,6 +263,7 @@ class BooleMonomial {
   bool_type operator!=(const self& rhs) const { return m_poly != rhs.m_poly; }
   bool_type isZero() const { return m_poly.isZero(); }
   bool_type isOne() const { return m_poly.isOne(); }
+  bool_type isConstant() const { return m_poly.isConstant(); }
   //@}
 
   /// Test for reducibility
@@ -293,6 +297,15 @@ class BooleMonomial {
     assert(!m_poly.isConstant());
     return *this = dd_type(m_poly.diagram().manager(),
                            m_poly.navigation().thenBranch()); 
+  }
+
+  /// Get first variable in monomial
+  var_type firstVariable() const;
+
+  /// Get first index in monomial
+  idx_type firstIndex() const {
+    assert(!m_poly.isConstant());
+    return *begin();
   }
 
 protected:
