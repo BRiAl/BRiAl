@@ -9,6 +9,7 @@
 //#include "pairs.h"
 #include "strategy_wrapper.h"
 #include "monomial_wrapper.h"
+#include "misc_wrapper.h"
 #include "set_wrapper.h"
 #include "out_helper.h"
 #include "test_util.h"
@@ -24,6 +25,7 @@ using namespace boost::python;
 using namespace std;
 
 USING_NAMESPACE_PBORI
+//#define EXPORT __attribute__((visibility("default")))
 #define WRAP_ALSO_CUDD 1
 
 void print_variable(const BooleVariable & p){
@@ -33,6 +35,7 @@ bool have_degree_order(){
     return BoolePolyRing::isDegreeOrder();
 }
 
+//EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   BoolePolyRing r;
@@ -107,6 +110,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   export_monomial();
   export_bset();
   export_variable_block();
+  export_misc();
    }
 #ifdef PB_STATIC_PROFILING_VERSION
 int main(int argc,char* argv[]){

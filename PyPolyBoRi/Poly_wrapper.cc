@@ -10,10 +10,12 @@
 #include <iostream>
 #include "polybori.h"
 #include "pbori_defs.h"
+#include "groebner_alg.h"
 #include "out_helper.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
+USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
 static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
@@ -102,7 +104,7 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("__len__", &BoolePolynomial::length)
   .def("__str__", streamable_as_str<BoolePolynomial>)
   .def("__repr__", streamable_as_str<BoolePolynomial>)
-  
+  .def("mapEveryXToXPlusOne",map_every_x_to_x_plus_one)
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
