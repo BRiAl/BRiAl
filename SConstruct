@@ -303,7 +303,7 @@ def add_cnf_dir(env,directory):
       env.CNF(f[:-4])
 if HAVE_PYTHON_EXTENSION:
  
-    wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "variable_block.cc","monomial_wrapper.cc", "strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
+    wrapper_files=["PyPolyBoRi/" + f  for f in ["test_util.cc","main_wrapper.cc", "dd_wrapper.cc", "Poly_wrapper.cc", "navigator_wrap.cc", "variable_block.cc","monomial_wrapper.cc", "misc_wrapper.cc","strategy_wrapper.cc", "set_wrapper.cc", "slimgb_wrapper.cc"]]
     if env['PLATFORM']=="darwin":
         pypb=env.LoadableModule('PyPolyBori/PyPolyBoRi',
             wrapper_files + shared_resources,
