@@ -26,7 +26,8 @@ default_options.set( 'groebner_basis',
                        'matrix_prefix': 'matrix', 'red_tail': True,
                        'implementation': 'Python', 'aes': False,
                        'llfirst': False, 'noro': False, 'implications': False,
-                       'draw_matrices': False, 'llfirstonthefly': False } )
+                       'draw_matrices': False, 'llfirstonthefly': False,
+                       'linearAlgebraInLastBlock': True } )
 
 def groebner_basis(I, **kwargs):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
@@ -87,5 +88,6 @@ def groebner_basis(I, **kwargs):
         selection_size=options.selection_size, optLazy=options.lazy, 
         optExchange=options.exchange, optAllowRecursion=options.recursion,
         use_faugere=options.faugere,
-        use_noro=options.noro,ll=options.ll)
+        use_noro=options.noro,ll=options.ll,
+        optLinearAlgebraInLastBlock=options.linearAlgebraInLastBlock)
     return I
