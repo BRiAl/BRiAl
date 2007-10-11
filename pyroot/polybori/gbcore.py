@@ -66,15 +66,9 @@ def groebner_basis(I, **kwargs):
       pt2=time()
       if options.prot:
         print "preprocessing time", pt2-pt
-    def invert(p):
-        p=Polynomial(p)
-        used_vars=p.vars()
-        for v in used_vars:
-          s1=Polynomial(p.diagram().subset1(v))
-          p=p+s1
-        return p
+
     if options.invert:
-       I=[invert(p) for p in I]
+       I=[p.mapEveryXToXPlusOne() for p in I]
     
             
     
