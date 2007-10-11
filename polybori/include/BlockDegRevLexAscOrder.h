@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/10/11 09:17:21  bricken
+ * + corrected baseorder code
+ *
  * Revision 1.5  2007/07/31 07:43:49  dreyer
  * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
  *
@@ -79,7 +82,7 @@ class BlockDegRevLexAscOrder:
   typedef std::greater<idx_type> idx_comparer_type;
 
   /// Get order code
-  enum { order_code = CTypes::block_dlex, baseorder_code = CTypes::dlex };
+  enum { order_code = CTypes::block_dlex, baseorder_code = CTypes::dp_asc };
 
   /// Default Constructor
   BlockDegRevLexAscOrder(): base(), m_indices() {
