@@ -4,7 +4,7 @@ from sys import path
 #print path
 
 from polybori.gbrefs import load_data, clean_data, my_import
-
+from polybori.gbcore import groebner_basis
 
 #from data import stas1 as data
 from polybori.nf import *
@@ -24,7 +24,7 @@ except:
 
 data=load_data(datafilename, base_dir="../testsuite/py/")
 change_ordering(getattr(OrderCode,ordername))
-I=buchberger_C_based2(data.ideal,optAllowRecursion=False)
+I=groebner_basis(data.ideal)
 del I
 clean_data(data)
 del data
