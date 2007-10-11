@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/10/11 09:48:39  dreyer
+ * Fix: codes and tags of block_dp_asc corrected
+ *
  * Revision 1.6  2007/10/11 09:17:21  bricken
  * + corrected baseorder code
  *
@@ -36,9 +39,6 @@
  *
  * Revision 1.1  2007/04/18 15:37:28  dreyer
  * ADD: dp_asc now active
- *
- * Revision 1.1  2007/03/21 08:55:08  dreyer
- * ADD: first version of block_dlex running
  *
  * @endverbatim
 **/
@@ -75,14 +75,14 @@ class BlockDegRevLexAscOrder:
   //@{
   typedef valid_tag blockorder_property;
   typedef invalid_tag descending_property;
-  typedef block_dlex_tag order_tag;
+  typedef block_dp_asc_tag order_tag;
   //@}
 
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;
 
   /// Get order code
-  enum { order_code = CTypes::block_dlex, baseorder_code = CTypes::dp_asc };
+  enum { order_code = CTypes::block_dp_asc, baseorder_code = CTypes::dp_asc };
 
   /// Default Constructor
   BlockDegRevLexAscOrder(): base(), m_indices() {
