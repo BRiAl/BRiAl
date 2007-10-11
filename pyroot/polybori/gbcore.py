@@ -1,6 +1,7 @@
 from polybori.nf import *
 import polybori.aes as aes
 import polybori.coding as coding
+from time import time
 
 class PolyBoRiDefaultOptions:
   def __init__(self):
