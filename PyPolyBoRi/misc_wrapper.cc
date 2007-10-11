@@ -4,12 +4,19 @@
 
 #include "polybori.h"
 #include "pbori_defs.h"
-#include "pbori_algorithms.h"
+
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
 #include "Poly_wrapper.h"
 
+BoolePolynomial
+do_mapping(const BoolePolynomial& poly, const BooleMonomial& fromVars, 
+           const BooleMonomial& toVars) {
+
+  return mapping(poly, fromVars, toVars);
+}
+
 void export_misc(){
-    def("mapping", mapping<BoolePolynomial,BooleMonomial>);
+  def("mapping", do_mapping);
 }

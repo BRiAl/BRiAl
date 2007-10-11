@@ -24,6 +24,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/10/11 09:30:47  dreyer
+ * Fix: Workaround function template pointer problem
+ *
  * Revision 1.13  2007/10/09 15:07:27  dreyer
  * ADD: mapping;   CHANGE: shared python modules to pyroot
  *
@@ -66,6 +69,9 @@
  * @endverbatim
 **/
 //*****************************************************************************
+
+#ifndef pbori_algorithms_h_
+#define pbori_algorithms_h_
 
 // include standard headers
 #include <numeric>
@@ -335,5 +341,6 @@ mapping(PolyType poly, MonomType fromVars, MonomType toVars) {
   return apply_mapping(poly, generate_mapping(fromVars, toVars, PolyType()) );
 }
 
-
 END_NAMESPACE_PBORI
+
+#endif // pbori_algorithms_h_
