@@ -1435,7 +1435,7 @@ static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, 
     return p;
 }
 static int get_table_entry4(int p_code, int pos){
-    switch(BoolePolyRing::getOrderCode()){
+    switch(BoolePolyRing::getBaseOrderCode()){
         #ifdef HAVE_LP4_DATA
         case COrderEnums::lp:
             return lp4var_data[p_code][pos];
@@ -1452,6 +1452,12 @@ static int get_table_entry4(int p_code, int pos){
             cerr<<"using tables with forbidden order"<<endl;
     }
     return 0;
+}
+bool polynomial_in_one_block(const Polynomial p){
+    if (p.isConstant()) return true;
+    Monomial vars=p.usedVariables();
+    
+    return BoolePolyRing::activeManager().lieInSameBlock(*vars.begin(),*std::max(vars.begin(),vars.end()));
 }
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
@@ -1724,7 +1730,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   std::vector<Polynomial> impl;
   PolyEntry& e=generators[s];
-  if (have_ordering_for_tables()){
+  if ((have_ordering_for_tables())||(polynomial_in_one_block(generators[s].p))){
     int uv=e.usedVariables.deg();
     if (uv<=4){
       impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
@@ -2354,10 +2360,11 @@ class ShorterEliminationLengthModified{
     return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
   }
 };
+
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
   std::vector<Polynomial> impl;
   int way=0;
-  if (have_ordering_for_tables()){
+  if ((have_ordering_for_tables())||(polynomial_in_one_block(p))){
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
