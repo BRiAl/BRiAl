@@ -71,6 +71,7 @@ def with_heuristic(heuristic_function):
     def make_wrapper(f):
         wrapped=HeuristicalFunction(f,heuristic_function)
         wrapped.__name__=f.__name__
+        wrapped.__doc__=f.__doc__
         return wrapped
     return make_wrapper
 
