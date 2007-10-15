@@ -2301,31 +2301,23 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
 #endif
 
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
+
+  if (vs.ownsOne()) return MonomialSet();
   MonomialSet::navigator a=as.navigation();
   MonomialSet::navigator v=vs.navigation();
   idx_type a_index=*a;
   idx_type v_index=*v;
-  if (vs.ownsOne()) return MonomialSet();
   if (a.isConstant()) {
-     // if (!(vs.ownsOne()))
           return as;
-      //else return MonomialSet();
   }
-  
-  
   while((v_index=*v)<(a_index=*a)){
         v.incrementElse();
     }
   if (v.isConstant()) {
-      //if (v.isTerminated()) return MonomialSet();
-      //else
           return as;
   }
   if (v==a) return MonomialSet(); 
-  /*else 
-  {
-      if (MonomialSet(v).ownsOne()) return MonomialSet();
-  }*/
+
   typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
     cache_mgr_type;
   cache_mgr_type cache_mgr;
@@ -2334,9 +2326,12 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   if (cached.isValid()) return cached;
   MonomialSet result;
   if (a_index==v_index){
+
+    MonomialSet::navigator ve=v.elseBranch();
+
     result=MonomialSet(a_index,
-    mod_mon_set(mod_mon_set(a.thenBranch(), v.thenBranch()),v.elseBranch()),
-    mod_mon_set(a.elseBranch(),v.elseBranch())
+    mod_mon_set(mod_mon_set(a.thenBranch(), v.thenBranch()),ve),
+    mod_mon_set(a.elseBranch(),ve)
     );
     
   } else {
