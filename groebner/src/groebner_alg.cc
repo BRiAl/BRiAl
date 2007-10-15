@@ -314,25 +314,32 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
     else return MonomialSet();
 }
 
-static bool have_ordering_for_tables(){
-        
-        
-      
+static bool have_ordering_for_tables(){  
     const int order_code=BoolePolyRing::getOrderCode();
     #ifdef HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
     #endif
-
-
-
     #ifdef HAVE_LP4_DATA
         if (order_code==COrderEnums::lp)
            return true;
     #endif
-
-    
-
+    #ifdef HAVE_DP_ASC4_DATA
+        if (order_code==COrderEnums::dp_asc)
+           return true;
+    #endif
+    return false;
+}
+static bool have_base_ordering_for_tables(){  
+    const int order_code=BoolePolyRing::getBaseOrderCode();
+    #ifdef HAVE_DLEX4_DATA
+        if (order_code==COrderEnums::dlex)
+           return true;
+    #endif
+    #ifdef HAVE_LP4_DATA
+        if (order_code==COrderEnums::lp)
+           return true;
+    #endif
     #ifdef HAVE_DP_ASC4_DATA
         if (order_code==COrderEnums::dp_asc)
            return true;
@@ -1730,7 +1737,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   std::vector<Polynomial> impl;
   PolyEntry& e=generators[s];
-  if ((have_ordering_for_tables())||(polynomial_in_one_block(generators[s].p))){
+  if ((have_ordering_for_tables())||((have_base_ordering_for_tables())&&(polynomial_in_one_block(generators[s].p)))){
     int uv=e.usedVariables.deg();
     if (uv<=4){
       impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
@@ -2364,7 +2371,7 @@ class ShorterEliminationLengthModified{
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
   std::vector<Polynomial> impl;
   int way=0;
-  if ((have_ordering_for_tables())||(polynomial_in_one_block(p))){
+  if ((have_ordering_for_tables())||((have_base_ordering_for_tables()) && (polynomial_in_one_block(p)))){
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
