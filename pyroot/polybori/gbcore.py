@@ -3,6 +3,8 @@ import polybori.aes as aes
 import polybori.coding as coding
 from time import time
 from copy import copy
+from itertools import chain
+from inspect import getargspec
 #class PolyBoRiDefaultOptions:
 #  def __init__(self):
 #      self.opts = {}
@@ -20,19 +22,8 @@ default_options=dict()
 # if you want to override, add functionality, I would inherit from dict
 # P.S.: I already made the same error
 
-default_options["groebner_basis"]=\
-                     { 'faugere': False,  'coding': False,
-                       'preprocess_only': False, 'selection_size': 1000,
-                       'full_prot': False, 'recursion': False, 'invert': False,
-                       'prot': False, 'step_factor': 1,
-                       'deg_bound': 1000000000000L, 'lazy': True, 'll': False,
-                       'max_growth': 2.0, 'exchange': True,
-                       'matrix_prefix': 'matrix', 'red_tail': True,
-                       'implementation': 'Python', 'aes': False,
-                       'llfirst': False, 'noro': False, 'implications': False,
-                       'draw_matrices': False, 'llfirstonthefly': False,
-                       'linearAlgebraInLastBlock': True } 
 
+    
 #strategy brainstorming
 
 #count number of unbound vars to see, if ll is a good choice
@@ -45,56 +36,81 @@ default_options["groebner_basis"]=\
 
 #LA at few variables and no ll
 #LA at "dense" systems
-def resolve_groebner_basis_options(options,user_set_options,I):
-    options=copy(options)
-    options.update(user_set_options)
-    return options
-def groebner_basis(I, **kwargs):
+
+
+#@TODO: implement this to work with *args, **args for wrapped function
+
+def trivial_heuristic(d):
+    return d
+class HeuristicalFunction(object):
+    def __call__(self,*args,**kwds):
+        complete_dict=copy(kwds)
+        for (k,v) in zip(self.argnames,args):
+            complete_dict[k]=v
+        complete_dict=self.heuristicFunction(complete_dict)
+        return self.f(**complete_dict)
+    def __init__(self,f,heuristic_function):
+        (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
+        self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
+        self.heuristicFunction=heuristic_function
+        self.f=f
+        
+def with_heuristic(heuristic_function):
+    def make_wrapper(f):
+        wrapped=HeuristicalFunction(f,heuristic_function)
+        wrapped.__name__=f.__name__
+        return wrapped
+    return make_wrapper
+
+
+@with_heuristic(trivial_heuristic)
+def groebner_basis(I, faugere=False,  coding=False,
+       preprocess_only=False, selection_size= 1000,
+       full_prot= False, recursion= False, invert= False,
+       prot= False, step_factor= 1,
+       deg_bound= 1000000000000L, lazy= True, ll= False,
+       max_growth= 2.0, exchange= True,
+       matrix_prefix= "matrix", red_tail= True,
+       implementation="Python", aes= False,
+       llfirst= False, noro= False, implications= False,
+       draw_matrices= False, llfirstonthefly= False,
+       linearAlgebraInLastBlock= True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
 
-    class toAttr:
-        def __init__(self,indict):
-            self.stuff = indict
-        def __getattr__(self,which):
-            return self.stuff.get(which,None)
 
-    options = default_options['groebner_basis']
-    options= resolve_groebner_basis_options(options,kwargs,I)
-    
-    options = toAttr(options)
 
     import nf
-    if options.full_prot:
-        options.prot=True
+    if full_prot:
+        prot=True
     
-    nf.print_matrices=options.draw_matrices
-    nf.matrix_prefix=options.matrix_prefix
+    nf.print_matrices=draw_matrices
+    nf.matrix_prefix=matrix_prefix
     
-    if options.implementation=="Python":
+    if implementation=="Python":
         implementation=buchberger_C_based2
     else:
         implementation=symmGB_F2_C
     
     
-    if options.aes:
+    if aes:
         pt=time()
-        I=aes.preprocess(I, prot=options.prot)
+        I=aes.preprocess(I, prot=prot)
         pt2=time()
-        if options.prot:
+        if prot:
           print "preprocessing time", pt2-pt
-    if options.coding:
+    if coding:
       pt=time()
-      I=coding.preprocess(I,prot=options.prot)
+      I=coding.preprocess(I,prot=prot)
       pt2=time()
-      if options.prot:
+      if prot:
         print "preprocessing time", pt2-pt
 
-    if options.invert:
+    if invert:
        I=[p.mapEveryXToXPlusOne() for p in I]
     
             
     
-    if options.preprocess_only:
+    if preprocess_only:
       for p in I:
         print p
       del p
@@ -102,13 +118,13 @@ def groebner_basis(I, **kwargs):
       clean_data(mydata)
       import sys
       sys.exit(0)    
-    I=implementation(I, optRedTail=options.red_tail,\
-        max_growth=options.max_growth, step_factor=options.step_factor,
-        implications=options.implications,prot=options.prot,
-        full_prot=options.full_prot,deg_bound=options.deg_bound,
-        selection_size=options.selection_size, optLazy=options.lazy, 
-        optExchange=options.exchange, optAllowRecursion=options.recursion,
-        use_faugere=options.faugere,
-        use_noro=options.noro,ll=options.ll,
-        optLinearAlgebraInLastBlock=options.linearAlgebraInLastBlock)
+    I=implementation(I, optRedTail=red_tail,\
+        max_growth=max_growth, step_factor=step_factor,
+        implications=implications,prot=prot,
+        full_prot=full_prot,deg_bound=deg_bound,
+        selection_size=selection_size, optLazy=lazy, 
+        optExchange=exchange, optAllowRecursion=recursion,
+        use_faugere=faugere,
+        use_noro=noro,ll=ll,
+        optLinearAlgebraInLastBlock=linearAlgebraInLastBlock)
     return I
