@@ -5,6 +5,7 @@ from time import time
 from copy import copy
 from itertools import chain
 from inspect import getargspec
+from statistics import used_vars
 #class PolyBoRiDefaultOptions:
 #  def __init__(self):
 #      self.opts = {}
@@ -40,7 +41,18 @@ default_options=dict()
 
 #@TODO: implement this to work with *args, **args for wrapped function
 
+
+def firstgb_heuristic(d):
+    if not "faugere" in d:
+        if have_degree_order() and used_vars(d["I"])<200:
+            d["faugere"]=True
+            if not "red_tail" in d:
+                d["red_tail"]=False
+            if not "selection_size" in d:
+                d["selection_size"]=10000
+    return d
 def trivial_heuristic(d):
+    
     return d
 class HeuristicalFunction(object):
     def __call__(self,*args,**kwds):
@@ -63,7 +75,7 @@ def with_heuristic(heuristic_function):
     return make_wrapper
 
 
-@with_heuristic(trivial_heuristic)
+@with_heuristic(firstgb_heuristic)
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False, invert= False,
