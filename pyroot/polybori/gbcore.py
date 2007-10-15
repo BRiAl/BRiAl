@@ -66,12 +66,12 @@ class HeuristicalFunction(object):
         self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
         self.heuristicFunction=heuristic_function
         self.f=f
+        self.__doc__=f.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(self.options[k]) for k in self.options))
         
 def with_heuristic(heuristic_function):
     def make_wrapper(f):
         wrapped=HeuristicalFunction(f,heuristic_function)
         wrapped.__name__=f.__name__
-        wrapped.__doc__=f.__doc__
         return wrapped
     return make_wrapper
 
