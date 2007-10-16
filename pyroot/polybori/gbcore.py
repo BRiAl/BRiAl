@@ -6,6 +6,7 @@ from copy import copy
 from itertools import chain
 from inspect import getargspec
 from statistics import used_vars
+from heuristics import dense_system,gauss_on_linear
 #class PolyBoRiDefaultOptions:
 #  def __init__(self):
 #      self.opts = {}
@@ -43,13 +44,17 @@ default_options=dict()
 
 
 def firstgb_heuristic(d):
+    I=d["I"]
     if not "faugere" in d:
-        if have_degree_order() and used_vars(d["I"])<200:
+        if (have_degree_order() and len(used_vars(I))<200) or (dense_system(I) and len(used_vars(I))<100):
             d["faugere"]=True
             if not "red_tail" in d:
                 d["red_tail"]=False
             if not "selection_size" in d:
                 d["selection_size"]=10000
+            if not ("ll" in d):
+                d["ll"]=True
+
     return d
 def trivial_heuristic(d):
     
@@ -87,11 +92,12 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linearAlgebraInLastBlock= True):
+       linearAlgebraInLastBlock= True, gauss_on_linear_first=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
 
 
-
+    if gauss_on_linear_first:
+        I=gauss_on_linear(I)
     import nf
     if full_prot:
         prot=True
