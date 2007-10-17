@@ -19,7 +19,7 @@ def used_vars_set(l):
     for p in l:
         s.update(Polynomial(p).vars())
     for v in reversed(list(s)):
-        m=Variable(v)*m
+        m=Monomial(Variable(v))*m
     return m
     
 
@@ -31,5 +31,5 @@ def used_vars_set(l,bound=None):
         if bound and len(s)>bound:
             break
     for v in reversed(list(s)):
-        m=Variable(v)*m
+        m=Monomial(Variable(v))*m
     return m
