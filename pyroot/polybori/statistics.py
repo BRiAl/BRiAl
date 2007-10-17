@@ -4,6 +4,15 @@ def used_vars(l):
     for p in l:
         m=m*Polynomial(p).vars()
     return m
+
+def used_vars(l, bound):
+    m=Monomial()
+    for p in l:
+        m=m*Polynomial(p).vars()
+        if len(m) > bound:
+            return m
+    return m
+
 def used_vars_set(l):
     m=Monomial()
     s=set()

@@ -5,7 +5,7 @@ from time import time
 from copy import copy
 from itertools import chain
 from inspect import getargspec
-from statistics import used_vars
+from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
 #class PolyBoRiDefaultOptions:
 #  def __init__(self):
@@ -47,7 +47,7 @@ def firstgb_heuristic(d):
     I=d["I"]
     if not "faugere" in d:
         if (have_degree_order() and len(used_vars_set(I,bound=200))<200) or (dense_system(I) and len(used_vars_set(I,bound=100))<100):
-            print "using la"
+#            print "using la"
             d["faugere"]=True
             if not "red_tail" in d:
                 d["red_tail"]=False
