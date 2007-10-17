@@ -12,3 +12,15 @@ def used_vars_set(l):
     for v in reversed(list(s)):
         m=Variable(v)*m
     return m
+    
+
+def used_vars_set(l,bound=None):
+    m=Monomial()
+    s=set()
+    for p in l:
+        s.update(Polynomial(p).vars())
+        if bound and len(s)>bound:
+            break
+    for v in reversed(list(s)):
+        m=Variable(v)*m
+    return m
