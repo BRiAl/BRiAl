@@ -1,5 +1,5 @@
 from polybori.nf import *
-import polybori.aes as aes
+import polybori.aes as aesmod
 import polybori.coding as coding
 from time import time
 from copy import copy
@@ -113,7 +113,7 @@ def groebner_basis(I, faugere=False,  coding=False,
     
     if aes:
         pt=time()
-        I=aes.preprocess(I, prot=prot)
+        I=aesmod.preprocess(I, prot=prot)
         pt2=time()
         if prot:
           print "preprocessing time", pt2-pt
