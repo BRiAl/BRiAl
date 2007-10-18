@@ -44,10 +44,27 @@ default_options=dict()
 
 
 def firstgb_heuristic(d):
+    def want_la():
+        n_used_vars=None
+        bound=None
+        if have_degree_order():
+            new_bound=200
+            n_used_vars=len(used_vars_set(I,bound=new_bound))
+            if n_used_vars<new_bound:
+                return True
+            bound=new_bound
+        if dense_system(I):
+            new_bound=100
+            if not (bound and new_bound<bound):
+                n_used_vars=len(used_vars_set(I,bound=new_bound))
+                bound=new_bound
+            if n_used_vars<bound:
+                return True
+        return False 
     I=d["I"]
     if not "faugere" in d:
-        if (have_degree_order() and len(used_vars_set(I,bound=200))<200) or (dense_system(I) and len(used_vars_set(I,bound=100))<100):
-#            print "using la"
+        if want_la():
+
             d["faugere"]=True
             if not "red_tail" in d:
                 d["red_tail"]=False
