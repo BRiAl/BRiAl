@@ -1,0 +1,64 @@
+# -*- python -*- 
+#***************************************************************************
+# 
+# @author  Michael Brickenstein, Alexander Dreyer
+# @date 2007-07-06
+#
+# This file is a configuration file for ipython -- ipythonrc format
+#
+# @par Copyright:
+#   (c) 2007 by
+#   Mathematisches Forschungsinstitut Oberwolfach, @n
+#   Dep. of Mathematics, Kaiserslautern University of Technology and @n
+#   Fraunhofer Institute for Industrial Mathematics (ITWM)
+#   D-67663 Kaiserslautern, Germany
+#
+# @version \$Id$
+#
+# $Log$
+# Revision 1.1  2007/10/19 12:48:48  dreyer
+# ADD: ipython functionality and wrapper
+#
+#
+# Configuration file for ipython -- ipythonrc format
+#
+# The format of this file is one of 'key value' lines.
+# Lines containing only whitespace at the beginning and then a # are ignored
+# as comments. But comments can NOT be put on lines with data.
+#***************************************************************************
+
+# Evaluate some environment variables, which may be set by wrapper scripts
+
+# PolyBoRi path (either set by wrapper or assumed to be the parent directory)
+# Note: change "execute pbdir = '..'", if you manually install this profile
+execute from os import environ as env
+execute pbdir = '..'
+execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
+
+# Get program name and prompt something
+execute ipbname = 'ipbori'
+execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
+execute print ipbname, "-- PolyBoRi's interactive command line tool\n"
+
+# Uncomment, if we want to skip the banner 
+# banner 0
+
+# Include base config from current IPYTHONDIR and only add some extras
+include ipythonrc
+
+# Append the PolyBoRi application directory to current search path
+execute from sys import path
+execute path.append(pbdir + "/pyroot")
+
+# Get all basic stuff from PyPolyBoRi
+execute from polybori.PyPolyBoRi import *
+execute r = Ring(10000)
+execute x = Variable
+
+# Get all-inclusive groebner routine
+execute from polybori.gbcore import groebner_basis
+
+# Import some high-level modelling functionality
+execute from polybori.blocks import declare_ring
+execute from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
+

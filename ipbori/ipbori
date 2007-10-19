@@ -1,0 +1,54 @@
+#!/bin/bash
+# 
+# @author Alexander Dreyer
+# @date 2007-10-19
+#
+# This file is a wrapper which enables the use of the PolyBoRi profile for
+# IPython without the need of installing the profile and setting the PolyBoRi
+# directory.
+#
+# @par Copyright:
+#   (c) 2007 by
+#   Dep. of Mathematics, Kaiserslautern University of Technology and @n
+#   Fraunhofer Institute for Industrial Mathematics (ITWM)
+#   D-67663 Kaiserslautern, Germany
+#
+# @version \$Id$
+#
+# $Log$
+# Revision 1.1  2007/10/19 12:48:48  dreyer
+# ADD: ipython functionality and wrapper
+#
+
+
+# First determine the directory of this script 
+THIS="$0"
+
+# Follow all symbolic links to get the real file name and directory
+while [ -L ${THIS} ]; do
+    THIS_DIR=`dirname "${THIS}"`
+    # emulating readlink, which is not available everywhere
+    ls_l=`LC_ALL=C ls -l "${THIS}" 2> /dev/null`
+    THIS="${ls_l/* -> }"
+    cd "${THIS_DIR}"
+done
+THIS_DIR=`dirname "${THIS}"`
+
+
+# Assuming parent directory is PolyBoRi directory
+export PBDIR=`cd "${THIS_DIR}/.."; pwd`
+
+# Get program name
+export IPBNAME=`basename $THIS`
+
+# Get directory of ipython profile (assuming it is in same directory)
+IPBDIR="${PBDIR}/ipbori"
+
+# Calling ipython with PolyBoRi profile
+#
+# Note: directly calling the profile as rcfile saves us the trouble of
+# installing the profile, but custom settings like IPYTHONDIR/ipythonrc are
+# still available. 
+# (For the latter, ipythonrc-polybori needs to import ipythonrc.)
+ipython -rcfile ${IPBDIR}/ipythonrc-polybori  $@
+
