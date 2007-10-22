@@ -105,6 +105,7 @@ class PythonConfig(object):
 PYTHONSEARCH=[\
     PythonConfig(version="2.5", prefix=PYPREFIX),\
     PythonConfig(version="2.4", prefix=PYPREFIX),\
+    PythonConfig(version="2.5"),
     PythonConfig(version="2.4"),\
     PythonConfig(version="2.3"),]
 
