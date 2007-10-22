@@ -6,5 +6,5 @@ try:
     for k in dir(pb):
         globals()[k]=getattr(pb,k)   
 except:
-    from dynamic.PyPolyBoRi import *
+    from polybori.dynamic.PyPolyBoRi import *
 
