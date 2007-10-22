@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.100  2007/10/22 15:16:55  dreyer
+ * ADD: lexLmDeg(), lexLead()
+ *
  * Revision 1.99  2007/10/09 10:30:52  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *
@@ -702,6 +705,16 @@ BoolePolynomial::lead() const {
 
 //   return leadterm;
 }
+
+// Leading term w.r.t. lex
+BoolePolynomial::monom_type
+BoolePolynomial::lexLead() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::lexLead() const" );
+
+  return LexOrder().lead(*this);
+}
+
 // Leading term (bound)
 BoolePolynomial::monom_type
 BoolePolynomial::boundedLead(size_type bound) const {
@@ -816,10 +829,19 @@ BoolePolynomial::lmDeg() const {
 
 #else
   self ld1st(leadFirst());
-  return std::distance(ld1st.firstBegin(), ld1st.firstEnd());
+  return ld1st.lexLmDeg();
 #endif
 }
 
+
+// Degree of the leading term
+BoolePolynomial::size_type
+BoolePolynomial::lexLmDeg() const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::lexLmDeg() const" );
+
+  return std::distance(firstBegin(), firstEnd());
+}
 
 // Total (weighted) maximal degree of the polynomial
 BoolePolynomial::size_type

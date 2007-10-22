@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.77  2007/10/22 15:16:55  dreyer
+ * ADD: lexLmDeg(), lexLead()
+ *
  * Revision 1.76  2007/10/09 15:07:27  dreyer
  * ADD: mapping;   CHANGE: shared python modules to pyroot
  *
@@ -507,6 +510,9 @@ public:
   /// Get leading term
   monom_type lead() const;
 
+  /// Get leading term w.r.t. lexicographical order
+  monom_type lexLead() const;
+
   /// Get leading term (using upper bound)
   monom_type boundedLead(size_type bound) const;
 
@@ -527,6 +533,9 @@ public:
 
   /// Degree of the leading term
   size_type lmDeg() const;
+
+  /// Degree of the leading term w.r.t. lexicographical ordering
+  size_type lexLmDeg() const;
 
   /// Total maximal degree of the polynomial
   size_type totalDeg() const;
