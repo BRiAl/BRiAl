@@ -80,16 +80,21 @@ def trivial_heuristic(d):
 class HeuristicalFunction(object):
     def __call__(self,*args,**kwds):
         complete_dict=copy(kwds)
+        heuristic=True
         for (k,v) in zip(self.argnames,args):
-            complete_dict[k]=v
-        complete_dict=self.heuristicFunction(complete_dict)
+            if k!="heuristic":
+                complete_dict[k]=v
+            else:
+                heuristic=v
+        if heuristic:
+            complete_dict=self.heuristicFunction(complete_dict)
         return self.f(**complete_dict)
     def __init__(self,f,heuristic_function):
         (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
         self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
         self.heuristicFunction=heuristic_function
         self.f=f
-        self.__doc__=f.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(self.options[k]) for k in self.options))
+        self.__doc__=f.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(self.options[k]) for k in self.options))+"\nTurn off heuristic by setting heuristic=False"
         
 def with_heuristic(heuristic_function):
     def make_wrapper(f):
