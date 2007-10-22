@@ -16,9 +16,19 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.2  2007/10/22 08:19:15  dreyer
+# ADD: evaluation of IPYTHONPREFIX, -ipythonprefix
+#
 # Revision 1.1  2007/10/19 12:48:48  dreyer
 # ADD: ipython functionality and wrapper
 #
+
+
+if [ "$1" = "-ipythonprefix" ]; then
+    IPYTHONPREFIX=$2
+    shift
+    shift
+fi
 
 
 # First determine the directory of this script 
@@ -50,5 +60,5 @@ IPBDIR="${PBDIR}/ipbori"
 # installing the profile, but custom settings like IPYTHONDIR/ipythonrc are
 # still available. 
 # (For the latter, ipythonrc-polybori needs to import ipythonrc.)
-ipython -rcfile ${IPBDIR}/ipythonrc-polybori  $@
+${IPYTHONPREFIX}ipython -rcfile ${IPBDIR}/ipythonrc-polybori  $@
 
