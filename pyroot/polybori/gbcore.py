@@ -116,12 +116,12 @@ def gb_with_pre_post_option(option,pre=None,post=None):
                 option_set=True
             else:
                 option_set=False
-            
+            kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
             if option_set:
                if pre:
                    I=pre(I)
                
-            res=f(I,kwds)
+            res=f(I,**kwds)
             if option_set:
                 if post:
                     res=post(res)
