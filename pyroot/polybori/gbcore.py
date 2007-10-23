@@ -107,29 +107,42 @@ def with_heuristic(heuristic_function):
         return wrapped
     return make_wrapper
 
-def gb_with_invert_option(f):
-    def wrapper(I,invert=False,**kwds):
-        zero=Polynomial(0)
-        I=[Polynomial(p) for p in I if p!=zero]
-        if invert:
-           I=[p.mapEveryXToXPlusOne() for p in I]
-        res=f(I,kwds)
-        if invert:
-            res=[p.mapEveryXToXPlusOne() for p in res]
+def gb_with_pre_post_option(option,pre=None,post=None):
+    def make_wrapper(f):
+        def wrapper(I,**kwds):
+            zero=Polynomial(0)
+            I=[Polynomial(p) for p in I if p!=zero]
+            if option in kwds and kwds[option]:
+                option_set=True
+            else:
+                option_set=False
+            
+            if option_set:
+               if pre:
+                   I=pre(I)
+               
+            res=f(I,kwds)
+            if option_set:
+                if post:
+                    res=post(res)
+                
 
-        return res
-    wrapper.__name__=f.__name__
-    wrapper.__doc__=f.__doc__+"\n Setting invert=True input and output get a transformation x+1 for each variable x, which shouldn't effect the calculated GB, but the algorithm"
-    if hasattr(f,"options"):
-        wrapper.options=copy(f.options)
-    else:
-        (argnames,varargs,varopts,defaults)=getargspec(f)
-        wrapper.options=dict(zip(argnames[-len(defaults):],defaults))
+            return res
+        wrapper.__name__=f.__name__
+        wrapper.__doc__=f.__doc__+"\n Setting invert=True input and output get a transformation x+1 for each variable x, which shouldn't effect the calculated GB, but the algorithm"
+        if hasattr(f,"options"):
+            wrapper.options=copy(f.options)
+        else:
+            (argnames,varargs,varopts,defaults)=getargspec(f)
+            wrapper.options=dict(zip(argnames[-len(defaults):],defaults))
 
-    wrapper.options["invert"]=False
-    return wrapper
+        wrapper.options["invert"]=False
+        return wrapper
+    return make_wrapper
+def invert_all(I):
+    return [p.mapEveryXToXPlusOne() for p in I]
 @with_heuristic(firstgb_heuristic)
-@gb_with_invert_option
+@gb_with_pre_post_option("invert",pre=invert_all,post=invert_all)
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
@@ -177,22 +190,22 @@ def groebner_basis(I, faugere=False,  coding=False,
 
     
             
-       # if options.llfirst or options.llfirstonthefly:
-       #            from polybori.ll import eliminate
-       #            change_ordering(OrderCode.lp)
-       #            if options.llfirstonthefly:
-       #                on_the_fly=True
-       #            else:
-       #                on_the_fly=False
-       #            #mon=Monomial()
-       #            #for p in I:
-       #            #    if not p.isZero() and p.lead().deg()==1:
-       #            #        mon=mon*p.lead()
-       #            #print used_vars(I)/mon
-       #            (eliminated,llnf, I)=eliminate(I,on_the_fly=on_the_fly)
-       #            if options.prot:
-       #                print "eliminated vars:",len(eliminated),"remaining vars:",len(used_vars(I))
-       #            eliminated=[(p.lead(),p) for p in eliminated]
+    if llfirst or llfirstonthefly:
+              from polybori.ll import eliminate
+              change_ordering(OrderCode.lp)
+              if llfirstonthefly:
+                  on_the_fly=True
+              else:
+                  on_the_fly=False
+              #mon=Monomial()
+              #for p in I:
+              #    if not p.isZero() and p.lead().deg()==1:
+              #        mon=mon*p.lead()
+              #print used_vars(I)/mon
+              (eliminated,llnf, I)=eliminate(I,on_the_fly=on_the_fly)
+              if prot:
+                  print "eliminated vars:",len(eliminated),"remaining vars:",len(used_vars(I))
+              eliminated=[(p.lead(),p) for p in eliminated]
     if preprocess_only:
       for p in I:
         print p
