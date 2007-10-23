@@ -86,9 +86,13 @@ class HeuristicalFunction(object):
             del complete_dict["heuristic"]
         except KeyError:
             pass
+
+
+        for (k,v) in zip(self.argnames,args):
+            complete_dict[k]=v 
         if heuristic:
             complete_dict=self.heuristicFunction(complete_dict)
-        return self.f(*args,**complete_dict)
+        return self.f(**complete_dict)
     def __init__(self,f,heuristic_function):
         
         (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
