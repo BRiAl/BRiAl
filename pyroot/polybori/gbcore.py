@@ -88,7 +88,7 @@ class HeuristicalFunction(object):
             pass
         if heuristic:
             complete_dict=self.heuristicFunction(complete_dict)
-        return self.f(**complete_dict)
+        return self.f(*args,**complete_dict)
     def __init__(self,f,heuristic_function):
         
         (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
