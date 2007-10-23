@@ -90,8 +90,12 @@ class HeuristicalFunction(object):
             complete_dict=self.heuristicFunction(complete_dict)
         return self.f(**complete_dict)
     def __init__(self,f,heuristic_function):
+        
         (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
-        self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
+        if hasattr(f,"options"):
+            self.options=f.options
+        else:
+            self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
         self.heuristicFunction=heuristic_function
         self.f=f
         self.__doc__=f.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(self.options[k]) for k in self.options))+"\nTurn off heuristic by setting heuristic=False"
@@ -103,11 +107,32 @@ def with_heuristic(heuristic_function):
         return wrapped
     return make_wrapper
 
+def gb_with_invert_option(f):
+    def wrapper(I,invert=False,**kwds):
+        zero=Polynomial(0)
+        I=[Polynomial(p) for p in I if p!=zero]
+        if invert:
+           I=[p.mapEveryXToXPlusOne() for p in I]
+        res=f(I,kwds)
+        if invert:
+            res=[p.mapEveryXToXPlusOne() for p in res]
 
+        return res
+    wrapper.__name__=f.__name__
+    wrapper.__doc__=f.__doc__+"\n Setting invert=True input and output get a transformation x+1 for each variable x, which shouldn't effect the calculated GB, but the algorithm"
+    if hasattr(f,"options"):
+        wrapper.options=copy(f.options)
+    else:
+        (argnames,varargs,varopts,defaults)=getargspec(f)
+        wrapper.options=dict(zip(argnames[-len(defaults):],defaults))
+
+    wrapper.options["invert"]=False
+    return wrapper
 @with_heuristic(firstgb_heuristic)
+@gb_with_invert_option
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
-       full_prot= False, recursion= False, invert= False,
+       full_prot= False, recursion= False,
        prot= False, step_factor= 1,
        deg_bound= 1000000000000L, lazy= True, ll= False,
        max_growth= 2.0, exchange= True,
@@ -117,7 +142,9 @@ def groebner_basis(I, faugere=False,  coding=False,
        draw_matrices= False, llfirstonthefly= False,
        linearAlgebraInLastBlock= True, gauss_on_linear_first=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
-
+    
+    zero=Polynomial(0)
+    I=[Polynomial(p) for p in I if p!=zero]
 
     if gauss_on_linear_first:
         I=gauss_on_linear(I)
@@ -147,11 +174,25 @@ def groebner_basis(I, faugere=False,  coding=False,
       if prot:
         print "preprocessing time", pt2-pt
 
-    if invert:
-       I=[p.mapEveryXToXPlusOne() for p in I]
+
     
             
-    
+       # if options.llfirst or options.llfirstonthefly:
+       #            from polybori.ll import eliminate
+       #            change_ordering(OrderCode.lp)
+       #            if options.llfirstonthefly:
+       #                on_the_fly=True
+       #            else:
+       #                on_the_fly=False
+       #            #mon=Monomial()
+       #            #for p in I:
+       #            #    if not p.isZero() and p.lead().deg()==1:
+       #            #        mon=mon*p.lead()
+       #            #print used_vars(I)/mon
+       #            (eliminated,llnf, I)=eliminate(I,on_the_fly=on_the_fly)
+       #            if options.prot:
+       #                print "eliminated vars:",len(eliminated),"remaining vars:",len(used_vars(I))
+       #            eliminated=[(p.lead(),p) for p in eliminated]
     if preprocess_only:
       for p in I:
         print p
