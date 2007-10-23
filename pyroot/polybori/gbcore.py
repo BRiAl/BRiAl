@@ -82,6 +82,7 @@ class HeuristicalFunction(object):
         complete_dict=copy(kwds)
         heuristic=True
         for k in kwds:
+            v=kwds[k]
             if k!="heuristic":
                 complete_dict[k]=v
             else:
