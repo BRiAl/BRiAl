@@ -112,15 +112,20 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,default=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):
     def make_wrapper(f):
         def wrapper(I,**kwds):
-            
-            if option in kwds:
-                option_set=kwds[option]
-            else:
-                option_set=default
+            for o in if_not_option:
+                if (o in kwds and kwds[o]) or (o not in kwds and groebner_basis.options[o]):
+                    option_set=False
+            if not "option_set" in locals():
+                if option in kwds:
+                    
+                    option_set=kwds[option]
+                else:
+                    option_set=default
             kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
+            state=None
             if option_set:
                if pre:
                    (I,state)=pre(I)
@@ -140,7 +145,7 @@ def gb_with_pre_post_option(option,pre=None,post=None,default=False):
             (argnames,varargs,varopts,defaults)=getargspec(f)
             wrapper.options=dict(zip(argnames[-len(defaults):],defaults))
 
-        wrapper.options["invert"]=False
+        wrapper.options[option]=default
         return wrapper
     return make_wrapper
 
@@ -153,6 +158,8 @@ def invert_all_post(I,state):
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
+@gb_with_pre_post_option("minsb",pre=invert_all_pre,post=invert_all_post,if_not_option=["redsb"],default=True)
+@gb_with_pre_post_option("redsb",pre=invert_all_pre,post=invert_all_post,default=False)
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
