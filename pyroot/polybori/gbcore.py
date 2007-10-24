@@ -9,19 +9,14 @@ from itertools import chain
 from inspect import getargspec
 from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
-#class PolyBoRiDefaultOptions:
-#  def __init__(self):
-#      self.opts = {}
-#
-#  def __call__(self, fname):
-#      return self.opts[fname]
-#
-#  def set(self, fname, opts):
-#      self.opts[fname] = opts
-               
 
-#default_options = PolyBoRiDefaultOptions()
-default_options=dict()
+def owns_one_constant(I):
+    """Determines whether I contains the constant one polynomial."""
+    for p in I:
+        if p.isOne():
+            return True
+    return False
+
 
 #strategy brainstorming
 
