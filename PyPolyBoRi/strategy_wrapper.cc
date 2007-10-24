@@ -23,6 +23,36 @@ using namespace std;
 
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
+class StrategyIterator{
+public:
+    PolyEntryVector::const_iterator it;
+    StrategyIterator(PolyEntryVector::const_iterator it){
+        this->it=it;
+    }
+    bool operator==(const StrategyIterator other){
+        return it==other.it;
+    }
+    const Polynomial& operator*(){
+        return it->p;
+    }
+    const Polynomial* operator->(){
+        return &(it->p);
+    }
+    StrategyIterator operator++(int){
+        StrategyIterator cp(*this);
+        ++it;
+        return cp;
+    }
+    StrategyIterator& operator++(){
+        ++it;
+        return *this;
+    }
+    typedef std::input_iterator_tag iterator_category;
+    typedef Polynomial value_type;
+    typedef PolyEntryVector::const_iterator::difference_type difference_type;
+    typedef const Polynomial* pointer;
+    typedef const Polynomial reference;
+};
 static int npairs(const GroebnerStrategy& strat){
   return strat.pairs.queue.size();
 }
@@ -113,6 +143,12 @@ static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
     strat.addGenerator(p);
 }
+static StrategyIterator stratbegin(const GroebnerStrategy& strat){
+    return StrategyIterator(strat.generators.begin());
+}
+static StrategyIterator stratend(const GroebnerStrategy& strat){
+    return StrategyIterator(strat.generators.end());
+}
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
@@ -129,7 +165,7 @@ void export_strategy(){
   .def("someSpolysInNextDegree", someNextDegreeSpolys)
   .def("smallSpolysInNextDegree",small_next_degree_spolys)
   .def("__len__",nGenerators)
-  
+  .def("__iter__",range(stratbegin, stratend))
   .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
 #ifdef HAVE_NTL

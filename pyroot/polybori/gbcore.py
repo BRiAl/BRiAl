@@ -141,9 +141,20 @@ def gb_with_pre_post_option(option,pre=None,post=None):
     return make_wrapper
 def invert_all(I):
     if isinstance(I,GroebnerStrategy):
+        pass
         #workaround, doesn't work with deg bounds
-        print "minimalize"
-        I=I.minimalizeAndTailReduce()
+        #print "minimalize"
+        #l=[]
+        #for i in xrange(len(I)):
+        #    print i,I[i]
+        #    l.append(I[i])
+        #    
+        #print "looped"
+        #l=list(I)
+        #print "converted"
+        #testvalidstrat(I)
+        #I=I.minimalizeAndTailReduce()
+        #I=l
     return [p.mapEveryXToXPlusOne() for p in I]
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all,post=invert_all)
