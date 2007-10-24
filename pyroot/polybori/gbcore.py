@@ -106,12 +106,15 @@ def with_heuristic(heuristic_function):
         wrapped.__name__=f.__name__
         return wrapped
     return make_wrapper
-
+def clean_polys(I):
+    zero=Polynomial(0)
+    I=[Polynomial(p) for p in I if p!=zero]
+    return I
+    
 def gb_with_pre_post_option(option,pre=None,post=None):
     def make_wrapper(f):
         def wrapper(I,**kwds):
-            zero=Polynomial(0)
-            I=[Polynomial(p) for p in I if p!=zero]
+            
             if option in kwds and kwds[option]:
                 option_set=True
             else:
@@ -119,12 +122,12 @@ def gb_with_pre_post_option(option,pre=None,post=None):
             kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
             if option_set:
                if pre:
-                   I=pre(I)
+                   (I,state)=pre(I)
                
             res=f(I,**kwds)
             if option_set:
                 if post:
-                    res=post(res)
+                    res=post(res,state)
                 
 
             return res
@@ -141,8 +144,12 @@ def gb_with_pre_post_option(option,pre=None,post=None):
     return make_wrapper
 def invert_all(I):
     return [p.mapEveryXToXPlusOne() for p in I]
+def invert_all_pre(I):
+    return (invert_all(I),None)
+def invert_all_post(I,state):
+    return invert_all(I)
 @with_heuristic(firstgb_heuristic)
-@gb_with_pre_post_option("invert",pre=invert_all,post=invert_all)
+@gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post)
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
