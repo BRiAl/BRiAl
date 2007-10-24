@@ -1,6 +1,6 @@
 #include <boost/python.hpp>
 #include <polybori.h>
-
+#include "variable_block.h"
 #include <boost/type_traits.hpp>
 //#include <iostream>
 //#include "polybori.h"
@@ -22,9 +22,7 @@ USING_NAMESPACE_PBORI
 typedef CTypes::idx_type idx_type;
 
 
-class VariableIndexException{
-    
-};
+
 static void translator(VariableIndexException const& x) {
     PyErr_SetString( PyExc_IndexError, "Wrong VariableIndex");
 }

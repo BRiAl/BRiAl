@@ -20,7 +20,7 @@
 //#include "pbori_defs.h"
 using namespace boost::python;
 using namespace std;
-
+#include "variable_block.h"
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
 class StrategyIterator{
@@ -138,6 +138,9 @@ int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return select1(strat,m);
 }
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
+    if ((i<0)||(i>=strat.generators.size())){
+        throw VariableIndexException();
+    }
     return strat.generators[i].p;
 }
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
@@ -149,6 +152,10 @@ static StrategyIterator stratbegin(const GroebnerStrategy& strat){
 static StrategyIterator stratend(const GroebnerStrategy& strat){
     return StrategyIterator(strat.generators.end());
 }
+
+
+
+
 void export_strategy(){
   export_slimgb();
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
