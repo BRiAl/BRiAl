@@ -2,6 +2,7 @@ from polybori.nf import *
 import polybori.aes as aesmod
 import polybori.coding as coding
 from polybori.PyPolyBoRi import *
+from polybori.ll import eliminate
 from time import time
 from copy import copy
 from itertools import chain
@@ -158,11 +159,29 @@ def invert_all_pre(I):
     return (invert_all(I),None)
 def invert_all_post(I,state):
     return invert_all(I)
+    
+def llfirst_pre(I):
+    (eliminated,llnf, I)=eliminate(I,on_the_fly=False)
+    return (I,eliminated)
+
+def llfirstonthefly_pre(I):
+    (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
+    return (I,eliminated)
+def llfirst_post(I,eliminated):
+    
+    if not I.containsOne():
+        for p in eliminated:
+            I.addGenerator(p)
+    I.symmGB_F2()
+    return I
+
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,default=False)
+@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
+@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
@@ -210,22 +229,7 @@ def groebner_basis(I, faugere=False,  coding=False,
 
     
             
-    if llfirst or llfirstonthefly:
-              from polybori.ll import eliminate
-              change_ordering(OrderCode.lp)
-              if llfirstonthefly:
-                  on_the_fly=True
-              else:
-                  on_the_fly=False
-              #mon=Monomial()
-              #for p in I:
-              #    if not p.isZero() and p.lead().deg()==1:
-              #        mon=mon*p.lead()
-              #print used_vars(I)/mon
-              (eliminated,llnf, I)=eliminate(I,on_the_fly=on_the_fly)
-              if prot:
-                  print "eliminated vars:",len(eliminated),"remaining vars:",len(used_vars(I))
-              eliminated=[(p.lead(),p) for p in eliminated]
+
     if preprocess_only:
       for p in I:
         print p
