@@ -1,6 +1,7 @@
 from polybori.nf import *
 import polybori.aes as aesmod
 import polybori.coding as coding
+from polybori.PyPolyBoRi import *
 from time import time
 from copy import copy
 from itertools import chain
@@ -20,12 +21,7 @@ from heuristics import dense_system,gauss_on_linear
 
 #default_options = PolyBoRiDefaultOptions()
 default_options=dict()
-#@Alexander: To much abstraction is not a good choice for scripting
-# if you want to override, add functionality, I would inherit from dict
-# P.S.: I already made the same error
 
-
-    
 #strategy brainstorming
 
 #count number of unbound vars to see, if ll is a good choice
@@ -144,6 +140,10 @@ def gb_with_pre_post_option(option,pre=None,post=None):
         return wrapper
     return make_wrapper
 def invert_all(I):
+    if isinstance(I,GroebnerStrategy):
+        #workaround, doesn't work with deg bounds
+        print "minimalize"
+        I=I.minimalizeAndTailReduce()
     return [p.mapEveryXToXPlusOne() for p in I]
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all,post=invert_all)
