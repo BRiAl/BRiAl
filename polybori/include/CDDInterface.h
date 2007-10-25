@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.54  2007/10/25 14:38:00  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.53  2007/07/30 15:19:39  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -822,8 +825,8 @@ private:
                     navigator thenNavi, navigator elseNavi) const {
     assert(idx < *thenNavi);
     assert(idx < *elseNavi); 
-    return cuddZddGetNode(mgr.getManager(), idx, 
-                          thenNavi.getNode(), elseNavi.getNode());
+    return navigator(cuddZddGetNode(mgr.getManager(), idx, 
+                                    thenNavi.getNode(), elseNavi.getNode()));
   }
 
   interfaced_type newDiagram(const manager_base& mgr, navigator navi) const { 

@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/10/25 14:38:01  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.2  2007/07/30 15:19:39  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -98,9 +101,9 @@ CCuddGetNode::operator()(idx_type idx,
 
   // Note: assuming thennode.isValid() and elsenode.isValid(), and reference
   // count was increased for application of this operator
-  node_type result =  cuddZddGetNode( mgr.getManager(), 
-                                      idx, thennode.getNode(), 
-                                      elsenode.getNode() );
+  node_type result =  node_type(cuddZddGetNode( mgr.getManager(), idx,
+                                                thennode.getNode(), 
+                                                elsenode.getNode() ));
 
   if(!result.isValid()){
     thennode.recursiveDecRef(mgr.getManager());

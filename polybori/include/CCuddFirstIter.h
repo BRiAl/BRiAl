@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/10/25 14:38:00  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.6  2006/12/13 18:07:04  dreyer
  * ADD: poly /= exp
  *
@@ -72,8 +75,11 @@ public:
   /// Get base type 
   typedef CCuddNavigator base;
 
-  /// Default constructor and construct from node pointer
-  CCuddFirstIter(pointer_type ptr = NULL);
+  /// Default constructor
+  CCuddFirstIter(): base() {}
+
+  /// Construct from node pointer
+  CCuddFirstIter(pointer_type ptr); // inlined below
 
   /// Copy Constructor
   CCuddFirstIter(const self& rhs): base(rhs) {}

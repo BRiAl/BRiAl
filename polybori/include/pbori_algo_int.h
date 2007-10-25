@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/10/25 14:38:00  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.7  2007/07/30 15:19:39  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -491,8 +494,7 @@ template<class FunctionType, class ManagerType, class NodeType>
 void apply_assign_cudd_function(FunctionType func, ManagerType& mgr,
                                 NodeType& first, const NodeType& second) {
 
-    NodeType newNode;
-    newNode = func(mgr, do_get_node(first),  do_get_node(second));
+    NodeType newNode(func(mgr, do_get_node(first),  do_get_node(second)));
     inc_ref(newNode);
     recursive_dec_ref(mgr, first);
     first = newNode;
@@ -507,7 +509,7 @@ void apply_replacing_cudd_function(FunctionType func, ManagerType& mgr,
                                    const NodeType& first, 
                                    const NodeType& second) {
 
-  newNode = func(mgr, do_get_node(first), do_get_node(second));
+  newNode = NodeType(func(mgr, do_get_node(first), do_get_node(second)));
   inc_ref(newNode);
   recursive_dec_ref(mgr, first);
   recursive_dec_ref(mgr, second);
@@ -518,7 +520,7 @@ NodeType apply_cudd_function(FunctionType func, ManagerType& mgr,
                              const NodeType& first, const NodeType& second) {
 
     NodeType newNode;
-    newNode = func(mgr, do_get_node(first), do_get_node(second));
+    newNode = NodeType(func(mgr, do_get_node(first), do_get_node(second)));
     inc_ref(newNode);
     return newNode;
 }
@@ -554,7 +556,8 @@ public:
   void replacingNode(navigator& newNode, idx_type idx, 
                      navigator& first, navigator& second) const {
 
-    newNode = cuddZddGetNode(mgr, idx, first.getNode(), second.getNode());
+    newNode = navigator(cuddZddGetNode(mgr, idx, first.getNode(), 
+                                       second.getNode()));
     newNode.incRef();
     recursive_dec_ref(mgr, first);
     recursive_dec_ref(mgr, second);
@@ -562,8 +565,9 @@ public:
  
   void newNodeAssign(idx_type idx, 
                      navigator& thenNode, const navigator& elseNode) const {
-    navigator newNode = cuddZddGetNode(mgr, idx, 
-                                       thenNode.getNode(), elseNode.getNode());
+    navigator newNode = navigator(cuddZddGetNode(mgr, idx, 
+                                                 thenNode.getNode(), 
+                                                 elseNode.getNode()));
     newNode.incRef();
     //Cudd_Deref(thenNode);   
     recursive_dec_ref(mgr, thenNode);
@@ -575,7 +579,7 @@ public:
   }
 
   void productAssign(navigator& node, idx_type idx) const {
-    navigator emptyset = Cudd_ReadZero(mgr);
+    navigator emptyset = navigator(Cudd_ReadZero(mgr));
     newNodeAssign(idx, node, emptyset);
   }
 

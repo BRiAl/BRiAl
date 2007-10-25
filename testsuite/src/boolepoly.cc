@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2007/10/25 14:38:01  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.25  2007/10/09 15:07:30  dreyer
  * ADD: mapping;   CHANGE: shared python modules to pyroot
  *
@@ -334,11 +337,11 @@ main(){
     CCacheManagement<CCacheTypes::dlex_lead> 
       test_marker2(BoolePolyRing::activeManager().manager());
 
-    std::cout <<  (( test_marker.find( poly.navigation() ))==NULL)<<std::endl;
+    std::cout <<  (( test_marker.find( poly.navigation() )).getNode()==NULL)<<std::endl;
 
       test_marker.insert(poly.navigation(), poly.navigation() );
-      std::cout <<  (test_marker.find( poly.navigation() )!=NULL)<<std::endl;
-      std::cout <<  (test_marker2.find( poly.navigation() )==NULL)<<std::endl;
+      std::cout <<  (test_marker.find( poly.navigation() ).getNode()!=NULL)<<std::endl;
+      std::cout <<  (test_marker2.find( poly.navigation() ).getNode()==NULL)<<std::endl;
       poly = x*y*z +y*z +y*v + y*w;
       poly2 = x*y+y*z +y*w +v*w;
       std::cout << poly<<std::endl;

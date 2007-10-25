@@ -22,6 +22,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/10/25 14:38:00  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.19  2007/07/30 15:19:39  dreyer
  * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
  *
@@ -144,8 +147,13 @@ public:
   typedef value_type reference;
   //@}
 
-  /// Default constructor and construct from node pointer
-  CCuddNavigator(pointer_type ptr = NULL): pNode(ptr) {}
+  /// Default constructor
+  CCuddNavigator(): pNode(NULL) {}
+
+  /// Construct from node pointer
+  explicit CCuddNavigator(pointer_type ptr): pNode(ptr) {
+    assert(isValid());
+  }
 
   /// Construct from decision diagram
   explicit CCuddNavigator(const dd_base& rhs): pNode(rhs.getNode()) {}
@@ -210,14 +218,15 @@ public:
   //@}
 
   /// Force incrementation of reference count
-  void incRef() const {  Cudd_Ref(pNode); }
+  void incRef() const {  assert(isValid()); Cudd_Ref(pNode); }
 
   /// Force decrementation of reference count
-  void decRef() const {  Cudd_Deref(pNode); }
+  void decRef() const {  assert(isValid()); Cudd_Deref(pNode); }
 
   /// Force recursive decrementation of reference count
   template <class MgrType>
   void recursiveDecRef(const MgrType& mgr) const {
+    assert(isValid());
     Cudd_RecursiveDerefZdd(mgr, pNode); 
   }
 
@@ -242,7 +251,8 @@ inline CCuddNavigator::bool_type
 CCuddNavigator::isConstant() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::isConstant() const" );
-  return isValid() && Cudd_IsConstant(pNode);
+  assert(isValid());
+  return Cudd_IsConstant(pNode);
 }
 
 // constant node value
@@ -278,6 +288,18 @@ CCuddNavigator::incrementElse() {
 
   return *this;
 }
+
+inline CCuddNavigator
+explicit_navigator_cast(CCuddNavigator::pointer_type ptr) {
+
+#ifndef NDEBUG
+  if (ptr == NULL)
+    return CCuddNavigator();
+  else
+#endif
+    return CCuddNavigator(ptr);
+}
+
 
 END_NAMESPACE_PBORI
 

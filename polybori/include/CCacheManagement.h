@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/10/25 14:38:00  dreyer
+ * ADD: use of CCuddNavigator more secure
+ *
  * Revision 1.35  2007/10/09 12:16:49  dreyer
  * ADD: apply_mapping
  *
@@ -317,7 +320,7 @@ public:
 
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator node) const { 
-    return find(node.getNode()); 
+    return explicit_navigator_cast(find(node.getNode())); 
   }
 
   /// Store cached value wrt. given node  
@@ -357,7 +360,7 @@ public:
   }
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator first, navigator second) const { 
-    return find(first.getNode(), second.getNode());
+    return explicit_navigator_cast(find(first.getNode(), second.getNode()));
   }
 
   /// Store cached value wrt. given node  
@@ -400,7 +403,8 @@ public:
 
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator first, navigator second, navigator third) const {
-    return find(first.getNode(), second.getNode(), third.getNode());
+    return explicit_navigator_cast(find(first.getNode(), second.getNode(),
+                                        third.getNode())); 
   }
 
   /// Store cached value wrt. given node  
@@ -481,7 +485,7 @@ public:
 
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator first, navigator second) const {
-    return find(first.getNode(), second.getNode());
+    return explicit_navigator_cast(find(first.getNode(), second.getNode()));
   }
 
 
@@ -522,7 +526,9 @@ public:
   }
 
   /// Find cached value wrt. given node (for navigator type)
-  navigator find(navigator node) const { return find(node.getNode()); }
+  navigator find(navigator node) const { 
+    return explicit_navigator_cast(find(node.getNode()));
+  }
 
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
@@ -563,7 +569,7 @@ public:
     return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
   }
   navigator find(navigator first, navigator second) const {
-    return find(first.getNode(), second.getNode());
+    return explicit_navigator_cast(find(first.getNode(), second.getNode()));
   }
 
   /// Store cached value wrt. given node  
@@ -604,7 +610,8 @@ public:
   }
 
   navigator find(navigator first, navigator second, navigator third) const {
-    return find(first.getNode(), second.getNode(), third.getNode());
+    return explicit_navigator_cast(find(first.getNode(), second.getNode(),
+                                        third.getNode()));
   }
 
   /// Store cached value wrt. given node  
