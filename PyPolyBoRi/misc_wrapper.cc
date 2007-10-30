@@ -4,11 +4,25 @@
 
 #include "polybori.h"
 #include "pbori_defs.h"
-
+#include <iostream>
 using namespace boost::python;
 using namespace std;
+#include "groebner_alg.h"
 USING_NAMESPACE_PBORI
-#include "Poly_wrapper.h"
+USING_NAMESPACE_PBORIGB
+
+double count_double(const MonomialSet &d){
+    return d.sizeDouble();
+}
+
+void testvalidstrat(const GroebnerStrategy& strat){
+    int s=strat.generators.size();
+    int i;
+    for(i=0;i<s;i++){
+        assert(strat.generators[i].p.navigation().isValid());
+        cout<<i<<":"<<strat.generators[i].lm<<endl;
+    }
+}
 
 BoolePolynomial
 do_mapping(const BoolePolynomial& poly, const BooleMonomial& fromVars, 
@@ -19,4 +33,6 @@ do_mapping(const BoolePolynomial& poly, const BooleMonomial& fromVars,
 
 void export_misc(){
   def("mapping", do_mapping);
+  def("testvalidstrat",testvalidstrat);
+  def("count_double",count_double);
 }
