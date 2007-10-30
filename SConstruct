@@ -366,7 +366,7 @@ if HAVE_PYTHON_EXTENSION:
         cnffiles += glob(datapath + "uuf50/uuf50_" + str(i) + ".cnf")
     for i in xrange(1,11):
         cnffiles += glob(datapath + "uuf75/uuf75_" + str(i) + ".cnf")
-    for i in xrange(6,11):
+    for i in xrange(6,13):
         cnffiles += glob(datapath + "phole/hole" + str(i) + ".cnf")
     for i in xrange(4,6):
         cnffiles += glob(datapath + "hanoi/hanoi" + str(i) + ".cnf")
