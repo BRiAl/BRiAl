@@ -15,7 +15,7 @@ from polybori.PyPolyBoRi import *
 from polybori.gbrefs import my_import, load_data, clean_data
 from polybori.blocks import IfThen
 from copy import copy
-from polybori.ll import llredsb,llredsb_Cudd_style, ll_red_nf2_Cudd_style,ll_encode
+from polybori.ll import llredsb_Cudd_style, ll_encode
 
 def find_one(p,res=None):
     def zero_nav(n):
