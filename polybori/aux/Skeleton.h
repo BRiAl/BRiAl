@@ -8,10 +8,7 @@
  * 
  *
  * @par Copyright:
- *   (c) by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,8 +16,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.1  2006/03/09 16:57:32  dreyer
- * + Initial Version
+ * Revision 1.2  2007/11/06 16:36:54  dreyer
+ * + minor changes
  *
  * @endverbatim
 **/
