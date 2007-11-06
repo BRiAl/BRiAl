@@ -5,13 +5,10 @@
  * @author Alexander Dreyer
  * @date 2006-04-21
  *
- * THis file contains the definition of the class PBoRiOutIter
+ * This file contains the definition of the class PBoRiOutIter
  *
  * @par Copyright:
- *   (c) by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/11/06 15:03:36  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.3  2006/08/22 16:06:22  dreyer
  * + Added highlevel division
  *

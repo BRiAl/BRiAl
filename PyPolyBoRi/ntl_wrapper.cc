@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #include <boost/python.hpp>
 #include <NTL/GF2.h>
 #include <NTL/mat_GF2.h>

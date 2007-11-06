@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
     ZeroOrMore,Forward,nums,alphas, Or
 #from itertools import enumerate

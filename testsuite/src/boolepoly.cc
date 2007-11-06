@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file boolepoly.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
@@ -8,10 +8,7 @@
  * This file contains elementary tests for the Boolean Variables.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/11/06 15:03:42  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.26  2007/10/25 14:38:01  dreyer
  * ADD: use of CCuddNavigator more secure
  *

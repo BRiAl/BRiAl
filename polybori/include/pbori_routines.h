@@ -9,10 +9,7 @@
  * in the polybori library.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -20,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/11/06 15:03:37  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.5  2006/09/20 07:06:39  dreyer
  * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
  *

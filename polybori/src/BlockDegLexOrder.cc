@@ -8,10 +8,7 @@
  * Defining Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/11/06 15:03:37  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.3  2007/04/30 15:20:31  dreyer
  * CHANGE: Switching from CTermIter to iterators based on CTermStack
  *

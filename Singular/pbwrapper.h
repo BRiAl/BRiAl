@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #ifndef PB_SING_WRAPPER_HEADER
 #define PB_SING_WRAPPER_HEADER
 #include <vector>

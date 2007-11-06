@@ -2,17 +2,14 @@
 // $Id$
 //
 //*****************************************************************************
-/** @file 
+/** @file stringlit.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
  *
  * This file contains tests for the class CStringLiteral.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *  (c) 2006 by The PolyBoRi Team
  *
 **/
 //*****************************************************************************

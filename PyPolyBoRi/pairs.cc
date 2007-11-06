@@ -3,7 +3,7 @@
  *  PolyBoRi
  *
  *  Created by Michael Brickenstein on 12.04.06.
- *  Copyright 2006 Mathmatisches Forschungsinstitut Oberwolfach. All rights reserved.
+ *  Copyright 2006 The PolyBoRi Team. All rights reserved.
  *
  */
 #include <boost/python.hpp>

@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CCuddFirstIter.cc
+/** @file CCuddLastIter.cc
  *
  * @author Alexander Dreyer
  * @date 2006-03-26
@@ -11,10 +11,7 @@
  * @note: Tested for Cudd's ZDDs only.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -22,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/11/06 15:03:38  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.2  2006/08/01 11:12:22  dreyer
  * CHANGE: removed ';' at end of functions (pedantic)
  *

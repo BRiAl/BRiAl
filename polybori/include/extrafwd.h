@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #ifndef EXTRA_FWD_HEADER
 #define EXTRA_FWD_HEADER
 #include <cudd.h>

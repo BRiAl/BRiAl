@@ -8,10 +8,7 @@
  * This file defines properties of built-in an polybori types.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/11/06 15:03:37  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.10  2007/07/19 11:41:48  dreyer
  * CHANGE: clean-up
  *

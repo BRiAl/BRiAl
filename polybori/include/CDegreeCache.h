@@ -9,10 +9,7 @@
  * template CDegreeCache.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -20,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/11/06 15:03:34  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.8  2007/10/09 10:30:51  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *

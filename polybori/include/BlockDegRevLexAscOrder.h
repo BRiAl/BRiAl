@@ -8,10 +8,7 @@
  * Defining Block Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/11/06 15:03:32  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.7  2007/10/11 09:48:39  dreyer
  * Fix: codes and tags of block_dp_asc corrected
  *

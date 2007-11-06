@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #include "groebner_defs.h"
 BEGIN_NAMESPACE_PBORIGB
 Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one);

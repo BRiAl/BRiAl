@@ -2,16 +2,16 @@
 #
 #  @(#) $Id$
 #
-# Copyright (c) 2006 by
-#   Dep. of Mathematics, Kaiserslautern University of Technology and
-#   Fraunhofer Institute for Industrial Mathematics (ITWM)
-#   D-67663 Kaiserslautern, Germany
+# Copyright (c) 2006 by The PolyBoRi Team.
 #
 # $Author$
 #
 # $Log$
-# Revision 1.1  2006/03/09 14:34:31  dreyer
-# Initial revision
+# Revision 1.2  2007/11/06 15:03:32  dreyer
+# CHANGE: More generic copyright
+#
+# Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
+# + Project started
 #
 
 

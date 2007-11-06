@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 from polybori.PyPolyBoRi import *
 saver=0
 def term_sort_key(t):

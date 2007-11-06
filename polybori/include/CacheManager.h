@@ -9,10 +9,7 @@
  * which can find the active ring.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -20,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/11/06 15:03:35  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.1  2006/11/22 15:46:22  dreyer
  * ADD: CacheManager replacing CCacheManagement for external use
  * CHANGE: CacheManager used, where necessary

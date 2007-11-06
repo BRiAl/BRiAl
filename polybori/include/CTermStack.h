@@ -8,10 +8,7 @@
  * 
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/11/06 15:03:35  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.20  2007/10/09 10:30:52  dreyer
  * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
  *

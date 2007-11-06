@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file BooleVariable.h 
  *
  * @author Alexander Dreyer
  * @date 2006-03-10
@@ -10,10 +10,7 @@
  * ring. 
  * 
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -21,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/11/06 15:03:33  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.11  2007/08/27 09:57:43  bricken
  * + equality test const
  *

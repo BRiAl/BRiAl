@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file boolevars.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
@@ -8,10 +8,7 @@
  * This file contains tests for the Boolean Variables.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/11/06 15:03:42  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.6  2007/07/06 18:46:31  dreyer
  * ADD: rewritten C++-Interface for Cudd
  *

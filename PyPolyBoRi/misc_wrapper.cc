@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #include <boost/python.hpp>
 
 #include "misc_wrapper.h"

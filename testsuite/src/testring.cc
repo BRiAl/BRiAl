@@ -2,17 +2,15 @@
 // $Id$
 //
 //*****************************************************************************
-/** @file 
+/** @file testring.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
  *
  * This file contains tests for the class BoolePolyRing.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *  Copyright 
+ *  (c) 2006 by The PolyBoRi Team 
  *
 **/
 //*****************************************************************************
@@ -20,6 +18,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.26  2007/11/06 15:03:43  dreyer
+// CHANGE: More generic copyright
+//
 // Revision 1.25  2007/07/06 18:46:31  dreyer
 // ADD: rewritten C++-Interface for Cudd
 //

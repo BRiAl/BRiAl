@@ -2,17 +2,14 @@
 // $Id$
 //
 //*****************************************************************************
-/** @file 
+/** @file errornodes.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
  *
  * This file contains tests for the class PBoRiError.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *  (c) 2006 by The PolyBoRi Team
  *
 **/
 //*****************************************************************************
@@ -20,6 +17,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.3  2007/11/06 15:03:42  dreyer
+// CHANGE: More generic copyright
+//
 // Revision 1.2  2006/03/16 13:37:41  dreyer
 // ADD: added error codes and PBORI_DEVELOPER marker
 //

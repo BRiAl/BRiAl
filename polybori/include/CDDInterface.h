@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file CDDDInterface.h
  *
  * @author Alexander Dreyer
  * @date  2006-03-20
@@ -11,10 +11,7 @@
  * @note Currently only interface to Cudd's ZDDs are available.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -22,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.55  2007/11/06 15:03:33  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.54  2007/10/25 14:38:00  dreyer
  * ADD: use of CCuddNavigator more secure
  *

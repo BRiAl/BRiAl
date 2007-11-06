@@ -8,10 +8,7 @@
  * This file 
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/11/06 15:03:33  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.36  2007/10/25 14:38:00  dreyer
  * ADD: use of CCuddNavigator more secure
  *

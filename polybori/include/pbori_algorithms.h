@@ -13,10 +13,7 @@
  * PolyBoRi classes can be found in pbori_algo.h.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -24,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/11/06 15:03:36  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.14  2007/10/11 09:30:47  dreyer
  * Fix: Workaround function template pointer problem
  *

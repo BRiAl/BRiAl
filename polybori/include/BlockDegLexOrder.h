@@ -8,10 +8,7 @@
  * Defining Block Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/11/06 15:03:32  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.4  2007/07/31 07:43:49  dreyer
  * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
  *

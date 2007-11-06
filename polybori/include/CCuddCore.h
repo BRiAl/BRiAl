@@ -8,10 +8,7 @@
  * This files defines a 
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/11/06 15:03:33  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.1  2007/07/19 11:41:47  dreyer
  * CHANGE: clean-up
  *

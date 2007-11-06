@@ -8,10 +8,7 @@
  * This file defines an iterator, which respects the current ordering.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/11/06 15:03:34  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.19  2007/07/10 14:53:27  dreyer
  * CHANGE: clean-up
  *

@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #ifndef OUT_HELPER_H
 #define OUT_HELPER_H
 #include <sstream>

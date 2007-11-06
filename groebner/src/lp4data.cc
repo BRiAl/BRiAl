@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 //the content of this file is intellectual property of Michael Brickenstein
 //be aware of possible patent claims
 #include "lp4data.h"

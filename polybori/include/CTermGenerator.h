@@ -9,10 +9,7 @@
  * generation of from from a sequence of indices.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -20,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/11/06 15:03:35  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.9  2007/05/18 11:48:39  dreyer
  * ADD: sophisticated term_accumulate
  *

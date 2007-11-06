@@ -7,15 +7,14 @@
 # This file is a configuration file for ipython -- ipythonrc format
 #
 # @par Copyright:
-#   (c) 2007 by
-#   Mathematisches Forschungsinstitut Oberwolfach, @n
-#   Dep. of Mathematics, Kaiserslautern University of Technology and @n
-#   Fraunhofer Institute for Industrial Mathematics (ITWM)
-#   D-67663 Kaiserslautern, Germany
+#   (c) 2007 by The PolyBoRi Team
 #
 # @version \$Id$
 #
 # $Log$
+# Revision 1.2  2007/11/06 15:03:32  dreyer
+# CHANGE: More generic copyright
+#
 # Revision 1.1  2007/10/19 12:48:48  dreyer
 # ADD: ipython functionality and wrapper
 #

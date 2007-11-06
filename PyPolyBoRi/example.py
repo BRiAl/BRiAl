@@ -1,3 +1,5 @@
+/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+
 #log# Automatic Logger file. *** THIS MUST BE THE FIRST LINE ***
 #log# DO NOT CHANGE THIS LINE OR THE TWO BELOW
 #log# opts = Struct({'logfile': 'ipython.log', 'log': 1})

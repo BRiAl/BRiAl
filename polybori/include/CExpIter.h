@@ -9,10 +9,7 @@
  * iterator over all exponent vectors of a polynomial.
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -20,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/11/06 15:03:34  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.1  2007/05/03 16:04:45  dreyer
  * CHANGE: new-style CTermIter integrated
  *

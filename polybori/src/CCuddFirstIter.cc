@@ -11,10 +11,7 @@
  * @note: Tested for Cudd's ZDDs only.
  *
  * @par Copyright:
- *   (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2006 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -22,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/11/06 15:03:38  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.7  2006/12/06 09:20:09  dreyer
  * CHANGE: poly * exp now recursive
  *

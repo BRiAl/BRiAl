@@ -1,6 +1,6 @@
  // -*- c++ -*-
 //*****************************************************************************
-/** @file 
+/** @file blocknavi.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
@@ -8,10 +8,7 @@
  * This file contains elementary tests
  *
  * @par Copyright:
- *   (c) 2007 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ *   (c) 2007 by The PolyBoRi Team
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/11/06 15:03:42  dreyer
+ * CHANGE: More generic copyright
+ *
  * Revision 1.15  2007/07/31 07:43:50  dreyer
  * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
  *
