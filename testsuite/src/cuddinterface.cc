@@ -1,4 +1,4 @@
-u// -*- c++ -*-
+// -*- c++ -*-
 //*****************************************************************************
 /** @file cuddinterface.cc
  *
@@ -9,9 +9,6 @@ u// -*- c++ -*-
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *   Dep. of Mathematics, Kaiserslautern University of Technology and @n
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
  *
  * @internal 
  * @version \$Id$
@@ -19,6 +16,9 @@ u// -*- c++ -*-
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2007/11/06 15:15:27  dreyer
+ * Fix: typo
+ *
  * Revision 1.8  2007/11/06 15:03:42  dreyer
  * CHANGE: More generic copyright
  *
