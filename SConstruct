@@ -63,10 +63,10 @@ for m in pbori_cache_macros:
 
 #opts.Add('USERLIBS', 'additional libs', [])
 
-tools =  ["default"]
+tools =  ["default", "disttar"]
 
 if HAVE_DOXYGEN:
-    tools = ["default", "doxygen"]
+    tools += ["doxygen"]
 
 env=Environment(options=opts,tools = tools, toolpath = '.')
 #print env.Dump()
@@ -446,34 +446,27 @@ if HAVE_SINGULAR_EXTENSION:
             #SHLIBPREFIX="")
     Default(singpb)
     
+
+
+# Source distribution archive generation
+env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
+           .cvsignore .dblite .log .sconsign .depend"""),
+           DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp html latex"),
+           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~"))
+
+pboriversion = "0.1"
+if 'distribute' in COMMAND_LINE_TARGETS:
+    srcdirs = []
+    for dirname in Split("""Cudd doc extra groebner ipbori M4RI polybori 
+    PyPolyBoRi pyroot Singular testsuite/src testsuite/ref"""):
+        srcdirs.append(env.Dir(dirname))
     
-
-def build_tgz(version="0.01"):
-    prefix="PolyBoRi-"+str(version)
-    tar=tarfile.open(prefix+".tgz","w:gz")
-    def addfiletotar(tar,name,tarname=None):
-        if tarname is None:
-            tarname=name
-        tar.add(name,prefix+"/"+tarname)
-    for (f,n) in installable_python_modules_tp:
-        addfiletotar(tar,f)
-    addfiletotar(tar,"groebner")
-    addfiletotar(tar,"Cudd")
-    addfiletotar(tar,"polybori")
-    addfiletotar(tar,"PyPolyBoRi")
-    addfiletotar(tar,"SConstruct")
-    addfiletotar(tar,"README")
-    addfiletotar(tar,"doc")
-    addfiletotar(tar,"pyroot")
-    addfiletotar(tar,"M4RI")
-    addfiletotar(tar,"doxygen.py")
-    addfiletotar(tar,"testsuite/py/check_claims.py")
-    addfiletotar(tar,"testsuite/py/rundata.py")
-    addfiletotar(tar,"testsuite/py/cnf2ideal.py")
-    tar.close()
-#build_tgz()
-
-
+    srcdistri = env.DistTar("PolyBoRi-" + pboriversion,
+        Split("""SConstruct README disttar.py doxygen.py testsuite/execsuite""")
+        + srcdirs + glob("testsuite/py/*.py") ) 
+                            
+    env.Alias('distribute', srcdistri)
+    
 
 # Installation for development purposes
 develinstpath = env['DEVEL_PREFIX']
