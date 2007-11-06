@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/11/06 16:36:07  dreyer
+ * Fix: used correct constructor
+ *
  * Revision 1.3  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -72,7 +75,8 @@ public:
   typedef CCuddNavigator base;
 
   /// Default constructor and construct from node pointer
-  CCuddLastIter(pointer_type ptr = NULL);
+  CCuddLastIter(): base() {}
+  CCuddLastIter(pointer_type ptr);
 
   /// Copy Constructor
   CCuddLastIter(const self&);
