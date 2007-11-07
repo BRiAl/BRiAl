@@ -456,15 +456,14 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 
 pboriversion = "0.1"
 if 'distribute' in COMMAND_LINE_TARGETS:
-    srcdirs = []
+    srcs = Split("SConstruct README disttar.py doxygen.py")
+    srcs += ['testsuite/execsuite'] + glob("testsuite/py/*.py")
+
     for dirname in Split("""Cudd doc extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular testsuite/src testsuite/ref"""):
-        srcdirs.append(env.Dir(dirname))
+        srcs.append(env.Dir(dirname))
     
-    srcdistri = env.DistTar("PolyBoRi-" + pboriversion,
-        Split("""SConstruct README disttar.py doxygen.py testsuite/execsuite""")
-        + srcdirs + glob("testsuite/py/*.py") ) 
-                            
+    srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
     env.Alias('distribute', srcdistri)
     
 
