@@ -394,6 +394,7 @@ if HAVE_PYTHON_EXTENSION:
 
     def pypb_emitter(target,source,env):
         env.Depends(target,pypb)
+        env.Clean(target, glob(os.path.join(str(target[0].dir), "*html")))
         return (target, source)
 
     bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
