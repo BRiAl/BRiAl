@@ -139,7 +139,7 @@ env.Append(LIBS=["m"]+USERLIBS)
 try:
     env.Append(CCFLAGS=Split(custom.CCFLAGS))
 except:
-    env.Append(CCFLAGS=Split("-O3 -ansi --pedantic"))
+    env.Append(CCFLAGS=Split("-O3 -ansi"))
 
 try:
     env.Append(CXXFLAGS=Split(custom.CXXFLAGS))
