@@ -54,9 +54,9 @@ opts.Add('PBP', 'PolyBoRi python', "python")
 opts.Add('CXX', 'C++ Compiler', "g++")
 opts.Add('DEVEL_PREFIX', 'development version installation directory', '')
 
-opts.Add('PREFIX', 'binary installation prefix directory', '/usr/local')
-opts.Add('INSTALLDIR', 'end user installation directory', '')
-         
+opts.Add('INSTALLDIR', 'end user installation directory', '/usr/local')
+opts.Add('PREFIX', 'binary installation prefix directory', '$INSTALLDIR') 
+
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
@@ -481,7 +481,7 @@ if develinstpath:
     env.Alias('devel-install', develinstdir)
 
 
-
+# Builder for symlinks
 def build_symlink(target, source, env):
     source = source[0].abspath
     target = target[0].abspath
@@ -493,22 +493,13 @@ def build_symlink(target, source, env):
         return True
     return None
 
-# Not so nice to have a builder for a warning only
-def no_instdir_complain(target, source, env):
-    print "Please specify INSTALLDIR at command line or custom.py!"
-    return True
-
 symlinkbld = Builder(action = build_symlink)
-no_instdirbld = Builder(action = no_instdir_complain)
-
-env.Append(BUILDERS={'SymLink' : symlinkbld, 'NoInstDir' : no_instdirbld})
-
+env.Append(BUILDERS={'SymLink' : symlinkbld})
 
 # Installation precedure for end users
-instpath = env['INSTALLDIR']
-prefix = env['PREFIX']
-
-if instpath:
+if 'install' in COMMAND_LINE_TARGETS:
+    instpath = env['INSTALLDIR']
+    prefix = env['PREFIX']
     instdir = instpath + '/polybori/'
     pypbroot = pyroot + 'polybori/'
     ipbroot = 'ipbori/'
@@ -525,9 +516,6 @@ if instpath:
 
     env.AlwaysBuild(ipboribin)
 
-if instpath:    
     env.Alias('install', instdir)
     env.Alias('install', ipboribin)
-else:
-    noinst = env.NoInstDir("/None", 'SConstruct')
-    env.Alias('install', noinst)
+
