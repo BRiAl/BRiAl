@@ -527,6 +527,7 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
+    # Setting umask for newly generated directories
     try:
         umask = os.umask(022)
         print 'setting umask to 022 (was 0%o)' % umask
