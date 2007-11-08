@@ -1,0 +1,109 @@
+%
+%  untitled
+%
+%  Created by Michael Brickenstein on 2007-11-08.
+%  Copyright (c) 2007 Mathematisches Forschungsinstitut Oberwolfach. All rights reserved.
+%
+\documentclass[]{article}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+
+% Setup for fullpage use
+\usepackage{fullpage}
+
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+%\usepackage{subfigure}
+
+% More symbols
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{latexsym}
+
+% Surround parts of graphics with box
+\usepackage{boxedminipage}
+
+% Package for including code in the document
+\usepackage{listings}
+
+% If you want to generate a toc for each chapter (use with book)
+\usepackage{minitoc}
+\usepackage{xspace}
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+\newenvironment{code}{\begin{verbatim}}{\end{verbatim}}
+\newcommand{\PolyBoRi}{{\sc PolyBoRi}\xspace}
+\newcommand{\CUDD}{{CUDD}\xspace}
+\newcommand{\ite}{{ite}\xspace}
+\providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+
+\title{\PolyBoRi tutorial}
+\author{  }
+
+
+
+
+\date{2007-11-08}
+
+\begin{document}
+
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+\maketitle
+
+
+\begin{abstract}
+\end{abstract}
+
+\section{Introduction}
+\section{How to program efficiently}
+The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
+This awareness can be seen on several levels
+\begin{itemize}
+    \item ZDD unaware, pure algebraic programming 
+    \item low level friendly programming
+    \item replacing algebraic operations by (a composition of) set operations
+    \item Cudd recursive programming without caching
+    \item Cudd recursive programming with caching
+    \item using ZDDs for many other things than polynomial arithmetik
+\end{itemize}
+\subsection{Low level friendly programming}
+\PolyBoRi is implemented as layer over a decision diagram library (\CUDD at the moment).
+
+In \CUDD every diagram node is unique: If two diagrams have the same structure, the are in fact identical (same position in memory).
+Another observation is, that \CUDD tries to build a functional style API in the C programming language. This means, that no data is manipulated, only new nodes are created.
+Functional programming is in principal very suited for caching and multithreading (at the moment however threading is not possible).
+The \ite-operator is the most central function in CUDD. It takes two nodes/diagrams $t$, $e$ and an index $i$ and creates a diagram with root variable $i$ and
+then-branch $t$, else-branch $e$. It is necessary that the branches have root variables with bigger index (or are constant).
+It creates either exactly one node, or retrieves the correct node from the cache.
+Function calls which come essentially down to a single \ite call are very cheap.
+For example taking the product $x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))$ is much cheaper than $((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)$.
+In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
+The same argumemt would apply for the addition of these variables.
+This example shows, that having a little bit background about the data structure, it is often possible to write code, that looks as well algebraic as provides good performance.
+\bibliographystyle{plain}
+
+\bibliography{}
+\end{document}
