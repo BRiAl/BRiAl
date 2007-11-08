@@ -1,6 +1,6 @@
 The PolyBoRi Team 
 
-...consists of members of 
+...consists of persons working at 
 
 * Mathematisches Forschungsinstitut Oberwolfach (MFO), Germany,
 
@@ -15,3 +15,35 @@ Michael Brickenstein (MFO), brickenstein@mfo.de
 Alexander Dreyer (ITWM), alexander.dreyer@itwm.fraunhofer.de
 
 
+Installation:
+
+Changing to the build directory (where you find this README file), and typing  
+
+  scons install INSTALLDIR=/path/to/programs PREFIX=/prefix/for/executables
+
+should be enough to build and install PolyBoRi to /path/to/programs/polybori/.
+In addition, a symbolic link to the 'ipbori' executable will be installed to
+/prefix/for/executables/bin. See /path/to/programs/polybori/doc for
+documentation.
+
+If might also be useful to add some custom setting to the file 'custom.py' in
+the build directory, see the following example.
+
+--- custom.py ---
+CCFLAGS = "-g -O3  -ansi --pedantic -Wno-long-long -pg"
+CXXFLAGS = "-ftemplate-depth-100"
+LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg" 
+LIBS=["util"]
+# means that this line is not activated.
+#LIBPATH = ["/custom/lib/path1", "/custom/lib/path2"]
+#CPPPATH = ["/custom/include/path1", "/custom/include/path2"]
+#PYPREFIX = 
+#PBP = "python"
+-----------------
+
+
+Typing 
+
+  scons devel-install DEVEL-PREFIX=/prefix/for/usr
+
+generates and installs PolyBoRi headers and libraries for developers.
