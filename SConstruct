@@ -7,7 +7,7 @@ HAVE_DOXYGEN=True
 pyroot="pyroot/"
 
 import sys
-from os import sep
+from os import sep, path
 from glob import glob
 USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
 USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
@@ -394,7 +394,7 @@ if HAVE_PYTHON_EXTENSION:
 
     def pypb_emitter(target,source,env):
         env.Depends(target,pypb)
-        env.Clean(target, glob(os.path.join(str(target[0].dir), "*html")))
+        env.Clean(target, glob(path.join(str(target[0].dir), "*html")))
         return (target, source)
 
     bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
@@ -457,12 +457,22 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 
 pboriversion = "0.1"
 if 'distribute' in COMMAND_LINE_TARGETS:
+    
     srcs = Split("SConstruct README disttar.py doxygen.py")
-    srcs += ['testsuite/execsuite'] + glob("testsuite/py/*.py")
-
     for dirname in Split("""Cudd doc extra groebner ipbori M4RI polybori 
-    PyPolyBoRi pyroot Singular testsuite/src testsuite/ref"""):
+    PyPolyBoRi pyroot Singular"""):
         srcs.append(env.Dir(dirname))
+
+    # Testsuite is not distributed completely
+    srcs += [path.join('testsuite', 'execsuite')]
+    srcs += glob(path.join('testsuite', 'py', '*.py'))
+
+    for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
+    rtpblocks.py rundummy.py specialsets2.py"""):
+        srcs.remove(path.join('testsuite', 'py', exclsrc))
+        
+    for dirname in Split("src ref"):
+        srcs.append(env.Dir(path.join('testsuite', dirname)))
     
     srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
     env.Alias('distribute', srcdistri)
@@ -501,22 +511,27 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 if 'install' in COMMAND_LINE_TARGETS:
     instpath = env['INSTALLDIR']
     prefix = env['PREFIX']
-    instdir = instpath + '/polybori/'
-    pypbroot = pyroot + 'polybori/'
-    ipbroot = 'ipbori/'
-    instfiles = glob(pypbroot + '*.py')
-    instfiles += [pypbroot + 'dynamic/PyPolyBoRi.so',
-                  pypbroot + 'dynamic/__init__.py']
-    instfiles += glob(ipbroot + 'ipbori') + glob(ipbroot + 'ipythonrc-polybori')
+    instdir = path.join(instpath, 'polybori')
+    pypbroot = path.join(pyroot, 'polybori')
+    ipbroot = 'ipbori'
+    instfiles = glob(path.join(pypbroot, '*.py'))
+    instfiles += [path.join(pypbroot, 'dynamic', 'PyPolyBoRi.so'),
+                  path.join(pypbroot, 'dynamic', '__init__.py')]
+    instfiles += glob(path.join(ipbroot, 'ipbori'))
+    instfiles += glob(path.join(ipbroot, 'ipythonrc-polybori'))
 
     for instfile in instfiles:
-        env.Install(instdir + os.path.dirname(instfile), instfile)
+        env.Install(path.join(instdir, path.dirname(instfile)), instfile)
 
-    ipboribin = env.SymLink(prefix + '/bin/ipbori',
-                            instdir + ipbroot + 'ipbori')
+    ipboribin = env.SymLink(path.join(prefix, 'bin', 'ipbori'),
+                            path.join(instdir, ipbroot, 'ipbori'))
 
     env.AlwaysBuild(ipboribin)
-
+    env.Install( path.join(instdir, 'doc', 'python') ,
+                 glob(path.join('doc', 'python', '*html')) )
+    env.Install( path.join(instdir, 'doc', 'c++' ),
+                 glob(path.join('doc', 'c++','html', '*')) ) 
+    
     env.Alias('install', instdir)
     env.Alias('install', ipboribin)
 
