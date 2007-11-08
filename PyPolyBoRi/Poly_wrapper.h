@@ -7,4 +7,10 @@
  *
  */
 
+#ifndef POLY_WRAPPER_HEADER
+#define POLY_WRAPPER_HEADER
+USING_NAMESPACE_PBORI
 void export_poly();
+
+#endif
+

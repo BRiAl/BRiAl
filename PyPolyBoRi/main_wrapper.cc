@@ -30,6 +30,11 @@ USING_NAMESPACE_PBORI
 //#define EXPORT __attribute__((visibility("default")))
 #define WRAP_ALSO_CUDD 1
 
+static BooleMonomial var_power(const BooleVariable& p, int n){
+    if (n==0) return BooleMonomial();
+    return p;
+}
+
 void print_variable(const BooleVariable & p){
   ((const BoolePolynomial&) p).print(cout);
 }
@@ -105,6 +110,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("__str__", streamable_as_str<BooleVariable>)
   .def("__repr__", streamable_as_str<BooleVariable>)
   .def("__hash__", &BooleVariable::index)
+  .def("__pow__", var_power)
   .def("index", &BooleVariable::index)
   
     .def("toStdOut", print_variable);

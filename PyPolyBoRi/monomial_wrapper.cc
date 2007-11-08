@@ -23,6 +23,10 @@ using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
 #include "Poly_wrapper.h"
+static BooleMonomial mon_power(const BooleMonomial& p, int n){
+    if (n==0) return BooleMonomial();
+    return p;
+}
 //static void print_monomial(const BooleMonomial & p){
 //  p.print(cout);
 //}
@@ -86,6 +90,7 @@ void export_monomial(){
   //.def("reducibleBy", &BooleMonomial::reducibleBy)
   .def("__str__", streamable_as_str<BooleMonomial>)
   .def("__repr__", streamable_as_str<BooleMonomial>)
+  .def("__pow__",mon_power)
   .def("divisors", &BooleMonomial::divisors)
   //.def("lmDeg", &BooleMonomial::lmDeg)
 

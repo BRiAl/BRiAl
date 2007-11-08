@@ -17,6 +17,10 @@ using namespace std;
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
+static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
+    if (n==0) return BooleMonomial();
+    return p;
+}
 static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
 }
@@ -39,10 +43,11 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())
   .def(boost::python::init<bool>())
+  .def(boost::python::init<int>())
   .def("__hash__", poly_hash)
   .def("__len__", &BoolePolynomial::length)
   .def("__iter__", range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
-
+  .def("__pow__",poly_power)
   .def(self+=self)
   //.def(self*=self)
   //.def(self/self)
