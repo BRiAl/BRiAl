@@ -475,7 +475,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 pboriversion = "0.1"
 if 'distribute' in COMMAND_LINE_TARGETS:
     
-    srcs = Split("SConstruct README disttar.py doxygen.py")
+    srcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
     for dirname in Split("""Cudd doc extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular"""):
         srcs.append(env.Dir(dirname))
