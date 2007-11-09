@@ -317,7 +317,7 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py coding.py memusage.py
-                               PyPolyBoRi.py""")]   
+                               heuristics.py gbcore.py PyPolyBoRi.py""")]   
 
 # Currently all python modules are at place
 installable_python_modules = []
@@ -416,6 +416,7 @@ if HAVE_PYTHON_EXTENSION:
             if fext in ['.so', '.py']:
                 fname = TargetPath(fname.replace(sep,'.') + '.html')
                 target.append(env.File(fname))
+
         return (target, source)
 
     bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
@@ -427,7 +428,8 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    pydocu = env.PYTHONDOC(target = DocPath('python/polybori.html'),
+    pydocu = env.PYTHONDOC(target = [DocPath('python/polybori.html'),
+                                     DocPath('python/polybori.dynamic.html')],
                            source = documentable_python_modules) 
     #bld=Builder("cd")
 else:
@@ -438,6 +440,7 @@ HAVE_SINGULAR_EXTENSION=True
 
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')])
+    env.Clean(cxxdocu, DocPath('c++'))
     #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
 #    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
 
@@ -526,8 +529,24 @@ def build_symlink(target, source, env):
         return True
     return None
 
+
+# Copy glob('*) from one directory to the other
+def cp_all(target, source, env):
+    source = source[0].path
+    target = target[0].path
+
+    if not path.exists(target):
+        Execute(Mkdir(target))
+    for file in glob(path.join(source, '*')):
+        result = str(path.join(target, path.basename(file)))
+        Execute([Copy(result, file), Chmod(result, 0644)])
+
+    return None
+
+cp_recbld = Builder(action = cp_all)
+
 symlinkbld = Builder(action = build_symlink)
-env.Append(BUILDERS={'SymLink' : symlinkbld})
+env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld})
 
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
@@ -540,12 +559,15 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     InstPath = PathJoiner(env['INSTALLDIR'], 'polybori')
 
-    # Copy documentation
-    nonexecs = env.Install(InstPath('doc/python'),
-                           pydocu)
- #   env.Depends(InstPath('doc/python'), pydocu)
-    nonexecs += env.Install(InstPath('doc/c++'), glob(DocPath('c++/html/*')) )
-    
+    # Copy c++ documentation
+    cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
+                             env.Dir(DocPath('c++/html'))) 
+    env.Depends(cxxdocinst, cxxdocu)
+    env.Clean(cxxdocinst, glob(InstPath('doc/c++/*')))
+
+    # Copy python documentation
+    nonexecs = env.Install(InstPath('doc/python'), pydocu)
+     
     # Non-executables to be installed
     for instfile in glob(PyRootPath('polybori/*.py')) + [
         PyRootPath('polybori/dynamic/__init__.py'),
