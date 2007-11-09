@@ -530,7 +530,7 @@ def build_symlink(target, source, env):
     return None
 
 
-# Copy glob('*) from one directory to the other
+# Copy glob('*') from one directory to the other
 def cp_all(target, source, env):
     source = source[0].path
     target = target[0].path
