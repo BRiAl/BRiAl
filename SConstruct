@@ -24,7 +24,11 @@ class PathJoiner(object):
     """Generates a valid path from lists of strings, with custom prefix (set at
     initialization). It also changes '/' to correct path separator.""" 
     def __init__(self, *parent):
-        self.parent = path.join(*self.split(*parent))
+        if path.isabs(parent[0]):
+            starter = os.sep
+        else:
+            starter = ''
+        self.parent = path.join(starter, *self.split(*parent))
     def __call__(self, *args):
         return path.join(self.parent, *self.split(*args))
     def split(self, *args):
@@ -515,8 +519,10 @@ def build_symlink(target, source, env):
     source = source[0].abspath
     target = target[0].abspath
     print "Symlinking from", source, "to", target
-
+    
     try:
+        if path.exists(target):
+            env.Remove(target)
         os.symlink(source, target)
     except:
         return True
@@ -555,7 +561,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', InstPath())
 
     # Symlink from executable into bin directory
-    ipboribin = env.SymLink(PathJoiner(env['PREFIX'])('bin/ipbori'),
+    ipboribin = env.SymLink(path.join(env['PREFIX'], 'bin', 'ipbori'),
                             InstPath(IPBPath('ipbori')))
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
