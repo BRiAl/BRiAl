@@ -21,15 +21,23 @@ PBP="python"
 
 # Fix some paths and names
 class PathJoiner(object):
+    """Generates a valid path from lists of strings, with custom prefix (set at
+    initialization). It also changes '/' to correct path separator.""" 
     def __init__(self, *parent):
-        self.parent = path.join(*parent)
+        self.parent = path.join(*self.split(*parent))
     def __call__(self, *args):
-        return path.join(self.parent, *args)     
+        return path.join(self.parent, *self.split(*args))
+    def split(self, *args):
+        """Splits all arguments at '/'."""
+        result = []
+        for elt in args:
+            result += str(elt).split('/')
+        return result
 
 [TestsPath, PyPBPath, CuddPath, GBPath, PBPath, DocPath] = [ PathJoiner(fdir)
     for fdir in Split("""testsuite PyPolyBoRi Cudd groebner polybori doc""") ]
 
-DataPath = PathJoiner(TestsPath('py', 'data'))
+DataPath = PathJoiner(TestsPath('py/data'))
 
 pyroot="pyroot/"
 ipbroot = 'ipbori'
@@ -207,13 +215,11 @@ if not env['PLATFORM']=="darwin":
 
 env.Append(LIBPATH=[CuddPath()])
 
-cudd_resources = [CuddPath('obj', 'cuddObj.cc')]
-cudd_resources += glob(CuddPath('util', '*.c'))
+cudd_resources = [CuddPath('obj/cuddObj.cc')]
+cudd_resources += glob(CuddPath('util/*.c'))
 
-cudd_headers = [ CuddPath(fdir, fname)
-                 for (fdir, fname) in [('obj', 'cuddObj.hh'),
-                                       ('util','util.h'),
-                                       ('cudd', 'cuddInt.h')] ]
+cudd_headers = [ CuddPath(fname) for fname in ['obj/cuddObj.hh', 'util/util.h',
+                                               'cudd/cuddInt.h'] ] 
 
 env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['obj', 'util'] ])
 
@@ -224,10 +230,8 @@ for fdir in Split("cudd dddmp mtr st epd"):
 
 
 # exclude the following files
-for (fdir, fname) in [('util', 'saveimage.c'),
-                      ('util', 'test*.c'),
-                      ('dddmp', '*DdNode*.c')]:
-    for file in glob(CuddPath(fdir, fname)):
+for fname in ['util/saveimage.c', 'util/test*.c','dddmp/*DdNode*.c']:
+    for file in glob(CuddPath(fname)):
         cudd_resources.remove(file)
 
 cudd_shared = env.SharedObject(cudd_resources)
@@ -312,21 +316,16 @@ LIBS = env['LIBS']+['boost_python']+USERLIBS
 LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
 
-#testsuite_py="testsuite/py/"
-installable_python_modules_tp=[]
 
-documentable_python_modules = [(PyRootPath('polybori'), f)
+documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py coding.py memusage.py
                                PyPolyBoRi.py""")]   
 
-installable_dynamic_python_modules = [(PyPBPath("PyPolyBoRi.so"),
-                                       path.join("dynamic", "PyPolyBoRi.so"))]
+# Currently all python modules are at place
+installable_python_modules = []
 
-installable_python_modules = installable_python_modules_tp
-
-all_installable_python_modules = installable_python_modules + installable_dynamic_python_modules
 
 def add_cnf_dir(env,directory):
   for f in glob(path.join(directory, "*.cnf")):
@@ -355,17 +354,20 @@ if HAVE_PYTHON_EXTENSION:
             #SHLIBPREFIX="")
     Default(pypb)
 
-   
-    polybori_modules = PyRootPath("polybori")
-    polybori_dynamic_modules = path.join(polybori_modules, 'dynamic')
+    # Define the dynamic python modules in pyroot
+    dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
+    documentable_python_modules += dynamic_modules
     
+    Default(dynamic_modules)
+
+    
+    polybori_modules = PyRootPath("polybori")
     #Default(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
         Default(env.Install(polybori_modules, f))
 
-    for (f,n) in installable_dynamic_python_modules:
-        Default(env.Install(polybori_dynamic_modules, f))
-        
+
+    
     to_append_for_profile = [libpb, gb] + libCudd
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
@@ -393,16 +395,16 @@ if HAVE_PYTHON_EXTENSION:
                      src_suffix = '.cnf')
     env.Append(BUILDERS={'CNF' : cnfbld})
 
-    cnffiles =  [("uf20", "uf20_" + str(i))        for i in xrange(1,1001)]
-    cnffiles += [("flat30_60", "flat30_" + str(i))  for i in xrange(1,101)]
-    cnffiles += [("uuf50", "uuf50_" + str(i))       for i in xrange(1,101)]
-    cnffiles += [("uuf75", "uuf75_" + str(i))        for i in xrange(1,11)]
-    cnffiles += [("phole", "hole" + str(i))          for i in xrange(6,13)]
-    cnffiles += [("hanoi", "hanoi" + str(i))          for i in xrange(4,6)]
-    cnffiles += [('uuf100', 'uuf100_01'), ('uuf125', 'uuf125_1')]
+    cnffiles =  ["uf20/uf20_" + str(i)         for i in xrange(1,1001)]
+    cnffiles += ["flat30_60/flat30_" + str(i)  for i in xrange(1,101)]
+    cnffiles += ["uuf50/uuf50_" + str(i)       for i in xrange(1,101)]
+    cnffiles += ["uuf75/uuf75_" + str(i)       for i in xrange(1,11)]
+    cnffiles += ["phole/hole" + str(i)         for i in xrange(6,13)]
+    cnffiles += ["hanoi/hanoi" + str(i)        for i in xrange(4,6)]
+    cnffiles += ['uuf100/uuf100_01', 'uuf125/uuf125_1']
 
-    for (fdir, fname) in cnffiles:
-        env.CNF(glob(DataPath(fdir, fname + ".cnf")))
+    for fname in cnffiles:
+        env.CNF(glob(DataPath(fname + ".cnf")))
 
     for fdir in Split("blocksworld qg gcp_large bejing"):
         add_cnf_dir(env, DataPath(fdir))
@@ -423,9 +425,8 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target = DocPath('python', 'polybori.html'),
-                  source=[path.join(polybori_modules, f) for (a,f) in
-                          documentable_python_modules + installable_dynamic_python_modules]) 
+    env.PYTHONDOC(target = DocPath('python/polybori.html'),
+                  source = documentable_python_modules) 
     #bld=Builder("cd")
 else:
     print "no python extension"
@@ -468,7 +469,7 @@ if HAVE_SINGULAR_EXTENSION:
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
-           .cvsignore .dblite .log .sconsign .depend"""),
+           .cvsignore .dblite .log .sconsign .depend .html"""),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp html latex"),
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~"))
 
@@ -482,7 +483,7 @@ if 'distribute' in COMMAND_LINE_TARGETS:
 
     # Testsuite is not distributed completely
     srcs += [TestsPath('execsuite')]
-    srcs += glob(TestsPath('py', '*.py'))
+    srcs += glob(TestsPath('py/*.py'))
 
     for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
     rtpblocks.py rundummy.py specialsets2.py"""):
@@ -501,11 +502,10 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
     env.Install(DevelInstPath('lib'), devellibs)
-    env.Install(DevelInstPath('include', 'polybori'),
-                glob(PBPath('include', '*.h')))
-    env.Install(DevelInstPath('include', 'polybori', 'groebner'),
-                glob(GBPath('src', '*.h')))
-    env.Install(DevelInstPath('include', 'cudd'), cudd_headers)
+    env.Install(DevelInstPath('include/polybori'), glob(PBPath('include/*.h')))
+    env.Install(DevelInstPath('include/polybori/groebner'),
+                glob(GBPath('src/*.h')))
+    env.Install(DevelInstPath('include/cudd'), cudd_headers)
     
     env.Alias('devel-install', DevelInstPath())
 
@@ -537,26 +537,25 @@ if 'install' in COMMAND_LINE_TARGETS:
     InstPath = PathJoiner(env['INSTALLDIR'], 'polybori')
 
     # Non-executables to be installed
-    for instfile in glob(PyRootPath('polybori', '*.py')) + [
-        PyRootPath('polybori', 'dynamic', '__init__.py'),
+    for instfile in glob(PyRootPath('polybori/*.py')) + [
+        PyRootPath('polybori/dynamic/__init__.py'),
         IPBPath('ipythonrc-polybori') ] :
         
         for file in env.InstallAs(InstPath(instfile), instfile):
             env.AddPostAction(file, Chmod(str(file), 0644))
 
-    # Executables to be installed
-    for instfile in [ PyRootPath('polybori', 'dynamic', 'PyPolyBoRi.so'),
-                      IPBPath('ipbori') ]:
+    # Executables and shared libraries to be installed
+    for instfile in dynamic_modules + [ IPBPath('ipbori') ]:
         for file in env.InstallAs(InstPath(instfile), instfile):
             env.AddPostAction(file, Chmod(str(file), 0755))
 
     # Copy documentation
-    env.Install( InstPath('doc', 'python'), glob(DocPath('python', '*html')) )
-    env.Install( InstPath('doc', 'c++'), glob(DocPath('c++','html', '*')) ) 
+    env.Install( InstPath('doc/python'), glob(DocPath('python/*html')) )
+    env.Install( InstPath('doc/c++'), glob(DocPath('c++/html/*')) ) 
     env.Alias('install', InstPath())
 
     # Symlink from executable into bin directory
-    ipboribin = env.SymLink(path.join(env['PREFIX'], 'bin', 'ipbori'),
+    ipboribin = env.SymLink(PathJoiner(env['PREFIX'])('bin/ipbori'),
                             InstPath(IPBPath('ipbori')))
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
