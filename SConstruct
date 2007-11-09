@@ -326,7 +326,8 @@ installable_python_modules = []
 def add_cnf_dir(env,directory):
   for f in glob(path.join(directory, "*.cnf")):
       env.CNF(f[:-4])
-      
+
+pydocu = []
 if HAVE_PYTHON_EXTENSION:
  
     wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
@@ -408,8 +409,13 @@ if HAVE_PYTHON_EXTENSION:
 
     # Generating python documentation
     def pypb_emitter(target,source,env):
-        env.Depends(target,pypb)
-        env.Clean(target, glob(path.join(str(target[0].dir), "*html")))
+
+        TargetPath = PathJoiner(target[0].dir)
+        for file in source:
+            (fname, fext) = path.splitext(str(file).replace(pyroot,''))
+            if fext in ['.so', '.py']:
+                fname = TargetPath(fname.replace(sep,'.') + '.html')
+                target.append(env.File(fname))
         return (target, source)
 
     bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
@@ -421,8 +427,8 @@ if HAVE_PYTHON_EXTENSION:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
         
-    env.PYTHONDOC(target = DocPath('python/polybori.html'),
-                  source = documentable_python_modules) 
+    pydocu = env.PYTHONDOC(target = DocPath('python/polybori.html'),
+                           source = documentable_python_modules) 
     #bld=Builder("cd")
 else:
     print "no python extension"
@@ -431,8 +437,8 @@ HAVE_SINGULAR_EXTENSION=True
 
 
 if HAVE_DOXYGEN:
-    env.Doxygen (source=[DocPath('doxygen.conf')])
-#    env.Doxygen (source=["groebner/doc/doxygen.conf"])
+    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')])
+    #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
 #    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
 
 import subprocess
@@ -534,22 +540,27 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     InstPath = PathJoiner(env['INSTALLDIR'], 'polybori')
 
+    # Copy documentation
+    nonexecs = env.Install(InstPath('doc/python'),
+                           pydocu)
+ #   env.Depends(InstPath('doc/python'), pydocu)
+    nonexecs += env.Install(InstPath('doc/c++'), glob(DocPath('c++/html/*')) )
+    
     # Non-executables to be installed
     for instfile in glob(PyRootPath('polybori/*.py')) + [
         PyRootPath('polybori/dynamic/__init__.py'),
         IPBPath('ipythonrc-polybori') ] :
-        
-        for file in env.InstallAs(InstPath(instfile), instfile):
-            env.AddPostAction(file, Chmod(str(file), 0644))
+        nonexecs += env.InstallAs(InstPath(instfile), instfile)
 
     # Executables and shared libraries to be installed
     for instfile in dynamic_modules + [ IPBPath('ipbori') ]:
         for file in env.InstallAs(InstPath(instfile), instfile):
             env.AddPostAction(file, Chmod(str(file), 0755))
 
-    # Copy documentation
-    env.Install( InstPath('doc/python'), glob(DocPath('python/*html')) )
-    env.Install( InstPath('doc/c++'), glob(DocPath('c++/html/*')) ) 
+    # Set correct permissions for non-executables
+    for file in nonexecs:
+        env.AddPostAction(file, Chmod(str(file), 0644))
+        
     env.Alias('install', InstPath())
 
     # Symlink from executable into bin directory
