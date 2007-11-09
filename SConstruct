@@ -24,19 +24,11 @@ class PathJoiner(object):
     """Generates a valid path from lists of strings, with custom prefix (set at
     initialization). It also changes '/' to correct path separator.""" 
     def __init__(self, *parent):
-        if path.isabs(parent[0]):
-            starter = os.sep
-        else:
-            starter = ''
-        self.parent = path.join(starter, *self.split(*parent))
+        self.parent = path.join(*self.validpath(*parent))
     def __call__(self, *args):
-        return path.join(self.parent, *self.split(*args))
-    def split(self, *args):
-        """Splits all arguments at '/'."""
-        result = []
-        for elt in args:
-            result += str(elt).split('/')
-        return result
+        return path.join(self.parent, *self.validpath(*args))
+    def validpath(self, *args):
+        return [str(elt).replace('/', sep) for elt in args]
 
 [TestsPath, PyPBPath, CuddPath, GBPath, PBPath, DocPath] = [ PathJoiner(fdir)
     for fdir in Split("""testsuite PyPolyBoRi Cudd groebner polybori doc""") ]
