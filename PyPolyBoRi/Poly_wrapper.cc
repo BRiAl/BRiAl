@@ -31,7 +31,9 @@ static void plot(const BoolePolynomial& p, const char* c){
   p.prettyPrint(c);
 }
 
-
+static BooleSet poly_diagram_as_set(const Polynomial& p){
+    return p.diagram();
+}
 void export_poly(){
 
 const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &BoolePolynomial::diagram;
@@ -104,7 +106,8 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("vars",&BoolePolynomial::usedVariables)
   .def("totalDegree", &BoolePolynomial::totalDeg)
   .def("gradedPart", &BoolePolynomial::gradedPart)
-  .def("diagram", diagram, return_internal_reference<1>())
+  //.def("diagram", diagram, return_internal_reference<1>())
+  .def("diagram",poly_diagram_as_set)
   .def("navigation", &BoolePolynomial::navigation)
   .def("elength", &BoolePolynomial::eliminationLength)
   .def("hasConstantPart", &BoolePolynomial::hasConstantPart)
