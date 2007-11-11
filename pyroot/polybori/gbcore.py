@@ -174,7 +174,7 @@ def llfirst_post(I,eliminated):
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
-@gb_with_pre_post_option("redsb",post=redsb_post,default=False)
+@gb_with_pre_post_option("redsb",post=redsb_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 def groebner_basis(I, faugere=False,  coding=False,
