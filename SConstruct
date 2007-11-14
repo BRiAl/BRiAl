@@ -4,6 +4,7 @@ opts = Options('custom.py')
 import tarfile
 BOOST_WORKS=False
 HAVE_DOXYGEN=True
+HAVE_PYTHON_EXTENSION = True
 
 import sys
 from os import sep, path
@@ -60,7 +61,8 @@ try:
         SINGULAR_HOME=custom.SINGULAR_HOME
     if "HAVE_DOXYGEN" in dir(custom):
         HAVE_DOXYGEN=custom.HAVE_DOXYGEN
-    
+    if "HAVE_PYTHON_EXTENSION" in dir(custom):
+        HAVE_PYTHON_EXTENSION = custom.HAVE_PYTHON_EXTENSION
 except:
     pass
 
@@ -76,9 +78,11 @@ import os
 opts.Add('PBP', 'PolyBoRi python', "python")
 opts.Add('CXX', 'C++ Compiler', "g++")
 
-opts.Add('INSTALLDIR', 'end user installation directory', '/usr/local')
-opts.Add('PREFIX', 'binary installation prefix directory', '$INSTALLDIR') 
+opts.Add('PREFIX', 'binary installation prefix directory', '/usr/local')
+opts.Add('INSTALLDIR', 'end user installation directory',
+         '$PREFIX/share/polybori')
 opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
+
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
@@ -108,7 +112,6 @@ cache_opts_file.close()
 IS_x64 = (2**32).__class__==int#((machtype == "x86_64") | (machtype == "ia64"))
 
 
-HAVE_PYTHON_EXTENSION=1
 
 class PythonConfig(object):
     def __init__(self, version="2.4", prefix="/usr", libdir=None, incdir=None, libname=None):
@@ -177,7 +180,6 @@ except:
 
 
 
-HAVE_PYTHON_EXTENSION=0
 for c in PYTHONSEARCH:
     if conf.CheckCHeader(path.join(c.incdir, "Python.h")):
         PYTHON_CONFIG=c
@@ -187,13 +189,12 @@ for c in PYTHONSEARCH:
         #pop it?
         break
 
-
-if BOOST_WORKS or conf.CheckCXXHeader(path.join('boost', 'python.hpp')):
-        HAVE_PYTHON_EXTENSION=1
-else:
-    print 'Warning Boost/python must be installed for python support'
+if HAVE_PYTHON_EXTENSION:
+    if not (BOOST_WORKS or
+            conf.CheckCXXHeader(path.join('boost', 'python.hpp')) ):
+        HAVE_PYTHON_EXTENSION = False
+        print 'Warning Boost/python must be installed for python support'
     
-
 env = conf.Finish()
 
 # Resoruces for including anything into the PyPolyBoRi shared library
@@ -328,8 +329,8 @@ def add_cnf_dir(env,directory):
       env.CNF(f[:-4])
 
 pydocu = []
+dynamic_modules = []
 if HAVE_PYTHON_EXTENSION:
- 
     wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
     dd_wrapper.cc Poly_wrapper.cc navigator_wrap.cc variable_block.cc
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
@@ -503,7 +504,7 @@ if 'distribute' in COMMAND_LINE_TARGETS:
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
-    DevelInstPath = PathJoiner(env['DEVEL_PREFIX'], 'polybori')
+    DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
     
     devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
     env.Install(DevelInstPath('lib'), devellibs)
@@ -557,13 +558,14 @@ if 'install' in COMMAND_LINE_TARGETS:
     except OSError:     # ignore on systems that don't support umask
         pass
     
-    InstPath = PathJoiner(env['INSTALLDIR'], 'polybori')
+    InstPath = PathJoiner(env['INSTALLDIR'])
 
     # Copy c++ documentation
-    cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
-                             env.Dir(DocPath('c++/html'))) 
-    env.Depends(cxxdocinst, cxxdocu)
-    env.Clean(cxxdocinst, glob(InstPath('doc/c++/*')))
+    if HAVE_DOXYGEN:
+        cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
+                                 env.Dir(DocPath('c++/html'))) 
+        env.Depends(cxxdocinst, cxxdocu)
+        env.Clean(cxxdocinst, glob(InstPath('doc/c++/*')))
 
     # Copy python documentation
     nonexecs = env.Install(InstPath('doc/python'), pydocu)
