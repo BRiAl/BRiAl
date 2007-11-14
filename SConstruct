@@ -560,6 +560,15 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     InstPath = PathJoiner(env['INSTALLDIR'])
 
+    # Executables and shared libraries to be installed
+    inst_dynms = []
+    for instfile in dynamic_modules :
+        inst_dynms += env.InstallAs(InstPath(instfile), instfile)
+
+    execs = inst_dynms
+    for instfile in [ IPBPath('ipbori') ]:
+        execs += env.InstallAs(InstPath(instfile), instfile)
+            
     # Copy c++ documentation
     if HAVE_DOXYGEN:
         cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
@@ -569,21 +578,34 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     # Copy python documentation
     nonexecs = env.Install(InstPath('doc/python'), pydocu)
-     
+
     # Non-executables to be installed
+    pyfiles = []
     for instfile in glob(PyRootPath('polybori/*.py')) + [
-        PyRootPath('polybori/dynamic/__init__.py'),
-        IPBPath('ipythonrc-polybori') ] :
+        PyRootPath('polybori/dynamic/__init__.py') ] :
+        pyfiles += env.InstallAs(InstPath(instfile), instfile)
+
+    nonexecs += pyfiles
+
+    if HAVE_PYTHON_EXTENSION:
+        for instfile in pyfiles:
+            mod = path.splitext(instfile.path.split(pyroot)[-1])[0]
+            mod = mod.replace(sep, '.')
+            cmdline = """$PBP -c "import sys; sys.path.append('"""
+            cmdline +=  InstPath(pyroot) + """'); import """ + mod + """ " """
+            results = env.Command(instfile.path +'c', instfile, cmdline)
+            env.Depends(results, pyfiles + inst_dynms)
+            nonexecs += results
+        
+    for instfile in [IPBPath('ipythonrc-polybori') ] :
         nonexecs += env.InstallAs(InstPath(instfile), instfile)
-
-    # Executables and shared libraries to be installed
-    for instfile in dynamic_modules + [ IPBPath('ipbori') ]:
-        for file in env.InstallAs(InstPath(instfile), instfile):
-            env.AddPostAction(file, Chmod(str(file), 0755))
-
-    # Set correct permissions for non-executables
-    for file in nonexecs:
+        
+    # Set correct permissions
+    for file in nonexecs: 
         env.AddPostAction(file, Chmod(str(file), 0644))
+
+    for file in execs:
+        env.AddPostAction(file, Chmod(str(file), 0755))
         
     env.Alias('install', InstPath())
 
