@@ -36,6 +36,8 @@ def owns_one_constant(I):
 
 
 def firstgb_heuristic(d):
+    d_orig=d
+    d=copy(d)
     def want_la():
         n_used_vars=None
         bound=None
@@ -64,7 +66,20 @@ def firstgb_heuristic(d):
                 d["selection_size"]=10000
             if not ("ll" in d):
                 d["ll"]=True
-
+    if not "other_ordering_first" in d:
+        if get_order_code()==OrderCode.lp:
+            max_non_linear=len(I)/2
+            non_linear=0
+            for p in I:
+                if p.lead().deg()>1:
+                    non_linear=non_linear+1
+                    if non_linear>max_non_linear:
+                        break
+            if non_linear>max_non_linear:
+                other_ordering_opts=copy(d_orig)
+                other_ordering_opts["switch_to"]=OrderCode.dlex
+                d["other_ordering_first"]=other_ordering_opts
+            
     return d
 def trivial_heuristic(d):
     
@@ -108,7 +123,7 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False):
     def make_wrapper(f):
         def wrapper(I,**kwds):
             for o in if_not_option:
@@ -124,7 +139,10 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
             state=None
             if option_set:
                if pre:
-                   (I,state)=pre(I)
+                   if not pass_option_set:
+                       (I,state)=pre(I)
+                   else:
+                       (I,state)=pre(I,option_set)
                
             res=f(I,**kwds)
             if option_set:
@@ -159,11 +177,19 @@ def llfirst_pre(I):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=False)
     return (I,eliminated)
 
+def other_ordering_pre(I,options):
+    ocode=get_order_code()
+    assert ocode==OrderCode.lp
+    #in parcticular it does not work for block orderings, because of the block sizes
+    change_ordering(options["switch_to"])
+    kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
+    I=groebner_basis(I,other_ordering_first=False,**kwds)
+    change_ordering(ocode)
+    return (I,None)
 def llfirstonthefly_pre(I):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)
 def llfirst_post(I,eliminated):
-    
     if not I.containsOne():
         for p in eliminated:
             I.addGenerator(p)
@@ -173,6 +199,7 @@ def llfirst_post(I,eliminated):
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
+@gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
