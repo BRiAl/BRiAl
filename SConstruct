@@ -442,6 +442,7 @@ HAVE_SINGULAR_EXTENSION=True
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')])
     env.Clean(cxxdocu, DocPath('c++'))
+    env.AlwaysBuild(cxxdocu)
     #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
 #    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
 
@@ -549,6 +550,34 @@ cp_recbld = Builder(action = cp_all)
 symlinkbld = Builder(action = build_symlink)
 env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld})
 
+def FinalizePermissions(targets, perm):
+    for file in targets:
+        env.AddPostAction(file, Chmod(str(file), perm))
+    return targets
+
+def FinalizeExecs(targets):
+    return FinalizePermissions(targets, 0755)
+
+def FinalizeNonExecs(targets):
+    return FinalizePermissions(targets, 0644)
+
+
+def GeneratePyc(sources):
+    results = []
+    for file in sources:
+        (pypath, pymod) = str(file.dir).split(pyroot)
+        pypath = path.join(pypath, pyroot)
+        pymod = pymod.replace(sep, '.')
+        (fbase, fext) = path.splitext(file.name)
+        if (fext == '.py') :
+            pymod += '.' + fbase
+            cmdline = """$PBP -c "import sys; sys.path.append('"""
+            cmdline +=  pypath + """'); import """ + pymod + """ " """
+            results += env.Command(str(file) +'c', file, cmdline)
+
+        env.Depends(results, sources)
+    return results
+            
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
     # Setting umask for newly generated directories
@@ -561,13 +590,12 @@ if 'install' in COMMAND_LINE_TARGETS:
     InstPath = PathJoiner(env['INSTALLDIR'])
 
     # Executables and shared libraries to be installed
-    inst_dynms = []
+    pyfiles = []
     for instfile in dynamic_modules :
-        inst_dynms += env.InstallAs(InstPath(instfile), instfile)
+        pyfiles += FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
 
-    execs = inst_dynms
     for instfile in [ IPBPath('ipbori') ]:
-        execs += env.InstallAs(InstPath(instfile), instfile)
+        FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
             
     # Copy c++ documentation
     if HAVE_DOXYGEN:
@@ -577,36 +605,19 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.Clean(cxxdocinst, glob(InstPath('doc/c++/*')))
 
     # Copy python documentation
-    nonexecs = env.Install(InstPath('doc/python'), pydocu)
+    FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))
 
     # Non-executables to be installed
-    pyfiles = []
     for instfile in glob(PyRootPath('polybori/*.py')) + [
         PyRootPath('polybori/dynamic/__init__.py') ] :
-        pyfiles += env.InstallAs(InstPath(instfile), instfile)
-
-    nonexecs += pyfiles
+        pyfiles += FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
 
     if HAVE_PYTHON_EXTENSION:
-        for instfile in pyfiles:
-            mod = path.splitext(instfile.path.split(pyroot)[-1])[0]
-            mod = mod.replace(sep, '.')
-            cmdline = """$PBP -c "import sys; sys.path.append('"""
-            cmdline +=  InstPath(pyroot) + """'); import """ + mod + """ " """
-            results = env.Command(instfile.path +'c', instfile, cmdline)
-            env.Depends(results, pyfiles + inst_dynms)
-            nonexecs += results
+        FinalizeNonExecs(GeneratePyc(pyfiles))
         
     for instfile in [IPBPath('ipythonrc-polybori') ] :
-        nonexecs += env.InstallAs(InstPath(instfile), instfile)
-        
-    # Set correct permissions
-    for file in nonexecs: 
-        env.AddPostAction(file, Chmod(str(file), 0644))
-
-    for file in execs:
-        env.AddPostAction(file, Chmod(str(file), 0755))
-        
+        FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+      
     env.Alias('install', InstPath())
 
     # Symlink from executable into bin directory
