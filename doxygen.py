@@ -164,6 +164,7 @@ def DoxyEmitter(source, target, env):
 
    targets = []
    out_dir = "doc/"+data.get("OUTPUT_DIRECTORY", ".")
+
    # add our output locations
    for (k, v) in output_formats.items():
       if data.get("GENERATE_" + k, v[0]) == "YES":

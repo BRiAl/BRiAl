@@ -441,7 +441,7 @@ HAVE_SINGULAR_EXTENSION=True
 
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')])
-    env.Clean(cxxdocu, DocPath('c++'))
+    env.Clean(cxxdocu, cxxdocu)
     env.AlwaysBuild(cxxdocu)
     #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
 #    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
@@ -602,7 +602,7 @@ if 'install' in COMMAND_LINE_TARGETS:
         cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
                                  env.Dir(DocPath('c++/html'))) 
         env.Depends(cxxdocinst, cxxdocu)
-        env.Clean(cxxdocinst, glob(InstPath('doc/c++/*')))
+        env.Clean(cxxdocinst, cxxdocinst)
 
     # Copy python documentation
     FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))

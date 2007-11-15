@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2007/11/15 14:43:06  dreyer
+ * CHANGE: small things for better doxygen generation
+ *
  * Revision 1.31  2007/11/15 13:08:00  dreyer
  * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
  *
@@ -143,7 +146,7 @@ class LexOrder;
 //class CGenericIter;
 
 
-#define PBORI_CONST_DDFUNCS(func) \
+#define PBORI_CONST_DDFUNCS(func)   \
   self func(const self& rhs) const { return self(base::func(rhs.diagram())); }
 
 #define PBORI_DDFUNCS(func) \
@@ -309,12 +312,12 @@ public:
     return *this;
   };
 
+  /// @name Members from base
+  //@{
   PBORI_CONST_DDFUNCS_IDX(subset0)
   PBORI_CONST_DDFUNCS_IDX(subset1)
   PBORI_CONST_DDFUNCS_IDX(change)
-  PBORI_DDFUNCS_IDX(subset0Assign)
-  PBORI_DDFUNCS_IDX(subset1Assign)
-  PBORI_DDFUNCS_IDX(changeAssign)
+
 
   PBORI_CONST_DDFUNCS(unite)
   PBORI_CONST_DDFUNCS(diff)
@@ -328,6 +331,11 @@ public:
   PBORI_CONST_DDFUNCS(weakDivide)
   PBORI_CONST_DDFUNCS(divideFirst)
 
+  /// @todo Do we really nee the assign variante here at high level?
+  PBORI_DDFUNCS_IDX(subset0Assign)
+  PBORI_DDFUNCS_IDX(subset1Assign)
+  PBORI_DDFUNCS_IDX(changeAssign)
+
   PBORI_DDFUNCS(uniteAssign)
   PBORI_DDFUNCS(diffAssign)
   PBORI_DDFUNCS(diffConstAssign)
@@ -338,7 +346,7 @@ public:
   PBORI_DDFUNCS(ddDivideAssign)
   PBORI_DDFUNCS(weakDivideAssign)
   PBORI_DDFUNCS(divideFirstAssign)
-
+  //@}
 };
 
 
