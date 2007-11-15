@@ -109,7 +109,6 @@ class AdderBlock(AlternatingBlock):
     for i in xrange(self.adder_bits):
       #print i, ":"
       c=1+(1+a(i)*b(i))*(1+carries[-1]*a(i))*(1+carries[-1]*b(i))
-      #print c.diagram().nNodes()
       carries.append(c)
 
     self.add_results=[a(i)+b(i)+carries[i] for i in xrange(self.adder_bits)]

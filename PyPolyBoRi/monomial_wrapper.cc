@@ -40,7 +40,7 @@ static boost::python::tuple mon2tuple(const BooleMonomial& m ){
   return tuple(m);
 }
 void export_monomial(){
-  const BooleMonomial::dd_type&  (BooleMonomial::*diagram)(void) const = &BooleMonomial::diagram;
+  BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
    
     
@@ -95,7 +95,8 @@ void export_monomial(){
   //.def("lmDeg", &BooleMonomial::lmDeg)
 
   //.def("totalDegree", &BooleMonomial::totalDeg)
-  .def("diagram", diagram,return_internal_reference<1>());
+  //.def("diagram", diagram,return_internal_reference<1>());
+  .def("set", set);
   //.def("reducibleBy", &BooleMonomial::reducibleBy, red_overloads());
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);

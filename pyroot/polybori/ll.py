@@ -22,7 +22,7 @@ def llredsb_Cudd_style(polys):
         lmp=p.lexLead()
         assert len(list(lmp))==1
         index=iter(lmp).next()
-        red_nf_of_tail=ll_red_nf(p+lmp,BooleSet(reductors.diagram()))
+        red_nf_of_tail=ll_red_nf(p+lmp,BooleSet(reductors.set()))
         assert index<reductors.navigation().value()
         reductors=lmp*reductors+red_nf_of_tail
   return reductors
@@ -33,7 +33,7 @@ def ll_encode(polys):
   polys=[Polynomial(p) for p in polys]
   def lead(p):
     return p.lexLead()
-  reductors=BooleSet(Polynomial(1).diagram())
+  reductors=BooleSet(Polynomial(1).set())
   
   linear_lead=sorted(polys,key=lead)
   assert len(set([p.lexLead() for p in linear_lead]))==len(polys)
@@ -69,7 +69,7 @@ def eliminate(polys, on_the_fly=False):
       reductors=ll_encode(linear_leads)
   else:
       reductors=llredsb_Cudd_style(linear_leads)
-      reductors=BooleSet(reductors.diagram())
+      reductors=BooleSet(reductors.set())
   if on_the_fly:
       red_fun=ll_red_nf_noredsb
   else:

@@ -18,7 +18,6 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
-typedef CTypes::dd_type dd_type;
 void changeAssign(BooleSet& c, BooleSet::idx_type idx){
   c.changeAssign(idx);
 }
@@ -29,9 +28,8 @@ void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
 
-  boost::python::class_<BooleSet, bases<dd_type> >("BooleSet")
+  boost::python::class_<BooleSet>("BooleSet")
   .def(boost::python::init <const BooleSet&>())
-  .def(boost::python::init <const CTypes::dd_type&>())
   .def(boost::python::init <const BooleSet::navigator& >())
   .def(boost::python::init <>())
  

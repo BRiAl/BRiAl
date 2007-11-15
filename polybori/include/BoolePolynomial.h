@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.79  2007/11/15 13:08:00  dreyer
+ * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
+ *
  * Revision 1.78  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -464,6 +467,9 @@ public:
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
 
+  /// Construct polynomial from a subset of the powerset over all variables
+  BoolePolynomial(const set_type&);
+
   /// Construct polynomial from exponent vector
   BoolePolynomial(const exp_type&);
 
@@ -644,8 +650,8 @@ public:
   /// gives a copy of the diagram
   dd_type copyDiagram(){   return diagram();  }
 
-  /// Casting operator
-  operator const dd_type&() const { return diagram(); };
+  /// Casting operator to Boolean set
+  operator set_type() const { return set(); };
 
   size_type eliminationLength() const;
   size_type eliminationLengthWithDegBound(size_type garantied_deg_bound) const;
@@ -657,6 +663,9 @@ public:
 
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_dd; }
+
+  /// Get corresponding subset of of the powerset over all variables
+  set_type set() const { return m_dd; }
 
   /// Test, whether we have one term only
   bool_type isSingleton() const { return dd_is_singleton(navigation()); }

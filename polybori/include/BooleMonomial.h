@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/11/15 13:08:00  dreyer
+ * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
+ *
  * Revision 1.28  2007/11/06 15:03:32  dreyer
  * CHANGE: More generic copyright
  *
@@ -292,11 +295,14 @@ class BooleMonomial {
   /// Read-only access to internal decision diagramm structure
   const dd_type& diagram() const { return m_poly.diagram(); }
 
+  /// Get corresponding subset of of the powerset over all variables
+  set_type set() const { return m_poly.set(); }
+
   /// Removes the first variables from monomial
   self& popFirst() { 
     assert(!m_poly.isConstant());
-    return *this = dd_type(m_poly.diagram().manager(),
-                           m_poly.navigation().thenBranch()); 
+    return *this = set_type( dd_type(m_poly.diagram().manager(),
+                                     m_poly.navigation().thenBranch()) ); 
   }
 
   /// Get first variable in monomial
@@ -314,7 +320,9 @@ protected:
   dd_type& internalDiagram() { return m_poly.internalDiagram(); }
 
   /// Construct from decision diagram
-  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
+  //  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
+  /// Construct from decision diagram
+  BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {}
 
 private:
   BoolePolynomial m_poly;

@@ -56,14 +56,10 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   implicitly_convertible<BooleVariable,BoolePolynomial>();
   implicitly_convertible<BooleMonomial,BoolePolynomial>();
   implicitly_convertible<int,BoolePolynomial>();
-  implicitly_convertible<BooleSet,CTypes::dd_type>();
-  implicitly_convertible<BoolePolynomial,CTypes::dd_type>();
   implicitly_convertible<BoolePolynomial,BooleSet>();
-  implicitly_convertible<CTypes::dd_type,BoolePolynomial>();
   implicitly_convertible<BooleSet,BoolePolynomial>();
-  implicitly_convertible<CTypes::dd_type,BooleSet>();
   def("change_ordering",&BoolePolyRing::changeOrdering);
-  export_dd();
+
   export_poly();
   export_nav();
   export_test_util();

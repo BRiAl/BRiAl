@@ -36,7 +36,13 @@ static BooleSet poly_diagram_as_set(const Polynomial& p){
 }
 void export_poly(){
 
-const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &BoolePolynomial::diagram;
+  BoolePolynomial::set_type  (BoolePolynomial::*set)(void) const =
+    &BoolePolynomial::set;
+
+//  const BoolePolynomial::set_type&  (BoolePolynomial::*set)(void) const =
+//    &BoolePolynomial::set;
+
+
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
@@ -107,7 +113,8 @@ const BoolePolynomial::dd_type&  (BoolePolynomial::*diagram)(void) const = &Bool
   .def("totalDegree", &BoolePolynomial::totalDeg)
   .def("gradedPart", &BoolePolynomial::gradedPart)
   //.def("diagram", diagram, return_internal_reference<1>())
-  .def("diagram",poly_diagram_as_set)
+  //.def("diagram",poly_diagram_as_set)
+  .def("set", set)
   .def("navigation", &BoolePolynomial::navigation)
   .def("elength", &BoolePolynomial::eliminationLength)
   .def("hasConstantPart", &BoolePolynomial::hasConstantPart)

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.102  2007/11/15 13:08:01  dreyer
+ * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
+ *
  * Revision 1.101  2007/11/06 15:03:38  dreyer
  * CHANGE: More generic copyright
  *
@@ -424,6 +427,13 @@ BoolePolynomial::BoolePolynomial(const dd_type& rhs):
   m_dd(rhs)  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(const dd_type&)" );
+}
+
+// Constructor polynomial from existing Boolean set
+BoolePolynomial::BoolePolynomial(const set_type& rhs):
+  m_dd(rhs.diagram())  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(const set_type&)" );
 }
 
 // Constructor polynomial from existing navigator

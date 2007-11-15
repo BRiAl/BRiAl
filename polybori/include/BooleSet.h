@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/11/15 13:08:00  dreyer
+ * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
+ *
  * Revision 1.30  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -139,6 +142,20 @@ class LexOrder;
 //template<class OrderType, class NavigatorType, class MonomType>
 //class CGenericIter;
 
+
+#define PBORI_CONST_DDFUNCS(func) \
+  self func(const self& rhs) const { return self(base::func(rhs.diagram())); }
+
+#define PBORI_DDFUNCS(func) \
+  self& func(const self& rhs) { base::func(rhs.diagram()); return *this; }
+
+#define PBORI_CONST_DDFUNCS_IDX(func) \
+  self func(idx_type idx) const { return self(base::func(idx)); }
+
+#define PBORI_DDFUNCS_IDX(func) \
+  self& func(idx_type idx) { base::func(idx); return *this; }
+
+
 class BooleSet:
   public CTypes::dd_type {
 
@@ -152,6 +169,10 @@ public:
   /// Generic access to underlying diagram type
   typedef base dd_type;
 
+  typedef base::navigator navigator;
+  typedef base::size_type size_type;
+  typedef base::idx_type idx_type;
+
   /// Type of terms
   typedef BooleMonomial term_type;
 
@@ -159,18 +180,10 @@ public:
   typedef BooleExponent exp_type; 
 
   /// Iterator type for iterating all monomials
-//   typedef CTermIter<term_type, navigator, 
-//                     change_assign<>,
-//                     change_assign<> >
-//   const_iterator;
   typedef CGenericIter<LexOrder, navigator, term_type> const_iterator;
 
   /// Iterator type for iterating all exponent vectors 
   typedef CGenericIter<LexOrder, navigator, exp_type> exp_iterator;
-//  typedef CTermIter<exp_type, navigator, 
-//                     inserts<>, 
-//                     removes<>, project_ith<1> >
-//   exp_iterator;
 
   /// Default constructor
   BooleSet();
@@ -284,6 +297,48 @@ public:
 
   /// Access internal decision diagram
   const dd_type& diagram() const { return dynamic_cast<const dd_type&>(*this); }
+
+  /// If-Then-Else operation
+  self ite(const self& then_dd, const self& else_dd) {
+    return self(base::ite(then_dd.diagram(), else_dd.diagram()));
+  };
+
+  /// If-Then-Else operation with assignment
+  self& iteAssign(const self& then_dd, const self& else_dd) {
+    base::iteAssign(then_dd.diagram(), else_dd.diagram());
+    return *this;
+  };
+
+  PBORI_CONST_DDFUNCS_IDX(subset0)
+  PBORI_CONST_DDFUNCS_IDX(subset1)
+  PBORI_CONST_DDFUNCS_IDX(change)
+  PBORI_DDFUNCS_IDX(subset0Assign)
+  PBORI_DDFUNCS_IDX(subset1Assign)
+  PBORI_DDFUNCS_IDX(changeAssign)
+
+  PBORI_CONST_DDFUNCS(unite)
+  PBORI_CONST_DDFUNCS(diff)
+  PBORI_CONST_DDFUNCS(diffConst)
+  PBORI_CONST_DDFUNCS(intersect)
+  PBORI_CONST_DDFUNCS(product)
+  PBORI_CONST_DDFUNCS(unateProduct)
+  PBORI_CONST_DDFUNCS(dotProduct)
+  PBORI_CONST_DDFUNCS(Xor)
+  PBORI_CONST_DDFUNCS(ddDivide)
+  PBORI_CONST_DDFUNCS(weakDivide)
+  PBORI_CONST_DDFUNCS(divideFirst)
+
+  PBORI_DDFUNCS(uniteAssign)
+  PBORI_DDFUNCS(diffAssign)
+  PBORI_DDFUNCS(diffConstAssign)
+  PBORI_DDFUNCS(intersectAssign)
+  PBORI_DDFUNCS(productAssign)
+  PBORI_DDFUNCS(unateProductAssign)
+  PBORI_DDFUNCS(dotProductAssign)
+  PBORI_DDFUNCS(ddDivideAssign)
+  PBORI_DDFUNCS(weakDivideAssign)
+  PBORI_DDFUNCS(divideFirstAssign)
+
 };
 
 

@@ -38,7 +38,7 @@ def update_cache2(h,cache):
     lead=h.lead()
     l=lm_tuple(lead)
     LGM[l]=h
-    LG=LG.union(lead.diagram())
+    LG=LG.union(lead.set())
     return (LG,LGM)
 
 
@@ -83,7 +83,7 @@ def build_and_print_matrices(v,strat):
             #else:
             #    print "in treated"
         polys_in_mat.append(p)
-        treated=treated.union(p.diagram())
+        treated=treated.union(p.set())
     m2i=dict([(v,k) for (k,v) in enumerate(BooleSet(treated))])
     polys_in_mat=[[m2i[t] for t in p] for p in polys_in_mat]
     polys_in_mat.sort(key=pkey)
@@ -138,7 +138,7 @@ def noro_step(polys,strat):
     polys=[red_tail(strat,p) for p in polys if not p.isZero()]
     terms=BooleSet()
     for p in polys:
-        terms=terms.union(p.diagram())
+        terms=terms.union(p.set())
     terms=list(BooleSet(terms))
     terms.sort(reverse=True)
     i2term=list(enumerate(terms))
@@ -149,7 +149,7 @@ def noro_step(polys,strat):
     cols=len(terms)
     m=createMatGF2(rows,cols)
     for (i,p) in enumerate(polys):
-        for t in BooleSet(p.diagram()):
+        for t in BooleSet(p.set()):
             j=term2i[t]
             m[i,j]=1
     
@@ -194,7 +194,7 @@ def build_and_print_matrices_deg_colored(v,strat):
             #else:
             #    print "in treated"
         polys_in_mat.append(p)
-        treated=treated.union(p.diagram())
+        treated=treated.union(p.set())
     m2i=dict([(v,k) for (k,v) in enumerate(BooleSet(treated))])
     max_deg=max([m.deg() for m in BooleSet(treated)])
     if max_deg==0:
@@ -334,7 +334,7 @@ def slimgb(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_no
             v=BoolePolynomialVector()
             for p in ps:
                 #print p
-                p=Polynomial(mod_mon_set(BooleSet(p.diagram()),strat.monomials))
+                p=Polynomial(mod_mon_set(BooleSet(p.set()),strat.monomials))
                 #p=ll_red_nf(p,strat.llReductor)
                 if not p.isZero():
                     v.append(p)

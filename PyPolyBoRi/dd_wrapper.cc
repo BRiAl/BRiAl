@@ -6,6 +6,10 @@
  *  Copyright 2006 The PolyBoRi Team. All rights reserved.
  *
  */
+
+/* low-level diagrams removed from PyPolyBoRi*/
+#if 0
+
 #include <boost/python.hpp>
 #include <iostream>
 #include "CDDInterface.h"
@@ -96,3 +100,6 @@ void export_dd(){
   .def("ite", &CTypes::dd_type::ite);
   //.def("printMinterm", &CTypes::dd_type::printMinterm);
 }
+
+
+#endif

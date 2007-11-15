@@ -19,6 +19,6 @@ def gen_random_poly(l,deg=10,vars_set=list(xrange(100)),seed=123):
         return helper(samples/2)+helper(samples-samples/2)
     p=Polynomial(0)
     while(len(p)<l):
-        p=Polynomial(p.diagram().union(helper(l-len(p)).diagram()))
+        p=Polynomial(p.set().union(helper(l-len(p)).set()))
     return p
 

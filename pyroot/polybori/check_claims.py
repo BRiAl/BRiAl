@@ -112,7 +112,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
       lead_index=li[0]
       if redsb:
           p=ll_red_nf(p,reductors)
-          reductors=ll_red_nf(Polynomial(reductors),BooleSet(p.diagram()))
+          reductors=ll_red_nf(Polynomial(reductors),BooleSet(p.set()))
       red_lead=[i for i in Polynomial(reductors).lead() if i<lead_index]
 
       
@@ -165,8 +165,8 @@ def proofll_old(ifthen,reductors):
       for v in reductors:
         if v<index and index in reductors[v].vars():
           to_red=reductors[v]
-          s0=Polynomial(to_red.diagram().subset0(index))
-          s1=Polynomial(to_red.diagram().subset1(index))
+          s0=Polynomial(to_red.set().subset0(index))
+          s1=Polynomial(to_red.set().subset1(index))
           to_red=reductors[index]*s1+s0
           reductors[v]=to_red
     else:
@@ -186,7 +186,7 @@ def proofll_old(ifthen,reductors):
       encoded_redsb=llredsb_Cudd_style([Monomial(Variable(i)) + reductors[i] for i in reductors])
       print ll_red_nf2_Cudd_style(c_orig,encoded_redsb)
       assert c==ll_red_nf2_Cudd_style(c_orig,encoded_redsb)
-      assert c==ll_red_nf(c_orig,BooleSet(encoded_redsb.diagram()))
+      assert c==ll_red_nf(c_orig,BooleSet(encoded_redsb.set()))
       
       if c.isZero():
         print "TRUE"
@@ -222,7 +222,7 @@ def main(argv=None):
            except NameError:
                 pass
        else:
-           reductors=BooleSet(llredsb_Cudd_style(mydata.ideal).diagram())
+           reductors=BooleSet(llredsb_Cudd_style(mydata.ideal).set())
            for c in claims:
              proofll(to_if_then(c),reductors)
            del reductors
