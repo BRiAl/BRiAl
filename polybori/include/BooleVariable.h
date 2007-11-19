@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/11/19 12:49:59  bricken
+ * + set
+ *
  * Revision 1.12  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -98,7 +101,10 @@ class BooleVariable {
   /// Constructor idx-th variable of active ring
   BooleVariable(idx_type idx = 0):
     m_poly( BoolePolyRing::persistentRingVariable(idx) ) {}
-
+  
+  /// Type of sets of Boolean variables
+  typedef BooleSet set_type;
+  
   /// Copy constructor
   BooleVariable(const self& rhs):  
     m_poly(rhs.m_poly) {}
@@ -116,6 +122,7 @@ class BooleVariable {
   bool operator!= (const self& other) const{
         return m_poly!=other.m_poly;
   }
+  set_type set() const { return m_poly.set(); }
 private:
   BoolePolynomial m_poly;
 };
