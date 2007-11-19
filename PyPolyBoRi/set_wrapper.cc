@@ -37,7 +37,7 @@ void export_bset(){
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("product", &BooleSet::product)
-  //.def("unateProduct", &BooleSet::unateProduct)
+  .def("cartesianProduct", &BooleSet::unateProduct)
   .def("weakDivide", &BooleSet::weakDivide)
   .def("divide", &BooleSet::divide)
   .def("diff", &BooleSet::diff)
