@@ -1,6 +1,6 @@
 if __name__=='__main__':
     import pathadjuster
-from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set
+from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else
 def all_monomials_of_degree_d(d,variable_indices):
     if d==0:
         return Polynomial(1).set()
@@ -23,7 +23,7 @@ def power_set(variable_indices):
     variable_indices=list(reversed(list(set(variable_indices))))
     res=Polynomial(1).set()
     for v in variable_indices:
-        res=res.change(v).union(res)
+        res=if_then_else(v,res,res)
     return res 
 if __name__=='__main__':
     from blocks import declare_ring,Block
