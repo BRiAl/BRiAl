@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/11/19 14:13:26  dreyer
+ * Fix: consistend naming of cartesianProduct
+ *
  * Revision 1.2  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -54,6 +57,7 @@ public:
     default_variable_name,
     variable_head,
     variable_tail,
+    between_list_separator,
     last_code
   };
 

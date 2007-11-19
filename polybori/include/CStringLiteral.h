@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/11/19 14:13:26  dreyer
+ * Fix: consistend naming of cartesianProduct
+ *
  * Revision 1.2  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -77,6 +80,7 @@ GENERATE_CSTRINGLITERAL(list_separator, ", ")
 GENERATE_CSTRINGLITERAL(default_variable_name, "x")
 GENERATE_CSTRINGLITERAL(variable_head, "(")
 GENERATE_CSTRINGLITERAL(variable_tail, ")")
+GENERATE_CSTRINGLITERAL(between_list_separator, "}, {")
 
 #undef GENERATE_CSTRINGLITERAL
 

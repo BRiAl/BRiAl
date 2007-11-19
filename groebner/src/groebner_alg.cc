@@ -1716,8 +1716,8 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         result.push_back(exp);
     } else {
         Monomial v;
-        m=m.existAbstract(lm.diagram());
-        mod=mod.existAbstract(lm.diagram());
+        m=m.existAbstract(lm);
+        mod=mod.existAbstract(lm);
         //mod=divide_monomial_divisors_out(mod,lm);
         m=mod_mon_set(m,mod);
         m=minimal_elements_cudd_style_unary(m);
@@ -2024,7 +2024,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
         if (!(ot2.emptiness())){
-            ext_prod_terms=ot2.existAbstract(lm.diagram()).diff(other_terms);
+            ext_prod_terms=ot2.existAbstract(lm).diff(other_terms);
             other_terms=other_terms.unite(ext_prod_terms);
         }
        

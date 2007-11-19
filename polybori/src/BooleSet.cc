@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2007/11/19 14:13:26  dreyer
+ * Fix: consistend naming of cartesianProduct
+ *
  * Revision 1.37  2007/11/06 15:03:38  dreyer
  * CHANGE: More generic copyright
  *
@@ -438,14 +441,46 @@ BooleSet::usedVariablesExp() const {
 // Computes existential abstraction wrt to the variables in the first
 // lexicographical term of rhs
 BooleSet
-BooleSet::existAbstract(const self& rhs) const {
+BooleSet::existAbstract(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::existAbstract(const term_type&) const" );
 
   typedef CCacheManagement<CCacheTypes::exist_abstract> cache_mgr_type;
   return 
     dd_existential_abstraction(cache_mgr_type(base::manager()), 
-                               rhs.navigation(), base::navigation(), self());
+                               rhs.diagram().navigation(), base::navigation(),
+                               self());
+}
+
+
+// Print current polynomial to output stream
+BooleSet::ostream_type&
+BooleSet::print(ostream_type& os) const {
+
+  PBORI_TRACE_FUNC( "BooleSet::print() const" );
+
+  // defining literal variable products
+  typedef CStringLiteral<CLiteralCodes::comma> comma_as_separator;
+
+  // defining literal for term separators
+  typedef CStringLiteral<CLiteralCodes::between_list_separator>
+    sep_literal_type;
+
+  typedef CStringLiteral<CLiteralCodes::empty>  empty_type;
+
+  typedef CTypes::manager_type mgr_type;
+
+  if( base::emptiness() )
+    os << "{}";
+  else {
+    os << "{{";
+    dd_print_terms(begin(), end(), 
+                   variable_name<mgr_type>(BoolePolyRing::activeManager()), 
+                   sep_literal_type(), comma_as_separator(), 
+                   empty_type(), os);
+    os << "}}";
+  }
+  return os;
 }
 
 END_NAMESPACE_PBORI

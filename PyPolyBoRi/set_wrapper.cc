@@ -12,6 +12,8 @@
 #include "polybori.h"
 #include "interpolate.h"
 #include "groebner_alg.h"
+#include "out_helper.h"
+
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
@@ -45,10 +47,10 @@ void export_bset(){
   .def(boost::python::init <const BooleSet::navigator& >())
   .def(boost::python::init <>())
  
-
+  .def("__str__", streamable_as_str<BooleSet>)
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
-  .def("cartesianProduct", &BooleSet::unateProduct)
+  .def("cartesianProduct", &BooleSet::cartesianProduct)
   .def("diff", &BooleSet::diff)
   .def("divide", &BooleSet::divide)
   .def("subset1",&BooleSet::subset1)

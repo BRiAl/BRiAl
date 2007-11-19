@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2007/11/19 14:13:26  dreyer
+ * Fix: consistend naming of cartesianProduct
+ *
  * Revision 1.32  2007/11/15 14:43:06  dreyer
  * CHANGE: small things for better doxygen generation
  *
@@ -296,7 +299,7 @@ public:
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
   /// Compute existential abstraction
-  self existAbstract(const self& rhs) const;
+  self existAbstract(const term_type& rhs) const;
 
   /// Access internal decision diagram
   const dd_type& diagram() const { return dynamic_cast<const dd_type&>(*this); }
@@ -312,6 +315,11 @@ public:
     return *this;
   };
 
+  /// Cartesean product
+  self cartesianProduct(const self& rhs) const {
+    return base::unateProduct(rhs.diagram());
+  };
+
   /// @name Members from base
   //@{
   PBORI_CONST_DDFUNCS_IDX(subset0)
@@ -324,7 +332,6 @@ public:
   PBORI_CONST_DDFUNCS(diffConst)
   PBORI_CONST_DDFUNCS(intersect)
   PBORI_CONST_DDFUNCS(product)
-  PBORI_CONST_DDFUNCS(unateProduct)
   PBORI_CONST_DDFUNCS(dotProduct)
   PBORI_CONST_DDFUNCS(Xor)
   PBORI_CONST_DDFUNCS(ddDivide)
@@ -341,15 +348,21 @@ public:
   PBORI_DDFUNCS(diffConstAssign)
   PBORI_DDFUNCS(intersectAssign)
   PBORI_DDFUNCS(productAssign)
-  PBORI_DDFUNCS(unateProductAssign)
   PBORI_DDFUNCS(dotProductAssign)
   PBORI_DDFUNCS(ddDivideAssign)
   PBORI_DDFUNCS(weakDivideAssign)
   PBORI_DDFUNCS(divideFirstAssign)
   //@}
+
+  /// Print current set to output stream
+  ostream_type& print(ostream_type&) const;
 };
 
-
+/// Stream output operator
+inline BooleSet::ostream_type& 
+operator<<( BooleSet::ostream_type& os, const BooleSet& bset ) {
+  return bset.print(os);
+}
 END_NAMESPACE_PBORI
 
 #endif
