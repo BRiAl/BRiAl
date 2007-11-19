@@ -18,11 +18,23 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
+
+class ITEIndexException{
+    
+};
+
 void changeAssign(BooleSet& c, BooleSet::idx_type idx){
   c.changeAssign(idx);
 }
-
-
+static void translator(ITEIndexException const& x) {
+    PyErr_SetString( PyExc_ValueError, "node index must be smaller than top indices in then and else branch");
+}
+static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
+    if ((i>=*a.navigation())|| (i>=*b.navigation())){
+        throw ITEIndexException();
+    }
+    return BooleSet(i,a,b);
+}
 
 void export_bset(){
 
@@ -53,5 +65,7 @@ void export_bset(){
   .def("minimalElements",minimal_elements)
   .def("__contains__", (owns_func_type) &BooleSet::owns)
   .def("intersect", &BooleSet::intersect);
-
+  def("if_then_else",if_then_else);
+  boost::python::register_exception_translator<
+            ITEIndexException>(translator);
 }
