@@ -476,15 +476,16 @@ if HAVE_SINGULAR_EXTENSION:
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
-           .cvsignore .dblite .log .sconsign .depend .html"""),
-           DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp html latex"),
-           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~"))
+           .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
+           .kprof.html"""),
+           DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
+           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled"))
 
 pboriversion = "0.1"
 if 'distribute' in COMMAND_LINE_TARGETS:
     
     srcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
-    for dirname in Split("""Cudd doc extra groebner ipbori M4RI polybori 
+    for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular"""):
         srcs.append(env.Dir(dirname))
 
@@ -498,7 +499,11 @@ if 'distribute' in COMMAND_LINE_TARGETS:
         
     for dirname in Split("src ref"):
         srcs.append(env.Dir(TestsPath(dirname)))
-    
+
+    # doc is not distributed completely
+    srcs += [ DocPath(src) for src in ['doxygen.conf', 'tutorial/tutorial.tex',
+                                       'python/genpythondoc.py'] ]
+
     srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
     env.Alias('distribute', srcdistri)
     
@@ -519,7 +524,7 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
 
 # Builder for symlinks
 def build_symlink(target, source, env):
-    source = source[0].abspath
+    source = source[0].path
     target = target[0].abspath
     print "Symlinking from", source, "to", target
     
