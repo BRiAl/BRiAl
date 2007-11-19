@@ -108,8 +108,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("__hash__", &BooleVariable::index)
   .def("__pow__", var_power)
   .def("index", &BooleVariable::index)
-  
-    .def("toStdOut", print_variable);
+  .def("set",&BooleVariable::set)
+ .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();
   export_bset();
