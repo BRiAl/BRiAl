@@ -39,7 +39,7 @@ static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
 void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
-
+  typedef BooleSet (BooleSet::*divisors_func_type)(const BooleSet::term_type &) const;
   boost::python::class_<BooleSet>("BooleSet")
   .def(boost::python::init <const BooleSet&>())
   .def(boost::python::init <const BooleSet::navigator& >())
@@ -48,11 +48,9 @@ void export_bset(){
 
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
-  .def("product", &BooleSet::product)
   .def("cartesianProduct", &BooleSet::unateProduct)
-  .def("weakDivide", &BooleSet::weakDivide)
-  .def("divide", &BooleSet::divide)
   .def("diff", &BooleSet::diff)
+  .def("divide", &BooleSet::divide)
   .def("subset1",&BooleSet::subset1)
   .def("subset0",&BooleSet::subset0)
   .def("change", &BooleSet::change)
@@ -60,10 +58,14 @@ void export_bset(){
   .def("nNodes", &BooleSet::nNodes)
   .def("nSupport", &BooleSet::nSupport)
   .def("union",&BooleSet::unite)
+  .def("vars",&BooleSet::usedVariables)
   .def("navigation", &BooleSet::navigation)
   .def("includeDivisors",include_divisors)
   .def("minimalElements",minimal_elements)
   .def("__contains__", (owns_func_type) &BooleSet::owns)
+  .def("multiplesOf",(divisors_func_type) &BooleSet::multiplesOf)
+  .def("divisorsOf",(divisors_func_type) &BooleSet::divisorsOf)
+  .def("existAbstract",&BooleSet::existAbstract, "a.existsAbstract(m) returns a BooleSet, where every term t is included, where exists n such that n*m=t*m and n is element of a")
   .def("intersect", &BooleSet::intersect);
   def("if_then_else",if_then_else);
   boost::python::register_exception_translator<
