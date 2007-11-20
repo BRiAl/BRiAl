@@ -79,8 +79,8 @@
 
 \section{Introduction}
 \subsection{Interfaces}
-The core of \PolyBoRi is a C++ library. On top of there exists a Python interface.
-Additionally to the Python interface a interface to SAGE was provided by Burcin Erocal.
+The core of \PolyBoRi is a C++ library. On top of it there exists a Python interface.
+Additionally to the Python interface a integration into SAGE was provided by Burcin Erocal.
 The main difference is, that the Python interface makes use of the boost library, while the SAGE interface relies on Cython.
 However the wrappers for SAGE and the original Python interface are designed, that it is possible to run the same code under both bindings.
 
@@ -90,7 +90,7 @@ In ipbori a global ring is predefined and a set of variables called  $x(0), \ldo
 The monomial ordering can be changed by calling
 change\_ordering(Ordering.code), where code can be either lp (lexicographical ordering), dlex (degree lexicographical ordering), dp\_asc (degree reverse lexicographical ordering with ascending variable ordering), block\_dlex, block\_dp\_asc (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the append\_ring\_block function.
 
-In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fast, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
+In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 
 
 Example:
@@ -100,7 +100,7 @@ change_ordering(block_dp_asc)
 append_ring_block(10)
 append_ring_block(20)
 \end{verbatim}
-In this example, we have a ordering composed of three blocks, one with the first ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
+In this example, we have an ordering composed of three blocks, the first with ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
 \subsection{Arithmetic}
 Basic arithmetic is provided in the domain of Boolean polynomials. If exponents bigger than one appear in a variable reduction by the field ideal is done automatically.
 \begin{verbatim}
