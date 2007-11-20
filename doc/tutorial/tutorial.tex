@@ -129,26 +129,116 @@ Note, that we switched from polynomials to diagrams. We inverse the order of var
 \subsection{All monomials of degree d}
 \begin{verbatim}
 def all_monomials_of_degree_d(d,variable_indices):
-    if d==0:
+    if d == 0:
         return Polynomial(1).set()
-    if len(variable_indices)==0:
+    if len(variable_indices) == 0:
         return BooleSet()
-    variable_indices=list(reversed(list(set(variable_indices))))
-
-    m=Variable(variable_indices[-1])
+    variable_indices = list(reversed(list(set(variable_indices))))
+    m = Variable(variable_indices[-1])
     for v in variable_indices[:-1]:
-        m=Variable(v)+m
-    m=m.set()
+        m = Variable(v) + m
+    m = m.set()
     def do_all_monomials(d):
-        if d==0:
+        if d == 0:
             return Polynomial(1).set()
         else:
-            prev=do_all_monomials(d-1)
+            prev = do_all_monomials(d-1)
             return prev.cartesianProduct(m).diff(prev)
     return do_all_monomials(d)
 \end{verbatim}
 We use the set of all monomials of one degree lower using the cartesian product with the set of variables and remove every term, where the degree did not increase (boolean multiplication: $x^2=x$).
 
+\section{Case study: Graded part of a polynomial}
+In the following we will show five variants to implement a function, that computes the sum of all terms of degree $d$ in a polynomial $f$.
+\subsection{Simple, algebraic solution}
+\begin{verbatim}
+def simple_graded(f, d):
+    return sum((t for t in f if t.deg()==d))   
+\end{verbatim}
+The solution is obvious, but quite slow.
+\subsection{Low level friendly, algebraic solution}
+\begin{verbatim}
+def friendly_graded(f, d):
+    vec=BoolePolynomialVector()
+    for t in f:
+        if t.deg()!=d:
+            continue
+        else:
+            vec.append(t)
+    return add_up_polynomials(vec)
+\end{verbatim}
+\subsection{Highlevel with set operations}
+\begin{verbatim}
+def highlevel_graded(f,d):
+    return Polynomial(f.set().intersect(all_monomials_of_degree_d(d,f.vars())))
+\end{verbatim}
+This solution build on the fast intersection algorithm and decomposes the task in just two set operations, which is very good.
+
+However it can be quite inefficient, when f has many variables.
+This can increase the number of steps in the intersection algorithm (which takes with high probability the else branch of the second argument in each step).
+\subsection{Recursive}
+This unnecessary branches can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was `intersection').
+
+\begin{verbatim}
+def recursive_graded(f,d):
+    def do_recursive_graded(f,d):
+        if f.empty():
+            return f
+        if d==0:
+            if Monomial() in f:
+                return Polynomial(1).set()
+            else:
+                return BooleSet()
+        else:
+            nav=f.navigation()
+            if nav.constant():
+                return BooleSet()
+            return if_then_else(
+                nav.value(),
+                do_recursive_graded(BooleSet(nav.thenBranch()),d-1),
+                do_recursive_graded(BooleSet(nav.elseBranch()),d))
+    return Polynomial(do_recursive_graded(f.set(),d))
+        
+\end{verbatim}
+Recursive implementations are very compatible with our data structures, so are quite fast. However this implementation does not use any caching techniques. Cudd recursive caching requires functions to have one, two or three parameters, which are of ZDD structure (so no integers).
+Of course we can encode the degree $d$ by the d-th Variable in the Polynomial ring.
+\subsection{Cudd-recursive implementation in \PolyBoRi}
+\begin{verbatim}
+// determine the part of a polynomials of a given degree
+template <class CacheType, class NaviType, class DegType, class SetType>
+SetType
+dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,  
+               SetType init) {
+
+
+  if (deg == 0) {
+    while(!navi.isConstant())
+      navi.incrementElse();
+    return SetType(navi);
+  }
+
+  if(navi.isConstant())
+    return SetType();
+
+  // Look whether result was cached before
+  NaviType cached = cache.find(navi, deg);
+
+  if (cached.isValid())
+    return SetType(cached);
+
+  SetType result = 
+    SetType(*navi,  
+            dd_graded_part(cache, navi.thenBranch(), deg - 1, init),
+            dd_graded_part(cache, navi.elseBranch(), deg, init)
+            );
+
+  // store result for later reuse
+  cache.insert(navi, deg, result.navigation());
+
+  return result;
+}
+\end{verbatim}
+The encoding of integers for the degree as variable is done implicitely by our cache lookup functions.
 
 \bibliographystyle{plain}
 
