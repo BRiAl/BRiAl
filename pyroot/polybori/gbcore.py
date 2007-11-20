@@ -195,8 +195,10 @@ def llfirst_post(I,eliminated):
             I.addGenerator(p)
     I.symmGB_F2()
     return I
-
+def result_to_list_post(I,state):
+    return list(I)
 @with_heuristic(firstgb_heuristic)
+@gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
@@ -214,7 +216,7 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linearAlgebraInLastBlock= True, gauss_on_linear_first=True):
+       linearAlgebraInLastBlock=True, gauss_on_linear_first=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     
     zero=Polynomial(0)
