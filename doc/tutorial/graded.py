@@ -2,6 +2,14 @@ from polybori.PyPolyBoRi import *
 from polybori.specialsets import all_monomials_of_degree_d
 def simple_graded(f, d):
     return sum((t for t in f if t.deg()==d))
+def friendly_graded(f, d):
+    vec=BoolePolynomialVector()
+    for t in f:
+        if t.deg()!=d:
+            continue
+        else:
+            vec.append(t)
+    return add_up_polynomials(vec)
 def highlevel_graded(f,d):
     return Polynomial(f.set().intersect(all_monomials_of_degree_d(d,f.vars())))
 def recursive_graded(f,d):
