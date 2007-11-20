@@ -56,7 +56,7 @@
 
 
 \title{\PolyBoRi tutorial}
-\author{  }
+\author{Michael Brickenstein  }
 
 
 
@@ -72,12 +72,51 @@
 \fi
 
 \maketitle
-
+\newcommand{\Singular}{{\sc Singular}}
 
 \begin{abstract}
 \end{abstract}
 
 \section{Introduction}
+\subsection{Interfaces}
+The core of \PolyBoRi is a C++ library. On top of there exists a Python interface.
+Additionally to the Python interface a interface to SAGE was provided by Burcin Erocal.
+The main difference is, that the Python interface makes use of the boost library, while the SAGE interface relies on Cython.
+However the wrappers for SAGE and the original Python interface are designed, that it is possible to run the same code under both bindings.
+
+We provide an interactive shell for $\PolyBoRi$ using ipython (either using sage or ipbori).
+In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
+\subsection{Ordering}
+The monomial ordering can be changed by calling
+change\_ordering(Ordering.code), where code can be either lp (lexicographical ordering), dlex (degree lexicographical ordering), dp\_asc (degree reverse lexicographical ordering with ascending variable ordering), block\_dlex, block\_dp\_asc (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the append\_ring\_block function.
+
+In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fast, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
+
+
+Example:
+\begin{verbatim}
+r=Ring(1000)
+change_ordering(block_dp_asc)
+append_ring_block(10)
+append_ring_block(20)
+\end{verbatim}
+In this example, we have a ordering composed of three blocks, one with the first ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
+\subsection{Arithmetic}
+Basic arithmetic is provided in the domain of Boolean polynomials. If exponents bigger than one appear in a variable reduction by the field ideal is done automatically.
+\begin{verbatim}
+In [1]: (x(1)+x(2))*(x(1)+x(3))
+Out[1]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
+\end{verbatim}
+\subsection{Gröbner bases}
+Gröbner bases functionality is available using the function groebner\_basis from polybori.gbcore.
+It has quite a lot of options and a exchangable heuristic.
+There exist in principle default values, but if the option is not provided explicitely, the heuristic function
+may decide dynamically by taking the ideal, the ordering and the other options into account, which is the best configuration.
+\begin{verbatim}
+In [1]: groebner_basis([x(1)+x(2),(x(2)+x(1)+1)*x(3)])
+Out[1]: [x(1) + x(2), x(3)]
+
+\end{verbatim}
 \section{How to program efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
 This awareness can be seen on several levels
@@ -203,6 +242,7 @@ def recursive_graded(f,d):
 Recursive implementations are very compatible with our data structures, so are quite fast. However this implementation does not use any caching techniques. Cudd recursive caching requires functions to have one, two or three parameters, which are of ZDD structure (so no integers).
 Of course we can encode the degree $d$ by the d-th Variable in the Polynomial ring.
 \subsection{Cudd-recursive implementation in \PolyBoRi}
+The C++ implementation of the functionality in \PolyBoRi is given in this section, which is recursive and uses caching techniques.
 \begin{verbatim}
 // determine the part of a polynomials of a given degree
 template <class CacheType, class NaviType, class DegType, class SetType>
