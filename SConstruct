@@ -726,9 +726,10 @@ if 'install' in COMMAND_LINE_TARGETS:
                 env.Dir(DocPath('tutorial/tutorial')))
 
     # Generate html master
-    env.DocuMaster(InstPath('doc/index.html'), [DocPath('index.html.in')] + [
+    FinalizeNonExecs(env.DocuMaster(InstPath('doc/index.html'),
+                                    [DocPath('index.html.in')] + [ 
         env.Dir(InstPath('doc', srcs)) for srcs in Split("""tutorial python
-        c++ cudd""") ] )
+        c++ cudd""") ] ))
 
     # Non-executables to be installed
     for instfile in glob(PyRootPath('polybori/*.py')) + [
