@@ -45,6 +45,7 @@
 \newcommand{\PolyBoRi}{{\sc PolyBoRi}\xspace}
 \newcommand{\CUDD}{{CUDD}\xspace}
 \newcommand{\ite}{{ite}\xspace}
+\newcommand{\functionname}[1]{\textit{#1}\xspace}
 \providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
 %\newif\ifpdf
 %\ifx\pdfoutput\undefined
@@ -88,7 +89,7 @@ We provide an interactive shell for \PolyBoRi using ipython (either using sage o
 In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
 \subsection{Ordering}
 The monomial ordering can be changed by calling
-change\_ordering(Ordering.code), where code can be either lp (lexicographical ordering), dlex (degree lexicographical ordering), dp\_asc (degree reverse lexicographical ordering with ascending variable ordering), block\_dlex, block\_dp\_asc (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the append\_ring\_block function.
+\functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex}, \functionname{block\_dp\_asc} (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
 
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 
@@ -108,7 +109,7 @@ In [1]: (x(1)+x(2))*(x(1)+x(3))
 Out[1]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
 \end{verbatim}
 \subsection{Gröbner bases}
-Gröbner bases functionality is available using the function groebner\_basis from polybori.gbcore.
+Gröbner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangable heuristic.
 There exist in principle default values, but if the option is not provided explicitely, the heuristic function
 may decide dynamically by taking the ideal, the ordering and the other options into account, which is the best configuration.
@@ -206,7 +207,7 @@ def friendly_graded(f, d):
             vec.append(t)
     return add_up_polynomials(vec)
 \end{verbatim}
-We leave it to the heuristic of the add\_up\_polynomials function how to add up the monomials. For example a divide and conquer strategy is quite good here.
+We leave it to the heuristic of the \functionname{add\_up\_polynomials} function how to add up the monomials. For example a divide and conquer strategy is quite good here.
 \subsection{Highlevel with set operations}
 \begin{verbatim}
 def highlevel_graded(f,d):
@@ -217,7 +218,7 @@ This solution build on the fast intersection algorithm and decomposes the task i
 However it can be quite inefficient, when f has many variables.
 This can increase the number of steps in the intersection algorithm (which takes with high probability the else branch of the second argument in each step).
 \subsection{Recursive}
-This unnecessary branches can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was `intersection').
+This unnecessary branches can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was \functionname{intersection}).
 
 \begin{verbatim}
 def recursive_graded(f,d):
