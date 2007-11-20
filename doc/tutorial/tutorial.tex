@@ -87,9 +87,10 @@ This awareness can be seen on several levels
     \item replacing algebraic operations by (a composition of) set operations
     \item Cudd recursive programming without caching
     \item Cudd recursive programming with caching
-    \item using ZDDs for many other things than polynomial arithmetik
+    \item using ZDDs for many other things than polynomial arithmetics
 \end{itemize}
 \subsection{Low level friendly programming}
+\label{low-level-friendly}
 \PolyBoRi is implemented as layer over a decision diagram library (\CUDD at the moment).
 
 In \CUDD every diagram node is unique: If two diagrams have the same structure, the are in fact identical (same position in memory).
@@ -103,6 +104,52 @@ For example taking the product $x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\
 In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
 The same argumemt would apply for the addition of these variables.
 This example shows, that having a little bit background about the data structure, it is often possible to write code, that looks as well algebraic as provides good performance.
+
+\subsection{Replace algebra by set operations}
+Often there is an alternativ description in terms of set operations for algebraic operations, which is much faster.
+
+\subsection{Construct power sets}
+An example for this behaviour is the calculation of power sets (sets of monomials/polynomials containing each term in the specified variables).
+The following code constructs such a power set very inefficiently for the first free variables:
+\begin{verbatim}
+sum([x(1)**i1*x(2)**i2*x(3)**i3 for i1 in (0,1) for i2 in (0,1) for i3 in (0,1)])
+\end{verbatim}
+The algorithm has of course exponential complexity in the number of variables.
+The resulting ZDD however has as many nodes as variables.
+In fact it can be constructed directly using the following function (from specialsets.py).
+\begin{verbatim}
+def power_set(variable_indices):
+    variable_indices=list(reversed(list(set(variable_indices))))
+    res=Polynomial(1).set()
+    for v in variable_indices:
+        res=if_then_else(v,res,res)
+    return res
+\end{verbatim}
+Note, that we switched from polynomials to diagrams. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple \ite operators instead of complex operations in each step).
+\subsection{All monomials of degree d}
+\begin{verbatim}
+def all_monomials_of_degree_d(d,variable_indices):
+    if d==0:
+        return Polynomial(1).set()
+    if len(variable_indices)==0:
+        return BooleSet()
+    variable_indices=list(reversed(list(set(variable_indices))))
+
+    m=Variable(variable_indices[-1])
+    for v in variable_indices[:-1]:
+        m=Variable(v)+m
+    m=m.set()
+    def do_all_monomials(d):
+        if d==0:
+            return Polynomial(1).set()
+        else:
+            prev=do_all_monomials(d-1)
+            return prev.cartesianProduct(m).diff(prev)
+    return do_all_monomials(d)
+\end{verbatim}
+We use the set of all monomials of one degree lower using the cartesian product with the set of variables and remove every term, where the degree did not increase (boolean multiplication: $x^2=x$).
+
+
 \bibliographystyle{plain}
 
 \bibliography{}
