@@ -501,9 +501,10 @@ if 'distribute' in COMMAND_LINE_TARGETS:
         srcs.append(env.Dir(TestsPath(dirname)))
 
     # doc is not distributed completely
-    srcs += [ DocPath(src) for src in ['doxygen.conf', 'tutorial/tutorial.tex',
-                                       'python/genpythondoc.py'] ]
-
+    srcs += [ DocPath(src) for src in Split("""doxygen.conf index.html.in
+    tutorial/tutorial.tex python/genpythondoc.py""") ]
+    srcs.append(env.Dir(DocPath('images')))
+    
     srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
     env.Alias('distribute', srcdistri)
     
@@ -545,15 +546,117 @@ def cp_all(target, source, env):
     if not path.exists(target):
         Execute(Mkdir(target))
     for file in glob(path.join(source, '*')):
-        result = str(path.join(target, path.basename(file)))
-        Execute([Copy(result, file), Chmod(result, 0644)])
+        if not path.isdir(file):
+            result = str(path.join(target, path.basename(file)))
+            Execute([Copy(result, file), Chmod(result, 0644)])
 
     return None
 
 cp_recbld = Builder(action = cp_all)
 
 symlinkbld = Builder(action = build_symlink)
-env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld})
+
+
+def l2h_emitter(target, source, env):
+
+    target = [env.File(str(source[0]).replace('.tex', sep + 'index.html'))]
+    env.Clean(target, target[0].dir)
+    return (target, source)
+
+l2h = Builder(action = 'latex2html -html_version 4.0,unicode,utf-8 $SOURCE',
+              suffix = '.html',
+              src_suffix = '.tex',
+              emitter = l2h_emitter)
+
+def pathsplit(p, rest=[]):
+    (h,t) = os.path.split(p)
+    if len(h) < 1: return [t]+rest
+    if len(t) < 1: return [h]+rest
+    return pathsplit(h,[t]+rest)
+
+def commonpath(l1, l2, common=[]):
+    if len(l1) < 1: return (common, l1, l2)
+    if len(l2) < 1: return (common, l1, l2)
+    if l1[0] != l2[0]: return (common, l1, l2)
+    return commonpath(l1[1:], l2[1:], common+[l1[0]])
+
+def relpath(p1, p2):
+    (common,l1,l2) = commonpath(pathsplit(p1), pathsplit(p2))
+    p = []
+    if len(l1) > 0:
+        p = [ ('..' + sep) * len(l1) ]
+    p = p + l2
+
+    if len(p) == 0:
+        return ''
+    return os.path.join( *p )
+
+
+def docu_master(target, source, env):
+    import os, re
+
+    mastersrc = source[0]
+    basefiles = ['index.html', 'polybori.html']
+    basesfound = []
+    
+    for item in source:
+        if os.path.isdir(str(item)):
+            for root, dirs, files in os.walk(str(item)):
+                for file in files:
+                    if file in basefiles:
+                        basesfound.append(os.path.join(root, file))
+
+    if str(target[0]) in basesfound:
+        basesfound.remove(str(target[0]))
+
+    linkPattern = re.compile('<title.*?>(.*?)</title>', re.I|re.S) 
+    links = ''
+    for src in basesfound:
+        fhandle = open(src, 'r')
+        fcontent = fhandle.read()
+        fhandle.close()
+        ftitle = linkPattern.search(fcontent).group(1)
+        relsrc = relpath(str(target[0].dir), src)
+        links +=  '<P><A href="' + relsrc + '">' + ftitle +'</A>\n'
+
+    from string import Template
+    env['PBDOCLINKS'] = links
+    page = Template(open(str(mastersrc), 'r').read()).safe_substitute(env)
+    open(str(target[0]), 'w').write(page)
+
+    return None
+
+def docu_emitter(target, source, env):
+    if source[0].dir != target[0].dir :
+        import re
+        linkPattern = re.compile('<img src *?= *?"([^>]*?)".*?>', re.I|re.S) 
+        fhandle = open(str(source[0]), 'r')
+        relsrcs = linkPattern.findall(fhandle.read())
+        SrcPath = PathJoiner(source[0].dir)
+        TargetPath = PathJoiner(target[0].dir)
+
+        for src in relsrcs:
+            FinalizeNonExecs(env.InstallAs(env.File(TargetPath(src)),
+                                           SrcPath(src)))
+        fhandle.close()
+        
+        
+    return (target, source)
+
+    
+masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
+
+env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h})
+env.Append(BUILDERS={'DocuMaster': masterdocubld})
+
+
+tutorial = env.L2H(DocPath('tutorial/tutorial.tex'))
+
+env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
+    env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
+    env.Dir('Cudd/cudd/doc')])  
+
+
 
 def FinalizePermissions(targets, perm):
     for file in targets:
@@ -611,6 +714,21 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     # Copy python documentation
     FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))
+
+    # Copy Cudd documentation
+    env.CopyAll(env.Dir(InstPath('doc/cudd')),
+                env.Dir('Cudd/cudd/doc')) 
+    env.CopyAll(env.Dir(InstPath('doc/cudd/icons')),
+                env.Dir('Cudd/cudd/doc/icons'))
+    
+    # Copy Tutorial 
+    env.CopyAll(env.Dir(InstPath('doc/tutorial')),
+                env.Dir(DocPath('tutorial/tutorial')))
+
+    # Generate html master
+    env.DocuMaster(InstPath('doc/index.html'), [DocPath('index.html.in')] + [
+        env.Dir(InstPath('doc', srcs)) for srcs in Split("""tutorial python
+        c++ cudd""") ] )
 
     # Non-executables to be installed
     for instfile in glob(PyRootPath('polybori/*.py')) + [
