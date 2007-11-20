@@ -194,7 +194,9 @@ if HAVE_PYTHON_EXTENSION:
             conf.CheckCXXHeader(path.join('boost', 'python.hpp')) ):
         HAVE_PYTHON_EXTENSION = False
         print 'Warning Boost/python must be installed for python support'
-    
+
+have_l2h = env.Detect('latex2html')
+
 env = conf.Finish()
 
 # Resoruces for including anything into the PyPolyBoRi shared library
@@ -649,8 +651,8 @@ masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
-
-tutorial = env.L2H(DocPath('tutorial/tutorial.tex'))
+if have_l2h:
+    tutorial = env.L2H(DocPath('tutorial/tutorial.tex'))
 
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
@@ -721,9 +723,10 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.CopyAll(env.Dir(InstPath('doc/cudd/icons')),
                 env.Dir('Cudd/cudd/doc/icons'))
     
-    # Copy Tutorial 
-    env.CopyAll(env.Dir(InstPath('doc/tutorial')),
-                env.Dir(DocPath('tutorial/tutorial')))
+    # Copy Tutorial
+    if have_l2h:
+        env.CopyAll(env.Dir(InstPath('doc/tutorial')),
+                    env.Dir(DocPath('tutorial/tutorial')))
 
     # Generate html master
     FinalizeNonExecs(env.DocuMaster(InstPath('doc/index.html'),
