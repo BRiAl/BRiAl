@@ -134,7 +134,7 @@ class HeuristicalFunction(object):
         heuristic=True
         try:
             heuristic=complete_dict["heuristic"]
-            del complete_dict["heuristic"]
+            #del complete_dict["heuristic"]
         except KeyError:
             pass
 
@@ -273,7 +273,7 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linearAlgebraInLastBlock=True, gauss_on_linear_first=True):
+       linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     
     zero=Polynomial(0)
