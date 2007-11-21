@@ -89,7 +89,7 @@ We provide an interactive shell for \PolyBoRi using ipython (either using sage o
 In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
 \subsection{Ordering}
 The monomial ordering can be changed by calling
-\functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex}, \functionname{block\_dp\_asc} (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
+\functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex} or \functionname{block\_dp\_asc} (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
 
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 
@@ -103,7 +103,7 @@ append_ring_block(20)
 \end{verbatim}
 In this example, we have an ordering composed of three blocks, the first with ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
 \subsection{Arithmetic}
-Basic arithmetic is provided in the domain of Boolean polynomials. If exponents bigger than one appear in a variable reduction by the field ideal is done automatically.
+Basic arithmetic is provided in the domain of Boolean polynomials. If exponents bigger than one per variable appear reduction by the field ideal is done automatically.
 \begin{verbatim}
 In [1]: (x(1)+x(2))*(x(1)+x(3))
 Out[1]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
@@ -111,7 +111,7 @@ Out[1]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangable heuristic.
-There exist in principle default values, but if the option is not provided explicitely, the heuristic function
+In principle, there exist  default values. But, if the option is not provided explicitely, the heuristic function
 may decide dynamically by taking the ideal, the ordering and the other options into account, which is the best configuration.
 \begin{verbatim}
 In [1]: groebner_basis([x(1)+x(2),(x(2)+x(1)+1)*x(3)])
@@ -133,29 +133,29 @@ This awareness can be seen on several levels
 \label{low-level-friendly}
 \PolyBoRi is implemented as layer over a decision diagram library (\CUDD at the moment).
 
-In \CUDD every diagram node is unique: If two diagrams have the same structure, the are in fact identical (same position in memory).
+In \CUDD every diagram node is unique: If two diagrams have the same structure, they are in fact identical (same position in memory).
 Another observation is, that \CUDD tries to build a functional style API in the C programming language. This means, that no data is manipulated, only new nodes are created.
-Functional programming is in principal very suited for caching and multithreading (at the moment however threading is not possible).
+Functional programming is a priori very suited for caching and multithreading (at the moment however threading is not possible in \PolyBoRi).
 The \ite-operator is the most central function in CUDD. It takes two nodes/diagrams $t$, $e$ and an index $i$ and creates a diagram with root variable $i$ and
 then-branch $t$, else-branch $e$. It is necessary that the branches have root variables with bigger index (or are constant).
 It creates either exactly one node, or retrieves the correct node from the cache.
 Function calls which come essentially down to a single \ite call are very cheap.
 For example taking the product $x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))$ is much cheaper than $((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)$.
 In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
-The same argumemt would apply for the addition of these variables.
+The same argument would apply for the addition of these variables.
 This example shows, that having a little bit background about the data structure, it is often possible to write code, that looks as well algebraic as provides good performance.
 
 \subsection{Replace algebra by set operations}
-Often there is an alternativ description in terms of set operations for algebraic operations, which is much faster.
+Often there is an alternative description in terms of set operations for algebraic operations, which is much faster.
 
-\subsection{Construct power sets}
+\subsubsection{Construct power sets}
 An example for this behaviour is the calculation of power sets (sets of monomials/polynomials containing each term in the specified variables).
-The following code constructs such a power set very inefficiently for the first free variables:
+The following code constructs such a power set very inefficiently for the first three variables:
 \begin{verbatim}
 sum([x(1)**i1*x(2)**i2*x(3)**i3 for i1 in (0,1) for i2 in (0,1) for i3 in (0,1)])
 \end{verbatim}
 The algorithm has of course exponential complexity in the number of variables.
-The resulting ZDD however has as many nodes as variables.
+The resulting ZDD however has only as many nodes as variables.
 In fact it can be constructed directly using the following function (from specialsets.py).
 \begin{verbatim}
 def power_set(variable_indices):
@@ -165,8 +165,8 @@ def power_set(variable_indices):
         res=if_then_else(v,res,res)
     return res
 \end{verbatim}
-Note, that we switched from polynomials to diagrams. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple \ite operators instead of complex operations in each step).
-\subsection{All monomials of degree d}
+Note, that we switched from polynomials to Boolean sets. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple \ite operators instead of complex operations in each step).
+\subsubsection{All monomials of degree d}
 \begin{verbatim}
 def all_monomials_of_degree_d(d,variable_indices):
     if d == 0:
@@ -195,7 +195,7 @@ In the following we will show five variants to implement a function, that comput
 def simple_graded(f, d):
     return sum((t for t in f if t.deg()==d))   
 \end{verbatim}
-The solution is obvious, but quite slow.
+This solution is obvious, but quite slow.
 \subsection{Low level friendly, algebraic solution}
 \begin{verbatim}
 def friendly_graded(f, d):
@@ -218,7 +218,7 @@ This solution build on the fast intersection algorithm and decomposes the task i
 However it can be quite inefficient, when f has many variables.
 This can increase the number of steps in the intersection algorithm (which takes with high probability the else branch of the second argument in each step).
 \subsection{Recursive}
-This unnecessary branches can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was \functionname{intersection}).
+The repeated unnecessary iteration over all variables in $f$ (during the \functionname{intersection} call in the last section) can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was \functionname{intersection}).
 
 \begin{verbatim}
 def recursive_graded(f,d):
