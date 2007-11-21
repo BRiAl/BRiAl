@@ -12,6 +12,7 @@
 #include "polybori.h"
 #include "interpolate.h"
 #include "groebner_alg.h"
+#include "nf.h"
 #include "out_helper.h"
 
 using namespace boost::python;
@@ -52,6 +53,7 @@ void export_bset(){
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
   .def("cartesianProduct", &BooleSet::cartesianProduct)
   .def("diff", &BooleSet::diff)
+  .def("__mod__", mod_mon_set)
   .def("divide", &BooleSet::divide)
   .def("subset1",&BooleSet::subset1)
   .def("subset0",&BooleSet::subset0)
