@@ -34,7 +34,18 @@ def owns_one_constant(I):
 
 #@TODO: implement this to work with *args, **args for wrapped function
 
-
+def ll_is_good(I):
+    lex_lead=set()
+    for p in I:
+        m=p.lexLead()
+        if m.deg()==1:
+            lex_lead.add(iter(m).next())
+    if len(lex_lead)>=0.8*len(I):
+        uv=len(used_vars_set(I))
+        if len(lex_lead)>0.9*uv:
+            return True
+    return False
+    
 def firstgb_heuristic(d):
     d_orig=d
     d=copy(d)
@@ -79,10 +90,10 @@ def firstgb_heuristic(d):
                 other_ordering_opts=copy(d_orig)
                 other_ordering_opts["switch_to"]=OrderCode.dlex
                 d["other_ordering_first"]=other_ordering_opts
-            
+    if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
+        d["llfirst"]=True
     return d
-def trivial_heuristic(d):
-    
+def trivial_heuristic(d):   
     return d
 class HeuristicalFunction(object):
     def __call__(self,*args,**kwds):
@@ -197,6 +208,7 @@ def llfirst_post(I,eliminated):
     return I
 def result_to_list_post(I,state):
     return list(I)
+
 @with_heuristic(firstgb_heuristic)
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
