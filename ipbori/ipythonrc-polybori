@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.3  2007/11/21 12:51:04  dreyer
+# Fix: refined copyright and paths
+#
 # Revision 1.2  2007/11/06 15:03:32  dreyer
 # CHANGE: More generic copyright
 #
@@ -37,7 +40,9 @@ execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 # Get program name and prompt something
 execute ipbname = 'ipbori'
 execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
-execute print ipbname, "-- PolyBoRi's interactive command line tool\n"
+execute print ipbname, "-- PolyBoRi's interactive command line tool"
+execute print 'Type "polybori_copyright()" or "polybori_license()"',
+execute print 'for more information.\n'
 
 # Uncomment, if we want to skip the banner 
 # banner 0
@@ -61,3 +66,28 @@ execute from polybori.gbcore import groebner_basis
 execute from polybori.blocks import declare_ring
 execute from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
 
+execute pb_copy =  "Copyright (c) 2007 by The PolyBoRi Team. "
+execute pb_copy += "All Rights Reserved.\n\n"
+execute pb_copy += "The PolyBoRi Team is a gathering of contributors from\n"
+execute pb_copy += "Mathematisches Forschungsinstitut Oberwolfach (MFO), "
+execute pb_copy += "Germany\n"
+execute pb_copy += "Department of Mathematics, University of Kaiserslautern, "
+execute pb_copy += "Germany, and\n"
+execute pb_copy += "Fraunhofer Institute for Industrial Mathematics (ITWM), "
+execute pb_copy += "Kaiserslautern, Germany."
+
+execute pb_lic  = "ipbori and the PolyBoRi framework are licensed under the "
+execute pb_lic += "terms\nof the GNU General Public License (GPL) version 3 "
+execute pb_lic += "or later. \n"
+execute pb_lic += "See http://www.gnu.org/licenses/ for details."
+
+execute pb_copy += "\n\nPolyBoRi incorporates the following works:\n"
+execute pb_copy += "The CU Decision Diagrams Package "
+execute pb_copy += "Release 2.4.1 (CUDD)\nby Fabio Somenzi, Copyright (c) "
+execute pb_copy += "1995-2004,\nRegents of the University of Colorado. "
+execute pb_copy += "All Rights Reserved.\n\n"
+execute pb_copy += "The Method of the Four Russians Inversion (M4RI)\n"
+execute pb_copy += "Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org>"
+
+execute def polybori_copyright(): print pb_copy 
+execute def polybori_license(): print pb_lic
