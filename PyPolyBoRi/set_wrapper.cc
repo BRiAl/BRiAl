@@ -46,7 +46,7 @@ void export_bset(){
   .def(boost::python::init <const BooleSet&>())
   .def(boost::python::init <const BooleSet::navigator& >())
   .def(boost::python::init <>())
- 
+  .def("__repr__", streamable_as_str<BooleSet>)
   .def("__str__", streamable_as_str<BooleSet>)
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
