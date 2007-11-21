@@ -1,7 +1,10 @@
-NOTE: The PolyBoRi Team will release PolyBoRi under the terms of GPL3 soon.
-NOTE: If you have obtained pre-release access to this code, please obeye the
-NOTE: respective legal conditions.
-NOTE: Remove this note on release!
+COPYRIGHT (c) 2007 by The PolyBoRi Team:
+Michael Brickenstein (MFO), brickenstein@mfo.de
+Alexander Dreyer (ITWM), alexander.dreyer@itwm.fraunhofer.de
+
+The PolyBoRi framework is released under the terms of the GNU General Public
+License (GPL), version 3 or later.
+
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
