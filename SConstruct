@@ -497,7 +497,8 @@ if 'distribute' in COMMAND_LINE_TARGETS:
 
     for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
     rtpblocks.py rundummy.py specialsets2.py"""):
-        srcs.remove(TestsPath('py', exclsrc))
+        for file in glob(TestsPath('py', exclsrc)):
+            srcs.remove(file)
         
     for dirname in Split("src ref"):
         srcs.append(env.Dir(TestsPath(dirname)))
