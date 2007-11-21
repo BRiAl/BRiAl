@@ -481,7 +481,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
            .kprof.html"""),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
-           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled"))
+           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
 pboriversion = "0.1"
 if 'distribute' in COMMAND_LINE_TARGETS:
