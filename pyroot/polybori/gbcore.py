@@ -78,6 +78,7 @@ def firstgb_heuristic(d):
             if not ("ll" in d):
                 d["ll"]=True
     if not "other_ordering_first" in d:
+        #TODO after ll situation might look much different, so heuristic is on wrong place
         if get_order_code()==OrderCode.lp:
             max_non_linear=len(I)/2
             non_linear=0
@@ -201,6 +202,15 @@ def llfirstonthefly_pre(I):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)
 def llfirst_post(I,eliminated):
+    for p in I:
+        if p.isOne():
+            return [p]
+    else:
+        if len(eliminated)>0:
+            I=list(I)+list(eliminated)
+            #redsb just for safety, as don't know how option is set
+            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,other_ordering_first=False,redsb=True)
+    return I
     if not I.containsOne():
         for p in eliminated:
             I.addGenerator(p)
@@ -213,11 +223,12 @@ def result_to_list_post(I,state):
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
+@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
+@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,default=True)
-@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
-@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
+
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
