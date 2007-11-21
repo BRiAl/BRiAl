@@ -46,37 +46,12 @@ def ll_is_good(I):
             return True
     return False
     
-def firstgb_heuristic(d):
+def ll_heuristic(d):
     d_orig=d
     d=copy(d)
-    def want_la():
-        n_used_vars=None
-        bound=None
-        if have_degree_order():
-            new_bound=200
-            n_used_vars=len(used_vars_set(I,bound=new_bound))
-            if n_used_vars<new_bound:
-                return True
-            bound=new_bound
-        if dense_system(I):
-            new_bound=100
-            if not (bound and new_bound<bound):
-                n_used_vars=len(used_vars_set(I,bound=new_bound))
-                bound=new_bound
-            if n_used_vars<bound:
-                return True
-        return False 
-    I=d["I"]
-    if not "faugere" in d:
-        if want_la():
 
-            d["faugere"]=True
-            if not "red_tail" in d:
-                d["red_tail"]=False
-            if not "selection_size" in d:
-                d["selection_size"]=10000
-            if not ("ll" in d):
-                d["ll"]=True
+    I=d["I"]
+
     if not "other_ordering_first" in d:
         #TODO after ll situation might look much different, so heuristic is on wrong place
         if get_order_code()==OrderCode.lp:
@@ -94,6 +69,63 @@ def firstgb_heuristic(d):
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
         d["llfirst"]=True
     return d
+
+
+
+def change_order_heuristic(d):
+    d_orig=d
+    d=copy(d)
+    I=d["I"]
+    if not "other_ordering_first" in d:
+        #TODO after ll situation might look much different, so heuristic is on wrong place
+        if get_order_code()==OrderCode.lp:
+            max_non_linear=len(I)/2
+            non_linear=0
+            for p in I:
+                if p.lead().deg()>1:
+                    non_linear=non_linear+1
+                    if non_linear>max_non_linear:
+                        break
+            if non_linear>max_non_linear:
+                other_ordering_opts=copy(d_orig)
+                other_ordering_opts["switch_to"]=OrderCode.dlex
+                d["other_ordering_first"]=other_ordering_opts
+    return d
+
+def linear_algebra_heuristic(d):
+    d_orig=d
+    d=copy(d)
+    I=d["I"]
+    def want_la():
+        n_used_vars=None
+        bound=None
+        if have_degree_order():
+            new_bound=200
+            n_used_vars=len(used_vars_set(I,bound=new_bound))
+            if n_used_vars<new_bound:
+                return True
+            bound=new_bound
+        if dense_system(I):
+            new_bound=100
+            if not (bound and new_bound<bound):
+                n_used_vars=len(used_vars_set(I,bound=new_bound))
+                bound=new_bound
+            if n_used_vars<bound:
+                return True
+        return False
+    if not "faugere" in d:
+        if want_la():
+
+            d["faugere"]=True
+            if not "red_tail" in d:
+                d["red_tail"]=False
+            if not "selection_size" in d:
+                d["selection_size"]=10000
+            if not ("ll" in d):
+                d["ll"]=True
+
+    return d
+
 def trivial_heuristic(d):   
     return d
 class HeuristicalFunction(object):
@@ -219,13 +251,15 @@ def llfirst_post(I,eliminated):
 def result_to_list_post(I,state):
     return list(I)
 
-@with_heuristic(firstgb_heuristic)
+@with_heuristic(ll_heuristic)
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
+@with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
+@with_heuristic(linear_algebra_heuristic)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,default=True)
 
