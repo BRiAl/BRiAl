@@ -11,6 +11,7 @@
 #include "polybori.h"
 #include "pbori_defs.h"
 #include "groebner_alg.h"
+#include "interpolate.h"
 #include "out_helper.h"
 using namespace boost::python;
 using namespace std;
@@ -123,6 +124,7 @@ void export_poly(){
   .def("__str__", streamable_as_str<BoolePolynomial>)
   .def("__repr__", streamable_as_str<BoolePolynomial>)
   .def("mapEveryXToXPlusOne",map_every_x_to_x_plus_one)
+  .def("zeroesIn",zeroes)
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
   def("spoly",&spoly);
