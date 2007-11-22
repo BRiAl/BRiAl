@@ -74,7 +74,7 @@ def change_order_heuristic(d):
                         break
             if non_linear>max_non_linear:
                 other_ordering_opts=copy(d_orig)
-                other_ordering_opts["switch_to"]=OrderCode.dlex
+                other_ordering_opts["switch_to"]=OrderCode.dp_asc
                 d["other_ordering_first"]=other_ordering_opts
     return d
 
