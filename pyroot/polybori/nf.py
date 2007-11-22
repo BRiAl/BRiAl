@@ -232,7 +232,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
     
-def slimgb(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
+def slimgb(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=False):
     #print implications
     if use_noro and use_faugere:
         raise Exception
@@ -354,7 +354,7 @@ def slimgb(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_no
         #res=red.result
         def sort_key(p):
             return p.lead()
-        res_cp=sorted(res,key=sort_key)
+        res_cp=sorted((p for p in res if not p.isZero()),key=sort_key)
         #res_cp=list(res)
         #res_cp.reverse()
         old_ll=strat.llReductor
