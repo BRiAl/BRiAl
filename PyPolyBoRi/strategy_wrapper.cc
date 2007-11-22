@@ -144,10 +144,10 @@ static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
     return strat.generators[i].p;
 }
 class DuplicateLeadException{};
-class GeneratorIsZeroException{};
 
-static void translator_g(GeneratorIsZeroException const& x) {
-    PyErr_SetString( PyExc_ValueError, "generator is zero");
+
+static void translator_g(PolynomialIsZeroException const& x) {
+    PyErr_SetString( PyExc_ValueError, "zero polynomial not allowed here");
 }
 static void translator_d(DuplicateLeadException const& x) {
     PyErr_SetString( PyExc_ValueError, "strategy contains already a polynomial with same lead");
@@ -155,7 +155,7 @@ static void translator_d(DuplicateLeadException const& x) {
 
 
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     Monomial m=p.lead();
     if UNLIKELY(strat.leadingTerms.owns(m)) throw DuplicateLeadException();
     strat.addGenerator(p);
@@ -168,12 +168,12 @@ static StrategyIterator stratend(const GroebnerStrategy& strat){
 }
 
 static void add_as_you_wish(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     strat.addAsYouWish(p);
 }
 
 static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     strat.addGeneratorDelayed(p);
 }
 
@@ -241,7 +241,7 @@ void export_strategy(){
   def("contained_vars",contained_variables_cudd_style);
   def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one);
   boost::python::register_exception_translator<
-              GeneratorIsZeroException>(translator_g);
+              PolynomialIsZeroException>(translator_g);
   boost::python::register_exception_translator<
             DuplicateLeadException>(translator_d);
 }

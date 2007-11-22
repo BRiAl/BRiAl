@@ -18,6 +18,11 @@ using namespace std;
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
+#include "strategy_wrapper.h"
+static BooleMonomial lead(const BoolePolynomial& p){
+    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
+    return p.lead();
+}
 static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
     if (n==0) return BooleMonomial();
     return p;
@@ -101,7 +106,7 @@ void export_poly(){
 
   .def("deg", &BoolePolynomial::deg)
   .def("lmDivisors", &BoolePolynomial::lmDivisors)
-  .def("lead", &BoolePolynomial::lead)
+  .def("lead", lead)
   .def("lexLead", &BoolePolynomial::lexLead)
   .def("firstTerm", &BoolePolynomial::firstTerm)
   .def("reducibleBy", &BoolePolynomial::reducibleBy)
