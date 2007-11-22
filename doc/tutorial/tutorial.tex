@@ -103,11 +103,19 @@ append_ring_block(20)
 \end{verbatim}
 In this example, we have an ordering composed of three blocks, the first with ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
 \subsection{Arithmetic}
-Basic arithmetic is provided in the domain of Boolean polynomials. If exponents bigger than one per variable appear reduction by the field ideal is done automatically.
+Basic arithmetic is provided in the domain of Boolean polynomials. Boolean Polynomial polynomials are polynomials over $\Ztwo$ where the maximal degree per variable is one.
+If exponents bigger than one per variable appear reduction by the field ideal (polynomials of the form $x^2+x$) is done automatically.
 \begin{verbatim}
-In [1]: (x(1)+x(2))*(x(1)+x(3))
-Out[1]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
+In [1]: Polynomial(1)+Polynomial(1)
+Out[1]: 0
+
+In [2]: x(1)*x(1)
+Out[2]: x(1)
+
+In [3]: (x(1)+x(2))*(x(1)+x(3))
+Out[3]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
 \end{verbatim}
+
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangable heuristic.
