@@ -52,20 +52,6 @@ def ll_heuristic(d):
 
     I=d["I"]
 
-    if not "other_ordering_first" in d:
-        #TODO after ll situation might look much different, so heuristic is on wrong place
-        if get_order_code()==OrderCode.lp:
-            max_non_linear=len(I)/2
-            non_linear=0
-            for p in I:
-                if p.lead().deg()>1:
-                    non_linear=non_linear+1
-                    if non_linear>max_non_linear:
-                        break
-            if non_linear>max_non_linear:
-                other_ordering_opts=copy(d_orig)
-                other_ordering_opts["switch_to"]=OrderCode.dlex
-                d["other_ordering_first"]=other_ordering_opts
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
         d["llfirst"]=True
     return d
