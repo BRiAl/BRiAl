@@ -138,12 +138,26 @@ int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return select1(strat,m);
 }
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
-    if ((i<0)||(i>=strat.generators.size())){
+    if UNLIKELY((i<0)||(i>=strat.generators.size())){
         throw VariableIndexException();
     }
     return strat.generators[i].p;
 }
+class DuplicateLeadException{};
+class GeneratorIsZeroException{};
+
+static void translator_g(GeneratorIsZeroException const& x) {
+    PyErr_SetString( PyExc_ValueError, "generator is zero");
+}
+static void translator_d(DuplicateLeadException const& x) {
+    PyErr_SetString( PyExc_ValueError, "strategy contains already a polynomial with same lead");
+}
+
+
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
+    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    Monomial m=p.lead();
+    if UNLIKELY(strat.leadingTerms.owns(m)) throw DuplicateLeadException();
     strat.addGenerator(p);
 }
 static StrategyIterator stratbegin(const GroebnerStrategy& strat){
@@ -153,8 +167,15 @@ static StrategyIterator stratend(const GroebnerStrategy& strat){
     return StrategyIterator(strat.generators.end());
 }
 
+static void add_as_you_wish(GroebnerStrategy& strat, const Polynomial& p){
+    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    strat.addAsYouWish(p);
+}
 
-
+static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
+    if UNLIKELY(p.isZero()) throw GeneratorIsZeroException();
+    strat.addGeneratorDelayed(p);
+}
 
 void export_strategy(){
   export_slimgb();
@@ -163,9 +184,9 @@ void export_strategy(){
   .def(init<const GroebnerStrategy&>())
   .def("suggestPluginVariable",&GroebnerStrategy::suggestPluginVariable)
   .def("addGenerator", add_generator)//&GroebnerStrategy::addGenerator)
-  .def("addGeneratorDelayed", &GroebnerStrategy::addGeneratorDelayed)
+  .def("addGeneratorDelayed", add_generator_delayed)
   .def("llReduceAll", &GroebnerStrategy::llReduceAll)
-  .def("addAsYouWish",&GroebnerStrategy::addAsYouWish)
+  .def("addAsYouWish",add_as_you_wish)
   .def("implications",implications)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
@@ -185,6 +206,8 @@ void export_strategy(){
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
   .def_readonly("llReductor",&GroebnerStrategy::llReductor)
+  .def_readonly("minimalLeadingTerms",&GroebnerStrategy::minimalLeadingTerms)
+  .def_readonly("leadingTerms",&GroebnerStrategy::leadingTerms)
   .def_readonly("monomials",&GroebnerStrategy::monomials)
   .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
   .def_readwrite("optLL",&GroebnerStrategy::optLL)
@@ -208,11 +231,6 @@ void export_strategy(){
   .def("symmGB_F2",&GroebnerStrategy::symmGB_F2)
   .def("nf",&GroebnerStrategy::nf)
   .def("npairs", npairs);
-  def("nf1",nf1);
-  def("nf2",nf2);
-  def("nf_delaying",nf_delaying);
-  def("nf_delaying_exchanging", nf_delaying_exchanging);
-  def("red_tail_self_tuning", red_tail_self_tuning);
   def("translate_indices",translate_indices);
   def("mult_fast_sim_C",mult_fast_sim);
   def("set_variable_name",&BoolePolyRing::setRingVariableName);
@@ -222,4 +240,8 @@ void export_strategy(){
   def("zeroes",zeroes);
   def("contained_vars",contained_variables_cudd_style);
   def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one);
+  boost::python::register_exception_translator<
+              GeneratorIsZeroException>(translator_g);
+  boost::python::register_exception_translator<
+            DuplicateLeadException>(translator_d);
 }

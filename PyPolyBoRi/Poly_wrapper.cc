@@ -81,6 +81,7 @@ void export_poly(){
   .def(self*BooleVariable())
   .def(self/BooleVariable())
   .def(self/BooleMonomial())
+  .def(self/self)
   .def(self%BooleVariable())
   .def(self%BooleMonomial())
   .def(self%self)

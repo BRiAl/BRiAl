@@ -35,8 +35,6 @@ void export_slimgb(){
     .def(vector_indexing_suite<std::vector<int> >());
   def("parallel_reduce", parallel_reduce);
   def("red_tail", red_tail);
-  def("red_tail_short", red_tail_short);
-  def("nf3_short", nf3_short);
   def("nf3", nf3);
   def("mod_mon_set", mod_mon_set);
   def("ll_red_nf",ll_red_nf);
