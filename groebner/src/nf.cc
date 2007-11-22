@@ -446,9 +446,11 @@ template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
           }
           
         }
+        assert(!(reductor.isZero()));
         result.push_back(reductor);
       } else{
         assert(s==0);
+        assert(!(curr[0].isZero()));
         result.push_back(curr[0]);
       }
     }
@@ -470,7 +472,7 @@ public:
     assert(lm==p.lead());
     assert(exp==p.leadExp());
   }
-  PolynomialSugar(const Polynomial& p, int sugar, int length){
+  PolynomialSugar(const Polynomial& p, int sugar, len_type length){
     this->p=p;
     assert(length>=0);
     
@@ -539,7 +541,7 @@ public:
   }
 protected:
   Monomial lm;
-  wlen_type length;
+  len_type length;
   deg_type sugar;
   Polynomial p;
   Exponent exp;
@@ -738,6 +740,7 @@ static void step_T_simple(std::vector<PolynomialSugar>& curr, std::vector<Polyno
     }
     
   }
+  assert(!(reductor.isZero()));
   result.push_back(reductor);
   
 
@@ -795,6 +798,7 @@ static void step_T_complex(std::vector<PolynomialSugar>& curr, std::vector<Polyn
   }
   reductor=curr[0].value();
   curr.erase(curr.begin());
+  assert(!(reductor.isZero()));
   result.push_back(reductor);
   
   
@@ -862,6 +866,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
                 
                 //result.insert(result.size(),la.begin(),la.end());
                 for(i=0;i<la.size();i++){
+                    assert(!(la[i].isZero()));
                     result.push_back(la[i]);
                 }
                 return result;
@@ -947,6 +952,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
                         strat.addGeneratorDelayed(this_lm[i].value());
                     }
                 }
+                assert(!(for_basis->value().isZero()));
                 result.push_back((*for_basis).value());
             }
             
@@ -2028,6 +2034,7 @@ linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, Mon
             polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
 std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess());
+    polys.clear();
     if (polys_lm.size() == 0)
         return;
     Monomial        last;
@@ -2040,6 +2047,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess())
 
         return;
     }
+    
     vector < Polynomial > polys_triangular;
     vector < Polynomial > polys_rest;
 
