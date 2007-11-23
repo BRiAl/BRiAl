@@ -63,19 +63,22 @@ def change_order_heuristic(d):
     d_orig=d
     d=copy(d)
     I=d["I"]
+    switch_table={OrderCode.lp:OrderCode.dlex,OrderCode.dlex:OrderCode.dp_asc}
     if not "other_ordering_first" in d:
         #TODO after ll situation might look much different, so heuristic is on wrong place
-        if get_order_code()==OrderCode.lp:
+        code=get_order_code()
+        if code in switch_table:
             max_non_linear=len(I)/2
             non_linear=0
-            for p in I:
-                if p.lead().deg()>1:
-                    non_linear=non_linear+1
-                    if non_linear>max_non_linear:
-                        break
-            if non_linear>max_non_linear:
+            if code==OrderCode.lp:
+                for p in I:
+                    if p.lead().deg()>1:
+                        non_linear=non_linear+1
+                        if non_linear>max_non_linear:
+                            break
+            if (non_linear>max_non_linear) or (code!=OrderCode.lp):
                 other_ordering_opts=copy(d_orig)
-                other_ordering_opts["switch_to"]=OrderCode.dp_asc
+                other_ordering_opts["switch_to"]=switch_table[code]
                 d["other_ordering_first"]=other_ordering_opts
     return d
 
@@ -217,12 +220,12 @@ def llfirst_pre(I):
 
 def other_ordering_pre(I,options):
     ocode=get_order_code()
-    assert ocode==OrderCode.lp
+    assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
     #in parcticular it does not work for block orderings, because of the block sizes
     change_ordering(options["switch_to"])
     kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
     I_orig=I
-    I=groebner_basis(I,other_ordering_first=False,**kwds)
+    I=groebner_basis(I,**kwds)
     for p in I:
         if p.deg()>1:
             I=list(chain(I,I_orig))
