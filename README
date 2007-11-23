@@ -1,22 +1,33 @@
-The PolyBoRi Team 
-
-...consists of persons working at 
-
-* Mathematisches Forschungsinstitut Oberwolfach (MFO), Germany,
-
-* Department of Mathematics, University of Kaiserslautern, Germany, and 
-
-* Fraunhofer Institute for Industrial Mathematics (ITWM)
-  Kaiserslautern, Germany
-
-
-Contact persons:
+The PolyBoRi Team:
 Michael Brickenstein (MFO), brickenstein@mfo.de
 Alexander Dreyer (ITWM), alexander.dreyer@itwm.fraunhofer.de
 
+PolyBoRi is a joint project of the following institutions
+* Mathematisches Forschungsinstitut Oberwolfach (MFO), 
+  Oberwolfach, Germany,
+* University of Kaiserslautern, Department of Mathematics,
+  Algebra, Geometry and Computer Algebra Group, 
+  Kaiserslautern, Germany, and
+* Fraunhofer Institute for Industrial Mathematics (ITWM),
+  Department of System Analysis, Prognosis and Control,
+  Kaiserslautern, Germany.
+
+
+Prerequisites:
+==============
+For building the PolyBoRi framework, the following tools and libraries are
+needed:
+* gcc 3.3.0 or newer
+* python 2.4 (deprecated) or python 2.5 (recommended)
+* scons (v0.96 or later)
+* the boost library, version 1.33.1 (for python 2.4; deprecated) or 
+  version 1.34.1 (for python 2.5; recommended)
+
+In addition, for running the ipbori command line tools IPython is needed.
+
 
 Installation:
-
+=============
 Changing to the build directory (where you find this README file), and typing  
 
   scons install INSTALLDIR=/path/to/program PREFIX=/prefix/for/executables
@@ -48,3 +59,12 @@ Typing
   scons devel-install DEVEL-PREFIX=/prefix/for/usr
 
 generates and installs PolyBoRi headers and libraries for developers.
+
+
+Usage:
+======
+Provided that /prefix/for/executables/bin is in your path, typing 
+
+  ipbori
+
+starts an IPython session with the PolyBoRi framework loaded.
