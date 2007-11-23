@@ -9,6 +9,7 @@ from itertools import chain
 from inspect import getargspec
 from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
+from itertools import chain
 
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
@@ -213,7 +214,12 @@ def other_ordering_pre(I,options):
     #in parcticular it does not work for block orderings, because of the block sizes
     change_ordering(options["switch_to"])
     kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
+    I_orig=I
     I=groebner_basis(I,other_ordering_first=False,**kwds)
+    for p in I:
+        if p.deg()>1:
+            I=list(chain(I,I_orig))
+            break
     change_ordering(ocode)
     return (I,None)
 def llfirstonthefly_pre(I):
@@ -225,7 +231,7 @@ def llfirst_post(I,eliminated):
             return [p]
     else:
         if len(eliminated)>0:
-            I=list(I)+list(eliminated)
+            I=list(chain(I,eliminated))
             #redsb just for safety, as don't know how option is set
             I=groebner_basis(I,llfirst=False,llfirstonthefly=False,other_ordering_first=False,redsb=True)
     return I
