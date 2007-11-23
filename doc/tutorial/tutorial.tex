@@ -11,7 +11,7 @@
 
 % Setup for fullpage use
 \usepackage{fullpage}
-
+\usepackage{amssymb}
 % Uncomment some of the following if you use the features
 %
 % Running Headers and footers
@@ -48,6 +48,8 @@
 \newcommand{\ite}{{ite}\xspace}
 \newcommand{\functionname}[1]{\textit{#1}\xspace}
 \providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
+
+\newcommand{\Ztwo}{\mathbb{Z}_2}
 %\newif\ifpdf
 %\ifx\pdfoutput\undefined
 %\pdffalse % we are not running PDFLaTeX
@@ -57,8 +59,8 @@
 %\fi
 
 
-\title{\PolyBoRi tutorial}
-\author{Michael Brickenstein  }
+\title{\PolyBoRi Tutorial}
+\author{Michael Brickenstein}
 
 
 
@@ -82,10 +84,16 @@
 \subsection{Interfaces}
 The core of \PolyBoRi is a C++ library. On top of it there exists a Python interface.
 Additionally to the Python interface a integration into SAGE was provided by Burcin Erocal.
-The main difference is, that the Python interface makes use of the boost library, while the SAGE interface relies on Cython.
+The main difference is, that \PolyBoRi's built-in Python interface makes use of
+the boost library, while the SAGE interface relies on Cython. 
 However the wrappers for SAGE and the original Python interface are designed, that it is possible to run the same code under both bindings.
 
-We provide an interactive shell for \PolyBoRi using ipython (either using sage or ipbori).
+We provide an interactive shell for \PolyBoRi using ipython for the SAGE
+interface~(which is invoked the command~\texttt{sage}) as well as for the
+built-in one, which can be accessed by typing~\texttt{ipbori}
+at the command line prompt.
+
+
 In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
 \subsection{Ordering}
 The monomial ordering can be changed by calling
@@ -94,7 +102,7 @@ The monomial ordering can be changed by calling
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 
 
-Example:
+\paragraph{Example:}
 \begin{verbatim}
 r=Ring(1000)
 change_ordering(block_dp_asc)
@@ -133,8 +141,8 @@ This awareness can be seen on several levels
     \item ZDD unaware, pure algebraic programming 
     \item low level friendly programming
     \item replacing algebraic operations by (a composition of) set operations
-    \item Cudd recursive programming without caching
-    \item Cudd recursive programming with caching
+    \item decision-diagram style recursive programming without caching
+    \item decision-diagram style recursive programming with caching
     \item using ZDDs for many other things than polynomial arithmetics
 \end{itemize}
 \subsection{Low level friendly programming}
@@ -148,6 +156,7 @@ The \ite-operator is the most central function in CUDD. It takes two nodes/diagr
 then-branch $t$, else-branch $e$. It is necessary that the branches have root variables with bigger index (or are constant).
 It creates either exactly one node, or retrieves the correct node from the cache.
 Function calls which come essentially down to a single \ite call are very cheap.
+
 For example taking the product $x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))$ is much cheaper than $((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)$.
 In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
 The same argument would apply for the addition of these variables.
@@ -250,8 +259,10 @@ def recursive_graded(f,d):
         
 \end{verbatim}
 Recursive implementations are very compatible with our data structures, so are quite fast. However this implementation does not use any caching techniques. Cudd recursive caching requires functions to have one, two or three parameters, which are of ZDD structure (so no integers).
-Of course we can encode the degree $d$ by the d-th Variable in the Polynomial ring.
-\subsection{Cudd-recursive implementation in \PolyBoRi}
+Of course we can encode the degree $d$ by the d-th Variable in the Polynomial
+ring.
+
+\subsection{Decision-diagram style recursive implementation in \PolyBoRi}
 The C++ implementation of the functionality in \PolyBoRi is given in this section, which is recursive and uses caching techniques.
 \begin{verbatim}
 // determine the part of a polynomials of a given degree
