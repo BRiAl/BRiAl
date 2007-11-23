@@ -152,6 +152,10 @@ try:
     env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
 except KeyError:
     pass
+from re import search
+for variable in os.environ:
+    if search("SAGE",variable):
+        env['ENV'][variable]=os.environ[variable]
 #if env['PLATFORM']=="darwin":
 #        env.Append(LIBPATH="/sw/lib")
 #        env.Append(CPPPATH="/sw/include")
