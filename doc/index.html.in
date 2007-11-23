@@ -4,40 +4,67 @@
 </HEAD>
 <BODY>
 <H1>PolyBoRi Master Reference</H1>
-<img src="images/overview.png" alt="Overview" align="middle" border="0">
+
+<p> The core of <I>PolyBoRi</I> is a C++ library, which provides high-level data types
+for Boolean polynomials and monomials, exponent vectors, as well as for the
+underlying polynomial rings and subsets of the powerset of the Boolean
+variables. As a unique approach, binary decision diagrams are 
+used as internal storage type for polynomial structures.</p>	
+
+<p> On top of this C++-library we provide a Python interface. This allows
+parsing of complex polynomial systems, as well as sophisticated and extendable
+strategies for Gr&ouml;bner base computation. <I>PolyBoRi</I> features a powerful reference
+implementation for Gr&ouml;bner basis computation.</p>			
+
+The structure of the framework is illustrated as follows.
+<p><img src="images/overview.png" alt="Overview" align="middle" border="0">
+
+<H2>Documentation</H2>
+The documentation of the <I>PolyBoRi</I> framework and incorporated works can be
+accessed via the following documents.
 
 $PBDOCLINKS
 
 <H2>Further Reading</H2>
-See the following references for the mathematical background of the poylbori
+See the following references for the mathematical background of the <I>PolyBoRi</I>
 framework. 
  <UL>
 
     <LI>M. Brickenstein, A. Dreyer,
-      <B>PolyBoRi: A Gr&ouml;bner Basis Framework for Boolean
-	Polynomials</B>,
+      <I><I>PolyBoRi</I>: A Gr&ouml;bner Basis Framework for Boolean
+	Polynomials</I>,
         <A HREF="http://www.itwm.fhg.de//as/asemployees/dreyer/bericht122.pdf" >
-        <I>Reports of Fraunhofer ITWM</I>, No. 122,
+        Reports of Fraunhofer ITWM, No. 122,
         </A>
         Kaiserslautern, Germany, 2007.
       </LI>
 
        <LI>M. Brickenstein, A. Dreyer,
-       <B>PolyBoRi: A framework for Gr&ouml;bner basis computations with
-	Boolean polynomials</B>,
+       <I><I>PolyBoRi</I>: A framework for Gr&ouml;bner basis computations with
+	Boolean polynomials</I>,
      
-        <A HREF="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   <I>Electronic Proceedings of the MEGA 2007 - Effective Methods in
- 	Algebraic Geometry</I>,
+        <A HREF="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   Electronic Proceedings of the MEGA 2007&nbsp;- Effective Methods in
+ 	Algebraic Geometry,
                       </A>
-       Strobl, Austria, June 2007,
+       Strobl, Austria, June 2007.
+       </LI>
+       <LI>Fabio Somenzi 
+     
+        <A HREF="http://vlsi.colorado.edu/~fabio/CUDD/">  
+          <I> CUDD: CU Decision Diagram Package Release 2.4.1</I>
+        </A>, 
+        Department of Electrical and Computer Engineering,
+        University of Colorado at Boulder     
        </LI>
 </UL>
 
 <H2>Links</H2>
-<p><a href="http://polybori.sourceforge.net"> PolyBoRi's home at SourceForge</a>
-<p> <a href="http://www.itwm.fhg.de/en/as__asprojects__PolyBoRi/PolyBoRi/">
-PolyBoRi Project page at Fraunhofer ITWM</a>
+<p><a href="http://polybori.sourceforge.net"> <I>PolyBoRi</I>'s home at
+SourceForge</a></p>
+<p> <a href="http://www.itwm.fhg.de/en/as__asprojects__PolyBoRi/PolyBoRi/"></p>	
+<I>PolyBoRi</I>'s project page at Fraunhofer ITWM</a>
 
-<P><img src="images/logo.png" alt="PolyBoRi" align="middle" border="0">
+<P><img src="images/logo.png" alt="<I>PolyBoRi</I>" align="middle" border="0"></p>	
+<P> Copyright &copy; 2007 The <I>PolyBoRi</I> Team</p>	
 </BODY>
 </HTML>
