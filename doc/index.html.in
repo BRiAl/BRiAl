@@ -8,6 +8,36 @@
 
 $PBDOCLINKS
 
+<H2>Further Reading</H2>
+See the following references for the mathematical background of the poylbori
+framework. 
+ <UL>
+
+    <LI>M. Brickenstein, A. Dreyer,
+      <B>PolyBoRi: A Gr&ouml;bner Basis Framework for Boolean
+	Polynomials</B>,
+        <A HREF="http://www.itwm.fhg.de//as/asemployees/dreyer/bericht122.pdf" >
+        <I>Reports of Fraunhofer ITWM</I>, No. 122,
+        </A>
+        Kaiserslautern, Germany, 2007.
+      </LI>
+
+       <LI>M. Brickenstein, A. Dreyer,
+       <B>PolyBoRi: A framework for Gr&ouml;bner basis computations with
+	Boolean polynomials</B>,
+     
+        <A HREF="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   <I>Electronic Proceedings of the MEGA 2007 - Effective Methods in
+ 	Algebraic Geometry</I>,
+                      </A>
+       Strobl, Austria, June 2007,
+       </LI>
+</UL>
+
+<H2>Links</H2>
+<p><a href="http://polybori.sourceforge.net"> PolyBoRi's home at SourceForge</a>
+<p> <a href="http://www.itwm.fhg.de/en/as__asprojects__PolyBoRi/PolyBoRi/">
+PolyBoRi Project page at Fraunhofer ITWM</a>
+
 <P><img src="images/logo.png" alt="PolyBoRi" align="middle" border="0">
 </BODY>
 </HTML>
