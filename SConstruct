@@ -665,7 +665,7 @@ env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
 
 
 def FinalizePermissions(targets, perm):
-    for file in targets:
+    for src in targets:
         env.AddPostAction(file, Chmod(str(file), perm))
     return targets
 
@@ -719,7 +719,15 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.Clean(cxxdocinst, cxxdocinst)
 
     # Copy python documentation
-    FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))
+    pydocuinst = env.CopyAll(env.Dir(InstPath('doc/python')),
+                             env.Dir(DocPath('python')))
+    pydocuinst += env.CopyAll(env.Dir(InstPath('doc/python/dynamic')),
+                             env.Dir(DocPath('python/dynamic')))
+
+    env.Depends(pydocuinst, pydocu)
+    env.Clean(pydocuinst, pydocuinst)
+#    FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))
+
 
     # Copy Cudd documentation
     env.CopyAll(env.Dir(InstPath('doc/cudd')),
