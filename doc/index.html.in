@@ -3,9 +3,9 @@
 <TITLE>PolyBoRi Master Reference</TITLE>
 </HEAD>
 <BODY>
-<H1>PolyBoRi Master Reference</H1>
+<h1>PolyBoRi Master Reference</h1>
 
-<p> The core of <I>PolyBoRi</I> is a C++ library, which provides high-level data types
+<p> The core of <i>PolyBoRi</i> is a C++ library, which provides high-level data types
 for Boolean polynomials and monomials, exponent vectors, as well as for the
 underlying polynomial rings and subsets of the powerset of the Boolean
 variables. As a unique approach, binary decision diagrams are 
@@ -13,58 +13,65 @@ used as internal storage type for polynomial structures.</p>
 
 <p> On top of this C++-library we provide a Python interface. This allows
 parsing of complex polynomial systems, as well as sophisticated and extendable
-strategies for Gr&ouml;bner base computation. <I>PolyBoRi</I> features a powerful reference
+strategies for Gr&ouml;bner base computation. <i>PolyBoRi</i> features a powerful reference
 implementation for Gr&ouml;bner basis computation.</p>			
 
 The structure of the framework is illustrated as follows.
 <p><img src="images/overview.png" alt="Overview" align="middle" border="0">
 
 <H2>Documentation</H2>
-The documentation of the <I>PolyBoRi</I> framework and incorporated works can be
+The documentation of the <i>PolyBoRi</i> framework and incorporated works can be
 accessed via the following documents.
 
 $PBDOCLINKS
 
-<H2>Further Reading</H2>
-See the following references for the mathematical background of the <I>PolyBoRi</I>
+<h2>Further Reading</h2>
+See the following references for the mathematical background of the <i>PolyBoRi</i>
 framework. 
- <UL>
+ <ul>
 
-    <LI>M. Brickenstein, A. Dreyer,
-      <I><I>PolyBoRi</I>: A Gr&ouml;bner Basis Framework for Boolean
-	Polynomials</I>,
-        <A HREF="http://www.itwm.fhg.de//as/asemployees/dreyer/bericht122.pdf" >
+    <li>M. Brickenstein, A. Dreyer,
+      <i><i>PolyBoRi</i>: A Gr&ouml;bner Basis Framework for Boolean
+	Polynomials</i>,
+        <a 
+         href="http://www.itwm.fhg.de/zentral/download/berichte/bericht122.pdf">
         Reports of Fraunhofer ITWM, No. 122,
-        </A>
+        </a>
         Kaiserslautern, Germany, 2007.
-      </LI>
+      </li>
 
-       <LI>M. Brickenstein, A. Dreyer,
-       <I><I>PolyBoRi</I>: A framework for Gr&ouml;bner basis computations with
-	Boolean polynomials</I>,
+       <li>M. Brickenstein, A. Dreyer,
+       <i><i>PolyBoRi</i>: A framework for Gr&ouml;bner basis computations with
+	Boolean polynomials</i>,
      
-        <A HREF="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   Electronic Proceedings of the MEGA 2007&nbsp;- Effective Methods in
+        <a href="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   Electronic Proceedings of the MEGA 2007&nbsp;- Effective Methods in
  	Algebraic Geometry,
-                      </A>
+                      </a>
        Strobl, Austria, June 2007.
-       </LI>
-       <LI>Fabio Somenzi 
+       </li>
+       <li>Fabio Somenzi 
      
-        <A HREF="http://vlsi.colorado.edu/~fabio/CUDD/">  
-          <I> CUDD: CU Decision Diagram Package Release 2.4.1</I>
-        </A>, 
+        <a href="http://vlsi.colorado.edu/~fabio/CUDD/">  
+          <i> CUDD: CU Decision Diagram Package Release 2.4.1</i>
+        </a>, 
         Department of Electrical and Computer Engineering,
         University of Colorado at Boulder     
-       </LI>
-</UL>
+       </li>
+       <li>
+        Gregory V. Bard,
+        <a href="http://eprint.iacr.org/2006/251.pdf">  
+          <i>Accelerating Cryptanalysis with the Method of Four Russians</i>
+        </a>, Preprint July 22, 2006.
+       </li>
+</ul>
 
-<H2>Links</H2>
-<p><a href="http://polybori.sourceforge.net"> <I>PolyBoRi</I>'s home at
+<h2>Links</h2>
+<p><a href="http://polybori.sourceforge.net"> <i>PolyBoRi</i>'s home at
 SourceForge</a></p>
 <p> <a href="http://www.itwm.fhg.de/en/as__asprojects__PolyBoRi/PolyBoRi/"></p>	
-<I>PolyBoRi</I>'s project page at Fraunhofer ITWM</a>
+<i>PolyBoRi</i>'s project page at Fraunhofer ITWM</a>
 
-<P><img src="images/logo.png" alt="<I>PolyBoRi</I>" align="middle" border="0"></p>	
-<P> Copyright &copy; 2007 The <I>PolyBoRi</I> Team</p>	
+<P><img src="images/logo.png" alt="<i>PolyBoRi</i>" align="middle" border="0"></p>	
+<P> Copyright &copy; 2007 The <i>PolyBoRi</i> Team</p>	
 </BODY>
 </HTML>
