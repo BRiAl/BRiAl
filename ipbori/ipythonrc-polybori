@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.4  2007/11/23 07:48:25  dreyer
+# CHANGE: copyright message
+#
 # Revision 1.3  2007/11/21 12:51:04  dreyer
 # Fix: refined copyright and paths
 #
@@ -41,7 +44,7 @@ execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 execute ipbname = 'ipbori'
 execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
 execute print ipbname, "-- PolyBoRi's interactive command line tool"
-execute print 'Type "polybori_copyright()" or "polybori_license()"',
+execute print 'Type "polybori_copyright" or "polybori_license"',
 execute print 'for more information.\n'
 
 # Uncomment, if we want to skip the banner 
@@ -67,8 +70,12 @@ execute from polybori.blocks import declare_ring
 execute from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
 
 execute pb_copy =  "Copyright (c) 2007 by The PolyBoRi Team. "
-execute pb_copy += "All Rights Reserved.\n\n"
-execute pb_copy += "The PolyBoRi Team is a gathering of contributors from\n"
+execute pb_copy +=  "All Rights Reserved.\n"
+execute pb_copy +=  "  Michael Brickenstein (MFO)  brickenstein@mfo.de\n"
+execute pb_copy +=  "  Alexander Dreyer (ITWM)     "
+execute pb_copy +=  "alexander.dreyer@itwm.fraunhofer.de\n\n"
+
+execute pb_copy += "The PolyBoRi Team is a joint project of\n"
 execute pb_copy += "Mathematisches Forschungsinstitut Oberwolfach (MFO), "
 execute pb_copy += "Germany\n"
 execute pb_copy += "Department of Mathematics, University of Kaiserslautern, "
