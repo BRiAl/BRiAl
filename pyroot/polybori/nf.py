@@ -232,7 +232,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
     
-def slimgb(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
     #print implications
     if use_noro and use_faugere:
         raise Exception
@@ -402,9 +402,9 @@ def GPS(G,vars_start, vars_end):
         strat=GroebnerStrategy(strat)
         print "npairs", strat.npairs()
         strat.addGeneratorDelayed(Polynomial(Monomial(Variable(var))+val))
-        strat=buchberger_C_based2(strat,prot=True,deg_bound=2, over_deg_bound=10)
+        strat=symmGB_F2_python(strat,prot=True,deg_bound=2, over_deg_bound=10)
         if var<=vars_start:
-            strat=buchberger_C_based2(strat, prot=True, optLazy=False, redTail=False)
+            strat=symmGB_F2_python(strat, prot=True, optLazy=False, redTail=False)
         if strat.containsOne():
             pass
         else:
@@ -450,12 +450,12 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
             strat.addGeneratorDelayed(plug_p)
         print "npairs", strat.npairs()
         print "pos:", pos
-        strat=buchberger_C_based2(strat,deg_bound=deg_bound, optLazy=False,over_deg_bound=over_deg_bound,prot=True)
+        strat=symmGB_F2_python(strat,deg_bound=deg_bound, optLazy=False,over_deg_bound=over_deg_bound,prot=True)
         print "npairs", strat.npairs()
         pos=pos+1
         if pos>=len(proof_path):
             print "OVER"
-            strat=buchberger_C_based2(strat,prot=True)
+            strat=symmGB_F2_python(strat,prot=True)
         if strat.containsOne():
             pass
         else:
@@ -463,7 +463,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
                 print "npairs", strat.npairs()
                 #strat.toStdOut()
                 #l=[p for p in strat]
-                #strat2=buchberger_C_based2(l,prot=True)
+                #strat2=symmGB_F2_python(l,prot=True)
                 #strat2.toStdOut()
                 print "minimized:"
                 for p in strat.minimalizeAndTailReduce():
@@ -503,7 +503,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         strat.addGeneratorDelayed(plug_p)
         print "npairs", strat.npairs()
         
-        strat=buchberger_C_based2(strat,deg_bound=deg_bound,optLazy=optLazy,over_deg_bound=over_deg_bound,prot=True)
+        strat=symmGB_F2_python(strat,deg_bound=deg_bound,optLazy=optLazy,over_deg_bound=over_deg_bound,prot=True)
         
         #pos=pos+1
         if not strat.containsOne():
@@ -518,7 +518,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
             step(strat, trace,  Polynomial(Monomial(Variable(index))),1)
         else:
             print "FINAL!!!", index
-            strat=slimgb(strat, prot=True)
+            strat=symmGB_F2_python(strat, prot=True)
             if not strat.containsOne():
                 print "TRACE", trace
                 print "SOLUTION"
@@ -574,7 +574,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
       #      print p
       #      strat.addAsYouWish(p)
     if initial_bb:
-      strat=buchberger_C_based2(strat,deg_bound=max(deg_bound,first_deg_bound), optLazy=optLazy,over_deg_bound=0,prot=True)
+      strat=symmGB_F2_python(strat,deg_bound=max(deg_bound,first_deg_bound), optLazy=optLazy,over_deg_bound=0,prot=True)
     strat.optLazy=optLazy
     print "INITIALIZED"
     branch(strat,[])
@@ -595,12 +595,12 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
  
         print "npairs", strat.npairs()
         print "pos:", pos
-        strat=buchberger_C_based2(strat,deg_bound=deg_bound, over_deg_bound=over_deg_bound,prot=True)
+        strat=symmGB_F2_python(strat,deg_bound=deg_bound, over_deg_bound=over_deg_bound,prot=True)
         print "npairs", strat.npairs()
         pos=pos+1
         if pos>=len(proof_path):
             print "OVER"
-            strat=buchberger_C_based2(strat)
+            strat=symmGB_F2_python(strat)
         if strat.containsOne():
             pass
         else:
@@ -608,7 +608,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
                 print "npairs", strat.npairs()
                 strat.toStdOut()
                 l=[p for p in strat]
-                strat2=buchberger_C_based2(l)
+                strat2=symmGB_F2_python(l)
                 strat2.toStdOut()
                 #bug: may contain Delayed polynomials
                 print "!!!!!!! SOLUTION",trace
@@ -629,7 +629,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
     for g in G[1:]:
         strat.addGeneratorDelayed(g)
     branch(strat,[], proof_path, 0)
-buchberger_C_based2=slimgb
+
 def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=30, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True):
     #print implications
     if use_noro:

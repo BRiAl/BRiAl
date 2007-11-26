@@ -291,7 +291,7 @@ def groebner_basis(I, faugere=False,  coding=False,
     nf.matrix_prefix=matrix_prefix
     
     if implementation=="Python":
-        implementation=buchberger_C_based2
+        implementation=symmGB_F2_python
     else:
         implementation=symmGB_F2_C
     

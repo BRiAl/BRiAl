@@ -1,5 +1,5 @@
 from polybori.PyPolyBoRi import Polynomial
-from nf import slimgb
+from nf import symmGB_F2_python
 def dense_system(I):
     I=(Polynomial(p) for p in I)
     I=(p for p in I if not p.isZero())
@@ -24,5 +24,5 @@ def gauss_on_linear(I):
             non_linear.append(p)
     if len(linear)==0:
         return non_linear
-    linear=list(slimgb(linear).minimalizeAndTailReduce())
+    linear=list(symmGB_F2_python(linear).minimalizeAndTailReduce())
     return linear+non_linear

@@ -80,7 +80,7 @@ def preprocess(I, prot=False):
         else:
             subs[m]=[p]
     
-    res=list(slimgb(linear,prot=prot).minimalizeAndTailReduce())
+    res=list(symmGB_F2_python(linear,prot=prot).minimalizeAndTailReduce())
     for m in subs:
     
         sub_system=subs[m]
@@ -117,7 +117,7 @@ def var_list(n,r,c,e):
     return (block_start,block_list)
 def sbox_generator4(code):
     change_ordering(code)
-    from nf import slimgb
+    from nf import symmGB_F2_python
     a3=Variable(0)
     a2=Variable(1)
     a1=Variable(2)
@@ -130,7 +130,7 @@ def sbox_generator4(code):
       a1+b3*b1*b0+b3*b1+b2*b1+b2*b0+b1*b0+b3,
       a2+b3*b2*b0+b3*b0+b2*b0+b1*b0+b3+b2,
       a3+b3*b2*b1+b3*b2+b3*b1+b3*b0+b3+b2+b1]
-    equations=slimgb(equations)
+    equations=symmGB_F2_python(equations)
     equations=list(equations.minimalizeAndTailReduce())
     change_ordering(OrderCode.lp)
     def sbox(a3,a2,a1,a0,b3,b2,b1,b0):
