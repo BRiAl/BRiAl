@@ -83,6 +83,10 @@ opts.Add('INSTALLDIR', 'end user installation directory',
          '$PREFIX/share/polybori')
 opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
 
+opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off', True))
+opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
+opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
+                    False))
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
@@ -96,6 +100,7 @@ if HAVE_DOXYGEN:
     tools += ["doxygen"]
 
 env=Environment(options=opts,tools = tools, toolpath = '.')
+
 #print env.Dump()
 cache_opts_file=open(PBPath('include', 'cacheopts.h'), "w")
 for m in pbori_cache_macros:
@@ -198,7 +203,10 @@ if HAVE_PYTHON_EXTENSION:
         HAVE_PYTHON_EXTENSION = False
         print 'Warning Boost/python must be installed for python support'
 
-have_l2h = env.Detect('latex2html')
+have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
+have_pydoc = env['HAVE_PYDOC']
+
+extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
 
 env = conf.Finish()
 
@@ -433,10 +441,10 @@ if HAVE_PYTHON_EXTENSION:
 
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
-        
-    pydocu = env.PYTHONDOC(target = [DocPath('python/polybori.html'),
-                                     DocPath('python/polybori.dynamic.html')],
-                           source = documentable_python_modules) 
+    if have_pydoc:
+        pydocu = env.PYTHONDOC(target=[DocPath('python/polybori.html'),
+                                       DocPath('python/polybori.dynamic.html')],
+                               source = documentable_python_modules) 
     #bld=Builder("cd")
 else:
     print "no python extension"
@@ -562,16 +570,14 @@ cp_recbld = Builder(action = cp_all)
 
 symlinkbld = Builder(action = build_symlink)
 
-
+# Note: target[0] needs to be the path resulting from latex2html
+# todo: More generic by moving actual result to given path?
 def l2h_emitter(target, source, env):
-
-    target = [env.File(str(source[0]).replace('.tex', sep + 'index.html'))]
+    target = [env.File(path.join(str(target[0]), 'index.html'))]
     env.Clean(target, target[0].dir)
     return (target, source)
 
 l2h = Builder(action = 'latex2html -html_version 4.0,unicode,utf-8 $SOURCE',
-              suffix = '.html',
-              src_suffix = '.tex',
               emitter = l2h_emitter)
 
 def pathsplit(p, rest=[]):
@@ -656,8 +662,9 @@ env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
 if have_l2h:
-    tutorial = env.L2H(DocPath('tutorial/tutorial.tex'))
-
+    tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
+                       DocPath('tutorial/tutorial.tex'))
+    
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
     env.Dir('Cudd/cudd/doc')])  
@@ -679,14 +686,10 @@ def FinalizeNonExecs(targets):
 def GeneratePyc(sources):
     results = []
     for file in sources:
-        (pypath, pymod) = str(file.dir).split(pyroot)
-        pypath = path.join(pypath, pyroot)
-        pymod = pymod.replace(sep, '.')
         (fbase, fext) = path.splitext(file.name)
         if (fext == '.py') :
-            pymod += '.' + fbase
-            cmdline = """$PBP -c "import sys; sys.path.append('"""
-            cmdline +=  pypath + """'); import """ + pymod + """ " """
+            cmdline = """$PBP -c "import py_compile; """
+            cmdline +=  """py_compile.compile('""" + str(file) + """')" """ 
             results += env.Command(str(file) +'c', file, cmdline)
 
         env.Depends(results, sources)
@@ -751,7 +754,7 @@ if 'install' in COMMAND_LINE_TARGETS:
         PyRootPath('polybori/dynamic/__init__.py') ] :
         pyfiles += FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
 
-    if HAVE_PYTHON_EXTENSION:
+    if HAVE_PYTHON_EXTENSION or extern_python_ext:
         FinalizeNonExecs(GeneratePyc(pyfiles))
         
     for instfile in [IPBPath('ipythonrc-polybori') ] :
