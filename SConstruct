@@ -420,7 +420,10 @@ if HAVE_PYTHON_EXTENSION:
     for fdir in Split("blocksworld qg gcp_large bejing"):
         add_cnf_dir(env, DataPath(fdir))
 
+else:
+    print "no python extension"
 
+if HAVE_PYTHON_EXTENSION or extern_python_ext:
     # Generating python documentation
     def pypb_emitter(target,source,env):
 
@@ -446,8 +449,7 @@ if HAVE_PYTHON_EXTENSION:
                                        DocPath('python/polybori.dynamic.html')],
                                source = documentable_python_modules) 
     #bld=Builder("cd")
-else:
-    print "no python extension"
+
     
 HAVE_SINGULAR_EXTENSION=True
 
