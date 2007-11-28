@@ -78,9 +78,14 @@ import os
 opts.Add('PBP', 'PolyBoRi python', "python")
 opts.Add('CXX', 'C++ Compiler', "g++")
 
-opts.Add('PREFIX', 'binary installation prefix directory', '/usr/local')
+opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
+opts.Add('EPREFIX', 'executables installation prefix directory', '$PREFIX/bin')
+
 opts.Add('INSTALLDIR', 'end user installation directory',
          '$PREFIX/share/polybori')
+opts.Add('DOCDIR', 'documentation installation directory', '$INSTALLDIR/doc')
+opts.Add('PYINSTALLPREFIX', 'python modules directory', '$INSTALLDIR/pyroot')
+
 opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
 
 opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off', True))
@@ -605,11 +610,19 @@ def relpath(p1, p2):
         return ''
     return os.path.join( *p )
 
+def substitute_install(target, source, env):
+    from string import Template
+    page = Template(open(str(source[0]), 'r').read()).safe_substitute(env)
+
+    open(str(target[0]), 'w').write(page)
+
+    return None
+
+substinstbld  = Builder(action = substitute_install)
 
 def docu_master(target, source, env):
     import os, re
 
-    mastersrc = source[0]
     basefiles = ['index.html', 'polybori.html']
     basesfound = []
     
@@ -633,10 +646,9 @@ def docu_master(target, source, env):
         relsrc = relpath(str(target[0].dir), src)
         links +=  '<P><A href="' + relsrc + '">' + ftitle +'</A>\n'
 
-    from string import Template
+
     env['PBDOCLINKS'] = links
-    page = Template(open(str(mastersrc), 'r').read()).safe_substitute(env)
-    open(str(target[0]), 'w').write(page)
+    substitute_install(target, source, env)
 
     return None
 
@@ -660,7 +672,8 @@ def docu_emitter(target, source, env):
     
 masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
-env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h})
+env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h,
+                     'SubstInstallAs': substinstbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
 if have_l2h:
@@ -696,7 +709,15 @@ def GeneratePyc(sources):
 
         env.Depends(results, sources)
     return results
-            
+
+
+def expand_repeated(val, env):
+    from string import Template
+    newval = ''
+    while (val != newval):
+        val = newval
+        newval = Template(val).safe_substitute(env)
+        
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
     # Setting umask for newly generated directories
@@ -707,7 +728,13 @@ if 'install' in COMMAND_LINE_TARGETS:
         pass
     
     InstPath = PathJoiner(env['INSTALLDIR'])
+    InstExecPath = PathJoiner(env['EPREFIX'])
+    InstDocPath = PathJoiner(env['DOCDIR'])
+    InstPyPath = PathJoiner(env['PYINSTALLPREFIX'])
 
+    for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath()]:
+        env.Alias('install', inst_path)
+        
     # Executables and shared libraries to be installed
     pyfiles = []
     for instfile in dynamic_modules :
@@ -718,15 +745,15 @@ if 'install' in COMMAND_LINE_TARGETS:
             
     # Copy c++ documentation
     if HAVE_DOXYGEN:
-        cxxdocinst = env.CopyAll(env.Dir(InstPath('doc/c++')),
+        cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
                                  env.Dir(DocPath('c++/html'))) 
         env.Depends(cxxdocinst, cxxdocu)
         env.Clean(cxxdocinst, cxxdocinst)
 
     # Copy python documentation
-    pydocuinst = env.CopyAll(env.Dir(InstPath('doc/python')),
+    pydocuinst = env.CopyAll(env.Dir(InstDocPath('python')),
                              env.Dir(DocPath('python')))
-    pydocuinst += env.CopyAll(env.Dir(InstPath('doc/python/dynamic')),
+    pydocuinst += env.CopyAll(env.Dir(InstDocPath('python/dynamic')),
                              env.Dir(DocPath('python/dynamic')))
 
     env.Depends(pydocuinst, pydocu)
@@ -735,18 +762,18 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 
     # Copy Cudd documentation
-    env.CopyAll(env.Dir(InstPath('doc/cudd')),
+    env.CopyAll(env.Dir(InstDocPath('cudd')),
                 env.Dir('Cudd/cudd/doc')) 
-    env.CopyAll(env.Dir(InstPath('doc/cudd/icons')),
+    env.CopyAll(env.Dir(InstDocPath('cudd/icons')),
                 env.Dir('Cudd/cudd/doc/icons'))
     
     # Copy Tutorial
     if have_l2h:
-        env.CopyAll(env.Dir(InstPath('doc/tutorial')),
+        env.CopyAll(env.Dir(InstDocPath('tutorial')),
                     env.Dir(DocPath('tutorial/tutorial')))
 
     # Generate html master
-    FinalizeNonExecs(env.DocuMaster(InstPath('doc/index.html'),
+    FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
                                     [DocPath('index.html.in')] + [ 
         env.Dir(InstPath('doc', srcs)) for srcs in Split("""tutorial python
         c++ cudd""") ] ))
@@ -754,18 +781,20 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Non-executables to be installed
     for instfile in glob(PyRootPath('polybori/*.py')) + [
         PyRootPath('polybori/dynamic/__init__.py') ] :
-        pyfiles += FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+        targetfile = InstPyPath(relpath(PyRootPath(), instfile))
+        pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         FinalizeNonExecs(GeneratePyc(pyfiles))
-        
+
+    env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
+    
     for instfile in [IPBPath('ipythonrc-polybori') ] :
-        FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+        FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))
       
-    env.Alias('install', InstPath())
 
     # Symlink from executable into bin directory
-    ipboribin = env.SymLink(path.join(env['PREFIX'], 'bin', 'ipbori'),
+    ipboribin = env.SymLink(InstExecPath('ipbori'),
                             InstPath(IPBPath('ipbori')))
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)

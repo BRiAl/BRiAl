@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.6  2007/11/28 15:02:30  dreyer
+# CHANGE: python moduls may be installed somewhere alse
+#
 # Revision 1.5  2007/11/28 06:18:19  bricken
 # + load_file
 #
@@ -40,6 +43,7 @@
 # PolyBoRi path (either set by wrapper or assumed to be the parent directory)
 # Note: change "execute pbdir = '..'", if you manually install this profile
 execute from os import environ as env
+execute from os import path
 execute pbdir = '..'
 execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 
@@ -58,7 +62,11 @@ include ipythonrc
 
 # Append the PolyBoRi application directory to current search path
 execute from sys import path
-execute path.append(pbdir + "/pyroot")
+
+# The following string may be changed by install. If not installed, use default.
+execute pyroot = '$PYINSTALLPREFIX'
+execute if pyroot[0] == '$': pyroot = path.join(pbdir, "pyroot")
+execute path.append(pyroot)
 
 # Get all basic stuff from PyPolyBoRi
 execute from polybori.PyPolyBoRi import *
