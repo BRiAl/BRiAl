@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.5  2007/11/28 06:18:19  bricken
+# + load_file
+#
 # Revision 1.4  2007/11/23 07:48:25  dreyer
 # CHANGE: copyright message
 #
@@ -68,6 +71,7 @@ execute from polybori.gbcore import groebner_basis
 # Import some high-level modelling functionality
 execute from polybori.blocks import declare_ring
 execute from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
+execute from polybori.gbrefs import load_file
 
 execute pb_copy =  "Copyright (c) 2007 by The PolyBoRi Team. "
 execute pb_copy +=  "All Rights Reserved.\n"
