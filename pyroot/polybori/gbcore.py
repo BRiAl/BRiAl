@@ -253,9 +253,10 @@ def llfirst_post(I,eliminated):
 def result_to_list_post(I,state):
     return list(I)
 
+@gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
-@gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
+
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
@@ -275,12 +276,16 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True):
+       linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True,uniqueIdealGenerator=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     
     zero=Polynomial(0)
     I=[Polynomial(p) for p in I if p!=zero]
-
+    if uniqueIdealGenerator:
+        prod=1
+        for p in I:
+            prod=p*prod
+        I=[prod]
     if gauss_on_linear_first:
         I=gauss_on_linear(I)
     import nf
