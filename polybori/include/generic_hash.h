@@ -25,6 +25,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/11/29 10:27:35  dreyer
+ * Fix: hashes obeye index 0 now, better hashtype used
+ *
  * Revision 1.5  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *
@@ -48,16 +51,15 @@
 #define generic_hash_h_
 
 /// @class pbori_hash
-/// @brief Experimenting with hashes, based on:
+/// @brief For information on hashes, see
 /// http://www.partow.net/programming/hashfunctions/
-/// Implementations are CPLed, so best in own module
-/// But most algorithms are public domain, so this may not be necessary
-/// @todo check license
+/// We did not use his implementation, because it is CPLed, but all algorithms
+/// used here are prior arts (published before Arash Partow). 
+
 
 class generic_hash_tags {
 public:
   struct simple_tag {};
-  struct rs_tag {};
   struct js_tag {};
   struct pjw_tag {};
   struct elf_tag {};
@@ -66,81 +68,60 @@ public:
   struct djb_tag {};
   struct dek_tag {};
   typedef dek_tag knuth_tag;
-  struct ap_tag {};
 
   typedef simple_tag default_tag;
 }; 
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType sum,
-                      generic_hash_tags::simple_tag) {
+                      generic_hash_tags::simple_tag, UnaryOp op) {
 
   HashType  vars = 0;
   sum = 0;
  
   while (start != finish){
     vars++;
-    sum += ((*start)+1) * ((*start)+1);
+    sum += ((op(*start))+1) * ((op(*start))+1);
     ++start;
   }
   return sum * vars;
 }
 
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::rs_tag) {
-
-  typedef HashType hash_type;
-  hash_type bval    = 378551;
-  hash_type aval    = 63689;
-  hash = 0;
-  
-  while (start != finish) {
-    hash = hash * aval + *start;
-    aval    = aval * bval;
-    ++start;
-  }
-  
-  return hash;
-}
-
-template <class Iterator, class HashType>
-HashType
-generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::js_tag) {
+                      generic_hash_tags::js_tag, UnaryOp op) {
 
   hash = 1315423911;
   
   while (start != finish) {
-    hash ^= ((hash << 5) + *start + (hash >> 2));
+    hash ^= ((hash << 5) + op(*start) + (hash >> 2));
     ++start;
   }
   
   return hash;
 }
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::pjw_tag) {
+                      generic_hash_tags::pjw_tag, UnaryOp op) {
 
-  unsigned int BitsInUnsignedInt = (unsigned int)(sizeof(unsigned int) * 8);
-  unsigned int ThreeQuarters     = (unsigned int)((BitsInUnsignedInt  * 3) / 4);
-  unsigned int OneEighth         = (unsigned int)(BitsInUnsignedInt / 8);
-  unsigned int HighBits          = 
-    (unsigned int)(0xFFFFFFFF) << (BitsInUnsignedInt - OneEighth);
+  const HashType nBits = (HashType)(sizeof(HashType) * 8);
+  const HashType nTimes3Div4 = (HashType)((nBits  * 3) / 4);
+  const HashType nDiv8 = (HashType)(nBits / 8);
+  const HashType BitMaskHigh = (HashType)(0xFFFFFFFF) << (nBits - nDiv8);
   
   hash = 0;
   HashType test = 0;
   
   while (start != finish) {
-    hash = (hash << OneEighth) + *start;
+    hash = (hash << nDiv8) + op(*start);
     
-    if((test = hash & HighBits)  != 0) {
-        hash = (( hash ^ (test >> ThreeQuarters)) & (~HighBits));
+    if((test = hash & BitMaskHigh)  != 0) {
+        hash = (( hash ^ (test >> nTimes3Div4)) & (~BitMaskHigh));
     }
     ++start;
   }
@@ -149,104 +130,109 @@ generic_hash_function(Iterator start, Iterator finish, HashType hash,
 }
 
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::elf_tag) {
+                      generic_hash_tags::elf_tag, UnaryOp op) {
 
   hash = 0;
-  HashType x = 0;
+  HashType tmp = 0;
 
    while (start != finish) {
-     hash = (hash << 4) + *start;
-      if((x = hash & 0xF0000000L) != 0) {
-        hash ^= (x >> 24);
-        hash &= ~x;
+     hash = (hash << 4) + op(*start);
+      if((tmp = hash & 0xF0000000L) != 0) {
+        hash ^= (tmp >> 24);
+        hash &= ~tmp;
       }
       ++start;
    }
   return hash;
 }
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::bkdr_tag) {
+                      generic_hash_tags::bkdr_tag, UnaryOp op) {
 
-  HashType seed = 131; // 31 131 1313 13131 131313 etc..
+  HashType magic_number = 131; 
   hash = 0;
   
   while (start != finish) {
-    hash = (hash * seed) + *start;
+    hash = (hash * magic_number) + op(*start);
     ++start;
   }
 
   return hash;
 }
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::sdbm_tag) {
+                      generic_hash_tags::sdbm_tag, UnaryOp op) {
 
   hash = 0;
   
   while (start != finish) {
-    hash = *start + (hash << 6) + (hash << 16) - hash;
+    hash = op(*start) + (hash << 6) + (hash << 16) - hash;
     ++start;
   }
 
   return hash;
 }
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::djb_tag) {
+                      generic_hash_tags::djb_tag, UnaryOp op) {
 
   hash = 5381;
   
   while (start != finish) {
-    hash = ((hash << 5) + hash) + *start;
+    hash = ((hash << 5) + hash) + op(*start);
     ++start;
   }
 
   return hash;
 }
 
-template <class Iterator, class HashType>
+template <class Iterator, class HashType, class UnaryOp>
 HashType
 generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::dek_tag) {
+                      generic_hash_tags::dek_tag, UnaryOp op) {
 
 
-  hash = static_cast<HashType>(std::distance(start, finish));;
+  hash = static_cast<HashType>(std::distance(start, finish));
   
   while (start != finish) {
-     hash = ((hash << 5) ^ (hash >> 27)) ^ *start;
+     hash = ((hash << 5) ^ (hash >> 27)) ^ op(*start);
     ++start;
   }
 
   return hash;
 }
 
-template <class Iterator, class HashType>
+
+class simple_identity {
+public:
+  template <class ValueType>
+  ValueType& operator()(ValueType& val) const { return val; }
+
+  template <class ValueType>
+  const ValueType& operator()(const ValueType& val) const { return val; }
+};
+
+class simple_increment {
+public:
+
+  template <class ValueType>
+  ValueType operator()(ValueType val) const { return ++val; }
+};
+
+template <class Iterator, class HashType, class HashTag>
 HashType
-generic_hash_function(Iterator start, Iterator finish, HashType hash,
-                      generic_hash_tags::ap_tag) {
+generic_hash_function(Iterator start, Iterator finish, HashType init,
+                      HashTag tag) {
 
-
-  hash = 0;
-  
-  bool isEven = true;
-  while (start != finish) {
-       hash ^= ( isEven ? (  (hash <<  7) ^ *start ^ (hash >> 3)) :
-                               (~((hash << 11) ^ *start ^ (hash >> 5))));
-
-       isEven = !isEven;
-    ++start;
-  }
-
-  return hash;
+  return generic_hash_function(start, finish, init, tag, simple_identity());
 }
 
 
@@ -263,8 +249,9 @@ public:
 
   hash_type operator()(iterator_type start, iterator_type finish) const {
     hash_type hash = 0;
-    hash = generic_hash_function(start, finish, hash, alg_tag() );
-    return (hash & mask);
+    hash = generic_hash_function(start, finish, hash, alg_tag(), 
+                                 simple_increment() );
+    return (--hash & mask);
   }
 };
 

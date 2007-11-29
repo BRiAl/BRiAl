@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/11/29 10:27:35  dreyer
+ * Fix: hashes obeye index 0 now, better hashtype used
+ *
  * Revision 1.3  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -42,7 +45,7 @@ BEGIN_NAMESPACE_PBORI
 #include "generic_hash.h"
 
 #ifndef PBORI_HASH_TAG
-#define PBORI_HASH_TAG elf_tag
+#define PBORI_HASH_TAG js_tag
 #endif
 
 
