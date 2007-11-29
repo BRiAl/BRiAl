@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/11/29 20:16:22  dreyer
+ * Fix: stableHash() consistent for monomials and polynomials/sets
+ *
  * Revision 1.5  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -48,6 +51,10 @@ template<class Iterator>
 std::size_t
 stable_hash_range(Iterator first, Iterator last) {
   std::size_t seed(0);
+  if (first != last) {
+    seed = (*first).stableHash();
+    ++first;
+  }
   for(; first != last; ++first) {
     boost::hash_combine(seed, (*first).stableHash());
   }
