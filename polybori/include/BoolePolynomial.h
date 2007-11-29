@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.80  2007/11/29 16:28:31  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.79  2007/11/15 13:08:00  dreyer
  * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
  *
@@ -531,8 +534,14 @@ public:
   /// Get all divisors of the leading term
   set_type lmDivisors() const { return leadFirst().firstDivisors(); };
   
+  /// Get unique hash value (may change from run to run)
+  hash_type hash() const { return m_dd.hash(); }
+
+  /// Get hash value, which is reproducible
+  hash_type stableHash() const;
+
   /// Hash value of the leading term
-  hash_type lmHash() const;
+  hash_type lmStableHash() const;
   
   /// Maximal degree of the polynomial
   size_type deg() const;

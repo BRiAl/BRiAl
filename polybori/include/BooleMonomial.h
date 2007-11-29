@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/11/29 16:28:31  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.29  2007/11/15 13:08:00  dreyer
  * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
  *
@@ -241,9 +244,12 @@ class BooleMonomial {
   set_type multiples(const self&) const; 
 
   /// Hash value of the monomial
-  hash_type hash() const { return m_poly.lmHash(); }
-//   hash_type hash() const { 
-//     return reinterpret_cast<hash_type>(m_poly.navigation().operator->()); }
+  hash_type stableHash() const {  
+    return boost::hash_range(begin(), end()); 
+  }
+
+  /// Get unique hash value (valid only per runtime)
+  hash_type hash() const {  return m_poly.hash(); }
 
   /// Substitute variable with index idx by its complement and assign
   self& changeAssign(idx_type);

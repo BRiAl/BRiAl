@@ -30,9 +30,7 @@ static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
 static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
 }
-static int poly_hash(const BoolePolynomial& p){
-  return p.lmHash();
-}
+
 static void plot(const BoolePolynomial& p, const char* c){
   p.prettyPrint(c);
 }
@@ -40,6 +38,7 @@ static void plot(const BoolePolynomial& p, const char* c){
 static BooleSet poly_diagram_as_set(const Polynomial& p){
     return p.diagram();
 }
+
 void export_poly(){
 
   BoolePolynomial::set_type  (BoolePolynomial::*set)(void) const =
@@ -47,7 +46,6 @@ void export_poly(){
 
 //  const BoolePolynomial::set_type&  (BoolePolynomial::*set)(void) const =
 //    &BoolePolynomial::set;
-
 
   boost::python::class_<BoolePolynomial>("Polynomial")
   .def(init<>())
@@ -58,7 +56,8 @@ void export_poly(){
   .def(init<const BooleMonomial &>())
   .def(boost::python::init<bool>())
   .def(boost::python::init<int>())
-  .def("__hash__", poly_hash)
+  .def("__hash__", &BoolePolynomial::hash)
+  .def("stableHash", &BoolePolynomial::stableHash)
   .def("__len__", &BoolePolynomial::length)
   .def("__iter__", range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
   .def("__pow__",poly_power)

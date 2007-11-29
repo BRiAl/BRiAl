@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.12  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -120,11 +123,10 @@ BooleExponent::~BooleExponent() {
 
 // Hashing
 BooleExponent::hash_type
-BooleExponent::hash() const {
+BooleExponent::stableHash() const {
 
   PBORI_TRACE_FUNC( "BooleExponent::hash() const" );
-
-  return generic_hash<self, hash_type, pbori_hash_tag>()(*this);
+  return boost::hash_range(begin(), end());
 }
 
 

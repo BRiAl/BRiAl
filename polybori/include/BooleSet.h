@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.33  2007/11/19 14:13:26  dreyer
  * Fix: consistend naming of cartesianProduct
  *
@@ -353,6 +356,12 @@ public:
   PBORI_DDFUNCS(weakDivideAssign)
   PBORI_DDFUNCS(divideFirstAssign)
   //@}
+
+  /// Get unique hash value (may change from run to run)
+  using base::hash;
+
+  /// Get hash value, which is reproducible
+  hash_type stableHash() const;
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;

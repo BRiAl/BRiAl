@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2007/11/29 16:28:33  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.38  2007/11/19 14:13:26  dreyer
  * Fix: consistend naming of cartesianProduct
  *
@@ -482,5 +485,15 @@ BooleSet::print(ostream_type& os) const {
   }
   return os;
 }
+
+
+
+BooleSet::hash_type 
+BooleSet::stableHash() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::stableHash() const" );
+  return stable_hash_range(expBegin(), expEnd());
+}
+
 
 END_NAMESPACE_PBORI

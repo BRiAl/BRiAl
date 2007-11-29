@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.36  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *
@@ -130,6 +133,8 @@
  * @endverbatim
 **/
 //*****************************************************************************
+
+# include <cstddef>
 
 // load cudd's c++ interface
 # include <cuddObj.hh>
@@ -404,7 +409,7 @@ struct CAuxTypes {
   typedef int idx_type;
 
   /// Type for hashing
-  typedef int hash_type;
+  typedef std::size_t hash_type;
 
    /// Type used to store error codes
   typedef unsigned int errornum_type;

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.103  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.102  2007/11/15 13:08:01  dreyer
  * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
  *
@@ -790,22 +793,20 @@ BoolePolynomial::firstDivisors() const {
 
 // hash value of lm
 BoolePolynomial::hash_type 
-BoolePolynomial::lmHash() const {
+BoolePolynomial::lmStableHash() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lmHash() const" );
-
-  if (m_dd.emptiness())
-    return 0;
-  else {
-    self ld1st(leadFirst());
-    return generic_sequence_hash<first_iterator, hash_type, 
-      pbori_hash_tag>()( ld1st.firstBegin(), ld1st.firstEnd() );
-  }
-    
+  PBORI_TRACE_FUNC( "BoolePolynomial::lmStableHash() const" );
+  self ld1st(leadFirst());
+  return boost::hash_range(ld1st.firstBegin(), ld1st.firstEnd() );
 }
 
 
+BoolePolynomial::hash_type 
+BoolePolynomial::stableHash() const {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::stableHash() const" );
+  return stable_hash_range(expBegin(), expEnd());
+}
 
 
 // Maximal degree of the polynomial

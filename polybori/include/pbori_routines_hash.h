@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.4  2007/11/29 10:27:35  dreyer
  * Fix: hashes obeye index 0 now, better hashtype used
  *
@@ -34,21 +37,35 @@
 
 // include basic definitions
 #include "pbori_defs.h"
+#include <boost/functional/hash.hpp>
 
 
 BEGIN_NAMESPACE_PBORI
+
+
+
+template<class Iterator>
+std::size_t
+stable_hash_range(Iterator first, Iterator last) {
+  std::size_t seed(0);
+  for(; first != last; ++first) {
+    boost::hash_combine(seed, (*first).stableHash());
+  }
+
+  return seed;
+}
 
 // The following may be used without polybori. Hence, we have to load it in the
 // namespace here
 
 // Get generic hash functions
-#include "generic_hash.h"
+// #include "generic_hash.h"
 
-#ifndef PBORI_HASH_TAG
-#define PBORI_HASH_TAG js_tag
-#endif
+// #ifndef PBORI_HASH_TAG
+// #define PBORI_HASH_TAG js_tag
+// #endif
 
 
-typedef generic_hash_tags::PBORI_HASH_TAG pbori_hash_tag;
+// typedef generic_hash_tags::PBORI_HASH_TAG pbori_hash_tag;
 
 END_NAMESPACE_PBORI

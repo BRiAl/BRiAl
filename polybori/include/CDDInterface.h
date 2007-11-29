@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.56  2007/11/29 16:28:32  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.55  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -194,6 +197,9 @@
 
 #ifndef CDDInterface_h_
 #define CDDInterface_h_
+
+#include <boost/functional/hash.hpp>
+
 #include "extrafwd.h"
 // load basic definitions
 #include "pbori_defs.h"
@@ -334,6 +340,9 @@ class CDDInterface:
   /// Type for comparisons
   typedef CTypes::bool_type bool_type;
 
+  /// Type for hashed
+  typedef CTypes::hash_type hash_type;
+
   /// Iterator type for retrieving first term from Cudd's ZDDs
   typedef CCuddFirstIter first_iterator;
 
@@ -387,6 +396,12 @@ class CDDInterface:
 
   /// Destructor
   ~CDDInterface() {}
+
+  /// Get unique hash value (valid only per runtime)
+  hash_type hash() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(m_interfaced
+                                                                   .getNode()));
+  }
 
   /// Set union
   self unite(const self& rhs) const {

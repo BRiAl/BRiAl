@@ -30,9 +30,6 @@ static BooleMonomial mon_power(const BooleMonomial& p, int n){
 //static void print_monomial(const BooleMonomial & p){
 //  p.print(cout);
 //}
-//static int poly_hash(const BooleMonomial& p){
-//  return p.lmHash();
-//}
 //static void plot(const BooleMonomial& p, const char* c){
 //  p.prettyPrint(c);
 //}
@@ -42,9 +39,7 @@ static boost::python::tuple mon2tuple(const BooleMonomial& m ){
 void export_monomial(){
   BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
-   
-    
-  
+
       
   boost::python::class_<BooleMonomial>("Monomial")
   .def(init<>())
@@ -54,6 +49,7 @@ void export_monomial(){
   .def("__iter__", range(&BooleMonomial::begin, &BooleMonomial::end))
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash)
+  .def("stableHash", &BooleMonomial::stableHash)
   //.def("__len__", &BooleMonomial::length)
   //.def(self+=self)
   .def(self*=self)

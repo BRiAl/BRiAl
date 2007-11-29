@@ -51,6 +51,8 @@ void export_bset(){
   .def("__str__", streamable_as_str<BooleSet>)
   .def("__len__", &BooleSet::length)
   .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
+  .def("__hash__", &BooleSet::hash)
+  .def("stableHash", &BooleSet::stableHash)
   .def("cartesianProduct", &BooleSet::cartesianProduct)
   .def("diff", &BooleSet::diff)
   .def("__mod__", mod_mon_set)

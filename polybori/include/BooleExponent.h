@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/11/29 16:28:31  dreyer
+ * ADD: fast hash(), where applicable; + stableHashes() anywhere
+ *
  * Revision 1.13  2007/11/06 15:03:32  dreyer
  * CHANGE: More generic copyright
  *
@@ -179,8 +182,11 @@ class BooleExponent {
   /// multiples of the monomial wrt. given monomial
   set_type multiples(const self&) const; 
 
-  /// Hash value of the monomial
-  hash_type hash() const;
+  /// Hash value for the exponent
+  hash_type stableHash() const;
+
+  /// For the exponent we only have one type of hashes
+  hash_type hash() const { return stableHash(); }
 
   /// Substitute variable with index idx by its complement and assign
   self& changeAssign(idx_type);
