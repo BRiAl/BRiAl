@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.7  2007/11/29 16:23:52  dreyer
+# ADD: preparation for installation of pythond modules in other directory
+#
 # Revision 1.6  2007/11/28 15:02:30  dreyer
 # CHANGE: python moduls may be installed somewhere alse
 #
@@ -43,7 +46,7 @@
 # PolyBoRi path (either set by wrapper or assumed to be the parent directory)
 # Note: change "execute pbdir = '..'", if you manually install this profile
 execute from os import environ as env
-execute from os import path
+execute from os import path as os_path
 execute pbdir = '..'
 execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 
@@ -65,7 +68,7 @@ execute from sys import path
 
 # The following string may be changed by install. If not installed, use default.
 execute pyroot = '$PYINSTALLPREFIX'
-execute if pyroot[0] == '$': pyroot = path.join(pbdir, "pyroot")
+execute if pyroot[0] == '$': pyroot = os_path.join(pbdir, "pyroot")
 execute path.append(pyroot)
 
 # Get all basic stuff from PyPolyBoRi
