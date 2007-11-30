@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2007/11/30 12:51:06  dreyer
+ * Fix: protected corrected
+ *
  * Revision 1.38  2007/11/06 15:03:32  dreyer
  * CHANGE: More generic copyright
  *
@@ -353,7 +356,7 @@ class BoolePolyRing:
   ///  Clears the function cache of the current ring
   static void clearRingCache();
 
-protected: public:
+protected: 
   /// Pointer to current global manager setting
   static manager_ptr current_mgr;
 
@@ -365,6 +368,7 @@ protected: public:
   static std::list<manager_ptr> old_rings;
 #endif 
 
+public:
   /// @name interface for block orderings
   //@{
   static block_iterator blockRingBegin();
