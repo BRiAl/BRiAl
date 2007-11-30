@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2007/11/30 12:55:58  dreyer
+ * ADD: count_index
+ *
  * Revision 1.27  2007/11/06 15:03:42  dreyer
  * CHANGE: More generic copyright
  *
@@ -398,6 +401,14 @@ main(){
   std::cout << (apply_mapping(poly, map) == (v*w+v+w) )<<std::endl;
   std::cout << mapping(poly, x*y, v*w) <<std::endl;
   std::cout << (apply_mapping(poly, map) == mapping(poly, x*y, v*w))<<std::endl;
+
+  double counter(0);
+  std::cout << "count idx "<<poly <<" "<<x.firstIndex() <<" occurs "
+            <<count_index(counter, x.firstIndex(),
+                                         poly.navigation()) 
+            <<std::endl;
+
+
 
  }
   catch (PBoRiError& err) {

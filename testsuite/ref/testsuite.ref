@@ -100,9 +100,9 @@ Finished.
 ----------------------
 Executing testsuite/testring
 ----------------------
-sizeof(DdNode2)16
-sizeof(DdNode)16
-sizeof(void*)4
+sizeof(DdNode2)32
+sizeof(DdNode)32
+sizeof(void*)8
 Exception caught sucessfully: No polynomial ring structure defined.
 Variable 0:
 : 1 nodes 0.5 minterms
@@ -121,10 +121,10 @@ Variable 3:
 0001 1
 
 **** CUDD modifiable parameters ****
-Hard limit for cache size: 1398101
+Hard limit for cache size: 699050
 Cache hit threshold for resizing: 30%
 Garbage collection enabled: yes
-Limit for fast unique table growth: 838860
+Limit for fast unique table growth: 419430
 Maximum number of variables sifted per reordering: 1000
 Maximum number of variable swaps per reordering: 2000000
 Maximum growth while sifting a variable: 1.2
@@ -143,7 +143,7 @@ GA population size: 0
 Number of crossovers for GA: 0
 Next reordering threshold: 4004
 **** CUDD non-modifiable parameters ****
-Memory in use: 4737732
+Memory in use: 8949888
 Peak number of nodes: 1022
 Peak number of live nodes: 4
 Number of BDD variables: 0
@@ -201,9 +201,7 @@ poly x(2)*x(3)*x(4) + x(0)*x(1) + x(2) + x(4) + 1
 lead() x(2)*x(3)*x(4)
 leadExp() (2, 3, 4)
 lmDeg() 3
-lmDivisors() : 3 nodes 8 minterms
-00--- 1
-
+lmDivisors() {{x(2),x(3),x(4)}, {x(2),x(3)}, {x(2),x(4)}, {x(2)}, {x(3),x(4)}, {x(3)}, {x(4)}, {}}
 x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 2, 3, 1, 1, 0, 
 max 3
@@ -235,9 +233,7 @@ leadExp() (1, 3, 4)
 boundedLeadExp(deg()) (1, 3, 4)
 deg() 3
 lmDeg() 3
-lmDivisors() : 3 nodes 8 minterms
-0-0-- 1
-
+lmDivisors() {{x(1),x(3),x(4)}, {x(1),x(3)}, {x(1),x(4)}, {x(1)}, {x(3),x(4)}, {x(3)}, {x(4)}, {}}
 ordered iteration... 
 x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 Comparision x(1)*x(4)< x(0)*x(2)
@@ -271,9 +267,7 @@ leadExp() (2, 3, 4)
 boundedLeadExp(deg()) (2, 3, 4)
 deg() 3
 lmDeg() 3
-lmDivisors() : 3 nodes 8 minterms
-00--- 1
-
+lmDivisors() {{x(2),x(3),x(4)}, {x(2),x(3)}, {x(2),x(4)}, {x(2)}, {x(3),x(4)}, {x(3)}, {x(4)}, {}}
 ordered iteration... 
 x(2)*x(3)*x(4), x(1)*x(3)*x(4), x(0)*x(1), x(4), x(2), 1, 
 Comparision x(1)*x(4)< x(0)*x(2)
@@ -305,9 +299,7 @@ leadExp() (0, 1)
 boundedLeadExp(deg()) (0, 1)
 deg() 3
 lmDeg() 2
-lmDivisors() : 2 nodes 4 minterms
---000 1
-ordered iteration... 
+lmDivisors() {{x(0),x(1)}, {x(0)}, {x(1)}, {}}ordered iteration... 
 x(0)*x(1), x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(2), x(4), 1, 
 
 CHANGE ordering!
@@ -316,9 +308,7 @@ leadExp() (1, 3, 4)
 boundedLeadExp(deg()) (1, 3, 4)
 deg() 3
 lmDeg() 3
-lmDivisors() : 3 nodes 8 minterms
-0-0-- 1
-ordered iteration... 
+lmDivisors() {{x(1),x(3),x(4)}, {x(1),x(3)}, {x(1),x(4)}, {x(1)}, {x(3),x(4)}, {x(3)}, {x(4)}, {}}ordered iteration... 
 x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(0)*x(1), x(2), x(4), 1, 
 ordered exponent iteration... 
 (1, 3, 4), (2, 3, 4), (0, 1), (2), (4), (), 
@@ -345,9 +335,7 @@ leadExp() (2, 3, 4)
 boundedLeadExp(deg()) (2, 3, 4)
 deg() 3
 lmDeg() 3
-lmDivisors() : 3 nodes 8 minterms
-00--- 1
-ordered iteration... 
+lmDivisors() {{x(2),x(3),x(4)}, {x(2),x(3)}, {x(2),x(4)}, {x(2)}, {x(3),x(4)}, {x(3)}, {x(4)}, {}}ordered iteration... 
 x(2)*x(3)*x(4), x(1)*x(3)*x(4), x(0)*x(1), x(4), x(2), 1, 
 
 CHANGE ordering!
@@ -356,9 +344,7 @@ leadExp() (0, 1)
 boundedLeadExp(deg()) (0, 1)
 deg() 3
 lmDeg() 2
-lmDivisors() : 2 nodes 4 minterms
---000 1
-ordered iteration... 
+lmDivisors() {{x(0),x(1)}, {x(0)}, {x(1)}, {}}ordered iteration... 
 x(0)*x(1), x(1)*x(3)*x(4), x(2)*x(3)*x(4), x(2), x(4), 1, 
 ordered exponent iteration... 
 (0, 1), (1, 3, 4), (2, 3, 4), (2), (4), (), 
@@ -455,9 +441,7 @@ Executing testsuite/blocknavi
 Experimenting with block orderings...
 Polynom: x(1)*x(2)*x(6)*x(9) + x(1)*x(2)*x(7)*x(9) + x(1)*x(2)*x(8)*x(9) + x(1)*x(3)*x(6)*x(9) + x(1)*x(3)*x(7)*x(9) + x(1)*x(3)*x(8)*x(9) + x(1)*x(2)*x(7) + x(1)*x(3)*x(7) + x(1)*x(5) + x(1) + x(2) + 1
 Block degree wrt. 2: 1
-: 4 nodes 1 minterms
-0110001001 1
-x(1)*x(2)*x(6) < x(1)*x(2)*x(7)? 1
+{{x(1),x(2),x(6),x(9)}}x(1)*x(2)*x(6) < x(1)*x(2)*x(7)? 1
 block iter...
 ordered iteration 
 x(1)*x(2)*x(6)*x(9), 
@@ -1600,7 +1584,7 @@ Testing !=
 Testing== 
 0
 last begin: 6
-Upper blocks endpints: 4, 6, 65535, 
+Upper blocks endpints: 4, 6, 2147483647, 
 lieInSameBlock(0, 3): 1
 lieInSameBlock(0, 4): 0
 lieInSameBlock(4,5): 1
@@ -1614,7 +1598,7 @@ Testing!=
 1
 Testing== 
 0
-last begin: 65535
+last begin: 2147483647
 base order code: 0
 Finished.
 ----------------------
@@ -1659,49 +1643,26 @@ Executing testsuite/booleset
 Testing Boolean polynomials
 
 BooleSet divisorsOf test
-: 2 nodes 4 minterms
---000 1
-
-: 2 nodes 4 minterms
---000 1
-
+{{x(0),x(1)}, {x(0)}, {x(1)}, {}}
+{{x(0),x(1)}, {x(0)}, {x(1)}, {}}
 1
 next
 1
-: 0 nodes 1 minterms
-00000 1
-
-: 0 nodes 1 minterms
-00000 1
-
+{{}}
+{{}}
 0
 next
 1
-: 2 nodes 4 minterms
--000- 1
-
-: 2 nodes 4 minterms
--000- 1
-
+{{x(0),x(4)}, {x(0)}, {x(4)}, {}}
+{{x(0),x(4)}, {x(0)}, {x(4)}, {}}
 testing minimal elements
 testing next minimal elements
-bset : 6 nodes 4 minterms
-11100 1
-0101- 1
-01000 1
-
-: 1 nodes 1 minterms
-01000 1
-
-bset : 7 nodes 2 minterms
-11111 1
-01010 1
+bset {{x(0),x(1),x(2)}, {x(1),x(3),x(4)}, {x(1),x(3)}, {x(1)}}
+{{x(1)}}
+bset {{x(0),x(1),x(2),x(3),x(4)}, {x(1),x(3)}}
 
 
-
-: 2 nodes 1 minterms
-01010 1
-
+{{x(1),x(3)}}
 Test exponents of x(0)*x(1) + x(1)*x(2)*x(3) + x(1)*x(2)*x(4) + x(2)*x(4)
 (0, 1), (1, 2, 3), (1, 2, 4), (2, 4), 
 divide x(1)*x(3) == 
@@ -1714,55 +1675,19 @@ multiply x(1)*x(2)*x(3)*x(4) ==
 (1, 2, 3, 4) ? 
 (1, 2, 3, 4) ? 
 multiples x(2)*x(3) wrt. x(0)*x(4)
-: 4 nodes 4 minterms
--011- 1
-
-: 4 nodes 4 minterms
--011- 1
-
+{{x(0),x(2),x(3),x(4)}, {x(0),x(2),x(3)}, {x(2),x(3),x(4)}, {x(2),x(3)}}
+{{x(0),x(2),x(3),x(4)}, {x(0),x(2),x(3)}, {x(2),x(3),x(4)}, {x(2),x(3)}}
 divisors x(2)*x(3)
-: 2 nodes 4 minterms
-00--0 1
-
-multiplesOf : 5 nodes 3 minterms
-11000 1
-01100 1
-00001 1
-|x(0)*x(3)*x(4)
-: 4 nodes 2 minterms
-11000 1
-01100 1
-
-multiplesOf : 5 nodes 3 minterms
-11000 1
-01100 1
-00001 1
-|x(1)
-: 4 nodes 2 minterms
-11000 1
-01100 1
-
-multiplesOf : 7 nodes 4 minterms
-11-00 1
-01110 1
-00001 1
-|x(1)*x(2)
-: 6 nodes 2 minterms
-11100 1
-01110 1
-
-multiplesOf : 7 nodes 4 minterms
-11-00 1
-01110 1
-00001 1
-|0
-: is the empty ZDD
-
-multiplesOf : 7 nodes 4 minterms
-11-00 1
-01110 1
-00001 1
-|1
+{{x(2),x(3)}, {x(2)}, {x(3)}, {}}
+multiplesOf {{x(0),x(1)}, {x(1),x(2)}, {x(4)}}|x(0)*x(3)*x(4)
+{{x(0),x(1)}, {x(1),x(2)}}
+multiplesOf {{x(0),x(1)}, {x(1),x(2)}, {x(4)}}|x(1)
+{{x(0),x(1)}, {x(1),x(2)}}
+multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|x(1)*x(2)
+{{x(0),x(1),x(2)}, {x(1),x(2),x(3)}}
+multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|0
+{}
+multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|1
 
 ----------------------
 Executing testsuite/strategy_initialization
@@ -1813,9 +1738,7 @@ One polynomial == 1? 1
 Constant 0 == One polynomial? 0
 Constant 1 == One polynomial? 1
 Divisors of the leading monomial of  (x*z + y): 
-: 2 nodes 4 minterms
--0-00 1
-
+{{x(0),x(2)}, {x(0)}, {x(2)}, {}}
 (x*z + y).reducibleBy(z): 1
 (x*z*y + y).reducibleBy(y*z): 1
 (x*z*y + y).reducibleBy(w): 0
@@ -1890,6 +1813,7 @@ x(3)*x(4) + x(3) + x(4)
 1
 x(3)*x(4) + x(3) + x(4)
 1
+count idx x(0)*x(1) + x(0) + x(1) 0 occurs 2
 
 Finished.
 ----------------------
@@ -1907,6 +1831,7 @@ Executing testsuite/stringlit
 "x"
 "("
 ")"
+"}, {"
 ----------------------
 Executing testsuite/leadterm
 ----------------------
@@ -1998,9 +1923,7 @@ Monomial x*y: x(0)*x(1)
 
 Monomial x*y*z: x(0)*x(1)*x(2) degree: 3
 (Sum of) Divisors: 
-: 3 nodes 8 minterms
----00 1
-
+{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
 
 Indices:
 0
@@ -2033,9 +1956,7 @@ GCD( x(1)*x(3)*x(4), x(0)*x(1)*x(2)) :x(1)
 GCD( x(1)*x(3)*x(4), x(0)*x(1)*x(2)*x(4)) :x(1)*x(4)
 
 Multiples of x(0)*x(1)wrt. x(1)*x(2)*x(4): 
-: 4 nodes 4 minterms
-11-0- 1
-monom1
+{{x(0),x(1),x(2),x(4)}, {x(0),x(1),x(2)}, {x(0),x(1),x(4)}, {x(0),x(1)}}monom1
 x(0)*x(1)
 print
 0

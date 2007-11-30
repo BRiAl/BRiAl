@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/11/30 12:55:57  dreyer
+ * ADD: count_index
+ *
  * Revision 1.15  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *
@@ -339,6 +342,33 @@ PolyType
 mapping(PolyType poly, MonomType fromVars, MonomType toVars) {
 
   return apply_mapping(poly, generate_mapping(fromVars, toVars, PolyType()) );
+}
+
+
+template <class SetType>
+void combine_sizes(const SetType& bset, double& init) {
+  init += bset.sizeDouble();
+}
+
+template <class SetType>
+void combine_sizes(const SetType& bset, 
+                   typename SetType::size_type& init) {
+  init += bset.size();
+}
+
+
+template <class SizeType, class IdxType, class NaviType>
+SizeType&
+count_index(SizeType& size, IdxType idx, NaviType navi) {
+
+  if (*navi == idx)
+    combine_sizes(BooleSet(navi.incrementThen()), size);
+
+  if (*navi < idx) {
+    count_index(size, idx, navi.thenBranch());
+    count_index(size, idx, navi.elseBranch());
+  }
+  return size;
 }
 
 END_NAMESPACE_PBORI
