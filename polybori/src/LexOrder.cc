@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/11/30 10:20:51  dreyer
+ * Fix: #1841097 lexlead()
+ *
  * Revision 1.16  2007/11/06 15:03:39  dreyer
  * CHANGE: More generic copyright
  *
@@ -159,7 +162,7 @@ LexOrder::lead(const poly_type& poly) const {
   else {
 
     // store indices in list
-    CIdxPath<idx_type> indices(poly.lmDeg());
+    CIdxPath<idx_type> indices(poly.lexLmDeg());
 
     // iterator, which uses changeAssign to insert variable
     // wrt. given indices to a monomial
@@ -169,6 +172,7 @@ LexOrder::lead(const poly_type& poly) const {
     // insert backward (for efficiency reasons)
     reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
   } 
+
   return leadterm;
 }
 
@@ -183,7 +187,7 @@ LexOrder::leadExp(const poly_type& poly) const {
    
   if (!poly.isZero() && !poly.isOne()) {
 
-    leadterm.reserve(poly.lmDeg());
+    leadterm.reserve(poly.lexLmDeg());
     // wrt. given indices to a monomial
     PBoRiOutIter<exp_type, idx_type, inserts<exp_type> >  
       outiter(leadterm) ;
