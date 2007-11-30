@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.6  2007/11/29 20:16:22  dreyer
  * Fix: stableHash() consistent for monomials and polynomials/sets
  *
@@ -38,6 +41,8 @@
 **/
 //*****************************************************************************
 
+#ifndef pbori_routines_hash_h_
+#define pbori_routines_hash_h_
 // include basic definitions
 #include "pbori_defs.h"
 #include <boost/functional/hash.hpp>
@@ -47,20 +52,78 @@ BEGIN_NAMESPACE_PBORI
 
 
 
-template<class Iterator>
+template <class HashType, class NaviType>
+void
+stable_hash_range(HashType& seed, NaviType navi) {
+
+  if (navi.isConstant()) {
+    if (navi.terminalValue())
+      boost::hash_combine(seed, CTypes::max_index());
+    return;
+  }
+
+  boost::hash_combine(seed, *navi);
+
+  stable_hash_range(seed, navi.thenBranch());
+  stable_hash_range(seed, navi.elseBranch());
+}
+
+template <class NaviType>
 std::size_t
-stable_hash_range(Iterator first, Iterator last) {
-  std::size_t seed(0);
-  if (first != last) {
-    seed = (*first).stableHash();
-    ++first;
-  }
-  for(; first != last; ++first) {
-    boost::hash_combine(seed, (*first).stableHash());
-  }
+stable_hash_range(NaviType navi) {
+
+  std::size_t seed = 0;
+  stable_hash_range(seed, navi);
 
   return seed;
 }
+
+template <class HashType>
+void
+finalize_term_hash(HashType& seed) {
+  boost::hash_combine(seed, CTypes::max_index());
+}
+
+template <class HashType, class NaviType>
+void
+stable_first_hash_range(HashType& seed, NaviType navi) {
+
+  while (!navi.isConstant()) {
+    boost::hash_combine(seed, *navi);
+    navi.incrementThen();
+  }
+  if (navi.terminalValue())
+    finalize_term_hash(seed);
+
+}
+
+template <class NaviType>
+std::size_t
+stable_first_hash_range(NaviType navi) {
+
+  std::size_t seed = 0;
+  stable_first_hash_range(seed, navi);
+
+  return seed;
+}
+
+template <class HashType, class Iterator>
+void
+stable_term_hash(HashType& seed, Iterator start, Iterator finish) {
+  boost::hash_range(seed, start, finish);
+  finalize_term_hash(seed);
+}
+
+template <class Iterator>
+std::size_t
+stable_term_hash(Iterator start, Iterator finish) {
+
+  std::size_t seed(0);
+  stable_term_hash(seed, start, finish);
+
+  return seed;
+}
+
 
 // The following may be used without polybori. Hence, we have to load it in the
 // namespace here
@@ -76,3 +139,5 @@ stable_hash_range(Iterator first, Iterator last) {
 // typedef generic_hash_tags::PBORI_HASH_TAG pbori_hash_tag;
 
 END_NAMESPACE_PBORI
+
+#endif

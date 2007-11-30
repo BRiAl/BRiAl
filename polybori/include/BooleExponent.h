@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.14  2007/11/29 16:28:31  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -183,7 +186,9 @@ class BooleExponent {
   set_type multiples(const self&) const; 
 
   /// Hash value for the exponent
-  hash_type stableHash() const;
+  hash_type stableHash() const {
+    return stable_term_hash(begin(), end());
+  }
 
   /// For the exponent we only have one type of hashes
   hash_type hash() const { return stableHash(); }

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.37  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -481,6 +484,9 @@ struct CTypes:
 
   /// Define shared pointer to decision diagram manager
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
+
+  /// Fix type and value of maximal index
+  static idx_type max_index() { return CCompareEnums::max_idx; }
 };
 
 END_NAMESPACE_PBORI

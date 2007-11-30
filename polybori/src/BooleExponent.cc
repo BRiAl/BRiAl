@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.13  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -120,15 +123,6 @@ BooleExponent::~BooleExponent() {
 
   PBORI_TRACE_FUNC( "~BooleExponent()" );
 }
-
-// Hashing
-BooleExponent::hash_type
-BooleExponent::stableHash() const {
-
-  PBORI_TRACE_FUNC( "BooleExponent::hash() const" );
-  return boost::hash_range(begin(), end());
-}
-
 
 // Reducibility test
 BooleExponent::bool_type

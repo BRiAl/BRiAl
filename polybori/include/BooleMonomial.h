@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.30  2007/11/29 16:28:31  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -244,8 +247,8 @@ class BooleMonomial {
   set_type multiples(const self&) const; 
 
   /// Hash value of the monomial
-  hash_type stableHash() const {  
-    return boost::hash_range(begin(), end()); 
+  hash_type stableHash() const {
+    return stable_first_hash_range(m_poly.navigation());
   }
 
   /// Get unique hash value (valid only per runtime)

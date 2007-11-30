@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.104  2007/11/30 09:33:20  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.103  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -797,17 +800,8 @@ BoolePolynomial::lmStableHash() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmStableHash() const" );
   self ld1st(leadFirst());
-  return boost::hash_range(ld1st.firstBegin(), ld1st.firstEnd() );
+  return stable_first_hash_range(ld1st.navigation());
 }
-
-
-BoolePolynomial::hash_type 
-BoolePolynomial::stableHash() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::stableHash() const" );
-  return stable_hash_range(expBegin(), expEnd());
-}
-
 
 // Maximal degree of the polynomial
 BoolePolynomial::size_type
@@ -1103,21 +1097,6 @@ BoolePolynomial::expEnd() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::exp_end() const" );
   return exp_iterator();
 }
-// Navigate through diagram structure
-BoolePolynomial::navigator 
-BoolePolynomial::navigation() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::navigation() const" );
-  return m_dd.navigation();
-}
-// End marker
-BoolePolynomial::navigator 
-BoolePolynomial::endOfNavigation() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::nendOfNavigation() const" );
-  return navigator();
-}
-
 
 // Start of iteration over monomials in lex ordering
 BoolePolynomial::lex_iterator 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.57  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.56  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -198,8 +201,6 @@
 #ifndef CDDInterface_h_
 #define CDDInterface_h_
 
-#include <boost/functional/hash.hpp>
-
 #include "extrafwd.h"
 // load basic definitions
 #include "pbori_defs.h"
@@ -227,6 +228,7 @@
 #include "pbori_algo.h"
 
 #include "pbori_tags.h"
+#include "pbori_routines_hash.h"
 
 // Using stl's vector
 #include <vector>
@@ -401,6 +403,11 @@ class CDDInterface:
   hash_type hash() const { 
     return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(m_interfaced
                                                                    .getNode()));
+  }
+
+  /// Get stable hash value, which is reproducible
+  hash_type stableHash() const { 
+    return stable_hash_range(navigation());
   }
 
   /// Set union

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.34  2007/11/29 16:28:32  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -361,7 +364,7 @@ public:
   using base::hash;
 
   /// Get hash value, which is reproducible
-  hash_type stableHash() const;
+  using base::stableHash;
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;

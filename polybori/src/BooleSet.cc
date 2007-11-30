@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2007/11/30 09:33:20  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.39  2007/11/29 16:28:33  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -484,15 +487,6 @@ BooleSet::print(ostream_type& os) const {
     os << "}}";
   }
   return os;
-}
-
-
-
-BooleSet::hash_type 
-BooleSet::stableHash() const {
-
-  PBORI_TRACE_FUNC( "BooleSet::stableHash() const" );
-  return stable_hash_range(expBegin(), expEnd());
 }
 
 

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.81  2007/11/30 09:33:19  dreyer
+ * CHANGE: more dd-like stableHash()
+ *
  * Revision 1.80  2007/11/29 16:28:31  dreyer
  * ADD: fast hash(), where applicable; + stableHashes() anywhere
  *
@@ -538,7 +541,7 @@ public:
   hash_type hash() const { return m_dd.hash(); }
 
   /// Get hash value, which is reproducible
-  hash_type stableHash() const;
+  hash_type stableHash() const { return m_dd.stableHash(); } 
 
   /// Hash value of the leading term
   hash_type lmStableHash() const;
@@ -651,10 +654,10 @@ public:
   //@}
 
   /// Navigate through structure
-  navigator navigation() const;
+  navigator navigation() const { return m_dd.navigation(); }
  
   /// End of navigation marker
-  navigator endOfNavigation() const;
+  navigator endOfNavigation() const { return navigator(); }
   
   /// gives a copy of the diagram
   dd_type copyDiagram(){   return diagram();  }
