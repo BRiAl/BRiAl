@@ -255,22 +255,23 @@ def result_to_list_post(I,state):
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
-@gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 
+@gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 @with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
 @with_heuristic(linear_algebra_heuristic)
-@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb"],default=True)
-@gb_with_pre_post_option("redsb",post=redsb_post,default=True)
+
+@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound"],default=True)
+@gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound"],default=True)
 
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
        prot= False, step_factor= 1,
-       deg_bound= 1000000000000L, lazy= True, ll= False,
+       deg_bound=False, lazy= True, ll= False,
        max_growth= 2.0, exchange= True,
        matrix_prefix= "matrix", red_tail= True,
        implementation="Python", aes= False,
@@ -278,7 +279,8 @@ def groebner_basis(I, faugere=False,  coding=False,
        draw_matrices= False, llfirstonthefly= False,
        linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True,uniqueIdealGenerator=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
-    
+    if deg_bound is False:
+        deg_bound=100000000L
     zero=Polynomial(0)
     I=[Polynomial(p) for p in I if p!=zero]
     if uniqueIdealGenerator:
