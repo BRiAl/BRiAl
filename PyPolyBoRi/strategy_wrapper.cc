@@ -196,6 +196,8 @@ void export_strategy(){
   .def("__iter__",range(stratbegin, stratend))
   .def("__getitem__", get_ith_gen)
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
+  .def("allGenerators", &GroebnerStrategy::allGenerators)
+  
 #ifdef HAVE_NTL
   .def("noroStep", &GroebnerStrategy::noroStep)
 #endif

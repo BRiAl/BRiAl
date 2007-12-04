@@ -81,6 +81,7 @@ public:
     this->strat=&strat;
   }
 
+  void appendHiddenGenerators(std::vector<Polynomial>& vec);
   typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
@@ -202,6 +203,7 @@ public:
   Polynomial nf(Polynomial p) const;
   void symmGB_F2();
   int suggestPluginVariable();
+  std::vector<Polynomial> allGenerators();
   protected:
       std::vector<Polynomial> treatVariablePairs(int s);
       void treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms);

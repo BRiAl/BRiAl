@@ -1950,6 +1950,34 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 
      }
 }
+void PairManager::appendHiddenGenerators(std::vector<Polynomial>& vec){
+    int i;
+    std::vector<Pair> temp_store;
+    while(!(queue.empty())){
+        Pair temp=queue.top();
+        queue.pop();
+        if (temp.getType()==DELAYED_PAIR){
+            Polynomial pt=((PolyPairData*) temp.data.get())->p;
+            if (!(pt.isZero()))
+                vec.push_back(pt);
+        }
+        temp_store.push_back(temp);
+        
+    }
+    for(i=0;i<temp_store.size();i++){
+        queue.push(temp_store[i]);
+    }
+}
+std::vector<Polynomial> GroebnerStrategy::allGenerators(){
+     int i;
+     std::vector<Polynomial> result;
+     for (i=0;i<generators.size();i++){
+         result.push_back(generators[i].p);
+     }
+     pairs.appendHiddenGenerators(result);
+     return result;
+}
+
 
 
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
