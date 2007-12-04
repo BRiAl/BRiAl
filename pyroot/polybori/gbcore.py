@@ -252,6 +252,11 @@ def llfirst_post(I,eliminated):
     return I
 def result_to_list_post(I,state):
     return list(I)
+def fix_deg_bound_post(I,state):
+    if isinstance(I,GroebnerStrategy):
+        return I.allGenerators()
+    else:
+        return I
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
@@ -263,7 +268,7 @@ def result_to_list_post(I,state):
 @with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
 @with_heuristic(linear_algebra_heuristic)
-
+@gb_with_pre_post_option("fix_deg_bound",post=fix_deg_bound_post,default=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound"],default=True)
 

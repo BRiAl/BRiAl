@@ -232,7 +232,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
     
-def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
     #print implications
     if use_noro:
         raise NotImplementedError
@@ -285,9 +285,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=30, use_faugere=Fa
     if prot:
         print "added delayed"
     i=0
-    
     while strat.npairs()>0:
-
         i=i+1
         if prot:
             #pass 
@@ -632,7 +630,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         strat.addGeneratorDelayed(g)
     branch(strat,[], proof_path, 0)
 
-def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=30, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True):
+def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True):
     #print implications
     if use_noro:
         raise NotImplementedError, "noro not implemented for symmgb"    
