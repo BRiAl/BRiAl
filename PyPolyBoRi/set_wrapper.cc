@@ -72,6 +72,7 @@ void export_bset(){
   .def("multiplesOf",(divisors_func_type) &BooleSet::multiplesOf)
   .def("divisorsOf",(divisors_func_type) &BooleSet::divisorsOf)
   .def("existAbstract",&BooleSet::existAbstract, "a.existsAbstract(m) returns a BooleSet, where every term t is included, where exists n such that n*m=t*m and n is element of a")
+  .def("sizeDouble",&BooleSet::sizeDouble)
   .def("intersect", &BooleSet::intersect);
   def("if_then_else",if_then_else);
   boost::python::register_exception_translator<
