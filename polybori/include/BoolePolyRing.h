@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.39  2007/11/30 12:51:06  dreyer
  * Fix: protected corrected
  *
@@ -148,13 +151,22 @@
 #include "CDDManager.h"
   //#include "OrderedManager.h"
 
+
   // temporarily for work around
 #include <list>
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
 
+
+
 BEGIN_NAMESPACE_PBORI
+
+class COrderBase;
+
+
+class OrderedOrderBase;
+
 
 class BooleExponent;
 class BooleMonomial;
@@ -217,10 +229,9 @@ class BoolePolyRing:
                 bool_type make_active = true);
 
   /// Construct from manager
-  BoolePolyRing(const manager_type &);
+  //BoolePolyRing(const manager_type &);
 
-  /// Construct from pointer to manager
-  BoolePolyRing(manager_ptr pManager);
+
 
   /// Copy constructor
   BoolePolyRing(const BoolePolyRing &);
@@ -368,7 +379,25 @@ protected:
   static std::list<manager_ptr> old_rings;
 #endif 
 
+  typedef OrderedOrderBase  ordord_type;
+
+  typedef PBORI_SHARED_PTR(ordord_type) order_ptr;
+
+  typedef ordord_type& order_reference;
+
+  order_ptr pOrder;
+  static order_ptr current_order;
+
+
+  /// Construct from pointer to manager
+  BoolePolyRing(manager_ptr pManager, order_ptr);
+
+  order_reference ordering() const { return *pOrder; }
+
 public:
+
+  static order_reference activeOrdering() { return *current_order; }
+
   /// @name interface for block orderings
   //@{
   static block_iterator blockRingBegin();

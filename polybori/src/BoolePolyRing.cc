@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.38  2007/11/06 15:03:38  dreyer
  * CHANGE: More generic copyright
  *
@@ -160,14 +163,28 @@ BEGIN_NAMESPACE_PBORI
 // initialize pointer to active ring
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
+
+// initialize pointer to active ordering
+BoolePolyRing::order_ptr BoolePolyRing::current_order;
+
+
 #ifdef PBORI_KEEP_OLD_RINGS
 std::list<BoolePolyRing::manager_ptr> BoolePolyRing::old_rings;
 #endif
 
+#if 0
+#define pbori_temp(first, second) second
+#define pbori_tempinv(first, second) first
+#else
+#define pbori_temp(first, second) first
+#define pbori_tempinv(first, second) second
+#endif
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
-                             bool_type make_active) : base(),
-  pMgr( get_ordered_manager(nvars, order) ) {
+                             bool_type make_active) : 
+  base(),
+  pMgr(CTypes::manager_ptr(new OrderedManager<CTypes::manager_base>(nvars)) ),
+  pOrder(get_ordering(order)) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
 
@@ -180,22 +197,27 @@ BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
 
-  BoolePolyRing the_ring(get_ordered_manager(activeManager(), order));
-  the_ring.activate();
+  /// TEMP!
+    //  current_mgr  = get_ordered_manager(activeManager(), order);
+  current_order = get_ordering(order);
+
 }
 
 
 // copy constructor (shallow copy)
-BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs) : base(),
-  pMgr(rhs.pMgr) {
+BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs):
+  base(),
+  pMgr(rhs.pMgr), pOrder(rhs.pOrder) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
 
 }
 
+
 // construct from pointer to manager
-BoolePolyRing::BoolePolyRing(manager_ptr pRhs) : base(),
-  pMgr(pRhs) {
+BoolePolyRing::BoolePolyRing(manager_ptr pRhs, order_ptr rhsOrd) :
+  base(),
+  pMgr(pRhs), pOrder(rhsOrd) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
 }
@@ -352,7 +374,7 @@ BoolePolyRing::ring() {
   PBORI_TRACE_FUNC( "BoolePolyRing::ring() const" );
 
   if(current_mgr){
-    return self(current_mgr);
+    return self(current_mgr, current_order);
   }
   else {
     throw PBoRiError(CTypes::no_ring);
@@ -372,6 +394,8 @@ BoolePolyRing::activate() {
     old_rings.push_back(current_mgr);
 #endif  
   current_mgr = pMgr;
+
+  current_order = pOrder;
 }
 
 // print statistics about the current ring
@@ -388,7 +412,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::isLexicographical() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isLexicographical()" );
-  return activeManager().isLexicographical() ;
+  return activeOrdering().isLexicographical() ;
 } 
 
 // test whether current ring's iterators respect the ordering 
@@ -396,7 +420,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::orderedStandardIteration() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isOrdered()" );
-  return activeManager().orderedStandardIteration() ;
+  return activeOrdering().orderedStandardIteration() ;
 }
 
 // test whether variable pertubation do not change the order
@@ -404,14 +428,14 @@ BoolePolyRing::bool_type
 BoolePolyRing::isSymmetric() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isSymmetric()" );
-  return activeManager().isSymmetric() ;
+  return activeOrdering().isSymmetric() ;
 }
 // test whether we deal with a degree-ordering
 BoolePolyRing::bool_type 
 BoolePolyRing::isDegreeOrder() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isDegreeOrder()" );
-  return activeManager().isDegreeOrder() ;
+  return activeOrdering().isDegreeOrder() ;
 }
 
 // test whether we deal with a block-ordering
@@ -419,7 +443,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::isBlockOrder() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isBlockOrder()" );
-  return activeManager().isBlockOrder() ;
+  return activeOrdering().isBlockOrder() ;
 }
 
 // test whether we deal with a degree-ordering
@@ -427,7 +451,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::isTotalDegreeOrder() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isTotalDegreeOrder()" );
-  return activeManager().isTotalDegreeOrder() ;
+  return activeOrdering().isTotalDegreeOrder() ;
 }
 
 // test whether we deal with a degree-ordering
@@ -435,7 +459,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::isDegreeReverseLexicograpical() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::isDegreeReverseLexicograpical()" );
-  return activeManager().isDegreeReverseLexicograpical() ;
+  return activeOrdering().isDegreeReverseLexicograpical() ;
 }
 
 // test whether we deal with a degree-ordering
@@ -443,20 +467,20 @@ BoolePolyRing::ordercode_type
 BoolePolyRing::getOrderCode() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::getOrderCode()" );
-  return activeManager().getOrderCode() ;
+  return activeOrdering().getOrderCode() ;
 }
 BoolePolyRing::ordercode_type
 BoolePolyRing::getBaseOrderCode() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::getBaseOrderCode()" );
-  return activeManager().getBaseOrderCode() ;
+  return activeOrdering().getBaseOrderCode() ;
 }
 // test whether we deal with a degree-ordering
 BoolePolyRing::bool_type 
 BoolePolyRing::ascendingVariables() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::ascendingVariables()" );
-  return activeManager().ascendingVariables() ;
+  return activeOrdering().ascendingVariables() ;
 }
 
 // test whether we deal with a degree-ordering
@@ -464,7 +488,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::descendingVariables() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::descendingVariables()" );
-  return activeManager().descendingVariables() ;
+  return activeOrdering().descendingVariables() ;
 }
 
 // test whether two indices are in the same block
@@ -472,7 +496,7 @@ BoolePolyRing::bool_type
 BoolePolyRing::lieInSameBlock(idx_type first, idx_type second) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::lieInSameBlock()" );
-  return activeManager().lieInSameBlock(first, second);
+  return activeOrdering().lieInSameBlock(first, second);
 }
 
 // order-dependent comparison
@@ -480,21 +504,21 @@ BoolePolyRing::comp_type
 BoolePolyRing::compare(idx_type lhs, idx_type rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::compare(idx_type, idx_type)" );
-  return activeManager().compare(lhs, rhs);
+  return activeOrdering().compare(lhs, rhs);
 }
 
 BoolePolyRing::comp_type 
 BoolePolyRing::compare(const monom_type& lhs, const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::compare(const monom_type&, const monom_type&)" );
-  return activeManager().compare(lhs, rhs);
+  return activeOrdering().compare(lhs, rhs);
 }
 
 BoolePolyRing::comp_type 
 BoolePolyRing::compare(const exp_type& lhs, const exp_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::compare(const exp_type&, const exp_type&)");
-  return activeManager().compare(lhs, rhs);
+  return activeOrdering().compare(lhs, rhs);
 }
 
 void
@@ -534,26 +558,26 @@ BoolePolyRing::block_iterator
 BoolePolyRing::blockRingBegin() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::blockRingBegin() const");
-  return activeManager().blockBegin();
+  return activeOrdering().blockBegin();
 }
 
 BoolePolyRing::block_iterator
 BoolePolyRing::blockRingEnd() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::blockRingEnd() const");
-  return activeManager().blockEnd();
+  return activeOrdering().blockEnd();
 }
 
 void BoolePolyRing::appendRingBlock(idx_type idx) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::appendRingBlock(idx_type)");
-  return activeManager().appendBlock(idx);
+  activeOrdering().appendBlock(idx);
 }
 
 void BoolePolyRing::clearRingBlocks() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::clearRingBlocks()");
-  return activeManager().clearBlocks();
+  activeOrdering().clearBlocks();
 }
 
 BoolePolyRing::idx_type

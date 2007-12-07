@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.14  2007/11/06 15:03:38  dreyer
  * CHANGE: More generic copyright
  *
@@ -180,7 +183,7 @@ BooleMonomial::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::compare(const self& rhs) const" );
 
-  return BoolePolyRing::activeManager().compare(*this, rhs);
+  return BoolePolyRing::activeOrdering().compare(*this, rhs);
 
 //   /// @todo Up to now, this is for lexicographic order only.
 //   if (*this == rhs)
@@ -342,7 +345,7 @@ greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
   PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
 
   return
-    (BoolePolyRing::activeManager().compare(lhs, rhs)==CTypes::greater_than);
+    (BoolePolyRing::activeOrdering().compare(lhs, rhs)==CTypes::greater_than);
 }
 
 // Get exponent vector

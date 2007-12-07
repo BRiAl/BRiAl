@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.14  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -334,7 +337,7 @@ BooleExponent::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::compare(const self& rhs) const" );
 
-  return BoolePolyRing::activeManager().compare(*this, rhs);
+  return BoolePolyRing::activeOrdering().compare(*this, rhs);
 }
 
 // Degree of the lcm

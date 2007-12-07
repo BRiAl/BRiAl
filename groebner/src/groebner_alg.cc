@@ -1464,7 +1464,7 @@ bool polynomial_in_one_block(const Polynomial p){
     if (p.isConstant()) return true;
     Monomial vars=p.usedVariables();
     
-    return BoolePolyRing::activeManager().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
+    return BoolePolyRing::lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
 }
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.26  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -117,10 +120,13 @@
 
   //#include "CIndirectIter.h"
 
+
+
+
 #include <vector>
 #ifndef OrderedManager_h_
 #define OrderedManager_h_
-
+#include "COrderedIter.h"
 BEGIN_NAMESPACE_PBORI
 
 template <class IdxType, class OrderType>
@@ -151,7 +157,7 @@ lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
  **/
 
 template <class ManType>
-class OrderedManagerBase:
+class OrderedManager:
   public CDDManager<ManType> { 
 
 public:
@@ -163,7 +169,7 @@ public:
   typedef CDDManager<manager_type> base;
 
   /// Type of *this
-  typedef OrderedManagerBase<manager_type> self;
+  typedef OrderedManager<manager_type> self;
 
   /// @name adopt global type definitions
   //@{
@@ -196,20 +202,139 @@ public:
   typedef variable_names_type::const_reference const_varname_reference;
 
   /// Construct new decision diagramm manager
-  OrderedManagerBase(size_type nvars = 0): 
+  OrderedManager(size_type nvars = 0): 
     base(nvars), m_names(nvars)  { }
 
   /// Construct old decision diagramm manager
-  OrderedManagerBase(const base& rhs): 
+  OrderedManager(const base& rhs): 
     base(rhs), m_names(rhs.nVariables()) { }
 
 
   /// Construct new decision diagramm manager
-  OrderedManagerBase(const self& rhs): 
+  OrderedManager(const self& rhs): 
     base(rhs), m_names(rhs.m_names) { }
 
   // Destructor
-  virtual ~OrderedManagerBase() { }
+  ~OrderedManager() { }
+
+  /// Set name of variable with index idx
+  void setVariableName(idx_type idx, const_varname_reference varname) {
+    m_names.set(idx, varname);
+  }
+
+  /// Get name of variable with index idx
+  const_varname_reference getVariableName(idx_type idx) const { 
+    return m_names[idx];
+  }
+
+private:
+  /// Stores names of variables
+  variable_names_type m_names;
+};
+
+
+/** @class OrderedManager
+ * @brief This class initialize the interface for orderings of
+ * OrderedManagerBase.
+ *
+ **/
+
+#if 0
+template <class ManType, class OrderType>
+class OrderedManager:
+  public OrderedManagerBase<ManType> { 
+
+public:
+
+  /// Variable manager type
+  typedef ManType manager_type;
+
+  /// Variable ordering definiton functional type
+  typedef OrderType order_type;
+
+  /// Variable manager interface (base type)
+  typedef OrderedManagerBase<manager_type> base;
+
+  /// Type of *this
+  typedef OrderedManager<manager_type, order_type> self;
+
+  /// Type defining order related properties
+  typedef COrderProperties<order_type> properties_type;
+
+  /// @name adopt global type definitions
+  //@{
+  typedef typename base::bool_type bool_type;
+  typedef typename base::size_type size_type;
+  typedef typename base::idx_type idx_type;
+  typedef typename base::comp_type comp_type;
+  typedef typename base::monom_type monom_type;
+  typedef typename base::poly_type poly_type;
+  typedef typename base::exp_type exp_type;
+  typedef typename base::ordered_iterator ordered_iterator;
+  typedef typename base::ordered_exp_iterator ordered_exp_iterator;
+  typedef typename base::ordercode_type ordercode_type;
+  typedef typename base::block_iterator block_iterator;
+  //@}
+
+  /// Construct new decision diagramm manager
+  OrderedManager(size_type nvars = 0, 
+                 const order_type& theOrder = order_type() ): 
+    base(nvars) { }
+
+  /// Construct new decision diagramm manager
+  OrderedManager(const self& rhs): 
+    base(rhs) { }
+
+  /// Construct from given manager
+  OrderedManager(const base& rhs, const order_type& theOrder = order_type()  ): 
+    base(rhs) { }
+
+  // Destructor
+  ~OrderedManager() { }
+
+};
+
+#endif
+
+
+
+class OrderedOrderBase{ 
+
+public:
+
+  /// Type of *this
+  typedef OrderedOrderBase self;
+
+  /// @name adopt global type definitions
+  //@{
+  typedef CTypes::bool_type bool_type;
+  typedef CTypes::dd_type dd_type;
+  typedef CTypes::size_type size_type;
+  typedef CTypes::idx_type idx_type;
+  typedef CTypes::comp_type comp_type;
+  typedef CTypes::ordercode_type ordercode_type;
+  typedef BooleMonomial monom_type;
+  typedef BoolePolynomial poly_type;
+  typedef BoolePolynomial::navigator navigator;
+  typedef BooleExponent exp_type;
+
+
+  typedef COrderedIter<navigator, monom_type> ordered_iterator;
+  typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
+  //@}
+
+  /// Type for block indices
+  typedef std::vector<idx_type> block_idx_type;
+
+  /// Type for block iterators
+  typedef block_idx_type::const_iterator block_iterator;
+
+
+  /// Construct new
+  OrderedOrderBase() { }
+
+  // Destructor
+  virtual ~OrderedOrderBase() { }
 
   /// Comparison of monomials
   virtual comp_type compare(idx_type, idx_type) const = 0;
@@ -274,15 +399,6 @@ public:
   /// Get numerical code for base ordering (the same for non-block orderings)
   virtual ordercode_type getBaseOrderCode() const = 0 ;
 
-  /// Set name of variable with index idx
-  void setVariableName(idx_type idx, const_varname_reference varname) {
-    m_names.set(idx, varname);
-  }
-
-  /// Get name of variable with index idx
-  const_varname_reference getVariableName(idx_type idx) const { 
-    return m_names[idx];
-  }
   /// @name interface for block orderings
   //@{
   virtual block_iterator blockBegin() const = 0;
@@ -295,34 +411,29 @@ public:
   /// (true for nonblock orderings)
   virtual bool_type lieInSameBlock(idx_type, idx_type) const = 0;
 
-private:
-  /// Stores names of variables
-  variable_names_type m_names;
 };
 
-/** @class OrderedManager
+/** @class OrderedOrder
  * @brief This class initialize the interface for orderings of
- * OrderedManagerBase.
+ * OrderedOrderBase.
  *
  **/
 
-template <class ManType, class OrderType>
-class OrderedManager:
-  public OrderedManagerBase<ManType> { 
+template <class OrderType>
+class OrderedOrder:
+  public OrderedOrderBase { 
 
 public:
 
-  /// Variable manager type
-  typedef ManType manager_type;
 
   /// Variable ordering definiton functional type
   typedef OrderType order_type;
 
   /// Variable manager interface (base type)
-  typedef OrderedManagerBase<manager_type> base;
+  typedef OrderedOrderBase base;
 
   /// Type of *this
-  typedef OrderedManager<manager_type, order_type> self;
+  typedef OrderedOrder<order_type> self;
 
   /// Type defining order related properties
   typedef COrderProperties<order_type> properties_type;
@@ -343,20 +454,15 @@ public:
   //@}
 
   /// Construct new decision diagramm manager
-  OrderedManager(size_type nvars = 0, 
-                 const order_type& theOrder = order_type() ): 
-    base(nvars), ordering(theOrder) { }
-
+  OrderedOrder( const order_type& theOrder = order_type() ): 
+    ordering(theOrder) { }
+  
   /// Construct new decision diagramm manager
-  OrderedManager(const self& rhs): 
-    base(rhs), ordering(rhs.ordering) { }
-
-  /// Construct from given manager
-  OrderedManager(const base& rhs, const order_type& theOrder = order_type()  ): 
-    base(rhs), ordering(theOrder) { }
+  OrderedOrder(const self& rhs): 
+    ordering(rhs.ordering) { }
 
   // Destructor
-  ~OrderedManager() { }
+  ~OrderedOrder() { }
 
   /// Comparison of indices
   comp_type compare(idx_type lhs, idx_type rhs) const {

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.38  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -333,7 +336,7 @@ template <class ManType>
 class CDDManager;
 
 template <class ManType>
-class OrderedManagerBase;
+class OrderedManager;
 
 /** @class COrderEnums
  * @brief This struct contains type definitions and enumerations to be used for
@@ -476,7 +479,7 @@ struct CTypes:
 
   /// Manage variables to be used by polynomials over Boolean ring
   //  typedef CDDManager<Cudd>  manager_type;
-   typedef OrderedManagerBase<manager_base> manager_type;
+   typedef OrderedManager<manager_base> manager_type;
 
   /// Reference to decision diagramm manager
    typedef CDDManager<manager_base&>  manager_reference;

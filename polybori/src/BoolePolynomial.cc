@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.105  2007/12/07 17:06:19  dreyer
+ * CHANGE: First try: ring and order separated
+ *
  * Revision 1.104  2007/11/30 09:33:20  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -698,7 +701,7 @@ BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
-  return BoolePolyRing::activeManager().lead(*this);
+  return BoolePolyRing::activeOrdering().lead(*this);
 
 //   // Note: implementation relying on CCuddFirstIter 
 //   monom_type leadterm;
@@ -737,7 +740,7 @@ BoolePolynomial::boundedLead(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead(size_type) const" );
 
-  return BoolePolyRing::activeManager().lead(*this, bound);
+  return BoolePolyRing::activeOrdering().lead(*this, bound);
 }
 
 // Leading exponent
@@ -746,7 +749,7 @@ BoolePolynomial::leadExp() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp() const" );
 
-  return BoolePolyRing::activeManager().leadExp(*this);
+  return BoolePolyRing::activeOrdering().leadExp(*this);
 }
 
 // Leading exponent (bound)
@@ -755,7 +758,7 @@ BoolePolynomial::boundedLeadExp(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(size_type) const" );
 
-  return BoolePolyRing::activeManager().leadExp(*this, bound);
+  return BoolePolyRing::activeOrdering().leadExp(*this, bound);
 }
 
 
@@ -1038,7 +1041,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedBegin() const" );
-  return BoolePolyRing::activeManager().leadIteratorBegin(*this);
+  return BoolePolyRing::activeOrdering().leadIteratorBegin(*this);
 }
 
 // Finish of leading term 
@@ -1046,7 +1049,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedEnd() const" );
-  return BoolePolyRing::activeManager().leadIteratorEnd();
+  return BoolePolyRing::activeOrdering().leadIteratorEnd();
 }
 
 // Start of degrees
@@ -1054,7 +1057,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpBegin() const" );
-  return BoolePolyRing::activeManager().leadExpIteratorBegin(*this);//*this;
+  return BoolePolyRing::activeOrdering().leadExpIteratorBegin(*this);//*this;
 }
 
 // Finish of leading term 
@@ -1062,7 +1065,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpEnd() const" );
-  return BoolePolyRing::activeManager().leadExpIteratorEnd();//ordered_exp_iterator();
+  return BoolePolyRing::activeOrdering().leadExpIteratorEnd();//ordered_exp_iterator();
 }
 
 // Start of iteration over monomials
@@ -1283,7 +1286,7 @@ BoolePolynomial::leadFirst() const {
 
   PBORI_TRACE_FUNC("BoolePolynomial::leadFirst() const" ); 
 
-  return BoolePolyRing::activeManager().leadFirst(*this);
+  return BoolePolyRing::activeOrdering().leadFirst(*this);
 }
 
 // Stream output for Boolean polynomials
