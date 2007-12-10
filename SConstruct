@@ -713,10 +713,12 @@ def GeneratePyc(sources):
 
 def expand_repeated(val, env):
     from string import Template
-    newval = ''
+    newval = Template(val).safe_substitute(env)
     while (val != newval):
         val = newval
         newval = Template(val).safe_substitute(env)
+
+    return val
         
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
