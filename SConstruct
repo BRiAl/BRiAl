@@ -88,6 +88,9 @@ opts.Add('PYINSTALLPREFIX', 'python modules directory', '$INSTALLDIR/pyroot')
 
 opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
 
+opts.Add(BoolOption('RELATIVE_SYMLINK',
+                    'Use relative symbolic links on install', True))
+
 opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off', True))
 opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
 opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
@@ -546,8 +549,12 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
 
 # Builder for symlinks
 def build_symlink(target, source, env):
+    targetdir = str(target[0].dir)
+    target = target[0].path
     source = source[0].path
-    target = target[0].abspath
+    if env['RELATIVE_SYMLINK'] :
+        source = relpath(targetdir, source)
+    
     print "Symlinking from", source, "to", target
     
     try:
