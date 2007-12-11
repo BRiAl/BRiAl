@@ -240,6 +240,12 @@ cudd_headers = [ CuddPath(fname) for fname in ['obj/cuddObj.hh', 'util/util.h',
                                                'cudd/cuddInt.h'] ] 
 
 env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['obj', 'util'] ])
+visibility_hidden=(env['PLATFORM']=="darwin")
+def shared_object(o):
+    if not visibility_hidden:
+        return env.SharedObject(o)
+    else:
+        return env.SharedObject(o,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
 
 for fdir in Split("cudd dddmp mtr st epd"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
@@ -252,7 +258,7 @@ for fname in ['util/saveimage.c', 'util/test*.c','dddmp/*DdNode*.c']:
     for file in glob(CuddPath(fname)):
         cudd_resources.remove(file)
 
-cudd_shared = env.SharedObject(cudd_resources)
+cudd_shared = shared_object(cudd_resources)
 
 libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
 Default(libCudd)
@@ -283,7 +289,8 @@ if isinstance(libpb,list):
     libpb=libpb[0]
 Default(libpb)
 
-pb_shared = env.SharedObject(pb_src)
+
+pb_shared = shared_object(pb_src)#env.SharedObject(pb_src)
 shared_resources += pb_shared
 
 libpbShared = slib(PBPath('polybori'), list(shared_resources))
@@ -304,7 +311,7 @@ if isinstance(gb,list):
     gb=gb[0]
 Default(gb)
 
-gb_shared = env.SharedObject(gb_src)
+gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
