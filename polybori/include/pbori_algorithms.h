@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/12/11 13:18:28  bricken
+ * + > -> <
+ *
  * Revision 1.16  2007/11/30 12:55:57  dreyer
  * ADD: count_index
  *
@@ -282,7 +285,7 @@ dd_mapping(const CacheType& cache, NaviType navi, NaviType map, SetType init) {
   if (navi.isConstant())
     return navi;
 
-  while (*map > *navi) {
+  while (*map < *navi) {
     assert(!map.isConstant());
     map.incrementThen();
   }
