@@ -106,6 +106,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>())
   .def(self*self)
+  .def(self*BooleMonomial())
+  .def(BooleMonomial()*self)
   .def(self+self)
   .def(self+int())
   .def(int()+self)
