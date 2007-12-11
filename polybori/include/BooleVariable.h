@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2007/12/11 10:50:44  dreyer
+ * Fix: BooleVariable()*BooleMonomial() now monomial
+ *
  * Revision 1.13  2007/11/19 12:49:59  bricken
  * + set
  *
@@ -137,7 +140,7 @@ operator*(const BooleVariable& lhs,
 }
 
 /// Multiplication of variables by a monomial
-inline BoolePolynomial
+inline BooleMonomial
 operator*(const BooleVariable& lhs, 
           const BooleMonomial& rhs){
 
