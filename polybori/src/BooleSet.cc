@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.40  2007/11/30 09:33:20  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -166,6 +169,7 @@
 
 // include polybori iterator
 #include "CGenericIter.h"
+
 
 BEGIN_NAMESPACE_PBORI
 
@@ -489,5 +493,16 @@ BooleSet::print(ostream_type& os) const {
   return os;
 }
 
+// Count terms containing BooleVariable(idx)
+BooleSet::size_type BooleSet::countIndex(idx_type idx) const {
+  size_type size(0);
+  return count_index(size, idx, *this);
+}
+
+// Count terms containing BooleVariable(idx)
+double BooleSet::countIndexDouble(idx_type idx) const {
+  double size(0);
+  return count_index(size, idx, *this);
+}
 
 END_NAMESPACE_PBORI

@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.36  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *
@@ -905,6 +908,42 @@ bool
 dd_is_pair(NaviType navi) {
 
   return dd_pair_check(navi, false);
+}
+
+
+
+template <class SetType>
+void combine_sizes(const SetType& bset, double& init) {
+  init += bset.sizeDouble();
+}
+
+template <class SetType>
+void combine_sizes(const SetType& bset, 
+                   typename SetType::size_type& init) {
+  init += bset.size();
+}
+
+
+template <class SizeType, class IdxType, class NaviType, class SetType>
+SizeType&
+count_index(SizeType& size, IdxType idx, NaviType navi, const SetType& init) {
+
+  if (*navi == idx)
+    combine_sizes(SetType(navi.incrementThen()), size);
+
+  if (*navi < idx) {
+    count_index(size, idx, navi.thenBranch(), init);
+    count_index(size, idx, navi.elseBranch(), init);
+  }
+  return size;
+}
+
+
+template <class SizeType, class IdxType, class SetType>
+SizeType&
+count_index(SizeType& size, IdxType idx, const SetType& bset) {
+
+  return count_index(size, idx, bset.navigation(), SetType());
 }
 
 END_NAMESPACE_PBORI

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.35  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -134,8 +137,6 @@
 
 // include polybori functionals
 #include "pbori_func.h"
-
-
 
 #ifndef BooleSet_h_
 #define BooleSet_h_
@@ -368,6 +369,12 @@ public:
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;
+
+  /// Count terms containing BooleVariable(idx)
+  size_type countIndex(idx_type idx) const;
+
+  /// Count many terms containing BooleVariable(idx)
+  double countIndexDouble(idx_type idx) const ;
 };
 
 /// Stream output operator

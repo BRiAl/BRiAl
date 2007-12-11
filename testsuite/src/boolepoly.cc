@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.28  2007/11/30 12:55:58  dreyer
  * ADD: count_index
  *
@@ -404,9 +407,7 @@ main(){
 
   double counter(0);
   std::cout << "count idx "<<poly <<" "<<x.firstIndex() <<" occurs "
-            <<count_index(counter, x.firstIndex(),
-                                         poly.navigation()) 
-            <<std::endl;
+            <<poly.set().countIndex(x.firstIndex())      <<std::endl;
 
 
 

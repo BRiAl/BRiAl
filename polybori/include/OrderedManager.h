@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.27  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -150,9 +153,8 @@ lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
   return (second < *upper);
 }
 
-/** @class OrderedManagerBase
- * @brief This class adds an interface for orderings to CDDManager<>.
- *
+/** @class OrderedManager
+ * @brief This class adds and interface for variable names to CDDManager<>.
  *
  **/
 
@@ -233,69 +235,11 @@ private:
 };
 
 
-/** @class OrderedManager
+/** @class OrderedOrderBase
  * @brief This class initialize the interface for orderings of
  * OrderedManagerBase.
  *
  **/
-
-#if 0
-template <class ManType, class OrderType>
-class OrderedManager:
-  public OrderedManagerBase<ManType> { 
-
-public:
-
-  /// Variable manager type
-  typedef ManType manager_type;
-
-  /// Variable ordering definiton functional type
-  typedef OrderType order_type;
-
-  /// Variable manager interface (base type)
-  typedef OrderedManagerBase<manager_type> base;
-
-  /// Type of *this
-  typedef OrderedManager<manager_type, order_type> self;
-
-  /// Type defining order related properties
-  typedef COrderProperties<order_type> properties_type;
-
-  /// @name adopt global type definitions
-  //@{
-  typedef typename base::bool_type bool_type;
-  typedef typename base::size_type size_type;
-  typedef typename base::idx_type idx_type;
-  typedef typename base::comp_type comp_type;
-  typedef typename base::monom_type monom_type;
-  typedef typename base::poly_type poly_type;
-  typedef typename base::exp_type exp_type;
-  typedef typename base::ordered_iterator ordered_iterator;
-  typedef typename base::ordered_exp_iterator ordered_exp_iterator;
-  typedef typename base::ordercode_type ordercode_type;
-  typedef typename base::block_iterator block_iterator;
-  //@}
-
-  /// Construct new decision diagramm manager
-  OrderedManager(size_type nvars = 0, 
-                 const order_type& theOrder = order_type() ): 
-    base(nvars) { }
-
-  /// Construct new decision diagramm manager
-  OrderedManager(const self& rhs): 
-    base(rhs) { }
-
-  /// Construct from given manager
-  OrderedManager(const base& rhs, const order_type& theOrder = order_type()  ): 
-    base(rhs) { }
-
-  // Destructor
-  ~OrderedManager() { }
-
-};
-
-#endif
-
 
 
 class OrderedOrderBase{ 

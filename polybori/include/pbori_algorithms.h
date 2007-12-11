@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2007/12/11 14:21:08  dreyer
+ * ADD: count terms containing given index
+ *
  * Revision 1.17  2007/12/11 13:18:28  bricken
  * + > -> <
  *
@@ -348,31 +351,6 @@ mapping(PolyType poly, MonomType fromVars, MonomType toVars) {
 }
 
 
-template <class SetType>
-void combine_sizes(const SetType& bset, double& init) {
-  init += bset.sizeDouble();
-}
-
-template <class SetType>
-void combine_sizes(const SetType& bset, 
-                   typename SetType::size_type& init) {
-  init += bset.size();
-}
-
-
-template <class SizeType, class IdxType, class NaviType>
-SizeType&
-count_index(SizeType& size, IdxType idx, NaviType navi) {
-
-  if (*navi == idx)
-    combine_sizes(BooleSet(navi.incrementThen()), size);
-
-  if (*navi < idx) {
-    count_index(size, idx, navi.thenBranch());
-    count_index(size, idx, navi.elseBranch());
-  }
-  return size;
-}
 
 END_NAMESPACE_PBORI
 
