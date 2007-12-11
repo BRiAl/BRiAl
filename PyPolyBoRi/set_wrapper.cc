@@ -38,7 +38,9 @@ static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
     }
     return BooleSet(i,a,b);
 }
-
+BooleSet the_set_itself(const BooleSet &s){
+    return s;
+}
 void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
@@ -57,6 +59,7 @@ void export_bset(){
   .def("diff", &BooleSet::diff)
   .def("__mod__", mod_mon_set)
   .def("divide", &BooleSet::divide)
+  .def("set", the_set_itself)
   .def("subset1",&BooleSet::subset1)
   .def("subset0",&BooleSet::subset0)
   .def("change", &BooleSet::change)
