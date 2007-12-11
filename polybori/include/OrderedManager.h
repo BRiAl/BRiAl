@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2007/12/11 15:37:35  dreyer
+ * ADD: BooleOrdering started
+ *
  * Revision 1.28  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -153,13 +156,13 @@ lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
   return (second < *upper);
 }
 
-/** @class OrderedManager
- * @brief This class adds and interface for variable names to CDDManager<>.
+/** @class CNamedManager
+ * @brief This class adds an interface for variable names to CDDManager<>.
  *
  **/
 
 template <class ManType>
-class OrderedManager:
+class CNamedManager:
   public CDDManager<ManType> { 
 
 public:
@@ -171,7 +174,7 @@ public:
   typedef CDDManager<manager_type> base;
 
   /// Type of *this
-  typedef OrderedManager<manager_type> self;
+  typedef CNamedManager<manager_type> self;
 
   /// @name adopt global type definitions
   //@{
@@ -185,17 +188,7 @@ public:
   typedef BoolePolynomial poly_type;
   typedef BoolePolynomial::navigator navigator;
   typedef BooleExponent exp_type;
-
-
-  typedef COrderedIter<navigator, monom_type> ordered_iterator;
-  typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
   //@}
-
-  /// Type for block indices
-  typedef std::vector<idx_type> block_idx_type;
-
-  /// Type for block iterators
-  typedef block_idx_type::const_iterator block_iterator;
 
   /// Define type for storing names of variables
   typedef CVariableNames variable_names_type;
@@ -204,20 +197,20 @@ public:
   typedef variable_names_type::const_reference const_varname_reference;
 
   /// Construct new decision diagramm manager
-  OrderedManager(size_type nvars = 0): 
+  CNamedManager(size_type nvars = 0): 
     base(nvars), m_names(nvars)  { }
 
   /// Construct old decision diagramm manager
-  OrderedManager(const base& rhs): 
+  CNamedManager(const base& rhs): 
     base(rhs), m_names(rhs.nVariables()) { }
 
 
   /// Construct new decision diagramm manager
-  OrderedManager(const self& rhs): 
+  CNamedManager(const self& rhs): 
     base(rhs), m_names(rhs.m_names) { }
 
   // Destructor
-  ~OrderedManager() { }
+  ~CNamedManager() { }
 
   /// Set name of variable with index idx
   void setVariableName(idx_type idx, const_varname_reference varname) {
@@ -235,32 +228,30 @@ private:
 };
 
 
-/** @class OrderedOrderBase
- * @brief This class initialize the interface for orderings of
- * OrderedManagerBase.
+/** @class CDynamicBase
+ * @brief This class initialize the interface for runtime-switchable orderings.
  *
  **/
 
 
-class OrderedOrderBase{ 
+class CDynamicOrderBase { 
 
 public:
 
   /// Type of *this
-  typedef OrderedOrderBase self;
+  typedef CDynamicOrderBase self;
 
   /// @name adopt global type definitions
   //@{
   typedef CTypes::bool_type bool_type;
-  typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
   typedef CTypes::comp_type comp_type;
   typedef CTypes::ordercode_type ordercode_type;
-  typedef BooleMonomial monom_type;
   typedef BoolePolynomial poly_type;
-  typedef BoolePolynomial::navigator navigator;
-  typedef BooleExponent exp_type;
+  typedef poly_type::monom_type monom_type;
+  typedef poly_type::navigator navigator;
+  typedef poly_type::exp_type exp_type;
 
 
   typedef COrderedIter<navigator, monom_type> ordered_iterator;
@@ -275,10 +266,10 @@ public:
 
 
   /// Construct new
-  OrderedOrderBase() { }
+  CDynamicOrderBase() { }
 
   // Destructor
-  virtual ~OrderedOrderBase() { }
+  virtual ~CDynamicOrderBase() { }
 
   /// Comparison of monomials
   virtual comp_type compare(idx_type, idx_type) const = 0;
@@ -357,15 +348,15 @@ public:
 
 };
 
-/** @class OrderedOrder
+/** @class CDynamicOrder
  * @brief This class initialize the interface for orderings of
- * OrderedOrderBase.
+ * CDynamicOrderBase.
  *
  **/
 
 template <class OrderType>
-class OrderedOrder:
-  public OrderedOrderBase { 
+class CDynamicOrder:
+  public CDynamicOrderBase { 
 
 public:
 
@@ -374,10 +365,10 @@ public:
   typedef OrderType order_type;
 
   /// Variable manager interface (base type)
-  typedef OrderedOrderBase base;
+  typedef CDynamicOrderBase base;
 
   /// Type of *this
-  typedef OrderedOrder<order_type> self;
+  typedef CDynamicOrder<order_type> self;
 
   /// Type defining order related properties
   typedef COrderProperties<order_type> properties_type;
@@ -398,15 +389,15 @@ public:
   //@}
 
   /// Construct new decision diagramm manager
-  OrderedOrder( const order_type& theOrder = order_type() ): 
+  CDynamicOrder( const order_type& theOrder = order_type() ): 
     ordering(theOrder) { }
   
   /// Construct new decision diagramm manager
-  OrderedOrder(const self& rhs): 
+  CDynamicOrder(const self& rhs): 
     ordering(rhs.ordering) { }
 
   // Destructor
-  ~OrderedOrder() { }
+  ~CDynamicOrder() { }
 
   /// Comparison of indices
   comp_type compare(idx_type lhs, idx_type rhs) const {

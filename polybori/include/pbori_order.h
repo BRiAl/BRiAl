@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/12/11 15:37:35  dreyer
+ * ADD: BooleOrdering started
+ *
  * Revision 1.10  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -70,49 +73,25 @@
 
 BEGIN_NAMESPACE_PBORI
 
-inline PBORI_SHARED_PTR(OrderedOrderBase)
+inline PBORI_SHARED_PTR(CDynamicOrderBase)
 get_ordering(CTypes::ordercode_type order) {
-  typedef PBORI_SHARED_PTR(OrderedOrderBase) order_ptr;
+  typedef PBORI_SHARED_PTR(CDynamicOrderBase) order_ptr;
 
   if(order == CTypes::lp)
-    return order_ptr(new OrderedOrder<LexOrder>);
+    return order_ptr(new CDynamicOrder<LexOrder>);
   else if(order == CTypes::dlex)
-    return order_ptr(new OrderedOrder<DegLexOrder>);
+    return order_ptr(new CDynamicOrder<DegLexOrder>);
   else if(order == CTypes::dp_asc)
-    return order_ptr(new OrderedOrder<DegRevLexAscOrder>);
+    return order_ptr(new CDynamicOrder<DegRevLexAscOrder>);
   else if(order == CTypes::block_dlex)
-    return order_ptr(new OrderedOrder<BlockDegLexOrder>);
+    return order_ptr(new CDynamicOrder<BlockDegLexOrder>);
   else if(order == CTypes::block_dp_asc)
-     return order_ptr(new OrderedOrder<BlockDegRevLexAscOrder>);
+     return order_ptr(new CDynamicOrder<BlockDegRevLexAscOrder>);
 
   // default is lex order
-  return order_ptr(new OrderedOrder<LexOrder>);
+  return order_ptr(new CDynamicOrder<LexOrder>);
 }
 
-
-// template <class ConstructorType>
-// CTypes::manager_ptr
-// get_ordered_manager(ConstructorType& nvars, CTypes::ordercode_type order) {
-
-//   if(order == CTypes::lp)
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     LexOrder>(nvars) );
-//   else if(order == CTypes::dlex)
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     DegLexOrder>(nvars) );
-//   else if(order == CTypes::dp_asc)
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     DegRevLexAscOrder>(nvars) );
-//   else if(order == CTypes::block_dlex)
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     BlockDegLexOrder>(nvars) );
-//   else if(order == CTypes::block_dp_asc)
-//      return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//      BlockDegRevLexAscOrder>(nvars) );
-//   else                        // default is lex order
-//     return CTypes::manager_ptr(new OrderedManager<CTypes::manager_base,
-//     LexOrder>(nvars) );
-// }
 
 /// @class lex_compare_predicate
 /// @brief defines lexicographic comparison functor

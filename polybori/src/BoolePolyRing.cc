@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2007/12/11 15:37:35  dreyer
+ * ADD: BooleOrdering started
+ *
  * Revision 1.39  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -160,12 +163,62 @@
 
 BEGIN_NAMESPACE_PBORI
 
+
+
+
+
+BooleOrdering::BooleOrdering(ordercode_type order, bool_type make_active) : 
+  pOrder(get_ordering(order)) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
+  
+  if(make_active)
+    activate();
+}
+
+void
+BooleOrdering::changeOrdering(ordercode_type order) {
+
+  PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
+
+  current_order = get_ordering(order);
+}
+
+
+// copy constructor (shallow copy)
+BooleOrdering::BooleOrdering(const self& rhs):
+  pOrder(rhs.pOrder) {
+  
+  PBORI_TRACE_FUNC( "BooleOrdering(const BooleOrdering&)" );
+
+}
+
+
+// construct from pointer to manager
+BooleOrdering::BooleOrdering(order_ptr rhsOrd):
+  pOrder(rhsOrd) {
+  
+  PBORI_TRACE_FUNC( "BooleOrdering(order_ptr)" );
+}
+
+
+// initialize pointer to active ordering
+BooleOrdering::order_ptr BooleOrdering::current_order;
+
+
+
+
+
+
+
+
+
+
+
 // initialize pointer to active ring
 BoolePolyRing::manager_ptr BoolePolyRing::current_mgr;
 
 
-// initialize pointer to active ordering
-BoolePolyRing::order_ptr BoolePolyRing::current_order;
 
 
 #ifdef PBORI_KEEP_OLD_RINGS
@@ -183,10 +236,11 @@ std::list<BoolePolyRing::manager_ptr> BoolePolyRing::old_rings;
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
   base(),
-  pMgr(CTypes::manager_ptr(new OrderedManager<CTypes::manager_base>(nvars)) ),
-  pOrder(get_ordering(order)) {
+  pMgr(CTypes::manager_ptr(new CNamedManager<CTypes::manager_base>(nvars))) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
+
+  BooleOrdering(order, make_active);
 
   if(make_active)
     activate();
@@ -196,18 +250,15 @@ void
 BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
-
-  /// TEMP!
-    //  current_mgr  = get_ordered_manager(activeManager(), order);
-  current_order = get_ordering(order);
-
+  
+  BooleOrdering::changeOrdering(order);
 }
 
 
 // copy constructor (shallow copy)
 BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs):
   base(),
-  pMgr(rhs.pMgr), pOrder(rhs.pOrder) {
+  pMgr(rhs.pMgr) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(const BoolePolyRing&)" );
 
@@ -215,9 +266,9 @@ BoolePolyRing::BoolePolyRing(const BoolePolyRing& rhs):
 
 
 // construct from pointer to manager
-BoolePolyRing::BoolePolyRing(manager_ptr pRhs, order_ptr rhsOrd) :
+BoolePolyRing::BoolePolyRing(manager_ptr pRhs):
   base(),
-  pMgr(pRhs), pOrder(rhsOrd) {
+  pMgr(pRhs) {
   
   PBORI_TRACE_FUNC( "BoolePolyRing(manager_ptr)" );
 }
@@ -374,7 +425,7 @@ BoolePolyRing::ring() {
   PBORI_TRACE_FUNC( "BoolePolyRing::ring() const" );
 
   if(current_mgr){
-    return self(current_mgr, current_order);
+    return self(current_mgr);
   }
   else {
     throw PBoRiError(CTypes::no_ring);
@@ -395,7 +446,6 @@ BoolePolyRing::activate() {
 #endif  
   current_mgr = pMgr;
 
-  current_order = pOrder;
 }
 
 // print statistics about the current ring

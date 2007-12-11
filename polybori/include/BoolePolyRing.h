@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2007/12/11 15:37:34  dreyer
+ * ADD: BooleOrdering started
+ *
  * Revision 1.40  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -165,11 +168,56 @@ BEGIN_NAMESPACE_PBORI
 class COrderBase;
 
 
-class OrderedOrderBase;
+class CDynamicOrderBase;
 
 
 class BooleExponent;
 class BooleMonomial;
+
+/** @class BooleOrdering
+ * @brief This class is just a wrapper for using runtime-selectoable monomial
+ * orderings.
+ *
+ **/
+
+class BooleOrdering:
+  public CTypes::orderenums_type, public CTypes::auxtypes_type {
+
+public:
+
+  typedef CDynamicOrderBase order_type;
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+  typedef order_type& order_reference;
+  typedef BooleOrdering self;
+
+  /// Construct from pointer to manager
+  BooleOrdering(order_ptr);
+  BooleOrdering(const self&);
+
+  /// Construct new aordering from 
+  BooleOrdering(ordercode_type order = lp, 
+                bool_type make_active = true);
+
+  /// Access ordering of *this
+  order_reference ordering() const { return *pOrder; }
+
+  /// Access currently active ordering
+  static order_reference activeOrdering() { return *current_order; }
+
+  /// Make this global ordering
+  void activate() const { current_order = pOrder; }
+
+  /// Change active order
+  static void changeOrdering(ordercode_type);
+
+protected:
+  /// *Ordering of *this
+  order_ptr pOrder;
+
+  /// Active Ordering
+  static order_ptr current_order;
+};
+
 
 /** @class BoolePolyRing
  * @brief This class is just a wrapper for using @c cudd's decicion diagram
@@ -379,12 +427,9 @@ protected:
   static std::list<manager_ptr> old_rings;
 #endif 
 
-  typedef OrderedOrderBase  ordord_type;
-
-  typedef PBORI_SHARED_PTR(ordord_type) order_ptr;
-
-  typedef ordord_type& order_reference;
-
+  typedef CDynamicOrderBase  order_type;
+  typedef order_type& order_reference;
+#if 0
   order_ptr pOrder;
   static order_ptr current_order;
 
@@ -393,10 +438,16 @@ protected:
   BoolePolyRing(manager_ptr pManager, order_ptr);
 
   order_reference ordering() const { return *pOrder; }
+#endif 
+
+  /// Construct from pointer to manager
+  BoolePolyRing(manager_ptr pManager);
 
 public:
 
-  static order_reference activeOrdering() { return *current_order; }
+  static order_reference activeOrdering() { 
+    return BooleOrdering::activeOrdering(); 
+  }
 
   /// @name interface for block orderings
   //@{

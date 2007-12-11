@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2007/12/11 15:37:35  dreyer
+ * ADD: BooleOrdering started
+ *
  * Revision 1.39  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -336,7 +339,7 @@ template <class ManType>
 class CDDManager;
 
 template <class ManType>
-class OrderedManager;
+class CNamedManager;
 
 /** @class COrderEnums
  * @brief This struct contains type definitions and enumerations to be used for
@@ -475,16 +478,13 @@ struct CTypes:
 
   /// Variables manager base type
   typedef CCuddInterface manager_base;
-  // typedef Cudd manager_base;
 
   /// Manage variables to be used by polynomials over Boolean ring
-  //  typedef CDDManager<Cudd>  manager_type;
-   typedef OrderedManager<manager_base> manager_type;
+  typedef CNamedManager<manager_base> manager_type;
 
   /// Reference to decision diagramm manager
-   typedef CDDManager<manager_base&>  manager_reference;
-  //typedef OrderedManagerBase<manager_base&> manager_reference;
-
+  typedef CDDManager<manager_base&>  manager_reference;
+  
   /// Define shared pointer to decision diagram manager
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
 
