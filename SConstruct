@@ -346,7 +346,8 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py coding.py memusage.py
-                               heuristics.py gbcore.py PyPolyBoRi.py""")]   
+                               heuristics.py gbcore.py interpolate.py
+                               PyPolyBoRi.py""")] 
 
 # Currently all python modules are at place
 installable_python_modules = []
