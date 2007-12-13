@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2007/12/13 16:18:07  dreyer
+ * CHANGE: removed unnecessary friend declaration
+ *
  * Revision 1.42  2007/12/13 15:53:48  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -193,7 +196,7 @@ class BoolePolyRing:
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
-  friend class BooleEnv;
+
   /// generic access to current type
   typedef BoolePolyRing self;
 

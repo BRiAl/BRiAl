@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2007/12/13 16:18:07  dreyer
+ * CHANGE: removed unnecessary friend declaration
+ *
  * Revision 1.1  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -42,23 +45,23 @@ BEGIN_NAMESPACE_PBORI
 BooleEnv::block_iterator 
 BooleEnv::blockBegin() {
 
-  return active_ring.pOrder->blockBegin();
+  return ordering().blockBegin();
 }
 
 BooleEnv::block_iterator
 BooleEnv::blockEnd() {
 
-  return active_ring.pOrder->blockEnd();
+  return ordering().blockEnd();
 }
 
 void BooleEnv::appendBlock(idx_type idx) {
 
-  active_ring.pOrder->appendBlock(idx);
+  ordering().appendBlock(idx);
 }
 
 void BooleEnv::clearBlocks() {
 
-  active_ring.pOrder->clearBlocks();
+  ordering().clearBlocks();
 }
 
 
