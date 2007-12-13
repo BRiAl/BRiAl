@@ -26,7 +26,7 @@ using std::cout;
 using std::endl;
 
 BEGIN_NAMESPACE_PBORIGB
-Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
+
 static bool irreducible_lead(Monomial lm, const GroebnerStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//

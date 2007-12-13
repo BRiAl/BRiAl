@@ -10,8 +10,51 @@
 #include <algorithm>
 #include <iostream>
 #include "interpolate.h"
-
+#include "randomset.h"
+#include "nf.h"
 BEGIN_NAMESPACE_PBORIGB
+MonomialSet gen_random_subset(const std::vector<Monomial>& vec,bool_gen_type& bit_gen){
+    std::vector<Monomial> chosen;
+    std::vector<Monomial>::const_iterator it=vec.begin();
+    std::vector<Monomial>::const_iterator end=vec.end();
+    while(it!=end){
+        if (bit_gen()){
+            chosen.push_back(*it);
+        }
+        ++it;
+    }
+    return add_up_monomials(chosen).diagram();
+}
+MonomialSet random_interpolation(const MonomialSet& as_set, const std::vector<Monomial>& as_vector, bool_gen_type& bit_gen){
+    MonomialSet s1=gen_random_subset(as_vector,bit_gen);
+    return interpolate_smallest_lex(as_set.diff(s1),s1);
+}
+MonomialSet variety_leading_terms(const MonomialSet& points, const Monomial& variables){
+    base_generator_type generator(static_cast<unsigned int>(std::time(0)));
+    std::vector<Monomial> points_vec(points.size());
+    std::copy(points.begin(),points.end(),points_vec.begin());
+    bool_gen_type bit_gen(generator,distribution_type(0,1));
+    MonomialSet vars_div=variables.divisors();
+    MonomialSet standards;
+    if (points!=vars_div){
+        standards=Polynomial(1).diagram();
+    }
+    unsigned int len_standards=standards.size();
+    unsigned int n_points=points.size();
+    MonomialSet standards_old=standards;
+    while (len_standards<n_points){
+        
+        standards=standards.unite(random_interpolation(points,points_vec,bit_gen));
+        if (standards!=standards_old){
+            standards=include_divisors(standards);
+            len_standards=standards.size();
+            standards_old=standards;
+        }
+    }
+    MonomialSet res=vars_div.diff(standards);
+    res=res.minimalElements();
+    return res;
+}
 MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     MonomialSet s=p.diagram();
     MonomialSet result;

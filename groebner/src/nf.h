@@ -14,6 +14,7 @@
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB
 Polynomial add_up_exponents(const std::vector<Exponent>& vec);
+Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
 int select1(const GroebnerStrategy& strat, const Polynomial& p);
 int select1(const GroebnerStrategy& strat, const Monomial& m);
 

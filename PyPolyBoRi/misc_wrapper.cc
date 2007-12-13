@@ -10,6 +10,8 @@
 using namespace boost::python;
 using namespace std;
 #include "groebner_alg.h"
+#include "randomset.h"
+#include "interpolate.h"
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
@@ -37,4 +39,6 @@ void export_misc(){
   def("mapping", do_mapping);
   def("testvalidstrat",testvalidstrat);
   def("count_double",count_double);
+  def("random_set",random_set);
+  def("variety_leading_terms",variety_leading_terms);
 }
