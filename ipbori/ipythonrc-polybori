@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.8  2007/12/13 14:01:06  bricken
+# + just import polybori
+#
 # Revision 1.7  2007/11/29 16:23:52  dreyer
 # ADD: preparation for installation of pythond modules in other directory
 #
@@ -80,9 +83,8 @@ execute x = Variable
 execute from polybori.gbcore import groebner_basis
 
 # Import some high-level modelling functionality
-execute from polybori.blocks import declare_ring
-execute from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
-execute from polybori.gbrefs import load_file
+execute from polybori import *
+
 
 execute pb_copy =  "Copyright (c) 2007 by The PolyBoRi Team. "
 execute pb_copy +=  "All Rights Reserved.\n"
