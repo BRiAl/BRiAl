@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.41  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -179,39 +182,29 @@ BEGIN_NAMESPACE_PBORI
 
 // Default constructor
 BooleSet::BooleSet():
-  base( BoolePolyRing::ringZero() )  {
+  base( BooleEnv::zero() )  {
 
   PBORI_TRACE_FUNC( "BooleSet()" );
 
 }
 
-/*
-// Default constructor
-BooleSet::BooleSet(bool_type isOne):
-  base(isOne? BoolePolyRing::ringOne() : BoolePolyRing::ringZero())  {
-
-  PBORI_TRACE_FUNC( "BooleSet(bool_type)" );
-
-}
-*/
-
 // Construct new node (using navigator nodes)
 BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
-  base(BoolePolyRing::activeManager().manager(), idx, first, second) {
+  base(BooleEnv::manager().manager(), idx, first, second) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
 }
 
 // Construct new node (using navigator nodes)
 BooleSet::BooleSet(idx_type idx, navigator navi):
-  base(BoolePolyRing::activeManager().manager(), idx, navi) {
+  base(BooleEnv::manager().manager(), idx, navi) {
   
   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
 }
 
 // Construct new node (using navigator nodes)
 BooleSet::BooleSet(navigator navi) :
-  base(BoolePolyRing::activeManager().manager(), navi) {
+  base(BooleEnv::manager().manager(), navi) {
   
   PBORI_TRACE_FUNC( "BooleSet(navigator)" );
 }
@@ -485,7 +478,7 @@ BooleSet::print(ostream_type& os) const {
   else {
     os << "{{";
     dd_print_terms(begin(), end(), 
-                   variable_name<mgr_type>(BoolePolyRing::activeManager()), 
+                   variable_name<mgr_type>(BooleEnv::manager()), 
                    sep_literal_type(), comma_as_separator(), 
                    empty_type(), os);
     os << "}}";

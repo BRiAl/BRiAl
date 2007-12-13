@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.5  2007/11/06 15:03:38  dreyer
  * CHANGE: More generic copyright
  *
@@ -48,30 +51,6 @@ BEGIN_NAMESPACE_PBORI
 //-------------------------------------------------------------------------
 // Constructors and destructor
 //------------------------------------------------------------------------
-/*
-// Default constructor
-BooleVariable::BooleVariable(idx_type idx):
-  m_poly( BoolePolyRing::ringVariable(idx) )  {
-
-  PBORI_TRACE_FUNC( "BooleVariable(idx_type)" );
-
-}
-
-
-// Copy constructor
-BooleVariable::BooleVariable(const self& rhs) :
-  m_poly(rhs.m_poly) {
-  
-  PBORI_TRACE_FUNC( "BooleVariable(const self&)" );
-}
-
-// Casting operator
-BooleVariable::operator const BoolePolynomial&() const {
-
-  PBORI_TRACE_FUNC( "BooleVariable::operator const BoolePolynomial&() const" );
-
-  return m_poly;
-}
-*/
+  // everything inlined
 
 END_NAMESPACE_PBORI

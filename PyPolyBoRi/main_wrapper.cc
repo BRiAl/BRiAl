@@ -39,7 +39,7 @@ void print_variable(const BooleVariable & p){
   ((const BoolePolynomial&) p).print(cout);
 }
 bool have_degree_order(){
-    return BoolePolyRing::isDegreeOrder();
+  return BooleEnv::ordering().isDegreeOrder();
 }
 
 BooleVariable ring_var(const BoolePolyRing&, BooleVariable::idx_type idx) {
@@ -52,6 +52,7 @@ BooleMonomial ring_one(const BoolePolyRing&) {
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   BoolePolyRing r;
+
   #ifdef HAVE_M4RI
   buildAllCodes();
   
@@ -64,7 +65,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   implicitly_convertible<int,BoolePolynomial>();
   implicitly_convertible<BoolePolynomial,BooleSet>();
   implicitly_convertible<BooleSet,BoolePolynomial>();
-  def("change_ordering",&BoolePolyRing::changeOrdering);
+  def("change_ordering",&BooleEnv::changeOrdering);
 
   export_poly();
   export_nav();
@@ -88,8 +89,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     dp_asc
   };
 };*/
-  def("get_order_code",&BoolePolyRing::getOrderCode);  
-  def("print_ring_info", &BoolePolyRing::printInfo);
+  def("get_order_code",&BooleEnv::getOrderCode);  
+  def("print_ring_info", &BooleEnv::printInfo);
+
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
     .def(boost::python::init <BoolePolyRing::size_type>())
@@ -99,7 +101,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("one", ring_one)
 //#endif
   .def("nVars", &BoolePolyRing::nVariables);
-  def("append_ring_block", &BoolePolyRing::appendRingBlock);
+
+  def("append_ring_block", &BooleEnv::appendBlock);
   def("have_degree_order", have_degree_order);
 
   boost::python::class_<BooleVariable>("Variable")

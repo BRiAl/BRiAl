@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.82  2007/12/13 15:53:48  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.81  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -300,6 +303,7 @@
 #include "BooleSet.h"
 
 #include "CTermIter.h"
+
 
 BEGIN_NAMESPACE_PBORI
 

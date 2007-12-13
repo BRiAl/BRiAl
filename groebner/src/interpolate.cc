@@ -94,7 +94,7 @@ MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     }
     typedef PBORI::CacheManager<CCacheTypes::zeroes>
       cache_mgr_type;
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(candidates.manager());
     MonomialSet::navigator cached=cache_mgr.find(p_nav, can_nav);
     if (cached.isValid() ){
        return cached;
@@ -124,7 +124,7 @@ Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one){
     if (to_one.emptiness()) return Polynomial(0);
     typedef PBORI::CacheManager<CCacheTypes::interpolate>
       cache_mgr_type;
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(to_zero.manager());
     MonomialSet::navigator cached=cache_mgr.find(to_zero.navigation(), to_one.navigation());
     if (cached.isValid() ){
        return cached;
@@ -179,7 +179,7 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
     if (to_one.emptiness()) return Polynomial(0);
     typedef PBORI::CacheManager<CCacheTypes::interpolate_smallest_lex>
       cache_mgr_type;
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(to_zero.manager());
     MonomialSet::navigator cached=cache_mgr.find(to_zero.navigation(), to_one.navigation());
     if (cached.isValid() ){
        return cached;
@@ -228,7 +228,7 @@ MonomialSet include_divisors(const MonomialSet& m){
     if (nav.isConstant()) return m;
     typedef PBORI::CacheManager<CCacheTypes::include_divisors>
       cache_mgr_type;
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(m.manager());
     MonomialSet::navigator cached=cache_mgr.find(nav);
     if (cached.isValid() ){
        return cached;

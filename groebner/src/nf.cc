@@ -511,7 +511,7 @@ public:
     this->exp=this->lm.exp();
     this->length+=length;
     this->length-=2;
-    if (BoolePolyRing::isTotalDegreeOrder()) this->sugar=this->lm.deg();
+    if (BooleEnv::ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
     assert(lm==p.lead());
     assert(exp==p.leadExp());
   }
@@ -581,7 +581,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         Polynomial to_red=curr[i].value();
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);
-        if (BoolePolyRing::isTotalDegreeOrder())
+        if (BooleEnv::ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(),new_len);
         else
             curr[i]=PolynomialSugar(to_red);
@@ -616,7 +616,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);
         //curr[i]=PolynomialSugar(to_red);
-        if (BoolePolyRing::isTotalDegreeOrder())
+        if (BooleEnv::ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(), new_len);
         else
             curr[i]=PolynomialSugar(to_red,to_red.deg(),new_len);
@@ -631,7 +631,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);//BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
         //curr[i]=PolynomialSugar(to_red);
-        if (BoolePolyRing::isTotalDegreeOrder())
+        if (BooleEnv::ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(),new_len);
         else
             curr[i]=PolynomialSugar(to_red,to_red.deg(),new_len);
@@ -842,7 +842,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     
     to_reduce.push(to_push);
   }
-  const idx_type last_block_start=BoolePolyRing::lastBlockStart();
+  const idx_type last_block_start=BooleEnv::ring().lastBlockStart();
   while (!(to_reduce.empty())){
 
     std::vector<PolynomialSugar> curr;
@@ -1008,7 +1008,7 @@ int select1(const GroebnerStrategy& strat, const Polynomial& p){
     return -1;
   else {
 #ifdef LEX_LEAD_RED_STRAT
-    if (BoolePolyRing::isLexicographical()){
+    if (BooleEnv::ordering().isLexicographical()){
       Exponent min=*(ms.expBegin());
       return strat.exp2Index.find(min)->second;
     }
@@ -1465,7 +1465,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
     
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
-    if (!(BoolePolyRing::isDegreeOrder()))
+    if (!(BooleEnv::ordering().isDegreeOrder()))
         p=nf3(strat,p, rest_lead);
     else{
         p=nf3_degree_order(strat,p,rest_lead);
@@ -1605,11 +1605,11 @@ class DegOrderHelper{
 };*/
 
 Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
-    if (BoolePolyRing::isLexicographical())
+    if (BooleEnv::ordering().isLexicographical())
         return red_tail_generic<LexHelper>(strat,p);
-    if (BoolePolyRing::isDegreeOrder())
+    if (BooleEnv::ordering().isDegreeOrder())
         return red_tail_generic<DegOrderHelper>(strat,p);
-    if (BoolePolyRing::isBlockOrder())
+    if (BooleEnv::ordering().isBlockOrder())
         return red_tail_generic<BlockOrderHelper>(strat,p);
     return red_tail_general(strat,p);
 }
@@ -1661,7 +1661,7 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
       return p;
   typedef PBORI::CacheManager<CCacheTypes::ll_red_nf>
     cache_mgr_type;
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(p.diagram().manager());
   MonomialSet::navigator cached =
     cache_mgr.find(p_nav,r_nav);
   if (cached.isValid()) return MonomialSet(cached);
@@ -1712,7 +1712,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     assert (p_index=*p_nav);
     typedef PBORI::CacheManager<CCacheTypes::plug_1>
       cache_mgr_type;
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(p.diagram().manager());
     MonomialSet::navigator cached =
       cache_mgr.find(p_nav,m_nav);
     if (cached.isValid()) return MonomialSet(cached);
@@ -2328,7 +2328,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 
   typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
     cache_mgr_type;
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(as.manager());
   MonomialSet::navigator cached =
     cache_mgr.find(a, v);
   if (cached.isValid()) return cached;
@@ -2353,7 +2353,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 }
 Polynomial GroebnerStrategy::nf(Polynomial p) const{
     if (p.isZero()) return p;
-    if (BoolePolyRing::isDegreeOrder()) return nf3_degree_order(*this,p,p.lead());
+    if (BooleEnv::ordering().isDegreeOrder()) return nf3_degree_order(*this,p,p.lead());
     else return nf3(*this,p,p.lead());
 }
 END_NAMESPACE_PBORIGB

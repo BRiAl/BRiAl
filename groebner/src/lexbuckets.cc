@@ -100,7 +100,7 @@ void LexBucket::increaseTailStart(idx_type new_start){
   
 }
 void LexBucket::updateTailStart(){
-  if (front.isConstant()) {tail_start=BoolePolyRing::nRingVariables()+1; return;}
+  if (front.isConstant()) {tail_start=BooleEnv::ring().nVariables()+1; return;}
   idx_type front_idx=(*(front.navigation()));
   tail_start=front_idx - (front_idx % var_group_size) + var_group_size;
 }

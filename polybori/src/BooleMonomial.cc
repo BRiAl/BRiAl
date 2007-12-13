@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.15  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -73,7 +76,7 @@
 # include "BooleExponent.h"
 
 // get ring definitions
-# include "BoolePolyRing.h"
+#include "BooleEnv.h"
 # include "OrderedManager.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -84,7 +87,7 @@ BEGIN_NAMESPACE_PBORI
 
 // Default constructor
 BooleMonomial::BooleMonomial():
-  m_poly( BoolePolyRing::ringOne() )  {
+  m_poly( BooleEnv::one() )  {
 
   PBORI_TRACE_FUNC( "BooleMonomial()" );
 
@@ -183,7 +186,7 @@ BooleMonomial::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::compare(const self& rhs) const" );
 
-  return BoolePolyRing::activeOrdering().compare(*this, rhs);
+  return BooleEnv::ordering().compare(*this, rhs);
 
 //   /// @todo Up to now, this is for lexicographic order only.
 //   if (*this == rhs)
@@ -345,7 +348,7 @@ greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
   PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
 
   return
-    (BoolePolyRing::activeOrdering().compare(lhs, rhs)==CTypes::greater_than);
+    (BooleEnv::ordering().compare(lhs, rhs)==CTypes::greater_than);
 }
 
 // Get exponent vector

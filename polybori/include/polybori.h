@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.10  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -56,6 +59,7 @@
 
 #include "BooleSet.h"
 #include "BoolePolyRing.h"
+#include "BooleEnv.h"
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
 #include "BooleVariable.h"
@@ -66,4 +70,5 @@
 #include "CExpIter.h"
 
 #include "pbori_algorithms.h"
+
 #endif // of #ifndef polybori_h_

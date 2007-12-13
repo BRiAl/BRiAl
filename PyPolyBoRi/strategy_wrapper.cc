@@ -235,7 +235,7 @@ void export_strategy(){
   .def("npairs", npairs);
   def("translate_indices",translate_indices);
   def("mult_fast_sim_C",mult_fast_sim);
-  def("set_variable_name",&BoolePolyRing::setRingVariableName);
+  def("set_variable_name",&BooleEnv::setVariableName);
   def("mod_var_set",mod_var_set);
   def("interpolate",interpolate);
   def("interpolate_smallest_lex",interpolate_smallest_lex);

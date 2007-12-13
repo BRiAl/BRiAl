@@ -18,6 +18,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.27  2007/12/13 15:53:50  dreyer
+// CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+//
 // Revision 1.26  2007/11/06 15:03:43  dreyer
 // CHANGE: More generic copyright
 //
@@ -161,26 +164,26 @@ void test_ordered(CTypes::ordercode_type order_marker) {
   BoolePolyRing ring(5, order_marker);
 
   std::cout << "order code?" <<std::endl;
-  std::cout << BoolePolyRing::getOrderCode();
+  std::cout << BooleEnv::ordering().getOrderCode();
   std::cout<<" (should be: "<< order_marker<<")" <<std::endl;
 
 
   std::cout << "is lexicographical?" <<std::endl;
-  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+  std::cout << BooleEnv::ordering().isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+  std::cout << BooleEnv::ordering().orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
-  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << BooleEnv::ordering().isSymmetric() <<std::endl;  
   std::cout << "is degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isTotalDegreeOrder() <<std::endl;  
   std::cout << "has descending variables?" <<std::endl;
-  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().descendingVariables() <<std::endl;  
   std::cout << "has ascending variables?" <<std::endl;
-  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().ascendingVariables() <<std::endl;  
 
   BooleMonomial x = BooleVariable(0);
   BooleMonomial y = BooleVariable(1);
@@ -234,21 +237,21 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
   BoolePolyRing ring(5, order_marker);
 
   std::cout << "is lexicographical?" <<std::endl;
-  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+  std::cout << BooleEnv::ordering().isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+  std::cout << BooleEnv::ordering().orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
-  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << BooleEnv::ordering().isSymmetric() <<std::endl;  
   std::cout << "is degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isTotalDegreeOrder() <<std::endl;  
   std::cout << "has descending variables?" <<std::endl;
-  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().descendingVariables() <<std::endl;  
   std::cout << "has ascending variables?" <<std::endl;
-  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().ascendingVariables() <<std::endl;  
 
   BooleMonomial x = BooleVariable(0);
   BooleMonomial y = BooleVariable(1);
@@ -287,7 +290,7 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
 
   std::cout <<std::endl<< "CHANGE ordering!"<<std::endl;
 
-  BoolePolyRing::changeOrdering(changed_order);
+  BooleEnv::changeOrdering(changed_order);
 
  std::cout << "boundedLead(deg()) " << poly.boundedLead(poly.deg())
             <<std::endl;
@@ -353,7 +356,7 @@ main(){
   std::cout << "sizeof(void*)"<<sizeof(void*) << std::endl;
 
   try{
-    BoolePolyRing::ring();
+    //    BooleEnv::ordering().ring();
   }
   catch(PBoRiError err){
     std::cout << "Exception caught sucessfully: "<<err.text() <<std::endl;
@@ -374,28 +377,28 @@ main(){
   std::cout << "Variable 3:"<<std::endl;
   ((CTypes::dd_base)ring.variable(3)).print(3, verbosity);
 
-  BoolePolyRing::printInfo();
+  BooleEnv::printInfo();
 
   std::cout << "is lexicographical?" <<std::endl;
-  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+  std::cout << BooleEnv::ordering().isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+  std::cout << BooleEnv::ordering().orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
-  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << BooleEnv::ordering().isSymmetric() <<std::endl;  
 
   std::cout << "is degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isTotalDegreeOrder() <<std::endl;  
   std::cout << "has descending variables?" <<std::endl;
-  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().descendingVariables() <<std::endl;  
   std::cout << "has ascending variables?" <<std::endl;
-  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().ascendingVariables() <<std::endl;  
 
   try{
-    BoolePolyRing::ring();
+    //    BooleEnv::ordering().ring();
   }
   catch(PBoRiError err){
     std::cout << "Warning! Accessing global ring failed. ";
@@ -407,21 +410,21 @@ main(){
   std::cout << "Testing DegLex ring... "<<std::endl;;
 
   std::cout << "is lexicographical?" <<std::endl;
-  std::cout << BoolePolyRing::isLexicographical() <<std::endl;
+  std::cout << BooleEnv::ordering().isLexicographical() <<std::endl;
 
   std::cout << "is ordered?" <<std::endl;
-  std::cout << BoolePolyRing::orderedStandardIteration() <<std::endl;
+  std::cout << BooleEnv::ordering().orderedStandardIteration() <<std::endl;
 
   std::cout << "is symmetric?" <<std::endl;
-  std::cout << BoolePolyRing::isSymmetric() <<std::endl;  
+  std::cout << BooleEnv::ordering().isSymmetric() <<std::endl;  
   std::cout << "is degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isDegreeOrder() <<std::endl;  
   std::cout << "is total degree ordering?" <<std::endl;
-  std::cout << BoolePolyRing::isTotalDegreeOrder() <<std::endl;  
+  std::cout << BooleEnv::ordering().isTotalDegreeOrder() <<std::endl;  
   std::cout << "has descending variables?" <<std::endl;
-  std::cout << BoolePolyRing::descendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().descendingVariables() <<std::endl;  
   std::cout << "has ascending variables?" <<std::endl;
-  std::cout << BoolePolyRing::ascendingVariables() <<std::endl;  
+  std::cout << BooleEnv::ordering().ascendingVariables() <<std::endl;  
 
   BooleMonomial x = BooleVariable(0);
   BooleMonomial y = BooleVariable(1);
@@ -547,21 +550,21 @@ main(){
       std::cout<<  "Test Variablenames"<< std::endl;
 
       std::cout <<"x(0)? "<<
-        BoolePolyRing::getRingVariableName(0) <<std::endl;
+        BooleEnv::manager().getVariableName(0) <<std::endl;
       std::cout.flush();
-      BoolePolyRing::setRingVariableName(0, "X");
+      BooleEnv::manager().setVariableName(0, "X");
       std::cout <<"X? "<<
-        BoolePolyRing::activeManager().getVariableName(0) <<std::endl;
+        BooleEnv::manager().getVariableName(0) <<std::endl;
 
       std::cout <<"Testing cache flushing..." <<std::endl;
       std::cout.flush();
-      BoolePolyRing::clearRingCache();
+      BooleEnv::ring().clearCache();
 
       std::cout << "Finished." <<std::endl;
 
 
   try{
-    BoolePolyRing::ring();
+    BooleEnv::ring();
   }
   catch(PBoRiError err){
     std::cout << "Warning! Accessing global ring failed. ";

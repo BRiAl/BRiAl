@@ -276,7 +276,7 @@ libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 # Stuff for building PolyBoRi's C++ part
 ######################################################################
 
-pb_src=Split("""BoolePolyRing.cc BoolePolynomial.cc BooleVariable.cc
+pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
     CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc
     BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
     CCuddGetNode.cc BooleExponent.cc DegLexOrder.cc DegRevLexAscOrder.cc
@@ -525,7 +525,7 @@ if 'distribute' in COMMAND_LINE_TARGETS:
     srcs += glob(TestsPath('py/*.py'))
 
     for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
-    rtpblocks.py rundummy.py specialsets2.py"""):
+    rtpblocks.py runstas1.py rundummy.py specialsets2.py"""):
         for file in glob(TestsPath('py', exclsrc)):
             srcs.remove(file)
         

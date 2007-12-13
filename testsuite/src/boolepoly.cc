@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.29  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -193,7 +196,7 @@ main(){
     std::cout << poly <<std::endl;
 
     std::cout << "Node count: "<< poly.nNodes() <<std::endl;
-    std::cout << "N: "<< BoolePolyRing::nRingVariables() <<std::endl;
+    std::cout << "N: "<< BooleEnv::nVariables() <<std::endl;
 
     std::cout << std::endl << "(x*v + y*v + z )* (v*y): " <<std::endl;
     std::cout <<  (x*v + y*v + z )* (v*y) <<std::endl;
@@ -338,10 +341,10 @@ main(){
     std::cout <<std::endl<<  "Going on..."<<std::endl;
 
     CCacheManagement<CCacheTypes::dp_asc_lead> 
-      test_marker(BoolePolyRing::activeManager().manager());
+      test_marker(BooleEnv::manager().manager());
 
     CCacheManagement<CCacheTypes::dlex_lead> 
-      test_marker2(BoolePolyRing::activeManager().manager());
+      test_marker2(BooleEnv::manager().manager());
 
     std::cout <<  (( test_marker.find( poly.navigation() )).getNode()==NULL)<<std::endl;
 

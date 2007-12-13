@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.16  2007/11/06 15:03:42  dreyer
  * CHANGE: More generic copyright
  *
@@ -272,8 +275,8 @@ main(){
 
     unsigned next_block[3] = {4, 6, CUDD_MAXINDEX};
 
-    BoolePolyRing::appendRingBlock(4);
-    BoolePolyRing::appendRingBlock(6);
+    BooleEnv::appendBlock(4);
+    BooleEnv::appendBlock(6);
 
 
     std::cout << dd_block_degree_lead(cache_mgr, blockDegCache, navi, 
@@ -508,14 +511,16 @@ main(){
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
     std::cout.flush();
     
-    std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl; 
+    std::cout << "last begin: "<<BooleEnv::ring().lastBlockStart()<<std::endl; 
 
 
 
 
 
-    BoolePolyRing::block_iterator start(BoolePolyRing::blockRingBegin()), 
-      finish(BoolePolyRing::blockRingEnd());
+    BoolePolyRing::block_iterator
+      start(BooleEnv::ordering().blockBegin()), 
+      finish(BooleEnv::ordering().blockBegin());
+
 
     std::cout << "Upper blocks endpints: ";
 
@@ -524,22 +529,22 @@ main(){
       ++start;
     }
     std::cout<< std::endl << "lieInSameBlock(0, 3): "<<
-      BoolePolyRing::lieInSameBlock(0, 3) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(0, 3) << std::endl;
 
     std::cout << "lieInSameBlock(0, 4): "<<
-      BoolePolyRing::lieInSameBlock(0, 4) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(0, 4) << std::endl;
 
     std::cout << "lieInSameBlock(4,5): "<<
-      BoolePolyRing::lieInSameBlock(4,5) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(4,5) << std::endl;
 
     std::cout << "lieInSameBlock(4,6): "<<
-      BoolePolyRing::lieInSameBlock(4,6) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(4,6) << std::endl;
 
     std::cout << "lieInSameBlock(3,1000): "<<
-      BoolePolyRing::lieInSameBlock(3,1000) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(3,1000) << std::endl;
 
     std::cout << "lieInSameBlock(7,1000): "<<
-      BoolePolyRing::lieInSameBlock(7,1000) << std::endl;
+      BooleEnv::ordering().lieInSameBlock(7,1000) << std::endl;
 
     std::cout << std::endl;
 
@@ -548,7 +553,7 @@ main(){
     std::cout << "Switching to lex:  " <<std::endl;
     
     
-    BoolePolyRing::changeOrdering(CTypes::lp);
+    BooleEnv::changeOrdering(CTypes::lp);
     
     std::cout <<  monom1<< " < " << monom2<<" " ;
     std::cout <<  (monom1 < monom2) <<std::endl;
@@ -559,9 +564,9 @@ main(){
     std::cout << "Testing== " <<std::endl;  
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
 
-    std::cout << "last begin: "<<BoolePolyRing::lastBlockStart()<<std::endl;
+    std::cout << "last begin: "<<BooleEnv::ring().lastBlockStart()<<std::endl;
 
-    std::cout << "base order code: "<<BoolePolyRing::getBaseOrderCode()
+    std::cout << "base order code: "<<BooleEnv::ordering().getBaseOrderCode()
               << std::endl;
  
 

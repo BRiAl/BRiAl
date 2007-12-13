@@ -114,7 +114,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
   #ifndef DANGEROUS_FIXED_PATH
   typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
     cache_mgr_type;
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(a.manager());
   #else
 //   typedef PBORI::CacheManager<CCacheTypes::divisorsof>
   //  cache_mgr_type;
@@ -140,7 +140,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
   typedef PBORI::CacheManager<CCacheTypes::divisorsof>
     cache_mgr_type2;
 
-  cache_mgr_type2 cache_mgr2;
+  cache_mgr_type2 cache_mgr2(a.manager());
   
   cached =
     cache_mgr2.find(a_nav, m_nav);
@@ -197,7 +197,7 @@ MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
     typedef PBORI::CacheManager<CCacheTypes::mod_varset>
       cache_mgr_type;
 
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(as.manager());
 
     MonomialSet::navigator cached =
       cache_mgr.find(a, v);
@@ -232,7 +232,7 @@ MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs){
   if (v.isConstant()) return as;
   typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
     cache_mgr_type;
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(as.manager());
   MonomialSet::navigator cached =
     cache_mgr.find(a, v);
   if (cached.isValid()) return cached;
@@ -259,7 +259,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     typedef PBORI::CacheManager<CCacheTypes::contained_variables>
       cache_mgr_type;
 
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(m.manager());
 
 
     while (!(nav.isConstant())){
@@ -296,7 +296,7 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
     typedef PBORI::CacheManager<CCacheTypes::contained_deg2>
       cache_mgr_type;
 
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(m.manager());
 
 
     if (!(nav.isConstant())){
@@ -315,7 +315,7 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
 }
 
 static bool have_ordering_for_tables(){  
-    const int order_code=BoolePolyRing::getOrderCode();
+    const int order_code=BooleEnv::ordering().getOrderCode();
     #ifdef HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
@@ -331,7 +331,7 @@ static bool have_ordering_for_tables(){
     return false;
 }
 static bool have_base_ordering_for_tables(){  
-    const int order_code=BoolePolyRing::getBaseOrderCode();
+    const int order_code=BooleEnv::ordering().getBaseOrderCode();
     #ifdef HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
@@ -640,7 +640,7 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
 
 void PolyEntry::recomputeInformation(){
   assert(this->lm==p.lead());
-  if (!(BoolePolyRing::isDegreeOrder()))
+  if (!(BooleEnv::ordering().isDegreeOrder()))
       this->deg=p.deg();
   //so also lmExp keeps constant
   this->length=p.length();
@@ -805,7 +805,7 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(a.diagram().manager());
 
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(a.navigation(), b.navigation());
@@ -863,7 +863,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
   typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
-  cache_mgr_type cache_mgr(PBORI::BoolePolyRing::activeManager());
+  cache_mgr_type cache_mgr(PBORI::BooleEnv::manager());
 
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(a.navigation(), b.navigation());
@@ -872,7 +872,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
 
   if (cached.isValid() ){
     result = (PBORI::CTypes::dd_type)
-      PBORI::CTypes::dd_base(get_mgr_core(PBORI::BoolePolyRing::activeManager().manager()),
+      PBORI::CTypes::dd_base(get_mgr_core(PBORI::BooleEnv::manager().manager()),
                              cached.getNode());
   }
   else {
@@ -1185,7 +1185,7 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
         std::vector<Exponent> exponents;
         //Pol sp=s;
         exponents.insert(exponents.end(), s.expBegin(),s.expEnd());
-        int nvars=BoolePolyRing::nRingVariables();
+        int nvars=BooleEnv::ring().nVariables();
         std::vector<std::vector<int> > occ_vecs(nvars);
         for(i=0;i<exponents.size()-1;i++){
             Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
@@ -1442,7 +1442,7 @@ static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, 
     return p;
 }
 static int get_table_entry4(int p_code, int pos){
-    switch(BoolePolyRing::getBaseOrderCode()){
+  switch(BooleEnv::ordering().getBaseOrderCode()){
         #ifdef HAVE_LP4_DATA
         case COrderEnums::lp:
             return lp4var_data[p_code][pos];
@@ -1464,7 +1464,7 @@ bool polynomial_in_one_block(const Polynomial p){
     if (p.isConstant()) return true;
     Monomial vars=p.usedVariables();
     
-    return BoolePolyRing::lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
+    return BooleEnv::ordering().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
 }
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
@@ -1480,7 +1480,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     Exponent e=p.leadExp();
     if (e.size()>4) cerr<<"too many variables for table"<<endl;
     
-    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
+    std::vector<char> ring_2_0123(BooleEnv::ring().nVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     unsigned int p_code=p2code_4(p, ring_2_0123);
@@ -1540,7 +1540,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
 
     Exponent e=lm_exp;//generators[s].lmExp;
 
-    std::vector<char> ring_2_0123(BoolePolyRing::nRingVariables());
+    std::vector<char> ring_2_0123(BooleEnv::ring().nVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
@@ -1780,7 +1780,7 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
 
 
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(m.manager());
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(m_nav);
 
@@ -1848,7 +1848,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
 
 
 
-  cache_mgr_type cache_mgr;
+  cache_mgr_type cache_mgr(m.manager());
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(m_nav, mod_nav);
 
@@ -2210,7 +2210,7 @@ Polynomial map_every_x_to_x_plus_one(Polynomial p){
     typedef PBORI::CacheManager<CCacheTypes::map_every_x_to_x_plus_one>
          cache_mgr_type;
     
-    cache_mgr_type cache_mgr;
+    cache_mgr_type cache_mgr(p.diagram().manager());
     MonomialSet::navigator cached=cache_mgr.find(nav);
     if (cached.isValid() ){
            return cached;
@@ -2476,7 +2476,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 }
 Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
     Polynomial::navigator nav=p.navigation();
-    idx_type last=BoolePolyRing::lastBlockStart();
+    idx_type last=BooleEnv::ring().lastBlockStart();
     if ((*nav)>=last) //includes constant polynomials
         return p;
     while ((*nav)<last){
@@ -2650,7 +2650,7 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& 
     }
 }
 int GroebnerStrategy::suggestPluginVariable(){
-    std::vector<int> ranking(BoolePolyRing::nRingVariables());
+    std::vector<int> ranking(BooleEnv::ring().nVariables());
     int s=ranking.size();
     int i;
     for(i=0;i<s;i++){ ranking[i]=0;}

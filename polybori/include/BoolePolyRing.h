@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2007/12/13 15:53:48  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.41  2007/12/11 15:37:34  dreyer
  * ADD: BooleOrdering started
  *
@@ -152,7 +155,7 @@
 
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
-  //#include "OrderedManager.h"
+#include "OrderedManager.h"
 
 
   // temporarily for work around
@@ -160,7 +163,6 @@
 
 #ifndef BoolePolyRing_h_
 #define BoolePolyRing_h_
-
 
 
 BEGIN_NAMESPACE_PBORI
@@ -173,50 +175,6 @@ class CDynamicOrderBase;
 
 class BooleExponent;
 class BooleMonomial;
-
-/** @class BooleOrdering
- * @brief This class is just a wrapper for using runtime-selectoable monomial
- * orderings.
- *
- **/
-
-class BooleOrdering:
-  public CTypes::orderenums_type, public CTypes::auxtypes_type {
-
-public:
-
-  typedef CDynamicOrderBase order_type;
-  typedef PBORI_SHARED_PTR(order_type) order_ptr;
-  typedef order_type& order_reference;
-  typedef BooleOrdering self;
-
-  /// Construct from pointer to manager
-  BooleOrdering(order_ptr);
-  BooleOrdering(const self&);
-
-  /// Construct new aordering from 
-  BooleOrdering(ordercode_type order = lp, 
-                bool_type make_active = true);
-
-  /// Access ordering of *this
-  order_reference ordering() const { return *pOrder; }
-
-  /// Access currently active ordering
-  static order_reference activeOrdering() { return *current_order; }
-
-  /// Make this global ordering
-  void activate() const { current_order = pOrder; }
-
-  /// Change active order
-  static void changeOrdering(ordercode_type);
-
-protected:
-  /// *Ordering of *this
-  order_ptr pOrder;
-
-  /// Active Ordering
-  static order_ptr current_order;
-};
 
 
 /** @class BoolePolyRing
@@ -235,7 +193,7 @@ class BoolePolyRing:
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
-
+  friend class BooleEnv;
   /// generic access to current type
   typedef BoolePolyRing self;
 
@@ -276,188 +234,77 @@ class BoolePolyRing:
                 ordercode_type order = lp,
                 bool_type make_active = true);
 
-  /// Construct from manager
-  //BoolePolyRing(const manager_type &);
-
-
-
-  /// Copy constructor
-  BoolePolyRing(const BoolePolyRing &);
-
   /// destructor
-  ~BoolePolyRing();
+  ~BoolePolyRing() {}
 
-  //-------------------------------------------------------------------------
-  // member operators
-  //-------------------------------------------------------------------------
-  /// Cast to base operator
-  // operator manager_type&();
-
-  //-------------------------------------------------------------------------
-  // other member functions
-  //-------------------------------------------------------------------------
   /// Access to decision diagram manager
-  manager_type& manager();
+  manager_type& manager() {  return *pMgr; }
 
   /// Constant access to decision diagram manager
-  const manager_type& manager() const;
-
-  /// Constant access to decision diagram manager
-  static manager_type& activeManager() { return *current_mgr; };
+  const manager_type& manager() const {  return *pMgr; }
 
   /// Access nvar-th variable of decision diagram manager
-  dd_type ddVariable(idx_type nvar) const;
+  dd_type ddVariable(idx_type nvar) const { return pMgr->ddVariable(nvar); }
 
-  /// Access nvar-th variable of the active ring
-  static dd_type ringDdVariable(idx_type nvar);
 
   /// Access nvar-th ring variable
-  dd_type variable(idx_type nvar) const;
-
-  /// Access nvar-th variable of the active ring
-  static dd_type ringVariable(idx_type nvar);
+  dd_type variable(idx_type nvar) const { return pMgr->variable(nvar); }
 
   /// Access nvar-th ring variable
-  dd_type persistentVariable(idx_type nvar) const;
-
-  /// Access nvar-th variable of the active ring
-  static dd_type persistentRingVariable(idx_type nvar);
+  dd_type persistentVariable(idx_type nvar) const { 
+    return pMgr->persistentVariable(nvar); 
+  }
 
   /// Get empty decision diagram 
-  dd_type zero() const;
-
-  /// Get empty decision diagram of the active ring
-  static dd_type ringZero();
+  dd_type zero() const { return pMgr->empty(); }
 
   /// Get decision diagram with all variables negated
-  dd_type one() const;
-
-  /// Get decision diagram with all variables negated of the active ring
-  static dd_type ringOne();
+  dd_type one() const { return pMgr->blank(); }
 
   /// Get number of ring variables
-  size_type nVariables() const;
-
-  /// Get number of ring variables the of active ring
-  static size_type nRingVariables();
-
-  /// Access current global ring setting
-  static self ring();
+  size_type nVariables() const { return pMgr->nVariables(); }
 
   /// Make this global ring
   void activate();
 
   /// Print out statistics and settings for current ring
-  static void printInfo();
+  void printInfo() {  return pMgr->printInfo(); }
 
-  /// Test whether current ring's ordering is lexicographical
-  static bool_type isLexicographical();
-
-  /// Test whether current ring's iterators respect the ordering 
-  static bool_type orderedStandardIteration();
-
-  ///  Test whether variable pertubation do not change the order
-  static bool_type isSymmetric();
-
-  /// Test whether we deal with a degree-ordering
-  static bool_type isDegreeOrder();
-
-  /// Test whether we deal with a block-ordering
-  static bool_type isBlockOrder();
-
-  /// Test whether we deal with a total degree-ordering
-  static bool_type isTotalDegreeOrder();
-
-  /// Test whether ordering is deg-rev-lex ordering
-  static bool_type isDegreeReverseLexicograpical();
-
-  /// Test whether variables are in ascending order
-  static bool_type ascendingVariables();
-
-  /// Test whether variables are in descending order
-  static bool_type descendingVariables();
-
-  /// Get numerical code for current ordering
-  static ordercode_type getOrderCode();
-
-  /// Get numerical code for current base ordering 
-  /// (the same for non-block orderings)
-  static ordercode_type getBaseOrderCode();
-
-  /// Check, whether two indices are in the same block 
-  static bool_type lieInSameBlock(idx_type, idx_type);
-
-  /// @name Comparison of monomials-like types
-  //@{
-  static comp_type compare(idx_type, idx_type);
-  static comp_type compare(const monom_type&, const monom_type&);
-  static comp_type compare(const exp_type&, const exp_type&);
-  //@}
 
   /// Change order of current ring
-  static void changeOrdering(ordercode_type);
-
-  /// Set name of variable with index idx
-  void setVariableName(idx_type idx, vartext_type varname);
-
-  /// Get name of variable with index idx
-  vartext_type getVariableName(idx_type idx);
-
-  /// Set name of variable with index idx
-  static void setRingVariableName(idx_type idx, vartext_type varname);
-
-  /// Get name of variable with index idx
-  static vartext_type getRingVariableName(idx_type idx);
+  void changeOrdering(ordercode_type);
 
   /// Clears the function cache
-  void clearCache();
-
-  ///  Clears the function cache of the current ring
-  static void clearRingCache();
+  void clearCache() { cuddCacheFlush(pMgr->manager().getManager()); }
 
 protected: 
-  /// Pointer to current global manager setting
-  static manager_ptr current_mgr;
-
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
   manager_ptr pMgr;
 
-  /// Work around, if we want to reuse Polynomials after order change
-#ifdef PBORI_KEEP_OLD_RINGS
-  static std::list<manager_ptr> old_rings;
-#endif 
-
-  typedef CDynamicOrderBase  order_type;
-  typedef order_type& order_reference;
-#if 0
-  order_ptr pOrder;
-  static order_ptr current_order;
-
-
-  /// Construct from pointer to manager
-  BoolePolyRing(manager_ptr pManager, order_ptr);
-
-  order_reference ordering() const { return *pOrder; }
-#endif 
-
-  /// Construct from pointer to manager
-  BoolePolyRing(manager_ptr pManager);
-
 public:
-
-  static order_reference activeOrdering() { 
-    return BooleOrdering::activeOrdering(); 
+  idx_type lastBlockStart() {
+    if (ordering().isBlockOrder()) {
+      return *(ordering().blockEnd() - 2);
+    }
+    else if (ordering().isLexicographical()) {
+      return CTypes::max_idx;
+    }
+    return 0;
   }
 
-  /// @name interface for block orderings
-  //@{
-  static block_iterator blockRingBegin();
-  static block_iterator blockRingEnd();
-  static void appendRingBlock(idx_type idx);
-  static void clearRingBlocks();
+  typedef CDynamicOrderBase order_type;
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+  typedef order_type& order_reference;
 
-  static idx_type lastBlockStart();
-  //@}
+  /// Access ordering of *this
+  order_reference ordering() const { return *pOrder; }
+protected:
+
+  /// *Ordering of *this
+  order_ptr pOrder;
+
+
+
 };
 
 END_NAMESPACE_PBORI

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.18  2007/11/06 15:03:43  dreyer
  * CHANGE: More generic copyright
  *
@@ -263,7 +266,7 @@ main(){
 
     std::list<CTypes::dd_type > theList;
 
-    dd_transform( navi, BoolePolyRing::ringOne(),  
+    dd_transform( navi, BooleEnv::one(),  
                   std::back_inserter(theList),
                   change_idx<CTypes::dd_type >() );
 
@@ -272,7 +275,7 @@ main(){
 
 
     std::cout <<std::endl<< "Printing via dd_transform: "<<std::endl;
-    dd_transform( navi, BoolePolyRing::ringOne(), 
+    dd_transform( navi, BooleEnv::one(), 
                   std::ostream_iterator<BoolePolynomial>(std::cout, ""),
                   change_idx<CTypes::dd_type, int> () );
 

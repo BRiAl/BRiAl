@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2007/12/13 15:53:48  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.14  2007/12/11 10:50:44  dreyer
  * Fix: BooleVariable()*BooleMonomial() now monomial
  *
@@ -71,7 +74,7 @@
 #include "pbori_defs.h"
 
 // get BoolePolynomial's definition
-#include "BoolePolyRing.h"
+#include "BooleEnv.h"
 #include "BooleMonomial.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -103,7 +106,7 @@ class BooleVariable {
 
   /// Constructor idx-th variable of active ring
   BooleVariable(idx_type idx = 0):
-    m_poly( BoolePolyRing::persistentRingVariable(idx) ) {}
+    m_poly( BooleEnv::persistentVariable(idx) ) {}
   
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.21  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -102,7 +105,7 @@
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>
 
-#include "BoolePolyRing.h"
+#include "BooleEnv.h"
 #include "CDegreeCache.h"
 #include "CBidirectTermIter.h"
 
@@ -116,7 +119,7 @@ BEGIN_NAMESPACE_PBORI
 //////////////////////////////////////////////////////////
 template<class NavigatorType>
 struct cached_deg {
-  cached_deg(): m_deg_cache(BoolePolyRing::activeManager()) {}
+  cached_deg(): m_deg_cache(BooleEnv::manager()) {}
 
   typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
@@ -142,8 +145,8 @@ public:
 
   cached_block_deg():
     //  m_indices(BoolePolyRing::blockRingBegin()), 
-    m_current_block(BoolePolyRing::blockRingBegin()),
-    m_deg_cache(BoolePolyRing::activeManager()) { }
+    m_current_block(BooleEnv::blockBegin()),
+    m_deg_cache(BooleEnv::manager()) { }
 
   typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
@@ -341,7 +344,7 @@ public:
   }
 
   void invalidate() {
-    push(BoolePolyRing::ringZero().navigation());
+    push(BooleEnv::zero().navigation());
   }
 
   void restart(navigator navi) {

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/12/13 15:53:50  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.6  2007/11/06 15:03:43  dreyer
  * CHANGE: More generic copyright
  *
@@ -107,16 +110,16 @@ main(){
     std::cout << "# usedVariables()"<<std::endl;
     std::cout << poly.nUsedVariables() <<std::endl;
 
-    poly = BoolePolyRing::ringVariable(3);
+    poly = BooleEnv::variable(3);
     std::cout <<std::endl << "Leading term of simple monomial "<<std::endl;
     std::cout << poly.lead() <<std::endl;
 
  
-    poly = BoolePolyRing::ringZero();
+    poly = BooleEnv::zero();
     std::cout << "Leading term of empty diagram "<<std::endl;
     std::cout << poly.lead() <<std::endl;
 
-    poly = BoolePolyRing::ringOne();
+    poly = BooleEnv::one();
     std::cout << "Leading term of constant polynomial one"<<std::endl;
     std::cout << poly.lead() <<std::endl;
 

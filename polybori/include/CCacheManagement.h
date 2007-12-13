@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2007/12/13 15:53:48  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.37  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -140,9 +143,6 @@
 
 // get DD navigation
 #include "CCuddNavigator.h"
-
-// get polynomial ring
-//#include "BoolePolyRing.h"
 
 // get standard functionality
 #include <functional>

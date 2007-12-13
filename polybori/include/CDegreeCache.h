@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2007/12/13 15:53:48  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.9  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -51,7 +54,7 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-#include "BoolePolyRing.h"
+#include "BooleEnv.h"
 
 #include "CCacheManagement.h"
 
@@ -106,7 +109,7 @@ public:
 protected:
 
   /// Get active manager
-  manager_type& manager() const { return BoolePolyRing::activeManager(); }
+  manager_type& manager() const { return BooleEnv::manager(); }
 
   /// Convert plain number to navigation type
   navigator toNode(idx_type idx) const {

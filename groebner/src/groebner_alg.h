@@ -174,12 +174,12 @@ public:
 		optStepBounded=false;
 		optAllowRecursion=true;
         optLinearAlgebraInLastBlock=true;
-        if (BoolePolyRing::isBlockOrder())
+        if (BooleEnv::ordering().isBlockOrder())
             optRedTailInLastBlock=true;
         else 
             optRedTailInLastBlock=false;
 
-		if (BoolePolyRing::isDegreeOrder())
+		if (BooleEnv::ordering().isDegreeOrder())
 			optLazy=false;
 		else
 			optLazy=true;

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.15  2007/12/07 17:06:19  dreyer
  * CHANGE: First try: ring and order separated
  *
@@ -337,7 +340,7 @@ BooleExponent::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::compare(const self& rhs) const" );
 
-  return BoolePolyRing::activeOrdering().compare(*this, rhs);
+  return BooleEnv::ordering().compare(*this, rhs);
 }
 
 // Degree of the lcm
@@ -444,7 +447,7 @@ BooleExponent::multiples(const self& multipliers) const {
 
   poly_type theZero(false);
   dd_type result = cudd_generate_multiples(theZero.diagram().manager(),
-                                            // BoolePolyRing::activeManager().manager() , //theZero.diagram().manager(),
+
                                             m_data.rbegin(), m_data.rend(),
                                             multipliers.rbegin(),
                                            multipliers.rend());

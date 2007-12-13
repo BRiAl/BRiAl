@@ -33,7 +33,7 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr;
+            cache_mgr_type cache_mgr(m.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
                    return cached;
@@ -75,7 +75,7 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
             if (*nav_r!=*nav_l) return 0;
             
             
-            cache_mgr_type cache_mgr;
+            cache_mgr_type cache_mgr(left.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav_l,nav_r, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
                    return cached;
@@ -117,7 +117,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_y>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr;
+            cache_mgr_type cache_mgr(m.manager());
             MonomialSet::navigator x_nav=((Polynomial) x).diagram().navigation();
             MonomialSet::navigator y_nav=((Polynomial) y).diagram().navigation();
             MonomialSet::navigator cached=cache_mgr.find(nav, x_nav,y_nav);
@@ -158,7 +158,7 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_one>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr;
+            cache_mgr_type cache_mgr(m.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
                    return cached;
@@ -245,7 +245,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 while(other_it!=other_end){
                     
                     idx_type v2=*other_it;
-                    if (UNLIKELY(BoolePolyRing::compare(v, v2)!=BoolePolyRing::greater_than)){
+                    if (UNLIKELY(BooleEnv::ordering().compare(v, v2)!=BoolePolyRing::greater_than)){
                         ++other_it;
                         continue;
                     }
@@ -262,7 +262,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                     if (has_factor_x_plus_y(r,v,v2_var)){
                     #endif
                     
-                        assert(BoolePolyRing::compare(v, v2)==BoolePolyRing::greater_than);
+                      assert(BooleEnv::ordering().compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
                         assert(r.subset1(v2).change(v2)==r.subset0(v));
                         assert(r.subset1(v2).subset1(v).emptiness());

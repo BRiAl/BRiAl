@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.20  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -88,7 +91,6 @@
 
  
 #include "BoolePolynomial.h"
-#include "BoolePolyRing.h"
 #include "OrderedManager.h"
 #include "CDelayedTermIter.h"
 #include "CBidirectTermIter.h"

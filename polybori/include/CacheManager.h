@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/12/13 15:53:49  dreyer
+ * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
+ *
  * Revision 1.2  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -35,15 +38,13 @@
 // get internal cache management classes
 #include "CCacheManagement.h"
 
-// get defintions of polynomial ring
-#include "BoolePolyRing.h"
 
 #ifndef CacheManager_h_
 #define CacheManager_h_
 
 BEGIN_NAMESPACE_PBORI
 
-
+class BooleEnv;
 template <class CacheType, unsigned ArgumentLength = CacheType::nargs>
 class CacheManager:
   public CCacheManagement<CacheType, ArgumentLength> {
@@ -54,7 +55,7 @@ public:
   typedef typename base::manager_type manager_type;
 
   /// (Default) Constructor
-  CacheManager(const manager_type& mgr = BoolePolyRing::activeManager()):
+  CacheManager(const manager_type& mgr):
     base(mgr) {}
 
   /// Destructor
@@ -77,8 +78,7 @@ public:
   typedef typename base::manager_type manager_type;
 
   /// (Default) Constructor
-  CommutativeCacheManager(const manager_type& mgr = 
-                          BoolePolyRing::activeManager()):
+  CommutativeCacheManager(const manager_type& mgr):
     base(mgr) {}
 
   /// Destructor
