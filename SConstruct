@@ -301,7 +301,7 @@ libpbShared = slib(PBPath('polybori'), list(shared_resources))
 # Stuff for building Groebner library
 ######################################################################
 
-gb_src=Split("groebner.cc literal_factorization.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
+gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src=[GBPath('src', source) for source in gb_src]+m4ri
 gb=env.StaticLibrary(GBPath('groebner'), gb_src+[libpb])
 
