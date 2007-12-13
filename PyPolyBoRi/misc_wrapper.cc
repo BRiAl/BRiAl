@@ -40,5 +40,6 @@ void export_misc(){
   def("testvalidstrat",testvalidstrat);
   def("count_double",count_double);
   def("random_set",random_set);
-  def("variety_leading_terms",variety_leading_terms);
+  def("variety_lex_leading_terms",variety_lex_leading_terms);
+  def("variety_lex_groebner_basis",variety_lex_groebner_basis);
 }

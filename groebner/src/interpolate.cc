@@ -13,6 +13,27 @@
 #include "randomset.h"
 #include "nf.h"
 BEGIN_NAMESPACE_PBORIGB
+
+std::vector<Polynomial> variety_lex_groebner_basis(const MonomialSet& points,const Monomial & variables){
+    MonomialSet leads=variety_lex_leading_terms(points,variables);
+    std::vector<Polynomial> res;
+    MonomialSet::const_iterator it=leads.begin();
+    MonomialSet::const_iterator end=leads.end();
+    while(it!=end){
+        Monomial lm=*it;
+        Polynomial p=nf_lex_points(lm,points);
+        res.push_back(lm+p);
+        ++it;
+    }
+    return res;
+}
+        
+
+            
+MonomialSet nf_lex_points(const Polynomial& f,const MonomialSet& p){
+    MonomialSet z=zeroes(f,p);
+    return interpolate_smallest_lex(z,p.diff(z));
+}
 MonomialSet gen_random_subset(const std::vector<Monomial>& vec,bool_gen_type& bit_gen){
     std::vector<Monomial> chosen;
     std::vector<Monomial>::const_iterator it=vec.begin();
@@ -29,7 +50,7 @@ MonomialSet random_interpolation(const MonomialSet& as_set, const std::vector<Mo
     MonomialSet s1=gen_random_subset(as_vector,bit_gen);
     return interpolate_smallest_lex(as_set.diff(s1),s1);
 }
-MonomialSet variety_leading_terms(const MonomialSet& points, const Monomial& variables){
+MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial& variables){
     base_generator_type generator(static_cast<unsigned int>(std::time(0)));
     std::vector<Monomial> points_vec(points.size());
     std::copy(points.begin(),points.end(),points_vec.begin());

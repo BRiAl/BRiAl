@@ -1,6 +1,4 @@
-if __name__=='__main__':
-    import pathadjuster
-from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else
+from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else, Monomial
 def all_monomials_of_degree_d(d,variable_indices):
     if d==0:
         return Polynomial(1).set()
@@ -47,3 +45,10 @@ if __name__=='__main__':
             (x(1)*x(2)+x(1)+1).set(),
             all_monomials_of_degree_d(2,range(1000))))
     print list(mod_mon_set(power_set(range(50)),all_monomials_of_degree_d(2,range(1000))))
+def monomial_from_indices(indices):
+    l=sorted(indices,reverse=True)
+    res=Monomial()
+    for i in l:
+        res=res*Variable(i)
+        
+    return res

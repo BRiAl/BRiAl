@@ -1,6 +1,5 @@
 # Copyright (c) 2005-2007 by The PolyBoRi Team
 import sys
-import pathadjuster
 from polybori.PyPolyBoRi import *
 from polybori.randompoly import gen_random_poly
 from random import Random
@@ -76,8 +75,9 @@ def variety_lex_leading_terms(points,variables):
     standards_old=standards
     while len_standards<len(points):
         standards=standards.union(gen_random_o_z(points_tuple,points))
-        standards=BooleSet(standards).includeDivisors()
+        
         if standards_old!=standards:
+            standards=BooleSet(standards).includeDivisors()
             len_standards=len(standards)
             standards_old=standards
 

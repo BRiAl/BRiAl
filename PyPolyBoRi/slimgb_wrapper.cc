@@ -21,17 +21,12 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
 void export_slimgb(){
-  boost::python::class_<slimgb_reduction_type>("SlimgbReduction")
-  .def(init<slimgb_reduction_type>())
-  .def(init<GroebnerStrategy&>())
-  .def("addPolynomial", &slimgb_reduction_type::addPolynomial)
-  .def("nextResult", &slimgb_reduction_type::nextResult)
-  .def_readonly("result",&slimgb_reduction_type::result)
-  
-  .def("reduce", &slimgb_reduction_type::reduce);
+
   class_ <std::vector<BoolePolynomial> >("BoolePolynomialVector")
-    .def(vector_indexing_suite<std::vector<BoolePolynomial> >());
+    .def(vector_indexing_suite<std::vector<BoolePolynomial> >())
+    .def(self==self);
   class_ <std::vector<int> >("IntVector")
+    .def(self==self)
     .def(vector_indexing_suite<std::vector<int> >());
   def("parallel_reduce", parallel_reduce);
   def("red_tail", red_tail);

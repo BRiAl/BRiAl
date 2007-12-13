@@ -8,3 +8,4 @@ from polybori.gbcore import groebner_basis
 from polybori.blocks import declare_ring
 from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
 from polybori.gbrefs import load_file
+from polybori.specialsets import *
