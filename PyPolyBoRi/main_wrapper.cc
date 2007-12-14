@@ -42,12 +42,18 @@ bool have_degree_order(){
   return BooleEnv::ordering().isDegreeOrder();
 }
 
-BooleVariable ring_var(const BoolePolyRing&, BooleVariable::idx_type idx) {
-  return BooleVariable(idx);
+
+BoolePolynomial
+ring_var(const BoolePolyRing& ring, BooleVariable::idx_type idx) {
+  return ring.variable(idx);
 }
-BooleMonomial ring_one(const BoolePolyRing&) {
-  return BooleMonomial(true);
+BoolePolynomial ring_one(const BoolePolyRing& ring) {
+  return ring.one();
 }
+BoolePolynomial ring_zero(const BoolePolyRing& ring) {
+  return ring.zero();
+}
+
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -99,6 +105,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 //#ifdef WRAP_ALSO_CUUD
   .def("var", ring_var)
   .def("one", ring_one)
+  .def("zero", ring_zero)
 //#endif
   .def("nVars", &BoolePolyRing::nVariables);
 

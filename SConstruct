@@ -317,7 +317,6 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
 #Default(libgbShared)
 
-
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
   "booleset", "blocknavi", "termaccu" ]
@@ -540,12 +539,11 @@ if 'distribute' in COMMAND_LINE_TARGETS:
     srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
     env.Alias('distribute', srcdistri)
     
-
+devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
     DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
     
-    devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
     env.Install(DevelInstPath('lib'), devellibs)
     env.Install(DevelInstPath('include/polybori'), glob(PBPath('include/*.h')))
     env.Install(DevelInstPath('include/polybori/groebner'),
@@ -816,3 +814,4 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
 
+env.Alias('prepare-devel', devellibs)
