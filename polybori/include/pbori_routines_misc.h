@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2007/12/14 15:05:59  dreyer
+ * Fix: merged bug fixes from sf.net
+ *
  * Revision 1.35  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -276,6 +279,35 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 
 }
 
+template<class PolyType>
+class dd_generator {
+
+public:
+  typedef PolyType poly_type;
+  typedef typename poly_type::dd_type dd_type;
+  typedef typename dd_type::mgr_ref mgr_ref;
+  typedef typename poly_type::navigator navigator;
+
+  dd_generator(const poly_type& poly):
+    m_mgr(poly.diagram().manager()) { }
+
+  template <class NaviType>
+  poly_type operator()(const NaviType& navi) const {
+    return  dd_type(m_mgr, navi);
+  }
+  template <class IdxType>
+  poly_type operator()(IdxType idx, 
+                       const navigator& first, const navigator& second) const {
+    return  dd_type(m_mgr, idx, first, second);
+  }
+  template <class IdxType>
+  poly_type operator()(IdxType idx, 
+                       const dd_type& first, const dd_type& second) const {
+    return  dd_type(idx, first, second);
+  }
+
+  mgr_ref m_mgr;
+};
 
 
 template <class CacheType, class NaviType, class PolyType>
@@ -283,7 +315,8 @@ PolyType
 dd_multiply_recursively(const CacheType& cache_mgr,
                         NaviType firstNavi, NaviType secondNavi, PolyType init){
   // Extract subtypes
-  typedef typename PolyType::set_type dd_type;
+  dd_generator<PolyType> dd_type(init);
+
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
@@ -383,11 +416,11 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                     //init=0, which is init
                 }
                 else {
-                    PolyType as01=(PolyType(as0)+PolyType(as1));
+                    PolyType as01=(PolyType(dd_type(as0))+PolyType(dd_type(as1)));
                     init=dd_type(index,dd_multiply_recursively(cache_mgr,as01.navigation(),bs1,init).diagram(),init.diagram());
                 }
             } else {*/
-            PolyType bs01=(PolyType(bs0)+PolyType(bs1));
+          PolyType bs01=(PolyType(dd_type(bs0))+PolyType(dd_type(bs1)));
             init=dd_type(index,(dd_multiply_recursively(cache_mgr,bs01.navigation(),as1,init)+ 
                     dd_multiply_recursively(cache_mgr, as0, bs1, init)).diagram(),
                 dd_multiply_recursively(cache_mgr, 
@@ -411,8 +444,9 @@ PolyType
 dd_multiply_recursively(const CacheType& cache_mgr,
                         NaviType monomNavi, NaviType navi, PolyType init,
                         MonomTag monom_tag ){
+
+  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
-  typedef typename PolyType::set_type dd_type;
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
@@ -486,7 +520,7 @@ PolyType
 dd_multiply_recursively_exp(Iterator start, Iterator finish,
                             NaviType navi, PolyType init){
   // Extract subtypes
-  typedef typename PolyType::set_type dd_type;
+  dd_generator<PolyType> dd_type(init);
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
@@ -677,22 +711,23 @@ TermType
 dd_existential_abstraction(const CacheType& cache_mgr, 
                            NaviType varsNavi, NaviType navi, TermType init){
 
+  dd_generator<TermType> set_type(init);
   typedef typename TermType::idx_type idx_type;
 
   if (navi.isConstant()) 
-    return navi;
+    return set_type(navi);
 
   idx_type index(*navi);
   while (!varsNavi.isConstant() && ((*varsNavi) < index))
     varsNavi.incrementThen();
 
   if (varsNavi.isConstant())
-    return navi;
+    return set_type(navi);
 
   // Check cache for previous result
   NaviType cached = cache_mgr.find(varsNavi, navi);
   if (cached.isValid()) 
-    return cached;
+    return set_type(cached);
 
   NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch()); 
 
@@ -706,9 +741,9 @@ dd_existential_abstraction(const CacheType& cache_mgr,
     init = thenResult.unite(elseResult);
   else if ( (thenResult.navigation() == thenNavi) && 
             (elseResult.navigation() == elseNavi)  )
-    init = navi;
+    init = set_type(navi);
   else
-    init = TermType(index, thenResult, elseResult);
+    init = set_type(index, thenResult, elseResult);
 
   // Insert result to cache
   cache_mgr.insert(varsNavi, navi, init.navigation());
@@ -722,8 +757,9 @@ template <class CacheType, class NaviType, class PolyType>
 PolyType
 dd_divide_recursively(const CacheType& cache_mgr,
                       NaviType navi, NaviType monomNavi,PolyType init){
+
+  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
-  typedef typename PolyType::set_type dd_type;
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
@@ -740,7 +776,8 @@ dd_divide_recursively(const CacheType& cache_mgr,
     return init;
 
   if (monomNavi == navi)
-    return PolyType(1);
+    return (init + 1);// workaround to ensure that resulting manager (ring is
+                      // from init
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(navi, monomNavi);
@@ -786,8 +823,8 @@ PolyType
 dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
                           PolyType init){
 
+  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
-  typedef typename PolyType::set_type dd_type;
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
@@ -905,5 +942,88 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 
   return result;
 }
+
+
+/// @func dd_first_divisors_of
+/// Function templates extracting the terms of a given decision diagram contain
+/// which contains only indices from first lexicographical path in 
+/// Note: Replacement for dd_intersect_some_index
+template <class CacheManager, class NaviType, class SetType>
+SetType
+dd_first_divisors_of(CacheManager cache_mgr, NaviType navi, 
+                     NaviType rhsNavi, SetType init ) {
+
+  dd_generator<SetType> set_type(init);
+
+  while( (!navi.isConstant()) && (*rhsNavi != *navi) ) {
+
+    if ( (*rhsNavi < *navi) && (!rhsNavi.isConstant()) ) 
+      rhsNavi.incrementThen();
+    else 
+      navi.incrementElse();  
+  }
+
+  if (navi.isConstant())        // At end of path
+    return set_type(navi);
+
+  // Look up, whether operation was already used
+  NaviType result = cache_mgr.find(navi, rhsNavi);
+    
+  if (result.isValid())       // Cache lookup sucessful
+    return  set_type(result);
+  
+  assert(*rhsNavi == *navi);
+   
+  // Compute new result
+  init = set_type(*rhsNavi,  
+                 dd_first_divisors_of(cache_mgr, 
+                                      navi.thenBranch(), rhsNavi, init),
+                 dd_first_divisors_of(cache_mgr, 
+                                      navi.elseBranch(), rhsNavi, init) );
+  // Insert result to cache
+  cache_mgr.insert(navi, rhsNavi, init.navigation());
+
+  return init;
+}
+
+template <class CacheType, class NaviType, class SetType>
+SetType
+dd_first_multiples_of(const CacheType& cache_mgr,
+                      NaviType navi, NaviType rhsNavi, SetType init){
+
+  dd_generator<SetType> set_type(init);
+
+  if(rhsNavi.isConstant())
+    if(rhsNavi.terminalValue())
+      return set_type(navi);
+    else
+      return set_type(rhsNavi);
+
+  if (navi.isConstant() || (*navi > *rhsNavi)) 
+    return init;
+
+  if (*navi == *rhsNavi)
+    return dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                 rhsNavi.thenBranch(), init).change(*navi);
+
+  // Look up old result - if any
+  NaviType result = cache_mgr.find(navi, rhsNavi);
+
+  if (result.isValid())
+    return set_type(result);
+
+  // Compute new result
+  init = set_type(*navi,
+                  dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
+                                        rhsNavi, init),
+                  dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
+                                        rhsNavi, init) );
+
+  // Insert new result in cache
+  cache_mgr.insert(navi, rhsNavi, init.navigation());
+
+  return init;
+}
+
 
 END_NAMESPACE_PBORI

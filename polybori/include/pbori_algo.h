@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2007/12/14 15:05:59  dreyer
+ * Fix: merged bug fixes from sf.net
+ *
  * Revision 1.37  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -665,82 +668,6 @@ generic_compare_3way(const LhsType& lhs, const RhsType& rhs, BinaryPredicate com
   return (comp(lhs, rhs)?  CTypes::greater_than: CTypes::less_than);
 }
 
-/// @func dd_first_divisors_of
-/// Function templates extracting the terms of a given decision diagram contain
-/// which contains only indices from first lexicographical path in 
-/// Note: Replacement for dd_intersect_some_index
-template <class CacheManager, class NaviType, class SetType>
-SetType
-dd_first_divisors_of(CacheManager cache_mgr, NaviType navi, 
-                     NaviType rhsNavi, SetType init ) {
-
-  while( (!navi.isConstant()) && (*rhsNavi != *navi) ) {
-
-    if ( (*rhsNavi < *navi) && (!rhsNavi.isConstant()) ) 
-      rhsNavi.incrementThen();
-    else 
-      navi.incrementElse();  
-  }
-
-  if (navi.isConstant())        // At end of path
-    return navi;
-
-  // Look up, whether operation was already used
-  NaviType result = cache_mgr.find(navi, rhsNavi);
-    
-  if (result.isValid())       // Cache lookup sucessful
-    return  result;
-  
-  assert(*rhsNavi == *navi);
-   
-  // Compute new result
-  init = SetType(*rhsNavi,  
-                 dd_first_divisors_of(cache_mgr, 
-                                      navi.thenBranch(), rhsNavi, init),
-                 dd_first_divisors_of(cache_mgr, 
-                                      navi.elseBranch(), rhsNavi, init) );
-  // Insert result to cache
-  cache_mgr.insert(navi, rhsNavi, init.navigation());
-
-  return init;
-}
-
-template <class CacheType, class NaviType, class SetType>
-SetType
-dd_first_multiples_of(const CacheType& cache_mgr,
-                      NaviType navi, NaviType rhsNavi, SetType init){
-
-  if(rhsNavi.isConstant())
-    if(rhsNavi.terminalValue())
-      return navi;
-    else
-      return rhsNavi;
-
-  if (navi.isConstant() || (*navi > *rhsNavi)) 
-    return init;
-
-  if (*navi == *rhsNavi)
-    return dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
-                                 rhsNavi.thenBranch(), init).change(*navi);
-
-  // Look up old result - if any
-  NaviType result = cache_mgr.find(navi, rhsNavi);
-
-  if (result.isValid())
-    return result;
-
-  // Compute new result
-  init = SetType(*navi,
-                 dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
-                                       rhsNavi, init),
-                 dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
-                                       rhsNavi, init) );
-
-  // Insert new result in cache
-  cache_mgr.insert(navi, rhsNavi, init.navigation());
-
-  return init;
-}
 
 
 template <class IteratorLike, class ForwardIteratorTag>
