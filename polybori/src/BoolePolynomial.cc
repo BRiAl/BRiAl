@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.107  2007/12/14 11:50:31  dreyer
+ * Fix: merged from bugfix at sf.net
+ *
  * Revision 1.106  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -503,26 +506,9 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
                                         rhs.diagram().navigation(),
-                                        navigation(),  self(), 
+                                        navigation(),  zeroElement(), 
                                         int());
 
-
-
-
-#if 0
-  // store indices in list
-  CIdxPath<idx_type> indices(rhs.deg());
-  
-  // iterator, which generates m_dd *= var(idx) for given index idx
-  // on assignment of dereferenced object
-  PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
-    outiter(m_dd) ;
-  
-  // insert backward (for efficiency reasons)
-  reversed_inter_copy(rhs.begin(), rhs.end(), indices, outiter);
-
-  assert(result == *this);
-#endif
   return (*this = result);
 }
 
@@ -532,18 +518,8 @@ BoolePolynomial::operator*=(const exp_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const exp_type&)" );
 
-  // iterator, which generates m_dd *= var(idx) for given index idx
-  // on assignment of dereferenced object
-//   PBoRiOutIter<dd_type, idx_type, times_indexed_var<dd_type> >  
-//     outiter(m_dd) ;
-  
-//   // insert backward (for efficiency reasons)
-//   std::copy(rhs.rbegin(), rhs.rend(), outiter);
-
   self result = dd_multiply_recursively_exp(rhs.begin(), rhs.end(),
-                                            navigation(),  self() );
-
-  //  assert(*this == result);
+                                            navigation(), zeroElement() );
 
   return (*this = result);;
 }
@@ -561,26 +537,8 @@ BoolePolynomial::operator*=(const self& rhs) {
     cache_mgr_type;
 
   self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
-                                        navigation(), rhs.navigation(), self());
-
-#if 0
-
-  self result(0);
-
-  exp_iterator start(rhs.expBegin()), finish(rhs.expEnd());
-
-  while (start != finish) {
-
-    exp_iterator myStart(expBegin()), myFinish(expEnd());
-
-    while(myStart != myFinish) {
-      result += ( (*myStart).multiply(*start) );
-      ++myStart;
-    }
-    ++start;
-  }
-
-#endif
+                                        navigation(), rhs.navigation(),
+                                        zeroElement()); 
 
   return (*this = result);
 }
@@ -599,7 +557,8 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
 
   self result = dd_divide_recursively(cache_mgr_type(diagram().manager()), 
                                       navigation(),
-                                      rhs.diagram().navigation(), self() );
+                                      rhs.diagram().navigation(),
+                                      zeroElement());
 
 //   m_dd.divideFirstAssign(rhs.diagram());
 //   assert(*this == result);
@@ -613,7 +572,7 @@ BoolePolynomial::operator/=(const exp_type& rhs) {
 
   return (*this = 
           dd_divide_recursively_exp(navigation(), rhs.begin(),rhs.end(),
-          self()));
+                                    zeroElement()));
 }
 
 // Polynomial Division

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/12/14 11:50:31  dreyer
+ * Fix: merged from bugfix at sf.net
+ *
  * Revision 1.36  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -369,6 +372,9 @@ public:
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;
+
+  /// Get corresponding zero element (may be removed in the future)
+  self emptyElement() const { return base::emptyElement(); }
 
   /// Count terms containing BooleVariable(idx)
   size_type countIndex(idx_type idx) const;

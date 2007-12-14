@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2007/12/14 11:50:31  dreyer
+ * Fix: merged from bugfix at sf.net
+ *
  * Revision 1.42  2007/12/13 15:53:50  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -326,7 +329,8 @@ BooleSet::firstDivisorsOf(const self& rhs) const {
 
   typedef CCacheManagement<CCacheTypes::divisorsof> cache_type;
   return dd_first_divisors_of( cache_type(manager()), 
-                               navigation(), rhs.navigation(), self() );
+                               navigation(), rhs.navigation(), 
+                               emptyElement() );
 }
 
 // compute intersection with divisors of rhs
@@ -352,7 +356,7 @@ BooleSet BooleSet::multiplesOf(const term_type& rhs) const{
 
   return 
     dd_first_multiples_of( cache_type(base::manager()), navigation(),
-                           rhs.diagram().navigation(), self() );
+                           rhs.diagram().navigation(), emptyElement() );
 }
 
 // check whether the intersection with divisors of rhs is non-empty
@@ -452,7 +456,7 @@ BooleSet::existAbstract(const term_type& rhs) const {
   return 
     dd_existential_abstraction(cache_mgr_type(base::manager()), 
                                rhs.diagram().navigation(), base::navigation(),
-                               self());
+                               emptyElement());
 }
 
 

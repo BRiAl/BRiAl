@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.83  2007/12/14 11:50:30  dreyer
+ * Fix: merged from bugfix at sf.net
+ *
  * Revision 1.82  2007/12/13 15:53:48  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -704,6 +707,9 @@ protected:
 
   /// Get all divisors of the first term
   set_type firstDivisors() const;
+
+  /// Get corresponding zero element (may be removed in the future)
+  self zeroElement() const { return m_dd.emptyElement(); }
 
 private:
   /// The actual decision diagramm

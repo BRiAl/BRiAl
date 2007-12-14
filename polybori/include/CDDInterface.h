@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.58  2007/12/14 11:50:31  dreyer
+ * Fix: merged from bugfix at sf.net
+ *
  * Revision 1.57  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -319,6 +322,9 @@ class CDDInterface:
   /// Cudd's decision diagram manager type
   typedef typename zdd_traits<interfaced_type>::manager_base manager_base;
 
+  /// Reference to decision diagram manager type
+  typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
+
   /// Interface to Cudd's decision diagram manager type
   typedef CDDManager<CCuddInterface> manager_type;
 
@@ -501,6 +507,8 @@ class CDDInterface:
   }
 
   self Xor(const self& rhs) const {
+    if (rhs.emptiness())
+      return *this;
 #ifdef PBORI_LOWLEVEL_XOR
     return interfaced_type(m_interfaced.manager(),
             pboriCudd_zddUnionXor(
@@ -651,7 +659,7 @@ class CDDInterface:
   }
 
   /// Get reference to actual decision diagram manager 
-  typename manager_traits<manager_base>::tmp_ref manager() const {
+  mgr_ref manager() const {
     return get_manager(m_interfaced.manager());
   }
   typename manager_traits<manager_base>::core_type managerCore() const{
@@ -842,6 +850,12 @@ class CDDInterface:
   double sizeDouble() const {
     return m_interfaced.CountDouble();
   }
+
+  /// Get corresponding zero element (may be removed in the future)
+  self emptyElement() const {
+    return manager().zddZero();
+  }
+
 private:
   navigator newNode(const manager_base& mgr, idx_type idx, 
                     navigator thenNavi, navigator elseNavi) const {
@@ -875,6 +889,9 @@ private:
     navi.decRef();
     return result;
   }
+
+
+
 };
 
 
