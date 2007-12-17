@@ -204,9 +204,15 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
         return wrapper
     return make_wrapper
 def redsb_post(I,state):
-    return I.minimalizeAndTailReduce()
+    if I==[]:
+        return []
+    else:
+        return I.minimalizeAndTailReduce()
 def minsb_post(I,state):
-    return I.minimalize()
+    if I==[]:
+        return []
+    else:
+        return I.minimalize()
 def invert_all(I):
     return [p.mapEveryXToXPlusOne() for p in I]
 def invert_all_pre(I):
