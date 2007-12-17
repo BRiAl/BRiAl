@@ -1,7 +1,8 @@
 /*  Copyright (c) 2005-2007 by The PolyBoRi Team */
 
 #include <boost/python.hpp>
-
+#include <boost/python/default_call_policies.hpp>
+#include <boost/python/return_value_policy.hpp>
 #include "misc_wrapper.h"
 
 #include "polybori.h"
@@ -42,4 +43,7 @@ void export_misc(){
   def("random_set",random_set);
   def("variety_lex_leading_terms",variety_lex_leading_terms);
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
+  def("global_ring",&BooleEnv::ring, return_value_policy<copy_non_const_reference>());
+  
+  
 }

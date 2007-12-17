@@ -222,6 +222,7 @@ def other_ordering_pre(I,options):
     ocode=get_order_code()
     assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
     #in parcticular it does not work for block orderings, because of the block sizes
+    old_ring=global_ring()
     change_ordering(options["switch_to"])
     kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
     I_orig=I
@@ -230,7 +231,8 @@ def other_ordering_pre(I,options):
         if p.deg()>1:
             I=list(chain(I,I_orig))
             break
-    change_ordering(ocode)
+    #change_ordering(ocode)
+    old_ring.set()
     return (I,None)
 def llfirstonthefly_pre(I):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)

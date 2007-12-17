@@ -100,6 +100,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 
   boost::python::class_<BoolePolyRing>("Ring")
     //.def(boost::python::init <>())
+    .def("set",&BooleEnv::set)
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def(boost::python::init <BoolePolyRing::size_type, int>())
 //#ifdef WRAP_ALSO_CUUD
