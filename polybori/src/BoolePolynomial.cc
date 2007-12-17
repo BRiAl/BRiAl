@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.108  2007/12/17 16:12:03  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.107  2007/12/14 11:50:31  dreyer
  * Fix: merged from bugfix at sf.net
  *
@@ -506,7 +509,7 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
 
   self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
                                         rhs.diagram().navigation(),
-                                        navigation(),  zeroElement(), 
+                                        navigation(),  self(), 
                                         int());
 
   return (*this = result);
@@ -517,9 +520,11 @@ BoolePolynomial&
 BoolePolynomial::operator*=(const exp_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator*=(const exp_type&)" );
+  typedef CCacheManagement<CCacheTypes::no_cache> cache_mgr_type;
 
-  self result = dd_multiply_recursively_exp(rhs.begin(), rhs.end(),
-                                            navigation(), zeroElement() );
+  self result = dd_multiply_recursively_exp(cache_mgr_type(diagram().manager()),
+                                            rhs.begin(), rhs.end(),
+                                            navigation(), self() );
 
   return (*this = result);;
 }
@@ -538,7 +543,7 @@ BoolePolynomial::operator*=(const self& rhs) {
 
   self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
                                         navigation(), rhs.navigation(),
-                                        zeroElement()); 
+                                        self()); 
 
   return (*this = result);
 }
@@ -558,7 +563,7 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
   self result = dd_divide_recursively(cache_mgr_type(diagram().manager()), 
                                       navigation(),
                                       rhs.diagram().navigation(),
-                                      zeroElement());
+                                      self());
 
 //   m_dd.divideFirstAssign(rhs.diagram());
 //   assert(*this == result);
@@ -569,10 +574,12 @@ BoolePolynomial&
 BoolePolynomial::operator/=(const exp_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const exp_type&)" );
+  typedef CCacheManagement<CCacheTypes::no_cache> cache_mgr_type;
 
   return (*this = 
-          dd_divide_recursively_exp(navigation(), rhs.begin(),rhs.end(),
-                                    zeroElement()));
+          dd_divide_recursively_exp(cache_mgr_type(diagram().manager()), 
+                                    navigation(), rhs.begin(),rhs.end(),
+                                    self()));
 }
 
 // Polynomial Division

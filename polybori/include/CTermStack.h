@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.22  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -177,8 +180,7 @@ private:
   //  block_iterator m_indices;
   block_iterator m_current_block;
 
-  CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type, 
-                    CTypes::manager_base> m_deg_cache;
+  CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type> m_deg_cache;
 };
 
 

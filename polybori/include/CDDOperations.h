@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.7  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -76,7 +79,8 @@ public:
   typedef MonomType monom_type;
 
   CCacheManagement<CCacheTypes::used_variables> cache_mgr(dd.manager());
-  return cached_used_vars(cache_mgr, dd.navigation(),  MonomType());
+  return cached_used_vars(cache_mgr, dd.navigation(),  
+                          MonomType(cache_mgr.one()));
 }
 
 };

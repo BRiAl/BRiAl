@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.38  2007/12/13 15:53:48  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -143,6 +146,7 @@
 
 // get DD navigation
 #include "CCuddNavigator.h"
+#include "CDDInterface.h"
 
 // get standard functionality
 #include <functional>
@@ -156,11 +160,13 @@ BEGIN_NAMESPACE_PBORI
 class CCacheTypes {
 
 public:
+  struct no_cache_tag { enum { nargs = 0 }; };
   struct unary_cache_tag { enum { nargs = 1 }; };
   struct binary_cache_tag { enum { nargs = 2 }; };
   struct ternary_cache_tag { enum { nargs = 3 }; };
 
   // user functions
+  struct no_cache: public no_cache_tag { };
   struct union_xor: public binary_cache_tag { };
 
   struct multiply_recursive: public binary_cache_tag { };
@@ -249,73 +255,141 @@ public:
          ( ((Counted + Offset) & 0x1C ) << 3) | 0x2 };
 };
 
-
-class cudd_manager_storage {
+/** @class CCuddLikeMgrStorage<ManagerType>
+ *
+ * This template defines how to used the Cudd-like decision diagram managers
+ * like Cudd and CCuddInterface.
+ **/
+template <class MgrType>
+class CCuddLikeMgrStorage {
 public:
   /// Set  manager type
-  typedef Cudd manager_type;
-
-  /// Set type of Cudd's nodes
-  typedef DdNode* node_type;
-
-  typedef CCuddNavigator navigator;
-
-
-  /// Constructor
-  cudd_manager_storage(const manager_type& mgr): 
-    m_mgr(mgr.getManager()) {}
+  typedef MgrType manager_type;
 
   /// Set type of Cudd's internal manager type
   typedef DdManager* internal_manager_type;
 
-  /// Accessing operator
-  internal_manager_type operator()() const { return m_mgr; }
-
-private:
-  /// Store (pointer) to internal manager
-  internal_manager_type m_mgr;
-};
-
-class mycudd_manager_storage {
-public:
-  /// Set  manager type
-  typedef CCuddInterface manager_type;
-
   /// Set type of Cudd's nodes
   typedef DdNode* node_type;
+
+  /// Type of navigators
   typedef CCuddNavigator navigator;
+
+  /// Get high-level decision diagram type
+  typedef CTypes::dd_type dd_type;
+
   /// Constructor
-  mycudd_manager_storage(const manager_type& mgr): 
-    m_mgr(mgr.getManager()) {}
+  CCuddLikeMgrStorage(const manager_type& mgr): 
+    m_mgr(mgr) {}
 
-  /// Set type of Cudd's internal manager type
-  typedef DdManager* internal_manager_type;
+  /// Accessing manager
+  const manager_type& manager() const { return m_mgr; }
 
-  /// Accessing operator
-  internal_manager_type operator()() const { return m_mgr; }
+  /// Re-generate valid decision diagram from navigator
+  dd_type generate(navigator navi) const {
+    return dd_type(manager(), navi);
+  }
+
+  /// Get constant one
+  dd_type one() const {
+    return manager().zddOne( Cudd_ReadZddSize(manager().getManager()) );
+  }
+  /// Get constant zero
+  dd_type zero() const {
+    return manager().zddZero();
+  }
+
+protected:
+  /// Accessing Cudd-internal decision diagram manager
+  internal_manager_type internalManager() const { return m_mgr.getManager(); }
 
 private:
   /// Store (pointer) to internal manager
-  internal_manager_type m_mgr;
+  const manager_type& m_mgr;
 };
 
+/** @class CCacheManBase<ManagerType, CacheType, nArgs>
+ *
+ * @brief This template forms the base for CCacheManagement. It implements
+ * routines for finding and inserting results into the cache.
+ *
+ * @note We have template specilizations for nArgs = 1, 2, 3 corresponding to
+ * unary, binary and ternary funtions to be cached. In addition, nArgs = 0 is
+ * used, when no cache is used.
+ **/
 template <class ManagerType, class CacheType, unsigned ArgumentLength>
 class CCacheManBase;
 
-template <class CacheType>
-class CCacheManBase<Cudd, CacheType, 1> :
-  protected cudd_manager_storage {
+// Fixing base type for Cudd-Like type Cudd
+template <class CacheType, unsigned ArgumentLength>
+struct pbori_base<CCacheManBase<Cudd, CacheType, ArgumentLength> > {
+
+  typedef CCuddLikeMgrStorage<Cudd>  type;
+};
+
+// Fixing base type for Cudd-Like type CCuddInterface
+template <class CacheType, unsigned ArgumentLength>
+struct pbori_base<CCacheManBase<CCuddInterface, CacheType, ArgumentLength> > {
+
+  typedef CCuddLikeMgrStorage<CCuddInterface> type;
+};
+
+// Dummy variant for generating empty cache managers, e.g. for using generate()
+template <class ManagerType, class CacheType>
+class CCacheManBase<ManagerType, CacheType, 0> :
+  public pbori_base<CCacheManBase<ManagerType, CacheType, 0> >::type {
 
 public:
+  /// Set this type
+  typedef CCacheManBase<ManagerType, CacheType, 0> self;
+
   /// Set base type
-  typedef cudd_manager_storage base;
+  typedef typename pbori_base<self>::type base;
+
+  /// @name Extracting inherited types
+  //@{
+  typedef typename base::node_type node_type;
+  typedef typename base::navigator navigator;
+  typedef typename base::manager_type manager_type;
+  //@}
+
+  /// Constructor
+  CCacheManBase(const manager_type& mgr): base(mgr) {}
+
+  /// @name Dummy functions
+  //@{
+  navigator find(navigator, ...) const { return navigator(); }
+  node_type find(node_type, ...) const { return NULL; }
+  void insert(...) const {}
+  //@}
+};
+
+
+// Variant for unary functions
+template <class ManagerType, class CacheType>
+class CCacheManBase<ManagerType, CacheType, 1> :
+  public pbori_base<CCacheManBase<ManagerType, CacheType, 1> >::type {
+
+public:
+  /// Set this type
+  typedef CCacheManBase<ManagerType, CacheType, 1> self;
+
+  /// Set base type
+  typedef typename pbori_base<self>::type base;
+
+  /// @name Extracting inherited types
+  //@{
+  typedef typename base::node_type node_type;
+  typedef typename base::navigator navigator;
+  typedef typename base::manager_type manager_type;
+  //@}
 
   /// Constructor
   CCacheManBase(const manager_type& mgr): base(mgr) {}
 
   /// Find cached value wrt. given node
   node_type find(node_type node) const {
-    return cuddCacheLookup1Zdd(base::operator()(), cache_dummy, node);
+    return cuddCacheLookup1Zdd(internalManager(), cache_dummy, node);
   }
 
   /// Find cached value wrt. given node (for navigator type)
@@ -326,7 +400,7 @@ public:
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
     Cudd_Ref(result);
-    cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
+    cuddCacheInsert1(internalManager(), cache_dummy, node, result);
     Cudd_Deref(result);
   }
 
@@ -335,28 +409,42 @@ public:
     insert(node.getNode(), result.getNode());
   }
 
+protected:
+  /// Access manager used for caching
+  using base::internalManager;
+
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type){
+  static node_type cache_dummy(typename base::internal_manager_type,node_type){
     return NULL;
   }
 };
 
-template <class CacheType>
-class CCacheManBase<Cudd, CacheType, 2> :
-  protected cudd_manager_storage {
+// Variant for binary functions
+template <class ManagerType, class CacheType>
+class CCacheManBase<ManagerType, CacheType, 2> :
+  public pbori_base<CCacheManBase<ManagerType, CacheType, 2> >::type {
 
 public:
+  /// Set this type
+  typedef CCacheManBase<ManagerType, CacheType, 2> self;
 
   /// Set base type
-  typedef cudd_manager_storage base;
+  typedef typename pbori_base<self>::type base;
+
+  /// @name Extracting inherited types
+  //@{
+  typedef typename base::node_type node_type;
+  typedef typename base::navigator navigator;
+  typedef typename base::manager_type manager_type;
+  //@}
 
   /// Constructor
   CCacheManBase(const manager_type& mgr): base(mgr) {}
 
   /// Find cached value wrt. given node
   node_type find(node_type first, node_type second) const {
-    return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
+    return cuddCacheLookup2Zdd(internalManager(), cache_dummy, first, second);
   }
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator first, navigator second) const { 
@@ -366,7 +454,7 @@ public:
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
     Cudd_Ref(result);
-    cuddCacheInsert2(base::operator()(), cache_dummy, first, second, result);
+    cuddCacheInsert2(internalManager(), cache_dummy, first, second, result);
     Cudd_Deref(result);
   }
 
@@ -375,29 +463,43 @@ public:
     insert(first.getNode(), second.getNode(), result.getNode());
   }
 
+protected:
+  /// Access manager used for caching
+  using base::internalManager;
+
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type, node_type){
+  static node_type cache_dummy(typename base::internal_manager_type, 
+                               node_type, node_type){
     return NULL;
-}
+  }
 };
 
-
-template <class CacheType>
-class CCacheManBase<Cudd, CacheType, 3> :
-  protected cudd_manager_storage {
+// Variant for ternary functions
+template <class ManagerType, class CacheType>
+class CCacheManBase<ManagerType, CacheType, 3> :
+  public pbori_base<CCacheManBase<ManagerType, CacheType, 3> >::type {
 
 public:
+  /// Set this type
+  typedef CCacheManBase<ManagerType, CacheType, 3> self;
 
   /// Set base type
-  typedef cudd_manager_storage base;
+  typedef typename pbori_base<self>::type base;
+
+  /// @name Extracting inherited types
+  //@{
+  typedef typename base::node_type node_type;
+  typedef typename base::navigator navigator;
+  typedef typename base::manager_type manager_type;
+  //@}
 
   /// Constructor
   CCacheManBase(const manager_type& mgr): base(mgr) {}
 
   /// Find cached value wrt. given node
   node_type find(node_type first, node_type second, node_type third) const {
-    return cuddCacheLookupZdd(base::operator()(), (ptruint)GENERIC_DD_TAG, 
+    return cuddCacheLookupZdd(internalManager(), (ptruint)GENERIC_DD_TAG, 
                               first, second, third);
   }
 
@@ -411,7 +513,7 @@ public:
   void insert(node_type first, node_type second, node_type third, 
               node_type result) const {
     Cudd_Ref(result);
-    cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
+    cuddCacheInsert(internalManager(), (ptruint)GENERIC_DD_TAG, 
                     first, second, third, result);
     Cudd_Deref(result);
   }
@@ -422,27 +524,47 @@ public:
            result.getNode());  
   }
 
+protected:
+  /// Access manager used for caching
+  using base::internalManager;
+
 private:
   enum { GENERIC_DD_TAG =
          cudd_tag_number<count_tags<CacheType>::value>::value };
 };
 
+/** @class CCacheManagement
+ *
+ * @brief This template class forms the base for CCommutativeCacheManagement and
+ * CacheManager. It is an interface defining find and insert on decision diagram
+ * cache.
+ *
+ * It it mainly a wrapper for the template specialization of CCacheManBase,
+ * which allows a simple call of CCacheManagement<CacheType>, if CacheType is
+ * inherited from unary_cache_tag, binary_cache_tag, and ternary_cache_tag.
+ * It also fixes the ManagerType to CTypes::manager_base.
+ *
+ **/
 template <class CacheType, 
-          unsigned ArgumentLength = CacheType::nargs,
-          class ManagerType = typename CTypes::manager_base>
+          unsigned ArgumentLength = CacheType::nargs>
 class CCacheManagement: 
-  public CCacheManBase<ManagerType, CacheType, ArgumentLength> {
+  public CCacheManBase<typename CTypes::manager_base, 
+                       CacheType, ArgumentLength> {
 public:
 
-  /// @name Get template parameters
+  /// @name Get template parameters and global types
   //@{
-  typedef ManagerType manager_type;
+  typedef CTypes::manager_base manager_type;
+  typedef CTypes::idx_type idx_type;
   typedef CacheType cache_type;
   enum { nargs = ArgumentLength };
   //@}
 
   /// Name base type
   typedef CCacheManBase<manager_type, cache_type, nargs> base;
+
+  /// Extracting inherited node type
+  typedef typename base::node_type node_type;
 
   /// Constructor and default constructor
   CCacheManagement(const manager_type& mgr):
@@ -452,27 +574,28 @@ public:
   using base::insert;
 };
 
-
-template <class CacheType, class ManagerType = typename CTypes::manager_base>
+/** @class CCommutativeCacheManagement
+ * This is the variant for cache management of binary commutative functions.
+ **/
+template <class CacheType>
 class CCommutativeCacheManagement: 
-  public CCacheManagement<CacheType, 2, ManagerType> {
-public:
+  public CCacheManagement<CacheType, 2> {
 
+public:
   /// @name Get template parameters
   //@{
-  typedef ManagerType manager_type;
   typedef CacheType cache_type;
   //@}
 
   /// Name base type
-  typedef CCacheManagement<cache_type, 2, manager_type> base;
+  typedef CCacheManagement<cache_type, 2> base;
 
   /// Define node type
   typedef typename base::node_type node_type;
   typedef typename base::navigator navigator;
 
   /// Constructor and default constructor
-  CCommutativeCacheManagement(const manager_type& mgr):
+  CCommutativeCacheManagement(const typename base::manager_type& mgr):
     base(mgr) {}
 
   /// Find cached value wrt. given node
@@ -502,136 +625,6 @@ public:
     insert(first.getNode(), second.getNode(), result.getNode());
   }
 
-};
-
-
-
-/// temporarily
-
-
-template <class CacheType>
-class CCacheManBase<CCuddInterface, CacheType, 1> :
-  protected mycudd_manager_storage {
-
-public:
-  /// Set base type
-  typedef mycudd_manager_storage base;
-
-  /// Constructor
-  CCacheManBase(const manager_type& mgr): base(mgr) {}
-
-  /// Find cached value wrt. given node
-  node_type find(node_type node) const {
-    return cuddCacheLookup1Zdd(base::operator()(), cache_dummy, node);
-  }
-
-  /// Find cached value wrt. given node (for navigator type)
-  navigator find(navigator node) const { 
-    return explicit_navigator_cast(find(node.getNode()));
-  }
-
-  /// Store cached value wrt. given node  
-  void insert(node_type node, node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert1(base::operator()(), cache_dummy, node, result);
-    Cudd_Deref(result);
-  }
-
-  /// Store cached value wrt. given node  
-  void insert(navigator node, navigator result) const {
-    insert(node.getNode(), result.getNode());
-  }
-
-private:
-  /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type){
-    return NULL;
-  }
-};
-
-
-
-
-template <class CacheType>
-class CCacheManBase<CCuddInterface, CacheType, 2> :
-  protected mycudd_manager_storage {
-
-public:
-
-  /// Set base type
-  typedef mycudd_manager_storage base;
-
-  /// Constructor
-  CCacheManBase(const manager_type& mgr): base(mgr) {}
-
-  /// Find cached value wrt. given node
-  node_type find(node_type first, node_type second) const {
-    return cuddCacheLookup2Zdd(base::operator()(), cache_dummy, first, second);
-  }
-  navigator find(navigator first, navigator second) const {
-    return explicit_navigator_cast(find(first.getNode(), second.getNode()));
-  }
-
-  /// Store cached value wrt. given node  
-  void insert(node_type first, node_type second, node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert2(base::operator()(), cache_dummy, first, second, result);
-    Cudd_Deref(result);
-  }
-
-  /// Store cached value wrt. given node (for navigator type)
-  void insert(navigator first, navigator second, navigator result) const {
-    insert(first.getNode(), second.getNode(), result.getNode());
-  }
-private:
-  /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(internal_manager_type, node_type, node_type){
-    return NULL;
-}
-};
-
-
-template <class CacheType>
-class CCacheManBase<CCuddInterface, CacheType, 3> :
-  protected mycudd_manager_storage {
-
-public:
-
-  /// Set base type
-  typedef mycudd_manager_storage base;
-
-  /// Constructor
-  CCacheManBase(const manager_type& mgr): base(mgr) {}
-
-  /// Find cached value wrt. given node
-  node_type find(node_type first, node_type second, node_type third) const {
-    return cuddCacheLookupZdd(base::operator()(), (ptruint)GENERIC_DD_TAG, 
-                              first, second, third);
-  }
-
-  navigator find(navigator first, navigator second, navigator third) const {
-    return explicit_navigator_cast(find(first.getNode(), second.getNode(),
-                                        third.getNode()));
-  }
-
-  /// Store cached value wrt. given node  
-  void insert(node_type first, node_type second, node_type third, 
-              node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert(base::operator()(), (ptruint)GENERIC_DD_TAG, 
-                    first, second, third, result);
-    Cudd_Deref(result);
-  }
-  /// Store cached value wrt. given node  
-  void insert(navigator first, navigator second, navigator third, 
-              navigator result) const {
-    insert(first.getNode(), second.getNode(), third.getNode(), 
-           result.getNode());
-  }
-
-private:
-  enum { GENERIC_DD_TAG =
-         cudd_tag_number<count_tags<CacheType>::value>::value };
 };
 
 END_NAMESPACE_PBORI

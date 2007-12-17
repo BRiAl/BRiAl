@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.10  2007/12/13 15:53:48  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -122,24 +125,23 @@ protected:
 };
 
 template <class TagType = typename CCacheTypes::degree,
-          class DDType = typename CTypes::dd_type,
-          class ManagerType = typename CTypes::manager_base>
+          class DDType = typename CTypes::dd_type>
 class CDegreeCache:
-  public CCacheManagement<TagType, 1, ManagerType> {
+  public CCacheManagement<TagType, 1> {
 
 public:
   /// @name Define generic access to data types
   //@{
-  typedef ManagerType manager_type;
   typedef DDType dd_type;
   typedef TagType tag_type;
-  typedef CCacheManagement<tag_type, 1, manager_type> base;
-  typedef CDegreeCache<tag_type, dd_type, manager_type> self;
+  typedef CCacheManagement<tag_type, 1> base;
+  typedef CDegreeCache<tag_type, dd_type> self;
   //@}
 
   /// @name Adopt type definitions
   //@{
   typedef typename base::node_type input_node_type;
+  typedef typename base::manager_type manager_type;
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
@@ -177,24 +179,23 @@ public:
 
 
 template <class TagType =  typename CCacheTypes::block_degree,
-          class DDType = typename CTypes::dd_type,
-          class ManagerType = typename CTypes::manager_base>
+          class DDType = typename CTypes::dd_type>
 class CBlockDegreeCache:
-  public CCacheManagement<TagType, 2, ManagerType> {
+  public CCacheManagement<TagType, 2> {
 
 public:
   /// @name Define generic access to data types
   //@{
-  typedef ManagerType manager_type;
   typedef DDType dd_type;
   typedef TagType tag_type;
-  typedef CCacheManagement<tag_type, 2, manager_type> base;
-  typedef CBlockDegreeCache<tag_type, dd_type, manager_type> self;
+  typedef CCacheManagement<tag_type, 2> base;
+  typedef CBlockDegreeCache<tag_type, dd_type> self;
   //@}
 
   /// @name Adopt type definitions
   //@{
   typedef typename base::node_type input_node_type;
+  typedef typename base::manager_type manager_type;
   typedef typename dd_type::idx_type idx_type;
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
@@ -229,24 +230,23 @@ public:
 };
 
 template <class TagType, 
-          class DDType = typename CTypes::dd_type,
-          class ManagerType = typename CTypes::manager_base>
+          class DDType = typename CTypes::dd_type>
 class CDegreeArgumentCache:
-  public CCacheManagement<TagType, 2, ManagerType> {
+  public CCacheManagement<TagType, 2> {
 
 public:
   /// @name Define generic access to data types
   //@{
-  typedef ManagerType manager_type;
   typedef DDType dd_type;
   typedef TagType tag_type;
-  typedef CCacheManagement<tag_type, 2, manager_type> base;
-  typedef CDegreeArgumentCache<tag_type, dd_type, manager_type> self;
+  typedef CCacheManagement<tag_type, 2> base;
+  typedef CDegreeArgumentCache<tag_type, dd_type> self;
   //@}
 
   /// @name Adopt type definitions
   //@{
   typedef typename base::node_type node_type;
+  typedef typename base::manager_type manager_type;
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> degree_node_type;

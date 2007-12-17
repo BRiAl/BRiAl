@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.3  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -45,27 +48,21 @@
 BEGIN_NAMESPACE_PBORI
 
 class BooleEnv;
-template <class CacheType, unsigned ArgumentLength = CacheType::nargs>
+template <class CacheType>
 class CacheManager:
-  public CCacheManagement<CacheType, ArgumentLength> {
+  public CCacheManagement<CacheType, CacheType::nargs> {
 
 public:
   /// Define base type
-  typedef CCacheManagement<CacheType, ArgumentLength> base;
+  typedef CCacheManagement<CacheType, CacheType::nargs> base;
   typedef typename base::manager_type manager_type;
 
-  /// (Default) Constructor
+  /// Constructor
   CacheManager(const manager_type& mgr):
     base(mgr) {}
 
   /// Destructor
   ~CacheManager() {}
-
-  /// Find cached value wrt. given node
-  using base::find;
-
-  /// Store cached value wrt. given node  
-  using base::insert;
 };
 
 template <class CacheType>
@@ -77,18 +74,12 @@ public:
   typedef CCommutativeCacheManagement<CacheType> base;
   typedef typename base::manager_type manager_type;
 
-  /// (Default) Constructor
+  /// Constructor
   CommutativeCacheManager(const manager_type& mgr):
     base(mgr) {}
 
   /// Destructor
   ~CommutativeCacheManager() {}
-
-  /// Find cached value wrt. given node
-  using base::find;
-
-  /// Store cached value wrt. given node  
-  using base::insert;
 };
 
 

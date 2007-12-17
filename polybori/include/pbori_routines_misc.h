@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2007/12/17 16:12:02  dreyer
+ * CHANGE: reviewed and optimized merge frim sf.net
+ *
  * Revision 1.36  2007/12/14 15:05:59  dreyer
  * Fix: merged bug fixes from sf.net
  *
@@ -279,68 +282,38 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 
 }
 
-template<class PolyType>
-class dd_generator {
-
-public:
-  typedef PolyType poly_type;
-  typedef typename poly_type::dd_type dd_type;
-  typedef typename dd_type::mgr_ref mgr_ref;
-  typedef typename poly_type::navigator navigator;
-
-  dd_generator(const poly_type& poly):
-    m_mgr(poly.diagram().manager()) { }
-
-  template <class NaviType>
-  poly_type operator()(const NaviType& navi) const {
-    return  dd_type(m_mgr, navi);
-  }
-  template <class IdxType>
-  poly_type operator()(IdxType idx, 
-                       const navigator& first, const navigator& second) const {
-    return  dd_type(m_mgr, idx, first, second);
-  }
-  template <class IdxType>
-  poly_type operator()(IdxType idx, 
-                       const dd_type& first, const dd_type& second) const {
-    return  dd_type(idx, first, second);
-  }
-
-  mgr_ref m_mgr;
-};
-
 
 template <class CacheType, class NaviType, class PolyType>
 PolyType
 dd_multiply_recursively(const CacheType& cache_mgr,
                         NaviType firstNavi, NaviType secondNavi, PolyType init){
   // Extract subtypes
-  dd_generator<PolyType> dd_type(init);
-
+  typedef typename PolyType::dd_type dd_type;
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
   if (firstNavi.isConstant()) {
     if(firstNavi.terminalValue())
-      return dd_type(secondNavi);
+      return cache_mgr.generate(secondNavi);
     else 
-      return init;
+      return cache_mgr.zero();
   }
 
   if (secondNavi.isConstant()) {
     if(secondNavi.terminalValue())
-      return dd_type(firstNavi);
+      return cache_mgr.generate(firstNavi);
     else 
-      return init;
+      return cache_mgr.zero();
   }
   if (firstNavi == secondNavi)
-    return dd_type(firstNavi);
+    return cache_mgr.generate(firstNavi);
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(firstNavi, secondNavi);
+  PolyType result = cache_mgr.zero();
 
   if (cached.isValid()) {       // Cache lookup sucessful
-    return dd_type(cached);
+    return cache_mgr.generate(cached);
   }
   else {                        // Cache lookup not sucessful
     // Get top variable's index
@@ -363,7 +336,7 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     }
     else {
       bs0 = secondNavi;
-      bs1 = init.navigation();
+      bs1 = result.navigation();
     }
 
 
@@ -372,69 +345,57 @@ dd_multiply_recursively(const CacheType& cache_mgr,
 
       PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init);
 
-      PolyType res10 = PolyType(dd_type(as1)) + PolyType(dd_type(as0));
-      PolyType res01 = PolyType(dd_type(bs0)) + PolyType(dd_type(bs1));
+      PolyType res10 = PolyType(cache_mgr.generate(as1)) +
+        PolyType(cache_mgr.generate(as0));
+      PolyType res01 = PolyType(cache_mgr.generate(bs0)) +
+        PolyType(cache_mgr.generate(bs1));
 
       PolyType res11 = 
         dd_multiply_recursively(cache_mgr,
                                 res10.navigation(), res01.navigation(),
                                 init) - res00;
 
-      init = dd_type(index, res11.navigation(), res00.navigation());
+      result = dd_type(index, res11.diagram(), res00.diagram());
     } else
 #endif
     { 
         bool as1_zero=false;
         if (as0 == as1)
-          bs1 = init.navigation();
+          bs1 = result.navigation();
         else if (bs0 == bs1){
-          as1 = init.navigation();
+          as1 = result.navigation();
           as1_zero=true;  
         }
         // Do recursion
-        NaviType zero_ptr=init.navigation();
-        
-        #if 0
-        init = dd_type(index,  
-                         (dd_multiply_recursively(cache_mgr, as0, bs1, init) 
-                         + dd_multiply_recursively(cache_mgr, as1, bs1, init)
-                         + dd_multiply_recursively(cache_mgr,
-                                                   as1, bs0, init)).diagram(),
-                         dd_multiply_recursively(cache_mgr, 
-                                                 as0, bs0, init).diagram() );
-        #else
+        NaviType zero_ptr = result.navigation();
         
         if (as1_zero){
-            init = dd_type(index,  
-                             dd_multiply_recursively(cache_mgr, as0, bs1, init).diagram(),
-                             dd_multiply_recursively(cache_mgr, 
-                                                     as0, bs0, init).diagram() );
+          result = dd_type(index,  
+                         dd_multiply_recursively(cache_mgr, as0, bs1,
+                                                 init).diagram(),
+                         dd_multiply_recursively(cache_mgr, as0, bs0,
+                                                 init).diagram() );
         } else{
-            /*if (bs0==zero_ptr){
-                //WARNING: here we use uniqueness of nodes
-                if (bs1==zero_ptr){
-                    //init=0, which is init
-                }
-                else {
-                    PolyType as01=(PolyType(dd_type(as0))+PolyType(dd_type(as1)));
-                    init=dd_type(index,dd_multiply_recursively(cache_mgr,as01.navigation(),bs1,init).diagram(),init.diagram());
-                }
-            } else {*/
-          PolyType bs01=(PolyType(dd_type(bs0))+PolyType(dd_type(bs1)));
-            init=dd_type(index,(dd_multiply_recursively(cache_mgr,bs01.navigation(),as1,init)+ 
-                    dd_multiply_recursively(cache_mgr, as0, bs1, init)).diagram(),
-                dd_multiply_recursively(cache_mgr, 
-                  as0, bs0, init).diagram());
-            //}
+          PolyType bs01 = PolyType(cache_mgr.generate(bs0)) + 
+            PolyType(cache_mgr.generate(bs1));
+          result = dd_type(index,
+                         ( dd_multiply_recursively(cache_mgr,
+                                                   bs01.navigation(), 
+                                                   as1, init) + 
+                           dd_multiply_recursively(cache_mgr, as0, bs1, init)
+                           ).diagram(),
+                         dd_multiply_recursively(cache_mgr, 
+                                                 as0, bs0,
+                                                 init).diagram()
+                         ); 
           }
         
-        #endif
       }
     // Insert in cache
-    cache_mgr.insert(firstNavi, secondNavi, init.navigation());
+    cache_mgr.insert(firstNavi, secondNavi, result.navigation());
   }
 
-  return init;
+  return result;
 }
 
 
@@ -445,34 +406,34 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                         NaviType monomNavi, NaviType navi, PolyType init,
                         MonomTag monom_tag ){
 
-  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
+  typedef typename PolyType::dd_type dd_type;
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
 
   if (monomNavi.isConstant()) {
     if(monomNavi.terminalValue())
-      return dd_type(navi);
+      return cache_mgr.generate(navi);
     else 
-      return init;
+      return cache_mgr.zero();
   }
 
   assert(monomNavi.elseBranch().isEmpty());
 
   if (navi.isConstant()) {
     if(navi.terminalValue())
-      return dd_type(monomNavi);
+      return cache_mgr.generate(monomNavi);
     else 
-      return init;
+      return cache_mgr.zero();
   }
   if (monomNavi == navi)
-    return dd_type(monomNavi);
+    return cache_mgr.generate(monomNavi);
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(monomNavi, navi);
 
   if (cached.isValid()) {       // Cache lookup sucessful
-    return dd_type(cached);
+    return cache_mgr.generate(cached);
   }
 
   // Cache lookup not sucessful
@@ -515,30 +476,34 @@ dd_multiply_recursively(const CacheType& cache_mgr,
 }
 
 
-template <class Iterator, class NaviType, class PolyType>
+template <class DDGenerator, class Iterator, class NaviType, class PolyType>
 PolyType
-dd_multiply_recursively_exp(Iterator start, Iterator finish,
+dd_multiply_recursively_exp(const DDGenerator& ddgen,
+                            Iterator start, Iterator finish,
                             NaviType navi, PolyType init){
   // Extract subtypes
-  dd_generator<PolyType> dd_type(init);
   typedef typename NaviType::idx_type idx_type;
+  typedef typename PolyType::dd_type dd_type;
   typedef NaviType navigator;
 
   if (start == finish)
-    return dd_type(navi);
+    return ddgen.generate(navi);
 
+  PolyType result;
   if (navi.isConstant()) {
     if(navi.terminalValue()) {
 
       std::reverse_iterator<Iterator> rstart(finish), rfinish(start);
-      init = dd_type(navi);
+      result = ddgen.generate(navi);
       while (rstart != rfinish) {
-        init = init.diagram().change(*rstart);
+        result = result.diagram().change(*rstart);
         ++rstart;
       }
     }
+    else 
+      return ddgen.zero();
 
-    return init;
+    return result;
   }
 
   // Cache lookup not sucessful
@@ -553,11 +518,11 @@ dd_multiply_recursively_exp(Iterator start, Iterator finish,
     while( (next != finish) && (*next < index) )
       ++next;
 
-    init = dd_multiply_recursively_exp(next, finish, navi, init);
+    result = dd_multiply_recursively_exp(ddgen, next, finish, navi, init);
 
     std::reverse_iterator<Iterator> rstart(next), rfinish(start);
     while (rstart != rfinish) {
-      init = init.diagram().change(*rstart);
+      result = result.diagram().change(*rstart);
       ++rstart;
     }
   }
@@ -570,21 +535,21 @@ dd_multiply_recursively_exp(Iterator start, Iterator finish,
     navigator naviElse = navi.elseBranch();
 
     if (naviThen != naviElse)
-      init = (dd_multiply_recursively_exp(start, finish, naviThen, init)
-              + dd_multiply_recursively_exp(start, finish, naviElse,
+      result =(dd_multiply_recursively_exp(ddgen, start, finish, naviThen, init)
+              + dd_multiply_recursively_exp(ddgen, start, finish, naviElse,
                                             init)).diagram().change(index);
   }
   else {                        // Case: var(index) not part of monomial
     
-    init = 
+    result = 
       dd_type(index,  
-              dd_multiply_recursively_exp(start, finish, navi.thenBranch(), 
-                                      init).diagram(),
-              dd_multiply_recursively_exp(start, finish, navi.elseBranch(),
-                                      init).diagram() );
+              dd_multiply_recursively_exp(ddgen, start, finish,
+                                          navi.thenBranch(), init).diagram(),
+              dd_multiply_recursively_exp(ddgen, start, finish, 
+                                          navi.elseBranch(), init).diagram() );
   }
 
-  return init;
+  return result;
 }
 
 template<class DegCacheMgr, class NaviType, class SizeType>
@@ -612,22 +577,22 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
                          DescendingProperty prop) {
 
   if ((degree == 0) || navi.isConstant())
-    return navi;
+    return cache_mgr.generate(navi);
 
   // Check cache for previous results
   NaviType cached = cache_mgr.find(navi);
   if (cached.isValid())
-    return cached;
+    return cache_mgr.generate(cached);
 
   // Go to next branch
   if ( max_degree_on_then(deg_mgr, navi, degree, prop) ) {
-    NaviType then_branch=navi.thenBranch();
+    NaviType then_branch = navi.thenBranch();
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, then_branch, 
         init, degree - 1, prop);
-    if  ((navi.elseBranch().isEmpty())&& (init.navigation()==then_branch))
-        init=navi;
+    if  ((navi.elseBranch().isEmpty()) && (init.navigation()==then_branch))
+      init = cache_mgr.generate(navi);
     else
-      init=init.change(*navi);
+      init = init.change(*navi);
                                     
   }
   else {
@@ -649,7 +614,7 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
                          NaviType navi, TermType init, DescendingProperty prop){
 
   if (navi.isConstant())
-    return navi;
+    return cache_mgr.generate(navi);
   
   return dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, init,
                                   dd_cached_degree(deg_mgr, navi), prop);
@@ -670,7 +635,7 @@ dd_recursive_degree_leadexp(const CacheType& cache_mgr,
   // Check cache for previous result
   NaviType cached = cache_mgr.find(navi);
   if (cached.isValid())
-    return result = result.multiplyFirst(cached);
+    return result = result.multiplyFirst(cache_mgr.generate(cached));
 
   // Prepare next branch
   if ( max_degree_on_then(deg_mgr, navi, degree, prop) ) {
@@ -711,23 +676,23 @@ TermType
 dd_existential_abstraction(const CacheType& cache_mgr, 
                            NaviType varsNavi, NaviType navi, TermType init){
 
-  dd_generator<TermType> set_type(init);
+  typedef typename TermType::dd_type dd_type;
   typedef typename TermType::idx_type idx_type;
 
   if (navi.isConstant()) 
-    return set_type(navi);
+    return cache_mgr.generate(navi);
 
   idx_type index(*navi);
   while (!varsNavi.isConstant() && ((*varsNavi) < index))
     varsNavi.incrementThen();
 
   if (varsNavi.isConstant())
-    return set_type(navi);
+    return cache_mgr.generate(navi);
 
   // Check cache for previous result
   NaviType cached = cache_mgr.find(varsNavi, navi);
   if (cached.isValid()) 
-    return set_type(cached);
+    return cache_mgr.generate(cached);
 
   NaviType thenNavi(navi.thenBranch()), elseNavi(navi.elseBranch()); 
 
@@ -741,9 +706,9 @@ dd_existential_abstraction(const CacheType& cache_mgr,
     init = thenResult.unite(elseResult);
   else if ( (thenResult.navigation() == thenNavi) && 
             (elseResult.navigation() == elseNavi)  )
-    init = set_type(navi);
+    init = cache_mgr.generate(navi);
   else
-    init = set_type(index, thenResult, elseResult);
+    init = dd_type(index, thenResult, elseResult);
 
   // Insert result to cache
   cache_mgr.insert(varsNavi, navi, init.navigation());
@@ -756,34 +721,33 @@ dd_existential_abstraction(const CacheType& cache_mgr,
 template <class CacheType, class NaviType, class PolyType>
 PolyType
 dd_divide_recursively(const CacheType& cache_mgr,
-                      NaviType navi, NaviType monomNavi,PolyType init){
+                      NaviType navi, NaviType monomNavi, PolyType init){
 
-  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
   typedef typename NaviType::idx_type idx_type;
   typedef NaviType navigator;
+  typedef typename PolyType::dd_type dd_type;
 
   if (monomNavi.isConstant()) {
     if(monomNavi.terminalValue())
-      return dd_type(navi);
+      return cache_mgr.generate(navi);
     else 
-      return init;
+      return cache_mgr.zero();
   }
 
   assert(monomNavi.elseBranch().isEmpty());
 
   if (navi.isConstant()) 
-    return init;
+    return cache_mgr.zero();
 
   if (monomNavi == navi)
-    return (init + 1);// workaround to ensure that resulting manager (ring is
-                      // from init
+    return cache_mgr.one();
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(navi, monomNavi);
 
   if (cached.isValid()) {       // Cache lookup sucessful
-    return dd_type(cached);
+    return cache_mgr.generate(cached);
   }
 
   // Cache lookup not sucessful
@@ -818,21 +782,22 @@ dd_divide_recursively(const CacheType& cache_mgr,
 
 
 
-template <class Iterator, class NaviType, class PolyType>
+template <class DDGenerator, class Iterator, class NaviType, class PolyType>
 PolyType
-dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
+dd_divide_recursively_exp(const DDGenerator& ddgen,
+                          NaviType navi, Iterator start, Iterator finish,
                           PolyType init){
 
-  dd_generator<PolyType> dd_type(init);
   // Extract subtypes
   typedef typename NaviType::idx_type idx_type;
+  typedef typename PolyType::dd_type dd_type;
   typedef NaviType navigator;
 
   if (start == finish)
-    return dd_type(navi);
+    return ddgen.generate(navi);
 
   if (navi.isConstant()) 
-    return init;
+    return ddgen.zero();
   
 
   // Cache lookup not sucessful
@@ -841,25 +806,28 @@ dd_divide_recursively_exp(NaviType navi, Iterator start, Iterator finish,
   idx_type index = *navi;
   idx_type monomIndex = *start;
 
+  PolyType result;
   if (monomIndex == index) {    // Case: monom and poly start with same index
 
     // Increment navigators
     ++start;
     navigator naviThen = navi.thenBranch();
 
-    init = dd_divide_recursively_exp(naviThen, start, finish, init);
+    result = dd_divide_recursively_exp(ddgen, naviThen, start, finish, init);
   }
   else if (monomIndex > index) { // Case: monomIndex may occure within poly
     
-    init = 
+    result = 
       dd_type(index,  
-              dd_divide_recursively_exp(navi.thenBranch(), start, finish,
-                                      init).diagram(),
-              dd_divide_recursively_exp( navi.elseBranch(), start, finish,
-                                      init).diagram() );
+              dd_divide_recursively_exp(ddgen, navi.thenBranch(), start, finish,
+                                        init).diagram(),
+              dd_divide_recursively_exp(ddgen, navi.elseBranch(), start, finish,
+                                        init).diagram() );
   }
+  else 
+    result = ddgen.zero();
   
-  return init;
+  return result;
 }
 
 /// Function templates for determining the used variables of a decision diagram
@@ -869,7 +837,7 @@ MonomType
 cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
 
   if (navi.isConstant()) // No need for caching of constant nodes' degrees
-    return MonomType();
+    return init;
  
   // Look whether result was cached before
   NaviType cached_result = cache.find(navi);
@@ -877,7 +845,7 @@ cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
   typedef typename MonomType::poly_type poly_type;
   if (cached_result.isValid())
     return CDDOperations<typename MonomType::dd_type, 
-    MonomType>().getMonomial(poly_type(cached_result).diagram());
+    MonomType>().getMonomial(cache.generate(cached_result));
   
   MonomType result = cached_used_vars(cache, navi.thenBranch(), init);
   result *= cached_used_vars(cache, navi.elseBranch(), init);
@@ -919,17 +887,17 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
   if (deg == 0) {
     while(!navi.isConstant())
       navi.incrementElse();
-    return SetType(navi);
+    return cache.generate(navi);
   }
 
   if(navi.isConstant())
-    return SetType();
+    return cache.zero();
 
   // Look whether result was cached before
   NaviType cached = cache.find(navi, deg);
 
   if (cached.isValid())
-    return SetType(cached);
+    return cache.generate(cached);
 
   SetType result = 
     SetType(*navi,  
@@ -953,8 +921,7 @@ SetType
 dd_first_divisors_of(CacheManager cache_mgr, NaviType navi, 
                      NaviType rhsNavi, SetType init ) {
 
-  dd_generator<SetType> set_type(init);
-
+  typedef typename SetType::dd_type dd_type;
   while( (!navi.isConstant()) && (*rhsNavi != *navi) ) {
 
     if ( (*rhsNavi < *navi) && (!rhsNavi.isConstant()) ) 
@@ -964,22 +931,22 @@ dd_first_divisors_of(CacheManager cache_mgr, NaviType navi,
   }
 
   if (navi.isConstant())        // At end of path
-    return set_type(navi);
+    return cache_mgr.generate(navi);
 
   // Look up, whether operation was already used
   NaviType result = cache_mgr.find(navi, rhsNavi);
     
   if (result.isValid())       // Cache lookup sucessful
-    return  set_type(result);
+    return  cache_mgr.generate(result);
   
   assert(*rhsNavi == *navi);
    
   // Compute new result
-  init = set_type(*rhsNavi,  
-                 dd_first_divisors_of(cache_mgr, 
-                                      navi.thenBranch(), rhsNavi, init),
-                 dd_first_divisors_of(cache_mgr, 
-                                      navi.elseBranch(), rhsNavi, init) );
+  init = dd_type(*rhsNavi,  
+                 dd_first_divisors_of(cache_mgr, navi.thenBranch(), rhsNavi, 
+                                      init).diagram(),
+                 dd_first_divisors_of(cache_mgr, navi.elseBranch(), rhsNavi, 
+                                      init).diagram() );
   // Insert result to cache
   cache_mgr.insert(navi, rhsNavi, init.navigation());
 
@@ -991,16 +958,16 @@ SetType
 dd_first_multiples_of(const CacheType& cache_mgr,
                       NaviType navi, NaviType rhsNavi, SetType init){
 
-  dd_generator<SetType> set_type(init);
+  typedef typename SetType::dd_type dd_type;
 
   if(rhsNavi.isConstant())
     if(rhsNavi.terminalValue())
-      return set_type(navi);
+      return cache_mgr.generate(navi);
     else
-      return set_type(rhsNavi);
+      return cache_mgr.generate(rhsNavi);
 
   if (navi.isConstant() || (*navi > *rhsNavi)) 
-    return init;
+    return cache_mgr.zero();
 
   if (*navi == *rhsNavi)
     return dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
@@ -1010,14 +977,14 @@ dd_first_multiples_of(const CacheType& cache_mgr,
   NaviType result = cache_mgr.find(navi, rhsNavi);
 
   if (result.isValid())
-    return set_type(result);
+    return cache_mgr.generate(result);
 
   // Compute new result
-  init = set_type(*navi,
+  init = dd_type(*navi,
                   dd_first_multiples_of(cache_mgr, navi.thenBranch(), 
-                                        rhsNavi, init),
+                                        rhsNavi, init).diagram(),
                   dd_first_multiples_of(cache_mgr, navi.elseBranch(), 
-                                        rhsNavi, init) );
+                                        rhsNavi, init).diagram() );
 
   // Insert new result in cache
   cache_mgr.insert(navi, rhsNavi, init.navigation());
