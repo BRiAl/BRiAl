@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2007/12/18 22:05:40  dreyer
+ * CHANGE: persistent variables computed on manaer initialization
+ *
  * Revision 1.4  2007/12/18 10:20:16  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -46,6 +49,9 @@
 #include "pbori_traits.h"
 
 #include "CVariableNames.h"
+
+#include <vector>
+#include "cuddInt.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -93,16 +99,25 @@ public:
   /// Stores names of variables
   variable_names_type m_names;
 
+  std::vector<node_type> m_vars;
+
   /// Initialize raw decision diagram management
   CCuddCore(size_type numVars = 0,
             size_type numVarsZ = 0,
             size_type numSlots = CUDD_UNIQUE_SLOTS,
             size_type cacheSize = CUDD_CACHE_SLOTS,
             large_size_type maxMemory = 0):  
-    ref(0), m_names(numVarsZ) {
+    ref(0), m_names(numVarsZ), m_vars(numVarsZ) {
     manager = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
     errorHandler = defaultError; // CUDD's default error handle
     verbose = 0;		// initially terse
+
+    for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
+      m_vars[idx] = cuddUniqueInterZdd(manager, idx, DD_ONE(manager),
+                                       DD_ZERO(manager)); 
+      Cudd_Ref(m_vars[idx]);
+    }
+
   }
 
   /// Destructor
@@ -114,6 +129,13 @@ public:
   /// Release this by decrementing reference counting
   void release() {
     if (--(ref) == 0){
+      for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
+             m_vars.end(); ++iter) {
+        
+        Cudd_RecursiveDerefZdd(manager, *iter);
+    }
+
+
       int retval = Cudd_CheckZeroRef(manager);
       if UNLIKELY(retval != 0) {
         std::cerr << retval << " unexpected non-zero reference counts\n";

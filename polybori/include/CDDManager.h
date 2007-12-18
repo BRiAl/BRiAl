@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2007/12/18 22:05:40  dreyer
+ * CHANGE: persistent variables computed on manaer initialization
+ *
  * Revision 1.20  2007/12/18 10:20:17  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -191,30 +194,20 @@ class CDDManagerBase {
                  size_type numSlots = PBORI_UNIQUE_SLOTS,
                  size_type cacheSize = PBORI_CACHE_SLOTS,
                  unsigned long maxMemory = PBORI_MAX_MEMORY): 
-    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory),
-    m_variables() {  }
+    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory) {  }
   
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
-    m_interfaced(rhs.m_interfaced), m_variables() {
-    
-    typename persistent_cache_type::const_iterator start(rhs.m_variables.begin()),
-      finish(rhs.m_variables.end());
-
-    // explicit copy, since pointer to manager in dd_base has to be consistent
-    while (start != finish) {
-      m_variables[start->first] = fetchDiagram(start->second);
-      ++start;
-    }
+    m_interfaced(rhs.m_interfaced) {
   }
 
   /// Constructor from given ring
   CDDManagerBase(const interfaced_type& rhs): 
-    m_interfaced(fetch_manager(rhs)), m_variables() {  }
+    m_interfaced(fetch_manager(rhs)) {  }
 
   /// Extract manager from given decision diagram
   CDDManagerBase(const dd_type& dd): 
-    m_interfaced(dd.manager()), m_variables() { }
+    m_interfaced(dd.manager()) { }
 
   /// Destructor
   ~CDDManagerBase() { }
@@ -236,12 +229,7 @@ class CDDManagerBase {
 
   /// Access nvar-th managed variable
   dd_base persistentVariable(idx_type nvar) {
-    typename persistent_cache_type::iterator iter = m_variables.find(nvar);
-
-    if (iter != m_variables.end())
-      return (*iter).second;
-    else
-      return m_variables[nvar] = variable(nvar);
+    return manager().getVar(nvar);
   }
 
   /// Get number of managed variables
@@ -285,9 +273,6 @@ class CDDManagerBase {
 private:
   /// Actual decision diagram manager
   mutable interfaced_store m_interfaced;
-
-  /// Store values of Boolean variables
-  persistent_cache_type m_variables;
 };
 
 /** @class CDDManager<Cudd&>

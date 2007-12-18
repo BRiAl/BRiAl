@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/12/18 22:05:40  dreyer
+ * CHANGE: persistent variables computed on manaer initialization
+ *
  * Revision 1.12  2007/12/18 10:20:16  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -318,11 +321,21 @@ public:
     return (pMgr->m_names)[idx];
   }
 
+  dd_type getVar(idx_type idx) const {
+    assert(idx < pMgr->m_vars.size());
+    return getDiagram(pMgr->m_vars[idx]);
+  }
+
 protected:
+  /// Convert to decision diagram
+  dd_type getDiagram(node_type result) const  { 
+    return dd_type(managerCore(), result);
+  }
+
   /// Generate check result of previous node operation and convert 
   dd_type checkedResult(node_type result) const  { 
     checkReturnValue(result);
-    return dd_type(managerCore(), result);
+    return getDiagram(result);
   }
 
   /// Generate check numerical result of previous operation
