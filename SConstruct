@@ -74,6 +74,13 @@ except:
 import os
 
 
+distribute = 'distribute' in COMMAND_LINE_TARGETS
+
+DefaultBuild = Default
+if distribute:
+    def DefaultBuild(arg):
+        return arg
+
 #opts.Add("SINGULAR_HOME")
 opts.Add('PBP', 'PolyBoRi python', "python")
 opts.Add('CXX', 'C++ Compiler', "g++")
@@ -263,7 +270,7 @@ for fname in ['util/saveimage.c', 'util/test*.c','dddmp/*DdNode*.c']:
 cudd_shared = shared_object(cudd_resources)
 
 libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
-Default(libCudd)
+DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
 
@@ -272,7 +279,7 @@ if env['PLATFORM']=="darwin":
     slib=env.LoadableModule
 
 libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
-#Default(libCuddShared)
+#DefaultBuild(libCuddShared)
 
 ######################################################################
 # Stuff for building PolyBoRi's C++ part
@@ -289,14 +296,14 @@ libpb=env.StaticLibrary(PBPath('polybori'), pb_src)
 #sometimes l seems to be boxed by a list
 if isinstance(libpb,list):
     libpb=libpb[0]
-Default(libpb)
+DefaultBuild(libpb)
 
 
 pb_shared = shared_object(pb_src)#env.SharedObject(pb_src)
 shared_resources += pb_shared
 
 libpbShared = slib(PBPath('polybori'), list(shared_resources))
-#Default(libpbShared)
+#DefaultBuild(libpbShared)
 
 
 ######################################################################
@@ -311,13 +318,13 @@ gb=env.StaticLibrary(GBPath('groebner'), gb_src+[libpb])
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
     gb=gb[0]
-Default(gb)
+DefaultBuild(gb)
 
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
-#Default(libgbShared)
+#DefaultBuild(libgbShared)
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
@@ -380,19 +387,19 @@ if HAVE_PYTHON_EXTENSION:
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
-    Default(pypb)
+    DefaultBuild(pypb)
 
     # Define the dynamic python modules in pyroot
     dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
     documentable_python_modules += dynamic_modules
     
-    Default(dynamic_modules)
+    DefaultBuild(dynamic_modules)
 
     
     polybori_modules = PyRootPath("polybori")
-    #Default(env.Install(polybori_modules, pypb))
+    #DefaultBuild(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
-        Default(env.Install(polybori_modules, f))
+        DefaultBuild(env.Install(polybori_modules, f))
 
 
     
@@ -502,7 +509,7 @@ if HAVE_SINGULAR_EXTENSION:
             CPPPATH=SING_INCLUDES+CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
-    Default(singpb)
+    DefaultBuild(singpb)
     
 
 
@@ -514,8 +521,8 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
 pboriversion = "0.2"
-if 'distribute' in COMMAND_LINE_TARGETS:
-    
+
+if distribute:
     srcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular"""):
