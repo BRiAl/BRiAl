@@ -96,6 +96,8 @@ opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
 opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
                     False))
 
+opts.Add(BoolOption('USE_TIMESTAMP', 'Use timestamp on distribution', True))
+
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
@@ -511,7 +513,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
-pboriversion = "0.1"
+pboriversion = "0.2"
 if 'distribute' in COMMAND_LINE_TARGETS:
     
     srcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
@@ -535,8 +537,23 @@ if 'distribute' in COMMAND_LINE_TARGETS:
     srcs += [ DocPath(src) for src in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex python/genpythondoc.py""") ]
     srcs.append(env.Dir(DocPath('images')))
+
     
-    srcdistri = env.DistTar("PolyBoRi-" + pboriversion, srcs) 
+    presrcdistri = env.DistTar("PolyBoRi", srcs)
+    (srcdistrname, srcdistrext1) = path.splitext(str(presrcdistri[0]))
+    (srcdistrname, srcdistrext) = path.splitext(srcdistrname)
+    srcdistrext += srcdistrext1
+    pborisuffix = "-" + pboriversion
+
+    if env['USE_TIMESTAMP']:
+        from datetime import date
+        pborisuffix += "-" + str(date.today())
+        
+    srcdistri = env.Command(srcdistrname + pborisuffix + srcdistrext,
+                            presrcdistri,                            
+                            Move("$TARGET", "$SOURCE"))
+
+    env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
 devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
