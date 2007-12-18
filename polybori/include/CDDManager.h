@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2007/12/18 08:28:03  dreyer
+ * CHANGE: minor changes
+ *
  * Revision 1.18  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -209,12 +212,12 @@ class CDDManagerBase {
 
   /// Get decision diagram, from the same manager, but different wrapper 
   dd_base fetchDiagram(const dd_base& rhs) const {
-    return fetch_diagram(m_interfaced, rhs);
+    return fetch_diagram(manager(), rhs);
   }
 
   /// Access nvar-th managed variable
   dd_base ddVariable(idx_type nvar) const {  
-    return m_interfaced.zddVar(nvar); 
+    return manager().zddVar(nvar); 
   }
 
   /// Access nvar-th managed variable
@@ -234,16 +237,16 @@ class CDDManagerBase {
 
   /// Get number of managed variables
   size_type nVariables() const { 
-    return Cudd_ReadZddSize(m_interfaced.getManager()); 
+    return Cudd_ReadZddSize(manager().getManager()); 
   }
 
   /// Get empty decision diagram 
   /// @note Corresponds to the empty set (or the zero polynomial)
-  dd_type empty() const { return m_interfaced.zddZero(); }
+  dd_type empty() const { return manager().zddZero(); }
 
   /// Get decision diagram with all variables negated
   /// @note Set containing the empty set only (or the constant polynomial one)
-  dd_type blank() const { return m_interfaced.zddOne(nVariables()); }
+  dd_type blank() const { return manager().zddOne(nVariables()); }
 
   /// Casting operator to interfaced type
   operator interfaced_type&() { return m_interfaced; }
@@ -258,7 +261,7 @@ class CDDManagerBase {
   const interfaced_type& manager() const { return m_interfaced; }
 
   /// Print out statistics and settings for a decision diagram manager
-  void printInfo() const { m_interfaced.info(); }
+  void printInfo() const { manager().info(); }
 
 private:
   /// Actual decision diagram manager

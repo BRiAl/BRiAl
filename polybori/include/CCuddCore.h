@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2007/12/18 08:28:03  dreyer
+ * CHANGE: minor changes
+ *
  * Revision 1.2  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -46,7 +49,7 @@ BEGIN_NAMESPACE_PBORI
  * for the use with instrinsive pointers.
  *
  * The purpose of this wrapper is mainly to provide the necessary functionality
- * for application of intrisive pointers (refernce cpunting). In addition, saome
+ * for application of intrisive pointers (refernce counting). In addition, some
  * global settings are stored within.
  *
  * @attention This class is intented for internal use only. See CCuddDD,
