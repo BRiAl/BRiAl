@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/12/18 10:20:17  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.11  2007/12/17 16:12:02  dreyer
  * CHANGE: reviewed and optimized merge frim sf.net
  *
@@ -103,7 +106,7 @@ public:
 
   /// Dereference to get stored index
   typename base::reference operator*() const {
-    if (base::isConstant())
+    if UNLIKELY(base::isConstant())
       return manager().nVariables();
     else 
       return base::operator*();
@@ -117,7 +120,7 @@ protected:
   /// Convert plain number to navigation type
   navigator toNode(idx_type idx) const {
 
-    if ((size_type)idx < manager().nVariables())
+    if LIKELY((size_type)idx < manager().nVariables())
       return  navigator(manager().persistentVariable(idx));
 
     return  navigator(manager().empty());

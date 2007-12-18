@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2007/12/18 10:20:17  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.29  2007/12/11 15:37:35  dreyer
  * ADD: BooleOrdering started
  *
@@ -161,74 +164,74 @@ lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
  *
  **/
 
-template <class ManType>
-class CNamedManager:
-  public CDDManager<ManType> { 
+// template <class ManType>
+// class CNamedManager:
+//   public CDDManager<ManType> { 
 
-public:
+// public:
 
-  /// Variable manager type
-  typedef ManType manager_type;
+//   /// Variable manager type
+//   typedef ManType manager_type;
 
-  /// Variable manager interface (base type)
-  typedef CDDManager<manager_type> base;
+//   /// Variable manager interface (base type)
+//   typedef CDDManager<manager_type> base;
 
-  /// Type of *this
-  typedef CNamedManager<manager_type> self;
+//   /// Type of *this
+//   typedef CNamedManager<manager_type> self;
 
-  /// @name adopt global type definitions
-  //@{
-  typedef CTypes::bool_type bool_type;
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::comp_type comp_type;
-  typedef CTypes::ordercode_type ordercode_type;
-  typedef BooleMonomial monom_type;
-  typedef BoolePolynomial poly_type;
-  typedef BoolePolynomial::navigator navigator;
-  typedef BooleExponent exp_type;
-  //@}
+//   /// @name adopt global type definitions
+//   //@{
+//   typedef CTypes::bool_type bool_type;
+//   typedef CTypes::dd_type dd_type;
+//   typedef CTypes::size_type size_type;
+//   typedef CTypes::idx_type idx_type;
+//   typedef CTypes::comp_type comp_type;
+//   typedef CTypes::ordercode_type ordercode_type;
+//   typedef BooleMonomial monom_type;
+//   typedef BoolePolynomial poly_type;
+//   typedef BoolePolynomial::navigator navigator;
+//   typedef BooleExponent exp_type;
+//   //@}
 
-  /// Define type for storing names of variables
-  typedef CVariableNames variable_names_type;
+//   /// Define type for storing names of variables
+//   typedef CVariableNames variable_names_type;
 
-  /// Define type for getting names of variables
-  typedef variable_names_type::const_reference const_varname_reference;
+//   /// Define type for getting names of variables
+//   typedef variable_names_type::const_reference const_varname_reference;
 
-  /// Construct new decision diagramm manager
-  CNamedManager(size_type nvars = 0): 
-    base(nvars), m_names(nvars)  { }
+//   /// Construct new decision diagramm manager
+//   CNamedManager(size_type nvars = 0): 
+//     base(nvars)  { }
 
-  /// Construct old decision diagramm manager
-  CNamedManager(const base& rhs): 
-    base(rhs), m_names(rhs.nVariables()) { }
-
-
-  /// Construct new decision diagramm manager
-  CNamedManager(const self& rhs): 
-    base(rhs), m_names(rhs.m_names) { }
-
-  // Destructor
-  ~CNamedManager() { }
-
-  /// Set name of variable with index idx
-  void setVariableName(idx_type idx, const_varname_reference varname) {
-    m_names.set(idx, varname);
-  }
-
-  /// Get name of variable with index idx
-  const_varname_reference getVariableName(idx_type idx) const { 
-    return m_names[idx];
-  }
-
-private:
-  /// Stores names of variables
-  variable_names_type m_names;
-};
+//   /// Construct old decision diagramm manager
+//   CNamedManager(const base& rhs): 
+//     base(rhs) { }
 
 
-/** @class CDynamicBase
+//   /// Construct new decision diagramm manager
+//   CNamedManager(const self& rhs): 
+//     base(rhs) { }
+
+//   // Destructor
+//   ~CNamedManager() { }
+
+//   /// Set name of variable with index idx
+//   void setVariableName(idx_type idx, const_varname_reference varname) {
+//     base::manager().names().set(idx, varname);
+//   }
+
+//   /// Get name of variable with index idx
+//   const_varname_reference getVariableName(idx_type idx) const { 
+//     return base::manager().names()[idx];
+//   }
+
+// private:
+//   /// Stores names of variables
+//   //variable_names_type m_names;
+// };
+
+
+/** @class CDynamicOrderBase
  * @brief This class initialize the interface for runtime-switchable orderings.
  *
  **/

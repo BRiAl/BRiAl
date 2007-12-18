@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2007/12/18 10:20:17  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.19  2007/12/18 08:28:03  dreyer
  * CHANGE: minor changes
  *
@@ -177,6 +180,12 @@ class CDDManagerBase {
   /// Define type for caching persistent variables
   typedef std::map<idx_type, dd_base> persistent_cache_type;
 
+  /// Define type for storing names of variables
+  typedef CVariableNames variable_names_type;
+
+  /// Define type for getting names of variables
+  typedef variable_names_type::const_reference const_varname_reference;
+
   /// Default constructor
   CDDManagerBase(size_type nvars = 0,
                  size_type numSlots = PBORI_UNIQUE_SLOTS,
@@ -262,6 +271,16 @@ class CDDManagerBase {
 
   /// Print out statistics and settings for a decision diagram manager
   void printInfo() const { manager().info(); }
+
+  /// Set name of variable with index idx
+  void setVariableName(idx_type idx, const_varname_reference varname) {
+    manager().setName(idx, varname);
+  }
+
+  /// Get name of variable with index idx
+  const_varname_reference getVariableName(idx_type idx) const { 
+    return manager().getName(idx);
+  }
 
 private:
   /// Actual decision diagram manager

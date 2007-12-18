@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2007/12/18 10:20:17  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.40  2007/12/11 15:37:35  dreyer
  * ADD: BooleOrdering started
  *
@@ -338,9 +341,6 @@ class CDDInterface;
 template <class ManType>
 class CDDManager;
 
-template <class ManType>
-class CNamedManager;
-
 /** @class COrderEnums
  * @brief This struct contains type definitions and enumerations to be used for
  * order codes.
@@ -480,7 +480,7 @@ struct CTypes:
   typedef CCuddInterface manager_base;
 
   /// Manage variables to be used by polynomials over Boolean ring
-  typedef CNamedManager<manager_base> manager_type;
+  typedef CDDManager<manager_base> manager_type;
 
   /// Reference to decision diagramm manager
   typedef CDDManager<manager_base&>  manager_reference;

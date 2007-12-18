@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2007/12/18 10:20:16  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.11  2007/11/06 16:36:55  dreyer
  * + minor changes
  *
@@ -103,6 +106,12 @@ public:
   typedef CCuddZDD dd_type;
   typedef self tmp_ref;
   //@}
+
+  /// Define type for storing names of variables
+  typedef CVariableNames variable_names_type;
+
+  /// Define type for getting names of variables
+  typedef variable_names_type::const_reference const_varname_reference;
 
   /// Initialize CUDD-like decision diagram manager
   CCuddInterface(size_type numVars = 0,
@@ -298,6 +307,16 @@ public:
   /** @endcode */
   /// 
   //@}
+
+  ///  Set name of variable with index idx
+  void setName(idx_type idx, const_varname_reference varname) {
+    (pMgr->m_names).set(idx, varname);
+  }
+
+  /// Get name of variable with index idx
+  const_varname_reference getName(idx_type idx) const { 
+    return (pMgr->m_names)[idx];
+  }
 
 protected:
   /// Generate check result of previous node operation and convert 

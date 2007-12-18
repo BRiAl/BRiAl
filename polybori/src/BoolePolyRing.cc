@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2007/12/18 10:20:17  dreyer
+ * CHANGE CNamedManager removed, names are in core now
+ *
  * Revision 1.41  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -170,7 +173,7 @@ BEGIN_NAMESPACE_PBORI
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
   base(),
-  pMgr(CTypes::manager_ptr(new CNamedManager<CTypes::manager_base>(nvars))),
+  pMgr(CTypes::manager_ptr(new CTypes::manager_type(nvars))),
   pOrder(get_ordering(order)) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
