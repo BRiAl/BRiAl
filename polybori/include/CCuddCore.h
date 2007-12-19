@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2007/12/19 10:40:34  dreyer
+ * CHANGE: make Cudd-related globals initialization static
+ *
  * Revision 1.6  2007/12/19 09:03:16  dreyer
  * CHANGE: make Cudd-related globals static
  *
@@ -112,10 +115,9 @@ public:
             large_size_type maxMemory = 0):  
     ref(0), m_names(numVarsZ), m_vars(numVarsZ) {
     manager = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
-    errorHandler = defaultError; // CUDD's default error handle
-    verbose = 0;		// initially terse
 
-      for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
+
+    for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
       m_vars[idx] = cuddUniqueInterZdd(manager, idx, DD_ONE(manager),
                                        DD_ZERO(manager)); 
       Cudd_Ref(m_vars[idx]);

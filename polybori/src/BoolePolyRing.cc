@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2007/12/19 10:40:34  dreyer
+ * CHANGE: make Cudd-related globals initialization static
+ *
  * Revision 1.43  2007/12/19 09:03:16  dreyer
  * CHANGE: make Cudd-related globals static
  *
@@ -203,7 +206,10 @@ BoolePolyRing::activate() {
 
 }
 
-bool CCuddCore::verbose;
-CCuddCore::errorfunc_type CCuddCore::errorHandler;
+bool CCuddCore::verbose = 0;		// initially terse
+CCuddCore::errorfunc_type CCuddCore::errorHandler  = defaultError; // CUDD's
+                                                                   // default
+                                                                   // error
+                                                                   // handle; 
 
 END_NAMESPACE_PBORI
