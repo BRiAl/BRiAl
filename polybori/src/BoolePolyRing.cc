@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2007/12/19 09:03:16  dreyer
+ * CHANGE: make Cudd-related globals static
+ *
  * Revision 1.42  2007/12/18 10:20:17  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -200,5 +203,7 @@ BoolePolyRing::activate() {
 
 }
 
+bool CCuddCore::verbose;
+CCuddCore::errorfunc_type CCuddCore::errorHandler;
 
 END_NAMESPACE_PBORI

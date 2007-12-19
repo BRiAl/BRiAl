@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2007/12/19 09:03:16  dreyer
+ * CHANGE: make Cudd-related globals static
+ *
  * Revision 1.5  2007/12/18 22:05:40  dreyer
  * CHANGE: persistent variables computed on manaer initialization
  *
@@ -88,10 +91,10 @@ public:
   mgrcore_type manager;
 
   /// Functions for handling errors from CUDD functions
-  errorfunc_type errorHandler;
+  static errorfunc_type errorHandler;
 
   /// Control eloquence of CUDD functionality
-  bool verbose;
+  static bool verbose;
 
   /// Count instances pointing here
   refcount_type ref;
@@ -112,7 +115,7 @@ public:
     errorHandler = defaultError; // CUDD's default error handle
     verbose = 0;		// initially terse
 
-    for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
+      for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
       m_vars[idx] = cuddUniqueInterZdd(manager, idx, DD_ONE(manager),
                                        DD_ZERO(manager)); 
       Cudd_Ref(m_vars[idx]);

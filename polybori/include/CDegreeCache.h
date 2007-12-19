@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2007/12/19 09:03:16  dreyer
+ * CHANGE: make Cudd-related globals static
+ *
  * Revision 1.12  2007/12/18 10:20:17  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -127,6 +130,59 @@ protected:
   }
 };
 
+
+template <class NaviType>
+class CIndexCacheHandle:
+  public NaviType {
+public:
+
+  /// Set actual storage type
+  typedef NaviType navigator;
+
+  /// Define type base
+  typedef navigator base;
+
+  /// Plain Boolean type
+  typedef typename navigator::bool_type bool_type;
+
+  /// Type for representing indices
+  typedef typename base::value_type idx_type;
+
+   /// Type for representing size
+  typedef typename base::size_type size_type;
+
+  /// Type of decision diagram manager
+  typedef typename CTypes::manager_type manager_type;
+
+  /// Construct from index
+  CIndexCacheHandle(idx_type idx): base( toNode(idx) ) {}
+
+  /// Construct from given navigator
+  explicit CIndexCacheHandle(navigator navi): base(navi) {}
+
+  /// Dereference to get stored index
+  typename base::reference operator*() const {
+    if UNLIKELY(base::isConstant())
+      return manager().nVariables();
+    else 
+      return base::operator*();
+  }
+
+protected:
+
+  /// Get active manager
+  manager_type& manager() const { return BooleEnv::manager(); }
+
+  /// Convert plain number to navigation type
+  navigator toNode(idx_type idx) const {
+
+    if LIKELY((size_type)idx < manager().nVariables())
+      return  navigator(manager().persistentVariable(idx));
+
+    return  navigator(manager().empty());
+  }
+};
+
 template <class TagType = typename CCacheTypes::degree,
           class DDType = typename CTypes::dd_type>
 class CDegreeCache:
@@ -148,6 +204,7 @@ public:
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
+  typedef CIndexCacheHandle<navi_type> node_cache_type;
   //@}
 
   /// Constructor
@@ -168,12 +225,12 @@ public:
 
   /// Store cached degree wrt. given navigator
   void insert(input_node_type navi, size_type deg) const {
-    base::insert(navi, node_type(deg));
+    base::insert(navi, node_cache_type(deg));
   }
 
   /// Store cached degree wrt. given navigator
   void insert(navi_type navi, size_type deg) const {
-    base::insert(navi, node_type(deg));
+    base::insert(navi, node_cache_type(deg));
   }
 
 };
@@ -203,6 +260,7 @@ public:
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
+  typedef CIndexCacheHandle<navi_type> node_cache_type;
   //@}
 
   /// Constructor
@@ -223,12 +281,12 @@ public:
 
   /// Store cached degree wrt. given navigator
   void insert(input_node_type navi, idx_type idx, size_type deg) const {
-    base::insert(navi, node_type(idx), node_type(deg));
+    base::insert(navi, node_cache_type(idx), node_cache_type(deg));
   }
 
   /// Store cached degree wrt. given navigator
   void insert(navi_type navi, idx_type idx, size_type deg) const {
-    base::insert(navi, node_type(idx), node_type(deg));
+    base::insert(navi, node_cache_type(idx), node_cache_type(deg));
   }
 };
 
@@ -252,7 +310,7 @@ public:
   typedef typename base::manager_type manager_type;
   typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
-  typedef CIndexHandle<navi_type> degree_node_type;
+  typedef CIndexCacheHandle<navi_type> degree_node_type;
   //@}
 
   /// Constructor
