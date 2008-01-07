@@ -1,4 +1,5 @@
 from polybori.PyPolyBoRi import *
+from polybori.statistics import used_vars_set
 from random import Random
 import copy
 import sys
@@ -512,6 +513,12 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
     def branch(strat,trace):
         print "branching"
         index=strat.suggestPluginVariable();
+        if index<0:
+            uv=set(used_vars_set(strat))
+            lv=set([iter(p.lead()).next() for p in strat if p.lmDeg()==1])
+            candidates=uv.difference(lv)
+            if len(candidates)>0:
+                index=iter(candidates).next()
         if index>=0:
             print "chosen index:", index
             step(strat, trace,  Polynomial(Monomial(Variable(index))),0)
