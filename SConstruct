@@ -2,9 +2,6 @@
 #$Id$
 opts = Options('custom.py')
 import tarfile
-BOOST_WORKS=False
-HAVE_DOXYGEN=True
-HAVE_PYTHON_EXTENSION = True
 
 import sys
 from os import sep, path
@@ -16,8 +13,6 @@ m4ri=["grayflex.cc", "packedmatrix.cc","watch.cc",
 "brilliantrussian.cc", "matrix.cc"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 USERLIBS=[]
-PYPREFIX="/sw"
-SINGULAR_HOME=None
 PBP="python"
 
 # Fix some paths and names
@@ -43,26 +38,16 @@ cudd_name = 'pboriCudd'
 [PyRootPath, IPBPath] = [PathJoiner(fdir) for fdir in [pyroot, ipbroot] ]
 
  
-#TODO: use opts.Add instead of the import of custom.py
-#see http://www.scons.org/doc/production/HTML/scons-user/x1445.html
+#Note: opts.Add is used for most options, LIBPATH and CPPPATH are exceptions,
+#      because they be set in custom.py and by the command line (combined)
+#see http://www.scons.org/doc/0.97/HTML/scons-user.html#AEN1541
+# todo: change this? avoid combined use?
 try:
     import custom
     if "LIBPATH" in dir(custom):
         USER_LIBPATH=custom.LIBPATH+USER_LIBPATH
     if "CPPPATH" in dir(custom):
         USER_CPPPATH=custom.CPPPATH+USER_CPPPATH
-    if "BOOST_WORKS" in dir(custom):
-        BOOST_WORKS=custom.BOOST_WORKS
-    if "PYPREFIX" in dir(custom):
-        PYPREFIX=custom.PYPREFIX
-    if "LIBS" in dir(custom):
-        USERLIBS=custom.LIBS
-    if "SINGULAR_HOME" in dir(custom):
-        SINGULAR_HOME=custom.SINGULAR_HOME
-    if "HAVE_DOXYGEN" in dir(custom):
-        HAVE_DOXYGEN=custom.HAVE_DOXYGEN
-    if "HAVE_PYTHON_EXTENSION" in dir(custom):
-        HAVE_PYTHON_EXTENSION = custom.HAVE_PYTHON_EXTENSION
 except:
     pass
 
@@ -95,6 +80,18 @@ opts.Add('PYINSTALLPREFIX', 'python modules directory', '$INSTALLDIR/pyroot')
 
 opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
 
+opts.Add('PYPREFIX', 'alternative python directory to be searched','/sw')
+opts.Add('SINGULAR_HOME',
+         'directory of Singular development version', '')
+opts.Add('LIBS', 'custom libraries needed for build', [])
+         
+opts.Add(BoolOption('HAVE_DOXYGEN',
+                    'Generate doxygen-based documentation, if available', True))
+opts.Add(BoolOption('HAVE_PYTHON_EXTENSION',
+                    'Build python extension, if possible', True))
+opts.Add(BoolOption('BOOST_WORKS',
+                    'Skip check for Boost libraries', False))
+
 opts.Add(BoolOption('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
 
@@ -111,13 +108,36 @@ for m in pbori_cache_macros:
 
 #opts.Add('USERLIBS', 'additional libs', [])
 
-tools =  ["default", "disttar"]
+tools =  ["default", "disttar", "doxygen"]
 
+
+# Get paths an related things from current environment
+# todo: Are these settings sane in any case?
+getenv = dict()
+for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
+    try:
+        getenv[key] = os.environ[key]
+    except KeyError:
+        pass
+
+env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
+Help(opts.GenerateHelpText(env))
+
+# Extract some option values
+HAVE_DOXYGEN = env['HAVE_DOXYGEN']
+HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
+BOOST_WORKS = env['BOOST_WORKS']
+PYPREFIX = env['PYPREFIX']
+SINGULAR_HOME = env['SINGULAR_HOME']
+USERLIBS = env['LIBS']
+
+# Skipping doxygen-based docu, if no doxygen is found.
 if HAVE_DOXYGEN:
-    tools += ["doxygen"]
+    HAVE_DOXYGEN = env.Detect('doxygen')
+    if not HAVE_DOXYGEN:
+        print "Doxygen not found, skipping C++-documentation generation!"
 
-env=Environment(options=opts,tools = tools, toolpath = '.')
-
+    
 #print env.Dump()
 cache_opts_file=open(PBPath('include', 'cacheopts.h'), "w")
 for m in pbori_cache_macros:
@@ -160,20 +180,16 @@ PYTHONSEARCH=[\
     PythonConfig(version="2.4")]
 
 conf = Configure(env)
+
 env.Append(CPPPATH=USER_CPPPATH)
 env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=[PBPath('include')])
 env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 env.Append(LIBPATH=["polybori","groebner"])
 
-##env.Append(RPATH = pyroot+"polybori/")
+env.Prepend(LIBS=["m"])
 
 
-env['ENV']['HOME']=os.environ["HOME"]
-try:
-    env['ENV']['LD_LIBRARY_PATH']=os.environ["LD_LIBRARY_PATH"]
-except KeyError:
-    pass
 from re import search
 for variable in os.environ:
     if search("SAGE",variable):
@@ -183,8 +199,6 @@ for variable in os.environ:
 #        env.Append(CPPPATH="/sw/include")
 #workaround for linux
 #env.Append(LIBPATH=".")
-
-env.Append(LIBS=["m"]+USERLIBS)
 
 
 try:
