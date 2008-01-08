@@ -259,7 +259,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                     assert((r.subset1(v2)==s1)==has_factor_x_plus_y(r,Variable(v),Variable(v2)));
                     if (r.subset1(v2)==s1){
                     #else
-                    if (has_factor_x_plus_y(r,v,v2_var)){
+                      if (has_factor_x_plus_y(r,Variable(v),v2_var)){
                     #endif
                     
                       assert(BooleEnv::ordering().compare(v, v2)==BoolePolyRing::greater_than);

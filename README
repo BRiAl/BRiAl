@@ -61,6 +61,12 @@ Typing
 generates and installs PolyBoRi headers and libraries for developers.
 
 
+Type 
+
+  scons -h
+
+for more infos about possible custom settings.
+
 Usage:
 ======
 Provided that /prefix/for/executables/bin is in your path, typing 
