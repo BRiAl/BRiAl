@@ -6,14 +6,10 @@ import tarfile
 import sys
 from os import sep, path
 from glob import glob
-USER_CPPPATH=ARGUMENTS.get("CPPPATH","").split(":")
-USER_LIBPATH=ARGUMENTS.get("LIBPATH","").split(":")
 
 m4ri=["grayflex.cc", "packedmatrix.cc","watch.cc",
 "brilliantrussian.cc", "matrix.cc"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
-USERLIBS=[]
-PBP="python"
 
 # Fix some paths and names
 class PathJoiner(object):
@@ -31,25 +27,18 @@ class PathJoiner(object):
 
 DataPath = PathJoiner(TestsPath('py/data'))
 
+# Split lists separated by colons and whitespaces
+def SplitColonSep(arg):
+    result = []
+    for element in Split(arg):
+        result += element.split(':')
+    return result
+
 pyroot="pyroot/"
 ipbroot = 'ipbori'
 cudd_name = 'pboriCudd'
 
 [PyRootPath, IPBPath] = [PathJoiner(fdir) for fdir in [pyroot, ipbroot] ]
-
- 
-#Note: opts.Add is used for most options, LIBPATH and CPPPATH are exceptions,
-#      because they be set in custom.py and by the command line (combined)
-#see http://www.scons.org/doc/0.97/HTML/scons-user.html#AEN1541
-# todo: change this? avoid combined use?
-try:
-    import custom
-    if "LIBPATH" in dir(custom):
-        USER_LIBPATH=custom.LIBPATH+USER_LIBPATH
-    if "CPPPATH" in dir(custom):
-        USER_CPPPATH=custom.CPPPATH+USER_CPPPATH
-except:
-    pass
 
 
 try:
@@ -66,24 +55,44 @@ if distribute:
     def DefaultBuild(arg):
         return arg
 
-#opts.Add("SINGULAR_HOME")
-opts.Add('PBP', 'PolyBoRi python', "python")
+# Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
+opts.Add('CC', 'C Compiler', "gcc")
+opts.Add('PBP', 'PolyBoRi python', "python")
 
-opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
-opts.Add('EPREFIX', 'executables installation prefix directory', '$PREFIX/bin')
+opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
+         [], converter = SplitColonSep)
+opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
+         [], converter = SplitColonSep)
 
-opts.Add('INSTALLDIR', 'end user installation directory',
-         '$PREFIX/share/polybori')
-opts.Add('DOCDIR', 'documentation installation directory', '$INSTALLDIR/doc')
-opts.Add('PYINSTALLPREFIX', 'python modules directory', '$INSTALLDIR/pyroot')
+opts.Add('CCFLAGS', "C compiler flags", "-O3 -ansi", converter = Split)
+opts.Add('CXXFLAGS', "C++ compiler flags", "$CCFLAGS -ftemplate-depth-100",
+         converter = Split)
+opts.Add('LINKFLAGS', "Linker flags", [], converter = Split)
+opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
-opts.Add('DEVEL_PREFIX', 'development version installation directory','$PREFIX')
+opts.Add(PathOption('PREFIX', 'installation prefix directory', '/usr/local',
+                    PathOption.PathAccept))
+opts.Add(PathOption('EPREFIX',
+                    'executables installation prefix directory', '$PREFIX/bin',
+                    PathOption.PathAccept))
 
-opts.Add('PYPREFIX', 'alternative python directory to be searched','/sw')
-opts.Add('SINGULAR_HOME',
-         'directory of Singular development version', '')
-opts.Add('LIBS', 'custom libraries needed for build', [])
+opts.Add(PathOption('INSTALLDIR', 'end user installation directory',
+                    '$PREFIX/share/polybori', PathOption.PathAccept))
+opts.Add(PathOption('DOCDIR', 'documentation installation directory',
+                    '$INSTALLDIR/doc', PathOption.PathAccept))
+opts.Add(PathOption('PYINSTALLPREFIX', 'python modules directory',
+                    '$INSTALLDIR/pyroot', PathOption.PathAccept))
+
+opts.Add(PathOption('DEVEL_PREFIX',
+                    'development version installation directory','$PREFIX',
+                    PathOption.PathAccept) )
+
+opts.Add(PathOption('PYPREFIX', 'alternative python directory to be searched',
+                    '/sw', PathOption.PathAccept))
+opts.Add(PathOption('SINGULAR_HOME',
+                    'directory of Singular development version',
+                    '', PathOption.PathAccept))
          
 opts.Add(BoolOption('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
@@ -106,10 +115,8 @@ pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
 
-#opts.Add('USERLIBS', 'additional libs', [])
 
 tools =  ["default", "disttar", "doxygen"]
-
 
 # Get paths an related things from current environment
 # todo: Are these settings sane in any case?
@@ -181,12 +188,9 @@ PYTHONSEARCH=[\
 
 conf = Configure(env)
 
-env.Append(CPPPATH=USER_CPPPATH)
-env.Append(LIBPATH=USER_LIBPATH)
 env.Append(CPPPATH=[PBPath('include')])
 env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 env.Append(LIBPATH=["polybori","groebner"])
-
 env.Prepend(LIBS=["m"])
 
 
@@ -201,20 +205,7 @@ for variable in os.environ:
 #env.Append(LIBPATH=".")
 
 
-try:
-    env.Append(CCFLAGS=Split(custom.CCFLAGS))
-except:
-    env.Append(CCFLAGS=Split("-O3 -ansi"))
 
-try:
-    env.Append(CXXFLAGS=Split(custom.CXXFLAGS))
-except:
-    env.Append(CXXFLAGS=Split("-ftemplate-depth-100"))
-    
-try:
-    env.Append(LINKFLAGS=Split(custom.LINKFLAGS))
-except:
-    pass
 
 
 

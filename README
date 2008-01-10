@@ -43,7 +43,7 @@ the build directory, see the following example.
 
 --- custom.py ---
 CCFLAGS = "-g -O3  -ansi --pedantic -Wno-long-long -pg"
-CXXFLAGS = "-ftemplate-depth-100"
+CXXFLAGS = "$CCFLAGS -ftemplate-depth-100"
 LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg" 
 LIBS=["util"]
 # means that this line is not activated.
