@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/01/11 16:58:58  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.19  2007/12/13 15:53:50  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -240,6 +243,8 @@ void testiter(const BoolePolynomial& poly) {
 
 int
 main(){
+  std::cout << "Temporarily deactivated" <<std::endl;   
+#if 0
 
   std::cout << "Testing navigating through decision diagrams" <<std::endl;   
 
@@ -507,6 +512,6 @@ main(){
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
-
+#endif //if0
   return 0;
 }

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2008/01/11 16:58:58  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.15  2007/11/06 15:03:39  dreyer
  * CHANGE: More generic copyright
  *
@@ -202,7 +205,8 @@ DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
 //   return indirect_iterator(core_pointer(new iterator_core(poly)));
-  return CGenericOrderedIter<self, navigator, monom_type>(poly.navigation());
+  return CGenericOrderedIter<self, navigator, 
+    monom_type>(poly.navigation(), poly.diagram().managerCore());
 
 }
 
@@ -231,8 +235,8 @@ DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
 //   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation());
-
+ 
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation()); 
 }
 
 DegRevLexAscOrder::indirect_exp_iterator

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.24  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -160,7 +163,7 @@ public:
   }
 
   /// Construct from navigator over decision diagram
-  CTermIter(navigator navi, term_generator get_term = term_generator()): 
+  CTermIter(navigator navi, const term_generator& get_term): 
     m_getTerm(get_term), m_stack(navi) {
     m_stack.init(); 
   }
@@ -221,6 +224,7 @@ protected:
   /// The stack, which carries the current path
   stack_type m_stack;
 };
+
 
 END_NAMESPACE_PBORI
 

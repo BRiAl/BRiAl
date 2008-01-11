@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.21  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -213,10 +216,9 @@ public:
   /// Extract plain Boolean type
   typedef bool bool_type;
 
-  // Default Constructor
-
+  // Constructor
   COrderedIter(core_pointer rhs, 
-               term_generator getTerm = term_generator()):
+               const term_generator & getTerm):
     m_getTerm(getTerm), p_iter(rhs) {}
 
   // Destructor
@@ -244,7 +246,7 @@ public:
   /// Dereferencing operation
   MonomType dereference() const { 
 
-    return CTermGenerator<MonomType>()(*p_iter);
+    return m_getTerm(*p_iter);
   }
 
   const_iterator begin() const { return p_iter->begin(); }
@@ -282,10 +284,37 @@ public:
   typedef typename base::iterator_core iterator_core;
   typedef typename base::core_pointer core_pointer;
 
+  typedef typename base::term_generator term_generator;
+
+  CGenericOrderedIter(NavigatorType navi, term_generator gen): 
+    base( core_pointer(new ordered_iter_type(navi)), gen) {}
+  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
+                               term_generator() ) {}
+
+  CGenericOrderedIter(const CGenericOrderedIter& rhs): base(rhs) {}
+};
+
+template <class OrderType, class NavigatorType>
+class CGenericOrderedIter<OrderType, NavigatorType, BooleExponent> :
+  public COrderedIter<NavigatorType, BooleExponent> {
+public:
+  typedef CAbstractStackBase<NavigatorType> stack_base;
+  typedef typename CStackSelector<OrderType, NavigatorType, stack_base>::type
+  ordered_iter_base;
+  typedef CWrappedStack<ordered_iter_base> ordered_iter_type;
+
+  typedef COrderedIter<NavigatorType, BooleExponent> base;
+  typedef typename base::iterator_core iterator_core;
+  typedef typename base::core_pointer core_pointer;
+
+  typedef typename base::term_generator term_generator;
 
   CGenericOrderedIter(NavigatorType navi): 
-    base( core_pointer(new ordered_iter_type(navi)) ) {}
-  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()) ) {}
+    base( core_pointer(new ordered_iter_type(navi)),
+                       term_generator() ) {}
+
+  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
+                              term_generator() ) {}
 
   CGenericOrderedIter(const CGenericOrderedIter& rhs): base(rhs) {}
 };

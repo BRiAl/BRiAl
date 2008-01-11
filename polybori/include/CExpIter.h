@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.2  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -99,7 +102,7 @@ public:
   typedef typename pbori_base<self>::type base;
 
   /// Construct iteraor from navigator over decision diagram structure
-  CExpIter(NaviType navi): base(navi) {
+  CExpIter(NaviType navi): base(navi, typename base::term_generator() ) {
     base::m_getTerm.reserve(base::m_stack.size());
     base::m_getTerm.append(base::begin(), base::end()); 
   }

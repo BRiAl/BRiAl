@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.84  2008/01/11 16:58:56  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.83  2007/12/14 11:50:30  dreyer
  * Fix: merged from bugfix at sf.net
  *
@@ -336,6 +339,10 @@ template<class, class, class, class> class CDelayedTermIter;
 template<class OrderType, class NavigatorType, class MonomType>
 class CGenericIter;
 
+template<class OrderType, class NavigatorType, class MonomType>
+class MyCGenericIter;
+
+
 template<class NavigatorType, class ExpType>
 class CExpIter;
 template<class NavigatorType, class ExpType>
@@ -421,6 +428,7 @@ public:
   /// @name Generic iterators for various orderings
   //@{
   typedef CGenericIter<LexOrder, navigator, monom_type> lex_iterator;
+  ////  typedef CGenericIter<LexOrder, navigator, monom_type> lex_iterator;
   typedef CGenericIter<DegLexOrder, navigator, monom_type> dlex_iterator;
   typedef CGenericIter<DegRevLexAscOrder, navigator, monom_type> 
   dp_asc_iterator;

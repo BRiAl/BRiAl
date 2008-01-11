@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2008/01/11 16:58:58  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.17  2007/11/30 10:20:51  dreyer
  * Fix: #1841097 lexlead()
  *
@@ -215,7 +218,8 @@ LexOrder::leadIteratorBegin(const poly_type& poly) const {
 //   return indirect_iterator(core_pointer(new iterator_core(poly)));
 
 
-  return CGenericOrderedIter<self, navigator, monom_type>(poly.navigation());
+  return CGenericOrderedIter<self, navigator,
+    monom_type>(poly.navigation(), poly.diagram().managerCore());  
 
 }
 

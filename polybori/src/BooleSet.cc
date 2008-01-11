@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2008/01/11 16:58:58  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.44  2007/12/17 16:12:03  dreyer
  * CHANGE: reviewed and optimized merge frim sf.net
  *
@@ -266,7 +269,7 @@ BooleSet::const_iterator
 BooleSet::begin() const {
 
   PBORI_TRACE_FUNC( "BooleSet::begin() const" );
-  return navigation();
+  return const_iterator(navigation(), managerCore());
 }
 
 // Finish of iteration over monomials

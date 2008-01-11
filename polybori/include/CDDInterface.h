@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.59  2008/01/11 16:58:56  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.58  2007/12/14 11:50:31  dreyer
  * Fix: merged from bugfix at sf.net
  *
@@ -324,6 +327,9 @@ class CDDInterface:
 
   /// Reference to decision diagram manager type
   typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
+
+  /// Decision diagram manager core type
+  typedef typename manager_traits<manager_base>::core_type core_type;
 
   /// Interface to Cudd's decision diagram manager type
   typedef CDDManager<CCuddInterface> manager_type;
@@ -662,7 +668,7 @@ class CDDInterface:
   mgr_ref manager() const {
     return get_manager(m_interfaced.manager());
   }
-  typename manager_traits<manager_base>::core_type managerCore() const{
+  core_type managerCore() const{
     return m_interfaced.manager();
   }
   /// Get numbers of used variables

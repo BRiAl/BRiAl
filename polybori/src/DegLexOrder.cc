@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/01/11 16:58:58  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.18  2007/11/06 15:03:39  dreyer
  * CHANGE: More generic copyright
  *
@@ -218,7 +221,8 @@ DegLexOrder::leadIteratorBegin(const poly_type& poly) const {
 
 //   return indirect_iterator(core_pointer(new iterator_core(poly)));
 
-  return CGenericOrderedIter<self, navigator, monom_type>(poly.navigation());
+  return CGenericOrderedIter<self, navigator,
+    monom_type>(poly.navigation(), poly.diagram().managerCore()); 
 }
 
 DegLexOrder::indirect_iterator

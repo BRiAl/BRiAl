@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.109  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.108  2007/12/17 16:12:03  dreyer
  * CHANGE: reviewed and optimized merge frim sf.net
  *
@@ -1042,7 +1045,8 @@ BoolePolynomial::const_iterator
 BoolePolynomial::begin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::begin() const" );
-  return navigation();
+  return const_iterator(navigation(),
+                        lex_iterator::term_generator(m_dd.managerCore()) );
 }
 
 // Finish of iteration over monomials
@@ -1075,7 +1079,8 @@ BoolePolynomial::lex_iterator
 BoolePolynomial::genericBegin(lex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(lex_tag) const" );
-  return lex_iterator(navigation());
+  return lex_iterator(navigation(), 
+                      lex_iterator::term_generator(m_dd.managerCore()) );
 }
 
 // Finish of iteration over monomials in lex ordering
@@ -1091,7 +1096,7 @@ BoolePolynomial::dlex_iterator
 BoolePolynomial::genericBegin(dlex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(dlex_tag) const" );
-  return dlex_iterator(navigation());
+  return dlex_iterator(navigation(), m_dd.managerCore());
 }
 
 // Finish of iteration over monomials in deg-lex ordering
@@ -1107,7 +1112,7 @@ BoolePolynomial::dp_asc_iterator
 BoolePolynomial::genericBegin(dp_asc_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(sd_asc_tag) const" );
-  return dp_asc_iterator(navigation());
+  return dp_asc_iterator(navigation(), m_dd.managerCore());
 }
 
 // Finish of iteration over monomials in ascending deg-rev-lex ordering
@@ -1122,7 +1127,7 @@ BoolePolynomial::block_dlex_iterator
 BoolePolynomial::genericBegin(block_dlex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(block_dlex_tag) const" );
-  return block_dlex_iterator(navigation());
+  return block_dlex_iterator(navigation(), m_dd.managerCore());
 }
 
 // Finish of iteration over monomials in block deg-lex ordering
@@ -1136,7 +1141,7 @@ BoolePolynomial::block_dp_asc_iterator
 BoolePolynomial::genericBegin(block_dp_asc_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericBegin(block_dp_asc_tag) const" );
-  return block_dp_asc_iterator(navigation());
+  return block_dp_asc_iterator(navigation(), m_dd.managerCore());
 }
 
 BoolePolynomial::block_dp_asc_iterator

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2008/01/11 16:58:56  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.13  2007/12/18 22:05:40  dreyer
  * CHANGE: persistent variables computed on manaer initialization
  *
@@ -185,6 +188,10 @@ public:
   /// Get 0-terminal for ZDDs
   CCuddZDD zddZero() const { return apply(Cudd_ReadZero); }
 
+  /// Get 1-terminal for ZDDs
+  CCuddZDD zddOne() const {  
+    return checkedResult(DD_ONE(getManager()));
+  }
 
   /// @name Member functions mimicking/interfacing with CUDD procedures 
   /// @note See preprocessor generated members below

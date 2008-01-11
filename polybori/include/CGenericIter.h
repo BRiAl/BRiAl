@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.18  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -106,10 +109,55 @@ class CGenericIter:
   
 public:
   typedef typename pbori_base<CGenericIter>::type base;
+  typedef typename base::term_generator term_generator;
 
-  CGenericIter(NaviType navi): base(navi) {}
+  CGenericIter(NaviType navi): base(navi, term_generator()) {}
   CGenericIter(): base() {}
 };
+
+template <class OrderType, class NaviType>
+class CGenericIter<OrderType, NaviType, BooleMonomial>: 
+  public pbori_base<CGenericIter<OrderType, NaviType, BooleMonomial> >::type {
+  
+public:
+  typedef typename pbori_base<CGenericIter>::type base;
+  typedef typename base::term_generator term_generator;
+
+  CGenericIter(NaviType navi, term_generator gen): base(navi, gen) {}
+  CGenericIter(): base() {}
+};
+
+///////////////
+
+#if 0
+template <class OrderType, class NaviType, class RefType>
+class MyCGenericIter: 
+  public pbori_base<MyCGenericIter<OrderType, NaviType, RefType> >::type {
+  
+public:
+  typedef typename pbori_base<MyCGenericIter>::type base;
+  typedef typename base::term_generator term_generator;
+
+  MyCGenericIter(NaviType navi, const term_generator& gen):
+    base(navi, gen) {}
+  MyCGenericIter(): base() {}
+};
+
+template <class OrderType, class NaviType, class RefType>
+struct pbori_base<MyCGenericIter<OrderType, NaviType, RefType> > {
+
+  typedef typename CStackSelector<OrderType, NaviType>::type stack_type;
+
+  typedef CTermIter<stack_type, MyCTermGenerator<RefType> > type;
+};
+#endif
+
+
+
+
+
+
+
 
 
 END_NAMESPACE_PBORI

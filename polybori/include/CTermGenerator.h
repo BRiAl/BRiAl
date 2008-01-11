@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2008/01/11 16:58:57  dreyer
+ * CHANGE: Experimenting with iterators and correct rings
+ *
  * Revision 1.10  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -68,6 +71,7 @@ BEGIN_NAMESPACE_PBORI
 template <class TermType, class BehaviourTag = type_tag<TermType> >
 class CTermGeneratorBase;
 
+#if 0
 template <class TermType>
 class CTermGeneratorBase<TermType, type_tag<BooleMonomial> >{
 
@@ -104,6 +108,7 @@ public:
     return result;
   }
 };
+#endif //if0
 
 class BooleExponent;
 template <class TermType>
@@ -149,6 +154,92 @@ class CTermGenerator:
 
 };
 
+/////////
+class NoData {};
+
+
+template <class TermType, class BehaviourTag = type_tag<TermType> >
+class MyCTermGeneratorBase;
+
+template <class TermType>
+class CTermGeneratorBase<TermType, type_tag<BooleMonomial> >{
+
+public:
+  typedef TermType value_type;
+  typedef value_type result_type;
+
+  typedef  CTypes::manager_base manager_base;
+
+  typedef  CTypes::dd_type dd_type;
+  typedef  dd_type::core_type data_type;
+
+  // typedef  CTypes::manager_base data_type;
+  data_type m_data;
+  ///CCuddCore * m_data; // non-save variant
+
+  CTermGeneratorBase(const data_type& data): m_data(data) {}
+
+  CTermGeneratorBase(): m_data() {}
+
+  template <class SequenceType>
+  result_type operator()(const SequenceType& seq) const{
+
+    assert(m_data != data_type());
+    ///@todo: avoid using manager_base here
+    value_type result(dd_type(seq.isZero()?  manager_base(m_data).zddZero():
+                              manager_base(m_data).zddOne()));
+
+
+    typename SequenceType::stack_reverse_iterator 
+      start(seq.stackRBegin()), finish(seq.stackREnd());
+
+#ifndef PBORI_NO_TERMS_BY_TAIL
+    typename BooleSet::navigator navi(result.diagram().navigation());
+
+    assert((start == finish) || !start->isConstant());
+    while((start != finish) && 
+          (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
+      navi = *start;
+      ++start;
+    }
+
+    result = value_type(dd_type(m_data, navi));
+#endif
+
+    while (start != finish){
+      result.changeAssign(**start);
+      ++start;
+    }
+    
+    return result;
+  }
+};
+
+
+template <class TermType>
+class MyCTermGenerator:
+  public MyCTermGeneratorBase<TermType> {
+public:
+  typedef TermType term_type;
+  typedef MyCTermGeneratorBase<term_type> base;
+  typedef typename base::data_type data_type;
+
+  MyCTermGenerator(const data_type&  data): base(data) {}
+  MyCTermGenerator(): base() {}
+};
+
+template <>
+class CTermGenerator<BooleMonomial>:
+  public CTermGeneratorBase<BooleMonomial> {
+public:
+  typedef BooleMonomial term_type;
+  typedef CTermGeneratorBase<term_type> base;
+  typedef base::data_type data_type;
+
+  CTermGenerator(const data_type& data): base(data) {}
+  CTermGenerator(const CTermGenerator& rhs): base(rhs) {}
+  CTermGenerator(): base() {}
+};
 
 END_NAMESPACE_PBORI
 
