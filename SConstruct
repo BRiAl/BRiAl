@@ -71,28 +71,24 @@ opts.Add('CXXFLAGS', "C++ compiler flags", "$CCFLAGS -ftemplate-depth-100",
 opts.Add('LINKFLAGS', "Linker flags", [], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
-opts.Add(PathOption('PREFIX', 'installation prefix directory', '/usr/local',
-                    PathOption.PathAccept))
-opts.Add(PathOption('EPREFIX',
-                    'executables installation prefix directory', '$PREFIX/bin',
-                    PathOption.PathAccept))
+opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
+opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
 
-opts.Add(PathOption('INSTALLDIR', 'end user installation directory',
-                    '$PREFIX/share/polybori', PathOption.PathAccept))
-opts.Add(PathOption('DOCDIR', 'documentation installation directory',
-                    '$INSTALLDIR/doc', PathOption.PathAccept))
-opts.Add(PathOption('PYINSTALLPREFIX', 'python modules directory',
-                    '$INSTALLDIR/pyroot', PathOption.PathAccept))
+opts.Add('INSTALLDIR', 'end user installation directory',
+                    '$PREFIX/share/polybori')
+opts.Add('DOCDIR', 'documentation installation directory',
+                    '$INSTALLDIR/doc')
+opts.Add('PYINSTALLPREFIX', 'python modules directory',
+                    '$INSTALLDIR/pyroot')
 
-opts.Add(PathOption('DEVEL_PREFIX',
-                    'development version installation directory','$PREFIX',
-                    PathOption.PathAccept) )
+opts.Add('DEVEL_PREFIX',
+                    'development version installation directory','$PREFIX' )
 
-opts.Add(PathOption('PYPREFIX', 'alternative python directory to be searched',
-                    '/sw', PathOption.PathAccept))
-opts.Add(PathOption('SINGULAR_HOME',
+opts.Add('PYPREFIX', 'alternative python directory to be searched',
+                    '/sw')
+opts.Add('SINGULAR_HOME',
                     'directory of Singular development version',
-                    '', PathOption.PathAccept))
+                    '')
          
 opts.Add(BoolOption('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
