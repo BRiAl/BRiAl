@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/01/16 17:10:18  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.19  2008/01/11 16:58:57  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -111,7 +114,8 @@ public:
   typedef typename pbori_base<CGenericIter>::type base;
   typedef typename base::term_generator term_generator;
 
-  CGenericIter(NaviType navi): base(navi, term_generator()) {}
+  template <class MgrType>
+  CGenericIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
   CGenericIter(): base() {}
 };
 
@@ -123,38 +127,13 @@ public:
   typedef typename pbori_base<CGenericIter>::type base;
   typedef typename base::term_generator term_generator;
 
-  CGenericIter(NaviType navi, term_generator gen): base(navi, gen) {}
+  template <class MgrType>
+  CGenericIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
+
   CGenericIter(): base() {}
 };
 
 ///////////////
-
-#if 0
-template <class OrderType, class NaviType, class RefType>
-class MyCGenericIter: 
-  public pbori_base<MyCGenericIter<OrderType, NaviType, RefType> >::type {
-  
-public:
-  typedef typename pbori_base<MyCGenericIter>::type base;
-  typedef typename base::term_generator term_generator;
-
-  MyCGenericIter(NaviType navi, const term_generator& gen):
-    base(navi, gen) {}
-  MyCGenericIter(): base() {}
-};
-
-template <class OrderType, class NaviType, class RefType>
-struct pbori_base<MyCGenericIter<OrderType, NaviType, RefType> > {
-
-  typedef typename CStackSelector<OrderType, NaviType>::type stack_type;
-
-  typedef CTermIter<stack_type, MyCTermGenerator<RefType> > type;
-};
-#endif
-
-
-
-
 
 
 

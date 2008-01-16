@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2008/01/16 17:10:18  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.11  2008/01/11 16:58:57  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -151,6 +154,15 @@ public:
 template <class TermType>
 class CTermGenerator:
   public CTermGeneratorBase<TermType> {
+public:
+  typedef CTermGeneratorBase<TermType> base;
+
+  typedef  CTypes::dd_type dd_type;
+  typedef  dd_type::core_type data_type;
+
+  CTermGenerator(const data_type&): base() {}
+  CTermGenerator(const CTermGenerator& rhs): base(rhs) {}
+  CTermGenerator(): base() {}
 
 };
 
@@ -215,18 +227,6 @@ public:
   }
 };
 
-
-template <class TermType>
-class MyCTermGenerator:
-  public MyCTermGeneratorBase<TermType> {
-public:
-  typedef TermType term_type;
-  typedef MyCTermGeneratorBase<term_type> base;
-  typedef typename base::data_type data_type;
-
-  MyCTermGenerator(const data_type&  data): base(data) {}
-  MyCTermGenerator(): base() {}
-};
 
 template <>
 class CTermGenerator<BooleMonomial>:

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2008/01/16 17:10:18  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.25  2008/01/11 16:58:57  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -108,7 +111,7 @@
 // include boost's interator facade
 #include <boost/iterator/iterator_facade.hpp>
 
-
+#include "BooleEnv.h"
 #ifndef CTermIter_h_
 #define CTermIter_h_
 
@@ -163,8 +166,9 @@ public:
   }
 
   /// Construct from navigator over decision diagram
-  CTermIter(navigator navi, const term_generator& get_term): 
-    m_getTerm(get_term), m_stack(navi) {
+  template <class MgrType>
+  CTermIter(navigator navi, const MgrType& mgr): 
+    m_getTerm(mgr), m_stack(navi, mgr) {
     m_stack.init(); 
   }
 

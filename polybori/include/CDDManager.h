@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/01/16 17:10:17  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.21  2007/12/18 22:05:40  dreyer
  * CHANGE: persistent variables computed on manaer initialization
  *
@@ -228,13 +231,13 @@ class CDDManagerBase {
   }
 
   /// Access nvar-th managed variable
-  dd_base persistentVariable(idx_type nvar) {
+  dd_base persistentVariable(idx_type nvar) const {
     return manager().getVar(nvar);
   }
 
   /// Get number of managed variables
   size_type nVariables() const { 
-    return Cudd_ReadZddSize(manager().getManager()); 
+    return manager().nVariables();
   }
 
   /// Get empty decision diagram 
@@ -396,6 +399,9 @@ public:
   /// Construct new decision diagramm manager
   CDDManager(size_type nvars = 0): 
     base(nvars) { }
+
+  CDDManager(const manager_type& rhs): 
+    base(rhs) { }
 
   // Destructor
   ~CDDManager() { }

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2008/01/16 17:10:18  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.23  2007/12/17 16:12:02  dreyer
  * CHANGE: reviewed and optimized merge frim sf.net
  *
@@ -122,13 +125,15 @@ BEGIN_NAMESPACE_PBORI
 //////////////////////////////////////////////////////////
 template<class NavigatorType>
 struct cached_deg {
-  cached_deg(): m_deg_cache(BooleEnv::manager()) {}
+  typedef CDegreeCache<> cache_type;
+  typedef typename cache_type::manager_type manager_type;
+  cached_deg(const manager_type & mgr): m_deg_cache(mgr) {}
 
   typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
     return dd_cached_degree(m_deg_cache, navi);
   }
-  CDegreeCache<> m_deg_cache;
+  cache_type m_deg_cache;
 };
 
 //////////////////////////////////////////////////////////
@@ -145,11 +150,14 @@ public:
 
   /// Type for block iterators
   typedef typename block_idx_type::const_iterator block_iterator;
+  typedef CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type>
+  cache_type;
+  typedef typename cache_type::manager_type manager_type;
 
-  cached_block_deg():
+  cached_block_deg(const manager_type& mgr):
     //  m_indices(BoolePolyRing::blockRingBegin()), 
     m_current_block(BooleEnv::blockBegin()),
-    m_deg_cache(BooleEnv::manager()) { }
+    m_deg_cache(mgr) { }
 
   typename NavigatorType::size_type
   operator()(NavigatorType navi) const {
@@ -180,7 +188,7 @@ private:
   //  block_iterator m_indices;
   block_iterator m_current_block;
 
-  CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type> m_deg_cache;
+  cache_type m_deg_cache;
 };
 
 
@@ -442,6 +450,11 @@ public:
   /// Construct from initial navigator
   CTermStack(navigator navi): base(navi) { }
 
+  /// Construct from initial navigator, second argument is just for having the
+  /// same interface with block and degree-stacks
+  template <class Dummy>
+  CTermStack(navigator navi, const Dummy&): base(navi) { }
+
   void init() {
     followThen();
     terminate();
@@ -582,9 +595,11 @@ class CDegStackCore<NavigatorType, invalid_tag, Category, BaseType>:
 public:
   typedef CTermStack<NavigatorType, Category, BaseType> base;
   typedef NavigatorType navigator;
+  typedef typename cached_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base() {}
-  CDegStackCore(navigator navi): base(navi), getDeg() {}
+  CDegStackCore(): base(), getDeg(BooleEnv::manager()) {}
+  CDegStackCore(navigator navi, const manager_type& mgr):
+    base(navi), getDeg(mgr) {}
 
 
   void gotoEnd()  {
@@ -607,9 +622,11 @@ public:
   typedef NavigatorType navigator;
   typedef typename base::idx_type idx_type;
   typedef typename base::size_type size_type;
+  typedef typename cached_block_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base() {}
-  CDegStackCore(navigator navi): base(navi), block() {}
+  CDegStackCore(): base(), block(BooleEnv::manager()) {}
+  CDegStackCore(navigator navi, const manager_type& mgr): 
+    base(navi), block(mgr) {}
 
   size_type getDeg(navigator navi) const { return block(navi); }
 
@@ -670,7 +687,7 @@ public:
   }
 
 protected:
-  cached_block_deg<navigator> block;
+   cached_block_deg<navigator> block;
 };
 
 template <class NavigatorType, class BlockProperty, class DescendingProperty,
@@ -688,10 +705,10 @@ public:
 
   typedef typename base::size_type size_type;
   typedef std::greater<size_type> size_comparer;
-
+  typedef typename base::manager_type manager_type;
 
   CDegStackBase(): base() {}
-  CDegStackBase(NavigatorType navi): base(navi) {}
+  CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
 
   integral_constant<bool, false> takeLast;
 
@@ -716,10 +733,10 @@ public:
                          std::bidirectional_iterator_tag, BaseType> base;
   typedef typename base::size_type size_type;
   typedef std::greater_equal<size_type> size_comparer;
-
+  typedef typename base::manager_type manager_type;
 
   CDegStackBase(): base() {}
-  CDegStackBase(NavigatorType navi): base(navi) {}
+  CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
 
   integral_constant<bool, true> takeLast;
 
@@ -744,9 +761,11 @@ public:
 
   typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
+  typedef typename base::manager_type manager_type;
 
   CDegTermStack(): base(), m_start() {}
-  CDegTermStack(navigator navi): base(navi), m_start(navi) {}
+  CDegTermStack(navigator navi, const manager_type& mgr):
+    base(navi, mgr), m_start(navi) {}
 
   void init() {
     followDeg();
@@ -863,9 +882,11 @@ public:
   typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
   typedef typename navigator::idx_type idx_type;
+  typedef typename base::manager_type manager_type;
 
   /// Construct stack from navigator
-  CBlockTermStack(navigator navi): base(navi) { }
+  CBlockTermStack(navigator navi, const manager_type& mgr):
+    base(navi, mgr) { }
 
   /// Default Constructor
   CBlockTermStack(): base() {}

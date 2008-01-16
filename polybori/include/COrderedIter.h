@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2008/01/16 17:10:18  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.22  2008/01/11 16:58:57  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -137,11 +140,13 @@ public:
   typedef typename base::iterator_core iterator_core;
   typedef PBORI_SHARED_PTR(iterator_core) core_pointer;
 
-  CWrappedStack(navigator navi): base(navi) {
+  template <class MgrType>
+  CWrappedStack(navigator navi, const MgrType& mgr):
+    base(navi, mgr) {
     base::init();
   }
   CWrappedStack(): base() {}
-  CWrappedStack(const self& rhs): StackType(rhs) {}
+  CWrappedStack(const self& rhs): base(rhs) {}
 
 
   core_pointer copy() const {
@@ -286,8 +291,9 @@ public:
 
   typedef typename base::term_generator term_generator;
 
-  CGenericOrderedIter(NavigatorType navi, term_generator gen): 
-    base( core_pointer(new ordered_iter_type(navi)), gen) {}
+  template <class MgrType>
+  CGenericOrderedIter(NavigatorType navi, const MgrType& gen): 
+    base( core_pointer(new ordered_iter_type(navi, gen) ), gen) {}
   CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
                                term_generator() ) {}
 
@@ -309,8 +315,9 @@ public:
 
   typedef typename base::term_generator term_generator;
 
-  CGenericOrderedIter(NavigatorType navi): 
-    base( core_pointer(new ordered_iter_type(navi)),
+  template <class MgrType>
+  CGenericOrderedIter(NavigatorType navi, const MgrType& mgr): 
+    base( core_pointer(new ordered_iter_type(navi, mgr)),
                        term_generator() ) {}
 
   CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),

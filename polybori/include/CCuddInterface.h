@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2008/01/16 17:10:17  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.14  2008/01/11 16:58:56  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -331,6 +334,11 @@ public:
   dd_type getVar(idx_type idx) const {
     assert(idx < pMgr->m_vars.size());
     return getDiagram(pMgr->m_vars[idx]);
+  }
+
+  /// Get number of managed variables
+  size_type nVariables() const { 
+    return Cudd_ReadZddSize(getManager()); 
   }
 
 protected:

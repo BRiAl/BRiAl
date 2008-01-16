@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/01/16 17:10:19  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.18  2008/01/11 16:58:58  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -236,7 +239,7 @@ LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
 //   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
 
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation());
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore());
 }
 
 LexOrder::indirect_exp_iterator

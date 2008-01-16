@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2008/01/16 17:10:19  dreyer
+ * CHANGE: term-iterators use correct manager now
+ *
  * Revision 1.45  2008/01/11 16:58:58  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -285,7 +288,7 @@ BooleSet::exp_iterator
 BooleSet::expBegin() const {
 
   PBORI_TRACE_FUNC( "BooleSet::exp_begin() const" );
-  return base::navigation();
+  return exp_iterator(base::navigation(), base::managerCore());
 }
 
 // Finish of iteration over monomials
