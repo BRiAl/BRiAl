@@ -16,8 +16,8 @@
  * @par History:
  * @verbatim
  * $Log$
- * Revision 1.38  2008/01/17 15:43:13  dreyer
- * CHANGE: removed unused functionality
+ * Revision 1.39  2008/01/17 16:05:00  dreyer
+ * Fix: reverted previous version (performance problem)
  *
  * Revision 1.37  2007/12/14 11:50:31  dreyer
  * Fix: merged from bugfix at sf.net
@@ -216,6 +216,12 @@ public:
   /// Construct new node
   BooleSet(idx_type idx, const self& first, const self& second):
     base(idx, first, second) {}
+
+  /// Construct new node (using navigator nodes)
+  BooleSet(idx_type idx, navigator, navigator);
+
+  /// Construct new node (using navigator for then and else-branches)
+  BooleSet(idx_type idx, navigator);
 
   /// Construct one or zero set from constant
   //  BooleSet(bool_type);
