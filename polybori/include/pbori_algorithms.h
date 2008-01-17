@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/01/17 15:18:41  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.18  2007/12/11 14:21:08  dreyer
  * ADD: count terms containing given index
  *
@@ -286,7 +289,7 @@ SetType
 dd_mapping(const CacheType& cache, NaviType navi, NaviType map, SetType init) {
 
   if (navi.isConstant())
-    return navi;
+    return cache.generate(navi);
 
   while (*map < *navi) {
     assert(!map.isConstant());

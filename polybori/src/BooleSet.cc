@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2008/01/17 15:18:41  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.46  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -484,14 +487,15 @@ BooleSet::print(ostream_type& os) const {
 
   typedef CStringLiteral<CLiteralCodes::empty>  empty_type;
 
-  typedef CTypes::manager_type mgr_type;
+  //  typedef CTypes::manager_type mgr_type;
+  typedef CTypes::manager_base mgr_type;
 
   if( base::emptiness() )
     os << "{}";
   else {
     os << "{{";
     dd_print_terms(begin(), end(), 
-                   variable_name<mgr_type>(BooleEnv::manager()), 
+                   variable_name<mgr_type>(managerCore()), 
                    sep_literal_type(), comma_as_separator(), 
                    empty_type(), os);
     os << "}}";

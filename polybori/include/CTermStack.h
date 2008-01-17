@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2008/01/17 15:18:40  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.24  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -597,7 +600,8 @@ public:
   typedef NavigatorType navigator;
   typedef typename cached_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), getDeg(BooleEnv::manager()) {}
+  CDegStackCore(): base(), getDeg(typename manager_type::mgrcore_ptr()) {}
+
   CDegStackCore(navigator navi, const manager_type& mgr):
     base(navi), getDeg(mgr) {}
 
@@ -624,7 +628,7 @@ public:
   typedef typename base::size_type size_type;
   typedef typename cached_block_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), block(BooleEnv::manager()) {}
+  CDegStackCore(): base(), block(typename manager_type::mgrcore_ptr()) {}
   CDegStackCore(navigator navi, const manager_type& mgr): 
     base(navi), block(mgr) {}
 

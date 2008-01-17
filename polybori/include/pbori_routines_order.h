@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2008/01/17 15:18:41  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.10  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -486,7 +489,7 @@ dd_block_degree_lead(const CacheType& cache_mgr,
                      DescendingProperty prop) {
 
   if (navi.isConstant())
-    return navi;
+    return cache_mgr.generate(navi);
 
   while( (*navi >= *block_iter) && (*block_iter != CUDD_MAXINDEX))  {
     ++block_iter;
@@ -497,7 +500,7 @@ dd_block_degree_lead(const CacheType& cache_mgr,
   // Check cache for previous results
   NaviType cached = cache_mgr.find(navi);
   if (cached.isValid())
-    return cached;
+    return cache_mgr.generate(cached);
 
   // Go to next branch
     if ( max_block_degree_on_then(deg_mgr, navi, *block_iter, degree, prop) ) {
@@ -527,7 +530,7 @@ dd_block_degree_lead(const CacheType& cache_mgr, const DegCacheMgr& deg_mgr,
                      DescendingProperty prop){ 
 
   if (navi.isConstant())
-    return navi;
+    return cache_mgr.generate(navi);
   
   return dd_block_degree_lead(cache_mgr, deg_mgr, navi,block_iter, init,
                               dd_cached_block_degree(deg_mgr, navi,

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.111  2008/01/17 15:18:41  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.110  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -945,7 +948,7 @@ BoolePolynomial::print(ostream_type& os) const {
     os << 1;
   else
     dd_print_terms(orderedExpBegin(), orderedExpEnd(), 
-                   variable_name<manager_type>(BooleEnv::manager()), 
+                   variable_name<CTypes::manager_base>(m_dd.managerCore()), 
                    sep_literal_type(), times_as_separator(), 
                    integral_constant<unsigned, 1>(), os);
 

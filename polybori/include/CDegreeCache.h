@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2008/01/17 15:18:40  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.14  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -159,7 +162,7 @@ public:
   typedef typename navigator::size_type size_type;
 
   /// Type of decision diagram manager
-  typedef typename CTypes::manager_type manager_type;
+  typedef typename CTypes::manager_base manager_type;
 
   /// Construct from index
   CIndexCacheHandle(idx_type idx, const manager_type& mgr):
@@ -176,9 +179,9 @@ protected:
   navigator toNode(idx_type idx, const manager_type& mgr) const {
 
     if LIKELY((size_type)idx < mgr.nVariables())
-      return  navigator(mgr.persistentVariable(idx));
+      return  navigator(mgr.getVar(idx));
 
-    return  navigator(mgr.empty());
+    return  navigator(mgr.zddZero());
   }
 
   /// Actual navigator, which is stored

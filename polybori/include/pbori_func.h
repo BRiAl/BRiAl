@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2008/01/17 15:18:41  dreyer
+ * CHANGE: removed several calls of BooleEnv::*
+ *
  * Revision 1.39  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *
@@ -970,7 +973,7 @@ public:
 
   /// Funtional operator
   varname_type operator()(idx_type idx) const{
-    return m_mgr.getVariableName(idx);
+    return m_mgr.getName(idx);
   }
 
 protected:
