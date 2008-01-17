@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.48  2008/01/17 15:43:13  dreyer
+ * CHANGE: removed unused functionality
+ *
  * Revision 1.47  2008/01/17 15:18:41  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -201,20 +204,6 @@ BooleSet::BooleSet():
 
   PBORI_TRACE_FUNC( "BooleSet()" );
 
-}
-
-// Construct new node (using navigator nodes)
-BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
-  base(BooleEnv::manager().manager(), idx, first, second) {
-  
-  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
-}
-
-// Construct new node (using navigator nodes)
-BooleSet::BooleSet(idx_type idx, navigator navi):
-  base(BooleEnv::manager().manager(), idx, navi) {
-  
-  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
 }
 
 // Construct new node (using navigator nodes)
