@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/01/18 15:44:24  dreyer
+ * CHANGE: Avoid cast from navigator to BooleSet
+ *
  * Revision 1.19  2008/01/17 15:18:41  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -266,9 +269,11 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
 
 #else
 
-
+  /// @note: This line always uses the active manager!
+  /// @todo: check correct manager
   if(first.isZero())
-    return first.navigation();
+    return typename ValueType::dd_type(init.diagram().manager(),
+                                       first.navigation());
 
   ValueType result = upper_term_accumulate(first.begin(), first.end(), 
                                            first.navigation(), init);
