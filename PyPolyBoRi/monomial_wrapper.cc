@@ -36,11 +36,13 @@ static BooleMonomial mon_power(const BooleMonomial& p, int n){
 static boost::python::tuple mon2tuple(const BooleMonomial& m ){
   return tuple(m);
 }
+BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1);
+
 void export_monomial(){
   BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
 
-      
+  bool  (BooleMonomial::*reducibleBy)(const BooleMonomial&) const = &BooleMonomial::reducibleBy;
   boost::python::class_<BooleMonomial>("Monomial")
   .def(init<>())
   .def(init<const BooleMonomial &>())
@@ -92,8 +94,8 @@ void export_monomial(){
 
   //.def("totalDegree", &BooleMonomial::totalDeg)
   //.def("diagram", diagram,return_internal_reference<1>());
-  .def("set", set);
-  //.def("reducibleBy", &BooleMonomial::reducibleBy, red_overloads());
+  .def("set", set)
+  .def("reducibleBy", reducibleBy);
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);
 
