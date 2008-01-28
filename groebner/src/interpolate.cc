@@ -97,7 +97,7 @@ MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     cache_mgr_type cache_mgr(candidates.manager());
     MonomialSet::navigator cached=cache_mgr.find(p_nav, can_nav);
     if (cached.isValid() ){
-       return cached;
+      return cache_mgr.generate(cached);
     }
     s=MonomialSet(p_nav);
     
@@ -127,7 +127,7 @@ Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one){
     cache_mgr_type cache_mgr(to_zero.manager());
     MonomialSet::navigator cached=cache_mgr.find(to_zero.navigation(), to_one.navigation());
     if (cached.isValid() ){
-       return cached;
+      return cache_mgr.generate(cached);
     }
     idx_type index=std::min(*to_zero.navigation(),*to_one.navigation());
     //std::cout<<"else"<<std::endl;
@@ -182,7 +182,7 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
     cache_mgr_type cache_mgr(to_zero.manager());
     MonomialSet::navigator cached=cache_mgr.find(to_zero.navigation(), to_one.navigation());
     if (cached.isValid() ){
-       return cached;
+      return cache_mgr.generate(cached);
     }
   
     idx_type index=std::min(*to_zero.navigation(),*to_one.navigation());
@@ -231,12 +231,12 @@ MonomialSet include_divisors(const MonomialSet& m){
     cache_mgr_type cache_mgr(m.manager());
     MonomialSet::navigator cached=cache_mgr.find(nav);
     if (cached.isValid() ){
-       return cached;
+      return cache_mgr.generate(cached);
     }
     MonomialSet::navigator tb=nav.thenBranch();
     MonomialSet::navigator eb=nav.elseBranch();
-    MonomialSet itb=include_divisors(tb);
-    MonomialSet r0=include_divisors(eb).unite(itb);
+    MonomialSet itb=include_divisors(cache_mgr.generate(tb));
+    MonomialSet r0=include_divisors(cache_mgr.generate(eb)).unite(itb);
     MonomialSet result=MonomialSet(*nav,itb,r0);
     cache_mgr.insert(nav,result.navigation());
     return result;
