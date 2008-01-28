@@ -36,7 +36,7 @@ static BooleMonomial mon_power(const BooleMonomial& p, int n){
 static boost::python::tuple mon2tuple(const BooleMonomial& m ){
   return tuple(m);
 }
-BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1);
+BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
   BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;
