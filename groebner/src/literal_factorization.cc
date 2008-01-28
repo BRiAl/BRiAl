@@ -36,12 +36,12 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
             cache_mgr_type cache_mgr(m.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
-                   return cached;
+              return cache_mgr.generate(cached);
             }
-            Polynomial res0=do_has_factor_x(nav.elseBranch(),x);
+            Polynomial res0=do_has_factor_x(cache_mgr.generate(nav.elseBranch()),x);
             Polynomial res=res0;
             if (res0==1){
-                res=do_has_factor_x(nav.thenBranch(),x);
+              res=do_has_factor_x(cache_mgr.generate(nav.thenBranch()),x);
                 
             }
             cache_mgr.insert(nav,((Polynomial) x).diagram().navigation(),res.diagram().navigation());
@@ -78,12 +78,12 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
             cache_mgr_type cache_mgr(left.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav_l,nav_r, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
-                   return cached;
+              return cache_mgr.generate(cached);
             }
-            Polynomial res0=do_left_equals_right_x_branch_and_r_has_fac_x(nav_l.elseBranch(),nav_r.elseBranch(),x);
+            Polynomial res0=do_left_equals_right_x_branch_and_r_has_fac_x(cache_mgr.generate(nav_l.elseBranch()),cache_mgr.generate(nav_r.elseBranch()),x);
             Polynomial res=res0;
             if (res0==1){
-                res=do_left_equals_right_x_branch_and_r_has_fac_x(nav_l.thenBranch(),nav_r.thenBranch(),x);
+              res=do_left_equals_right_x_branch_and_r_has_fac_x(cache_mgr.generate(nav_l.thenBranch()),cache_mgr.generate(nav_r.thenBranch()),x);
                 
             }
             cache_mgr.insert(nav_l,nav_r,((Polynomial) x).diagram().navigation(),res.diagram().navigation());
@@ -107,7 +107,8 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
     if (m_idx==min_idx){
         Variable other;
         if (min_idx!=x.index()) other=x; else other=y;
-        return do_left_equals_right_x_branch_and_r_has_fac_x(nav.thenBranch(),nav.elseBranch(),other)==1?1:0;
+        return
+          do_left_equals_right_x_branch_and_r_has_fac_x(MonomialSet::dd_type(m.manager(), nav.thenBranch()), MonomialSet::dd_type(m.manager(), nav.elseBranch()), other)==1?1:0;
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>min_idx){
@@ -122,12 +123,14 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
             MonomialSet::navigator y_nav=((Polynomial) y).diagram().navigation();
             MonomialSet::navigator cached=cache_mgr.find(nav, x_nav,y_nav);
             if (cached.isValid() ){
-                   return cached;
+              return cache_mgr.generate(cached);
             }
-            Polynomial res0=do_has_factor_x_plus_y(nav.elseBranch(),x,y);
+            Polynomial
+              res0=do_has_factor_x_plus_y(cache_mgr.generate(nav.elseBranch()),
+                                          x,y); 
             Polynomial res=res0;
             if (res0==1){
-                res=do_has_factor_x_plus_y(nav.thenBranch(),x,y);
+              res=do_has_factor_x_plus_y(cache_mgr.generate(nav.thenBranch()),x,y);
                 
             }
             cache_mgr.insert(nav,x_nav,y_nav,res.diagram().navigation());
@@ -161,12 +164,13 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
             cache_mgr_type cache_mgr(m.manager());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
-                   return cached;
+              return cache_mgr.generate(cached);
             }
-            Polynomial res0=do_has_factor_x_plus_one(nav.elseBranch(),x);
+            Polynomial res0=do_has_factor_x_plus_one(cache_mgr.generate(nav.elseBranch()),x);
             Polynomial res=res0;
             if (res0==1){
-                res=do_has_factor_x_plus_one(nav.thenBranch(),x);
+              res=do_has_factor_x_plus_one(cache_mgr.generate(nav.thenBranch()),
+                                           x);
                 
             }
             cache_mgr.insert(nav,((Polynomial) x).diagram().navigation(),res.diagram().navigation());
