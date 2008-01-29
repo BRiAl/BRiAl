@@ -1289,6 +1289,8 @@ static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int s
     return MonomialSet(idx,add_up_lex_sorted_exponents(vec,start,limes),add_up_lex_sorted_exponents(vec,limes,end));
 }
 
+/// @note: This function always uses the active manager!
+/// @todo: check correct manager
 static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_iterator>& vec, int start, int end){
     assert(end<=vec.size());
     assert(start>=0);
@@ -1297,7 +1299,7 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
     if (d<=2){
         switch(d){
             case 0:return MonomialSet();
-            case 1:return vec[start];
+            case 1:return MonomialSet(vec[start]);
             case 2: 
               Polynomial res=Polynomial(vec[start])+Polynomial(vec[start+1]);
               return MonomialSet(res.diagram());
@@ -1642,6 +1644,18 @@ Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p){
   return res;
 }
 
+template <bool have_redsb> Polynomial 
+ll_red_nf_generic(const Polynomial&, const BooleSet&);
+
+template <bool have_redsb>
+Polynomial
+ll_red_nf_generic(const Polynomial&  p, const BooleSet::navigator navi) {
+
+  return ll_red_nf_generic<have_redsb>(p,
+                                       (BooleSet)BooleSet::dd_type(p.diagram().manager(), 
+                                                      navi));
+}
+
 
 template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
     
@@ -1696,6 +1710,7 @@ Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<false>(p,reductors);
 }
 
+
 Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     MonomialSet::navigator m_nav=m_plus_ones.navigation();
     
@@ -1715,21 +1730,21 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     cache_mgr_type cache_mgr(p.diagram().manager());
     MonomialSet::navigator cached =
       cache_mgr.find(p_nav,m_nav);
-    if (cached.isValid()) return MonomialSet(cached);
+    if (cached.isValid()) return cache_mgr.generate(cached);
     MonomialSet res;
     if (p_index==*m_nav){  
-    MonomialSet m1(m_nav.thenBranch());
-    MonomialSet m0(m_nav.elseBranch());
-    MonomialSet p1=p_nav.thenBranch();
+      MonomialSet m1(cache_mgr.generate(m_nav.thenBranch()));
+      MonomialSet m0(cache_mgr.generate(m_nav.elseBranch()));
+      MonomialSet p1(cache_mgr.generate(p_nav.thenBranch()));
     MonomialSet p1_irr_s1=mod_mon_set(p1,m1);
     MonomialSet p1_red_s1=p1.diff(p1_irr_s1);
-    MonomialSet p0=p_nav.elseBranch();
+    MonomialSet p0=cache_mgr.generate(p_nav.elseBranch());
     Polynomial res0=do_plug_1(p1_red_s1,m1)+do_plug_1(p0,m0);
     Polynomial res1=do_plug_1(p1_irr_s1,m0);
     res=MonomialSet(p_index,res1.diagram(),res0.diagram());
     } else {
         assert(p_index<*m_nav);
-        res=MonomialSet(p_index,do_plug_1(p_nav.thenBranch(),m_plus_ones).diagram(),do_plug_1(p_nav.elseBranch(),m_plus_ones).diagram());
+        res=MonomialSet(p_index,do_plug_1(cache_mgr.generate(p_nav.thenBranch()),m_plus_ones).diagram(),do_plug_1(cache_mgr.generate(p_nav.elseBranch()),m_plus_ones).diagram());
     }
     cache_mgr.insert(p_nav,m_nav,res.navigation());
     
@@ -2331,22 +2346,28 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   cache_mgr_type cache_mgr(as.manager());
   MonomialSet::navigator cached =
     cache_mgr.find(a, v);
-  if (cached.isValid()) return cached;
+  if (cached.isValid()) return cache_mgr.generate(cached);
   MonomialSet result;
   if (a_index==v_index){
 
     MonomialSet::navigator ve=v.elseBranch();
 
-    result=MonomialSet(a_index,
-    mod_mon_set(mod_mon_set(a.thenBranch(), v.thenBranch()),ve),
-    mod_mon_set(a.elseBranch(),ve)
-    );
+    result = 
+      MonomialSet(a_index,
+                  mod_mon_set(mod_mon_set(cache_mgr.generate(a.thenBranch()), 
+                                          cache_mgr.generate(v.thenBranch())),
+                              cache_mgr.generate(ve)),
+                  mod_mon_set(cache_mgr.generate(a.elseBranch()),
+                              cache_mgr.generate(ve))
+                  );
     
   } else {
     assert(v_index>a_index);
     result=MonomialSet(a_index,
-      mod_mon_set(a.thenBranch(),v),
-      mod_mon_set(a.elseBranch(), v));
+                       mod_mon_set(cache_mgr.generate(a.thenBranch()), 
+                                   cache_mgr.generate(v)),
+                       mod_mon_set(cache_mgr.generate(a.elseBranch()), 
+                                   cache_mgr.generate(v)));
   }
   cache_mgr.insert(a,v,result.navigation());
   return result;

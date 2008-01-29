@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.85  2008/01/29 16:05:02  dreyer
+ * Fix: cast from navigator to BooleSet or BoolePolynomial made explicit
+ *
  * Revision 1.84  2008/01/11 16:58:56  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -495,7 +498,7 @@ public:
   BoolePolynomial(const exp_type&);
 
   /// Construct polynomial from navigator
-  BoolePolynomial(const navigator&);
+  explicit BoolePolynomial(const navigator&);
 
   /// Copy constructor
   BoolePolynomial(const self&);

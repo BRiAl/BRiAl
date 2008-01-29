@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2008/01/29 16:05:02  dreyer
+ * Fix: cast from navigator to BooleSet or BoolePolynomial made explicit
+ *
  * Revision 1.39  2008/01/17 16:05:00  dreyer
  * Fix: reverted previous version (performance problem)
  *
@@ -229,7 +232,7 @@ public:
   /// term_accumulate, needs check, what happens to inlinings etc. in this case
 
   /// Construct from navigator node
-  BooleSet(navigator);
+  explicit BooleSet(navigator);
 
   /// Destructor
   ~BooleSet() {}
