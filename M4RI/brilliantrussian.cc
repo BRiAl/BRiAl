@@ -64,6 +64,32 @@ int prepPackedFlex(packedmatrix *m, int ai, int k) {
   return rank;
 }
 
+int prepPackedFlexEverySubmatFullRank(packedmatrix *m, int ai, int k) {
+  int pc; /* pivot column */
+  int tr; /* target row */
+  int good;
+
+  int rank = 0;
+
+  for (pc=ai; pc<min(ai+k,m->cols); pc++) {
+    /* Step one, find a pivot row in this column.*/
+    good=forceNonZero2PackedFlex(m, pc, min( ai+k-1, m->rows-1 ), pc);
+
+    if (good==NO) return rank;
+
+    for (tr=ai; tr<min(ai+k, m->rows); tr++) {
+      /* Step two, add this pivot row to other rows as needed. */
+      if (tr==pc) continue;
+      
+      if (readPackedCell(m, tr, pc)==0) continue;
+
+      rowAddPackedOffset(m, pc, tr, ai);
+    }
+    rank++;
+  }
+
+  return rank;
+}
 void combineFlex( packedmatrix * s1, int row1, int startblock1, 
 	          packedmatrix * s2, int row2, int startblock2,
 	          packedmatrix * dest, int row3, int startblock3 ) {
@@ -307,7 +333,7 @@ int doAByteColumnFlexEverySubmatFullRank(packedmatrix *m, int full, int k, int a
    * zeroes in $a_{(i+k),i} ... a_{(i+3k-1),(i+k-1)}$.
    */
 
-  submatrixrank=prepPackedFlex(m, ai, k);
+  submatrixrank=prepPackedFlexEverySubmatFullRank(m, ai, k);
 
 
   if (submatrixrank!=k) return submatrixrank;

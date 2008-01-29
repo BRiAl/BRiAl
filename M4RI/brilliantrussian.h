@@ -30,6 +30,7 @@
  */
 #define simpleFourRussiansPackedFlexEverySubmatFullRank  f1_pbm4
 #define fourRussiansPackedFlexEverySubmatFullRank f2_pbm4
+#define prepPackedFlexEverySubmatFullRank f3_pbm4
 
 
 
