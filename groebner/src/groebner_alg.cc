@@ -66,23 +66,35 @@ void GroebnerStrategy::llReduceAll(){
 static MonomialSet divide_monomial_divisors_out(const BooleSet& s, const Monomial& lm);
 //static MonomialSet minimal_elements_cudd_style(MonomialSet m);
 static MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod);
-static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialSet n){
-  //we assume that m is a multiple of n
-  MonomialSet::navigator m_nav=m.navigation();
-  MonomialSet::navigator n_nav=n.navigation();
-  if (n_nav.isTerminated()) return a.firstDivisorsOf(m);
+
+
+#ifndef DANGEROUS_FIXED_PATH
+  typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
+#else
+  typedef PBORI::CacheManager<CCacheTypes::divisorsof>
+#endif
+  fixed_divisors_cache_type;
+
+// Variant navigator
+static MonomialSet
+do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr, 
+                       MonomialSet::navigator a_nav,
+                       MonomialSet::navigator m_nav,
+                       MonomialSet::navigator n_nav){
+
+  if (n_nav.isTerminated()) return 
+    MonomialSet(cache_mgr.generate(a_nav)).firstDivisorsOf(cache_mgr.generate(m_nav));
   assert(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
-  MonomialSet::navigator a_nav=a.navigation();
-  if (a_nav.isConstant()) return a;
+
+  if (a_nav.isConstant()) return cache_mgr.generate(a_nav);
+
   assert(!(n_nav.isConstant()));
   assert(!(m_nav.isConstant()));
   int m_index=*m_nav;
   int n_index=*n_nav;
   int a_index=*a_nav;
-  
-    
+   
   assert(m_index<=n_index);
-  
   
   
   //here we rely on the fact, that in Cudd deref of constant nav. gives a bigger index than allow allowed real indices
@@ -101,63 +113,55 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
    
   }
   n_index=*n_nav;
-  
-  
-
-  
-  
-  //a=MonomialSet(a_nav);
+ 
   if (a_nav.isConstant()){
-    return a_nav;
+    return cache_mgr.generate(a_nav);
   }
   assert((*a_nav)==(*m_nav));
-  #ifndef DANGEROUS_FIXED_PATH
-  typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
-    cache_mgr_type;
-  cache_mgr_type cache_mgr(a.manager());
-  #else
-//   typedef PBORI::CacheManager<CCacheTypes::divisorsof>
-  //  cache_mgr_type;
-  #endif
-  
-
 
   MonomialSet::navigator cached;
   #ifndef DANGEROUS_FIXED_PATH
   cached =
     cache_mgr.find(a_nav, m_nav,n_nav);
     if (cached.isValid() ){
-       return cached;
+      return  cache_mgr.generate(cached);
     }
   #else
   //MonomialSet::navigator cached =
     //cache_mgr.find(a_nav, m_nav);
-#endif
+  #endif
 
     
-  // here it is theoretically possible to get answers which don't contain the fixed path n, but that doesn't matter in practice,
+  // here it is theoretically possible to get answers which don't contain the
+  // fixed path n, but that doesn't matter in practice, 
   // as it is optimization anyway
   typedef PBORI::CacheManager<CCacheTypes::divisorsof>
     cache_mgr_type2;
 
-  cache_mgr_type2 cache_mgr2(a.manager());
+  cache_mgr_type2 cache_mgr2(cache_mgr.manager());
   
   cached =
     cache_mgr2.find(a_nav, m_nav);
   
-  if (cached.isValid() ){
-     return cached;
+  if (cached.isValid()){
+    return cache_mgr2.generate(cached);
   }
     
   assert(a_index==m_index);
   int index=m_index;
   MonomialSet result;
   if (m_index==n_index){
-    result=do_fixed_path_divisors(a_nav.thenBranch(),m_nav.thenBranch(),n_nav.thenBranch());
-    if (!(result.emptiness())) result=MonomialSet(index,result,MonomialSet());
+    result=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(), 
+                                  m_nav.thenBranch(), n_nav.thenBranch());
+    if (!(result.emptiness())) 
+      result = MonomialSet(index, result, cache_mgr.zero());
   } else {
-    MonomialSet then_path=do_fixed_path_divisors(a_nav.thenBranch(),m_nav.thenBranch(),n_nav);
-    MonomialSet else_path=do_fixed_path_divisors(a_nav.elseBranch(),m_nav.thenBranch(),n_nav);
+    MonomialSet
+      then_path=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(),
+                                       m_nav.thenBranch(), n_nav);
+    MonomialSet
+      else_path=do_fixed_path_divisors(cache_mgr, a_nav.elseBranch(),
+                                       m_nav.thenBranch(), n_nav);
     if (then_path.emptiness()){
       result=else_path;
     } else {
@@ -171,14 +175,35 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a, MonomialSet m,MonomialS
 #endif
   return result;
 }
+// end of variant for navigator
+
+// variant for MonomialSet
+static MonomialSet do_fixed_path_divisors(MonomialSet a, 
+                                          MonomialSet m, MonomialSet n){
+
+  //we assume that m is a multiple of n
+  MonomialSet::navigator m_nav=m.navigation();
+  MonomialSet::navigator n_nav=n.navigation();
+
+  MonomialSet::navigator a_nav=a.navigation();
+
+  typedef fixed_divisors_cache_type cache_mgr_type;
+  cache_mgr_type cache_mgr(a.manager());
+
+  return do_fixed_path_divisors(cache_mgr, a_nav, m_nav, n_nav);
+}
+
+
 static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
    assert(m.reducibleBy(n));
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
 
-MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
-  MonomialSet::navigator a=as.navigation();
-  MonomialSet::navigator v=vs.navigation();
+//Variant for navigaor
+template <class CacheMgr>
+MonomialSet mod_var_set(const CacheMgr& cache_mgr,
+                        MonomialSet::navigator a, MonomialSet::navigator v){
+
   idx_type a_index=*a;
   idx_type v_index=*v;
   while((v_index<a_index)||((v_index==a_index)&&(!(v.isConstant())))){
@@ -191,26 +216,22 @@ MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
     v_index=*v;
     a_index=*a;
   }
-  if (v_index>a_index){
-    if (v.isConstant()) return a;
-    
-    typedef PBORI::CacheManager<CCacheTypes::mod_varset>
-      cache_mgr_type;
 
-    cache_mgr_type cache_mgr(as.manager());
+  if (v_index>a_index){
+    if (v.isConstant()) return cache_mgr.generate(a);
 
     MonomialSet::navigator cached =
       cache_mgr.find(a, v);
-    if (cached.isValid()) return cached;
+    if (cached.isValid()) return cache_mgr.generate(cached);
     MonomialSet::navigator a_e=a.elseBranch();
     MonomialSet::navigator a_t=a.thenBranch();
-    MonomialSet a0=mod_var_set(a_e,v);
-    MonomialSet a1=mod_var_set(a_t,v);
+    MonomialSet a0=mod_var_set(cache_mgr, a_e, v);
+    MonomialSet a1=mod_var_set(cache_mgr, a_t, v);
     MonomialSet result;
     if (a1.emptiness()) result=a0;
     else {
       if ((a1.navigation()==a_t)&&(a0.navigation()==a_e))
-        result=a;
+        result=cache_mgr.generate(a);
       else
         result=MonomialSet(a_index,a1,a0);
     }
@@ -218,40 +239,71 @@ MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs){
     return result;
   }
   //so v_index==a_index and v.IsConstant
-  return a;
+  return cache_mgr.generate(a);
 }
-MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs){
+
+// Variant for MonomialSet
+MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs) {
   MonomialSet::navigator a=as.navigation();
   MonomialSet::navigator v=vs.navigation();
+  typedef PBORI::CacheManager<CCacheTypes::mod_varset>
+    cache_mgr_type;
+
+  cache_mgr_type cache_mgr(as.manager());
+  return mod_var_set(cache_mgr, a, v);
+}
+
+// Forward declaration
+MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs);
+
+template <class CacheMgr>
+MonomialSet mod_deg2_set(const CacheMgr& cache_mgr, 
+                         MonomialSet::navigator a, MonomialSet::navigator v){
+
   idx_type a_index=*a;
   idx_type v_index=*v;
-  if (a.isConstant()) return as;
+  if (a.isConstant()) return cache_mgr.generate(a);
   while((v_index=*v)<(a_index=*a)){
         v.incrementElse();
     }
-  if (v.isConstant()) return as;
-  typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
-    cache_mgr_type;
-  cache_mgr_type cache_mgr(as.manager());
+  if (v.isConstant()) return cache_mgr.generate(a);
+
   MonomialSet::navigator cached =
     cache_mgr.find(a, v);
-  if (cached.isValid()) return cached;
+  if (cached.isValid()) return cache_mgr.generate(cached);
+
   MonomialSet result;
   if (a_index==v_index){
+    MonomialSet tmp = mod_var_set(cache_mgr.generate(a.thenBranch()), 
+                                  cache_mgr.generate(v.thenBranch()));
     result=MonomialSet(a_index,
-    mod_deg2_set(mod_var_set(a.thenBranch(), v.thenBranch()),v.elseBranch()),
-    mod_deg2_set(a.elseBranch(),v.elseBranch())
-    );
+                       mod_deg2_set(cache_mgr, 
+                                    tmp.navigation(), v.elseBranch()),
+                       mod_deg2_set(cache_mgr, a.elseBranch(), v.elseBranch())
+                       );
     
   } else {
     assert(v_index>a_index);
     result=MonomialSet(a_index,
-      mod_deg2_set(a.thenBranch(),v),
-      mod_deg2_set(a.elseBranch(), v));
+                       mod_deg2_set(cache_mgr, a.thenBranch(), v),
+                       mod_deg2_set(cache_mgr, a.elseBranch(), v) );
   }
   cache_mgr.insert(a,v,result.navigation());
   return result;
 }
+
+// Variant for MonomialSet
+MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs){
+  MonomialSet::navigator a=as.navigation();
+  MonomialSet::navigator v=vs.navigation();
+  typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
+    cache_mgr_type;
+  cache_mgr_type cache_mgr(as.manager());
+
+  return mod_deg2_set(cache_mgr, a, v);
+}
+
+
 MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     
     MonomialSet::navigator nav=m.navigation();
@@ -265,7 +317,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     while (!(nav.isConstant())){
         MonomialSet::navigator cached =
           cache_mgr.find(nav);
-        if (cached.isValid()) return cached;
+        if (cached.isValid()) return cache_mgr.generate(cached);
         idx_type v=*nav;
         MonomialSet::navigator check_nav=nav.thenBranch();
         while(!(check_nav.isConstant())){
@@ -273,7 +325,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
         }
         if (check_nav.isTerminated()){
             idx_type result_index=v;
-            MonomialSet result=MonomialSet(result_index,Polynomial(1).diagram(),contained_variables_cudd_style(nav.elseBranch()));
+            MonomialSet result=MonomialSet(result_index,Polynomial(cache_mgr.one()).diagram(),contained_variables_cudd_style(cache_mgr.generate(nav.elseBranch())));
             MonomialSet::navigator r_nav=result.navigation();
             while(1){
               MonomialSet::navigator last=orig;
@@ -286,7 +338,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
         nav.incrementElse();
         
     }
-    return MonomialSet();
+    return MonomialSet(cache_mgr.zero());
 }
 
 MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
@@ -302,16 +354,16 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
     if (!(nav.isConstant())){
         MonomialSet::navigator cached =
           cache_mgr.find(nav);
-        if (cached.isValid()) return cached;
+        if (cached.isValid()) return cache_mgr.generate(cached);
         MonomialSet::navigator then_branch=nav.thenBranch();
         MonomialSet::navigator else_branch=nav.elseBranch();
-        MonomialSet then_res=contained_variables_cudd_style(then_branch);
-        MonomialSet else_res=contained_deg2_cudd_style(else_branch);
+        MonomialSet then_res=contained_variables_cudd_style(cache_mgr.generate(then_branch));
+        MonomialSet else_res=contained_deg2_cudd_style(cache_mgr.generate(else_branch));
         MonomialSet result=MonomialSet(*nav,then_res,else_res);
         cache_mgr.insert(nav,result.navigation());
         return result;
     }
-    else return MonomialSet();
+    else return MonomialSet(cache_mgr.zero());
 }
 
 static bool have_ordering_for_tables(){  
@@ -1787,11 +1839,11 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
       
   if (cached.isValid() ){
-      return cached;
+    return cache_mgr.generate(cached);
   }
   
-  MonomialSet minimal_else=minimal_elements_cudd_style_unary(ms0);
-  MonomialSet minimal_then=minimal_elements_cudd_style_unary(mod_mon_set(ms1,minimal_else));
+  MonomialSet minimal_else=minimal_elements_cudd_style_unary(cache_mgr.generate(ms0));
+  MonomialSet minimal_then=minimal_elements_cudd_style_unary(mod_mon_set(cache_mgr.generate(ms1),minimal_else));
   MonomialSet result;
   if ((minimal_else.navigation()==ms0) &&(minimal_then.navigation()==ms1)) result=m;
   else
@@ -1855,21 +1907,23 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
 
       
   if (cached.isValid() ){
-    return cv.unite((MonomialSet)cached);
+    return cv.unite((MonomialSet)cache_mgr.generate(cached));
   }
   
   if (mod.emptiness()){
     
-    MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod);
-    MonomialSet result1= do_minimal_elements_cudd_style(
-      ms1,result0);
+    MonomialSet result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0),
+                                                       mod); 
+    MonomialSet result1= do_minimal_elements_cudd_style(cache_mgr.generate(ms1),
+                                                        result0);
     result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
      
   } else {
       if (*mod_nav>index){
-        MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod);
+        MonomialSet
+          result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), mod);
         MonomialSet result1= do_minimal_elements_cudd_style(
-          ms1,result0.unite(mod));
+          cache_mgr.generate(ms1),result0.unite(mod));
         if (result1.emptiness()) {result=result0;}
         else
           {result= MonomialSet(index,result1,result0);}
@@ -1877,10 +1931,12 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
       assert(index==*mod_nav);
       MonomialSet::navigator mod0=mod_nav.elseBranch();
       MonomialSet::navigator mod1=mod_nav.thenBranch();
-      MonomialSet result0=do_minimal_elements_cudd_style(ms0 , mod0);
+      MonomialSet
+        result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), cache_mgr.generate(mod0));
       //MonomialSet mod1=mod.subset1(index);
-      MonomialSet result1= do_minimal_elements_cudd_style(
-        ms1,result0.unite(((MonomialSet) mod0).unite((MonomialSet)mod1)));
+      MonomialSet result1=
+        do_minimal_elements_cudd_style(cache_mgr.generate(ms1), 
+                                       result0.unite(cache_mgr.generate(ms0).unite(cache_mgr.generate(mod1))));
       result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
     }
   }
@@ -1979,11 +2035,13 @@ std::vector<Polynomial> GroebnerStrategy::allGenerators(){
 }
 
 
-
+/// @note: This function always uses the active manager!
+/// @todo: check correct manager
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
     //MonomialSet::navigation nav=m.navigator();
     if (idx>*m){
-        return MonomialSet(*m,recursively_insert(p,idx,m.thenBranch()),m.elseBranch());
+        return MonomialSet(*m,recursively_insert(p,idx,m.thenBranch()),
+                           MonomialSet(m.elseBranch()));
     } else{
         assert(idx<*m);
         return MonomialSet(idx,m,p);
@@ -2199,30 +2257,43 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     return s;
 }
 
+template <class CacheMgr>
+Polynomial map_every_x_to_x_plus_one(const CacheMgr& cache_mgr,
+                                     MonomialSet::navigator nav){
 
-Polynomial map_every_x_to_x_plus_one(Polynomial p){
-    if (p.isConstant()) return p;
+    if (nav.isConstant()) return cache_mgr.generate(nav);
     
-    
-    MonomialSet::navigator nav=p.diagram().navigation();
     idx_type idx=*nav;
 
-    typedef PBORI::CacheManager<CCacheTypes::map_every_x_to_x_plus_one>
-         cache_mgr_type;
-    
-    cache_mgr_type cache_mgr(p.diagram().manager());
     MonomialSet::navigator cached=cache_mgr.find(nav);
     if (cached.isValid() ){
-           return cached;
+      return cache_mgr.generate(cached);
     }
     
-    Polynomial then_mapped=map_every_x_to_x_plus_one(nav.thenBranch());
-    Polynomial res0=map_every_x_to_x_plus_one(nav.elseBranch())+Polynomial(then_mapped);
-    Polynomial res=MonomialSet(idx,map_every_x_to_x_plus_one(nav.thenBranch()).diagram(),res0.diagram());
+    Polynomial then_mapped = 
+      map_every_x_to_x_plus_one(cache_mgr, nav.thenBranch());
+    Polynomial res0 = 
+      map_every_x_to_x_plus_one(cache_mgr, nav.elseBranch()) + 
+      Polynomial(then_mapped);
+    Polynomial res = 
+      MonomialSet(idx,
+                  map_every_x_to_x_plus_one(cache_mgr, 
+                                            nav.thenBranch()).diagram(), 
+                  res0.diagram());
 
     cache_mgr.insert(nav,res.diagram().navigation());
     return res;
 }
+
+Polynomial map_every_x_to_x_plus_one(Polynomial p){
+  MonomialSet::navigator nav=p.diagram().navigation();
+  typedef PBORI::CacheManager<CCacheTypes::map_every_x_to_x_plus_one>
+    cache_mgr_type;
+  
+  cache_mgr_type cache_mgr(p.diagram().manager());
+  return map_every_x_to_x_plus_one(cache_mgr, nav);
+}
+
 static Polynomial opposite_logic_mapping(Polynomial p){
     return map_every_x_to_x_plus_one(p)+1;
 }
