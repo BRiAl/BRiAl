@@ -2263,6 +2263,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         std::cout<<"start mult"<<std::endl;
     }
     packedmatrix* eliminated=m4rmPacked(mat_step2_factor,mat_step1,optimal_k_for_multiplication(mat_step2_factor->rows,mat_step2_factor->cols,mat_step1->cols,strat));
+    destroyPackedMatrix(mat_step2_factor);
     if (strat.enabledLog){
         std::cout<<"end mult"<<std::endl;
     }
