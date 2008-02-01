@@ -338,7 +338,6 @@ def groebner_basis(I, faugere=False,  coding=False,
         print p
       del p
       del I
-      clean_data(mydata)
       import sys
       sys.exit(0)    
     I=implementation(I, optRedTail=red_tail,\
