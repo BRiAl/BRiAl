@@ -64,11 +64,13 @@ opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
 opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
+opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
+         ['NDEBUG'], converter = Split)
 
 opts.Add('CCFLAGS', "C compiler flags", "-O3 -ansi", converter = Split)
 opts.Add('CXXFLAGS', "C++ compiler flags", "$CCFLAGS -ftemplate-depth-100",
          converter = Split)
-opts.Add('LINKFLAGS', "Linker flags", [], converter = Split)
+opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
