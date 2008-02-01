@@ -1,7 +1,10 @@
 /*  Copyright (c) 2005-2007 by The PolyBoRi Team */
 
-//the content of this file is intellectual property of Michael Brickenstein
-//be aware of possible patent claims
+// The content of this file is intellectual property of Michael Brickenstein
+// Note, that choosing GPL3+ we made a clear statement against software
+// patents.
+// The method using this tables is actually described in 
+// http://arxiv.org/abs/0801.1177 
 #include "dp_asc4data.h"
 BEGIN_NAMESPACE_PBORIGB
 const unsigned short dp_asc4var_data[][7]={
