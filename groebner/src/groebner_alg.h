@@ -345,7 +345,7 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& c
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
 MonomialSet contained_variables_cudd_style(const MonomialSet& m);
 MonomialSet minimal_elements_cudd_style(MonomialSet m);
-MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m);
+MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset);
 MonomialSet minimal_elements_cudd_style_unary(MonomialSet m);
 END_NAMESPACE_PBORIGB
 

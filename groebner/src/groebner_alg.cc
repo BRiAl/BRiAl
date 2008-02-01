@@ -2035,18 +2035,26 @@ std::vector<Polynomial> GroebnerStrategy::allGenerators(){
 }
 
 
-/// @note: This function always uses the active manager!
-/// @todo: check correct manager
-MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
+/// @note Core function which uses the manager given as firt argument
+template <class MgrType>
+MonomialSet recursively_insert(const MgrType& mgr,
+                               MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
     //MonomialSet::navigation nav=m.navigator();
+    typedef typename MonomialSet::dd_type dd_type;
     if (idx>*m){
-        return MonomialSet(*m,recursively_insert(p,idx,m.thenBranch()),
-                           MonomialSet(m.elseBranch()));
+      return MonomialSet(*m,recursively_insert(mgr, p,idx,m.thenBranch()),
+                         dd_type(mgr, m.elseBranch()));
     } else{
         assert(idx<*m);
-        return MonomialSet(idx,m,p);
+        return dd_type(mgr, idx,m,p);
     }
 }
+
+/// @note Wrapper for external use
+MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset){
+  return recursively_insert(mset.manager(), p, idx, mset.navigation());
+}
+
 void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
     Monomial lm=p.lead();
     assert (!(m.emptiness()));
@@ -2058,9 +2066,8 @@ void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
         assert(p.lead()==lm);
         m=ll_red_nf(m,MonomialSet(p.diagram())).diagram();
         //assert(ll_red_nf(m+m.lead(),m)==m+m.lead());
-         m=recursively_insert(
-           p.navigation().elseBranch(),
-           lead_index,m.navigation());
+        m=recursively_insert(p.navigation().elseBranch(),
+                             lead_index, m);
     }
 }
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){

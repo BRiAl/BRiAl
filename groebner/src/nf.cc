@@ -1289,8 +1289,9 @@ static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int s
     return MonomialSet(idx,add_up_lex_sorted_exponents(vec,start,limes),add_up_lex_sorted_exponents(vec,limes,end));
 }
 
-/// @note: This function always uses the active manager!
-/// @todo: check correct manager
+/// @note This function is deactivated, because it always uses the active manager!
+/// @todo activate and make save, when used
+#if 0
 static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_iterator>& vec, int start, int end){
     assert(end<=vec.size());
     assert(start>=0);
@@ -1325,6 +1326,7 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
     
     return MonomialSet(idx,add_up_lex_sorted_monomial_navs(vec,start,limes),add_up_lex_sorted_monomial_navs(vec,limes,end));
 }
+#endif
 
 Polynomial add_up_monomials(const std::vector<Monomial>& vec){
     return add_up_generic(vec);

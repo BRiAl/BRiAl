@@ -45,7 +45,7 @@ def ll_encode(polys):
   lastpp=-1
   for p in linear_lead:
         p_nav=p.navigation()
-        reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors.navigation())
+        reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors)
   return reductors
 
 def eliminate(polys, on_the_fly=False):

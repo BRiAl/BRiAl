@@ -117,7 +117,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
 
       
       p_nav=p.navigation()
-      reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors.navigation())
+      reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors)
     else:
       ip.append(p)
   it=ifthen.thenpart
