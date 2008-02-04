@@ -10,7 +10,7 @@ from inspect import getargspec
 from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
 from itertools import chain
-
+from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
@@ -34,6 +34,18 @@ def owns_one_constant(I):
 
 
 #@TODO: implement this to work with *args, **args for wrapped function
+
+def want_interpolation_gb(G):
+    if get_order_code()!=OrderCode.lp:
+        return False
+    if len(G)!=1:
+        return False
+    p=Polynomial(G[0])
+    if p.lmDeg()<=1:
+        return False
+    if p.set().nNodes()>1000:
+        return False
+    return True
 
 def ll_is_good(I):
     lex_lead=set()
@@ -82,6 +94,14 @@ def change_order_heuristic(d):
                 d["other_ordering_first"]=other_ordering_opts
     return d
 
+
+def interpolation_gb_heuristic(d):
+    d=copy(d)
+    I=d["I"]
+    if not d.get("other_ordering_opts",False) and want_interpolation_gb(I):
+        d["interpolation_gb"]=True
+        d["other_ordering_first"]=False
+    return d
 def linear_algebra_heuristic(d):
     d_orig=d
     d=copy(d)
@@ -266,19 +286,22 @@ def fix_deg_bound_post(I,state):
     else:
         return I
 
+
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
 
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
+@with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
+
 @with_heuristic(change_order_heuristic)
-@gb_with_pre_post_option("other_ordering_first",pre=other_ordering_pre,default=False,pass_option_set=True)
+@gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True)
 @with_heuristic(linear_algebra_heuristic)
-@gb_with_pre_post_option("fix_deg_bound",post=fix_deg_bound_post,default=True)
-@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound"],default=True)
-@gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound"],default=True)
+@gb_with_pre_post_option("fix_deg_bound",if_not_option=["interpolation_gb"], post=fix_deg_bound_post,default=True)
+@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb"],default=True)
+@gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb"],default=True)
 
 def groebner_basis(I, faugere=False,  coding=False,
        preprocess_only=False, selection_size= 1000,
@@ -290,8 +313,12 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True,uniqueIdealGenerator=False):
+       linearAlgebraInLastBlock=True, gauss_on_linear_first=True,heuristic=True,uniqueIdealGenerator=False, interpolation_gb=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
+    if interpolation_gb:
+        if len(I)!=1 or get_order_code()!=OrderCode.lp:
+            raise ValueError
+        return lex_groebner_basis_for_polynomial_via_variety(I[0])
     if deg_bound is False:
         deg_bound=100000000L
     zero=Polynomial(0)
@@ -315,7 +342,6 @@ def groebner_basis(I, faugere=False,  coding=False,
     else:
         implementation=symmGB_F2_C
     
-    
     if aes:
         pt=time()
         I=aesmod.preprocess(I, prot=prot)
@@ -328,10 +354,6 @@ def groebner_basis(I, faugere=False,  coding=False,
       pt2=time()
       if prot:
         print "preprocessing time", pt2-pt
-
-
-    
-            
 
     if preprocess_only:
       for p in I:
