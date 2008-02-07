@@ -1,51 +1,44 @@
 from polybori.PyPolyBoRi import *
 
+def lead_index(p):
+  return iter(p.lexLead()).next()#first index
+ 
+def combine(reductors,p, reduce=None):
+    p_nav=p.navigation()
+    assert p_nav.value()<reductors.navigation().value()
+    p_else=BooleSet(p_nav.elseBranch())
+    if reduce:
+        p_else=reduce(p_else,reductors)
+    return if_then_else(p_nav.value(),reductors,p_else)
+    
+
 def llredsb_Cudd_style(polys):
-  def lead(p):
-    return p.lexLead()
-  reductors=Polynomial(1)
+
+  reductors=Polynomial(1).set()
   
-  linear_lead=sorted(polys,key=lead)
+  linear_lead=sorted(polys,key=lead_index,reverse=True)
   assert len(set([p.lexLead() for p in linear_lead]))==len(polys)
   assert len([p for p in polys if p.constant()])==0
   assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
-  counter=0
-  total=len(linear_lead)
-  lastpp=-1
   for p in linear_lead:
-        counter=counter+1
-        pp=int(counter*100/float(total))
-        if pp>lastpp:
-          lastpp=pp
-          #print "llredsb:",pp,"%" 
-        lmp=p.lexLead()
-        assert len(list(lmp))==1
-        index=iter(lmp).next()
-        red_nf_of_tail=ll_red_nf(p+lmp,BooleSet(reductors.set()))
-        assert index<reductors.navigation().value()
-        reductors=lmp*reductors+red_nf_of_tail
+        reductors=combine(reductors,p,reduce=ll_red_nf)
   return reductors
 
 
 
 def ll_encode(polys):
   polys=[Polynomial(p) for p in polys]
-  def lead(p):
-    return p.lexLead()
-  reductors=BooleSet(Polynomial(1).set())
+  reductors=Polynomial(1).set()
   
-  linear_lead=sorted(polys,key=lead)
+  linear_lead=sorted(polys,key=lead_index, reverse=True)
   assert len(set([p.lexLead() for p in linear_lead]))==len(polys)
   assert len([p for p in polys if p.constant()])==0
   assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
-  counter=0
-  total=len(linear_lead)
-  lastpp=-1
+
   for p in linear_lead:
-        p_nav=p.navigation()
-        reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors)
+      reductors=combine(reductors,p,reduce=None)
   return reductors
 
 def eliminate(polys, on_the_fly=False):
