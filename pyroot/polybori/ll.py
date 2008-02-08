@@ -62,7 +62,6 @@ def eliminate(polys, on_the_fly=False):
       reductors=ll_encode(linear_leads)
   else:
       reductors=llredsb_Cudd_style(linear_leads)
-      reductors=BooleSet(reductors.set())
   if on_the_fly:
       red_fun=ll_red_nf_noredsb
   else:
