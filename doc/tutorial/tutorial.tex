@@ -303,7 +303,7 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 The encoding of integers for the degree as variable is done implicitely by our cache lookup functions.
 
 \section{Case study: Evaluation of a polynomial}
-\subsection{Substitute a single variable x in a polynomial by a constant c}
+\subsection{Substitute a single variable $x$ in a polynomial by a constant $c$}
 
 Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to plug in the constant $c$ for the variable $x$.
 \subsubsection{Solution 1: Set operations}
@@ -326,41 +326,45 @@ In this case the system is $\{x+c\} \cup \{\explfieldequations\}$ (we assume tha
 For this special case, that all Boolean polynomials have pairwise different linear leading terms,
 there exist special functions.
 
-first we encode the system $\{x+c\}$ into one diagram
+First, we encode the system $\{x+c\}$ into one diagram
 \begin{verbatim}
 d=ll_encode([x+c])    
 \end{verbatim}
-
+%
 This is a special format representing a set of such polynomials in one diagram, which is used by several procedures in
-$\PolyBoRi$.
+\PolyBoRi.
 Then we may
-reduce the f by this rewriting system
+reduce~$f$ by this rewriting system
 \begin{verbatim}
 ll_red_nf_noredsb(f,d)  
 \end{verbatim}
-
-
+%
+%
 This can be simplified in our special case in two ways.
 \begin{enumerate}
-    \item If our system consists of exactly *one* Boolean polynomial,
-    ll\_encode, does essentially only a type conversion (and much overhead).
-    This type conversion can be done implicitely (at least using the boost::python interface).
+    \item If our system consists of exactly \textbf{one} Boolean polynomial,
+    \verb|ll_encode| does essentially  a type conversion only (and much overhead).
+    This type conversion can be done implicitely (at least using the
+\verb|boost::python|-based  interface \verb|ipbori|).
 
     So you may call
-    \begin{verbatim}
-      ll_red_nf_noredsb(f,x+c)  
-    \end{verbatim}
-
-    In this case, there is no need for calling ll\_encode.
+\begin{verbatim}
+ll_red_nf_noredsb(f,x+c)  
+\end{verbatim}
+%
+    In this case, there is no need for calling \verb|ll_encode|.
     The second argument is converted implicitely to BooleSet.
-    \item A second optimization is to call
-    \begin{verbatim}
-        ll_red_nf(f,x+c)
-    \end{verbatim}
-    
-    As $\{x+c\}$ is a reduced Gröbner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced Gröbner basis).
+    \item A second optimization is to call just
+\begin{verbatim}
+ll_red_nf(f,x+c)
+\end{verbatim}
+    %
+    As $\{x+c\}$ is a reduced Boolean Gröbner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced Gröbner basis).
 \end{enumerate}
-\subsection{Evaluate a polynomial by plugging in a constant for every variable}
+
+
+
+\subsection{Evaluate a polynomial by plugging in a constant for each variable}
     We want to a polynomial
     $f(x_1,\ldots, x_n)$
     by
@@ -368,7 +372,7 @@ This can be simplified in our special case in two ways.
     $c_1,\ldots, c_y$ are constants.
 
 \subsubsection{Solution 1: $n$ set operations}
-First we show it in a naive way, similar to the first solution above.
+First, we show it in a naive way, similar to the first solution above.
 \begin{verbatim}
 def evaluate(f,m):
    while not f.constant():
@@ -387,39 +391,53 @@ For example, the call
 \begin{verbatim}
 evaluate(x(1)+x(2),{x(1).index():1,x(2).index():0})  
 \end{verbatim}
-results in
-\begin{verbatim}
-1.
-\end{verbatim}
+results in~\verb|1|.
 
 
-We deal here we navigators, which is dangerous, but will show its value in optimized code (e.g. PyRex), which does less overhead.
-Note, that they don't increase the reference counts, so we have to make sure,  that f lives  as long as we use an navigator on f.
-A second point, why it is desirable to use navigators is, that their thenBranch, elseBranch methods directly calculate the subset0, subset1 results
-when calling it with the top variable of the diagram f. In this example, this is the crucial point (in terms of performance),
-as we call the polynomial construct on the branches anyway, which does reference counting again.
 
-This is quite fast, but suboptimal, as only the inner functions (additions) use caching.
+We deal here with navigators, which is dangerous, because
+they do not increase the internal reference count on the represented polynomial
+substructure. So, one has
+to ensure, that~$f$ is still valid, as long as we use a navigator on~$f$.
+But it will show its value on optimized code (e.\,g.\ PyRex), where it causes
+less overhead. 
+A second point, why it is desirable to use navigators is, that their
+\verb|thenBranch|- and \verb|elseBranch|-methods immediately return~(without
+further calculations) the
+results of the \verb|subset0| and \verb|subset1|-functions, when the latter are
+called together  with the top variable of the diagram~$f$.
+%
+In this example, this is the crucial point in terms of performance.
+But, since we already call the polynomial construction on the branches,
+reference counting of the corresponding subpolynomials is done anyway.
 
-Furthermore, it works against the usual ZDD recursion and generates complex intermediate results.
+This is quite fast, but suboptimal, because only the inner functions (additions) use caching.
+%
+Furthermore, it contradicts the usual ZDD recursion and generates complex intermediate results.
+
 \subsubsection{Solution 2: Linear Lead rewriting systems}
-The same problem can also be tackled by the ll routines. In this case, when evaluating all variables to constants, the generated intermediate results (during ll\_red\_nf/ll\_red\_nf\_noreds) are only constants.
-In general we consider the overhead of generating the encoding d not so big, as this consists only of very few, tiny ZDD operations (and some Python overhead in the quite general ll\_encode).
+The same problem can also be tackled by the linear-lead routines. In the case, when
+all variables are substituted by  constants, all intermediate results
+(generated during \verb|ll_red_nf|/\verb|ll_red_nf_noreds|) are constant.
+In general, we consider the overhead of generating the encoding $d$ as small, 
+since it consists of very few, tiny ZDD operations only (and some Python overhead in the quite general \verb|ll_encode|).
 \begin{verbatim}
-    d=ll_encode([x+cx,y+cy])
-    ll_red_nf_noredsb(f,d)
+d=ll_encode([x+cx,y+cy])
+ll_red_nf_noredsb(f,d)
 \end{verbatim}
-
-
-Since the tails of the polynomials in the rewriting system  only consist of constants, this forms also a
-reduced Gröbner basis and you may call
+%
+%
+Since the tails of the polynomials in the rewriting system   consist of
+constants only, this forms also a
+reduced Gröbner basis. Therefore, you may just call
 \begin{verbatim}
 ll_red_nf(f,d)   
 \end{verbatim}
-
-
-This is assumed to be the fasted way.
+%
+%
+It is assumed, that this is the fasted way.
 \bibliographystyle{plain}
 
-\bibliography{}
+% As long as there are noe citations...
+%\bibliography{}
 \end{document}
