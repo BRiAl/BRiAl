@@ -409,9 +409,12 @@ ll_red_nf(f,x+c)
     by
     $x_i\mapsto c_i$, where
     $c_1,\ldots, c_y$ are constants.
-
-\subsubsection{Solution 1: $n$ set operations}
+\subsubsection{Naive approach}
 First, we show it in a naive way, similar to the first solution above.
+...
+\subsubsection{Solution 1: $n$ set operations}
+The following approach is faster, as it does not involve individual terms, but set operations
+
 \begin{verbatim}
 def evaluate(f,m):
    while not f.constant():
