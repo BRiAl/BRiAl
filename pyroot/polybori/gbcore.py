@@ -313,7 +313,7 @@ def groebner_basis(I, faugere=False,  coding=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,uniqueIdealGenerator=False, interpolation_gb=False):
+       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
@@ -323,7 +323,7 @@ def groebner_basis(I, faugere=False,  coding=False,
         deg_bound=100000000L
     zero=Polynomial(0)
     I=[Polynomial(p) for p in I if p!=zero]
-    if uniqueIdealGenerator:
+    if unique_ideal_generator:
         prod=1
         for p in I:
             prod=p*prod
