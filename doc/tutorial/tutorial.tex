@@ -47,6 +47,7 @@
 \newcommand{\CUDD}{{CUDD}\xspace}
 \newcommand{\ite}{{ite}\xspace}
 \newcommand{\functionname}[1]{\textit{#1}\xspace}
+\newcommand{\pythonconstant}[1]{\textit{#1}\xspace}
 \newcommand{\explfieldequations}{{x_1^2+x_1,\ldots,x_n^2+x_n}}
 \providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
 
@@ -66,7 +67,7 @@
 
 
 
-\date{2007-11-08}
+\date{\today}
 
 \begin{document}
 
@@ -98,12 +99,16 @@ at the command line prompt.
 In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
 \subsection{Ordering}
 The monomial ordering can be changed by calling
-\functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex} or \functionname{block\_dp\_asc} (for odering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
+\functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex} or \functionname{block\_dp\_asc} (for ordering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
 
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
+\paragraph{Example: Degree reverse lexicographical ordering}
+\begin{verbatim}
+r=Ring(1000)
+change_ordering(dp_asc)
+\end{verbatim}
 
-
-\paragraph{Example:}
+\paragraph{Example: Block orderings}
 \begin{verbatim}
 r=Ring(1000)
 change_ordering(block_dp_asc)
@@ -133,8 +138,25 @@ may decide dynamically by taking the ideal, the ordering and the other options i
 \begin{verbatim}
 In [1]: groebner_basis([x(1)+x(2),(x(2)+x(1)+1)*x(3)])
 Out[1]: [x(1) + x(2), x(3)]
-
 \end{verbatim}
+
+There exists a set of default options for \functionname{groebner\_basis}.
+They can be seen, but not manipulated via accessing \verb|groebner_basis.options|.
+A second layer of heuristics is incorporated into the \functionname{groebner\_basis}-function, to choose dynamically the best options depending on the ordering and the given ideal.
+Every option given explicitely by the user takes effect, but for the other options the default may be overwritten by the script.
+This behaviour can be turned off by calling
+\begin{verbatim}
+groebner_basis(I,heuristic=False).
+\end{verbatim}
+
+Important options are:
+\begin{itemize}
+    \item \verb|other_ordering_first|, possible values are \pythonconstant{False} or an ordering code
+    \item \verb|faugere|, turn off or on the linear algebra
+    \item \verb|linear_algebra_in_last_block|, this affects the last block of block orderings and degree orderings. If it is set to \pythonconstant{True} linear algebra takes affect in this block.
+    \item \verb|selection_size|, maximum number of polynomials for parallel reductions
+    \item \verb|prot|, turn off or on the protocoll
+\end{itemize}
 \section{How to program efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
 This awareness can be seen on several levels
