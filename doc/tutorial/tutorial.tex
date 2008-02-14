@@ -327,9 +327,24 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 The encoding of integers for the degree as variable is done implicitely by our cache lookup functions.
 
 \section{Case study: Evaluation of a polynomial}
+
 \subsection{Substitute a single variable $x$ in a polynomial by a constant $c$}
 
 Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to plug in the constant $c$ for the variable $x$.
+\subsubsection{Naive approach}
+The following code shows how to tackle the problem, by manipulating individual terms.
+While it is easy to understand, it is quite slow.
+The method \functionname{reducibleBy} gives a test for divisibility.
+\begin{verbatim}
+
+def subst(f,x,c):
+    if c==1:
+        return sum([t/x for t in f if t.reducibleBy(x)])+sum([t for t in f if not t.reducibleBy(x)])
+    else:
+        #c==0
+        return sum([t for t in f if not t.reducibleBy(x)])
+
+\end{verbatim}
 \subsubsection{Solution 1: Set operations}
 This can be done quite efficiently using set operations.
 \begin{verbatim}
