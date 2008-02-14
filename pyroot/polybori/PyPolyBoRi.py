@@ -49,3 +49,6 @@ def booleset_new_init(self,arg=None):
             p=add_up_polynomials(v)
             booleset_old_init(self,p.set())
 BooleSet.__init__=booleset_new_init
+
+for k in OrderCode.values:
+    globals()[str(OrderCode.values[k])]=OrderCode.values[k]
