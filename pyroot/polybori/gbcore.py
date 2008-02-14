@@ -163,7 +163,7 @@ class HeuristicalFunction(object):
             self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
         self.heuristicFunction=heuristic_function
         self.f=f
-        self.__doc__=f.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(self.options[k]) for k in self.options))+"\nTurn off heuristic by setting heuristic=False"
+        self.__doc__=f.__doc__#
         
 def with_heuristic(heuristic_function):
     def make_wrapper(f):
@@ -213,7 +213,7 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
 
             return res
         wrapper.__name__=f.__name__
-        wrapper.__doc__=f.__doc__+"\n Setting invert=True input and output get a transformation x+1 for each variable x, which shouldn't effect the calculated GB, but the algorithm"
+        wrapper.__doc__=f.__doc__
         if hasattr(f,"options"):
             wrapper.options=copy(f.options)
         else:
@@ -372,3 +372,5 @@ def groebner_basis(I, faugere=False,  coding=False,
         use_noro=noro,ll=ll,
         optLinearAlgebraInLastBlock=linear_algebra_in_last_block)
     return I
+
+groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))+"\nTurn off heuristic by setting heuristic=False"
