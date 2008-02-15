@@ -131,9 +131,13 @@ Out[3]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
 \end{verbatim}
 
 \subsection{Set operations}
-In addition to polynomials the \PolyBoRi implements a data type for set of monomials, called \functionname{BooleSet}.
-This data type is also implemented on top of ZDDs and gives another view on the polynomial  and enables highlevel set operations, which are in most cases faster than operations handling individual terms, as the complexity of the algorithms depends only on the structure of the diagrams.
+In addition to polynomials  \PolyBoRi implements a data type for sets of monomials, called \functionname{BooleSet}.
+This data type is also implemented on the top of ZDDs and allows to see
+polynomials
+from a different angle. Also, it makes high-level set operations possible, which are in most cases faster than operations handling individual terms, because the complexity of the algorithms depends only on the structure of the diagrams.
 
+Polynomials can easily be converted to \functionname{BooleSet}s by using the
+member function \verb|set()|.
 \begin{verbatim}
 In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
 
@@ -143,9 +147,10 @@ Out[2]: x(1)*x(3) + x(2)*x(3) + x(2) + x(4)
 In [3]: f.set()
 Out[3]: {{x(1),x(3)}, {x(2),x(3)}, {x(2)}, {x(4)}}
 \end{verbatim}
-
-One of the most common operations is to split the set into cofactors of a variable.
-
+%
+One of the most common operations is to split the set into cofactors of a
+variable. This illustrates the following example.
+%
 \begin{verbatim}
 In [4]: s0=f.set().subset0(x(2).index())
 
@@ -160,8 +165,8 @@ Out[7]: {{x(3)}, {}}
 In [8]: f==Polynomial(s1)*x(2)+Polynomial(s0)
 Out[8]: True
 \end{verbatim}
-
-But also more higher level operations are possible like the calculation of the minimal terms (with respect to division) in a BooleSet:
+%
+But also operations on higher levels are possible, like the calculation of the minimal terms (with respect to division) in a~\functionname{BooleSet}:
 \begin{verbatim}
 In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
 
@@ -174,7 +179,8 @@ Out[3]: {{x(1),x(3)}, {x(2)}, {x(4)}}
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangable heuristic.
-In principle, there exist  default values. But, if the option is not provided explicitely, the heuristic function
+In principle, there exist  standard settings, but~-- in case an option is not
+provided explicitely by the user~-- the active heuristic function
 may decide dynamically by taking the ideal, the ordering and the other options into account, which is the best configuration.
 \begin{verbatim}
 In [1]: groebner_basis([x(1)+x(2),(x(2)+x(1)+1)*x(3)])
@@ -193,12 +199,12 @@ groebner_basis(I,heuristic=False).
 Important options are the following:
 \begin{itemize}
     \item \verb|other_ordering_first|, possible values are \pythonconstant{False} or an ordering code.
-    In praxis, many boolean examples have very few solutions and a very easy \Groebner basis. So a complex walk algorith (which cannot be implemented using the \PolyBoRi data structures) seems unnecessary, as such \Groebner bases can be converted quite fast by the 
+    In practice, many Boolean examples have very few solutions and a very easy \Groebner basis. So, a complex walk algorithm (which cannot be implemented using the \PolyBoRi data structures) seems unnecessary, as such \Groebner bases can be converted quite fast by the 
     normal Buchberger algorithm from one ordering into another ordering.
     \item \verb|faugere|, turn off or on the linear algebra
     \item \verb|linear_algebra_in_last_block|, this affects the last block of block orderings and degree orderings. If it is set to \pythonconstant{True} linear algebra takes affect in this block.
     \item \verb|selection_size|, maximum number of polynomials for parallel reductions
-    \item \verb|prot|, turn off or on the protocoll
+    \item \verb|prot|, turn off or on the protocol
 \end{itemize}
 \section{How to program efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
