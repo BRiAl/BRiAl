@@ -130,6 +130,47 @@ In [3]: (x(1)+x(2))*(x(1)+x(3))
 Out[3]: x(1)*x(2) + x(1)*x(3) + x(1) + x(2)*x(3)
 \end{verbatim}
 
+\subsection{Set operations}
+In addition to polynomials the \PolyBoRi implements a data type for set of monomials, called \functionname{BooleSet}.
+This data type is also implemented on top of ZDDs and gives another view on the polynomial  and enables highlevel set operations, which are in most cases faster than operations handling individual terms, as the complexity of the algorithms depends only on the structure of the diagrams.
+
+\begin{verbatim}
+In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
+
+In [2]: f
+Out[2]: x(1)*x(3) + x(2)*x(3) + x(2) + x(4)
+
+In [3]: f.set()
+Out[3]: {{x(1),x(3)}, {x(2),x(3)}, {x(2)}, {x(4)}}
+\end{verbatim}
+
+One of the most common operations is to split the set into cofactors of a variable.
+
+\begin{verbatim}
+In [4]: s0=f.set().subset0(x(2).index())
+
+In [5]: s0
+Out[5]: {{x(1),x(3)}, {x(4)}}
+
+In [6]: s1=f.set().subset1(x(2).index())
+
+In [7]: s1
+Out[7]: {{x(3)}, {}}
+
+In [8]: f==Polynomial(s1)*x(2)+Polynomial(s0)
+Out[8]: True
+\end{verbatim}
+
+But also more higher level operations are possible like the calculation of the minimal terms (with respect to division) in a BooleSet:
+\begin{verbatim}
+In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
+
+In [2]: f.set()
+Out[2]: {{x(1),x(3)}, {x(2),x(3)}, {x(2)}, {x(4)}}
+
+In [3]: f.set().minimalElements()
+Out[3]: {{x(1),x(3)}, {x(2)}, {x(4)}}
+\end{verbatim}
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangable heuristic.
