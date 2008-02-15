@@ -333,20 +333,21 @@ The encoding of integers for the degree as variable is done implicitely by our c
 Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to plug in the constant $c$ for the variable $x$.
 \subsubsection{Naive approach}
 The following code shows how to tackle the problem, by manipulating individual terms.
-While it is easy to understand, it is quite slow.
+While this is a very direct approach, it is quite slow.
 The method \functionname{reducibleBy} gives a test for divisibility.
 \begin{verbatim}
 
 def subst(f,x,c):
     if c==1:
-        return sum([t/x for t in f if t.reducibleBy(x)])+sum([t for t in f if not t.reducibleBy(x)])
+        return sum([t/x for t in f if t.reducibleBy(x)])+\
+            sum([t for t in f if not t.reducibleBy(x)])
     else:
         #c==0
         return sum([t for t in f if not t.reducibleBy(x)])
 
 \end{verbatim}
 \subsubsection{Solution 1: Set operations}
-This can be done quite efficiently using set operations.
+In fact, the problem can be tackled quite efficiently using set operations.
 \begin{verbatim}
 def subst(f,x,c):
    i=x.index()
@@ -411,7 +412,19 @@ ll_red_nf(f,x+c)
     $c_1,\ldots, c_y$ are constants.
 \subsubsection{Naive approach}
 First, we show it in a naive way, similar to the first solution above.
-...
+
+\begin{verbatim}
+def evaluate(f,m):
+    res=0
+    for term in f:
+        product=1
+        for index in term:
+            product=m[index]*product
+        res=res+product
+    return Polynomial(res)
+\end{verbatim}
+
+
 \subsubsection{Solution 1: $n$ set operations}
 The following approach is faster, as it does not involve individual terms, but set operations
 
