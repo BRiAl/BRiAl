@@ -520,7 +520,7 @@ Furthermore, it contradicts the usual ZDD recursion and generates complex interm
 \subsubsection{Solution 2: Linear Lead rewriting systems}
 The same problem can also be tackled by the linear-lead routines. In the case, when
 all variables are substituted by  constants, all intermediate results
-(generated during \verb|ll_red_nf|/\verb|ll_red_nf_noreds|) are constant.
+(generated during \verb|ll_red_nf|/\verb|ll_red_nf_noredsb|) are constant.
 In general, we consider the overhead of generating the encoding $d$ as small, 
 since it consists of very few, tiny ZDD operations only (and some Python overhead in the quite general \verb|ll_encode|).
 \begin{verbatim}
