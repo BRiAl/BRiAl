@@ -165,7 +165,36 @@ Out[20]: True
 In [21]: x(0)>y(0)*y(1)
 Out[21]: True
 \end{verbatim}
-In this example, we have an ordering composed of three blocks, the first with ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
+In this example, we have an ordering composed of two blocks, the first with ten variables, the second contains the rest of variables $y(0), \ldots x(9)$ (per default indices start at 0).
+
+Another important feature in \PolyBoRi is the ability to iterate over a polynomial in the current monomial ordering.
+
+\begin{verbatim}
+In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
+
+In [2]: f=x(0)+x(1)*x(2)+x(2)
+
+In [3]: for t in f:
+   print t
+   
+x(0)
+x(1)*x(2)
+x(2)
+
+In [4]: change_ordering(dp_asc)
+
+In [5]: 
+
+In [5]: for t in f:
+    print t
+
+x(1)*x(2)
+x(2)
+x(0)
+\end{verbatim}
+
+This is a nontrivial functionality, as the natural order of paths in ZDDs is lexicographical.
+
 \subsection{Arithmetic}
 Basic arithmetic is provided in the domain of Boolean polynomials. Boolean Polynomial polynomials are polynomials over $\Ztwo$ where the maximal degree per variable is one.
 If exponents bigger than one per variable appear reduction by the field ideal (polynomials of the form $x^2+x$) is done automatically.
