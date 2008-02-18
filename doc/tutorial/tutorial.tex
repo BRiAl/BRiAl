@@ -1,3 +1,4 @@
+
 %
 %  untitled
 %
@@ -136,9 +137,6 @@ In [11]: append_ring_block(10)
 
 In [12]: x(0)>x(1)
 Out[12]: True
-
-In [13]: x(0)>y(1)*
-KeyboardInterrupt
 
 In [13]: x(0)>x(1)*x(2)
 Out[13]: False
@@ -624,10 +622,11 @@ We used \verb|ll_red_nf|/\verb|ll_red_nf_noredsb| functions on rewriting systems
 They can be used in a more general setting (which allows to eliminate auxiliary variable).
 \begin{definition}
 Let $L$ be a list of Boolean polynomials.
-If all element $p$ of $L$ have pairwise different leading terms with respect to lexicographical ordering.
-Then we call $L$ a \textbf{linear lexicographical lead rewriting system}.
+If all elements~$p$ of~$L$ have pairwise different leading terms with respect to lexicographical ordering,
+then we call $L$ a \textbf{linear lexicographical lead rewriting system}.
 \end{definition}
-We know that such a system forms together with the complete set of field equations \Groebner basis w.\,r.\,t. lexicographical ordering.
+We know that such a system forms together with the complete set of field
+equations a \Groebner basis w.\,r.\,t.\ lexicographical ordering.
 
 In particular we can use \verb|ll_red_nf| to speedup substitution of a variable $x$ by a value $v$ also in the more general case, that the lexicographical leading term of $x+v$ is equal to $x$.
 This can be tested most efficiently by the expression
@@ -635,14 +634,14 @@ This can be tested most efficiently by the expression
 x.set().navigation().value()>v.set().navigation().value().
 \end{verbatim}
 
-In many cases, we have a bigger equation system, where many variables have a linear leading term w.\,r.\,t. lexicographical ordering (at least one can optimize the formulation of the equations to fulfill these condition).
-
-This systems can be handled by the function \functionname{eliminate} in the module \functionname{polybori.ll}.
-I returns three results
+In many cases, we have a bigger equation system, where many variables have a linear leading term w.\,r.\,t.\ lexicographical ordering (at least one can optimize the formulation of the equations to fulfill these condition).
+%
+These systems can be handled by the function \functionname{eliminate} in the module \functionname{polybori.ll}.
+I returns three results:
 \begin{enumerate}
-    \item a maximal subset $L$ of the equation system, which forms a linear lexicographical lexicographical rewriting system.
-    \item a normal form algorithm $f$, s.\,t. $f(p)$ forms a reduced normal form of $p$ against the \Groebner basis consisting of $L$ and the field equations.
-    \item a list of polynomials $R$, which are in reduced normal form against $L$, s.\,t. $L\cup R$ spans modulo field equations the same ideal as the original equation system.
+    \item A maximal subset $L$ of the equation system, which forms a linear lexicographical lexicographical rewriting system.
+    \item A normal form algorithm $f$, s.\,th.\ $f(p)$ forms a reduced normal form of $p$ against the \Groebner basis consisting of $L$ and the field equations.
+    \item A list of polynomials $R$, which are in reduced normal form against $L$, s.\,th.\ $L\cup R$ spans modulo field equations the same ideal as the original equation system.
 \end{enumerate}
 
 \begin{verbatim}
@@ -665,4 +664,6 @@ Out[6]: x(3)*x(4) + 1
 
 % As long as there are noe citations...
 %\bibliography{}
+
+% Rem.: Some final words...
 \end{document}
