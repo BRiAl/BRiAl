@@ -106,16 +106,64 @@ The monomial ordering can be changed by calling
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 \paragraph{Example: Degree reverse lexicographical ordering}
 \begin{verbatim}
-r=Ring(1000)
-change_ordering(dp_asc)
-\end{verbatim}
+In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
 
-\paragraph{Example: Block orderings}
-\begin{verbatim}
-r=Ring(1000)
-change_ordering(block_dp_asc)
-append_ring_block(10)
-append_ring_block(20)
+In [2]: x(0)>x(1)
+Out[2]: True
+
+In [3]: x(0)>x(1)*x(2)
+Out[3]: True
+
+In [4]: change_ordering(dlex)
+
+In [5]: x(0)>x(1)
+Out[5]: True
+
+In [6]: x(0)>x(1)*x(2)
+Out[6]: False
+
+In [7]: change_ordering(dp_asc)
+
+In [8]: x(0)>x(1)
+Out[8]: False
+
+In [9]: x(0)>x(1)*x(2)
+Out[9]: False
+
+In [10]: change_ordering(block_dlex)
+
+In [11]: append_ring_block(10)
+
+In [12]: x(0)>x(1)
+Out[12]: True
+
+In [13]: x(0)>y(1)*
+KeyboardInterrupt
+
+In [13]: x(0)>x(1)*x(2)
+Out[13]: False
+
+In [14]: x(0)>y(0)*y(1)*y(2)
+Out[14]: True
+
+In [15]: change_ordering(block_dp_asc)
+
+In [16]: x(0)>x(1)
+Out[16]: False
+
+In [17]: x(0)>y(0)
+Out[17]: False
+
+In [18]: x(0)>x(1)*x(2)
+Out[18]: False
+
+In [19]: append_ring_block(10)
+
+In [20]: x(0)>y(0)
+Out[20]: True
+
+In [21]: x(0)>y(0)*y(1)
+Out[21]: True
 \end{verbatim}
 In this example, we have an ordering composed of three blocks, the first with ten variables, the second contains the $x(10), \ldots x(19)$ (per default indices start at 0).
 \subsection{Arithmetic}
