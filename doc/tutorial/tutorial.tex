@@ -246,7 +246,7 @@ x(1)*x(2)
 x(2)
 x(0)
 \end{verbatim}
-
+%
 This is a nontrivial functionality, as the natural order of paths in ZDDs is lexicographical.
 
 
@@ -339,7 +339,7 @@ Important options are the following:
     \item \verb|linear_algebra_in_last_block|, this affects the last block of block orderings and degree orderings. If it is set to \pythonconstant{True} linear algebra takes affect in this block.
     \item \verb|selection_size|, maximum number of polynomials for parallel reductions
     \item \verb|prot|, turn off or on the protocol
-    \item \verb|red_tail|, tail reductions in intermediate polynomials, this options effects mainly heuristics. The reducedness of the output polynomials can only be guarantied by the option \verb|redsb|
+    \item \verb|red_tail|, tail reductions in intermediate polynomials, this options affects mainly heuristics. The reducedness of the output polynomials can only be guaranteed by the option \verb|redsb|
     \item \verb|minsb|, return a minimal \Groebner basis
     \item \verb|redsb|, return a reduced \Groebner basis (minimal and all elements are tail reduced)
 \end{itemize}
@@ -727,11 +727,11 @@ In \PolyBoRi we have default file format and tools, which read the files and gen
 
 The format is a normal Python-file with a few exceptions:
 \begin{itemize}
-    \item It contains a ring declaration, and after that a list of polynomials called \functionname{ideal}.
-    \item Most \PolyBoRi standard importants are done by default
-    \item The second parameter for the ring declaration (the \functionname{globals()} dictionary) can be ommitted
+    \item It contains a ring declaration, and after this a list of polynomials called \functionname{ideal}.
+    \item Most \PolyBoRi standard importants are done by default.
+    \item The second parameter for the ring declaration (the \functionname{globals()} dictionary) can be omitted.
     \item The polynomial system \functionname{ideal} is supposed to be the main data.
-    Usually we calculate a \Groebner basis of it
+    Usually we calculate a \Groebner basis of it.
 \end{itemize}
 \begin{verbatim}
 declare_ring([Block("x",4, reverse=False)])
@@ -739,9 +739,9 @@ ideal=[
 x(1)+x(3),
 x(0)+x(1)*x(2)]  
 \end{verbatim}
-
-The data file can be loaded using the
-
+%
+The data file can be loaded using the following commands.
+%
 \begin{verbatim}
 In [1]: from polybori.gbrefs import load_file
 
