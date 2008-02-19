@@ -326,8 +326,8 @@ def groebner_basis(I, faugere=False,  coding=False,
     if unique_ideal_generator:
         prod=1
         for p in I:
-            prod=p*prod
-        I=[prod]
+            prod=(p+1)*prod
+        I=[prod+Polynomial(1)]
     if gauss_on_linear_first:
         I=gauss_on_linear(I)
     import nf
