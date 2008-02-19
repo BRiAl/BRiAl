@@ -1,7 +1,7 @@
 BuildRequires: scons boost-devel gcc python doxygen
 
 Requires: python >= 2.4
-Requires: ipython >= 0.6
+Requires: IPython >= 0.6
 Requires: boost >= 1.33
 
 Summary: Framework for Boolean Rings
@@ -30,7 +30,7 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %setup -q
 
 %build
-scons -j 5 .
+scons -j 5 prepare-install
 
 %install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
@@ -55,6 +55,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+# $Log$
+# Revision 1.2  2008/02/19 14:06:40  dreyer
+# Fix: IPython package name; better install target
+#
 * Wed Feb 13 2008 Alexander Dreyer <dreyer@itwm.fhg.de> - 
 - Initial build.
 
