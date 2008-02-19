@@ -802,7 +802,7 @@ if rpm_generation:
 
 def FinalizePermissions(targets, perm):
     for src in targets:
-        env.AddPostAction(file, Chmod(str(file), perm))
+        env.AddPostAction(src, Chmod(str(src), perm))
     return targets
 
 def FinalizeExecs(targets):
@@ -854,8 +854,12 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Executables and shared libraries to be installed
     pyfiles = []
     for instfile in dynamic_modules :
-        pyfiles += FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
+        installedfile = InstPyPath(relpath(pyroot, instfile.path))
+        pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
+    for file in pyfiles:
+        print file.path
+    
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
             
@@ -904,7 +908,9 @@ if 'install' in COMMAND_LINE_TARGETS:
         FinalizeNonExecs(GeneratePyc(pyfiles))
 
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
-    
+    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstExecPath(),env),
+                                      env['PYINSTALLPREFIX'])
+        
     for instfile in [IPBPath('ipythonrc-polybori') ] :
         FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))
       
@@ -916,3 +922,4 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', ipboribin)
 
 env.Alias('prepare-devel', devellibs)
+env.Alias('prepare-install', [pyroot, 'doc'])

@@ -12,6 +12,9 @@
 # @version \$Id$
 #
 # $Log$
+# Revision 1.9  2008/02/19 14:07:19  dreyer
+# Fix: rpm-installation issues (paths)
+#
 # Revision 1.8  2007/12/13 14:01:06  bricken
 # + just import polybori
 #
@@ -70,7 +73,7 @@ include ipythonrc
 execute from sys import path
 
 # The following string may be changed by install. If not installed, use default.
-execute pyroot = '$PYINSTALLPREFIX'
+execute pyroot = '$RELATIVEPYPREFIX'
 execute if pyroot[0] == '$': pyroot = os_path.join(pbdir, "pyroot")
 execute path.append(pyroot)
 
