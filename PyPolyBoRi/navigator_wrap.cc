@@ -44,5 +44,5 @@ void export_nav(){
   .def("valid", &CCuddNavigator::isValid);
   def("one", &BooleEnv::one);
   def("zero", &BooleEnv::zero);
-  def("nVars", &BooleEnv::nVariables);
+  def("number_of_variables", &BooleEnv::nVariables);
 }
