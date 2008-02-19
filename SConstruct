@@ -535,8 +535,8 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec"""),
-           DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
+           .kprof.html .rpm .spec """),
+           DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp SOURCES"),
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
 
