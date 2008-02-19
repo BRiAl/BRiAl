@@ -181,8 +181,6 @@ x(2)
 
 In [4]: change_ordering(dp_asc)
 
-In [5]: 
-
 In [5]: for t in f:
     print t
 
@@ -282,6 +280,9 @@ Important options are the following:
     \item \verb|linear_algebra_in_last_block|, this affects the last block of block orderings and degree orderings. If it is set to \pythonconstant{True} linear algebra takes affect in this block.
     \item \verb|selection_size|, maximum number of polynomials for parallel reductions
     \item \verb|prot|, turn off or on the protocol
+    \item \verb|red_tail|, tail reductions in intermediate polynomials, this options effects mainly heuristics. The reducedness of the output polynomials can only be guarantied by the option \verb|redsb|
+    \item \verb|minsb|, return a minimal \Groebner basis
+    \item \verb|redsb|, return a reduced \Groebner basis (minimal and all elements are tail reduced)
 \end{itemize}
 \section{How to program efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
