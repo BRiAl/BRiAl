@@ -1,6 +1,12 @@
 # Emacs edit mode for this file is -*- python -*-
 #$Id$
 opts = Options('custom.py')
+
+# Some hard-coded settings
+pboriname = 'PolyBoRi'
+pboriversion = "0.2"
+pborirelease = "rc2"
+
 import tarfile
 
 import sys
@@ -27,6 +33,9 @@ class PathJoiner(object):
 
 DataPath = PathJoiner(TestsPath('py/data'))
 
+RPMPath = PathJoiner('pkgs/rpm')
+SpecsPath = PathJoiner(RPMPath('SPECS'))
+                      
 # Split lists separated by colons and whitespaces
 def SplitColonSep(arg):
     result = []
@@ -50,8 +59,12 @@ import os
 
 distribute = 'distribute' in COMMAND_LINE_TARGETS
 
+generate_rpm = 'rpm' in COMMAND_LINE_TARGETS
+generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
+rpm_generation = generate_rpm or generate_srpm
+
 DefaultBuild = Default
-if distribute:
+if distribute or rpm_generation :
     def DefaultBuild(arg):
         return arg
 
@@ -155,9 +168,12 @@ cache_opts_file.close()
 
 
 # todo: More generic?
-#machtype =""# os.environ['MACHTYPE']
-IS_x64 = (2**32).__class__==int#((machtype == "x86_64") | (machtype == "ia64"))
+IS_x64 = (2**32).__class__==int
 
+try:
+    machtype = os.environ['MACHTYPE']
+except KeyError:
+    machtype = 'undefined'
 
 
 class PythonConfig(object):
@@ -523,33 +539,32 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
-pboriversion = "0.2"
 
-if distribute:
-    srcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
+if distribute or rpm_generation :
+    allsrcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular"""):
-        srcs.append(env.Dir(dirname))
+        allsrcs.append(env.Dir(dirname))
 
     # Testsuite is not distributed completely
-    srcs += [TestsPath('execsuite')]
-    srcs += glob(TestsPath('py/*.py'))
+    allsrcs += [TestsPath('execsuite')]
+    allsrcs += glob(TestsPath('py/*.py'))
 
     for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
     rtpblocks.py runstas1.py rundummy.py specialsets2.py"""):
         for file in glob(TestsPath('py', exclsrc)):
-            srcs.remove(file)
+            allsrcs.remove(file)
         
     for dirname in Split("src ref"):
-        srcs.append(env.Dir(TestsPath(dirname)))
+        allsrcs.append(env.Dir(TestsPath(dirname)))
 
     # doc is not distributed completely
-    srcs += [ DocPath(src) for src in Split("""doxygen.conf index.html.in
+    allsrcs += [ DocPath(src) for src in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex python/genpythondoc.py""") ]
-    srcs.append(env.Dir(DocPath('images')))
+    allsrcs.append(env.Dir(DocPath('images')))
 
-    
-    presrcdistri = env.DistTar("PolyBoRi", srcs)
+if distribute:    
+    presrcdistri = env.DistTar("PolyBoRi", allsrcs)
     (srcdistrname, srcdistrext1) = path.splitext(str(presrcdistri[0]))
     (srcdistrname, srcdistrext) = path.splitext(srcdistrname)
     srcdistrext += srcdistrext1
@@ -716,6 +731,37 @@ env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h,
                      'SubstInstallAs': substinstbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
+
+
+def spec_builder(target, source, env):
+
+    env['PBVERSION'] = pboriversion
+    env['PBRELEASE'] = pborirelease
+    substitute_install(target, source, env)
+    return None
+
+specbld = Builder(action = spec_builder)
+
+def rpmemitter(target, source, env):
+    target = [RPMPath('RPMS', machtype, target[0].name + '.' +machtype+ '.rpm')]
+    return (target, source)
+
+def srpmemitter(target, source, env):
+    target = [RPMPath('SRPMS', target[0].name + '.src.rpm')]
+    return (target, source)   
+    
+def generate_rpmbuilder(rpmopts, emitt = rpmemitter):
+    return Builder(action = "rpmbuild " + rpmopts + " --define='_topdir " +
+                   Dir(RPMPath()).abspath +  "' $SOURCE", emitter = emitt)
+
+srpmbld  = generate_rpmbuilder('-bs', srpmemitter)
+rpmbld  = generate_rpmbuilder('-bb', rpmemitter)
+
+env.Append(BUILDERS={'SpecBuilder': specbld,
+                     'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld})
+
+
+
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
                        DocPath('tutorial/tutorial.tex'))
@@ -724,6 +770,29 @@ env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
     env.Dir('Cudd/cudd/doc')])  
 
+pbrpmname = pboriname + '-' + pboriversion + "-" + pborirelease 
+
+if rpm_generation:
+    rpmsrcs = env.DistTar(RPMPath('SOURCES', "PolyBoRi-" + pboriversion),
+                          allsrcs)
+
+    pbspec = env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
+                             SpecsPath('PolyBoRi.spec.in'))
+
+    def correctgid(target, source, env):
+        os.chown(target[0].path, -1, os.getgid())
+        
+    env.AddPostAction(pbspec, correctgid)
+
+    env.AlwaysBuild(pbspec)
+    
+    pbsrpm = env.SRPMBuilder(RPMPath('SRPMS', pbrpmname),
+                             pbspec + rpmsrcs)
+    pbrpm = env.RPMBuilder(RPMPath('RPMS', pbrpmname ),
+                           pbspec + rpmsrcs)
+
+    env.Alias('srpm', pbsrpm)
+    env.Alias('rpm', pbrpm)
 
 
 def FinalizePermissions(targets, perm):
