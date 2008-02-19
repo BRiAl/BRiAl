@@ -773,14 +773,17 @@ env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
 pbrpmname = pboriname + '-' + pboriversion + "-" + pborirelease 
 
 if rpm_generation:
+    # Some file servers use invalid group-ids, so change to current gid
+    def correctgid(target, source, env):
+        os.chown(target[0].path, -1, os.getgid())
+
     rpmsrcs = env.DistTar(RPMPath('SOURCES', "PolyBoRi-" + pboriversion),
                           allsrcs)
-
+    env.AddPostAction(rpmsrcs, correctgid)
+    
     pbspec = env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
                              SpecsPath('PolyBoRi.spec.in'))
 
-    def correctgid(target, source, env):
-        os.chown(target[0].path, -1, os.getgid())
         
     env.AddPostAction(pbspec, correctgid)
 
@@ -788,9 +791,11 @@ if rpm_generation:
     
     pbsrpm = env.SRPMBuilder(RPMPath('SRPMS', pbrpmname),
                              pbspec + rpmsrcs)
+    env.AlwaysBuild(pbsrpm)
     pbrpm = env.RPMBuilder(RPMPath('RPMS', pbrpmname ),
                            pbspec + rpmsrcs)
 
+    env.AlwaysBuild(pbrpm)
     env.Alias('srpm', pbsrpm)
     env.Alias('rpm', pbrpm)
 
