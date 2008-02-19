@@ -535,7 +535,7 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html"""),
+           .kprof.html .rpm .spec"""),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp"),
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
@@ -543,7 +543,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 if distribute or rpm_generation :
     allsrcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
-    PyPolyBoRi pyroot Singular"""):
+    PyPolyBoRi pyroot Singular pkgs"""):
         allsrcs.append(env.Dir(dirname))
 
     # Testsuite is not distributed completely
