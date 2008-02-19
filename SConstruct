@@ -795,6 +795,11 @@ if rpm_generation:
     pbrpm = env.RPMBuilder(RPMPath('RPMS', pbrpmname ),
                            pbspec + rpmsrcs)
 
+    def provide_builddir(target, source, env):
+        if not path.exists(RPMPath('BUILD')):
+            Execute(Mkdir(RPMPath('BUILD')))
+    
+    env.AddPreAction(pbrpm, provide_builddir)
     env.AlwaysBuild(pbrpm)
     env.Alias('srpm', pbsrpm)
     env.Alias('rpm', pbrpm)
