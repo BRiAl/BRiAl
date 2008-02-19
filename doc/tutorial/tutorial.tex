@@ -100,12 +100,51 @@ at the command line prompt.
 
 
 In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
+
+\subsection{Ring Declarations}
+While in ipbori usually a standard ring is predefined,
+it is possible to have more advanced ring declarations.
+The \verb|declare_ring|-function takes two arguments.
+The first argument is a list of variables or blocks or variables, and the second is a dictionary where the ring and the variable declarations are written to. The ring always get the name \functionname{r} in that dictionary (the best choice is to use the dictionary of global variables). In addition to that the ring is returned.
+\paragraph{Example}
+\begin{verbatim}
+In [1]: declare_ring([Block("x",2),Block("y",3)],globals())
+Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
+
+In [2]: r
+Out[2]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
+
+
+In [3]: [Variable(i) for i in xrange(r.nVars())]
+Out[3]: [x(0), x(1), y(0), y(1), y(2)]
+
+In [4]: declare_ring([AlternatingBlock(["x","y"],2)],globals())
+Out[4]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2370b70>
+
+
+
+In [5]: [Variable(i) for i in xrange(r.nVars())]
+Out[5]: [x(0), y(0), x(1), y(1)]
+
+
+In [6]: [Variable(i) for i in xrange(r.nVars())]
+Out[6]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
+
+In [7]: declare_ring(["x","y","z"],globals())
+Out[7]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
+
+In [8]: [Variable(i) for i in xrange(r.nVars())]
+Out[8]: [x, y, z]  
+\end{verbatim}
+
+
+
 \subsection{Ordering}
 The monomial ordering can be changed by calling
 \functionname{change\_ordering}(\functionname{Ordering.code}), where \functionname{code} can be either \functionname{lp} (lexicographical ordering), \functionname{dlex} (degree lexicographical ordering), \functionname{dp\_asc} (degree reverse lexicographical ordering with ascending variable ordering), \functionname{block\_dlex} or \functionname{block\_dp\_asc} (for ordering composed out of blocks in the corresponding ordering). When using block ordering, after changing to that ordering, blocks have to be defined using the \functionname{append\_ring\_block} function.
 
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
-\paragraph{Example: Degree reverse lexicographical ordering}
+\paragraph{Example}
 \begin{verbatim}
 In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
 
@@ -165,6 +204,25 @@ Out[21]: True
 \end{verbatim}
 In this example, we have an ordering composed of two blocks, the first with ten variables, the second contains the rest of variables $y(0), \ldots x(9)$ (per default indices start at 0).
 
+Even, if there is a natural block structure, like in this example, we have to explicit call \verb|append_ring_block| in a block ordering to set the start indices of these blocks.
+
+This can be simplified using the variable \verb|block_start_hints| created by our ring declaration.
+
+\begin{verbatim}
+In [1]: declare_ring([Block("x",2),Block("y",3),Block("z",2)],globals())
+Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
+
+In [2]: change_ordering(block_dp_asc)
+
+In [3]: for b in block_start_hints:
+   ...:     append_ring_block(b)
+   ...:     
+   ...:     
+
+In [4]: block_start_hints
+Out[4]: [2, 5]
+\end{verbatim}
+
 Another important feature in \PolyBoRi is the ability to iterate over a polynomial in the current monomial ordering.
 
 \begin{verbatim}
@@ -190,6 +248,7 @@ x(0)
 \end{verbatim}
 
 This is a nontrivial functionality, as the natural order of paths in ZDDs is lexicographical.
+
 
 \subsection{Arithmetic}
 Basic arithmetic is provided in the domain of Boolean polynomials. Boolean Polynomial polynomials are polynomials over $\Ztwo$ where the maximal degree per variable is one.
@@ -660,6 +719,36 @@ Out[5]: [x(3)*x(4) + 1]
 
 In [6]: f(x(1)+x(2))
 Out[6]: x(3)*x(4) + 1
+\end{verbatim}
+
+\section{Storing polynomial data in a file}
+
+In \PolyBoRi we have default file format and tools, which read the files and generate references for our test suite.
+
+The format is a normal Python-file with a few exceptions:
+\begin{itemize}
+    \item It contains a ring declaration, and after that a list of polynomials called \functionname{ideal}.
+    \item Most \PolyBoRi standard importants are done by default
+    \item The second parameter for the ring declaration (the \functionname{globals())} dictionary) can be ommitted
+    \item The polynomial system \functionname{ideal} is supposed to be the main data.
+    Usually we calculate a \Groebner basis of it
+\end{itemize}
+\begin{verbatim}
+declare_ring([Block("x",4, reverse=False)])
+ideal=[
+x(1)+x(3),
+x(0)+x(1)*x(2)]  
+\end{verbatim}
+
+The data file can be loaded using the
+
+\begin{verbatim}
+In [1]: from polybori.gbrefs import load_file
+
+In [2]: data=load_file("data-sample.py")
+
+In [3]: data.ideal
+Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \end{verbatim}
 \bibliographystyle{plain}
 
