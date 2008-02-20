@@ -10,7 +10,7 @@
 #include <set>
 #include "nf.h"
 BEGIN_NAMESPACE_PBORIGB
-
+static base_generator_type generator(static_cast<unsigned int>(std::time(0)));
 
 MonomialSet random_set_using_generator(const Monomial& variables, unsigned int len, bool_gen_type& bit_gen){
     Exponent var_exp=variables.exp();
@@ -35,7 +35,7 @@ MonomialSet random_set_using_generator(const Monomial& variables, unsigned int l
 }
 MonomialSet random_set(const Monomial& variables, unsigned int len){
     
-    base_generator_type generator(static_cast<unsigned int>(std::time(0)));
+    
     bool_gen_type bit_gen(generator,distribution_type(0,1));
     return random_set_using_generator(variables,len,bit_gen);
 }
