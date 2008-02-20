@@ -596,10 +596,10 @@ def subst(f,x,c):
        #c==1
        return Polynomial(s.subset1(i))+Polynomial(s.subset0(i))    
 \end{verbatim}
-\subsubsection{Solution 2: Linear Lead rewriting systems}
+\subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
 On the other hand, this linear rewriting forms a rewriting problem and can be solved by calculating a normal form against a Gröbner basis.
 In this case the system is $\{x+c\} \cup \{\explfieldequations\}$ (we assume that $x=x_i$ for some $i$).
-For this special case, that all Boolean polynomials have pairwise different linear leading terms,
+For this special case, that all Boolean polynomials have pairwise different linear leading terms w.\,r.\,t. lexicographical ordering,
 there exist special functions.
 
 First, we encode the system $\{x+c\}$ into one diagram
@@ -706,7 +706,7 @@ This is quite fast, but suboptimal, because only the inner functions (additions)
 %
 Furthermore, it contradicts the usual ZDD recursion and generates complex intermediate results.
 
-\subsubsection{Solution 2: Linear Lead rewriting systems}
+\subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
 The same problem can also be tackled by the linear-lead routines. In the case, when
 all variables are substituted by  constants, all intermediate results
 (generated during \verb|ll_red_nf|/\verb|ll_red_nf_noredsb|) are constant.
@@ -725,11 +725,11 @@ reduced Gröbner basis. Therefore, you may just call
 ll_red_nf(f,d)   
 \end{verbatim}
 %
-It is assumed, that this is the fasted way.
+This is assumed to be the fastest way.
 %
 
 
-\subsection{Generalization: Linear Lexicographical Lead Rewriting Systems}
+\subsection{General Linear Lexicographical Lead Rewriting Systems}
 \label{linear-lexicographical-lead-rewriting-systems}
 We used \verb|ll_red_nf|/\verb|ll_red_nf_noredsb| functions on rewriting systems, where the tails of the polynomials was constant and the leading term linear.
 They can be used in a more general setting (which allows to eliminate auxiliary variable).
