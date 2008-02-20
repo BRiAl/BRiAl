@@ -13,6 +13,7 @@
 % Setup for fullpage use
 \usepackage{fullpage}
 \usepackage{amssymb}
+\usepackage{amsmath}
 % Uncomment some of the following if you use the features
 %
 % Running Headers and footers
@@ -43,6 +44,7 @@
 \usepackage{graphicx}
 \fi
 \newenvironment{code}{\begin{verbatim}}{\end{verbatim}}
+\newcommand{\set}[1]{\{#1\}}
 \newcommand{\PolyBoRi}{{\sc PolyBoRi}\xspace}
 \newcommand{\Groebner}{Gröbner\xspace}
 \newcommand{\CUDD}{{CUDD}\xspace}
@@ -50,11 +52,12 @@
 \newcommand{\functionname}[1]{\textit{#1}\xspace}
 \newcommand{\pythonconstant}[1]{\textit{#1}\xspace}
 \newcommand{\explfieldequations}{{x_1^2+x_1,\ldots,x_n^2+x_n}}
+\newcommand{\Ztwo}{\mathbb{Z}_2}
 \providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
 \newcounter{thm}
 \newtheorem{definition}[thm]{Definition}
 
-\newcommand{\Ztwo}{\mathbb{Z}_2}
+
 %\newif\ifpdf
 %\ifx\pdfoutput\undefined
 %\pdffalse % we are not running PDFLaTeX
@@ -202,7 +205,7 @@ Out[20]: True
 In [21]: x(0)>y(0)*y(1)
 Out[21]: True
 \end{verbatim}
-In this example, we have an ordering composed of two blocks, the first with ten variables, the second contains the rest of variables $y(0), \ldots x(9)$ (per default indices start at 0).
+In this example, we have an ordering composed of two blocks, the first with ten variables, the second contains the rest of variables $y(0), \ldots y(9)$ (per default indices start at 0).
 
 Even, if there is a natural block structure, like in this example, we have to explicit call \verb|append_ring_block| in a block ordering to set the start indices of these blocks.
 
@@ -222,6 +225,7 @@ In [3]: for b in block_start_hints:
 In [4]: block_start_hints
 Out[4]: [2, 5]
 \end{verbatim}
+
 
 Another important feature in \PolyBoRi is the ability to iterate over a polynomial in the current monomial ordering.
 
@@ -343,6 +347,55 @@ Important options are the following:
     \item \verb|minsb|, return a minimal \Groebner basis
     \item \verb|redsb|, return a reduced \Groebner basis (minimal and all elements are tail reduced)
 \end{itemize}
+
+\subsubsection{Elimination of variables}
+
+Given Boolean generators $G$ of an ideal $I\subset \Ztwo[x_1,\ldots,x_n,y_1,\ldots,y_m]/\langle x_1^2+x_1,\ldots,x_n^2+x_n,y_1,\ldots,y_m \rangle$
+we would like to compute a generating system $H$ of Boolean polynomials, where $$\langle H\rangle=\set{p\in I\vert p \mbox{ can be represented by a (Boolean) polynomial in } \Ztwo[y_1,\ldots,y_m]}.$$
+ % (fold)
+
+This can be done as in the classical case despite the field equations using an elimination ordering for $x_1, \ldots, x_n$
+
+\begin{definition}[Elimination orderings]
+  Let $R=\Ztwo[x_1,\ldots, x_n, y_1, \ldots y_m]$. An ordering~``$>$'' is called an \emph{elimination ordering} of $x_1, \ldots, x_n$, if $x_i>t$ 
+  for every monomial~$t$ in~$K[y_1, \ldots, y_m]$ and every $i=1,\ldots,n$. 
+\end{definition}
+\paragraph{Example} % (fold)
+\label{par:example-elimination}
+\begin{verbatim}
+In [1]: declare_ring([Block("x",3),Block("y",3)],globals())
+Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
+
+In [2]: change_ordering(block_dp_asc)
+
+In [3]: for b in block_start_hints:
+   ...:     append_ring_block(b)
+   ...:     
+   ...:     
+
+In [4]: G=[x(0)*x(2)*y(0)*y(1) + y(1)*y(2) + y(1),
+   ...:  x(1)*x(2)*y(0)*y(2) + x(0)*x(1)*y(2) + y(1),
+   ...:  x(0)*x(1)*x(2)*y(1) + x(1) + y(1)*y(2)]
+
+In [5]: H=groebner_basis(G)
+
+In [6]: H
+Out[6]: 
+[x(0)*y(0)*y(1) + x(0)*y(1) + y(0)*y(1) + y(1),
+ x(1) + y(1),
+ x(2)*y(1) + x(0)*y(1) + y(1),
+ y(1)*y(2) + y(1)]
+
+In [7]: [p for p in H if p.set().navigation().value()>=y(0).index()]
+Out[7]: [y(1)*y(2) + y(1)]
+\end{verbatim}
+
+For special cases elimination (depending on the formulation of the equations) elimination of (auxiliary) variables can be done much faster as can be seen in \ref{linear-lexicographical-lead-rewriting-systems}.
+% paragraph example (end)
+
+
+% subsection  (end)$
+
 \section{How to program efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
 This awareness can be seen on several levels
@@ -677,7 +730,7 @@ It is assumed, that this is the fasted way.
 
 
 \subsection{Generalization: Linear Lexicographical Lead Rewriting Systems}
-
+\label{linear-lexicographical-lead-rewriting-systems}
 We used \verb|ll_red_nf|/\verb|ll_red_nf_noredsb| functions on rewriting systems, where the tails of the polynomials was constant and the leading term linear.
 They can be used in a more general setting (which allows to eliminate auxiliary variable).
 \begin{definition}
