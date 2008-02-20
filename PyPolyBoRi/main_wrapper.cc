@@ -1,4 +1,4 @@
-/*  Copyright (c) 2005-2007 by The PolyBoRi Team */
+/*  Copyright (c) 2005-2007 by The #+PolyBoRi Team */
 
 #include <boost/python.hpp>
 #include <iostream>
@@ -98,24 +98,35 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   def("get_order_code",&BooleEnv::getOrderCode);  
   def("print_ring_info", &BooleEnv::printInfo);
 
-  boost::python::class_<BoolePolyRing>("Ring")
+  boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring")
     //.def(boost::python::init <>())
-    .def("set",&BooleEnv::set)
+    .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
-    .def(boost::python::init <BoolePolyRing::size_type, int>())
+    .def(boost::python::init <BoolePolyRing::size_type, int>(
+         "Construct a Boolean polynomial ring with the following parameters:\n\
+            n -- number of variables (integer)\n\
+            order -- term ordering (optinal), one of the following values \n\
+                lp: lexicographical ordering (default)\n\
+                dlex: degree lexicographical ordering\n\
+                dp_asc: degree reverse lexicographical ordering \
+with inverted variable order\n\
+                block_dp_asc: Block ordering with blocks consisting of dp_asc\n\
+                block_dlex: Block ordering with blocks consisting of dlex\n") )
 //#ifdef WRAP_ALSO_CUUD
-  .def("var", ring_var)
-  .def("one", ring_one)
-  .def("zero", ring_zero)
+    .def("var", ring_var, "i-th ring Variable")
+    .def("one", ring_one, "Polynomial one")
+    .def("zero", ring_zero, "Polynomial zero")
 //#endif
-  .def("nVars", &BoolePolyRing::nVariables);
+    .def("nVars", &BoolePolyRing::nVariables, "Number of ring variables");
+  
+  def("append_ring_block", &BooleEnv::appendBlock, 
+      "Append integer, which marks start of next block (for block orderings)");
+  def("have_degree_order", have_degree_order, 
+      "Determines, whether ring ordering is a degree ordering");
 
-  def("append_ring_block", &BooleEnv::appendBlock);
-  def("have_degree_order", have_degree_order);
-
-  boost::python::class_<BooleVariable>("Variable")
+  boost::python::class_<BooleVariable>("Variable", "Boolean Variable")
   .def(init<const BooleVariable &>())
-  .def(init<BooleVariable::idx_type>())
+  .def(init<BooleVariable::idx_type>("Get Variable of given index"))
   .def(self*self)
   .def(self*BooleMonomial())
   .def(BooleMonomial()*self)
@@ -131,8 +142,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   .def("__repr__", streamable_as_str<BooleVariable>)
   .def("__hash__", &BooleVariable::index)
   .def("__pow__", var_power)
-  .def("index", &BooleVariable::index)
-  .def("set",&BooleVariable::set)
+    .def("index", &BooleVariable::index, "Variable position in the ring")
+    .def("set",&BooleVariable::set, "Convert to BooleSet")
  .def("toStdOut", print_variable);
   export_strategy();
   export_monomial();

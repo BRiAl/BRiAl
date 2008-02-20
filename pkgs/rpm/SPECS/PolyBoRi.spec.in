@@ -1,4 +1,4 @@
-BuildRequires: scons boost-devel gcc python doxygen
+BuildRequires: scons boost-devel gcc python doxygen latex2html
 
 Requires: python >= 2.4
 Requires: IPython >= 0.6
@@ -26,6 +26,13 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 
 %description
+PolyBoRi is a special purpose computer algebra system for computations in
+Boolean Rings. The core is a C++ library, which provides high-level data types
+for Boolean polynomials and related structures. As a unique approach, binary
+decision diagrams are used as internal storage type for polynomial
+structures. On top of this, we provide a Python interface for parsing of complex
+polynomial systems, as well as for sophisticated and extendable strategies for
+Groebner base computation.
 
 %prep
 %setup -q
@@ -58,6 +65,9 @@ rm -rf $RPM_BUILD_ROOT
 
 %changelog
 # $Log$
+# Revision 1.4  2008/02/20 16:08:52  dreyer
+# ADD: docstrings for most PyPolyBoRi classes and functions
+#
 # Revision 1.3  2008/02/19 16:20:15  dreyer
 # CHANGE: rpm install python files to site
 #

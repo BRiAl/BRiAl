@@ -32,17 +32,21 @@ static CCuddNavigator::value_type value(const CCuddNavigator & nav){
 void export_nav(){
   boost::python::class_<CCuddNavigator>("CCuddNavigator")
   .def(init<>())
-  .def(init<const CCuddNavigator &>())
-  .def("thenBranch", then_branch)
-  .def("elseBranch", else_branch)
+  .def(init<const CCuddNavigator &>("Iterator-like object, which allows to \
+navigate through ZDD-based data structures,"))
+  .def("thenBranch", then_branch, "Following then-edge of thr root node")
+  .def("elseBranch", else_branch, "Following else-edge of thr root node")
   .def(self==self)
   .def(self!=self)
   .def("value",value)
-  .def("constant", &CCuddNavigator::isConstant)
-  .def("terminalOne", &CCuddNavigator::isTerminated)
-  .def("__hash__", &CCuddNavigator::hash)
-  .def("valid", &CCuddNavigator::isValid);
-  def("one", &BooleEnv::one);
-  def("zero", &BooleEnv::zero);
-  def("number_of_variables", &BooleEnv::nVariables);
+  .def("constant", &CCuddNavigator::isConstant, "Terminal node test")
+    .def("terminalOne", &CCuddNavigator::isTerminated, "Check for terminal 1")
+  .def("__hash__", &CCuddNavigator::hash, "Fast hash code, based on the \
+pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
+  .def("valid", &CCuddNavigator::isValid, 
+       "If navigator is constant, this checks for terminal one");
+  def("one", &BooleEnv::one, "Constant one of the active ring");
+  def("zero", &BooleEnv::zero, "Constant zero of the active ring");
+  def("number_of_variables", &BooleEnv::nVariables, 
+      "Number of variables in the active ring");
 }

@@ -43,15 +43,16 @@ void export_monomial(){
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
 
   bool  (BooleMonomial::*reducibleBy)(const BooleMonomial&) const = &BooleMonomial::reducibleBy;
-  boost::python::class_<BooleMonomial>("Monomial")
-  .def(init<>())
+  boost::python::class_<BooleMonomial>("Monomial", "Boolean monomial")
+  .def(init<>("Construct Boolean monomial"))
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
   .def(boost::python::init<bool>())
   .def("__iter__", range(&BooleMonomial::begin, &BooleMonomial::end))
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
-  .def("__hash__", &BooleMonomial::hash)
-  .def("stableHash", &BooleMonomial::stableHash)
+  .def("__hash__", &BooleMonomial::hash, "Fast hash code, based on the \
+pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
+  .def("stableHash", &BooleMonomial::stableHash, "Reproducible hash code")
   //.def("__len__", &BooleMonomial::length)
   //.def(self+=self)
   .def(self*=self)
@@ -81,21 +82,23 @@ void export_monomial(){
   
   //.def("isOne", &BooleMonomial::isOne)
   
-  .def("deg", &BooleMonomial::deg)
-  .def("__len__", &BooleMonomial::deg)
-  .def("divisors", &BooleMonomial::divisors)
-  .def("multiples", &BooleMonomial::multiples)
+    .def("deg", &BooleMonomial::deg, "Degree of the monomial")
+  .def("__len__", &BooleMonomial::deg, "Equivalent to deg")
+  .def("divisors", &BooleMonomial::divisors, 
+       "Return Boolean set consisting of all divisors of the monomial")
+  .def("multiples", &BooleMonomial::multiples, 
+       "Return Boolean set consisting of all multiples of the monomial")
   //.def("reducibleBy", &BooleMonomial::reducibleBy)
   .def("__str__", streamable_as_str<BooleMonomial>)
   .def("__repr__", streamable_as_str<BooleMonomial>)
   .def("__pow__",mon_power)
-  .def("divisors", &BooleMonomial::divisors)
+    //  .def("divisors", &BooleMonomial::divisors)
   //.def("lmDeg", &BooleMonomial::lmDeg)
 
   //.def("totalDegree", &BooleMonomial::totalDeg)
   //.def("diagram", diagram,return_internal_reference<1>());
-  .def("set", set)
-  .def("reducibleBy", reducibleBy);
+    .def("set", set, "Convert to BooleSet")
+    .def("reducibleBy", reducibleBy, "Test for reducibility");
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);
 
