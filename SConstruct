@@ -628,7 +628,31 @@ def cp_all(target, source, env):
 
     return None
 
+# Copy python docu from one directory to the other
+def cp_pydoc(target, source, env):
+
+    source = source[0].path
+    target = target[0].path
+    import re
+    patt = re.compile('/[^\"]*'+ pyroot, re.VERBOSE)
+
+    if not path.exists(target):
+        Execute(Mkdir(target))
+    showpath = relpath(target, env['PYINSTALLPREFIX']) +'/'
+
+    for file in glob(path.join(source, '*.html')):
+        if not path.isdir(file):
+            fcontent = open(file).read()
+            fcontent = patt.sub(r''+showpath, fcontent)
+
+            result = str(path.join(target, path.basename(file)))
+            open(result, "w").write(fcontent)
+
+    return None
+
+
 cp_recbld = Builder(action = cp_all)
+cp_pydocbld = Builder(action = cp_pydoc)
 
 symlinkbld = Builder(action = build_symlink)
 
@@ -728,7 +752,7 @@ def docu_emitter(target, source, env):
 masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h,
-                     'SubstInstallAs': substinstbld})
+                     'SubstInstallAs': substinstbld, 'CopyPyDoc':cp_pydocbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
 
@@ -862,8 +886,6 @@ if 'install' in COMMAND_LINE_TARGETS:
         installedfile = InstPyPath(relpath(pyroot, instfile.path))
         pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
-    for file in pyfiles:
-        print file.path
     
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
@@ -876,15 +898,11 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.Clean(cxxdocinst, cxxdocinst)
 
     # Copy python documentation
-    pydocuinst = env.CopyAll(env.Dir(InstDocPath('python')),
+    pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath('python')),
                              env.Dir(DocPath('python')))
-    pydocuinst += env.CopyAll(env.Dir(InstDocPath('python/dynamic')),
-                             env.Dir(DocPath('python/dynamic')))
 
     env.Depends(pydocuinst, pydocu)
     env.Clean(pydocuinst, pydocuinst)
-#    FinalizeNonExecs(env.Install(InstPath('doc/python'), pydocu))
-
 
     # Copy Cudd documentation
     env.CopyAll(env.Dir(InstDocPath('cudd')),

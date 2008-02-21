@@ -22,8 +22,8 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 %define pbori_eprefix %{_bindir}
 
 %define pbori_instdir %{_datadir}/%{name}
-%define pbori_docpath docs
-
+%define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
+%define pbori_tmpdoc docs
 
 %description
 PolyBoRi is a special purpose computer algebra system for computations in
@@ -45,9 +45,10 @@ scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
               PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
               INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
               PYPREFIX=%{pbori_pyprefix} \
-              DOCDIR=%{pbori_docpath} 
+              DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} 
 
-
+# rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
+%__mv $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -55,7 +56,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README LICENSE %{pbori_docpath}/*
+%doc README LICENSE %{pbori_tmpdoc}/*
+
 
 
 %attr(755, root, root) %{pbori_eprefix}/ipbori
@@ -63,8 +65,12 @@ rm -rf $RPM_BUILD_ROOT
 %{pbori_instdir}
 %{pbori_pyinstprefix}/polybori
 
+
 %changelog
 # $Log$
+# Revision 1.5  2008/02/21 15:52:24  dreyer
+# Fix: Use relative paths on installed pydoc documentation
+#
 # Revision 1.4  2008/02/20 16:08:52  dreyer
 # ADD: docstrings for most PyPolyBoRi classes and functions
 #
