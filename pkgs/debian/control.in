@@ -1,0 +1,12 @@
+Source: polybori
+Section: unkown
+Priority: optional
+Maintainer: Alexander Dreyer <adreyer@gmx.de>
+Build-Depends: debhelper (>= 4.1.16)
+Standards-Version: $PBVERSION.$PBRELEASE.0
+
+Package: polybori
+Architecture: any
+Depends:  python (>= 2.4)
+Description: huhu
+Version: $PBVERSION.$PBRELEASE
