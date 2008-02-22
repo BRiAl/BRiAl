@@ -176,6 +176,8 @@ cache_opts_file.close()
 # todo: More generic?
 IS_x64 = (2**32).__class__==int
 
+# todo: machtype does not deliver the correct value for rpm and deb
+# (only interesting for scons -c rpm|srpm|prepare-debian|deb)
 try:
     machtype = os.environ['MACHTYPE']
 except KeyError:
@@ -380,7 +382,8 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py coding.py memusage.py
                                heuristics.py gbcore.py interpolate.py
-                               PyPolyBoRi.py""")] 
+                               PyPolyBoRi.py __init__.py dynamic/__init__.py""")
+                               ] 
 
 # Currently all python modules are at place
 installable_python_modules = []
@@ -417,9 +420,9 @@ if HAVE_PYTHON_EXTENSION:
     # Define the dynamic python modules in pyroot
     dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
     documentable_python_modules += dynamic_modules
-    
+   
     DefaultBuild(dynamic_modules)
-
+    
     
     polybori_modules = PyRootPath("polybori")
     #DefaultBuild(env.Install(polybori_modules, pypb))
@@ -496,7 +499,9 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
     if have_pydoc:
         pydocu = env.PYTHONDOC(target=[DocPath('python/polybori.html'),
                                        DocPath('python/polybori.dynamic.html')],
-                               source = documentable_python_modules) 
+                               source = documentable_python_modules)
+        if env.GetOption('clean'):
+            env.Ignore(pydocu, dynamic_modules)
     #bld=Builder("cd")
 
     
@@ -863,9 +868,8 @@ if prepare_deb or generate_deb:
 
     env.AlwaysBuild(env.Alias('prepare-debian', srcdeb))
 
-    pbdeb = env.DebBuilder(path.join('..',
-                                     debname + '-' + pborirelease +'.i386.deb'),
-                           debsrc)
+    pbdeb = env.DebBuilder(path.join('..', debname + '-' + pborirelease + '.' +
+                                     machtype + '.deb'), debsrc)
     
     env.AlwaysBuild(env.Alias('deb', pbdeb))
     
@@ -929,7 +933,7 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     # Copy python documentation
     pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath('python')),
-                             env.Dir(DocPath('python')))
+                               env.Dir(DocPath('python')))
 
     env.Depends(pydocuinst, pydocu)
     env.Clean(pydocuinst, pydocuinst)
