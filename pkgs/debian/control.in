@@ -9,10 +9,10 @@ Package: polybori
 Architecture: any
 Depends:  python (>= 2.4) IPython (>= 0.6) boost (>= 1.33)
 Description: PolyBoRi is a computer algebra system for Boolean Rings. 
-The core is a C++ library, which provides high-level data types
-for Boolean polynomials and related structures. As a unique approach, binary
-decision diagrams are used as internal storage type for polynomial
-structures. On top of this, we provide a Python interface for parsing of complex
-polynomial systems, as well as for sophisticated and extendable strategies for
-Groebner base computation.
+  The core is a C++ library, which provides high-level data types
+  for Boolean polynomials and related structures. As a unique approach, binary
+  decision diagrams are used as internal storage type for polynomial
+  structures. On top of this, we provide a Python interface for parsing of 
+  complex polynomial systems, as well as for sophisticated and extendable
+  strategies for Groebner base computation.
 Version: $PBVERSION.$PBRELEASE

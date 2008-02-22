@@ -19,7 +19,7 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
-	# Add here commands to compile the package.
+# Add here commands to compile the package.
 	scons -j 5 prepare-install
 
 	touch build-stamp
@@ -29,7 +29,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp
 
-	# Add here commands to clean up after the build process.
+# Add here commands to clean up after the build process.
 	scons -c .
 
 	dh_clean
@@ -40,8 +40,11 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	# Add here commands to install the package into debian/gentoo.
-	scons install PREFIX=$(CURDIR)/debian/polybori
+# Add here commands to install the package into debian/polybori.
+# todo: PYINSTALLPREFIX PYPREFIX
+	scons install PREFIX=$(CURDIR)/debian/polybori/usr \
+		EPREFIX=$(CURDIR)/debian/polybori/usr/bin \
+		DOCDIR=$(CURDIR)/debian/polybori/usr/share/doc/PolyBoRi
 
 
 # Build architecture-independent files here.

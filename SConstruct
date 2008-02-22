@@ -853,17 +853,19 @@ def FinalizeNonExecs(targets):
     return FinalizePermissions(targets, 0644)
 
 if prepare_deb or generate_deb:
-    debname = "polybori_" + pboriversion
+    debname = "polybori-" + pboriversion
     debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
     debsrc += FinalizeExecs(env.SpecBuilder(DebInstPath('control'),
                                             DebPath('control.in')))
     debsrc += env.Install(DebInstPath(), DebPath('rules'))
                   
-    srcdeb = env.DistTar("polybori_" + pboriversion, allsrcs + debsrc)
+    srcdeb = env.DistTar(debname, allsrcs + debsrc)
 
     env.AlwaysBuild(env.Alias('prepare-debian', srcdeb))
 
-    pbdeb = env.DebBuilder(path.join('..', debname + '.i386.deb'), debsrc)
+    pbdeb = env.DebBuilder(path.join('..',
+                                     debname + '-' + pborirelease +'.i386.deb'),
+                           debsrc)
     
     env.AlwaysBuild(env.Alias('deb', pbdeb))
     
