@@ -1,8 +1,13 @@
 """The PolyBoRi package implements a framework for computations with Polynomials in Boolean Ring. 
 
-The core of PolyBoRi is a C++ library, which provides high-level data types for Boolean polynomials and monomials, exponent vectors, as well as for the underlying polynomial rings and subsets of the powerset of the Boolean variables. The description of the latter can be found in the description of the 'dynamic' submodule, as well as in the doxygen-based documentation.
+The core of PolyBoRi is a C++ library, which provides high-level data types for Boolean polynomials and monomials,
+exponent vectors, as well as for the underlying polynomial rings and subsets of the powerset of the Boolean variables.
+The description of the latter can be found in the description of the 'dynamic' submodule, as well as in the doxygen-based documentation.
 
-As a unique approach, binary decision diagrams are used as internal storage type for polynomial structures. On top of this C++-library we provide a Python interface. This allows parsing of complex polynomial systems, as well as sophisticated and extendable strategies for Groebner base computation. PolyBoRi features a powerful reference implementation for Groebner basis computation.
+As a unique approach, binary decision diagrams are used as internal storage type for polynomial structures.
+On top of this C++-library we provide a Python interface. This allows parsing of complex polynomial systems,
+as well as sophisticated and extendable strategies for Groebner base computation.
+PolyBoRi features a powerful reference implementation for Groebner basis computation.
 
 AUTHOR:
     The PolyBoRi Team, 2007-2008
