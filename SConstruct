@@ -5,7 +5,7 @@ opts = Options('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.2"
-pborirelease = "rc1"
+pborirelease = "0"
 
 import tarfile
 
@@ -33,6 +33,9 @@ class PathJoiner(object):
 
 DataPath = PathJoiner(TestsPath('py/data'))
 
+DebPath = PathJoiner('pkgs/debian')
+DebInstPath = PathJoiner('debian')
+
 RPMPath = PathJoiner('pkgs/rpm')
 SpecsPath = PathJoiner(RPMPath('SPECS'))
                       
@@ -59,12 +62,15 @@ import os
 
 distribute = 'distribute' in COMMAND_LINE_TARGETS
 
+prepare_deb = 'prepare-debian' in COMMAND_LINE_TARGETS
+generate_deb = 'deb' in COMMAND_LINE_TARGETS
+deb_generation = prepare_deb or generate_deb
 generate_rpm = 'rpm' in COMMAND_LINE_TARGETS
 generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
 rpm_generation = generate_rpm or generate_srpm
 
 DefaultBuild = Default
-if distribute or rpm_generation :
+if distribute or rpm_generation or deb_generation:
     def DefaultBuild(arg):
         return arg
 
@@ -540,7 +546,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
 
 
-if distribute or rpm_generation :
+if distribute or rpm_generation or deb_generation:
     allsrcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular pkgs"""):
@@ -781,8 +787,12 @@ def generate_rpmbuilder(rpmopts, emitt = rpmemitter):
 srpmbld  = generate_rpmbuilder('-bs', srpmemitter)
 rpmbld  = generate_rpmbuilder('-bb', rpmemitter)
 
+# debbuilder is very experimental, we ignore dependencies currently (-d)
+debbld = Builder(action = "dpkg-buildpackage -d -rfakeroot")
+    
 env.Append(BUILDERS={'SpecBuilder': specbld,
-                     'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld})
+                     'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld,
+                     'DebBuilder': debbld})
 
 
 
@@ -829,6 +839,8 @@ if rpm_generation:
     env.Alias('rpm', pbrpm)
 
 
+
+
 def FinalizePermissions(targets, perm):
     for src in targets:
         env.AddPostAction(src, Chmod(str(src), perm))
@@ -840,6 +852,22 @@ def FinalizeExecs(targets):
 def FinalizeNonExecs(targets):
     return FinalizePermissions(targets, 0644)
 
+if prepare_deb or generate_deb:
+    debname = "polybori_" + pboriversion
+    debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
+    debsrc += FinalizeExecs(env.SpecBuilder(DebInstPath('control'),
+                                            DebPath('control.in')))
+    debsrc += env.Install(DebInstPath(), DebPath('rules'))
+                  
+    srcdeb = env.DistTar("polybori_" + pboriversion, allsrcs + debsrc)
+
+    env.AlwaysBuild(env.Alias('prepare-debian', srcdeb))
+
+    pbdeb = env.DebBuilder(path.join('..', debname + '.i386.deb'), debsrc)
+    
+    env.AlwaysBuild(env.Alias('deb', pbdeb))
+    
+    
 
 def GeneratePyc(sources):
     results = []
