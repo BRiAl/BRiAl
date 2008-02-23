@@ -649,7 +649,8 @@ def cp_pydoc(target, source, env):
 
     if not path.exists(target):
         Execute(Mkdir(target))
-    showpath = relpath(target, env['PYINSTALLPREFIX']) +'/'
+    showpath = relpath(env.Dir(target).abspath,
+                       env.Dir(env['PYINSTALLPREFIX']).abspath) +'/'
 
     for file in glob(path.join(source, '*.html')):
         if not path.isdir(file):
