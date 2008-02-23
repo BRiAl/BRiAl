@@ -639,13 +639,13 @@ def cp_all(target, source, env):
 
     return None
 
-# Copy python docu from one directory to the other
+# Copy python docu from one directory to the other and correct paths to modules
 def cp_pydoc(target, source, env):
 
     source = source[0].path
     target = target[0].path
     import re
-    patt = re.compile('/[^\"]*'+ pyroot, re.VERBOSE)
+    patt = re.compile('(file:|)/[^\" ]*' + pyroot, re.VERBOSE)
 
     if not path.exists(target):
         Execute(Mkdir(target))
