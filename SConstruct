@@ -5,7 +5,7 @@ opts = Options('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.2"
-pborirelease = "0"
+pborirelease = "0.1"
 
 import tarfile
 
