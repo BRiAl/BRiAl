@@ -509,7 +509,8 @@ HAVE_SINGULAR_EXTENSION=True
 
 
 if HAVE_DOXYGEN:
-    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')])
+    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], 
+                          target = [DocPath('c++', elt) for elt in Split("html latex")])
     env.Clean(cxxdocu, cxxdocu)
     env.AlwaysBuild(cxxdocu)
     #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
@@ -570,7 +571,7 @@ if distribute or rpm_generation or deb_generation:
         allsrcs.append(env.Dir(TestsPath(dirname)))
 
     # doc is not distributed completely
-    allsrcs += [ DocPath(src) for src in Split("""doxygen.conf index.html.in
+    allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex python/genpythondoc.py""") ]
     allsrcs.append(env.Dir(DocPath('images')))
 
@@ -859,11 +860,12 @@ def FinalizeNonExecs(targets):
     return FinalizePermissions(targets, 0644)
 
 if prepare_deb or generate_deb:
-    debname = "polybori-" + pboriversion
     debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
     debsrc += FinalizeExecs(env.SpecBuilder(DebInstPath('control'),
                                             DebPath('control.in')))
     debsrc += env.Install(DebInstPath(), DebPath('rules'))
+
+    debname = "polybori-" + pboriversion
                   
     srcdeb = env.DistTar(debname, allsrcs + debsrc)
 
@@ -980,4 +982,4 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', ipboribin)
 
 env.Alias('prepare-devel', devellibs)
-env.Alias('prepare-install', [pyroot, 'doc'])
+env.Alias('prepare-install', [pyroot, DocPath()])

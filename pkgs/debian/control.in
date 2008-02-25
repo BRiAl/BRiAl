@@ -2,12 +2,14 @@ Source: polybori
 Section: unkown
 Priority: optional
 Maintainer: Alexander Dreyer <adreyer@gmx.de>
-Build-Depends: debhelper (>= 4.1.16) scons boost-devel gcc python doxygen latex2html
+Build-Depends: debhelper (>= 4.1.16), scons (>= 0.96), libboost-dev (>= 1.33), gcc (>= 3.3), python (>= 2.4), 
+Build-Depends: python-dev (>= 2.4), libboost-python-dev (>=1.33), doxygen (>= 1.4.6)
+# is non-free , latex2html (>= 1.7)
 Standards-Version: $PBVERSION.$PBRELEASE.0
 
 Package: polybori
 Architecture: any
-Depends:  python (>= 2.4) IPython (>= 0.6) boost (>= 1.33)
+Depends:  python (>= 2.4), IPython (>= 0.6), boost (>= 1.33)
 Description: PolyBoRi is a computer algebra system for Boolean Rings. 
   The core is a C++ library, which provides high-level data types
   for Boolean polynomials and related structures. As a unique approach, binary
@@ -15,4 +17,4 @@ Description: PolyBoRi is a computer algebra system for Boolean Rings.
   structures. On top of this, we provide a Python interface for parsing of 
   complex polynomial systems, as well as for sophisticated and extendable
   strategies for Groebner base computation.
-Version: $PBVERSION.$PBRELEASE
+#Version: $PBVERSION.$PBRELEASE
