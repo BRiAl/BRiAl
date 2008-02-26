@@ -132,6 +132,10 @@ opts.Add(BoolOption('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
 
 opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off', True))
+opts.Add(BoolOption('HAVE_HEVEA', 'Switch hevea on/off (if latex2html is not available)', True))
+opts.Add(BoolOption('HAVE_TEX4HT', 'Switch tex4ht on/off (if latex2html and hevea are not available) ', True))
+
+
 opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
 opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
                     False))
@@ -258,6 +262,20 @@ if HAVE_PYTHON_EXTENSION:
         print 'Warning Boost/python must be installed for python support'
 
 have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
+
+have_t4h = False
+
+if not have_l2h:
+    have_t4h = env['HAVE_HEVEA'] and env.Detect('hevea')
+    tex_to_ht = 'hevea'
+    if not have_t4h:
+        have_t4h = env['HAVE_TEX4HT'] and env.Detect('htlatex')
+	tex_to_ht = 'htlatex'
+        if not have_t4h:
+            print "Warning: No LaTeX to html converter found,",
+            print "Tutorial will not be installed"
+
+
 have_pydoc = env['HAVE_PYDOC']
 
 extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
@@ -689,6 +707,25 @@ def l2h_emitter(target, source, env):
 l2h = Builder(action = 'latex2html -html_version 4.0,unicode,utf-8 $SOURCE',
               emitter = l2h_emitter)
 
+def t4h_emitter(target, source, env):
+    target = [env.File(path.join(str(target[0]), 
+                      path.splitext(path.basename(source[0].name))[0] + '.html'))]
+    env.Clean(target, target[0].dir)
+    return (target, source)
+
+
+#if have_hevea:
+
+t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE")
+tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';' + t4h_str,
+                        emitter = t4h_emitter)
+#else:
+#    tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`; htlatex ' 
+#                                     + path.abspath("$SOURCE"), emitter = t4h_emitter)
+#    tex_to_ht_bld = Builder(action = 'htlatex $SOURCE  ', emitter = t4h_emitter)
+
+
+
 def pathsplit(p, rest=[]):
     (h,t) = os.path.split(p)
     if len(h) < 1: return [t]+rest
@@ -775,6 +812,7 @@ def docu_emitter(target, source, env):
 masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h,
+                     'TeXToHt' : tex_to_ht_bld, 
                      'SubstInstallAs': substinstbld, 'CopyPyDoc':cp_pydocbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
@@ -816,7 +854,10 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
                        DocPath('tutorial/tutorial.tex'))
-
+else if have_t4h :
+    tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
+                           DocPath('tutorial/tutorial.tex'))
+    
 
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
@@ -948,7 +989,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                 env.Dir('Cudd/cudd/doc/icons'))
     
     # Copy Tutorial
-    if have_l2h:
+    if have_l2h or have_t4h :
         env.CopyAll(env.Dir(InstDocPath('tutorial')),
                     env.Dir(DocPath('tutorial/tutorial')))
 
