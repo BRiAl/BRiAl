@@ -264,10 +264,10 @@ if HAVE_PYTHON_EXTENSION:
 have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
 have_t4h = False
+tex_to_ht = 'hevea'
 
 if not have_l2h:
     have_t4h = env['HAVE_HEVEA'] and env.Detect('hevea')
-    tex_to_ht = 'hevea'
     if not have_t4h:
         have_t4h = env['HAVE_TEX4HT'] and env.Detect('htlatex')
 	tex_to_ht = 'htlatex'
@@ -854,9 +854,10 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
                        DocPath('tutorial/tutorial.tex'))
-else if have_t4h :
-    tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
-                           DocPath('tutorial/tutorial.tex'))
+else:
+    if have_t4h :
+        tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
+                               DocPath('tutorial/tutorial.tex'))
     
 
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
