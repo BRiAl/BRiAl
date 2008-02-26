@@ -59,6 +59,16 @@ except:
 	pass
 import os
 
+def FinalizePermissions(targets, perm):
+    for src in targets:
+        env.AddPostAction(src, Chmod(str(src), perm))
+    return targets
+
+def FinalizeExecs(targets):
+    return FinalizePermissions(targets, 0755)
+
+def FinalizeNonExecs(targets):
+    return FinalizePermissions(targets, 0644)
 
 distribute = 'distribute' in COMMAND_LINE_TARGETS
 
@@ -806,7 +816,8 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
                        DocPath('tutorial/tutorial.tex'))
-    
+
+
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
     env.Dir('Cudd/cudd/doc')])  
@@ -818,12 +829,13 @@ if rpm_generation:
     def correctgid(target, source, env):
         os.chown(target[0].path, -1, os.getgid())
 
-    rpmsrcs = env.DistTar(RPMPath('SOURCES', "PolyBoRi-" + pboriversion),
-                          allsrcs)
+    rpmsrcs = FinalizeNonExecs(env.DistTar(RPMPath('SOURCES',
+                                                   "PolyBoRi-" + pboriversion),
+                                           allsrcs))
     env.AddPostAction(rpmsrcs, correctgid)
     
-    pbspec = env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
-                             SpecsPath('PolyBoRi.spec.in'))
+    pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
+                                              SpecsPath('PolyBoRi.spec.in')))
 
         
     env.AddPostAction(pbspec, correctgid)
@@ -846,18 +858,6 @@ if rpm_generation:
     env.Alias('rpm', pbrpm)
 
 
-
-
-def FinalizePermissions(targets, perm):
-    for src in targets:
-        env.AddPostAction(src, Chmod(str(src), perm))
-    return targets
-
-def FinalizeExecs(targets):
-    return FinalizePermissions(targets, 0755)
-
-def FinalizeNonExecs(targets):
-    return FinalizePermissions(targets, 0644)
 
 if prepare_deb or generate_deb:
     debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
