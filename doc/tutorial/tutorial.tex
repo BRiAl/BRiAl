@@ -46,7 +46,7 @@
 \newenvironment{code}{\begin{verbatim}}{\end{verbatim}}
 \newcommand{\set}[1]{\{#1\}}
 \newcommand{\PolyBoRi}{{\sc PolyBoRi}\xspace}
-\newcommand{\Groebner}{Gröbner\xspace}
+\newcommand{\Groebner}{Gr\"{o}bner\xspace}
 \newcommand{\CUDD}{{CUDD}\xspace}
 \newcommand{\ite}{{ite}\xspace}
 \newcommand{\functionname}[1]{\textit{#1}\xspace}
@@ -445,6 +445,7 @@ def power_set(variable_indices):
     return res
 \end{verbatim}
 Note, that we switched from polynomials to Boolean sets. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple \ite operators instead of complex operations in each step).
+
 \subsubsection{All monomials of degree d}
 \begin{verbatim}
 def all_monomials_of_degree_d(d,variable_indices):
@@ -469,12 +470,14 @@ We use the set of all monomials of one degree lower using the cartesian product 
 
 \section{Case study: Graded part of a polynomial}
 In the following we will show five variants to implement a function, that computes the sum of all terms of degree $d$ in a polynomial $f$.
+
 \subsection{Simple, algebraic solution}
 \begin{verbatim}
 def simple_graded(f, d):
     return sum((t for t in f if t.deg()==d))   
 \end{verbatim}
 This solution is obvious, but quite slow.
+
 \subsection{Low level friendly, algebraic solution}
 \begin{verbatim}
 def friendly_graded(f, d):
@@ -487,6 +490,7 @@ def friendly_graded(f, d):
     return add_up_polynomials(vec)
 \end{verbatim}
 We leave it to the heuristic of the \functionname{add\_up\_polynomials} function how to add up the monomials. For example a divide and conquer strategy is quite good here.
+
 \subsection{Highlevel with set operations}
 \begin{verbatim}
 def highlevel_graded(f,d):
@@ -496,6 +500,7 @@ This solution build on the fast intersection algorithm and decomposes the task i
 
 However it can be quite inefficient, when f has many variables.
 This can increase the number of steps in the intersection algorithm (which takes with high probability the else branch of the second argument in each step).
+
 \subsection{Recursive}
 The repeated unnecessary iteration over all variables in $f$ (during the \functionname{intersection} call in the last section) can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was \functionname{intersection}).
 
@@ -568,6 +573,7 @@ The encoding of integers for the degree as variable is done implicitely by our c
 \subsection{Substitute a single variable $x$ in a polynomial by a constant $c$}
 
 Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to plug in the constant $c$ for the variable $x$.
+
 \subsubsection{Naive approach}
 The following code shows how to tackle the problem, by manipulating individual terms.
 While this is a very direct approach, it is quite slow.
@@ -582,6 +588,7 @@ def subst(f,x,c):
         return sum([t for t in f if not t.reducibleBy(x)])
 
 \end{verbatim}
+
 \subsubsection{Solution 1: Set operations}
 In fact, the problem can be tackled quite efficiently using set operations.
 \begin{verbatim}
@@ -596,8 +603,10 @@ def subst(f,x,c):
        #c==1
        return Polynomial(s.subset1(i))+Polynomial(s.subset0(i))    
 \end{verbatim}
+
 \subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
-On the other hand, this linear rewriting forms a rewriting problem and can be solved by calculating a normal form against a Gröbner basis.
+On the other hand, this linear rewriting forms a rewriting problem and can be solved by calculating a normal form against a \Groebner 
+basis.
 In this case the system is $\{x+c\} \cup \{\explfieldequations\}$ (we assume that $x=x_i$ for some $i$).
 For this special case, that all Boolean polynomials have pairwise different linear leading terms w.\,r.\,t. lexicographical ordering,
 there exist special functions.
@@ -635,7 +644,9 @@ ll_red_nf_noredsb(f,x+c)
 ll_red_nf(f,x+c)
 \end{verbatim}
     %
-    As $\{x+c\}$ is a reduced Boolean Gröbner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced Gröbner basis).
+    As $\{x+c\}$ is a reduced Boolean \Groebner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced 
+\Groebner 
+basis).
 \end{enumerate}
 
 
@@ -646,6 +657,7 @@ ll_red_nf(f,x+c)
     by
     $x_i\mapsto c_i$, where
     $c_1,\ldots, c_y$ are constants.
+
 \subsubsection{Naive approach}
 First, we show it in a naive way, similar to the first solution above.
 
@@ -720,7 +732,7 @@ ll_red_nf_noredsb(f,d)
 %
 Since the tails of the polynomials in the rewriting system   consist of
 constants only, this forms also a
-reduced Gröbner basis. Therefore, you may just call
+reduced \Groebner basis. Therefore, you may just call
 \begin{verbatim}
 ll_red_nf(f,d)   
 \end{verbatim}
@@ -809,4 +821,5 @@ Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 %\bibliography{}
 
 % Rem.: Some final words...
+
 \end{document}
