@@ -2,9 +2,9 @@ Source: polybori
 Section: unkown
 Priority: optional
 Maintainer: Alexander Dreyer <adreyer@gmx.de>
-Build-Depends: debhelper (>= 4.1.16), scons (>= 0.96), libboost-dev (>= 1.33), gcc (>= 3.3), python (>= 2.4), python-dev (>= 2.4), libboost-python-dev (>=1.33), doxygen (>= 1.4.6)
-# is non-free , latex2html (>= 1.7)
-Standards-Version: $PBVERSION.$PBRELEASE.0
+Build-Depends: debhelper (>= 4.1.16), scons (>= 0.96), libboost-dev (>= 1.33), gcc (>= 3.3), python (>= 2.4), 
+Build-Depends: python-dev (>= 2.4), libboost-python-dev (>=1.33), doxygen (>= 1.4.6), hevea | tex4ht 
+Standards-Version: $PBVERSION.$PBRELEASE
 
 Package: polybori
 Architecture: any

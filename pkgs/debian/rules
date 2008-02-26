@@ -20,7 +20,7 @@ build-stamp:
 	dh_testdir
 
 # Add here commands to compile the package.
-	scons -j 5 prepare-install
+	scons prepare-install
 
 	touch build-stamp
 
