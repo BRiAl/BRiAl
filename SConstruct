@@ -581,7 +581,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 
 
 if distribute or rpm_generation or deb_generation:
-    allsrcs = Split("SConstruct README LICENSE disttar.py doxygen.py")
+    allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular pkgs"""):
         allsrcs.append(env.Dir(dirname))
