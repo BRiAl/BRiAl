@@ -737,7 +737,7 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
 #if 0
   //buggy variant 2
   if (p==Polynomial(m))
-    return Polynomial(0);
+    return p.zero();
   BooleSet dividing_terms
     =BooleSet(p/m);
     
@@ -830,9 +830,9 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
 }
 
 static Polynomial multiply_recursively(Polynomial a,Polynomial b){
-  if (a.isZero()) return Polynomial(0);
+  if (a.isZero()) return a; // is 0
   if (a.isOne()) return b;
-  if (b.isZero()) return Polynomial(0);
+  if (b.isZero()) return b; // is 0
   if (b.isOne()) return a;
   int index=*(a.navigation());
   Polynomial as0=a.diagram().subset0(index);
@@ -840,7 +840,7 @@ static Polynomial multiply_recursively(Polynomial a,Polynomial b){
   if (as0==as1){
     b=b.diagram().subset0(index);
   }
-  if (b.isZero()) return Polynomial(0);
+  if (b.isZero()) return b; // is 0
   if (b.isOne()) return a;
   as0=multiply_recursively(as0,b);
   as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
@@ -848,9 +848,9 @@ static Polynomial multiply_recursively(Polynomial a,Polynomial b){
 }
 static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
 
-  if (a.isZero()) return Polynomial(0);
+  if (a.isZero()) return a; // is 0
   if (a.isOne()) return b;
-  if (b.isZero()) return Polynomial(0);
+  if (b.isZero()) return b; // is 0
   if (b.isOne()) return a;
   if (a==b) return a;
 
@@ -906,9 +906,9 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
 }
 
 static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
-  if (a.isZero()) return Polynomial(0);
+  if (a.isZero()) return a; // is 0
   if (a.isOne()) return b;
-  if (b.isZero()) return Polynomial(0);
+  if (b.isZero()) return b; // is 0;
   if (b.isOne()) return a;
   if (a==b) return a;
 
@@ -1378,7 +1378,7 @@ Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& t
     
 #if 0
 return
-      dd_backward_transform(p.navigation(), Polynomial(0), 
+  dd_backward_transform(p.navigation(), p.zero(), 
                             mapped_new_node<std::vector<idx_type>,
                             Variable, Monomial, Polynomial>(table), 
                             integral_constant<bool, true, Polynomial>());
@@ -2308,16 +2308,17 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
   //cout<<"p_opp"<<p_opp<<endl;
-  Polynomial mult_by(1);
+  const Polynomial one_element(p_opp.one());
+  Polynomial mult_by(one_element);
   LiteralFactorization factors_opp(p_opp);
   
   if (factors_opp.trivial()){
     if (e.literal_factors.trivial()) return;
-    if (e.literal_factors.rest!=(Polynomial)1){
+    if ( !e.literal_factors.rest.isOne() ){
       
     
       //if (e.literal_factors.trivial())
-      mult_by=Polynomial(1);
+      mult_by=one_element;
       LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
       LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
       while(itf!=endf){
@@ -2325,7 +2326,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
         int val=itf->second;
         if (val==0){
           mult_by*=(Monomial)Variable(var);
-        } else mult_by*=Variable(var)+1;
+        } else mult_by*=Variable(var)+one_element;
         itf++;
       }
 
@@ -2363,7 +2364,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
       int val=itf->second;
       if (val==0){
         addGeneratorDelayed(((Monomial) Variable(var))*mult_by);
-      } else addGeneratorDelayed(((Monomial) Variable(var)+Polynomial(1))*mult_by);
+      } else addGeneratorDelayed(((Monomial) Variable(var)+one_element)*mult_by);
       itf++;
     }
     
@@ -2666,6 +2667,8 @@ void GroebnerStrategy::symmGB_F2(){
 static int get_first_variable_index(const Polynomial& p){
     return *(p.navigation());
 }
+
+
 Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     std::vector<Polynomial> new_vec;
     
@@ -2673,7 +2676,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     int s=vec.size();
     int index=-1;
     for(i=0;i<s;i++){
-        if (vec[i].isZero()) return Polynomial(0);
+      if (vec[i].isZero()) return vec[i]; // is 0
         if (!(vec[i].isOne())){
     
             new_vec.push_back(vec[i]);
@@ -2689,7 +2692,6 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
             }
         }
     }
-    
     
     
     if (new_vec.size()==0) return Polynomial(1);

@@ -184,7 +184,7 @@ public:
 		else
 			optLazy=true;
 		reduceByTailReduced=false;
-        llReductor=Polynomial(1).diagram();
+                llReductor=Polynomial(1).diagram(); // todo: is this unsafe?
 	}
 
     Polynomial nextSpoly(){

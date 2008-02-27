@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.60  2008/02/27 16:35:13  dreyer
+ * Fix: Polynomial(0|1) removed, where possible
+ *
  * Revision 1.59  2008/01/11 16:58:56  dreyer
  * CHANGE: Experimenting with iterators and correct rings
  *
@@ -857,9 +860,14 @@ class CDDInterface:
     return m_interfaced.CountDouble();
   }
 
-  /// Get corresponding zero element (may be removed in the future)
+  /// Get corresponding zero element 
   self emptyElement() const {
     return manager().zddZero();
+  }
+
+  /// Get corresponding one element
+  self blankElement() const {
+    return manager().zddOne();
   }
 
 private:

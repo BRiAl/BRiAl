@@ -27,6 +27,9 @@ using std::endl;
 
 BEGIN_NAMESPACE_PBORIGB
 
+template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec,
+                                             Polynomial init);
+
 static bool irreducible_lead(Monomial lm, const GroebnerStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
@@ -64,7 +67,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
         //if (p!=strat.generators[index].lm)
           p=reduce_by_monom(p,strat.generators[index].lm);
         //else
-        //  p=Polynomial(0);
+        //  p=p.zero();
       } else{
         assert(!(p.isZero()));
         assert(p.reducibleBy(*g));
@@ -116,7 +119,7 @@ Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
         //if (p!=strat.generators[index].lm)
         p=reduce_by_monom(p,strat.generators[index].lm);
         //else
-        //  p=Polynomial(0);
+        //  p=p.zero();
       } else{
         assert(!(p.isZero()));
         assert(p.reducibleBy(*g));
@@ -1081,11 +1084,12 @@ class LexHelper{
       else return false;
       
     }
-    static Polynomial sum_range(std::vector<Monomial>& vec,const iterator_type& it, const iterator_type& end){
+  static Polynomial sum_range(std::vector<Monomial>& vec,const iterator_type&
+  it, const iterator_type& end, Polynomial init){
         if (vec.size()==1) return vec[0];
         if (it!=end)
-            return term_accumulate(it,end,Polynomial(0));
-        else return 0;
+          return term_accumulate(it,end, init);
+        else return init;
     }
 };
 
@@ -1109,8 +1113,8 @@ class DegOrderHelper{
     static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
       return false;
     }
-    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
-          return add_up_monomials(vec);
+    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end, Polynomial init){
+      return add_up_generic(vec, init);
       }
     
 };
@@ -1134,8 +1138,8 @@ class BlockOrderHelper{
     static bool knowRestIsIrreducible(const iterator_type& it, const GroebnerStrategy & strat){
       return false;
     }
-    static Polynomial  sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end){
-            return add_up_monomials(vec);
+    static Polynomial  sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end, Polynomial init){
+      return add_up_generic(vec, init);
         }
 };
 int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m){
@@ -1190,23 +1194,26 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   
 }
 
-template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec, int start, int end){
+template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec, int
+start, int end, Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=end-start;
-    if (s==0) return Polynomial();
+    if (s==0) return init;
     if (s==1) return Polynomial(res_vec[start]);
     int h=s/2;
-    return add_up_generic(res_vec,start,start+h)+add_up_generic(res_vec,start+h,end);
-    //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
+    return add_up_generic(res_vec,start,start+h,init) +
+      add_up_generic(res_vec,start+h,end, init);
 }
-template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec){
+template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec,
+                                             Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
-    if (s==0) return Polynomial();
+    if (s==0) return init;
     if (s==1) return (Polynomial) res_vec[0];
     int h=s/2;
     
-    return add_up_generic(res_vec,0,h)+add_up_generic(res_vec,h,s);
+    return add_up_generic(res_vec,0,h, init) + 
+      add_up_generic(res_vec,h,s, init);
 }
 
 class LexOrderGreaterComparer{
@@ -1329,11 +1336,11 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
 #endif
 
 Polynomial add_up_monomials(const std::vector<Monomial>& vec){
-    return add_up_generic(vec);
+  return add_up_generic(vec, (vec.empty()? Polynomial(0): vec[0].zero()) );
 
 }
 Polynomial add_up_polynomials(const std::vector<Polynomial>& vec){
-    return add_up_generic(vec);
+  return add_up_generic(vec, (vec.empty()? Polynomial(0): vec[0].zero()) );
 
 }
 Polynomial add_up_exponents(const std::vector<Exponent>& vec){
@@ -1347,23 +1354,27 @@ Polynomial add_up_exponents(const std::vector<Exponent>& vec){
 
 
 
-static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec, int start, int end){
+static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec, int
+start, int end, Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=end-start;
-    if (s==0) return Polynomial();
+    if (s==0) return init;
     if (s==1) return res_vec[start];
     int h=s/2;
-    return Polynomial(unite_polynomials(res_vec,start,start+h).diagram().unite(unite_polynomials(res_vec,start+h,end).diagram()));
+    return Polynomial(unite_polynomials(res_vec,start,start+h,
+             init).diagram().unite(unite_polynomials(res_vec,start+h,end, 
+                                                     init).diagram()));
     //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
 }
-static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec){
+static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec,
+                                    Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
-    if (s==0) return Polynomial();
+    if (s==0) return init;
     if (s==1) return res_vec[0];
     int h=s/2;
     
-    return Polynomial(unite_polynomials(res_vec,0,h).diagram().unite(unite_polynomials(res_vec,h,s).diagram()));
+    return Polynomial(unite_polynomials(res_vec,0,h, init).diagram().unite(unite_polynomials(res_vec,h,s,init).diagram()));
 }
 
 
@@ -1393,7 +1404,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
         it++;
     }
     if ((!(changed))&& (it==end)) return orig_p;
-    Polynomial irr_p=add_up_monomials(irr);
+    Polynomial irr_p=add_up_monomials(irr, p.zero());
     int s,i;
     s=irr.size();
     assert(s==irr_p.length());
@@ -1415,7 +1426,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=add_up_monomials(res_vec);
+  res=add_up_monomials(res_vec, p.zero());
   return res;
 }
 #else
@@ -1449,7 +1460,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
     if (it!=end) {
-        irr_p=add_up_monomials(irr);
+      irr_p=add_up_generic(irr, p.zero());
         rest_lead=*it;
         }
     else irr_p=p;
@@ -1478,7 +1489,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec);
+  res=unite_polynomials(res_vec, p.zero());
   return res;
 }
 
@@ -1537,7 +1548,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
     if ((it!=end) &&(!(rest_is_irreducible))) {
-        irr_p=Helper::sum_range(irr,it_orig,it);//add_up_monomials(irr);
+      irr_p=Helper::sum_range(irr,it_orig,it, p.zero());//add_up_monomials(irr);
         rest_lead=*it;
         
         }
@@ -1556,7 +1567,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec);
+  res=unite_polynomials(res_vec, p.zero());
   return res;
 }
 
@@ -2085,7 +2096,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
     }
     polys.clear();
-    terms_unique = add_up_monomials(terms_unique_vec);
+    terms_unique = add_up_generic(terms_unique_vec, terms.zero());
     assert(terms_step1.diff(terms).emptiness());
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2008/02/27 16:35:12  dreyer
+ * Fix: Polynomial(0|1) removed, where possible
+ *
  * Revision 1.31  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -322,6 +325,12 @@ class BooleMonomial {
     assert(!m_poly.isConstant());
     return *begin();
   }
+
+  /// Get corresponding zero element
+  self zero() const { return m_poly.set().zero(); }
+
+  /// Get one in corresponding ring
+  self one() const { return m_poly.set().one(); }
 
 protected:
 

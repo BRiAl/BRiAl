@@ -654,6 +654,8 @@ def build_symlink(target, source, env):
     return None
 
 
+env.Append(COPYALL_PATTERNS = ['*'])
+
 # Copy glob('*') from one directory to the other
 def cp_all(target, source, env):
     source = source[0].path
@@ -661,10 +663,11 @@ def cp_all(target, source, env):
 
     if not path.exists(target):
         Execute(Mkdir(target))
-    for file in glob(path.join(source, '*')):
-        if not path.isdir(file):
-            result = str(path.join(target, path.basename(file)))
-            Execute([Copy(result, file), Chmod(result, 0644)])
+    for patt in env['COPYALL_PATTERNS']:
+        for file in glob(path.join(source, patt)):
+            if not path.isdir(file):
+                result = str(path.join(target, path.basename(file)))
+                Execute([Copy(result, file), Chmod(result, 0644)])
 
     return None
 
@@ -968,13 +971,15 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
-            
+
     # Copy c++ documentation
     if HAVE_DOXYGEN:
         cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
                                  env.Dir(DocPath('c++/html'))) 
         env.Depends(cxxdocinst, cxxdocu)
         env.Clean(cxxdocinst, cxxdocinst)
+
+    htmlpatterns = Split("*.html *.css *.png *gif *.jpg")
 
     # Copy python documentation
     pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath('python')),
@@ -985,14 +990,15 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     # Copy Cudd documentation
     env.CopyAll(env.Dir(InstDocPath('cudd')),
-                env.Dir('Cudd/cudd/doc')) 
+                env.Dir('Cudd/cudd/doc') ) 
     env.CopyAll(env.Dir(InstDocPath('cudd/icons')),
                 env.Dir('Cudd/cudd/doc/icons'))
-    
+
     # Copy Tutorial
     if have_l2h or have_t4h :
         env.CopyAll(env.Dir(InstDocPath('tutorial')),
-                    env.Dir(DocPath('tutorial/tutorial')))
+                    env.Dir(DocPath('tutorial/tutorial')),
+                    COPYALL_PATTERNS = htmlpatterns)
 
     # Generate html master
     FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),

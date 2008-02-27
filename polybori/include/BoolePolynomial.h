@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.86  2008/02/27 16:35:12  dreyer
+ * Fix: Polynomial(0|1) removed, where possible
+ *
  * Revision 1.85  2008/01/29 16:05:02  dreyer
  * Fix: cast from navigator to BooleSet or BoolePolynomial made explicit
  *
@@ -486,7 +489,7 @@ public:
   BoolePolynomial(bool_type);
 
   /// Construct polynomial from a constant value
-  BoolePolynomial(int);
+  explicit BoolePolynomial(int);
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
@@ -708,6 +711,12 @@ public:
   /// Test, whether we have two terms only
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
+  /// Get corresponding zero element
+  self zero() const { return m_dd.emptyElement(); }
+
+  /// Get one in corresponding ring
+  self one() const { return m_dd.blankElement(); }
+
 protected:
 
   /// Access to internal decision diagramm structure
@@ -719,8 +728,6 @@ protected:
   /// Get all divisors of the first term
   set_type firstDivisors() const;
 
-  /// Get corresponding zero element (may be removed in the future)
-  self zeroElement() const { return m_dd.emptyElement(); }
 
 private:
   /// The actual decision diagramm

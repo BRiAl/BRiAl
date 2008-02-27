@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/02/27 16:35:13  dreyer
+ * Fix: Polynomial(0|1) removed, where possible
+ *
  * Revision 1.40  2008/01/29 16:05:02  dreyer
  * Fix: cast from navigator to BooleSet or BoolePolynomial made explicit
  *
@@ -387,6 +390,12 @@ public:
 
   /// Count many terms containing BooleVariable(idx)
   double countIndexDouble(idx_type idx) const ;
+
+  /// Get one in corresponding ring
+  self one() const { return base::blankElement(); }
+
+  /// Get zero in corresponding ring
+  self zero() const { return base::emptyElement(); }
 };
 
 /// Stream output operator

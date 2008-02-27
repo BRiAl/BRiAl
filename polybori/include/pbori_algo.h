@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2008/02/27 16:35:14  dreyer
+ * Fix: Polynomial(0|1) removed, where possible
+ *
  * Revision 1.38  2007/12/14 15:05:59  dreyer
  * Fix: merged bug fixes from sf.net
  *
@@ -157,11 +160,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
-//       dd_backward_transform(p.navigation(), Polynomial(0), 
-//                             mapped_new_node<std::vector<idx_type>, Variable,
-//                             Polynomial>(table), 
-//                             integral_constant<bool, true, Polynomial>());
 
 /// Function templates for transforming decision diagrams 
 template< class NaviType, class TermType, 
