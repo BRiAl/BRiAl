@@ -15,6 +15,8 @@ else
 CFLAGS += -O2
 endif
 
+INSTALLDIR = $(CURDIR)/debian/polybori/usr/lib/polybori
+
 build: build-stamp
 build-stamp:
 	dh_testdir
@@ -44,7 +46,9 @@ install: build
 # todo: PYINSTALLPREFIX PYPREFIX
 	scons install PREFIX=$(CURDIR)/debian/polybori/usr \
 		EPREFIX=$(CURDIR)/debian/polybori/usr/bin \
-		DOCDIR=$(CURDIR)/debian/polybori/usr/share/doc/PolyBoRi
+		DOCDIR=$(CURDIR)/debian/polybori/usr/share/doc/polybori \
+		INSTALLDIR=$(INSTALLDIR) \
+		PYINSTALLPREFIX=$(INSTALLDIR)/python/site-packages/
 
 
 # Build architecture-independent files here.
@@ -68,7 +72,7 @@ binary-arch: build install
 	dh_installman
 	dh_installinfo
 #      dh_undocumented
-###	dh_installchangelogs ChangeLog
+	dh_installchangelogs ChangeLog
 	dh_link
 	dh_strip
 	dh_compress

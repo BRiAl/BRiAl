@@ -8,7 +8,7 @@ Standards-Version: $PBVERSION.$PBRELEASE
 
 Package: polybori
 Architecture: any
-Depends:  python (>= 2.4), IPython (>= 0.6), boost (>= 1.33)
+Depends:  python (>= 2.4), IPython (>= 0.6), libboost-python1.33.0 | libboost-python1.33.1 | libboost-python1.34.0 | libboost-python1.34.1 
 Description: PolyBoRi is a computer algebra system for Boolean Rings. 
   The core is a C++ library, which provides high-level data types
   for Boolean polynomials and related structures. As a unique approach, binary
