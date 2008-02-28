@@ -13,7 +13,7 @@
 BEGIN_NAMESPACE_PBORIGB
 
 static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
-    if (m.emptiness()) return 1;
+  if (m.emptiness()) return m.one();
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
     while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
@@ -23,11 +23,11 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
     idx_type m_idx=*nav;
 
     if (m_idx==x_idx){
-        return nav.elseBranch().isEmpty()?1:0;
+      return BooleConstant(nav.elseBranch().isEmpty()).generate(m);//  ?1:0;
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>x_idx){
-            return 0;//False
+          return m.zero();//False
         } else {
             assert (*nav<x_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x>
@@ -53,26 +53,28 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
 
 
 static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSet& left,const MonomialSet& right, const Variable& x){
-    if (left.emptiness()) return right.emptiness()?1:0;
+    if (left.emptiness()) 
+      return BooleConstant(right.emptiness()).generate(left);
     MonomialSet::navigator nav_l=left.navigation();
     MonomialSet::navigator nav_r=right.navigation();
     typedef PBORI::CacheManager<CCacheTypes::left_equals_right_x_branch_and_r_has_fac_x>
          cache_mgr_type;
-    if (*nav_l<*nav_r) return 0;
+    if (*nav_l<*nav_r) return left.zero();
     idx_type x_idx=x.index();
-    if (*nav_r>x_idx) return 0;
-    if ((*nav_l!=*nav_r) && (*nav_r!=x_idx)) return 0;
+    if (*nav_r>x_idx) return left.zero();
+    if ((*nav_l!=*nav_r) && (*nav_r!=x_idx)) return left.zero();
     
-    if (*nav_l==x_idx) return 0;
+    if (*nav_l==x_idx) return left.zero();
 
     if (*nav_r==x_idx){
-        return ((nav_r.thenBranch()==nav_l) && (nav_r.elseBranch().isEmpty()))?1:0;
+      return BooleConstant((nav_r.thenBranch()==nav_l) &&
+                           (nav_r.elseBranch().isEmpty())).generate(left);
     } else {
         assert(!(nav_r.isEmpty()));
         assert(*nav_r<x_idx);
     
             assert (*nav_r<x_idx);
-            if (*nav_r!=*nav_l) return 0;
+            if (*nav_r!=*nav_l) return left.zero();
             
             
             cache_mgr_type cache_mgr(left.manager());
@@ -93,7 +95,7 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
 }
 
 static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,const Variable& y){
-    if (m.emptiness()) return true;
+    if (m.emptiness()) return m.one();
     assert(!(x==y));
     MonomialSet::navigator nav=m.navigation();
     idx_type min_idx=std::min(x.index(),y.index());
@@ -108,11 +110,14 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
         Variable other;
         if (min_idx!=x.index()) other=x; else other=y;
         return
-          do_left_equals_right_x_branch_and_r_has_fac_x(MonomialSet::dd_type(m.manager(), nav.thenBranch()), MonomialSet::dd_type(m.manager(), nav.elseBranch()), other)==1?1:0;
+          BooleConstant(do_left_equals_right_x_branch_and_r_has_fac_x(
+              MonomialSet::dd_type(m.manager(), nav.thenBranch()), 
+              MonomialSet::dd_type(m.manager(), nav.elseBranch()), 
+              other).isOne() ).generate(m);
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>min_idx){
-            return 0;//False
+          return m.zero();//False
         } else {
             assert (*nav<min_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_y>
@@ -141,7 +146,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
 //struct has_factor_x_plus_y: public ternary_cache_tag { };
 //struct left_equals_right_x_branch: public ternary_cache_tag { };
 static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& x){
-    if (m.emptiness()) return true;
+  if (m.emptiness()) return m.one();
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
     while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
@@ -151,11 +156,11 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
     idx_type m_idx=*nav;
 
     if (m_idx==x_idx){
-        return nav.elseBranch()==nav.thenBranch()?1:0;
+      return BooleConstant(nav.elseBranch()==nav.thenBranch()).generate(m);
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>x_idx){
-            return 0;//False
+          return m.zero();//False
         } else {
             assert (*nav<x_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_one>

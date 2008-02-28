@@ -202,7 +202,7 @@ Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial 
       bucket+=(exp-strat.generators[index].lmExp)*(*g);
     }
     if (bucket.isZero())
-        return 0;
+      return p.zero();
     else
         rest_lead=(Monomial) bucket.leadExp();
   }

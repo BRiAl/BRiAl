@@ -670,6 +670,7 @@ void PairManager::cleanTopByChainCriterion(){
     }
   }
 }
+
 PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
   this->deg=p.deg();

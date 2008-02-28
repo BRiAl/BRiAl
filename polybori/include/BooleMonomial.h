@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.33  2008/02/28 17:05:46  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.32  2008/02/27 16:35:12  dreyer
  * Fix: Polynomial(0|1) removed, where possible
  *
@@ -178,6 +181,9 @@ class BooleMonomial {
   /// Type of Boolean variables
   typedef BooleVariable var_type;
 
+  /// Type of Boolean constants
+  typedef BooleConstant constant_type;
+
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;
 
@@ -210,7 +216,7 @@ class BooleMonomial {
   explicit BooleMonomial(const exp_type&);
 
   /// Construct from Boolean constant
-  BooleMonomial(bool_type val): m_poly(val) {}
+  explicit BooleMonomial(constant_type val): m_poly(val) {}
 
   /// Destructor
   ~BooleMonomial() {}
@@ -221,8 +227,6 @@ class BooleMonomial {
   /// Get exponent vector
   exp_type exp() const;
 
-  /// Casting operator
-//  operator const dd_type&() const { return m_poly.diagram(); };
 
   /// Start iteration over indices
   const_iterator begin() const { return m_poly.firstBegin(); }
@@ -270,12 +274,19 @@ class BooleMonomial {
   self& operator/=(const self&);
   self& operator*=(const var_type&);
   self& operator/=(const var_type&);
+  self& operator*=(constant_type rhs) {
+    if (!rhs) *this = zero();
+    return *this;
+  }
+  self& operator/=(constant_type rhs) { return operator*=(rhs); }
   //@}
 
   /// @name Logical operations
   //@{
   bool_type operator==(const self& rhs) const { return m_poly == rhs.m_poly; }
   bool_type operator!=(const self& rhs) const { return m_poly != rhs.m_poly; }
+  bool_type operator==(constant_type rhs) const { return m_poly == rhs; }
+  bool_type operator!=(constant_type rhs) const { return m_poly != rhs; }
   bool_type isZero() const { return m_poly.isZero(); }
   bool_type isOne() const { return m_poly.isOne(); }
   bool_type isConstant() const { return m_poly.isConstant(); }
@@ -351,9 +362,21 @@ inline BooleMonomial
 operator*(const BooleMonomial& lhs, const BooleMonomial& rhs) {
   return BooleMonomial(lhs) *= rhs;
 }
+/// Multiplication of monomials
 inline BooleMonomial
 operator*(const BooleMonomial& lhs, const BooleVariable& rhs) {
   return BooleMonomial(lhs) *= rhs;
+}
+/// Multiplication of monomials
+inline BooleMonomial
+operator*(const BooleMonomial& lhs, BooleConstant rhs) {
+  return BooleMonomial(lhs) *= rhs;
+}
+
+/// Multiplication of monomials
+inline BooleMonomial
+operator*(BooleConstant lhs, const BooleMonomial& rhs) {
+  return rhs * lhs;
 }
 /// Division of monomials
 template <class RHSType>
@@ -361,7 +384,6 @@ inline BooleMonomial
 operator/(const BooleMonomial& lhs, const RHSType& rhs) {
   return BooleMonomial(lhs) /= rhs;
 }
-
 
 /// Less than comparision
 inline BooleMonomial::bool_type

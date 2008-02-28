@@ -10,9 +10,10 @@
 #include "lexbuckets.h"
 BEGIN_NAMESPACE_PBORIGB
 
-static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, const int s){
+static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, 
+                                 const int s){
   
-   if (s==0) return 0;
+  if (s==0) return Polynomial(0);
    if (s==1) return *it;
    if (s==2) return (*it)+(*(it++));
    return sum_up_buckets(it,s/2)+sum_up_buckets(it+s/2,s-s/2);

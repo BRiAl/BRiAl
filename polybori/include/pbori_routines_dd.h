@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.4  2007/11/06 15:03:37  dreyer
  * CHANGE: More generic copyright
  *
@@ -55,10 +58,10 @@ dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
   typedef typename DDType::size_type size_type;
   typedef OutputType term_type;
 
-  term_type result(true);
+  term_type result(CDDOperations<DDType, OutputType>().getMonomial(dd.one()));
 
   if (dd.emptiness())
-    result = false;
+    result = CDDOperations<DDType, OutputType>().getMonomial(dd.zero());
   else {
 
     size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());

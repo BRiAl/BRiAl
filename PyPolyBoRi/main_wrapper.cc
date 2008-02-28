@@ -124,12 +124,20 @@ with inverted variable order\n\
   def("have_degree_order", have_degree_order, 
       "Determines, whether ring ordering is a degree ordering");
 
+  boost::python::class_<BooleConstant>("BooleConstant", 
+                                       "Boolean constant value")
+    .def(init<const BooleConstant &>())
+    .def(init<int>("Convert integer to Boolean value"))
+    .def(init<bool>("Convert bool to Boolean value"));
+
   boost::python::class_<BooleVariable>("Variable", "Boolean Variable")
   .def(init<const BooleVariable &>())
   .def(init<BooleVariable::idx_type>("Get Variable of given index"))
   .def(self*self)
   .def(self*BooleMonomial())
   .def(BooleMonomial()*self)
+  .def(self*int())
+  .def(int()*self)
   .def(self+self)
   .def(self+int())
   .def(int()+self)

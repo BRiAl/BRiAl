@@ -111,7 +111,7 @@ typedef Exponent::idx_map_type exp2Index_map_type;
 class GroebnerStrategy{
 public:
   bool containsOne() const{
-    return leadingTerms.owns(Monomial());
+    return leadingTerms.ownsOne();
   }
   idx_type reducibleUntil;
   GroebnerStrategy(const GroebnerStrategy& orig);

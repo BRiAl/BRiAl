@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.50  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.49  2008/01/17 16:05:01  dreyer
  * Fix: reverted previous version (performance problem)
  *
@@ -313,28 +316,6 @@ BooleSet::lastLexicographicalTerm() const {
   PBORI_TRACE_FUNC( "BooleSet::lastTerm() const" );
 
   return dd_last_lexicographical_term(*this, type_tag<term_type>());
-
-  term_type result(true);
-
-  if (emptiness())
-    result = false;
-  else {
-
-    size_type nlen = std::distance(base::lastBegin(), base::lastEnd());
-
-    // store indices in list
-    CIdxPath<idx_type> indices(nlen);
-
-    // iterator, which uses changeAssign to insert variable
-    // wrt. given indices to a monomial
-    PBoRiOutIter<term_type, idx_type, change_assign<term_type> >  
-      outiter(result) ;
-    
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(base::lastBegin(), base::lastEnd(), indices, outiter);
-  }
-
-  return result;
 }
 
 BooleSet

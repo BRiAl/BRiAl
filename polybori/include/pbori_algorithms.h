@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.20  2008/01/18 15:44:24  dreyer
  * CHANGE: Avoid cast from navigator to BooleSet
  *
@@ -123,14 +126,14 @@ ValueType
 lower_term_accumulate(NaviType navi, 
                       LowerIterator lstart, LowerIterator lfinish, 
                       ValueType init) {
-
+  assert(init.isZero());
   /// @todo Maybe recursive caching is efficient here.
   if (lstart == lfinish){
-    return false;
+    return init;
   }
   
   if (navi.isConstant())
-    return BooleSet(navi);
+    return (navi.terminalValue()? init.one(): init);//BooleSet(navi);
   
   assert(*lstart >= *navi);
 
@@ -174,7 +177,7 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
 
   // assuming (ustart .. ufinish) never means zero
   if (ustart == ufinish)
-     return true;
+    return init.one();
   
   while (*navi < *ustart)
     navi.incrementElse();
@@ -201,7 +204,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
     return upper_term_accumulate(ustart, ufinish, navi, init);
 
   if (ustart == ufinish)
-    return true;
+    return init.one();
 
   while (*navi < *ustart)
     navi.incrementElse();

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2008/02/28 17:05:48  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.5  2007/11/06 15:03:42  dreyer
  * CHANGE: More generic copyright
  *
@@ -199,12 +202,12 @@ main(){
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout  <<bset.multiplesOf(monom) <<std::endl;
-    monom = 0;
+    monom = BoolePolynomial(0).lead();
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout  <<bset.multiplesOf(monom) <<std::endl;
  
-    monom = 1;
+    monom = BoolePolynomial(1).lead();;
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout << std::endl;

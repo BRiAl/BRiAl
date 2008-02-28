@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.16  2008/01/08 12:27:22  dreyer
  * CHANGE: erreous cast int to Variable removed, info about scons -h added
  *
@@ -151,6 +154,20 @@ operator*(const BooleVariable& lhs,
           const BooleMonomial& rhs){
 
   return BooleMonomial(lhs) * rhs;
+}
+
+/// Multiplication of variables by a 0 or 1
+inline BooleMonomial
+operator*(const BooleVariable& lhs, const BooleConstant& rhs){
+
+  return BooleMonomial(lhs) * rhs;
+}
+
+/// Multiplication of 0 or 1  by a Variable
+inline BooleMonomial
+operator*(const BooleConstant& lhs, const BooleVariable& rhs){
+
+  return rhs * lhs;
 }
 
 /// Multiplication of a polynomial by a variable

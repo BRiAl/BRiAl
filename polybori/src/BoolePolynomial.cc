@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.112  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.111  2008/01/17 15:18:41  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -436,18 +439,12 @@ BoolePolynomial::BoolePolynomial():
 }
 
 // Construct polynomial from a constant value 0 or 1
-BoolePolynomial::BoolePolynomial(bool_type isOne):
+BoolePolynomial::BoolePolynomial(constant_type isOne):
   m_dd(isOne? BooleEnv::ring().one()  : BooleEnv::ring().zero() )  {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial(bool_type)" );
+  PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
 }
 
-// Construct polynomial from a constant value
-BoolePolynomial::BoolePolynomial(int value):
-  m_dd( BoolePolynomial( bool_type(value % 2) ).diagram()  )  {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial(int)" );
-}
 
 // Constructor polynomial from existing decision diagram
 BoolePolynomial::BoolePolynomial(const dd_type& rhs):
@@ -611,67 +608,6 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
   return *this;
 }
 
-// Polynomial Modulus
-BoolePolynomial&
-BoolePolynomial::operator%=(const self& rhs) {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const self&)" );
-
-  return operator-=(rhs * (*this / rhs));
-}
-
-// tests whether polynomial can be reduced by rhs
-BoolePolynomial::bool_type
-BoolePolynomial::reducibleBy(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::reducibleBy(const self&) const" );
-
-  if( rhs.isOne() )
-    return true;
-
-  if( isZero() )
-    return rhs.isZero();
-
-  return std::includes(firstBegin(), firstEnd(), 
-                       rhs.firstBegin(), rhs.firstEnd());
-
-}
-
-// Equality
-BoolePolynomial::bool_type
-BoolePolynomial::operator==(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(const self&) const" );
-
-  return (m_dd == rhs.m_dd);
-}
-
-// Nonequality
-BoolePolynomial::bool_type
-BoolePolynomial::operator!=(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(const self&) const" );
-
-  return (m_dd != rhs.m_dd);
-}
-
-// Equality (compare with constant polynomial)
-BoolePolynomial::bool_type
-BoolePolynomial::operator==(bool_type rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator==(bool_type) const" );
-
-  return ( rhs? isOne() : isZero() );
-}
-
-// Nonequality (compare with constant polynomial)
-BoolePolynomial::bool_type
-BoolePolynomial::operator!=(bool_type rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::operator!=(bool_type) const" );
-
-  return ( rhs? isZero() : isOne() );
-}
 
 // Leading term
 BoolePolynomial::monom_type
@@ -680,27 +616,6 @@ BoolePolynomial::lead() const {
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
 
   return BooleEnv::ordering().lead(*this);
-
-//   // Note: implementation relying on CCuddFirstIter 
-//   monom_type leadterm;
-
-//   if (m_dd.emptiness())
-//     leadterm = 0;
-//   else {
-
-//     // store indices in list
-//     CIdxPath<idx_type> indices(lmDeg());
-
-//     // iterator, which uses changeAssign to insert variable
-//     // wrt. given indices to a monomial
-//     PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-//       outiter(leadterm) ;
-    
-//     // insert backward (for efficiency reasons)
-//     reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
-//   }
-
-//   return leadterm;
 }
 
 // Leading term w.r.t. lex
@@ -907,27 +822,6 @@ BoolePolynomial::length() const {
 
   return m_dd.length();
 }
-
-
-// // Access to internal decision diagramm structure
-// BoolePolynomial::dd_type&
-// BoolePolynomial::internalDiagram() {
-
-//   PBORI_TRACE_FUNC( "BoolePolynomial::internalDiagram()" );
-
-//   return m_dd;
-// }
-
-// // Access to internal decision diagramm structure
-// const BoolePolynomial::dd_type&
-// BoolePolynomial::diagram() const {
-
-//   PBORI_TRACE_FUNC( "BoolePolynomial::diagram() const" );
-
-//   return m_dd;
-// }
-
-
 
 
 // Print current polynomial to output stream

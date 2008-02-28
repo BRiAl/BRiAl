@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.19  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -161,10 +164,10 @@ LexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
 
-  monom_type leadterm;
+  monom_type leadterm = base::monom(poly.set().one());
    
   if (poly.isZero())
-    leadterm = 0;
+    leadterm = base::monom(poly.set());
   else {
 
     // store indices in list

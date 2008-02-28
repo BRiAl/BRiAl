@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.87  2008/02/28 17:05:47  dreyer
+ * Fix: treating constants (0, 1) accordingly
+ *
  * Revision 1.86  2008/02/27 16:35:12  dreyer
  * Fix: Polynomial(0|1) removed, where possible
  *
@@ -354,6 +357,29 @@ class CExpIter;
 template<class NavigatorType, class ExpType>
 class CGenericIter2;
 
+
+class BooleConstant {
+
+public:
+
+  BooleConstant(): m_value(false) {}
+
+  BooleConstant(bool value): m_value(value) {}
+
+  BooleConstant(int value): m_value(value % 2) {}
+
+  operator bool() const { return m_value; }
+  BooleConstant operator!() const { return !m_value; }
+
+  template <class Type>
+  Type generate(const Type& rhs) const {
+    return (m_value? rhs.one(): rhs.zero());
+  }
+
+protected:
+  const bool m_value;
+};
+
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the
  * necessary operations.
@@ -408,6 +434,9 @@ public:
 
   /// Fix type for treatment of exponent vectors
   typedef BooleExponent exp_type; 
+
+  /// Type for wrapping integer and bool values
+  typedef BooleConstant constant_type;
 
   /// Incrementation functional type
   typedef 
@@ -486,10 +515,7 @@ public:
   BoolePolynomial();
 
   /// Construct polynomial from a constant value 0 or 1
-  BoolePolynomial(bool_type);
-
-  /// Construct polynomial from a constant value
-  explicit BoolePolynomial(int);
+  explicit BoolePolynomial(constant_type rhs);
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
@@ -513,32 +539,67 @@ public:
   // operators and member functions
   //-------------------------------------------------------------------------
 
+  //  self& operator=(const self& rhs) { 
+  //  return m_dd = rhs.m_dd;
+  // }
+
+  self& operator=(constant_type rhs) { 
+    return (*this) = rhs.generate(*this); 
+  }
   /// @name Arithmetical operations
   //@{
+  const self& operator-() const { return *this; }
   self& operator+=(const self&);
-  self& operator-=(const self& rhs) { return operator+=(rhs); }
+  self& operator+=(constant_type rhs) {
+    if (rhs) (*this) += one();
+    return *this;
+  }
+  template <class RHSType>
+  self& operator-=(const RHSType& rhs) { return operator+=(rhs); }
   self& operator*=(const monom_type&);
   self& operator*=(const exp_type&);
   self& operator*=(const self&);
+  self& operator*=(constant_type rhs) {
+    if (!rhs) *this = zero();
+    return *this;
+  }
   self& operator/=(const monom_type&);
   self& operator/=(const exp_type&);
-  self& operator/=(const self&);
+  self& operator/=(const self& rhs);
+  self& operator/=(constant_type rhs) { return (*this) *= rhs; }
   self& operator%=(const monom_type&);
-  self& operator%=(const self&);
+  self& operator%=(const self& rhs) { 
+    return (*this) -= (self(rhs) *= (self(*this) /= rhs)); 
+  }
+  self& operator%=(constant_type rhs) { return (*this) /= (!rhs); }
   //@}
 
   /// @name Logical operations
   //@{
-  bool_type operator==(const self&) const;
-  bool_type operator!=(const self&) const;
-  bool_type operator==(bool_type) const;
-  bool_type operator!=(bool_type) const;
-  bool_type isZero() const;
-  bool_type isOne() const;
-  bool_type isConstant() const;
-  bool_type hasConstantPart() const;
-  bool_type reducibleBy(const self&) const;
+  bool_type operator==(const self& rhs) const { return (m_dd == rhs.m_dd); }
+  bool_type operator!=(const self& rhs) const { return (m_dd != rhs.m_dd); }
+  bool_type operator==(constant_type rhs) const { 
+    return ( rhs? isOne(): isZero() );
+  }
+  bool_type operator!=(constant_type rhs) const {
+    return ( rhs? isZero(): isOne() );
+  }
   //@}
+
+  /// Check whether polynomial is constant zero
+  bool_type isZero() const { return m_dd.emptiness(); }
+
+  /// Check whether polynomial is constant one 
+  bool_type isOne() const { return m_dd.blankness(); }
+
+  /// Check whether polynomial is zero or one
+  bool_type isConstant() const { return m_dd.isConstant(); }
+
+  /// Check whether polynomial has term one  
+  bool_type hasConstantPart() const { return m_dd.ownsOne(); }
+
+  /// Tests whether polynomial can be reduced by right-hand side
+  bool_type reducibleBy(const self&) const;
 
   /// Get leading term
   monom_type lead() const;
@@ -739,55 +800,60 @@ private:
 inline BoolePolynomial 
 operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
 
-   BoolePolynomial result(lhs);
-   result += rhs;
+  return BoolePolynomial(lhs) += rhs;
+}
+/// Addition operation 
+inline BoolePolynomial 
+operator+(const BoolePolynomial& lhs, BooleConstant rhs) {
 
-   return result;
+  return BoolePolynomial(lhs) += rhs;
 }
 
-/// Subtraction operation 
+/// Addition operation 
 inline BoolePolynomial 
-operator-(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
+operator+(BooleConstant lhs, const BoolePolynomial& rhs) {
+
+  return BoolePolynomial(rhs) += lhs;
+}
+
+
+/// Subtraction operation 
+template <class RHSType>
+inline BoolePolynomial 
+operator-(const BoolePolynomial& lhs, const RHSType& rhs) {
 
   return BoolePolynomial(lhs) -= rhs;
 }
+/// Subtraction operation with constant right-hand-side
+inline BoolePolynomial 
+operator-(const BooleConstant& lhs, const BoolePolynomial& rhs) {
 
-/// Multiplication with monomial
-inline BoolePolynomial
-operator*(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
-
-  return BoolePolynomial(lhs) *= rhs;
+  return -(BoolePolynomial(rhs) -= lhs);
 }
 
-/// Multiplication of monomials by a polynomial
-inline BoolePolynomial
-operator*(const BoolePolynomial::monom_type& lhs, 
-          const BoolePolynomial& rhs){
 
-  return BoolePolynomial(rhs) *= lhs;
-}
+/// Multiplication with other left-hand side type
+#define PBORI_RHS_MULT(type) inline BoolePolynomial \
+operator*(const BoolePolynomial& lhs, const type& rhs) { \
+    return BoolePolynomial(lhs) *= rhs; }
 
-/// Multiplication with monomial
-inline BoolePolynomial
-operator*(const BoolePolynomial& lhs, const BoolePolynomial::exp_type& rhs){
+PBORI_RHS_MULT(BoolePolynomial)
+PBORI_RHS_MULT(BooleMonomial)
+PBORI_RHS_MULT(BooleExponent)
+PBORI_RHS_MULT(BooleConstant)
 
-  return BoolePolynomial(lhs) *= rhs;
-}
+#undef PBORI_RHS_MULT
 
-/// Multiplication of monomials by a polynomial
-inline BoolePolynomial
-operator*(const BoolePolynomial::exp_type& lhs, 
-          const BoolePolynomial& rhs){
+/// Multiplication with other left-hand side type
+#define PBORI_LHS_MULT(type)  inline BoolePolynomial \
+operator*(const type& lhs, const BoolePolynomial& rhs) { return rhs * lhs; }
 
-  return BoolePolynomial(rhs) *= lhs;
-}
+PBORI_LHS_MULT(BooleMonomial)
+PBORI_LHS_MULT(BooleExponent)
+PBORI_LHS_MULT(BooleConstant)
 
-/// Multiplication with monomial
-inline BoolePolynomial
-operator*(const BoolePolynomial& lhs, const BoolePolynomial& rhs){
+#undef PBORI_LHS_MULT
 
-  return BoolePolynomial(lhs) *= rhs;
-}
 
 /// Division by monomial (skipping remainder)
 template <class RHSType>
@@ -798,15 +864,9 @@ operator/(const BoolePolynomial& lhs, const RHSType& rhs){
 }
 
 /// Modulus monomial (division remainder)
+template <class RHSType>
 inline BoolePolynomial
-operator%(const BoolePolynomial& lhs, const BoolePolynomial::monom_type& rhs){
-
-  return BoolePolynomial(lhs) %= rhs;
-}
-
-/// Modulus monomial (division remainder)
-inline BoolePolynomial
-operator%(const BoolePolynomial& lhs, const BoolePolynomial& rhs){
+operator%(const BoolePolynomial& lhs, const RHSType& rhs){
 
   return BoolePolynomial(lhs) %= rhs;
 }
@@ -829,41 +889,21 @@ operator!=(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 BoolePolynomial::ostream_type& 
 operator<<(BoolePolynomial::ostream_type&, const BoolePolynomial&);
 
-// Check whether polynomial is zero
+// tests whether polynomial can be reduced by rhs
 inline BoolePolynomial::bool_type
-BoolePolynomial::isZero() const {
+BoolePolynomial::reducibleBy(const self& rhs) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::isZero() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::reducibleBy(const self&) const" );
 
-  return m_dd.emptiness();
-}
+  if( rhs.isOne() )
+    return true;
 
-// Check whether polynomial is one
-inline BoolePolynomial::bool_type
-BoolePolynomial::isOne() const {
+  if( isZero() )
+    return rhs.isZero();
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::isOne() const" );
+  return std::includes(firstBegin(), firstEnd(), 
+                       rhs.firstBegin(), rhs.firstEnd());
 
-  return m_dd.blankness();
-}
-
-// Check whether polynomial is zero or one
-inline BoolePolynomial::bool_type
-BoolePolynomial::isConstant() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::isConstant() const" );
-
-  return m_dd.isConstant();
-}
-
-
-// Check whether polynomial own the one term
-inline BoolePolynomial::bool_type
-BoolePolynomial::hasConstantPart() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::hasConstantPart() const" );
-
-  return m_dd.ownsOne();
 }
 
 
