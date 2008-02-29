@@ -212,6 +212,9 @@ class PythonConfig(object):
                                    querycmd("get_python_inc()"))
         self.staticlibdir = shell_output(self.python, "-c",
                                          querycmd("get_config_vars()['LIBPL']"))
+        self.libs = shell_output(self.python, "-c",
+                                 querycmd("get_config_vars()['LIBS']"))
+        self.libs = self.libs.replace('-l','').split()
         self.libname = 'python' + str(self.version)
 
 
@@ -231,7 +234,7 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
 env.Append(CPPPATH=[PBPath('include')])
 env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 env.Append(LIBPATH=["polybori","groebner"])
-env.Prepend(LIBS=["m"])
+env.Prepend(LIBS = pyconf.libs +["m"])
 
 
 from re import search
