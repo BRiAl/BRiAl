@@ -15,6 +15,11 @@ else
 CFLAGS += -O2
 endif
 
+
+PYTHON = /usr/bin/python 
+PYTHONSITE = `$(PYTHON) -c 'import setuptools; print setuptools.distutils.sysconfig.get_python_lib() '`
+
+
 INSTALLDIR = $(CURDIR)/debian/polybori/usr/lib/polybori
 
 build: build-stamp
@@ -43,12 +48,12 @@ install: build
 	dh_installdirs
 
 # Add here commands to install the package into debian/polybori.
-# todo: PYINSTALLPREFIX PYPREFIX
 	scons install PREFIX=$(CURDIR)/debian/polybori/usr \
 		EPREFIX=$(CURDIR)/debian/polybori/usr/bin \
 		DOCDIR=$(CURDIR)/debian/polybori/usr/share/doc/polybori \
-		INSTALLDIR=$(INSTALLDIR) \
-		PYINSTALLPREFIX=$(INSTALLDIR)/python/site-packages/
+		INSTALLDIR=$(INSTALLDIR) PYPREFIX=/usr \
+		PYINSTALLPREFIX=$(CURDIR)/debian/polybori$(PYTHONSITE) \
+		PBP=$(PYTHON)
 
 
 # Build architecture-independent files here.
