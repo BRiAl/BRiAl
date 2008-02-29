@@ -46,6 +46,9 @@ def SplitColonSep(arg):
         result += element.split(':')
     return result
 
+def shell_output(*args):
+    return os.popen(' '.join(args)).read().strip()
+
 pyroot="pyroot/"
 ipbroot = 'ipbori'
 cudd_name = 'pboriCudd'
@@ -87,7 +90,7 @@ if distribute or rpm_generation or deb_generation:
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
 opts.Add('CC', 'C Compiler', "gcc")
-opts.Add('PBP', 'PolyBoRi python', "python")
+opts.Add('PYTHON', 'Python executable', "python")
 
 opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
@@ -106,20 +109,16 @@ opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
 opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
 
 opts.Add('INSTALLDIR', 'end user installation directory',
-                    '$PREFIX/share/polybori')
+         '$PREFIX/share/polybori')
 opts.Add('DOCDIR', 'documentation installation directory',
-                    '$INSTALLDIR/doc')
-opts.Add('PYINSTALLPREFIX', 'python modules directory',
-                    '$INSTALLDIR/pyroot')
+         '$INSTALLDIR/doc')
+opts.Add('PYINSTALLPREFIX',
+         'python modules directory (default is built-in site)', '$PYTHONSITE')
 
 opts.Add('DEVEL_PREFIX',
-                    'development version installation directory','$PREFIX' )
+         'development version installation directory','$PREFIX' )
 
-opts.Add('PYPREFIX', 'alternative python directory to be searched',
-                    '/sw')
-opts.Add('SINGULAR_HOME',
-                    'directory of Singular development version',
-                    '')
+opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
 opts.Add(BoolOption('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
@@ -159,13 +158,12 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
         pass
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
-Help(opts.GenerateHelpText(env))
 
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN']
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
 BOOST_WORKS = env['BOOST_WORKS']
-PYPREFIX = env['PYPREFIX']
+#PYPREFIX = env['PYPREFIX']
 SINGULAR_HOME = env['SINGULAR_HOME']
 USERLIBS = env['LIBS']
 
@@ -199,30 +197,36 @@ except KeyError:
 
 
 class PythonConfig(object):
-    def __init__(self, version="2.4", prefix="/usr", libdir=None, incdir=None, libname=None):
-        self.version=version
-        if libdir:
-            self.libdir=libdir
-        else:
-            self.libdir = path.join(prefix, 'lib')
-        self.prefix=prefix
-        if libname:
-            self.libname=libname
-        else:
-            self.libname="python"+self.version
-        if incdir:
-            self.incdir=incdir
-        else:
-            self.incdir = path.join(self.prefix,'include','python'+self.version)
-        self.staticlibdir = path.join(self.libdir, 'python' + version, 'config')
+    def __init__(self, python_executable):
+        def querycmd(arg):
+            return '"from distutils.sysconfig import *; print ' + arg + '"'
+        
+        self.python = python_executable
+        self.version = shell_output(self.python, "-c",
+                                    querycmd("get_python_version()"))
+        self.sitedir = shell_output(self.python, "-c",
+                                    querycmd("get_python_lib()"))
+        self.libdir = shell_output(self.python, "-c",
+                                   querycmd("get_config_vars()['LIBDIR']"))
+        self.incdir = shell_output(self.python, "-c",
+                                   querycmd("get_python_inc()"))
+        self.staticlibdir = shell_output(self.python, "-c",
+                                         querycmd("get_config_vars()['LIBPL']"))
+        self.libname = 'python' + str(self.version)
 
-PYTHONSEARCH=[\
-    PythonConfig(version="2.5", prefix=PYPREFIX),\
-    PythonConfig(version="2.4", prefix=PYPREFIX),\
-    PythonConfig(version="2.5"),
-    PythonConfig(version="2.4")]
 
 conf = Configure(env)
+pyconf = PythonConfig(env["PYTHON"])
+
+env.AppendUnique(PYTHONSITE = pyconf.sitedir)
+
+# Generate usage for scons -h here
+# (PYTHONSITE is already evaluated, but not python-specific paths)
+Help(opts.GenerateHelpText(env))
+
+if HAVE_PYTHON_EXTENSION or extern_python_ext:
+    env.Append(CPPPATH=[pyconf.incdir])
+    env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
 
 env.Append(CPPPATH=[PBPath('include')])
 env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
@@ -234,26 +238,7 @@ from re import search
 for variable in os.environ:
     if search("SAGE",variable):
         env['ENV'][variable]=os.environ[variable]
-#if env['PLATFORM']=="darwin":
-#        env.Append(LIBPATH="/sw/lib")
-#        env.Append(CPPPATH="/sw/include")
-#workaround for linux
-#env.Append(LIBPATH=".")
 
-
-
-
-
-
-
-for c in PYTHONSEARCH:
-    if conf.CheckCHeader(path.join(c.incdir, "Python.h")):
-        PYTHON_CONFIG=c
-        print "Python.h found in " + c.incdir
-        env.Append(CPPPATH=[c.incdir])
-        env.Append(LIBPATH=[c.staticlibdir])
-        #pop it?
-        break
 
 if HAVE_PYTHON_EXTENSION:
     if not (BOOST_WORKS or
@@ -423,6 +408,9 @@ def add_cnf_dir(env,directory):
 
 pydocu = []
 dynamic_modules = []
+
+python_absolute = shell_output("which", env["PYTHON"])
+
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
     dd_wrapper.cc Poly_wrapper.cc navigator_wrap.cc variable_block.cc
@@ -432,7 +420,7 @@ if HAVE_PYTHON_EXTENSION:
     if env['PLATFORM']=="darwin":
         pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
-            LINKFLAGS="-bundle_loader " + c.prefix+"/bin/python",
+            LINKFLAGS="-bundle_loader " + python_absolute,
             LIBS=LIBS,LDMODULESUFFIX=".so",
             CPPPATH=CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
     else:
@@ -463,7 +451,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS = LIBS + ["python"+c.version] + USERLIBS,
+            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
     sys.path.append(TestsPath("py"))
     from StringIO import StringIO
@@ -516,7 +504,7 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
 
         return (target, source)
 
-    bld = Builder(action = "$PBP doc/python/genpythondoc.py " + pyroot,
+    bld = Builder(action = "$PYTHON doc/python/genpythondoc.py " + pyroot,
                   emitter = pypb_emitter)
 
     # Add the new Builder to the list of builders
@@ -928,7 +916,7 @@ def GeneratePyc(sources):
     for file in sources:
         (fbase, fext) = path.splitext(file.name)
         if (fext == '.py') :
-            cmdline = """$PBP -c "import py_compile; """
+            cmdline = """$PYTHON -c "import py_compile; """
             cmdline +=  """py_compile.compile('""" + str(file) + """')" """ 
             results += env.Command(str(file) +'c', file, cmdline)
 
@@ -1031,3 +1019,4 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 env.Alias('prepare-devel', devellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
+
