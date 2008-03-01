@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.113  2008/03/01 01:11:25  dreyer
+ * Fix: working around bug in addition
+ *
  * Revision 1.112  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -444,7 +447,6 @@ BoolePolynomial::BoolePolynomial(constant_type isOne):
 
   PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
 }
-
 
 // Constructor polynomial from existing decision diagram
 BoolePolynomial::BoolePolynomial(const dd_type& rhs):

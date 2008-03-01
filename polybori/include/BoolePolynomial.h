@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.88  2008/03/01 01:11:25  dreyer
+ * Fix: working around bug in addition
+ *
  * Revision 1.87  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -385,6 +388,10 @@ protected:
  * necessary operations.
  *
  **/
+class BoolePolynomial;
+BoolePolynomial 
+operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs);
+
 class BoolePolynomial {
 
 public:
@@ -544,15 +551,17 @@ public:
   // }
 
   self& operator=(constant_type rhs) { 
-    return (*this) = rhs.generate(*this); 
+    return (*this) = self(rhs);//rhs.generate(*this); 
   }
   /// @name Arithmetical operations
   //@{
   const self& operator-() const { return *this; }
   self& operator+=(const self&);
   self& operator+=(constant_type rhs) {
-    if (rhs) (*this) += one();
-    return *this;
+
+    //return *this = (self(*this) + (rhs).generate(*this));
+     if (rhs) (*this) = (*this + one());
+     return *this;
   }
   template <class RHSType>
   self& operator-=(const RHSType& rhs) { return operator+=(rhs); }
@@ -805,15 +814,15 @@ operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs) {
 /// Addition operation 
 inline BoolePolynomial 
 operator+(const BoolePolynomial& lhs, BooleConstant rhs) {
-
-  return BoolePolynomial(lhs) += rhs;
+  return BoolePolynomial(lhs) +=  (rhs);
+  //return BoolePolynomial(lhs) +=  BoolePolynomial(rhs);
 }
 
 /// Addition operation 
 inline BoolePolynomial 
 operator+(BooleConstant lhs, const BoolePolynomial& rhs) {
 
-  return BoolePolynomial(rhs) += lhs;
+  return BoolePolynomial(rhs) += (lhs);
 }
 
 
@@ -841,6 +850,7 @@ PBORI_RHS_MULT(BoolePolynomial)
 PBORI_RHS_MULT(BooleMonomial)
 PBORI_RHS_MULT(BooleExponent)
 PBORI_RHS_MULT(BooleConstant)
+
 
 #undef PBORI_RHS_MULT
 

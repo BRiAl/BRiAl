@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.34  2008/03/01 01:11:24  dreyer
+ * Fix: working around bug in addition
+ *
  * Revision 1.33  2008/02/28 17:05:46  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -378,6 +381,8 @@ inline BooleMonomial
 operator*(BooleConstant lhs, const BooleMonomial& rhs) {
   return rhs * lhs;
 }
+
+
 /// Division of monomials
 template <class RHSType>
 inline BooleMonomial
