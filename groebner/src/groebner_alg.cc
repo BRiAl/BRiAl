@@ -738,7 +738,7 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
 #if 0
   //buggy variant 2
   if (p==Polynomial(m))
-    return p.zero();
+    return p.ring().zero();
   BooleSet dividing_terms
     =BooleSet(p/m);
     
@@ -1379,7 +1379,7 @@ Polynomial translate_indices(const Polynomial& p, const std::vector<idx_type>& t
     
 #if 0
 return
-  dd_backward_transform(p.navigation(), p.zero(), 
+  dd_backward_transform(p.navigation(), p.ring().zero(), 
                             mapped_new_node<std::vector<idx_type>,
                             Variable, Monomial, Polynomial>(table), 
                             integral_constant<bool, true, Polynomial>());
@@ -2309,7 +2309,7 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
   //cout<<"p_opp"<<p_opp<<endl;
-  const Polynomial one_element(p_opp.one());
+  const Polynomial one_element(p_opp.ring().one());
   Polynomial mult_by(one_element);
   LiteralFactorization factors_opp(p_opp);
   

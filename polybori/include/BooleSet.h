@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.41  2008/02/27 16:35:13  dreyer
  * Fix: Polynomial(0|1) removed, where possible
  *
@@ -149,6 +152,7 @@
 
 // include polybori functionals
 #include "pbori_func.h"
+#include "BooleRing.h"
 
 #ifndef BooleSet_h_
 #define BooleSet_h_
@@ -203,6 +207,9 @@ public:
 
   /// Fix type for treatment of exponent vectors
   typedef BooleExponent exp_type; 
+
+  /// Type for Boolean polynomial rings (without ordering)
+  typedef BooleRing ring_type;
 
   /// Iterator type for iterating all monomials
   typedef CGenericIter<LexOrder, navigator, term_type> const_iterator;
@@ -392,10 +399,13 @@ public:
   double countIndexDouble(idx_type idx) const ;
 
   /// Get one in corresponding ring
-  self one() const { return base::blankElement(); }
+  //  self one() const { return ring().one(); }
 
   /// Get zero in corresponding ring
-  self zero() const { return base::emptyElement(); }
+  // self zero() const { return ring().zero(); }
+
+  /// Access ring, where this belongs to
+  ring_type ring() const { return ring_type(base::manager()); } 
 };
 
 /// Stream output operator

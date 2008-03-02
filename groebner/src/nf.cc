@@ -67,7 +67,7 @@ Polynomial nf2(GroebnerStrategy& strat, Polynomial p){
         //if (p!=strat.generators[index].lm)
           p=reduce_by_monom(p,strat.generators[index].lm);
         //else
-        //  p=p.zero();
+        //  p=p.ring().zero();
       } else{
         assert(!(p.isZero()));
         assert(p.reducibleBy(*g));
@@ -119,7 +119,7 @@ Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p){
         //if (p!=strat.generators[index].lm)
         p=reduce_by_monom(p,strat.generators[index].lm);
         //else
-        //  p=p.zero();
+        //  p=p.ring().zero();
       } else{
         assert(!(p.isZero()));
         assert(p.reducibleBy(*g));
@@ -202,7 +202,7 @@ Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial 
       bucket+=(exp-strat.generators[index].lmExp)*(*g);
     }
     if (bucket.isZero())
-      return p.zero();
+      return p.ring().zero();
     else
         rest_lead=(Monomial) bucket.leadExp();
   }
@@ -1336,11 +1336,13 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
 #endif
 
 Polynomial add_up_monomials(const std::vector<Monomial>& vec){
-  return add_up_generic(vec, (vec.empty()? Polynomial(0): vec[0].zero()) );
+  return add_up_generic(vec, (vec.empty()? Polynomial(0): 
+                              (Polynomial)vec[0].ring().zero()) );
 
 }
 Polynomial add_up_polynomials(const std::vector<Polynomial>& vec){
-  return add_up_generic(vec, (vec.empty()? Polynomial(0): vec[0].zero()) );
+  return add_up_generic(vec, (vec.empty()? Polynomial(0): 
+                              (Polynomial)vec[0].ring().zero()) );
 
 }
 Polynomial add_up_exponents(const std::vector<Exponent>& vec){
@@ -1404,7 +1406,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
         it++;
     }
     if ((!(changed))&& (it==end)) return orig_p;
-    Polynomial irr_p=add_up_monomials(irr, p.zero());
+    Polynomial irr_p=add_up_monomials(irr, p.ring().zero());
     int s,i;
     s=irr.size();
     assert(s==irr_p.length());
@@ -1426,7 +1428,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=add_up_monomials(res_vec, p.zero());
+  res=add_up_monomials(res_vec, p.ring().zero());
   return res;
 }
 #else
@@ -1460,7 +1462,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
     if (it!=end) {
-      irr_p=add_up_generic(irr, p.zero());
+      irr_p=add_up_generic(irr, p.ring().zero());
         rest_lead=*it;
         }
     else irr_p=p;
@@ -1489,7 +1491,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec, p.zero());
+  res=unite_polynomials(res_vec, p.ring().zero());
   return res;
 }
 
@@ -1548,7 +1550,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
     if ((it!=end) &&(!(rest_is_irreducible))) {
-      irr_p=Helper::sum_range(irr,it_orig,it, p.zero());//add_up_monomials(irr);
+      irr_p=Helper::sum_range(irr,it_orig,it, p.ring().zero());//add_up_monomials(irr);
         rest_lead=*it;
         
         }
@@ -1567,7 +1569,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec, p.zero());
+  res=unite_polynomials(res_vec, p.ring().zero());
   return res;
 }
 
@@ -2096,7 +2098,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
     }
     polys.clear();
-    terms_unique = add_up_generic(terms_unique_vec, terms.zero());
+    terms_unique = add_up_generic(terms_unique_vec, terms.ring().zero());
     assert(terms_step1.diff(terms).emptiness());
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;

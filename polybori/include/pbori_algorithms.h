@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.21  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -133,7 +136,7 @@ lower_term_accumulate(NaviType navi,
   }
   
   if (navi.isConstant())
-    return (navi.terminalValue()? init.one(): init);//BooleSet(navi);
+    return (navi.terminalValue()? (ValueType)init.ring().one(): init);
   
   assert(*lstart >= *navi);
 
@@ -177,7 +180,7 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
 
   // assuming (ustart .. ufinish) never means zero
   if (ustart == ufinish)
-    return init.one();
+    return init.ring().one();
   
   while (*navi < *ustart)
     navi.incrementElse();
@@ -204,7 +207,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
     return upper_term_accumulate(ustart, ufinish, navi, init);
 
   if (ustart == ufinish)
-    return init.one();
+    return init.ring().one();
 
   while (*navi < *ustart)
     navi.incrementElse();

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.17  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -110,6 +113,9 @@ class BooleVariable {
   /// Generic access to current type
   typedef BooleVariable self;
 
+  /// Type for Boolean polynomial rings (without ordering)
+  typedef BooleRing ring_type;
+
   /// Constructor idx-th variable of active ring
   explicit BooleVariable(idx_type idx = 0):
     m_poly( BooleEnv::persistentVariable(idx) ) {}
@@ -135,6 +141,10 @@ class BooleVariable {
         return m_poly!=other.m_poly;
   }
   set_type set() const { return m_poly.set(); }
+
+  /// Access ring, where this belongs to
+  ring_type ring() const { return m_poly.ring(); } 
+
 private:
   BoolePolynomial m_poly;
 };

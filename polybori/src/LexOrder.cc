@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.20  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -164,7 +167,7 @@ LexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
 
-  monom_type leadterm = base::monom(poly.set().one());
+  monom_type leadterm = base::monom(poly.ring().one());
    
   if (poly.isZero())
     leadterm = base::monom(poly.set());

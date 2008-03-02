@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.44  2007/12/19 10:40:34  dreyer
  * CHANGE: make Cudd-related globals initialization static
  *
@@ -178,9 +181,7 @@ BEGIN_NAMESPACE_PBORI
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
-  base(),
-  pMgr(CTypes::manager_ptr(new CTypes::manager_type(nvars))),
-  pOrder(get_ordering(order)) {
+  base(nvars), pOrder(get_ordering(order)) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
   if(make_active)

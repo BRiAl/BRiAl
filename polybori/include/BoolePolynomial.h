@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.89  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.88  2008/03/01 01:11:25  dreyer
  * Fix: working around bug in addition
  *
@@ -309,6 +312,7 @@
 // get standard algorithmic functionalites
 #include <algorithm>
 
+#include "BooleRing.h"
 // include basic definitions and decision diagram interface
 #include "CDDInterface.h"
 
@@ -376,7 +380,7 @@ public:
 
   template <class Type>
   Type generate(const Type& rhs) const {
-    return (m_value? rhs.one(): rhs.zero());
+    return (m_value? rhs.ring().one(): rhs.ring().zero());
   }
 
 protected:
@@ -444,6 +448,9 @@ public:
 
   /// Type for wrapping integer and bool values
   typedef BooleConstant constant_type;
+
+  /// Type for Boolean polynomial rings (without ordering)
+  typedef BooleRing ring_type;
 
   /// Incrementation functional type
   typedef 
@@ -560,7 +567,7 @@ public:
   self& operator+=(constant_type rhs) {
 
     //return *this = (self(*this) + (rhs).generate(*this));
-     if (rhs) (*this) = (*this + one());
+    if (rhs) (*this) = (*this + ring().one());
      return *this;
   }
   template <class RHSType>
@@ -569,7 +576,7 @@ public:
   self& operator*=(const exp_type&);
   self& operator*=(const self&);
   self& operator*=(constant_type rhs) {
-    if (!rhs) *this = zero();
+    if (!rhs) *this = ring().zero();
     return *this;
   }
   self& operator/=(const monom_type&);
@@ -782,10 +789,13 @@ public:
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
   /// Get corresponding zero element
-  self zero() const { return m_dd.emptyElement(); }
+  // self zero() const { return ring().zero(); }
 
   /// Get one in corresponding ring
-  self one() const { return m_dd.blankElement(); }
+  //  self one() const { return ring().one(); }
+
+  /// Access ring, where this belongs to
+  ring_type ring() const { return ring_type(m_dd.manager()); } 
 
 protected:
 

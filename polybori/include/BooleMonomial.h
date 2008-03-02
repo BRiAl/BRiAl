@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.35  2008/03/02 23:24:36  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.34  2008/03/01 01:11:24  dreyer
  * Fix: working around bug in addition
  *
@@ -193,6 +196,9 @@ class BooleMonomial {
   /// Type of exponent vector
   typedef BooleExponent exp_type;
 
+  /// Type for Boolean polynomial rings (without ordering)
+  typedef BooleRing ring_type;
+
   /// Access to iterator type of leading terms
   typedef poly_type::first_iterator const_iterator;
 
@@ -278,7 +284,7 @@ class BooleMonomial {
   self& operator*=(const var_type&);
   self& operator/=(const var_type&);
   self& operator*=(constant_type rhs) {
-    if (!rhs) *this = zero();
+    if (!rhs) *this = self(ring().zero());
     return *this;
   }
   self& operator/=(constant_type rhs) { return operator*=(rhs); }
@@ -340,14 +346,10 @@ class BooleMonomial {
     return *begin();
   }
 
-  /// Get corresponding zero element
-  self zero() const { return m_poly.set().zero(); }
-
-  /// Get one in corresponding ring
-  self one() const { return m_poly.set().one(); }
+  /// Access ring, where this belongs to
+  ring_type ring() const { return m_poly.ring(); } 
 
 protected:
-
   /// Access to internal decision diagramm structure
   dd_type& internalDiagram() { return m_poly.internalDiagram(); }
 

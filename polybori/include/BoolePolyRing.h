@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2008/03/02 23:24:37  dreyer
+ * CHANGE: ring elements like polynomials, monomials, and variables have ring()
+ *
  * Revision 1.43  2007/12/13 16:18:07  dreyer
  * CHANGE: removed unnecessary friend declaration
  *
@@ -160,6 +163,7 @@
 #include "CDDManager.h"
 #include "OrderedManager.h"
 
+#include "BooleRing.h"
 
   // temporarily for work around
 #include <list>
@@ -171,26 +175,19 @@
 BEGIN_NAMESPACE_PBORI
 
 class COrderBase;
-
-
 class CDynamicOrderBase;
-
 
 class BooleExponent;
 class BooleMonomial;
 
 
 /** @class BoolePolyRing
- * @brief This class is just a wrapper for using @c cudd's decicion diagram
- * manager as Boolean polynomial rings.
+ * @brief This class adds order-related functionality to BooleRing.
  *
- * The purpose of this wrapper is just to provide a fixed interface to the ring
- * structure, even if switched to a different type of binary decision diagram.
  *
  **/
 class BoolePolyRing: 
-  public CTypes::orderenums_type, public CTypes::compenums_type, 
-  public CTypes::auxtypes_type {
+  public BooleRing {
 
  public:
   //-------------------------------------------------------------------------
@@ -201,17 +198,7 @@ class BoolePolyRing:
   typedef BoolePolyRing self;
 
   /// generic access to base type
-  typedef CTypes::orderenums_type base;
-
-  /// @name adopt global type definitions
-  //@{
-  typedef CTypes::ordercode_type ordercode_type;
-  typedef CTypes::manager_type manager_type;
-  typedef CTypes::manager_reference manager_reference;
-  typedef CTypes::manager_ptr manager_ptr;
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::vartext_type vartext_type;
-  //@}
+  typedef BooleRing base;
 
   /// define exponent type
   typedef BooleExponent exp_type;
@@ -224,6 +211,15 @@ class BoolePolyRing:
 
   /// Type for block iterators
   typedef block_idx_type::const_iterator block_iterator;
+
+  /// Type for handling mterm orderings
+  typedef CDynamicOrderBase order_type;
+  
+  /// Smart pointer for handling mterm orderings
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+
+  /// Reference for handling mterm orderings
+  typedef order_type& order_reference;
 
   //-------------------------------------------------------------------------
   // constructors and destructor
@@ -240,51 +236,13 @@ class BoolePolyRing:
   /// destructor
   ~BoolePolyRing() {}
 
-  /// Access to decision diagram manager
-  manager_type& manager() {  return *pMgr; }
-
-  /// Constant access to decision diagram manager
-  const manager_type& manager() const {  return *pMgr; }
-
-  /// Access nvar-th variable of decision diagram manager
-  dd_type ddVariable(idx_type nvar) const { return pMgr->ddVariable(nvar); }
-
-
-  /// Access nvar-th ring variable
-  dd_type variable(idx_type nvar) const { return pMgr->variable(nvar); }
-
-  /// Access nvar-th ring variable
-  dd_type persistentVariable(idx_type nvar) const { 
-    return pMgr->persistentVariable(nvar); 
-  }
-
-  /// Get empty decision diagram 
-  dd_type zero() const { return pMgr->empty(); }
-
-  /// Get decision diagram with all variables negated
-  dd_type one() const { return pMgr->blank(); }
-
-  /// Get number of ring variables
-  size_type nVariables() const { return pMgr->nVariables(); }
-
   /// Make this global ring
   void activate();
-
-  /// Print out statistics and settings for current ring
-  void printInfo() {  return pMgr->printInfo(); }
 
 
   /// Change order of current ring
   void changeOrdering(ordercode_type);
 
-  /// Clears the function cache
-  void clearCache() { cuddCacheFlush(pMgr->manager().getManager()); }
-
-protected: 
-  /// Interprete @c m_mgr as structure of Boolean polynomial ring
-  manager_ptr pMgr;
-
-public:
   idx_type lastBlockStart() {
     if (ordering().isBlockOrder()) {
       return *(ordering().blockEnd() - 2);
@@ -295,19 +253,12 @@ public:
     return 0;
   }
 
-  typedef CDynamicOrderBase order_type;
-  typedef PBORI_SHARED_PTR(order_type) order_ptr;
-  typedef order_type& order_reference;
-
   /// Access ordering of *this
   order_reference ordering() const { return *pOrder; }
-protected:
 
+protected:
   /// *Ordering of *this
   order_ptr pOrder;
-
-
-
 };
 
 END_NAMESPACE_PBORI
