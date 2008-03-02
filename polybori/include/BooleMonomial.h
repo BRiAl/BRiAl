@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.36  2008/03/02 23:45:33  dreyer
+ * CHANGED: added contructors for given ring
+ *
  * Revision 1.35  2008/03/02 23:24:36  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -226,6 +229,9 @@ class BooleMonomial {
 
   /// Construct from Boolean constant
   explicit BooleMonomial(constant_type val): m_poly(val) {}
+
+  /// Construct from Boolean constant and given ring
+  BooleMonomial(constant_type val, const ring_type& ring): m_poly(val, ring) {}
 
   /// Destructor
   ~BooleMonomial() {}

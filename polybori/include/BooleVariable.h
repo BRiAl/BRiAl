@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/03/02 23:45:34  dreyer
+ * CHANGED: added contructors for given ring
+ *
  * Revision 1.18  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -119,6 +122,10 @@ class BooleVariable {
   /// Constructor idx-th variable of active ring
   explicit BooleVariable(idx_type idx = 0):
     m_poly( BooleEnv::persistentVariable(idx) ) {}
+
+  /// Constructor idx-th variable of a given ring
+  BooleVariable(idx_type idx, const ring_type& ring):
+    m_poly( ring.persistentVariable(idx) ) {}
   
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;

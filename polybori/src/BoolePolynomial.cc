@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.114  2008/03/02 23:45:34  dreyer
+ * CHANGED: added contructors for given ring
+ *
  * Revision 1.113  2008/03/01 01:11:25  dreyer
  * Fix: working around bug in addition
  *
@@ -443,7 +446,14 @@ BoolePolynomial::BoolePolynomial():
 
 // Construct polynomial from a constant value 0 or 1
 BoolePolynomial::BoolePolynomial(constant_type isOne):
-  m_dd(isOne? BooleEnv::ring().one()  : BooleEnv::ring().zero() )  {
+  m_dd(isOne? BooleEnv::ring().one(): BooleEnv::ring().zero() )  {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
+}
+
+// Construct polynomial from a constant value 0 or 1
+BoolePolynomial::BoolePolynomial(constant_type isOne, const ring_type& ring):
+  m_dd(isOne? ring.one(): ring.zero() )  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
 }

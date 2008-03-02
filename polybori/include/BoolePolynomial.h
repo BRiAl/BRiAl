@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.90  2008/03/02 23:45:33  dreyer
+ * CHANGED: added contructors for given ring
+ *
  * Revision 1.89  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -529,7 +532,10 @@ public:
   BoolePolynomial();
 
   /// Construct polynomial from a constant value 0 or 1
-  explicit BoolePolynomial(constant_type rhs);
+  explicit BoolePolynomial(constant_type);
+
+  /// Construct polynomial from a constant value 0 or 1
+  BoolePolynomial(constant_type, const ring_type&);
 
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type&);
@@ -787,12 +793,6 @@ public:
 
   /// Test, whether we have two terms only
   bool_type isPair() const { return dd_is_pair(navigation()); }
-
-  /// Get corresponding zero element
-  // self zero() const { return ring().zero(); }
-
-  /// Get one in corresponding ring
-  //  self one() const { return ring().one(); }
 
   /// Access ring, where this belongs to
   ring_type ring() const { return ring_type(m_dd.manager()); } 

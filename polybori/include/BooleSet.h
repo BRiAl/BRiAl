@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2008/03/02 23:45:34  dreyer
+ * CHANGED: added contructors for given ring
+ *
  * Revision 1.42  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -397,12 +400,6 @@ public:
 
   /// Count many terms containing BooleVariable(idx)
   double countIndexDouble(idx_type idx) const ;
-
-  /// Get one in corresponding ring
-  //  self one() const { return ring().one(); }
-
-  /// Get zero in corresponding ring
-  // self zero() const { return ring().zero(); }
 
   /// Access ring, where this belongs to
   ring_type ring() const { return ring_type(base::manager()); } 
