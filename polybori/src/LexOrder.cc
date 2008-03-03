@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/03/03 13:52:12  dreyer
+ * Change: using more safe Variable(idx, ring)
+ *
  * Revision 1.21  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -167,10 +170,10 @@ LexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
 
-  monom_type leadterm = base::monom(poly.ring().one());
+  monom_type leadterm(1, poly.ring());
    
   if (poly.isZero())
-    leadterm = base::monom(poly.set());
+    leadterm = monom_type(0, poly.ring());
   else {
 
     // store indices in list

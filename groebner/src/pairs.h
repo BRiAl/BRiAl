@@ -81,7 +81,7 @@ public:
   int i;
   idx_type v;
   Polynomial extract(const PolyEntryVector& gen){
-    return Monomial(Variable(v))*gen[i].p;
+    return Monomial(Variable(v, gen[i].p.ring()))*gen[i].p;
   }
   VariablePairData(int i, idx_type v){
     this->v=v;

@@ -214,11 +214,11 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
     idx_type v=*it;
     #ifndef ELEMENTAR_FACTORIZATION
     BooleSet s0=r.subset0(v);
-    assert (s0.emptiness()==has_factor_x(r,Variable(v)));
+    assert (s0.emptiness()==has_factor_x(r,Variable(v, s0.ring())));
     if (s0.emptiness()){
     #else
-    Variable v_var(v);
-    if (has_factor_x(r,Variable(v_var))){
+      Variable v_var(v, p.ring());
+      if (has_factor_x(r,Variable(v_var))){
     #endif
       factors[v]=0;// var(v) is factor
       assert(r.change(v)==r.subset1(v));
@@ -233,7 +233,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
     #endif
     #ifndef ELEMENTAR_FACTORIZATION
         BooleSet s1=r.subset1(v);
-        assert((s1==s0)==has_factor_x_plus_one(r,Variable(v)));
+        assert((s1==s0)==has_factor_x_plus_one(r,Variable(v, s1.ring())));
             if (s1==s0){
     #else
        if (has_factor_x_plus_one(r,v_var)){
@@ -259,16 +259,16 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                         continue;
                     }
                     #ifdef ELEMENTAR_FACTORIZATION
-                    Variable v2_var(v2);
+                    Variable v2_var(v2, r.ring());
                     #endif
                     //cout<<"testing var"<<v2<<endl;
                     //v occurs in the lead, v2 not
                     assert(v2!=v);
                     #ifndef ELEMENTAR_FACTORIZATION
-                    assert((r.subset1(v2)==s1)==has_factor_x_plus_y(r,Variable(v),Variable(v2)));
+                    assert((r.subset1(v2)==s1)==has_factor_x_plus_y(r,Variable(v,r.ring()),Variable(v2, r.ring())));
                     if (r.subset1(v2)==s1){
                     #else
-                      if (has_factor_x_plus_y(r,Variable(v),v2_var)){
+                      if (has_factor_x_plus_y(r,Variable(v, r.ring()),v2_var)){
                     #endif
                     
                       assert(BooleEnv::ordering().compare(v, v2)==BoolePolyRing::greater_than);

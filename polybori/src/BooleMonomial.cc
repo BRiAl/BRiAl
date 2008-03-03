@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2008/03/03 13:52:12  dreyer
+ * Change: using more safe Variable(idx, ring)
+ *
  * Revision 1.17  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -335,6 +338,6 @@ BooleMonomial::var_type
 BooleMonomial::firstVariable() const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::firstVariable() const" );
-  return var_type(firstIndex());
+  return var_type(firstIndex(), ring());
 }
 END_NAMESPACE_PBORI

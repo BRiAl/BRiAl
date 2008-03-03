@@ -844,7 +844,7 @@ static Polynomial multiply_recursively(Polynomial a,Polynomial b){
   if (b.isZero()) return b; // is 0
   if (b.isOne()) return a;
   as0=multiply_recursively(as0,b);
-  as1=multiply_recursively(as1,((Monomial) Variable(index))*b);
+  as1=multiply_recursively(as1,((Monomial) Variable(index, a.ring()))*b);
   return as0+as1;
 }
 static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
@@ -1158,7 +1158,8 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     
     
     
-    if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
+    if (Polynomial(s).hasConstantPart()) 
+      return MonomialSet(Polynomial(true, s.ring()));
     MonomialSet result;
     std::vector<idx_type> cv=contained_variables(s);
     if ((cv.size()>0) && (s.length()==cv.size())){
@@ -1168,7 +1169,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
         int z;
         MonomialSet cv_set;
         for(z=cv.size()-1;z>=0;z--){
-            Monomial mv=Variable(cv[z]);
+            Monomial mv=Variable(cv[z], s.ring());
             cv_set=cv_set.unite(mv.diagram());
         }
         for(z=0;z<cv.size();z++){
@@ -1433,7 +1434,7 @@ static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123
     */
 }
 
-
+/// @todo: This uses always the active ring
 static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring){
     int i;
     Monomial res;
@@ -2311,7 +2312,8 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
   //cout<<"p_opp"<<p_opp<<endl;
-  const Polynomial one_element(p_opp.ring().one());
+  const Polynomial::ring_type ring(p_opp.ring());
+  const Polynomial one_element(ring.one());
   Polynomial mult_by(one_element);
   LiteralFactorization factors_opp(p_opp);
   
@@ -2328,8 +2330,8 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
         idx_type var=itf->first;
         int val=itf->second;
         if (val==0){
-          mult_by*=(Monomial)Variable(var);
-        } else mult_by*=Variable(var)+one_element;
+          mult_by*=(Monomial)Variable(var, ring);
+        } else mult_by*=Variable(var, ring)+one_element;
         itf++;
       }
 
@@ -2339,7 +2341,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
         idx_type var=itv->first;
         idx_type var2=itv->second;
 
-          mult_by*=Variable(var)+Variable(var2);
+          mult_by*=Variable(var, ring)+Variable(var2, ring);
         itv++;
 
       }
@@ -2366,8 +2368,8 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
       idx_type var=itf->first;
       int val=itf->second;
       if (val==0){
-        addGeneratorDelayed(((Monomial) Variable(var))*mult_by);
-      } else addGeneratorDelayed(((Monomial) Variable(var)+one_element)*mult_by);
+        addGeneratorDelayed(((Monomial) Variable(var, ring))*mult_by);
+      } else addGeneratorDelayed(((Monomial) Variable(var, ring)+one_element)*mult_by);
       itf++;
     }
     
@@ -2378,7 +2380,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
       idx_type var=itv->first;
       idx_type var2=itv->second;
       
-        addGeneratorDelayed(mult_by*(Variable(var)+Variable(var2)+ 1));
+      addGeneratorDelayed(mult_by*(Variable(var, ring)+Variable(var2, ring)+ 1));
      itv++; 
       
     }
@@ -2710,7 +2712,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     Polynomial s0=mult_fast_sim(s0_vec);
     Polynomial s1=mult_fast_sim(s1_vec);
     
-    return ((Monomial) Variable(index))*(s1+s0)+s0;
+    return ((Monomial) Variable(index, s0.ring()))*(s1+s0)+s0;
 }
 std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& cache, GroebnerStrategy& strat_param){
     bool succ;
