@@ -1888,7 +1888,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
       nav_mod.incrementElse();
      
     }
-    mod=MonomialSet(nav_mod);
+    mod=MonomialSet(nav_mod, m.ring());
   }
   
   MonomialSet::navigator m_nav=m.navigation();
@@ -1980,7 +1980,9 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=leadingTerms.intersect(t.divisors());
               //#else
-                  MonomialSet act_l_terms=fixed_path_divisors(leadingTerms,(Monomial)t, (Monomial) t_divided);
+                  MonomialSet act_l_terms = 
+                    fixed_path_divisors(leadingTerms, Monomial(t, lm.ring()), 
+                                        Monomial(t_divided, lm.ring()));
                   //leadingTerms.divisorsOf(t);
                   
                   
@@ -2584,7 +2586,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
       addGeneratorDelayed(p);
       return;
     }else {
-      if (divisors.owns(Monomial(lm_exp))){
+      if (divisors.owns(Monomial(lm_exp, p.ring()))){
           addGeneratorDelayed(p);
           return;
     }}

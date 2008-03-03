@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.37  2008/03/03 12:44:31  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.36  2008/03/02 23:45:33  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -216,22 +219,27 @@ class BooleMonomial {
   typedef dd_type::easy_equality_property easy_equality_property;
 
   /// Default Constructor (Constructs monomial one of the active ring)
-  BooleMonomial();
+  BooleMonomial():
+    m_poly( BooleEnv::one() )  { }
 
   /// Copy constructor
-  BooleMonomial(const self& rhs):  m_poly(rhs.m_poly) {}
+  BooleMonomial(const self& rhs):  
+    m_poly(rhs.m_poly) {}
 
   /// Construct from Boolean variable
-  BooleMonomial(const var_type&);
+  BooleMonomial(const var_type& rhs);  // not inlined to avoid dependency loop
+                                       // (both depend on poly_type)
 
   /// Construct from exponent vector
-  explicit BooleMonomial(const exp_type&);
+  BooleMonomial(const exp_type& rhs, const ring_type& ring): 
+    m_poly(rhs, ring) { }
 
-  /// Construct from Boolean constant
-  explicit BooleMonomial(constant_type val): m_poly(val) {}
+//   /// Construct from Boolean constant
+//   explicit BooleMonomial(constant_type val): m_poly(val) {}
 
   /// Construct from Boolean constant and given ring
-  BooleMonomial(constant_type val, const ring_type& ring): m_poly(val, ring) {}
+  BooleMonomial(constant_type val, const ring_type& ring): 
+    m_poly(val, ring) {}
 
   /// Destructor
   ~BooleMonomial() {}

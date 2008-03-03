@@ -47,7 +47,7 @@ void export_monomial(){
   .def(init<>("Construct Boolean monomial"))
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
-  .def(boost::python::init<bool>())
+    .def(boost::python::init<bool, const BooleMonomial::ring_type&>())
   .def("__iter__", range(&BooleMonomial::begin, &BooleMonomial::end))
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash, "Fast hash code, based on the \

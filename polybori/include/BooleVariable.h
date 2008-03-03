@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.19  2008/03/02 23:45:34  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -115,6 +118,9 @@ class BooleVariable {
 
   /// Generic access to current type
   typedef BooleVariable self;
+  
+  /// Type of sets of Boolean variables
+  typedef BooleSet set_type;
 
   /// Type for Boolean polynomial rings (without ordering)
   typedef BooleRing ring_type;
@@ -126,9 +132,7 @@ class BooleVariable {
   /// Constructor idx-th variable of a given ring
   BooleVariable(idx_type idx, const ring_type& ring):
     m_poly( ring.persistentVariable(idx) ) {}
-  
-  /// Type of sets of Boolean variables
-  typedef BooleSet set_type;
+
   
   /// Copy constructor
   BooleVariable(const self& rhs):  

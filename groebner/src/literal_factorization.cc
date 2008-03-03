@@ -23,7 +23,7 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
     idx_type m_idx=*nav;
 
     if (m_idx==x_idx){
-      return BooleConstant(nav.elseBranch().isEmpty()).generate(m);//  ?1:0;
+      return Polynomial(nav.elseBranch().isEmpty(), m.ring());
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>x_idx){
@@ -54,7 +54,7 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
 
 static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSet& left,const MonomialSet& right, const Variable& x){
     if (left.emptiness()) 
-      return BooleConstant(right.emptiness()).generate(left);
+      return Polynomial(right.emptiness(), left.ring());
     MonomialSet::navigator nav_l=left.navigation();
     MonomialSet::navigator nav_r=right.navigation();
     typedef PBORI::CacheManager<CCacheTypes::left_equals_right_x_branch_and_r_has_fac_x>
@@ -67,8 +67,8 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
     if (*nav_l==x_idx) return left.ring().zero();
 
     if (*nav_r==x_idx){
-      return BooleConstant((nav_r.thenBranch()==nav_l) &&
-                           (nav_r.elseBranch().isEmpty())).generate(left);
+      return Polynomial((nav_r.thenBranch()==nav_l) &&
+                        (nav_r.elseBranch().isEmpty()), left.ring());
     } else {
         assert(!(nav_r.isEmpty()));
         assert(*nav_r<x_idx);
@@ -110,10 +110,10 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
         Variable other;
         if (min_idx!=x.index()) other=x; else other=y;
         return
-          BooleConstant(do_left_equals_right_x_branch_and_r_has_fac_x(
+          Polynomial(do_left_equals_right_x_branch_and_r_has_fac_x(
               MonomialSet::dd_type(m.manager(), nav.thenBranch()), 
               MonomialSet::dd_type(m.manager(), nav.elseBranch()), 
-              other).isOne() ).generate(m);
+              other).isOne(), m.ring());
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>min_idx){
@@ -156,7 +156,7 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
     idx_type m_idx=*nav;
 
     if (m_idx==x_idx){
-      return BooleConstant(nav.elseBranch()==nav.thenBranch()).generate(m);
+      return Polynomial(nav.elseBranch()==nav.thenBranch(), m.ring());
     } else {
         assert(!(nav.isEmpty()));
         if (m_idx>x_idx){

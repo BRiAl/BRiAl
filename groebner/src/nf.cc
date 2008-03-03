@@ -204,7 +204,7 @@ Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial 
     if (bucket.isZero())
       return p.ring().zero();
     else
-        rest_lead=(Monomial) bucket.leadExp();
+      rest_lead=Monomial(bucket.leadExp(), p.ring());
   }
   return bucket.value();
 }
@@ -1260,6 +1260,8 @@ static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int s
     return MonomialSet(idx,add_up_lex_sorted_monomials(vec,start,limes),add_up_lex_sorted_monomials(vec,limes,end));
 }
 
+/// @note This function uses the active manager!
+/// @todo Make save!
 
 static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int start, int end){
     assert(end<=vec.size());
@@ -1269,9 +1271,10 @@ static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int s
     if (d<=2){
         switch(d){
             case 0:return MonomialSet();
-            case 1:return Monomial(vec[start]).diagram();
+        case 1:return Monomial(vec[start], BooleEnv::ring()).diagram();
             case 2: 
-              Polynomial res=Monomial(vec[start])+Monomial(vec[start+1]);
+              Polynomial res=Monomial(vec[start], BooleEnv::ring()) + 
+                Monomial(vec[start+1],BooleEnv::ring());
               return MonomialSet(res.diagram());
         }
 
@@ -1693,15 +1696,15 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
   cache_mgr_type cache_mgr(p.diagram().manager());
   MonomialSet::navigator cached =
     cache_mgr.find(p_nav,r_nav);
-  if (cached.isValid()) return MonomialSet(cached);
+  if (cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
   Polynomial res;
   if ((*r_nav)==p_index){
     if (have_redsb){  
-    res=ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
-      +Polynomial(MonomialSet(r_nav.elseBranch()))*ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+      res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
+      +Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch())))*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
    }else{
-    res=ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav.thenBranch())
-         +ll_red_nf_generic<have_redsb>(Polynomial(MonomialSet(r_nav.elseBranch())),r_nav.thenBranch())*ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav.thenBranch());
+      res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
+        +ll_red_nf_generic<have_redsb>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch())*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
    }
   } else{
       assert((*r_nav)>p_index);
@@ -1709,8 +1712,8 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
       res=
       MonomialSet(
         p_index,
-        ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.thenBranch()),r_nav).diagram(),
-        ll_red_nf_generic<have_redsb>(MonomialSet(p_nav.elseBranch()),r_nav).diagram());
+        ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav).diagram(),
+        ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav).diagram());
       
   }
   cache_mgr.insert(p_nav,r_nav,res.navigation());

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.43  2008/03/02 23:45:34  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -234,10 +237,13 @@ public:
     base(idx, first, second) {}
 
   /// Construct new node (using navigator nodes)
-  BooleSet(idx_type idx, navigator, navigator);
-
+  BooleSet(idx_type idx, navigator first, navigator second, 
+           const ring_type& ring): 
+    base(ring.manager(), idx, first, second) { }
+  
   /// Construct new node (using navigator for then and else-branches)
-  BooleSet(idx_type idx, navigator);
+  BooleSet(idx_type idx, const self& rhs):
+    base(rhs.ring().manager(), idx, rhs.navigation()) { }
 
   /// Construct one or zero set from constant
   //  BooleSet(bool_type);
@@ -245,7 +251,8 @@ public:
   /// term_accumulate, needs check, what happens to inlinings etc. in this case
 
   /// Construct from navigator node
-  explicit BooleSet(navigator);
+  BooleSet(navigator navi, const ring_type& ring):
+    base(ring.manager().manager(), navi) { }
 
   /// Destructor
   ~BooleSet() {}

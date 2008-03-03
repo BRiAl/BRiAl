@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.17  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.16  2007/12/13 15:53:49  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -85,27 +88,14 @@ BEGIN_NAMESPACE_PBORI
 // Constructors and destructor
 //------------------------------------------------------------------------
 
-// Default constructor
-BooleMonomial::BooleMonomial():
-  m_poly( BooleEnv::one() )  {
 
-  PBORI_TRACE_FUNC( "BooleMonomial()" );
-
-}
-
-//  Construct from Boolean variable
+// Construct from Boolean variable
+// not inlined to avoid dependency loop!
+// (both depend on poly_type)
 BooleMonomial::BooleMonomial(const var_type& rhs) :
   m_poly(rhs) {
   
   PBORI_TRACE_FUNC( "BooleMonomial(const var_type&)" );
-}
-
-//  Construct from Exponent vector
-BooleMonomial::BooleMonomial(const exp_type& rhs) :
-  m_poly(rhs) {
-  
-  PBORI_TRACE_FUNC( "BooleMonomial(const exp_type&)" );
-
 }
 
 // Reducibility test
@@ -187,26 +177,6 @@ BooleMonomial::compare(const self& rhs) const {
   PBORI_TRACE_FUNC( "BooleMonomial::compare(const self& rhs) const" );
 
   return BooleEnv::ordering().compare(*this, rhs);
-
-//   /// @todo Up to now, this is for lexicographic order only.
-//   if (*this == rhs)
-//     return CTypes::equality;
-
-//   const_iterator start(begin()), finish(end()),
-//     rhs_start(rhs.begin()), rhs_finish(rhs.end());
-
-//   while ( (start != finish) && (rhs_start != rhs_finish) && 
-//           (*start == *rhs_start) ) {
-//     ++start; ++rhs_start;
-//   }
-
-//   if (start == finish)
-//     return CTypes::less_than;
-
-//   if (rhs_start == rhs_finish)
-//     return CTypes::greater_than;
-
-//   return (*start < *rhs_start?  CTypes::greater_than : CTypes::less_than);
 }
 
 // Degree of the lcm

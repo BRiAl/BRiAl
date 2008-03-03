@@ -100,7 +100,7 @@ MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     if (cached.isValid() ){
       return cache_mgr.generate(cached);
     }
-    s=MonomialSet(p_nav);
+    s=MonomialSet(cache_mgr.generate(p_nav));
     
     MonomialSet p1=s.subset1(index);
     MonomialSet p0=s.subset0(index);

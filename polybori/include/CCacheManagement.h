@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.40  2008/01/16 17:10:17  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -150,7 +153,7 @@
 // get DD navigation
 #include "CCuddNavigator.h"
 #include "CDDInterface.h"
-
+#include "BooleRing.h"
 // get standard functionality
 #include <functional>
 
@@ -283,6 +286,8 @@ public:
   typedef CTypes::dd_base dd_base;
   typedef typename manager_type::mgrcore_ptr mgrcore_ptr;
 
+  /// Type of Boolean rings
+  typedef BooleRing ring_type;
 
   /// Constructor
   CCuddLikeMgrStorage(const manager_type& mgr): 
@@ -308,6 +313,7 @@ public:
     return dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager));//manager().zddZero();
   }
 
+  ring_type ring() const { return ring_type(manager()); }
 protected:
   /// Accessing Cudd-internal decision diagram manager
   internal_manager_type internalManager() const { 

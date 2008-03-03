@@ -52,7 +52,8 @@ void export_poly(){
    in the given Boolean polynomial ring.")
   .def(init<>())
   .def(init<const BoolePolynomial &>())
-  .def(init<const BoolePolynomial::navigator &>())
+    .def(init<const BoolePolynomial::navigator &, 
+         const BoolePolynomial::ring_type &>())
   .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())

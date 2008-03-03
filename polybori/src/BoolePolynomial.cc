@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.115  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.114  2008/03/02 23:45:34  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -451,38 +454,9 @@ BoolePolynomial::BoolePolynomial(constant_type isOne):
   PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
 }
 
-// Construct polynomial from a constant value 0 or 1
-BoolePolynomial::BoolePolynomial(constant_type isOne, const ring_type& ring):
-  m_dd(isOne? ring.one(): ring.zero() )  {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
-}
-
-// Constructor polynomial from existing decision diagram
-BoolePolynomial::BoolePolynomial(const dd_type& rhs):
-  m_dd(rhs)  {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial(const dd_type&)" );
-}
-
-// Constructor polynomial from existing Boolean set
-BoolePolynomial::BoolePolynomial(const set_type& rhs):
-  m_dd(rhs.diagram())  {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial(const set_type&)" );
-}
-
-// Constructor polynomial from existing navigator
-BoolePolynomial::BoolePolynomial(const navigator& rhs):
-  m_dd(BooleSet(rhs))  {
-
-  assert(rhs.isValid());
-  PBORI_TRACE_FUNC( "BoolePolynomial(const navigator&)" );
-}
-
 // Constructor polynomial from exponent vector
-BoolePolynomial::BoolePolynomial(const exp_type& rhs):
-  m_dd( BooleEnv::one() )  {
+BoolePolynomial::BoolePolynomial(const exp_type& rhs, const ring_type& ring):
+  m_dd( ring.one() )  {
 
   PBORI_TRACE_FUNC( "BoolePolynomial(const exp_type&)" );
 
@@ -494,12 +468,6 @@ BoolePolynomial::BoolePolynomial(const exp_type& rhs):
   }
 }
 
-// Copy constructor
-BoolePolynomial::BoolePolynomial(const self& rhs) :
-  m_dd(rhs.m_dd) {
-  
-  PBORI_TRACE_FUNC( "BoolePolynomial(const self&)" );
-}
 
 //-------------------------------------------------------------------------
 // operators and member functions
@@ -783,7 +751,7 @@ BoolePolynomial::gradedPart(size_type deg) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(size_type) const" );
   typedef CDegreeArgumentCache<CCacheTypes::graded_part> cache_type;
   return dd_graded_part(cache_type(m_dd.manager()), 
-                        navigation(), deg, set_type());
+                        navigation(), deg, set_type(ring().zero()));
 }
 
 

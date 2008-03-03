@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.51  2008/03/03 12:44:33  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.50  2008/02/28 17:05:47  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -209,26 +212,26 @@ BooleSet::BooleSet():
 
 }
 
-// Construct new node (using navigator nodes)
-BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
-  base(BooleEnv::manager().manager(), idx, first, second) {
+// // Construct new node (using navigator nodes)
+// BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
+//   base(BooleEnv::manager().manager(), idx, first, second) {
   
-  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
-}
+//   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
+// }
 
-// Construct new node (using navigator nodes)
-BooleSet::BooleSet(idx_type idx, navigator navi):
-  base(BooleEnv::manager().manager(), idx, navi) {
+// // Construct new node (using navigator nodes)
+// BooleSet::BooleSet(idx_type idx, navigator navi):
+//   base(BooleEnv::manager().manager(), idx, navi) {
   
-  PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
-}
+//   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
+// }
 
-// Construct new node (using navigator nodes)
-BooleSet::BooleSet(navigator navi) :
-  base(BooleEnv::manager().manager(), navi) {
+// // Construct new node (using navigator nodes)
+// BooleSet::BooleSet(navigator navi, const ring_type& ring) :
+//   base(ring.manager().manager(), navi) {
   
-  PBORI_TRACE_FUNC( "BooleSet(navigator)" );
-}
+//   PBORI_TRACE_FUNC( "BooleSet(navigator)" );
+// }
 
 // Assignment
 BooleSet&
@@ -343,7 +346,7 @@ BooleSet::divisorsOf(const exp_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::divisorsOf(const exp_type&) const" );
 
-  return firstDivisorsOf(term_type(rhs).diagram());
+  return firstDivisorsOf(term_type(rhs, ring()).diagram());
 }
 
 BooleSet BooleSet::multiplesOf(const term_type& rhs) const{

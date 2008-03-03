@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.91  2008/03/03 12:44:31  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.90  2008/03/02 23:45:33  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -364,8 +367,6 @@ class MyCGenericIter;
 
 template<class NavigatorType, class ExpType>
 class CExpIter;
-template<class NavigatorType, class ExpType>
-class CGenericIter2;
 
 
 class BooleConstant {
@@ -380,11 +381,6 @@ public:
 
   operator bool() const { return m_value; }
   BooleConstant operator!() const { return !m_value; }
-
-  template <class Type>
-  Type generate(const Type& rhs) const {
-    return (m_value? rhs.ring().one(): rhs.ring().zero());
-  }
 
 protected:
   const bool m_value;
@@ -535,22 +531,23 @@ public:
   explicit BoolePolynomial(constant_type);
 
   /// Construct polynomial from a constant value 0 or 1
-  BoolePolynomial(constant_type, const ring_type&);
+  BoolePolynomial(constant_type isOne, const ring_type& ring):
+    m_dd(isOne? ring.one(): ring.zero() )  { }
 
   /// Construct polynomial from decision diagram
-  BoolePolynomial(const dd_type&);
+  BoolePolynomial(const dd_type& rhs): m_dd(rhs) {}
 
   /// Construct polynomial from a subset of the powerset over all variables
-  BoolePolynomial(const set_type&);
+  BoolePolynomial(const set_type& rhs): m_dd(rhs.diagram()) {}
 
   /// Construct polynomial from exponent vector
-  BoolePolynomial(const exp_type&);
+  BoolePolynomial(const exp_type&, const ring_type&); 
 
   /// Construct polynomial from navigator
-  explicit BoolePolynomial(const navigator&);
-
-  /// Copy constructor
-  BoolePolynomial(const self&);
+  BoolePolynomial(const navigator& rhs, const ring_type& ring):
+    m_dd(ring.manager().manager(), rhs)  {
+    assert(rhs.isValid());
+  }
 
   /// Destructor
   ~BoolePolynomial() {}

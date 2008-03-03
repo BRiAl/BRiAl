@@ -13,7 +13,7 @@ BEGIN_NAMESPACE_PBORIGB
 static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, 
                                  const int s){
   
-  if (s==0) return Polynomial(0);
+   if (s==0) return Polynomial(0);
    if (s==1) return *it;
    if (s==2) return (*it)+(*(it++));
    return sum_up_buckets(it,s/2)+sum_up_buckets(it+s/2,s-s/2);
@@ -24,7 +24,7 @@ Polynomial without_prior_part(Polynomial p,idx_type tail_start){
   while((*nav)<tail_start){
     nav.incrementElse();
   }
-  return Polynomial(nav);
+  return Polynomial(nav, p.ring());
 }
 Exponent LexBucket::leadExp(){
   usualAssertions();

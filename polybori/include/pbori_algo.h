@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.39  2008/02/27 16:35:14  dreyer
  * Fix: Polynomial(0|1) removed, where possible
  *
@@ -854,7 +857,7 @@ SizeType&
 count_index(SizeType& size, IdxType idx, NaviType navi, const SetType& init) {
 
   if (*navi == idx)
-    combine_sizes(SetType(navi.incrementThen()), size);
+    combine_sizes(SetType(navi.incrementThen(), init.ring()), size);
 
   if (*navi < idx) {
     count_index(size, idx, navi.thenBranch(), init);

@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2008/03/03 12:44:32  dreyer
+ * Change: More inlining, and safer constructors
+ *
  * Revision 1.22  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -153,7 +156,8 @@ lower_term_accumulate(NaviType navi,
     // reselse.navigation() == navi.elseBranch() is almost always false
     // Hence, checking reselse.navigation() == navi.elseBranch() for returning
     // navi, instead of result yields too much overhead.
-    result = BooleSet(*navi, navi.thenBranch(), reselse.navigation());
+    result = BooleSet(*navi, navi.thenBranch(), reselse.navigation(), 
+                      init.ring());
   }
   else  {
     assert(*lstart == *navi);
@@ -190,9 +194,9 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
 
   // The following condition holds quite often, so computation time may be saved
   if (navithen == resthen.navigation())
-    return BooleSet(navi);
+    return BooleSet(navi, init.ring());
 
-  return BooleSet(*navi, resthen.navigation(), navi.elseBranch());
+  return BooleSet(*navi, resthen.navigation(), navi.elseBranch(), init.ring());
 }
 
 ///@note: assuming lstart .. lfinish *not* marking the term one
@@ -215,7 +219,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
 
   
   if (navi.isConstant())
-    return BooleSet(navi);
+    return BooleSet(navi, init.ring());
 
   assert(*lstart >= *navi);
 
@@ -226,7 +230,8 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
     ValueType reselse = 
       lower_term_accumulate(navi.elseBranch(), lstart, lfinish, init);
 
-    result = BooleSet(*navi, resthen.navigation(), reselse.navigation());
+    result = BooleSet(*navi, resthen.navigation(), reselse.navigation(),
+                      init.ring());
   }
   else  {
     assert(*lstart == *navi);
@@ -313,7 +318,7 @@ dd_mapping(const CacheType& cache, NaviType navi, NaviType map, SetType init) {
 
   // look whether computation was done before
   if (cached.isValid())
-    return SetType(cached);
+    return SetType(cached, cache.ring());
 
   SetType result = 
     SetType(*(map.elseBranch()),  
