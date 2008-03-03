@@ -6,7 +6,7 @@ def lead_index(p):
 def combine(reductors,p, reduce=None):
     p_nav=p.navigation()
     assert p_nav.value()<reductors.navigation().value()
-    p_else=BooleSet(p_nav.elseBranch(), p.ring())
+    p_else=navi_to_set(p_nav.elseBranch(), p.ring())
     if reduce:
         p_else=reduce(p_else,reductors)
     return if_then_else(p_nav.value(),reductors,p_else)

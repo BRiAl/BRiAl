@@ -41,6 +41,10 @@ static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
 BooleSet the_set_itself(const BooleSet &s){
     return s;
 }
+BooleSet navi_to_set(const BooleSet::navigator& navi, const BooleSet::ring_type& ring){
+  return BooleSet(navi, ring);
+}
+
 void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
@@ -95,4 +99,6 @@ corresponding to Variables of given index is replaced by its else-branch")
   def("if_then_else",if_then_else, "if-then else operator");
   boost::python::register_exception_translator<
             ITEIndexException>(translator);
+
+  def("navi_to_set", navi_to_set, "Convert navigator (and ring) to BooleSet");
 }
