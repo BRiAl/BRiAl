@@ -143,6 +143,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("diagram", diagram, return_internal_reference<1>())
   //.def("diagram",poly_diagram_as_set)
   .def("set", set, "Convert to BooleSet")
+  .def("ring", &BoolePolynomial::ring, "Get corresponding ring")
   .def("navigation", &BoolePolynomial::navigation, 
        "Navigate through underlying ZDD structure")
   .def("elength", &BoolePolynomial::eliminationLength, "Elimination length")

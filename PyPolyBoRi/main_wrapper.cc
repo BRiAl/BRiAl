@@ -98,6 +98,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   def("get_order_code",&BooleEnv::getOrderCode);  
   def("print_ring_info", &BooleEnv::printInfo);
 
+  boost::python::class_<BooleRing>("BooleRing", "Boolean ring")
+    .def(boost::python::init <BooleRing::size_type>());
+
   boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring")
     //.def(boost::python::init <>())
     .def("set",&BooleEnv::set, "Activate current Ring")

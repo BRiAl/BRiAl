@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2008/03/03 18:07:19  dreyer
+ * Fix: missing things in Python-interface
+ *
  * Revision 1.1  2008/03/02 23:45:34  dreyer
  * CHANGED: added contructors for given ring
  *
@@ -70,7 +73,7 @@ class BooleRing:
   using base::ordercodes;
 
   /// Constructor for @em nvars variables
-  BooleRing(size_type nvars):
+  BooleRing(size_type nvars = 100):
     m_mgr(nvars) {}
 
   BooleRing(const manager_type& mgr):

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2008/03/03 18:07:19  dreyer
+ * Fix: missing things in Python-interface
+ *
  * Revision 1.37  2008/03/03 12:44:31  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -233,9 +236,6 @@ class BooleMonomial {
   /// Construct from exponent vector
   BooleMonomial(const exp_type& rhs, const ring_type& ring): 
     m_poly(rhs, ring) { }
-
-//   /// Construct from Boolean constant
-//   explicit BooleMonomial(constant_type val): m_poly(val) {}
 
   /// Construct from Boolean constant and given ring
   BooleMonomial(constant_type val, const ring_type& ring): 
