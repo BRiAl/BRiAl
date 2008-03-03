@@ -866,9 +866,7 @@ static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
   Polynomial result;
 
   if (cached.isValid() ){
-    result = (PBORI::CTypes::dd_type)
-      PBORI::CTypes::dd_base(a.diagram().managerCore(),
-                             cached.getNode());
+    result = cache_mgr.generate(cached);
   }
   else {
     int indexa=*(a.navigation());
@@ -924,9 +922,7 @@ static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
   Polynomial result;
 
   if (cached.isValid() ){
-    result = (PBORI::CTypes::dd_type)
-      PBORI::CTypes::dd_base(get_mgr_core(PBORI::BooleEnv::manager().manager()),
-                             cached.getNode());
+    result = cache_mgr.generate(cached);
   }
   else {
 
@@ -1441,7 +1437,7 @@ static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring)
     //cout<<"m_code:"<<code<<endl;
     for(i=3;i>=0;i--){
         if ((code & (1<<i))!=0){
-            res*=Variable(back_2_ring[i]);
+          res*=Variable(back_2_ring[i], res.ring());
             //res=res.diagram().change(back_2_ring[i]);
         }
     }
@@ -2042,15 +2038,16 @@ std::vector<Polynomial> GroebnerStrategy::allGenerators(){
 /// @note Core function which uses the manager given as firt argument
 template <class MgrType>
 MonomialSet recursively_insert(const MgrType& mgr,
-                               MonomialSet::navigator p, idx_type idx, MonomialSet::navigator m){
+                               MonomialSet::navigator p, 
+                               idx_type idx, MonomialSet::navigator m){
     //MonomialSet::navigation nav=m.navigator();
-    typedef typename MonomialSet::dd_type dd_type;
     if (idx>*m){
       return MonomialSet(*m,recursively_insert(mgr, p,idx,m.thenBranch()),
-                         dd_type(mgr, m.elseBranch()));
+                         MonomialSet( m.elseBranch(), 
+                                      MonomialSet::ring_type(mgr)));
     } else{
         assert(idx<*m);
-        return dd_type(mgr, idx,m,p);
+        return MonomialSet(idx, m, p, MonomialSet::ring_type(mgr));
     }
 }
 

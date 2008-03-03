@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.52  2008/03/03 14:25:20  dreyer
+ * Change: switched to new syntax
+ *
  * Revision 1.51  2008/03/03 12:44:33  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -400,8 +403,7 @@ BooleSet::minimalElements() const {
   resultMultiples, indices.rbegin(), indices.rend(),  
                                         apply);
   // std::cerr<< "aft"<<std::endl;
-  base res = CTypes::dd_base( managerCore(), result.getNode() );
-
+  self res(result, ring());
 
   result.decRef();
   resultMultiples.recursiveDecRef(manager().getManager());

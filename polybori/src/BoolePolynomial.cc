@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.116  2008/03/03 14:25:19  dreyer
+ * Change: switched to new syntax
+ *
  * Revision 1.115  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -751,7 +754,7 @@ BoolePolynomial::gradedPart(size_type deg) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(size_type) const" );
   typedef CDegreeArgumentCache<CCacheTypes::graded_part> cache_type;
   return dd_graded_part(cache_type(m_dd.manager()), 
-                        navigation(), deg, set_type(ring().zero()));
+                        navigation(), deg, set_type());
 }
 
 
