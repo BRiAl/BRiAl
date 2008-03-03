@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2008/03/03 14:45:33  dreyer
+ * Change: some fine-tuning
+ *
  * Revision 1.6  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -61,11 +64,10 @@ dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
   typedef typename DDType::size_type size_type;
   typedef OutputType term_type;
 
-  term_type result(CDDOperations<DDType, 
-                   OutputType>().getMonomial(dd.ring().one()));
+  term_type result(0, dd.ring());
 
   if (dd.emptiness())
-    result = CDDOperations<DDType, OutputType>().getMonomial(dd.ring().zero());
+    result = term_type(0, dd.ring());
   else {
 
     size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());
