@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.38  2008/03/03 18:07:19  dreyer
  * Fix: missing things in Python-interface
  *
@@ -146,9 +149,15 @@
 
 // get definition of BoolePolynomial and BooleVariable
 #include "BoolePolynomial.h"
-
+#include "BooleVariable.h"
 // get standard map functionality
 #include <map>
+
+// get variable iterator
+#include "CVariableIter.h"
+
+// get variable iterator
+#include "PBoRiError.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -194,22 +203,25 @@ class BooleMonomial {
   typedef BoolePolynomial poly_type;
 
   /// Type of Boolean variables
-  typedef BooleVariable var_type;
+  typedef poly_type::var_type var_type;
 
   /// Type of Boolean constants
-  typedef BooleConstant constant_type;
+  typedef poly_type::constant_type constant_type;
 
   /// Type of sets of Boolean variables
-  typedef BooleSet set_type;
+  typedef poly_type::set_type set_type;
 
   /// Type of exponent vector
-  typedef BooleExponent exp_type;
+  typedef poly_type::exp_type exp_type;
 
   /// Type for Boolean polynomial rings (without ordering)
-  typedef BooleRing ring_type;
+  typedef poly_type::ring_type ring_type;
 
-  /// Access to iterator type of leading terms
+  /// Access to iterator over indices
   typedef poly_type::first_iterator const_iterator;
+
+  /// Access to iterator over variables
+  typedef CVariableIter<const_iterator, var_type> variable_iterator;
 
   /// Type for index maps
   //  typedef generate_index_map<self>::type idx_map_type;
@@ -257,6 +269,16 @@ class BooleMonomial {
   /// Finish iteration over indices
   const_iterator end() const { return m_poly.firstEnd(); }
 
+  /// Start iteration over variables
+  variable_iterator variableBegin() const { 
+    return variable_iterator(begin(), ring()); 
+  }
+
+  /// Finish iteration over variables
+  variable_iterator variableEnd() const { 
+    return variable_iterator(end(), ring()); 
+  }
+
   /// Degree of the monomial
   size_type deg() const {
     ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
@@ -297,11 +319,6 @@ class BooleMonomial {
   self& operator/=(const self&);
   self& operator*=(const var_type&);
   self& operator/=(const var_type&);
-  self& operator*=(constant_type rhs) {
-    if (!rhs) *this = self(ring().zero());
-    return *this;
-  }
-  self& operator/=(constant_type rhs) { return operator*=(rhs); }
   //@}
 
   /// @name Logical operations
@@ -387,23 +404,27 @@ operator*(const BooleMonomial& lhs, const BooleVariable& rhs) {
   return BooleMonomial(lhs) *= rhs;
 }
 /// Multiplication of monomials
-inline BooleMonomial
+inline BoolePolynomial
 operator*(const BooleMonomial& lhs, BooleConstant rhs) {
-  return BooleMonomial(lhs) *= rhs;
+  return BoolePolynomial(lhs) *= rhs;
 }
 
 /// Multiplication of monomials
-inline BooleMonomial
+inline BoolePolynomial
 operator*(BooleConstant lhs, const BooleMonomial& rhs) {
   return rhs * lhs;
 }
 
+/// Division of monomials
+inline BooleMonomial
+operator/(const BooleMonomial& lhs, const BooleMonomial& rhs) {
+  return BooleMonomial(lhs) /= rhs;
+}
 
 /// Division of monomials
-template <class RHSType>
 inline BooleMonomial
-operator/(const BooleMonomial& lhs, const RHSType& rhs) {
-  return BooleMonomial(lhs) /= rhs;
+operator/(const BooleMonomial& lhs, const BooleVariable& rhs) {
+  return  lhs / BooleMonomial(rhs);
 }
 
 /// Less than comparision
@@ -453,6 +474,93 @@ LCM(const BooleMonomial& lhs, const BooleMonomial& rhs ){
 /// @brief Checks whether BooleVariable(lhs) > BooleVariable(rhs) 
 BooleMonomial::bool_type
 greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
+
+
+/// Multiplication of variables by a 0 or 1
+inline BoolePolynomial
+operator*(const BooleVariable& lhs, const BooleConstant& rhs){
+
+  return BooleMonomial(lhs) * rhs;
+}
+
+/// Multiplication of 0 or 1  by a Variable
+inline BoolePolynomial
+operator*(const BooleConstant& lhs, const BooleVariable& rhs){
+
+  return rhs * lhs;
+}
+
+/// Multiplication of variables by a polynomial
+inline BoolePolynomial
+operator*(const BooleVariable& lhs, 
+          const BoolePolynomial& rhs){
+
+  return BoolePolynomial(rhs) *= BooleMonomial(lhs);
+}
+
+/// Multiplication of variables by a monomial
+inline BooleMonomial
+operator*(const BooleVariable& lhs, 
+          const BooleMonomial& rhs){
+
+  return BooleMonomial(lhs) * rhs;
+}
+
+/// Multiplication of a polynomial by a variable with assignment
+inline BoolePolynomial&
+operator*=(BoolePolynomial& lhs, 
+           const BooleVariable& rhs){
+
+  return lhs *= BooleMonomial(rhs);
+}
+
+/// Multiplication of monomials by a polynomial
+inline BooleMonomial
+operator*(const BooleVariable& lhs, 
+          const BooleVariable& rhs){
+
+  return BooleMonomial(lhs) *= BooleMonomial(rhs);
+}
+
+/// Multiplication of a polynomial by a variable
+inline BoolePolynomial
+operator*(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return BoolePolynomial(lhs) *= BooleMonomial(rhs);
+}
+
+/// Division of a polynomial by a variable (forcing monomial variant)
+inline BoolePolynomial&
+operator/=(BoolePolynomial& lhs, const BooleVariable& rhs){
+
+  return lhs /= BooleMonomial(rhs);
+}
+
+/// Division of a polynomial by a variable (forcing monomial variant)
+inline BoolePolynomial
+operator/(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs / BooleMonomial(rhs);
+}
+
+
+/// Remainder of division of a polynomial by a variable 
+inline BoolePolynomial
+operator%(const BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs % BooleMonomial(rhs);
+}
+
+/// Remainder of division of a polynomial by a variable (with assignment)
+inline BoolePolynomial&
+operator%=(BoolePolynomial& lhs, 
+          const BooleVariable& rhs){
+
+  return lhs %= BooleMonomial(rhs);
+}
 
 END_NAMESPACE_PBORI
 

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.19  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.18  2008/03/03 13:52:12  dreyer
  * Change: using more safe Variable(idx, ring)
  *
@@ -141,12 +144,15 @@ BooleMonomial::operator*=(const self& rhs) {
 }
 
 //  Division with assignment
+// Note: inlining seems to be inefficient, when throwing errors
 BooleMonomial&
 BooleMonomial::operator/=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator*=(const self&)" );
 
   m_poly /= rhs;//.m_poly;
+  if UNLIKELY(isZero())
+    throw PBoRiError(CTypes::monomial_zero);
 
   return *this;
 }
@@ -164,15 +170,19 @@ BooleMonomial::operator*=(const var_type& rhs) {
 }
 
 // Division with assignment (with variable)
+// Note: inlining seems to be inefficient, when throwing errors
 BooleMonomial&
 BooleMonomial::operator/=(const var_type& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator/=(const var_type&)" );
 
   m_poly.internalDiagram().subset1Assign(rhs.index());
+  if UNLIKELY(isZero())
+    throw PBoRiError(CTypes::monomial_zero);
 
   return *this;
 }
+
 // Comparision
 BooleMonomial::comp_type
 BooleMonomial::compare(const self& rhs) const {

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.20  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -90,7 +93,7 @@
 
 // get BoolePolynomial's definition
 #include "BooleEnv.h"
-#include "BooleMonomial.h"
+#include "BoolePolynomial.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -160,92 +163,14 @@ private:
   BoolePolynomial m_poly;
 };
 
-/**/
-/// Multiplication of variables by a polynomial
+
+
 inline BoolePolynomial
-operator*(const BooleVariable& lhs, 
-          const BoolePolynomial& rhs){
-
-  return BoolePolynomial(rhs) *= BooleMonomial(lhs);
-}
-
-/// Multiplication of variables by a monomial
-inline BooleMonomial
-operator*(const BooleVariable& lhs, 
-          const BooleMonomial& rhs){
-
-  return BooleMonomial(lhs) * rhs;
-}
-
-/// Multiplication of variables by a 0 or 1
-inline BooleMonomial
-operator*(const BooleVariable& lhs, const BooleConstant& rhs){
-
-  return BooleMonomial(lhs) * rhs;
-}
-
-/// Multiplication of 0 or 1  by a Variable
-inline BooleMonomial
-operator*(const BooleConstant& lhs, const BooleVariable& rhs){
-
-  return rhs * lhs;
-}
-
-/// Multiplication of a polynomial by a variable
-inline BoolePolynomial
-operator*(const BoolePolynomial& lhs, 
-          const BooleVariable& rhs){
-
-  return BoolePolynomial(lhs) *= BooleMonomial(rhs);
-}
-
-/// Multiplication of a polynomial by a variable with assignment
-inline BoolePolynomial&
-operator*=(BoolePolynomial& lhs, 
-           const BooleVariable& rhs){
-
-  return lhs *= BooleMonomial(rhs);
-}
-
-/// Multiplication of monomials by a polynomial
-inline BooleMonomial
-operator*(const BooleVariable& lhs, 
-          const BooleVariable& rhs){
-
-  return BooleMonomial(lhs) *= BooleMonomial(rhs);
-}
-
-/// Division of a polynomial by a variable (forcing monomial variant)
-inline BoolePolynomial
-operator/=(BoolePolynomial& lhs, const BooleVariable& rhs){
-
-  return lhs /= BooleMonomial(rhs);
-}
-
-/// Division of a polynomial by a variable (forcing monomial variant)
-inline BoolePolynomial
-operator/(const BoolePolynomial& lhs, 
-          const BooleVariable& rhs){
-
-  return lhs / BooleMonomial(rhs);
+operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
+  return BoolePolynomial(BooleConstant(lhs == rhs), lhs.ring());
 }
 
 
-/// Remainder of division of a polynomial by a variable 
-inline BoolePolynomial
-operator%(const BoolePolynomial& lhs, 
-          const BooleVariable& rhs){
-
-  return lhs % BooleMonomial(rhs);
-}
-
-/// Remainder of division of a polynomial by a variable (with assignment)
-inline BoolePolynomial&
-operator%=(BoolePolynomial& lhs, 
-          const BooleVariable& rhs){
-
-  return lhs %= BooleMonomial(rhs);
-}
 
 END_NAMESPACE_PBORI
 

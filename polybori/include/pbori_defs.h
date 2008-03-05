@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.41  2007/12/18 10:20:17  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -371,6 +374,7 @@ struct CErrorEnums {
     invalid,
     out_of_bounds,
     io_error,
+    monomial_zero,
 #ifdef PBORI_DEVELOPER
    not_implemented,
 #endif

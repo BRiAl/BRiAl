@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.92  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.91  2008/03/03 12:44:31  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -331,7 +334,7 @@
 #include "BooleSet.h"
 
 #include "CTermIter.h"
-
+#include "BooleConstant.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -368,23 +371,6 @@ class MyCGenericIter;
 template<class NavigatorType, class ExpType>
 class CExpIter;
 
-
-class BooleConstant {
-
-public:
-
-  BooleConstant(): m_value(false) {}
-
-  BooleConstant(bool value): m_value(value) {}
-
-  BooleConstant(int value): m_value(value % 2) {}
-
-  operator bool() const { return m_value; }
-  BooleConstant operator!() const { return !m_value; }
-
-protected:
-  const bool m_value;
-};
 
 /** @class BoolePolynomial
  * @brief This class wraps the underlying decicion diagram type and defines the

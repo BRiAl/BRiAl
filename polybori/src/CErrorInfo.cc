@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2008/03/05 16:23:37  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.6  2007/11/06 15:03:39  dreyer
  * CHANGE: More generic copyright
  *
@@ -59,6 +62,7 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::invalid] = "Invalid operation called.";
   pErrorText[CTypes::out_of_bounds] = "Variable index out of bounds.";
   pErrorText[CTypes::io_error] = "I/O error.";
+  pErrorText[CTypes::monomial_zero] = "Monomial operation resulted in zero.";
 #ifdef PBORI_DEVELOPER
   pErrorText[CTypes::not_implemented] = 
     "Sorry! Functionality not implemented yet.";

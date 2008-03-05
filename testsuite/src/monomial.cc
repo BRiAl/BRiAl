@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/03/05 16:23:38  dreyer
+ * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
+ *
  * Revision 1.8  2007/11/06 15:03:43  dreyer
  * CHANGE: More generic copyright
  *
@@ -143,9 +146,10 @@ main(){
     std::cout <<  "x / x: ";
     monom = x;
     std::cout << (monom /= BooleMonomial(x)) <<std::endl;
-    std::cout << "x / y*z: ";
-    monom = x;
-    std::cout << (monom /= denom) <<std::endl;
+     std::cout << "x / y*z: ";
+     monom = x;
+     // For monomials we throw exception in this case now
+     std::cout << (BoolePolynomial(monom) /= denom) <<std::endl;
 
     std::cout << "x * y (as BooleVariable): ";
     monom = x;
@@ -274,6 +278,18 @@ main(){
     exp1.popFirst();
 
     std::cout << (exp1) <<std::endl;
+    monom1 = BooleVariable(1)*BooleVariable(2)*BooleVariable(4);
+    std::cout << "Testing BooleMonomial.variableBegin() of "<< 
+      monom1<<std::endl;
+
+    BooleMonomial::variable_iterator start(monom1.variableBegin()),
+      finish(monom1.variableEnd());
+
+    while (start != finish) {
+      std::cout << *start <<" ";
+      ++start;
+    }
+    std::cout << std::endl;
 
     std::cout << "Finished."<<std::endl;
 
