@@ -33,9 +33,11 @@ def monomial_new_init(self,arg=None):
                 self*=Variable(i)
 Monomial.__init__=monomial_new_init
 booleset_old_init=BooleSet.__init__
-def booleset_new_init(self,arg=None):
+def booleset_new_init(self,arg=None, second=None):
     if arg==None:
         booleset_old_init(self)
+    elif second != None:
+        booleset_old_init(self, arg, second)
     else:
         try:
             booleset_old_init(self,arg)

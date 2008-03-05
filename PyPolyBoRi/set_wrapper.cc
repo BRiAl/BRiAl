@@ -99,6 +99,4 @@ corresponding to Variables of given index is replaced by its else-branch")
   def("if_then_else",if_then_else, "if-then else operator");
   boost::python::register_exception_translator<
             ITEIndexException>(translator);
-
-  def("navi_to_set", navi_to_set, "Convert navigator (and ring) to BooleSet");
 }
