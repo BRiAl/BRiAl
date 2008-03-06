@@ -437,32 +437,33 @@ The algorithm has of course exponential complexity in the number of variables.
 The resulting ZDD however has only as many nodes as variables.
 In fact it can be constructed directly using the following function (from specialsets.py).
 \begin{verbatim}
-def power_set(variable_indices):
-    variable_indices=list(reversed(list(set(variable_indices))))
+def power_set(variables):
+    variables=sorted(set(variables),reverse=True,key=key)
     res=Polynomial(1).set()
-    for v in variable_indices:
+    for v in variables:
         res=if_then_else(v,res,res)
-    return res
+    return res 
 \end{verbatim}
 Note, that we switched from polynomials to Boolean sets. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple \ite operators instead of complex operations in each step).
 
 \subsubsection{All monomials of degree d}
 \begin{verbatim}
-def all_monomials_of_degree_d(d,variable_indices):
-    if d == 0:
+def all_monomials_of_degree_d(d,variables):
+    if d==0:
         return Polynomial(1).set()
-    if len(variable_indices) == 0:
+    if len(variables)==0:
         return BooleSet()
-    variable_indices = list(reversed(list(set(variable_indices))))
-    m = Variable(variable_indices[-1])
-    for v in variable_indices[:-1]:
-        m = Variable(v) + m
-    m = m.set()
+    variables=sorted(set(variables),reverse=True,key=key)
+
+    m=Variable(variables[-1])
+    for v in variables[:-1]:
+        m=v+m
+    m=m.set()
     def do_all_monomials(d):
-        if d == 0:
+        if d==0:
             return Polynomial(1).set()
         else:
-            prev = do_all_monomials(d-1)
+            prev=do_all_monomials(d-1)
             return prev.cartesianProduct(m).diff(prev)
     return do_all_monomials(d)
 \end{verbatim}
@@ -520,8 +521,8 @@ def recursive_graded(f,d):
                 return BooleSet()
             return if_then_else(
                 nav.value(),
-                do_recursive_graded(BooleSet(nav.thenBranch()),d-1),
-                do_recursive_graded(BooleSet(nav.elseBranch()),d))
+                do_recursive_graded(BooleSet(nav.thenBranch(),f.ring()),d-1),
+                do_recursive_graded(BooleSet(nav.elseBranch(),f.ring()),d))
     return Polynomial(do_recursive_graded(f.set(),d))
         
 \end{verbatim}
