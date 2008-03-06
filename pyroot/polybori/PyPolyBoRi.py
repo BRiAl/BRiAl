@@ -54,3 +54,23 @@ BooleSet.__init__=booleset_new_init
 
 for k in OrderCode.values:
     globals()[str(OrderCode.values[k])]=OrderCode.values[k]
+
+monom_div_old = Monomial.__div__
+
+def monom_div_new(self, arg):
+    try:
+        return monom_div_old(self,arg)
+    except:
+        return 0 
+
+Monomial.__div__ = monom_div_new
+
+var_div_old = Variable.__div__
+
+def var_div_new(self, arg):
+    try:
+        return var_div_old(self,arg)
+    except:
+        return 0 
+
+Variable.__div__ = var_div_new

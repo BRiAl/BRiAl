@@ -54,6 +54,10 @@ BoolePolynomial ring_zero(const BoolePolyRing& ring) {
   return ring.zero();
 }
 
+static void translator_pborierror(const PBoRiError & err) {
+    PyErr_SetString(PyExc_ValueError, err.text());
+}
+
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -160,7 +164,10 @@ with inverted variable order\n\
   .def("__pow__", var_power)
     .def("index", &BooleVariable::index, "Variable position in the ring")
     .def("set",&BooleVariable::set, "Convert to BooleSet")
- .def("toStdOut", print_variable);
+  .def("toStdOut", print_variable);
+  boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
+
+
   export_strategy();
   export_monomial();
   export_bset();
