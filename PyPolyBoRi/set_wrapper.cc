@@ -38,6 +38,13 @@ static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
     }
     return BooleSet(i,a,b);
 }
+static BooleSet if_then_else_var(const BooleVariable & v,const BooleSet& a, const BooleSet& b){
+    idx_type i=v.index();
+    if ((i>=*a.navigation())|| (i>=*b.navigation())){
+        throw ITEIndexException();
+    }
+    return BooleSet(i,a,b);
+}
 BooleSet the_set_itself(const BooleSet &s){
     return s;
 }
@@ -97,6 +104,7 @@ corresponding to Variables of given index is replaced by its else-branch")
          "Number of elements as double floating point number.")
     .def("intersect", &BooleSet::intersect, "Set intersection");
   def("if_then_else",if_then_else, "if-then else operator");
+  def("if_then_else",if_then_else_var, "if-then else operator");
   boost::python::register_exception_translator<
             ITEIndexException>(translator);
 }
