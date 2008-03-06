@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2008/03/06 09:18:53  bricken
+ * + implement postincrement correctly
+ *
  * Revision 1.1  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -80,7 +83,10 @@ typedef int difference_type;
   }
 
   /// Postfix increment operator
-  self operator++(int) {  return ++self(*this); }
+  self operator++(int) {  
+      self copy=*this;
+      ++(*this);
+      return copy; }
 
   /// Constant dereference operator
   reference operator*() const {  return var_type(*m_iter, m_ring); }
