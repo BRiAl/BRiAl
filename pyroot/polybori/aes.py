@@ -6,7 +6,7 @@ cache={}
 def m2code(m,table):
     res=0
     for v in m:
-        res=res+(1<<table[v])
+        res=res+(1<<table[v.index()])
     #print "m2code",m,res
     return res
 def p2code(p,table):
@@ -17,7 +17,7 @@ def p2code(p,table):
 def translate_m(m,table):
     res=Monomial()
     for v in m:
-        res=Monomial(Variable(table[v]))*res
+        res=Monomial(Variable(table[v.index()]))*res
     return res
 def translate(p,table):
     res=0
@@ -35,7 +35,7 @@ def cached_GB(I,prot=False):
     for p in I:
         m=m*p.vars()
     table_to_ring=dict(enumerate(m))
-    table_to_123=dict([(v,k) for (k,v) in enumerate(m)])
+    table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m)])
     codes=tuple(sorted([p2code(p,table_to_123) for p in I]))
     if codes in cache:
         #print "codes found",codes

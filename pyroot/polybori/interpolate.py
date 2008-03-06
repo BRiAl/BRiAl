@@ -41,13 +41,15 @@ def nf_lex_points(f,p):
     p=BooleSet(p)
     z=zeroes(f,p)
     return interpolate_smallest_lex(z,p.diff(z))
+def key(v):
+    return v.index()
 def gen_random_monomial():
     d=generator.randrange(min(6,v+1))
     variables=generator.sample(xrange(v),d)
-    variables=sorted(variables,reverse=True)
+    variables=sorted(variables,key=key,reverse=True)
     m=Monomial()
     for x in variables:
-        m=Variable(x)*m
+        m=x*m
     return m
 def gen_random_polynomial(max_len=50):
     vec=BoolePolynomialVector()
@@ -97,7 +99,7 @@ if __name__=='__main__':
         print "----------"
         print "number_of_points:",number_of_points
         print "generate points"
-        points=gen_random_poly(number_of_points,nvariables,range(nvariables))
+        points=gen_random_poly(number_of_points,nvariables,[Variable(i) for i in range(nvariables)])
         print "points generated"
         bench_interpolate(nvariables,nvariables,points)
         vars_mon=Monomial()

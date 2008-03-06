@@ -1,8 +1,8 @@
 from polybori.PyPolyBoRi import *
 from random import Random
-
-
-def gen_random_poly(l,deg=10,vars_set=list(xrange(100)),seed=123):
+def key(v):
+    return v.index()
+def gen_random_poly(l,deg,vars_set,seed=123):
     myrange=vars_set
     r=Random(seed)
     def helper(samples):
@@ -12,8 +12,8 @@ def gen_random_poly(l,deg=10,vars_set=list(xrange(100)),seed=123):
             d=r.randint(0,deg)
             variables=r.sample(myrange,d)
             m=Monomial()
-            for v in sorted(variables,reverse=True):
-                m=m*Variable(v)
+            for v in sorted(set(variables),key=key,reverse=True):
+                m=m*v
             return Polynomial(m)
         assert samples>=2
         return helper(samples/2)+helper(samples-samples/2)

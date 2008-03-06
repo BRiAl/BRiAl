@@ -1,7 +1,7 @@
 from polybori.PyPolyBoRi import *
 
 def lead_index(p):
-  return iter(p.lexLead()).next()#first index
+  return iter(p.lexLead()).next().index()#first index
  
 def combine(reductors,p, reduce=None):
     p_nav=p.navigation()
@@ -50,7 +50,7 @@ def eliminate(polys, on_the_fly=False):
       continue
     lm=p.lexLead()
     if lm.deg()==1:
-      index=iter(lm).next()
+      index=iter(lm).next().index()
       if not (index in indices):
         indices.add(index)
         linear_leads.append(p)

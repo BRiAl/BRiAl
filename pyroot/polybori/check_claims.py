@@ -113,7 +113,6 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
       if redsb:
           p=ll_red_nf(p,reductors)
           reductors=ll_red_nf(Polynomial(reductors),BooleSet(p.set()))
-      red_lead=[i for i in Polynomial(reductors).lead() if i<lead_index]
 
       
       p_nav=p.navigation()
@@ -150,48 +149,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
         return False
         
 
-def proofll_old(ifthen,reductors):
-  ip_pre=ifthen.ifpart
-  ip=[]
-  reductors=copy(reductors)
-  for p in ip_pre:
-    p=Polynomial(p)
-    if p.isZero(): continue
-    li=list(p.lead())
-    if len(li)==1 and (not (li[0] in reductors)):
-      index=li[0]
-      tail=p.lead()+p
-      reductors[index]=ll_red_nf2(tail,reductors)
-      for v in reductors:
-        if v<index and index in reductors[v].vars():
-          to_red=reductors[v]
-          s0=Polynomial(to_red.set().subset0(index))
-          s1=Polynomial(to_red.set().subset1(index))
-          to_red=reductors[index]*s1+s0
-          reductors[v]=to_red
-    else:
-      ip.append(p)
-  it=ifthen.thenpart
-  print "proofing:", ifthen
-  ip=logicaland(ip)
-  for c in it:
-    print "proofing part:",c
-    c=logicalor([1+ip,c])
 
-    if c.isZero():
-      print "TRUE (trivial)"
-    else:
-      c_orig=c
-      c=ll_red_nf2(c,reductors)
-      encoded_redsb=llredsb_Cudd_style([Monomial(Variable(i)) + reductors[i] for i in reductors])
-      print ll_red_nf2_Cudd_style(c_orig,encoded_redsb)
-      assert c==ll_red_nf2_Cudd_style(c_orig,encoded_redsb)
-      assert c==ll_red_nf(c_orig,BooleSet(encoded_redsb.set()))
-      
-      if c.isZero():
-        print "TRUE"
-      else:
-        print "FAILED"
 
 def to_if_then(p):
   if isinstance(p,IfThen):

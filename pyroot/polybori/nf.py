@@ -351,7 +351,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
         plug_p_lead=plug_p.lead()
         if len(plug_p)==2 and (plug_p+plug_p_lead).deg()==0:
             for v in plug_p_lead:
-                strat.addGeneratorDelayed(Variable(v)+1)
+                strat.addGeneratorDelayed(v+1)
         else:
             strat.addGeneratorDelayed(plug_p)
         print "npairs", strat.npairs()
@@ -413,10 +413,10 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         index=strat.suggestPluginVariable();
         if index<0:
             uv=set(used_vars_set(strat))
-            lv=set([iter(p.lead()).next() for p in strat if p.lmDeg()==1])
+            lv=set([iter(p.lead()).next().index() for p in strat if p.lmDeg()==1])
             candidates=uv.difference(lv)
             if len(candidates)>0:
-                index=iter(candidates).next()
+                index=iter(candidates).next().index()
         if index>=0:
             print "chosen index:", index
             step(strat, trace,  Polynomial(Monomial(Variable(index))),0)

@@ -8,7 +8,8 @@ def used_vars(l, bound=None):
             return m
     return m
 
-
+def key(v):
+    return v.index()
 def used_vars_set(l,bound=None):
     m=Monomial()
     s=set()
@@ -16,6 +17,6 @@ def used_vars_set(l,bound=None):
         s.update(Polynomial(p).vars())
         if bound and len(s)>bound:
             break
-    for v in reversed(list(s)):
-        m=Monomial(Variable(v))*m
+    for v in sorted(list(s),key=key,reverse=True):
+        m=v*m
     return m

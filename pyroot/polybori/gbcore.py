@@ -1,6 +1,6 @@
 from polybori.nf import *
 import polybori.aes as aesmod
-import polybori.coding as coding
+
 from polybori.PyPolyBoRi import *
 from polybori.ll import eliminate
 from time import time
@@ -52,7 +52,7 @@ def ll_is_good(I):
     for p in I:
         m=p.lexLead()
         if m.deg()==1:
-            lex_lead.add(iter(m).next())
+            lex_lead.add(iter(m).next().index())
     if len(lex_lead)>=0.8*len(I):
         uv=len(used_vars_set(I))
         if len(lex_lead)>0.9*uv:
@@ -303,7 +303,7 @@ def fix_deg_bound_post(I,state):
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb"],default=True)
 
-def groebner_basis(I, faugere=False,  coding=False,
+def groebner_basis(I, faugere=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
        prot= False, step_factor= 1,
@@ -348,12 +348,6 @@ def groebner_basis(I, faugere=False,  coding=False,
         pt2=time()
         if prot:
           print "preprocessing time", pt2-pt
-    if coding:
-      pt=time()
-      I=coding.preprocess(I,prot=prot)
-      pt2=time()
-      if prot:
-        print "preprocessing time", pt2-pt
 
     if preprocess_only:
       for p in I:
