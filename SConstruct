@@ -4,8 +4,8 @@ opts = Options('custom.py')
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
-pboriversion = "0.2"
-pborirelease = "0.1"
+pboriversion = "0.3"
+pborirelease = "0"
 
 import tarfile
 
@@ -163,7 +163,7 @@ env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 HAVE_DOXYGEN = env['HAVE_DOXYGEN']
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
 BOOST_WORKS = env['BOOST_WORKS']
-#PYPREFIX = env['PYPREFIX']
+
 SINGULAR_HOME = env['SINGULAR_HOME']
 USERLIBS = env['LIBS']
 
@@ -401,6 +401,9 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
                                ] 
 
+documentable_python_modules = [ glob(elt)[0] for elt in
+                                documentable_python_modules ] 
+
 # Currently all python modules are at place
 installable_python_modules = []
 
@@ -594,6 +597,11 @@ if distribute or rpm_generation or deb_generation:
     tutorial/tutorial.tex python/genpythondoc.py""") ]
     allsrcs.append(env.Dir(DocPath('images')))
 
+    # Removing additional stuff
+    for exclsrc in [PyRootPath('polybori/coding.py')] :
+        for file in glob(exclsrc):
+            allsrcs.remove(file)  
+
 if distribute:    
     presrcdistri = env.DistTar("PolyBoRi", allsrcs)
     (srcdistrname, srcdistrext1) = path.splitext(str(presrcdistri[0]))
@@ -711,13 +719,8 @@ def t4h_emitter(target, source, env):
 #if have_hevea:
 
 t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE")
-tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';' + t4h_str,
-                        emitter = t4h_emitter)
-#else:
-#    tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`; htlatex ' 
-#                                     + path.abspath("$SOURCE"), emitter = t4h_emitter)
-#    tex_to_ht_bld = Builder(action = 'htlatex $SOURCE  ', emitter = t4h_emitter)
-
+tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';'
+                        + t4h_str, emitter = t4h_emitter)
 
 
 def pathsplit(p, rest=[]):

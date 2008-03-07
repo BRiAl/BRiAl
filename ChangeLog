@@ -1,3 +1,38 @@
+------------------------------------------------------------------------------
+Release Name: 0.3
+
+Notes:
+This release contains several stability improvements:  premature
+conversion of constant values (bool or int) is avoided, and the correct ring
+of given polynomial, monomial, variable or BooleSet is accesible. The
+latter was used to improve low-level procedures, which do not depend on
+the active ring any more.
+
+In addition, python-related settings during build-process were simplified.
+Also, monom1/monom2 = 0 will not result in invalid "monomial" zero.
+Finally, more standard conforming rpm and deb packages are generated.
+	
+Changes:
+* New option for scons: PYTHON=<python executable> replaces PBP and
+  PYPREFIX. Python-specific paths and libraries are extracted from that
+  executable. 
+* Default of the PYINSTALLPREFIX option is now the site_packages directory
+  of the python installation given by PYTHON.
+* The tutorial can be generated using hevea or tex4ht, if latex2html is
+  not available.
+* PolyBoRi exceptions are now converted to python exceptions.
+* Added class BooleRing for handling polynomial expressions without
+  given ordering. Polynomials, monomials, Variables and BooleSet have a
+  member function ring() for accessing the corresponding BooleRing
+* Added class BooleConstant, which is used to avoid premature evaluation
+  of bools and int values to Boolean polynomials. (Necessary if the active
+  ring is changed befor using a constant value.)
+* monom1/monom2 = 0 throws exception (caught and processed in python interface)
+* BooleMonomial::variableBegin|End can be used to iterate over the
+  variables in a given monomial.
+* In python interface: iteration over monomials is a sequence of variables
+  now (instead of indices).
+* Also more standard conforming rpm and deb package generation.	
 
 ------------------------------------------------------------------------------
 Release Name: 0.2

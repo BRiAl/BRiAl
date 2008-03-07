@@ -54,7 +54,7 @@ scons -j 5 prepare-install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
               PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
               INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-              PYPREFIX=%{pbori_pyprefix} PBP=%{__python} \
+              PYPREFIX=%{pbori_pyprefix} PYTHON=%{__python} \
               DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} 
 
 # rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
@@ -76,8 +76,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Feb 26 2008 Alexander Dreyer <adreyer@gmx.de> - 
-- More standard-conforming rpm (PolyBoRi 0.2-0.1).
+* Wed Mar 07 2008 Alexander Dreyer <adreyer@gmx.de> - 
+- More standard-conforming rpm (PolyBoRi 0.3-0).
 * Wed Feb 13 2008 Alexander Dreyer <adreyer@gmx.de> - 
 - Initial build (PolyBoRi 0.2-0).
 
