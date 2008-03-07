@@ -861,7 +861,7 @@ Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)},
 In [4]:f.zeroesIn(ambient_space)
 Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
 
-In [5]:S=BooleSet([x(1),x(1)*x(2)])
+In [5]:S=BooleSet([x(0),x(1)*x(2)])
 
 In [6]:f.zeroesIn(S)
 Out[6]:{{x(1),x(2)}}
@@ -869,15 +869,15 @@ Out[6]:{{x(1),x(2)}}
 
 A example of the second kind, where only the full ambient space can be considered count \verb|lex_groebner_basis_points|
 \begin{verbatim}
-In [1]:S=BooleSet([x(1),x(1)*x(2)])
+In [1]:S=BooleSet([x(0),x(1)*x(2)])
 
 In [2]:from polybori.interpolate import *              
 
 In [3]:lex_groebner_basis_points(S,x(0)*x(1)*x(2))
-Out[3]:[x(0), x(1) + 1]
+Out[3]:[x(0) + x(2) + 1, x(1) + x(2)]
 
 In [4]:lex_groebner_basis_points(S,x(0)*x(1)*x(2)*x(3))
-Out[4]:[x(0), x(1) + 1, x(3)]
+Out[4]:[x(0) + x(2) + 1, x(1) + x(2), x(3)]
 \end{verbatim}
 
 This function calculates the reduced lexicographical \Groebner basis of the vanishing ideal of $S$.
