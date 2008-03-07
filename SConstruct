@@ -396,13 +396,11 @@ LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
-                               specialsets.py aes.py coding.py memusage.py
+                               specialsets.py aes.py memusage.py
                                heuristics.py gbcore.py interpolate.py
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
                                ] 
 
-documentable_python_modules = [ glob(elt)[0] for elt in
-                                documentable_python_modules ] 
 
 # Currently all python modules are at place
 installable_python_modules = []
