@@ -817,7 +817,7 @@ In [3]: data.ideal
 Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \end{verbatim}
 
-\section{Reinterpretation of Boolean Sets as subsets of the vector space $\Ztwo^n$}
+\section{Reinterpretation of Boolean sets as subsets of the vector space~$\Ztwo^n$}
 Let \pythonconstant{S} be a Boolean set. For example:
 \begin{verbatim}
 In [1]:S=BooleSet([x(0),x(1)*x(2)])
@@ -832,21 +832,23 @@ Our usual interpretation is to identify it with a polynomial with corresponding 
 In [3]:Polynomial(S)
 Out[3]:x(1)*x(2) + x(0)
 \end{verbatim}
-Another interpretation is to map a set of variables $m$ to a vector v in $\Ztwo^n$.
-The i-th entry of $v$ is set to 1, iff the i-th variable occurs in $m$.
-So we can identify $\set{x_0}$ with $(1,0,0)$ and $\set{x_1,x_2}$ with $(0,1,1)$ in $\Ztwo^3$.
-Extending this identification from sets of variables  to sets of set of variables we can identify $S$ with
+Another interpretation is to map a set of variables $m$ to a vector~$v$ in $\Ztwo^n$.
+The $i$-th entry of~$v$ is set to 1, if and only if the $i$-th variable occurs in $m$.
+So we can identify $\set{x_0}$ with $(1,0,0)$ and $\set{x_1,x_2}$ with~$(0,1,1)$ in~$\Ztwo^3$.
+Extending this identification from sets of variables  to sets of set of variables we can identify $S$ with~%
 $\set{(1,0,0), (0,1,1)}$.
 Note, that the choice of $n$ as $3$ was not determined by \pythonconstant{S}. In fact every bigger $n$ would have also been a candidate.
-For this reason, some procedures interpreting Boolean sets as subsets of $\Ztwo^n$ taking the monomial ambient space as an additional parameter.
-The full vector space can be constructors by multiplying all needed variables and the set of divisors of the product.
+For this reason, some procedures interpreting Boolean sets as subsets of~$\Ztwo^n$ taking the monomial ambient space as an additional parameter.
+The full vector space can be constructed by multiplying all needed variables and the set of divisors of the product.
 
 \begin{verbatim}
 In [4]:(x(1)*x(2)*x(3)).divisors()
 Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
 \end{verbatim}
 
-We distingish between procedures, where also subset of the ambient space can be used like finding zeroes of a polynomial and procedures, where only the dimension/involved unit vectors/variables matters.
+We distingish between procedures, which use subsets of the ambient space~(like
+finding zeroes of a polynomial),  and such procedures, where
+only the dimension/involved unit vectors/variables matter.
 The first kind of procedures usually gets the ambient space itself, the second kind gets the monomial consisting of all involved variables.
 
 \subsection{Examples}
