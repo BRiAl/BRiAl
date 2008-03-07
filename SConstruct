@@ -571,7 +571,8 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
            .kprof.html .rpm .spec """),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp SOURCES BUILD"),
-           DISTTAR_EXCLUDEPATTERN = Split(".#* #*# *~ profiled cacheopts.h"))
+           DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
+           coding.py"""))
 
 
 if distribute or rpm_generation or deb_generation:
@@ -596,11 +597,6 @@ if distribute or rpm_generation or deb_generation:
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex python/genpythondoc.py""") ]
     allsrcs.append(env.Dir(DocPath('images')))
-
-    # Removing additional stuff
-    for exclsrc in [PyRootPath('polybori/coding.py')] :
-        for file in glob(exclsrc):
-            allsrcs.remove(file)  
 
 if distribute:    
     presrcdistri = env.DistTar("PolyBoRi", allsrcs)
