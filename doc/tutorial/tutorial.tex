@@ -816,6 +816,73 @@ In [2]: data=load_file("data-sample.py")
 In [3]: data.ideal
 Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \end{verbatim}
+
+\section{Reinterpretation of Boolean Sets as subsets of the vector space $\Ztwo^n$}
+Let \pythonconstant{S} be a Boolean set. For example:
+\begin{verbatim}
+In [1]:S=BooleSet([x(0),x(1)*x(2)])
+
+In [2]:S
+Out[2]:{{x(1),x(2)}, {x(0)}}
+\end{verbatim}
+
+\pythonconstant{S} is a set of sets of variables.
+Our usual interpretation is to identify it with a polynomial with corresponding terms:
+\begin{verbatim}
+In [3]:Polynomial(S)
+Out[3]:x(1)*x(2) + x(0)
+\end{verbatim}
+Another interpretation is to map a set of variables $m$ to a vector v in $\Ztwo^n$.
+The i-th entry of $v$ is set to 1, iff the i-th variable occurs in $m$.
+So we can identify $\set{x_0}$ with $(1,0,0)$ and $\set{x_1,x_2}$ with $(0,1,1)$ in $\Ztwo^3$.
+Extending this identification from sets of variables  to sets of set of variables we can identify $S$ with
+$\set{(1,0,0), (0,1,1)}$.
+Note, that the choice of $n$ as $3$ was not determined by \pythonconstant{S}. In fact every bigger $n$ would have also been a candidate.
+For this reason, some procedures interpreting Boolean sets as subsets of $\Ztwo^n$ taking the monomial ambient space as an additional parameter.
+The full vector space can be constructors by multiplying all needed variables and the set of divisors of the product.
+
+\begin{verbatim}
+In [4]:(x(1)*x(2)*x(3)).divisors()
+Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
+\end{verbatim}
+
+We distingish between procedures, where also subset of the ambient space can be used like finding zeroes of a polynomial and procedures, where only the dimension/involved unit vectors/variables matters.
+The first kind of procedures usually gets the ambient space itself, the second kind gets the monomial consisting of all involved variables.
+
+\subsection{Examples}
+\begin{verbatim}
+In [1]:f=x(0)+x(1)+x(2)
+
+In [2]:ambient_space=(x(0)*x(1)*x(2)).divisors()
+
+In [3]:ambient_space
+Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
+
+In [4]:f.zeroesIn(ambient_space)
+Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
+
+In [5]:S=BooleSet([x(1),x(1)*x(2)])
+
+In [6]:f.zeroesIn(S)
+Out[6]:{{x(1),x(2)}}
+\end{verbatim}
+
+A example of the second kind, where only the full ambient space can be considered count \verb|lex_groebner_basis_points|
+\begin{verbatim}
+In [1]:S=BooleSet([x(1),x(1)*x(2)])
+
+In [2]:from polybori.interpolate import *              
+
+In [3]:lex_groebner_basis_points(S,x(0)*x(1)*x(2))
+Out[3]:[x(0), x(1) + 1]
+
+In [4]:lex_groebner_basis_points(S,x(0)*x(1)*x(2)*x(3))
+Out[4]:[x(0), x(1) + 1, x(3)]
+\end{verbatim}
+
+This function calculates the reduced lexicographical \Groebner basis of the vanishing ideal of $S$.
+Here the ambient space matters, as an additional component would mean, that the corresponding entries are zero, so we would get an additional generator for the ideal $x_3$.
+
 \bibliographystyle{plain}
 
 % As long as there are noe citations...
