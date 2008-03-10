@@ -1,7 +1,6 @@
 from polybori.PyPolyBoRi import *
 from random import Random
-def key(v):
-    return v.index()
+
 def gen_random_poly(l,deg,vars_set,seed=123):
     myrange=vars_set
     r=Random(seed)
@@ -12,7 +11,7 @@ def gen_random_poly(l,deg,vars_set,seed=123):
             d=r.randint(0,deg)
             variables=r.sample(myrange,d)
             m=Monomial()
-            for v in sorted(set(variables),key=key,reverse=True):
+            for v in sorted(set(variables),key=top_index,reverse=True):
                 m=m*v
             return Polynomial(m)
         assert samples>=2

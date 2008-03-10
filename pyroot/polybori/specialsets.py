@@ -1,12 +1,11 @@
-from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else, Monomial
-def key(v):
-    return v.index()
+from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else, Monomial, top_index
+
 def all_monomials_of_degree_d(d,variables):
     if d==0:
         return Polynomial(1).set()
     if len(variables)==0:
         return BooleSet()
-    variables=sorted(set(variables),reverse=True,key=key)
+    variables=sorted(set(variables),reverse=True,key=top_index)
 
     m=variables[-1]
     for v in variables[:-1]:
@@ -20,7 +19,7 @@ def all_monomials_of_degree_d(d,variables):
             return prev.cartesianProduct(m).diff(prev)
     return do_all_monomials(d)
 def power_set(variables):
-    variables=sorted(set(variables),reverse=True,key=key)
+    variables=sorted(set(variables),reverse=True,key=top_index)
     res=Polynomial(1).set()
     for v in variables:
         res=if_then_else(v,res,res)

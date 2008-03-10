@@ -28,9 +28,9 @@ def monomial_new_init(self,arg=None):
             monomial_old_init(self,arg)
         except:
             monomial_old_init(self)
-            items=sorted((x.index() for x in arg),reverse=True)
-            for i in items:
-                self*=Variable(i)
+            items=sorted((x for x in arg),reverse=True, key=top_index)
+            for x in items:
+                self*=x
 Monomial.__init__=monomial_new_init
 booleset_old_init=BooleSet.__init__
 def booleset_new_init(self,arg=None, second=None):

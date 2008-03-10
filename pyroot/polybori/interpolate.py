@@ -41,12 +41,11 @@ def nf_lex_points(f,p):
     p=BooleSet(p)
     z=zeroes(f,p)
     return interpolate_smallest_lex(z,p.diff(z))
-def key(v):
-    return v.index()
+
 def gen_random_monomial():
     d=generator.randrange(min(6,v+1))
     variables=generator.sample(xrange(v),d)
-    variables=sorted(variables,key=key,reverse=True)
+    variables=sorted(variables,key=top_index,reverse=True)
     m=Monomial()
     for x in variables:
         m=x*m

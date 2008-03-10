@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import Monomial,Polynomial,Variable
+from polybori.PyPolyBoRi import Monomial,Polynomial,Variable,top_index
 
 def used_vars(l, bound=None):
     m=Monomial()
@@ -8,8 +8,6 @@ def used_vars(l, bound=None):
             return m
     return m
 
-def key(v):
-    return v.index()
 def used_vars_set(l,bound=None):
     m=Monomial()
     s=set()
@@ -17,6 +15,6 @@ def used_vars_set(l,bound=None):
         s.update(Polynomial(p).vars())
         if bound and len(s)>bound:
             break
-    for v in sorted(list(s),key=key,reverse=True):
+    for v in sorted(list(s),key=top_index,reverse=True):
         m=v*m
     return m

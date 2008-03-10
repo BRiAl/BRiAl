@@ -1,7 +1,8 @@
 from polybori.PyPolyBoRi import *
 
-def lead_index(p):
-  return iter(p.lexLead()).next().index()#first index
+lead_index=top_index
+#(p):
+#  return iter(p.lexLead()).next().index()#first index
  
 def combine(reductors,p, reduce=None):
     p_nav=p.navigation()
@@ -44,15 +45,15 @@ def ll_encode(polys):
 def eliminate(polys, on_the_fly=False):
   rest=[]
   linear_leads=[]
-  indices=set()
+  linear_leading_monomials=set()
   for p in polys:
     if p.isZero():
       continue
     lm=p.lexLead()
     if lm.deg()==1:
-      index=iter(lm).next().index()
-      if not (index in indices):
-        indices.add(index)
+      
+      if not (lm in linear_leading_monomials):
+        linear_leading_monomials.add(lm)
         linear_leads.append(p)
       else:
         rest.append(p)
