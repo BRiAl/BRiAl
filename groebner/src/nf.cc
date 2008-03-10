@@ -510,13 +510,19 @@ public:
     assert(length>=p2.length());
     this->p=p+p2;
     this->sugar=std::max(sugar2,this->sugar);
+    if (!(p.isZero())){
     this->lm=this->p.boundedLead(sugar);
     this->exp=this->lm.exp();
+    } else {
+	lm=BooleMonomial();
+	exp=BooleExponent();
+    }
     this->length+=length;
     this->length-=2;
     if (BooleEnv::ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
-    assert(lm==p.lead());
-    assert(exp==p.leadExp());
+    
+    assert((p.isZero())|| (lm==p.lead()));
+    assert((p.isZero())||(exp==p.leadExp()));
   }
   void adjustSugar(){
     sugar=p.deg();
