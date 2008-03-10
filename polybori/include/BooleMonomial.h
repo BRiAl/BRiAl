@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2008/03/10 16:48:06  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.39  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -249,9 +252,9 @@ class BooleMonomial {
   BooleMonomial(const exp_type& rhs, const ring_type& ring): 
     m_poly(rhs, ring) { }
 
-  /// Construct from Boolean constant and given ring
-  BooleMonomial(constant_type val, const ring_type& ring): 
-    m_poly(val, ring) {}
+  /// Construct from given ring
+  BooleMonomial(const ring_type& ring): 
+    m_poly(ring.one()) {}
 
   /// Destructor
   ~BooleMonomial() {}
@@ -387,7 +390,12 @@ protected:
   /// Construct from decision diagram
   //  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
   /// Construct from decision diagram
-  BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {}
+  BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {
+    if UNLIKELY(m_poly.isZero()) {
+      //        assert(false);
+      throw PBoRiError(CTypes::monomial_zero);
+    }
+  }
 
 private:
   BoolePolynomial m_poly;

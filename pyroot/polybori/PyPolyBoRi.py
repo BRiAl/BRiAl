@@ -59,9 +59,9 @@ monom_div_old = Monomial.__div__
 
 def monom_div_new(self, arg):
     try:
-        return monom_div_old(self,arg)
+        return monom_div_old(self, arg)
     except:
-        return 0 
+        return Polynomial(0, self.ring())
 
 Monomial.__div__ = monom_div_new
 
@@ -71,6 +71,6 @@ def var_div_new(self, arg):
     try:
         return var_div_old(self,arg)
     except:
-        return 0 
+        return Polynomial(0, self.ring())
 
 Variable.__div__ = var_div_new

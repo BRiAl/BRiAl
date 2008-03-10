@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.22  2008/03/03 13:52:12  dreyer
  * Change: using more safe Variable(idx, ring)
  *
@@ -95,6 +98,7 @@
 #include "pbori_algo.h"
 # include "PBoRiOutIter.h"
 #include "CIdxPath.h"
+#include "PBoRiError.h"
 
 // get internal routines
 #include "pbori_routines.h"
@@ -170,23 +174,23 @@ LexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
 
-  monom_type leadterm(1, poly.ring());
+  monom_type leadterm(poly.ring());
    
-  if (poly.isZero())
-    leadterm = monom_type(0, poly.ring());
-  else {
+  if UNLIKELY(poly.isZero()) {
+    // assert(false);
+    throw PBoRiError(CTypes::monomial_zero);
+  }
 
-    // store indices in list
-    CIdxPath<idx_type> indices(poly.lexLmDeg());
-
-    // iterator, which uses changeAssign to insert variable
-    // wrt. given indices to a monomial
-    PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-      outiter(leadterm) ;
-    
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
-  } 
+  // store indices in list
+  CIdxPath<idx_type> indices(poly.lexLmDeg());
+  
+  // iterator, which uses changeAssign to insert variable
+  // wrt. given indices to a monomial
+  PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
+    outiter(leadterm) ;
+  
+  // insert backward (for efficiency reasons)
+  reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
 
   return leadterm;
 }

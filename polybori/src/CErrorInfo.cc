@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.7  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -63,6 +66,7 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::out_of_bounds] = "Variable index out of bounds.";
   pErrorText[CTypes::io_error] = "I/O error.";
   pErrorText[CTypes::monomial_zero] = "Monomial operation resulted in zero.";
+  pErrorText[CTypes::division_by_zero] = "Division by zero.";
 #ifdef PBORI_DEVELOPER
   pErrorText[CTypes::not_implemented] = 
     "Sorry! Functionality not implemented yet.";

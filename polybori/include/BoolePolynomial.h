@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.93  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.92  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -571,7 +574,7 @@ public:
   self& operator/=(const monom_type&);
   self& operator/=(const exp_type&);
   self& operator/=(const self& rhs);
-  self& operator/=(constant_type rhs) { return (*this) *= rhs; }
+  self& operator/=(constant_type rhs);
   self& operator%=(const monom_type&);
   self& operator%=(const self& rhs) { 
     return (*this) -= (self(rhs) *= (self(*this) /= rhs)); 
@@ -862,7 +865,6 @@ PBORI_LHS_MULT(BooleConstant)
 template <class RHSType>
 inline BoolePolynomial
 operator/(const BoolePolynomial& lhs, const RHSType& rhs){
-
   return BoolePolynomial(lhs) /= rhs;
 }
 

@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.42  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -375,6 +378,7 @@ struct CErrorEnums {
     out_of_bounds,
     io_error,
     monomial_zero,
+    division_by_zero,
 #ifdef PBORI_DEVELOPER
    not_implemented,
 #endif

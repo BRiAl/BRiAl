@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.117  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.116  2008/03/03 14:25:19  dreyer
  * Change: switched to new syntax
  *
@@ -576,9 +579,22 @@ BoolePolynomial&
 BoolePolynomial::operator/=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const self&)" );
-
+  if UNLIKELY(rhs.isZero()) {
+    throw PBoRiError(CTypes::division_by_zero);
+  }
   return operator/=(rhs.firstTerm());
 }
+
+BoolePolynomial&
+BoolePolynomial::operator/=(constant_type rhs) {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(constant_type)" );
+  if UNLIKELY(!rhs) {
+    throw PBoRiError(CTypes::division_by_zero);
+  }
+  return *this;
+}
+
 
 // Modulus
 BoolePolynomial&

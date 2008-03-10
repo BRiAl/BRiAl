@@ -755,7 +755,7 @@ static Polynomial cancel_monomial_in_tail(const Polynomial& p, const Monomial & 
   Monomial lm=p.lead();
   
   Polynomial res=reduce_by_monom(p,m);
-  if (res.lead()==lm){
+  if ((!res.isZero()) && (res.lead()==lm)){
     return res;
   } else {
     return res+lm;

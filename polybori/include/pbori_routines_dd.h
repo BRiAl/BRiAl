@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/03/10 16:48:07  dreyer
+ * Fix: exception for division by 0 and invalid monomial-zero
+ *
  * Revision 1.8  2008/03/03 14:48:52  dreyer
  * Fix: wrong constant on fine-tuning
  *
@@ -67,25 +70,22 @@ dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
   typedef typename DDType::size_type size_type;
   typedef OutputType term_type;
 
-  term_type result(1, dd.ring());
+  term_type result(dd.ring());
 
-  if (dd.emptiness())
-    result = term_type(0, dd.ring());
-  else {
+  assert(!dd.emptiness());
 
-    size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());
+  size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());
 
-    // store indices in list
-    std::vector<idx_type> indices(nlen);
-
-    // iterator, which uses changeAssign to insert variable
-    // wrt. given indices to a monomial
-    PBoRiOutIter<term_type, idx_type, change_assign<term_type> >  
-      outiter(result);
-    
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(dd.lastBegin(), dd.lastEnd(), indices, outiter);
-  }
+  // store indices in list
+  std::vector<idx_type> indices(nlen);
+  
+  // iterator, which uses changeAssign to insert variable
+  // wrt. given indices to a monomial
+  PBoRiOutIter<term_type, idx_type, change_assign<term_type> >  
+    outiter(result);
+  
+  // insert backward (for efficiency reasons)
+  reversed_inter_copy(dd.lastBegin(), dd.lastEnd(), indices, outiter);
 
   return result;
 }

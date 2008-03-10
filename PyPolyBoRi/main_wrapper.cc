@@ -72,7 +72,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   implicitly_convertible<BooleVariable,BooleMonomial>();
   implicitly_convertible<BooleVariable,BoolePolynomial>();
   implicitly_convertible<BooleMonomial,BoolePolynomial>();
-  implicitly_convertible<int,BoolePolynomial>();
+  implicitly_convertible<int,BooleConstant>();
   implicitly_convertible<BoolePolynomial,BooleSet>();
   implicitly_convertible<BooleSet,BoolePolynomial>();
   def("change_ordering",&BooleEnv::changeOrdering);
@@ -162,8 +162,9 @@ with inverted variable order\n\
   .def("__repr__", streamable_as_str<BooleVariable>)
   .def("__hash__", &BooleVariable::index)
   .def("__pow__", var_power)
-    .def("index", &BooleVariable::index, "Variable position in the ring")
-    .def("set",&BooleVariable::set, "Convert to BooleSet")
+  .def("index", &BooleVariable::index, "Variable position in the ring")
+  .def("set",&BooleVariable::set, "Convert to BooleSet")
+  .def("ring", &BooleVariable::ring, "Get corresponding ring")
   .def("toStdOut", print_variable);
   boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
 

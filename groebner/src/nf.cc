@@ -466,16 +466,20 @@ template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
 
 class PolynomialSugar{
 public:
-  PolynomialSugar(const Polynomial& p){
+  PolynomialSugar(const Polynomial& p): lm(p.ring()), exp() {
     this->p=p;
     sugar=p.deg();
-    this->lm=p.boundedLead(sugar);
+    if (!(p.isZero())){
+      this->lm=p.boundedLead(sugar);
+      this->exp=lm.exp();
+      assert(lm==p.lead());
+      assert(exp==p.leadExp());
+    }
+
     length=p.length();
-    this->exp=lm.exp();
-    assert(lm==p.lead());
-    assert(exp==p.leadExp());
   }
-  PolynomialSugar(const Polynomial& p, int sugar, len_type length){
+  PolynomialSugar(const Polynomial& p, int sugar, len_type length):
+    lm(p.ring()), exp() {
     this->p=p;
     assert(length>=0);
     
@@ -484,10 +488,12 @@ public:
     this->length=length;
     assert(sugar>=p.deg());
     assert(length>=p.length());
-    this->lm=p.boundedLead(sugar);
-    this->exp=lm.exp();
-    assert(lm==p.lead());
-    assert(exp==p.leadExp());
+    if (!(p.isZero())){
+      this->lm=p.boundedLead(sugar);
+      this->exp=lm.exp();
+      assert(lm==p.lead());
+      assert(exp==p.leadExp());
+    }
   }
   const BooleMonomial& lead() const{
     return this->lm;
@@ -510,12 +516,13 @@ public:
     assert(length>=p2.length());
     this->p=p+p2;
     this->sugar=std::max(sugar2,this->sugar);
+
     if (!(p.isZero())){
-    this->lm=this->p.boundedLead(sugar);
-    this->exp=this->lm.exp();
+      this->lm=this->p.boundedLead(sugar);
+      this->exp=this->lm.exp();
     } else {
-	lm=BooleMonomial();
-	exp=BooleExponent();
+      lm=Monomial(p2.ring());
+      exp=Exponent();
     }
     this->length+=length;
     this->length-=2;
