@@ -5,7 +5,7 @@ opts = Options('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.3"
-pborirelease = "0"
+pborirelease = "1"
 
 import tarfile
 
@@ -227,6 +227,7 @@ env.AppendUnique(PYTHONSITE = pyconf.sitedir)
 # (PYTHONSITE is already evaluated, but not python-specific paths)
 Help(opts.GenerateHelpText(env))
 
+extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
 if HAVE_PYTHON_EXTENSION or extern_python_ext:
     env.Append(CPPPATH=[pyconf.incdir])
     env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
@@ -266,7 +267,6 @@ if not have_l2h:
 
 have_pydoc = env['HAVE_PYDOC']
 
-extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
 
 env = conf.Finish()
 
