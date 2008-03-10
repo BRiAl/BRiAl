@@ -35,7 +35,9 @@ do_mapping(const BoolePolynomial& poly, const BooleMonomial& fromVars,
 
   return mapping(poly, fromVars, toVars);
 }
-
+idx_type top_index(const BooleSet& s){
+    return *(s.navigation());
+}
 void export_misc(){
   def("mapping", do_mapping);
   def("testvalidstrat",testvalidstrat);
@@ -44,6 +46,6 @@ void export_misc(){
   def("variety_lex_leading_terms",variety_lex_leading_terms);
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
   def("global_ring",&BooleEnv::ring, return_value_policy<copy_non_const_reference>());
-  
+  def("top_index",top_index);
   
 }
