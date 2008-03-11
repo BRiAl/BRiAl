@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2008/03/11 14:21:25  dreyer
+ * Fix: old compiter issue (but better code anyway)
+ *
  * Revision 1.13  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -197,15 +200,16 @@ public:
   CTermGeneratorBase(): m_data() {}
 
   template <class SequenceType>
-  result_type operator()(const SequenceType& seq) const{
-
+  result_type operator()(const SequenceType& seq) const {
     assert(m_data != data_type());
 
     // Do not dereference empty sequence (corresponds to end())
     assert(!seq.isZero());
-    /// @todo: avoid using manager_base here
-    value_type result(dd_type(manager_base(m_data).zddOne()));
 
+    // @todo: avoid using manager_base here
+    typedef typename value_type::ring_type ring_type;
+    typedef typename ring_type::manager_type manager_type;
+    value_type result((ring_type)manager_type(m_data));
 
     typename SequenceType::stack_reverse_iterator 
       start(seq.stackRBegin()), finish(seq.stackREnd());
