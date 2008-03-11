@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.43  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -378,10 +381,11 @@ struct CErrorEnums {
     out_of_bounds,
     io_error,
     monomial_zero,
+    illegal_on_zero,
     division_by_zero,
-#ifdef PBORI_DEVELOPER
-   not_implemented,
-#endif
+    invalid_ite,
+    not_implemented,
+
     last_error
   };
 };

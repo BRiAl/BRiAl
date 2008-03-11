@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2008/03/11 10:04:11  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.44  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -234,7 +237,10 @@ public:
 
   /// Construct new node
   BooleSet(idx_type idx, const self& first, const self& second):
-    base(idx, first, second) {}
+    base(idx, first, second) {
+
+
+  }
 
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator first, navigator second, 

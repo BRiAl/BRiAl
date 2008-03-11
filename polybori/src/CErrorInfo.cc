@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.8  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -66,11 +69,12 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::out_of_bounds] = "Variable index out of bounds.";
   pErrorText[CTypes::io_error] = "I/O error.";
   pErrorText[CTypes::monomial_zero] = "Monomial operation resulted in zero.";
+  pErrorText[CTypes::illegal_on_zero] = "Illegal operation on zero.";
   pErrorText[CTypes::division_by_zero] = "Division by zero.";
-#ifdef PBORI_DEVELOPER
-  pErrorText[CTypes::not_implemented] = 
+  pErrorText[CTypes::invalid_ite] = 
+    "Node index must be smaller than top indices of then- and else-branch.";
+  pErrorText[CTypes::not_implemented] =
     "Sorry! Functionality not implemented yet.";
-#endif
 }
 
 // convert error code to description text

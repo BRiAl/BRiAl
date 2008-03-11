@@ -19,13 +19,10 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
 #include "strategy_wrapper.h"
-static BooleMonomial lead(const BoolePolynomial& p){
-    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
-    return p.lead();
-}
+
 static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
-    if (n==0) return BooleMonomial();
-    return p;
+  if (n==0) return BooleMonomial(p.ring());
+  return p;
 }
 static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
@@ -124,7 +121,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
 
   .def("deg", &BoolePolynomial::deg, "Polynomial degree")
   .def("lmDivisors", &BoolePolynomial::lmDivisors, "Divisors of leading term")
-  .def("lead", lead, "Leading term with respect to current ordering")
+  .def("lead", &BoolePolynomial::lead, "Leading term with respect to current ordering")
   .def("lexLead", &BoolePolynomial::lexLead, "Lexicographical leading term")
   .def("firstTerm", &BoolePolynomial::firstTerm, "First lexicographical term")
   .def("reducibleBy", &BoolePolynomial::reducibleBy)

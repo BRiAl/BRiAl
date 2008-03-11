@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.61  2008/03/11 10:04:11  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.60  2008/02/27 16:35:13  dreyer
  * Fix: Polynomial(0|1) removed, where possible
  *
@@ -230,6 +233,9 @@
 
 // Getting output iterator functionality
 #include "PBoRiOutIter.h"
+
+// Getting error coe functionality
+#include "PBoRiGenericError.h"
 
 // Cudd's internal definitions
 #include "cuddInt.h"
@@ -891,12 +897,18 @@ private:
 
   interfaced_type newNodeDiagram(const manager_base& mgr, idx_type idx, 
                                  navigator thenNavi, 
-                                 navigator elseNavi) const { 
+                                 navigator elseNavi) const {
+    if ((idx >= *thenNavi) || (idx >= *elseNavi))
+      throw PBoRiGenericError<CTypes::invalid_ite>();
+
     return newDiagram(mgr, newNode(mgr, idx, thenNavi, elseNavi) );
   }
 
   interfaced_type newNodeDiagram(const manager_base& mgr, 
                                  idx_type idx, navigator navi) const {
+    if (idx >= *navi)
+      throw PBoRiGenericError<CTypes::invalid_ite>();
+
     navi.incRef();
     interfaced_type result =
       newDiagram(mgr, newNode(mgr, idx, navi, navi) );

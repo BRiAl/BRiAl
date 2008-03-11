@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.12  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -197,9 +200,11 @@ public:
   result_type operator()(const SequenceType& seq) const{
 
     assert(m_data != data_type());
-    ///@todo: avoid using manager_base here
-    value_type result(dd_type(seq.isZero()?  manager_base(m_data).zddZero():
-                              manager_base(m_data).zddOne()));
+
+    // Do not dereference empty sequence (corresponds to end())
+    assert(!seq.isZero());
+    /// @todo: avoid using manager_base here
+    value_type result(dd_type(manager_base(m_data).zddOne()));
 
 
     typename SequenceType::stack_reverse_iterator 

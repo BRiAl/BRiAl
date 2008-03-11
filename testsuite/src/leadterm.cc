@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/03/11 10:04:13  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.7  2007/12/13 15:53:50  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -115,10 +118,6 @@ main(){
     std::cout << poly.lead() <<std::endl;
 
  
-    poly = BooleEnv::zero();
-    std::cout << "Leading term of empty diagram "<<std::endl;
-    std::cout << poly.lead() <<std::endl;
-
     poly = BooleEnv::one();
     std::cout << "Leading term of constant polynomial one"<<std::endl;
     std::cout << poly.lead() <<std::endl;
@@ -136,7 +135,18 @@ main(){
     std::cout << (x*y+z ) % (y*z) <<std::endl;
     std::cout << (x*y*z  +x +y +z) % (x*y) <<std::endl;
 
+    try {
+      poly = BooleEnv::zero();
+      std::cout << "Leading term of empty diagram is illegal:"<<std::endl;
+      std::cout << poly.lead() <<std::endl;
+    }
+    catch (PBoRiGenericError<CTypes::illegal_on_zero>&) {
+      std::cout << "As expected: caught illegal operation on zero exception."
+                <<std::endl;
+    }
+    
     std::cout << "Finished."<<std::endl;
+
   }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

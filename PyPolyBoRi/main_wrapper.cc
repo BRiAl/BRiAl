@@ -31,8 +31,8 @@ USING_NAMESPACE_PBORI
 #define WRAP_ALSO_CUDD 1
 
 static BooleMonomial var_power(const BooleVariable& p, int n){
-    if (n==0) return BooleMonomial();
-    return p;
+  if (n==0) return BooleMonomial(p.ring());
+  return p;
 }
 
 void print_variable(const BooleVariable & p){
@@ -56,6 +56,12 @@ BoolePolynomial ring_zero(const BoolePolyRing& ring) {
 
 static void translator_pborierror(const PBoRiError & err) {
     PyErr_SetString(PyExc_ValueError, err.text());
+}
+
+static void 
+translator_pboridivisionbyzero(const PBoRiGenericError<CTypes::division_by_zero>
+                               & err) {  
+  PyErr_SetString(PyExc_ZeroDivisionError, err.text());
 }
 
 //EXPORT
@@ -167,7 +173,8 @@ with inverted variable order\n\
   .def("ring", &BooleVariable::ring, "Get corresponding ring")
   .def("toStdOut", print_variable);
   boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
-
+  typedef PBoRiGenericError<CTypes::division_by_zero> pbori_div_by_zero;
+  boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);
 
   export_strategy();
   export_monomial();

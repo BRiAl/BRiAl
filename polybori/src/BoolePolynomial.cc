@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.118  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.117  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -404,7 +407,7 @@
 # include "BoolePolyRing.h"
 #include "BooleEnv.h"
 // get error types
-# include "PBoRiError.h"
+# include "PBoRiGenericError.h"
 
 // get 
 # include "CIdxPath.h"
@@ -580,7 +583,7 @@ BoolePolynomial::operator/=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const self&)" );
   if UNLIKELY(rhs.isZero()) {
-    throw PBoRiError(CTypes::division_by_zero);
+    throw PBoRiGenericError<CTypes::division_by_zero>();
   }
   return operator/=(rhs.firstTerm());
 }
@@ -590,7 +593,7 @@ BoolePolynomial::operator/=(constant_type rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(constant_type)" );
   if UNLIKELY(!rhs) {
-    throw PBoRiError(CTypes::division_by_zero);
+    throw PBoRiGenericError<CTypes::division_by_zero>();
   }
   return *this;
 }
@@ -613,7 +616,9 @@ BoolePolynomial::monom_type
 BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
-
+  if UNLIKELY(isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  
   return BooleEnv::ordering().lead(*this);
 }
 
@@ -622,6 +627,8 @@ BoolePolynomial::monom_type
 BoolePolynomial::lexLead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lexLead() const" );
+  if UNLIKELY(isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return LexOrder().lead(*this);
 }
@@ -631,6 +638,8 @@ BoolePolynomial::monom_type
 BoolePolynomial::boundedLead(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead(size_type) const" );
+  if UNLIKELY(isZero()) 
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return BooleEnv::ordering().lead(*this, bound);
 }
@@ -640,6 +649,8 @@ BoolePolynomial::exp_type
 BoolePolynomial::leadExp() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp() const" );
+  if UNLIKELY(isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return BooleEnv::ordering().leadExp(*this);
 }
@@ -649,6 +660,8 @@ BoolePolynomial::exp_type
 BoolePolynomial::boundedLeadExp(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(size_type) const" );
+  if UNLIKELY(isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return BooleEnv::ordering().leadExp(*this, bound);
 }

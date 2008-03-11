@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.5  2008/03/11 10:04:13  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.4  2007/11/06 15:03:43  dreyer
  * CHANGE: More generic copyright
  *
@@ -153,7 +156,10 @@ main(){
     std::cout <<term_accumulate(start, start2, BoolePolynomial(0)) <<std::endl;
 
     ++start2;
-    std::cout << "summing >= "<<*start <<" .. <  "<<*start2 << std::endl;
+    std::cout << "summing >= "<<*start <<" .. <  "<< 
+      ((start2 ==  poly.orderedEnd())? BoolePolynomial(0) : 
+       BoolePolynomial(*start2)) << std::endl;
+    std::cout.flush();
 
     std::cout <<term_accumulate(start, start2, BoolePolynomial(0)) <<std::endl;
 

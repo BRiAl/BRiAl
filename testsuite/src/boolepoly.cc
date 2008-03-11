@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2008/03/11 10:04:13  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.30  2007/12/13 15:53:50  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -419,6 +422,21 @@ main(){
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
+
+
+  try {
+    std::cout << "Testing division by zero  " <<std::endl;  
+    BoolePolynomial(1) / 0;
+ }
+  catch (PBoRiGenericError<CTypes::division_by_zero>& err) {
+    std::cout << "  Caught division_by_zero error # "<< err.code() <<std::endl;   
+    std::cout << "    which says: "<< err.text() <<std::endl;  
+ }
+  catch (PBoRiError& err) {
+    std::cout << "  Caught error # "<< err.code() <<std::endl;   
+    std::cout << "    which says: "<< err.text() <<std::endl;  
+ }
+
 
 
     std::cout <<std::endl<<  "Finished."<<std::endl;

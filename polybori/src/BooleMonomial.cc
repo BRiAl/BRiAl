@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.20  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.19  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -151,7 +154,7 @@ BooleMonomial::operator/=(const self& rhs) {
   PBORI_TRACE_FUNC( "BooleMonomial::operator*=(const self&)" );
 
   m_poly /= rhs;//.m_poly;
-  if UNLIKELY(isZero())
+  if UNLIKELY(m_poly.isZero())
     throw PBoRiError(CTypes::monomial_zero);
 
   return *this;
@@ -177,7 +180,7 @@ BooleMonomial::operator/=(const var_type& rhs) {
   PBORI_TRACE_FUNC( "BooleMonomial::operator/=(const var_type&)" );
 
   m_poly.internalDiagram().subset1Assign(rhs.index());
-  if UNLIKELY(isZero())
+  if UNLIKELY(m_poly.isZero())
     throw PBoRiError(CTypes::monomial_zero);
 
   return *this;

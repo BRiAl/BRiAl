@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2008/03/11 10:04:12  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.23  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -176,11 +179,6 @@ LexOrder::lead(const poly_type& poly) const {
 
   monom_type leadterm(poly.ring());
    
-  if UNLIKELY(poly.isZero()) {
-    // assert(false);
-    throw PBoRiError(CTypes::monomial_zero);
-  }
-
   // store indices in list
   CIdxPath<idx_type> indices(poly.lexLmDeg());
   

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/03/11 10:04:11  dreyer
+ * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
+ *
  * Revision 1.40  2008/03/10 16:48:06  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -330,7 +333,6 @@ class BooleMonomial {
   bool_type operator!=(const self& rhs) const { return m_poly != rhs.m_poly; }
   bool_type operator==(constant_type rhs) const { return m_poly == rhs; }
   bool_type operator!=(constant_type rhs) const { return m_poly != rhs; }
-  bool_type isZero() const { return m_poly.isZero(); }
   bool_type isOne() const { return m_poly.isOne(); }
   bool_type isConstant() const { return m_poly.isConstant(); }
   //@}
@@ -391,10 +393,7 @@ protected:
   //  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
   /// Construct from decision diagram
   BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {
-    if UNLIKELY(m_poly.isZero()) {
-      //        assert(false);
-      throw PBoRiError(CTypes::monomial_zero);
-    }
+    assert(!m_poly.isZero());
   }
 
 private:

@@ -24,8 +24,8 @@ using namespace std;
 USING_NAMESPACE_PBORI
 #include "Poly_wrapper.h"
 static BooleMonomial mon_power(const BooleMonomial& p, int n){
-    if (n==0) return BooleMonomial();
-    return p;
+  if (n==0) return BooleMonomial(p.ring());
+  return p;
 }
 //static void print_monomial(const BooleMonomial & p){
 //  p.print(cout);

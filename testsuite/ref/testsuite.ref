@@ -12,98 +12,13 @@ Finished.
 ----------------------
 Executing testsuite/zddnavi
 ----------------------
-Testing navigating through decision diagrams
-poly:  
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2) + x(1)
-Navigation: 
-x(0)*x(2)*x(3)*x(4)
-x(0)*x(2)
-x(1)
-
-Printing via dd_transform: 
-x(0)*x(2)*x(3)*x(4)x(0)*x(2)x(1)
-Storing via dd_transform: 
-0, 2, 3, 4, 
-0, 2, 
-1, 
-
-pure print dd_transform: 
-0 2 3 4 
-0 2 
-1 
-0 2 3 4 , 0 2 , 1 , 
-
-Get terms: 
-x(0)*x(2)*x(3)*x(4), x(0)*x(2), x(1), 
-
-Test Term iteration 
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1)
-x(0)*x(2)*x(3)*x(4)
-x(0)*x(2)*x(4)
-x(0)*x(2)
-x(1)
-  last: 
-0
-  next: 
-x(0)*x(2)*x(3)*x(4) + x(0)*x(2)*x(4) + x(0)*x(2) + x(1) + 1
-1
-0
-  next: 
-1
-1
-0
-  next: 
-0
-0
-
-Testing last term
-poly x(0)*x(1) + x(0)*x(4)
-last term 0, 4, 
-
-Testing last term
-poly x(0)*x(1) + x(1)*x(4)
-last term 1, 4, 
-
-Testing last term
-poly x(0)*x(1) + x(2)*x(4)
-last term 2, 4, 
-
-Testing last term
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
-last term 2, 4, 
-
-Testing last term
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
-last term 2, 4, last term via BoolSet: x(2)*x(4)
-
- Testing decrement...
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
-TEMPORARILY OUT OF ORDER
- Testing additional properties...
-poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
-term length: 5
-first index: 0
-
-Testing CTermStack...
- poly x(0)*x(1)*x(2)*x(3)*x(4) + x(1)*x(2)*x(3)*x(4) + x(2)*x(3)*x(4) + x(2)*x(4)
- top() 0
- top() 4
-2, 4, 
-
-Testing CDegTermStack...
- poly x(0)*x(1)*x(2) + x(1) + x(2)*x(3)*x(4) + 1
-2, 3, 4, 
-0, 1, 2, 
-1, 
-
-Finished.
+Temporarily deactivated
 ----------------------
 Executing testsuite/testring
 ----------------------
 sizeof(DdNode2)32
 sizeof(DdNode)32
 sizeof(void*)8
-Exception caught sucessfully: No polynomial ring structure defined.
 Variable 0:
 : 1 nodes 0.5 minterms
 1000 1
@@ -161,7 +76,7 @@ Used buckets in unique table: 0.94% (expected 0.93%)
 Number of BDD and ADD nodes: 4
 Number of ZDD nodes: 8
 Number of dead BDD and ADD nodes: 0
-Number of dead ZDD nodes: 4
+Number of dead ZDD nodes: 0
 Total number of nodes allocated: 12
 Total number of nodes reclaimed: 0
 Garbage collections so far: 0
@@ -1584,7 +1499,7 @@ Testing !=
 Testing== 
 0
 last begin: 6
-Upper blocks endpints: 4, 6, 2147483647, 
+Upper blocks endpints: 
 lieInSameBlock(0, 3): 1
 lieInSameBlock(0, 4): 0
 lieInSameBlock(4,5): 1
@@ -1636,6 +1551,15 @@ Throwing error # 5
     which says: I/O error.
 Throwing error # 6
   Caught error # 6
+    which says: Monomial operation resulted in zero.
+Throwing error # 7
+  Caught error # 7
+    which says: Illegal operation on zero.
+Throwing error # 8
+  Caught error # 8
+    which says: Division by zero.
+Throwing error # 9
+  Caught error # 9
     which says: Sorry! Functionality not implemented yet.
 ----------------------
 Executing testsuite/booleset
@@ -1685,10 +1609,8 @@ multiplesOf {{x(0),x(1)}, {x(1),x(2)}, {x(4)}}|x(1)
 {{x(0),x(1)}, {x(1),x(2)}}
 multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|x(1)*x(2)
 {{x(0),x(1),x(2)}, {x(1),x(2),x(3)}}
-multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|0
-{}
-multiplesOf {{x(0),x(1),x(2)}, {x(0),x(1)}, {x(1),x(2),x(3)}, {x(4)}}|1
-
+  Caught error # 7
+    which says: Illegal operation on zero.
 ----------------------
 Executing testsuite/strategy_initialization
 ----------------------
@@ -1814,6 +1736,9 @@ x(3)*x(4) + x(3) + x(4)
 x(3)*x(4) + x(3) + x(4)
 1
 count idx x(0)*x(1) + x(0) + x(1) 0 occurs 2
+Testing division by zero  
+  Caught division_by_zero error # 8
+    which says: Division by zero.
 
 Finished.
 ----------------------
@@ -1858,8 +1783,6 @@ x(0)*x(1)*x(3)*x(4)
 
 Leading term of simple monomial 
 x(3)
-Leading term of empty diagram 
-0
 Leading term of constant polynomial one
 1
 Checkung handling of constants: x*y + z + 1
@@ -1871,6 +1794,8 @@ x(2)
 x(2)
 x(0)*x(1) + x(2)
 x(0) + x(1) + x(2)
+Leading term of empty diagram is illegal:
+As expected: caught illegal operation on zero exception.
 Finished.
 ----------------------
 Executing testsuite/termaccu
@@ -1984,6 +1909,8 @@ x(4)
 Testing BooleExponent.popFirst()
 (0, 4)
 (4)
+Testing BooleMonomial.variableBegin() of x(1)*x(2)*x(4)
+x(1) x(2) x(4) 
 Finished.
 -------------------
 Testsuite finished.
