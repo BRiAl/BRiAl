@@ -111,7 +111,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   boost::python::class_<BooleRing>("BooleRing", "Boolean ring")
     .def(boost::python::init <BooleRing::size_type>());
 
-  boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring")
+  boost::python::class_<BoolePolyRing,boost::python::bases<BooleRing> >("Ring", "Boolean polynomial ring")
     //.def(boost::python::init <>())
     .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
