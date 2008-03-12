@@ -304,6 +304,76 @@ In [8]: f==Polynomial(s1)*x(2)+Polynomial(s0)
 Out[8]: True
 \end{verbatim}
 %
+
+Even more low-level than operation with \functionname{subset}-methods is the use of navigators. Navigators are provide an interface to diagram nodes, accessing there index and then- and else-branches.
+
+\begin{verbatim}
+In [1]:f=x(1)*x(2)+x(2)*x(3)*x(4)+x(2)*x(4)+x(3)+x(4)+1
+
+In [2]:s=f.set()
+
+In [3]:s
+Out[3]:{{x(1),x(2)}, {x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+
+In [4]:x(1).index()
+Out[4]:1
+
+In [5]:s.subset1(1)
+Out[5]:{{x(2)}}
+
+In [6]:s.subset0(1)
+Out[6]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+
+In [7]:nav=s.navigation()
+
+In [8]:BooleSet(nav,s.ring())
+Out[8]:{{x(1),x(2)}, {x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+
+In [9]:nav.value()
+Out[9]:1
+
+In [10]:nav_else=nav.elseBranch()
+
+In [11]:nav_else
+Out[11]:<polybori.dynamic.PyPolyBoRi.CCuddNavigator object at 0xb6e1e7d4>
+
+In [12]:BooleSet(nav_else,s.ring())
+Out[12]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+
+In [13]:nav_else.value()
+Out[13]:2
+\end{verbatim}
+
+You should be very careful and always keep a reference to the original object, when dealing with navigators, as navigators contain only a raw pointer as data.
+For the same reason, it is necessary to supply the ring as argument, when constructing a set out of a navigator.
+
+The opposite of navigation down a ZDD using navigators is to construct new ZDDs in the same way, namely giving their else- and then-branch as well as the index value of the new node.
+
+\begin{verbatim}
+    
+In [1]:f0=x(2)*x(3)+x(3)
+
+In [2]:f1=x(4)
+
+In [3]:if_then_else(x(1),f0,f1)
+Out[3]:{{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
+
+In [4]:if_then_else(x(1).index(),f0,f1)
+Out[4]:{{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
+
+In [5]:if_then_else(x(5),f0,f1)
+---------------------------------------------------------------------------
+<type 'exceptions.ValueError'>            Traceback (most recent call last)
+
+/home/michael/sing/PolyBoRi/<ipython console> in <module>()
+
+<type 'exceptions.ValueError'>: Node index must be smaller than top indices of then- and else-branch.
+
+\end{verbatim}
+
+It is strictly necessary that the index of the created node is smaller than the index of the branches.
+
+
 But also operations on higher levels are possible, like the calculation of the minimal terms (with respect to division) in a~\functionname{BooleSet}:
 \begin{verbatim}
 In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
