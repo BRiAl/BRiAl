@@ -1,4 +1,19 @@
 ------------------------------------------------------------------------------
+Release Name: 0.3.1
+This release fixes minor issues. In particular, a monomial cannot be zero, and
+iterations over monomials may be a sequence of variables.
+
+	
+Changes:
+* Illegal monomial zero	forbidden and avoided.
+* Exceptions are thrown for division by zero, Polynomial(0).lead(), and
+  illegal ITE operation. The Python-interface handles these exceptions
+  accordingly.
+* Iteration over monomials as a sequence of variables is possible now. It
+  is the default iterator over monomials in the python interface.
+	
+
+------------------------------------------------------------------------------
 Release Name: 0.3
 
 Notes:

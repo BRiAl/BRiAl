@@ -76,6 +76,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Mar 13 2008 Alexander Dreyer <adreyer@gmx.de> - 
+- Updating sources (PolyBoRi 0.3-1).
 * Wed Mar 07 2008 Alexander Dreyer <adreyer@gmx.de> - 
 - More standard-conforming rpm (PolyBoRi 0.3-0).
 * Wed Feb 13 2008 Alexander Dreyer <adreyer@gmx.de> - 
