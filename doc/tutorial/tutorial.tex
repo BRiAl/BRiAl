@@ -306,7 +306,9 @@ Out[8]: True
 \end{verbatim}
 %
 
-Even more low-level than operation with \functionname{subset}-methods is the use of navigators. Navigators are provide an interface to diagram nodes, accessing there index and then- and else-branches.
+Even more low-level than operation with \functionname{subset}-methods is the use
+of navigators. Navigators  provide an interface to diagram nodes, accessing
+their index as well as the corresponding then- and else-branches.
 
 \begin{verbatim}
 In [1]:f=x(1)*x(2)+x(2)*x(3)*x(4)+x(2)*x(4)+x(3)+x(4)+1
@@ -366,15 +368,15 @@ In [5]:if_then_else(x(5),f0,f1)
 ---------------------------------------------------------------------------
 <type 'exceptions.ValueError'>            Traceback (most recent call last)
 
-/home/michael/sing/PolyBoRi/<ipython console> in <module>()
+/home/user/PolyBoRi/<ipython console> in <module>()
 
-<type 'exceptions.ValueError'>: Node index must be smaller than top indices of then- and else-branch.
-
+<type 'exceptions.ValueError'>: Node index must be smaller than top indices of then- and
+else-branch.
 \end{verbatim}
 
 It is strictly necessary that the index of the created node is smaller than the index of the branches.
-
-
+%
+%
 But also operations on higher levels are possible, like the calculation of the minimal terms (with respect to division) in a~\functionname{BooleSet}:
 \begin{verbatim}
 In [1]: f=x(2)*x(3)+x(1)*x(3)+x(2)+x(4)
