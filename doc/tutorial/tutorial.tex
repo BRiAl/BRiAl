@@ -49,6 +49,7 @@
 \newcommand{\Groebner}{Gr\"{o}bner\xspace}
 \newcommand{\CUDD}{{CUDD}\xspace}
 \newcommand{\ite}{{ite}\xspace}
+\DeclareMathOperator{\I}{I}
 \newcommand{\functionname}[1]{\textit{#1}\xspace}
 \newcommand{\pythonconstant}[1]{\textit{#1}\xspace}
 \newcommand{\explfieldequations}{{x_1^2+x_1,\ldots,x_n^2+x_n}}
@@ -888,6 +889,7 @@ Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \end{verbatim}
 
 \section{Reinterpretation of Boolean sets as subsets of the vector space~$\Ztwo^n$}
+\label{reinterpretation-of-zdd}
 Let \pythonconstant{S} be a Boolean set. For example:
 \begin{verbatim}
 In [1]:S=BooleSet([x(0),x(1)*x(2)])
@@ -954,6 +956,50 @@ Out[4]:[x(0) + x(2) + 1, x(1) + x(2), x(3)]
 
 This function calculates the reduced lexicographical \Groebner basis of the vanishing ideal of $S$.
 Here the ambient space matters, as an additional component would mean, that the corresponding entries are zero, so we would get an additional generator for the ideal $x_3$.
+
+\section{Lexicographical normal form of polynomial against a variety}
+
+Let $V$ be a set of points in $\Ztwo^n$, $f$ a Boolean polynomial. $V$ can be encoded as a BooleSet as described in \ref{reinterpretation-of-zdd}.
+Then we are interested in the normal form of $f$ against the vanishing ideal of $V$: $\I(V)$.
+It turns out, that the computation of the normal form can be done by the computation of a minimal interpolation polynomial, which takes the same values as $f$ on $V$.
+
+\begin{verbatim}
+In [1]:from polybori.interpolate import *
+
+In [2]:V=(x(0)+x(1)+x(2)+x(3)+1).set()
+\end{verbatim}
+
+We take $V=\{e_0,e_1,e_2,e_3,0\}$, where $e_i$ describes the $i$-th unit vector. For our considerations it does not play any role, if we suppose $V$ to be embedded in $\Ztwo^4$ or a vector space of higher dimension.
+
+\begin{verbatim}
+In [3]:V
+Out[3]:{{x(0)}, {x(1)}, {x(2)}, {x(3)}, {}}
+
+In [4]:f=x(0)*x(1)+x(1)+x(2)+1
+
+In [5]:nf_lex_points(f,V)
+Out[5]:x(1) + x(2) + 1
+\end{verbatim}
+
+In this case, the normal form of $f$ w.\,r.\,t. the vanishing ideal of $V$ consists of all terms of $f$ with degree smaller or equal to $1$.
+
+It can be easily seen, that this polynomial forms the same function on $V$ as $f$.
+In fact, our computation is equivalent to the direct call of the interpolation function \verb|interpolate_smallest_lex|, which has two arguments: the set of interpolation points mapped to zero and the set of interpolation points mapped to one.
+
+\begin{verbatim}
+In [6]:z=f.zeroesIn(V)
+
+In [7]:z
+Out[7]:{{x(1)}, {x(2)}}
+
+In [8]:o=V.diff(z)
+
+In [9]:o
+Out[9]:{{x(0)}, {x(3)}, {}}
+
+In [11]:interpolate_smallest_lex(z,o)
+Out[11]:x(1) + x(2) + 1
+\end{verbatim}
 
 \bibliographystyle{plain}
 
