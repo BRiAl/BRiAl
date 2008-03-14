@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_algo.h
+/** @file pbori_algo_int.h
  *
  * @author Alexander Dreyer
  * @date 2006-04-07
@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2008/03/14 13:14:43  dreyer
+ * Fix: Some doxygen syntax errors
+ *
  * Revision 1.9  2007/11/06 15:03:36  dreyer
  * CHANGE: More generic copyright
  *

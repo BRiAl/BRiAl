@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_routines_misc.h
+/** @file pbori_routines_hash.h
  *
  * @author Alexander Dreyer
  * @date 2006-08-23
@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/03/14 13:14:43  dreyer
+ * Fix: Some doxygen syntax errors
+ *
  * Revision 1.7  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *

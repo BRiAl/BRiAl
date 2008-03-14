@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file PBoRiError.h 
+/** @file PBoRiGenericError.h 
  *
  * @author Alexander Dreyer
  * @date 2008-03-11
@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2008/03/14 13:14:43  dreyer
+ * Fix: Some doxygen syntax errors
+ *
  * Revision 1.1  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *

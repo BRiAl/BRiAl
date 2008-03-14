@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_algorithm.h
+/** @file pbori_algorithms.h
  *
  * @author Alexander Dreyer
  * @date 2007-05-11
@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2008/03/14 13:14:43  dreyer
+ * Fix: Some doxygen syntax errors
+ *
  * Revision 1.23  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *

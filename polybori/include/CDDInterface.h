@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CDDDInterface.h
+/** @file CDDInterface.h
  *
  * @author Alexander Dreyer
  * @date  2006-03-20
@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.62  2008/03/14 13:14:43  dreyer
+ * Fix: Some doxygen syntax errors
+ *
  * Revision 1.61  2008/03/11 10:04:11  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
