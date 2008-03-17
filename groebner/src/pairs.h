@@ -121,14 +121,13 @@ public:
   }
   PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
     data(new VariablePairData(i,v)),
+    sugar(gen[i].deg+1),
    // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength+gen[i].length),
   lm(gen[i].lm)
   
   {
     assert(type==VARIABLE_PAIR);
-    unsigned int deg2=gen[i].deg;
-    sugar=std::max(deg2,Polynomial(gen[i].tail.diagram().subset0(v)).deg()+1);
     this->type=type;
   }
   
