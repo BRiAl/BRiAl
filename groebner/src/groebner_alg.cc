@@ -2633,15 +2633,9 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
   deg_type deg=strat.pairs.queue.top().sugar;
   wlen_type wlen=strat.pairs.queue.top().wlen;
   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
-    deg_type sugar=strat.pairs.queue.top().sugar;
+    
     assert(strat.pairs.queue.top().sugar==deg);
-    Polynomial p=strat.nextSpoly();
-    if (p.deg()>sugar){
-        //very rare circumstances;
-        strat.addGeneratorDelayed(p);
-        return res;
-    }
-    res.push_back(p);
+    res.push_back(strat.nextSpoly());
     strat.pairs.cleanTopByChainCriterion();
   }
   return res;
