@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.94  2008/03/20 08:54:25  bricken
+ * + fixed evil bug in comparison with constants
+ *
  * Revision 1.93  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -590,7 +593,7 @@ public:
     return ( rhs? isOne(): isZero() );
   }
   bool_type operator!=(constant_type rhs) const {
-    return ( rhs? isZero(): isOne() );
+    return ( rhs? (!(isZero())): (!(isOne())) );
   }
   //@}
 
