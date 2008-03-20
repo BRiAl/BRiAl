@@ -164,6 +164,7 @@ with inverted variable order\n\
   .def(self<self)
   .def(self<=self)
   .def(self==self)
+
   .def("__str__", streamable_as_str<BooleVariable>)
   .def("__repr__", streamable_as_str<BooleVariable>)
   .def("__hash__", &BooleVariable::index)
