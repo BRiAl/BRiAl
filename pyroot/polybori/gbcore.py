@@ -2,7 +2,7 @@ from polybori.nf import *
 import polybori.aes as aesmod
 
 from polybori.PyPolyBoRi import *
-from polybori.ll import eliminate
+from polybori.ll import eliminate, ll_encode
 from time import time
 from copy import copy
 from itertools import chain
@@ -52,7 +52,7 @@ def ll_is_good(I):
     for p in I:
         m=p.lexLead()
         if m.deg()==1:
-            lex_lead.add(iter(m).next())
+            lex_lead.add(iter(m).next().index())
     if len(lex_lead)>=0.8*len(I):
         uv=len(used_vars_set(I))
         if len(lex_lead)>0.9*uv:
@@ -244,6 +244,30 @@ def llfirst_pre(I):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=False)
     return (I,eliminated)
 
+def ll_constants_pre(I):
+    I_new=[]
+    ll=[]
+    leads=set()
+    for p in I:
+        if p.lexLmDeg()==1:
+            l=p.lead()
+            if not (l in leads) and len(p)<=2:
+                tail=p+l
+                if tail.deg()<=0:
+                    ll.append(p)
+                    leads.add(l)
+                    continue
+        I_new.append(p)
+    encoded=ll_encode(ll)
+    reduced=[]
+    for p in I_new:
+        p=ll_red_nf(p,encoded)
+        if not p.isZero():
+            reduced.append(p)
+    #(eliminated,llnf, I)=eliminate(I,on_the_fly=False)
+    
+    return (reduced,ll)
+
 def other_ordering_pre(I,options):
     ocode=get_order_code()
     assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
@@ -271,13 +295,20 @@ def llfirst_post(I,eliminated):
         if len(eliminated)>0:
             I=list(chain(I,eliminated))
             #redsb just for safety, as don't know how option is set
-            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,other_ordering_first=False,redsb=True)
+            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,redsb=True)
     return I
-    if not I.containsOne():
-        for p in eliminated:
-            I.addGenerator(p)
-    I.symmGB_F2()
-    return I
+
+
+def ll_constants_post(I,eliminated):
+    for p in I:
+        if p.isOne():
+            return [p]
+    else:
+        if len(eliminated)>0:
+            I=list(chain(I,eliminated))
+            #redsb just for safety, as don't know how option is set
+        return I
+
 def result_to_list_post(I,state):
     return list(I)
 def fix_deg_bound_post(I,state):
@@ -293,6 +324,7 @@ def fix_deg_bound_post(I,state):
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
+@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=llfirst_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 
