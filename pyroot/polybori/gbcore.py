@@ -324,7 +324,7 @@ def fix_deg_bound_post(I,state):
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
-@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=llfirst_post,default=True)
+@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
 
