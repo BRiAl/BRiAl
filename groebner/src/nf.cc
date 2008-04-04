@@ -2406,7 +2406,12 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 }
 Polynomial GroebnerStrategy::nf(Polynomial p) const{
     if (p.isZero()) return p;
-    if (BooleEnv::ordering().isDegreeOrder()) return nf3_degree_order(*this,p,p.lead());
-    else return nf3(*this,p,p.lead());
+    
+    Polynomial res;
+    if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
+    else res=nf3(*this,p,p.lead());
+    if ((res.isZero())||(!(optRedTail))) return res;
+    res=red_tail(*this,p);
+    return res;
 }
 END_NAMESPACE_PBORIGB
