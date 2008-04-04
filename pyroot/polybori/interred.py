@@ -1,6 +1,6 @@
 from polybori.PyPolyBoRi import GroebnerStrategy, Polynomial
 
-def interred(l):
+def interred(l,completely=False):
     """computes a new generating system (g1, ...,gn), spanning the same ideal modulo field equations.
     The system is interreduced: For i!=j: gi.lead() does not divide any term of gj
     """
@@ -11,7 +11,8 @@ def interred(l):
         l_old=l
         l=sorted(l,key=Polynomial.lead)
         g=GroebnerStrategy()
-        g.optRedTail=True
+        if completely:
+            g.optRedTail=True
         for p in l:
             p=g.nf(p)
             if not p.isZero():
