@@ -34,7 +34,7 @@ def cached_GB(I,prot=False):
     m=Monomial()
     for p in I:
         m=m*p.vars()
-    table_to_ring=dict(enumerate(m))
+    table_to_ring=dict(enumerate([v.index() for v in m]))
     table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m)])
     codes=tuple(sorted([p2code(p,table_to_123) for p in I]))
     if codes in cache:
