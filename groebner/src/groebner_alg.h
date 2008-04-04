@@ -135,6 +135,7 @@ public:
   MonomialSet monomials;
   MonomialSet monomials_plus_one;
   boost::shared_ptr<CacheManager> cache;
+  BoolePolyRing r;
   bool enabledLog;
    unsigned int reductionSteps;
   int normalForms;
@@ -158,7 +159,7 @@ public:
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
 
-	GroebnerStrategy():pairs(*this),cache(new CacheManager()){
+	GroebnerStrategy():r(BooleEnv::ring()),pairs(*this),cache(new CacheManager()){
 	  reducibleUntil=-1;
 	  optDelayNonMinimals=true;
 		optRedTailDegGrowth=true;

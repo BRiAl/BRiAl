@@ -446,7 +446,8 @@ bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
-  assert(!(pairSetEmpty()));
+  //assert(!(pairSetEmpty()));
+  if (UNLIKELY(pairSetEmpty())) return strat->r.zero();
   bool replaced_used=false;
   
   Polynomial replaced;
@@ -504,7 +505,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
 :pairs(orig.pairs),monomials_plus_one(orig.monomials_plus_one),
 generators(orig.generators),
-leadingTerms(orig.leadingTerms),
+leadingTerms(orig.leadingTerms),r(orig.r),
 minimalLeadingTerms(orig.minimalLeadingTerms),
   leadingTerms11(orig.leadingTerms11),
   leadingTerms00(orig.leadingTerms00),
