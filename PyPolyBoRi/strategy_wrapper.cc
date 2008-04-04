@@ -203,6 +203,7 @@ void export_strategy(){
   .def("llReduceAll", &GroebnerStrategy::llReduceAll)
   .def("addAsYouWish",add_as_you_wish)
   .def("implications",implications)
+  .def("redTail",&GroebnerStrategy::redTail)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
   .def("someSpolysInNextDegree", someNextDegreeSpolys)

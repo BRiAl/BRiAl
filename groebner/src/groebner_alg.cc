@@ -445,6 +445,9 @@ void PairManager::introducePair(const Pair& pair){
 bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
+Polynomial GroebnerStrategy::redTail(const Polynomial & p){
+    return red_tail(*this,p);
+}
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   //assert(!(pairSetEmpty()));
   if (UNLIKELY(pairSetEmpty())) return strat->r.zero();

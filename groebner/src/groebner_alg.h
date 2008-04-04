@@ -198,6 +198,7 @@ public:
       if (this->enabledLog)
           std::cout<<c<<endl;
   }
+  Polynomial redTail(const Polynomial& p);
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
   std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
   //std::vector<Polynomial> faugereStepDenseModified(const std::vector<Polynomial>&);
