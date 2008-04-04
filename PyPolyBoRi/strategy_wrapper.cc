@@ -23,6 +23,12 @@ using namespace std;
 #include "variable_block.h"
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
+class StrategyIndexException{
+    
+};
+static void translator_gi(StrategyIndexException const& x) {
+    PyErr_SetString( PyExc_IndexError, "Wrong Index access at strategy");
+}
 class StrategyIterator{
 public:
     PolyEntryVector::const_iterator it;
@@ -137,9 +143,18 @@ static void implications(GroebnerStrategy& strat, int i){
 int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return select1(strat,m);
 }
+static Polynomial get_gen_by_lead(const GroebnerStrategy& strat,  const Monomial& m){
+    lm2Index_map_type::const_iterator it,end;
+    end=strat.lm2Index.end();
+    it=strat.lm2Index.find(m);
+    if UNLIKELY(it==end){
+        throw StrategyIndexException();
+    }
+    return strat.generators[it->second].p;
+}
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
     if UNLIKELY((i<0)||(i>=strat.generators.size())){
-        throw VariableIndexException();
+        throw StrategyIndexException();
     }
     return strat.generators[i].p;
 }
@@ -195,6 +210,8 @@ void export_strategy(){
   .def("__len__",nGenerators)
   .def("__iter__",range(stratbegin, stratend))
   .def("__getitem__", get_ith_gen)
+  .def("__getitem__", get_gen_by_lead)
+  
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("allGenerators", &GroebnerStrategy::allGenerators)
   
@@ -246,4 +263,6 @@ void export_strategy(){
               PolynomialIsZeroException>(translator_g);
   boost::python::register_exception_translator<
             DuplicateLeadException>(translator_d);
+        boost::python::register_exception_translator<
+                    StrategyIndexException>(translator_gi);
 }
