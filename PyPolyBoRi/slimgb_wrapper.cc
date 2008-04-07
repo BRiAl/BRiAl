@@ -29,7 +29,7 @@ void export_slimgb(){
     .def(self==self)
     .def(vector_indexing_suite<std::vector<int> >());
   def("parallel_reduce", parallel_reduce);
-  def("red_tail", red_tail);
+ /* def("red_tail", red_tail);*/
   def("nf3", nf3);
   def("mod_mon_set", mod_mon_set);
   def("ll_red_nf",ll_red_nf);
