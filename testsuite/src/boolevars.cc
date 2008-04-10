@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/04/10 12:45:01  dreyer
+ * Fix: memory leak
+ *
  * Revision 1.7  2007/11/06 15:03:42  dreyer
  * CHANGE: More generic copyright
  *
@@ -52,11 +55,18 @@ USING_NAMESPACE_PBORI
 
 int
 main(){
+////  BoolePolyRing the_ring(5);
+ BoolePolynomial poly;
+  
+  //DdManager* manager = Cudd_Init(1,1,1, 0,0);
+
+  //  Cudd_Quit(manager);
 
   std::cout << "Testing boolean ring variables" <<std::endl;   
-
+#if 0
   try {
     BoolePolyRing the_ring(5);
+
 
     BoolePolynomial x = BooleVariable(0);
     std::cout << x << std::endl;
@@ -104,6 +114,6 @@ main(){
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
-
+#endif
   return 0;
 }

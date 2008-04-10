@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/04/10 12:45:01  dreyer
+ * Fix: memory leak
+ *
  * Revision 1.7  2007/12/19 10:40:34  dreyer
  * CHANGE: make Cudd-related globals initialization static
  *
@@ -107,6 +110,7 @@ public:
 
   std::vector<node_type> m_vars;
 
+
   /// Initialize raw decision diagram management
   CCuddCore(size_type numVars = 0,
             size_type numVarsZ = 0,
@@ -126,13 +130,13 @@ public:
   }
 
   /// Destructor
-  ~CCuddCore(){ release(); }
+           //  ~CCuddCore(){ release(); }
 
   /// Increment reference count
   void addRef(){ ++ref; }
 
   /// Release this by decrementing reference counting
-  void release() {
+  int release() {
     if (--(ref) == 0){
       for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
              m_vars.end(); ++iter) {
@@ -149,6 +153,7 @@ public:
       }
       Cudd_Quit(manager);
     }
+    return ref;
   }
 };
 
@@ -163,7 +168,9 @@ intrusive_ptr_add_ref(CCuddCore* pCore){
 /// Release current pointer by decrementing reference counting
 inline void 
 intrusive_ptr_release(CCuddCore* pCore) {
-  pCore->release();
+  if (!(pCore->release())) {
+    delete pCore;
+  }
 }
 //@}
 
