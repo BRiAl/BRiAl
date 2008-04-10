@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/04/10 12:47:34  dreyer
+ * + reverted erreous check-in
+ *
  * Revision 1.8  2008/04/10 12:45:01  dreyer
  * Fix: memory leak
  *
@@ -55,15 +58,10 @@ USING_NAMESPACE_PBORI
 
 int
 main(){
-////  BoolePolyRing the_ring(5);
- BoolePolynomial poly;
-  
-  //DdManager* manager = Cudd_Init(1,1,1, 0,0);
 
-  //  Cudd_Quit(manager);
 
   std::cout << "Testing boolean ring variables" <<std::endl;   
-#if 0
+#if 1
   try {
     BoolePolyRing the_ring(5);
 
