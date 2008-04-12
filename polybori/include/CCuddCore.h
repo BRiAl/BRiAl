@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/04/12 22:22:36  dreyer
+ * + CCuddCore even cleaner
+ *
  * Revision 1.8  2008/04/10 12:45:01  dreyer
  * Fix: memory leak
  *
@@ -130,30 +133,27 @@ public:
   }
 
   /// Destructor
-           //  ~CCuddCore(){ release(); }
+  ~CCuddCore(){ 
+    
+    for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
+           m_vars.end(); ++iter) {
+      
+      Cudd_RecursiveDerefZdd(manager, *iter);
+    }
+    
+    int retval = Cudd_CheckZeroRef(manager);
+    // Check for unexpected non-zero reference counts
+    assert(retval == 0);
+
+    Cudd_Quit(manager);
+  }
 
   /// Increment reference count
   void addRef(){ ++ref; }
 
   /// Release this by decrementing reference counting
-  int release() {
-    if (--(ref) == 0){
-      for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
-             m_vars.end(); ++iter) {
-        
-        Cudd_RecursiveDerefZdd(manager, *iter);
-    }
-
-
-      int retval = Cudd_CheckZeroRef(manager);
-      if UNLIKELY(retval != 0) {
-        std::cerr << retval << " unexpected non-zero reference counts\n";
-      } else if (verbose) {
-        std::cerr << "All went well\n";
-      }
-      Cudd_Quit(manager);
-    }
-    return ref;
+  refcount_type release() {
+    return (--ref);
   }
 };
 
