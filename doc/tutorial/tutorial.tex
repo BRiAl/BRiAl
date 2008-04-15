@@ -1003,6 +1003,154 @@ In [11]:interpolate_smallest_lex(z,o)
 Out[11]:x(1) + x(2) + 1
 \end{verbatim}
 
+\section{Building your own \Groebner basis algorithm}
+
+The central class for writing your own \Groebner bases algorithm is called \functionname{GroebnerStrategy}
+
+It represents a system of generators (Boolean polynomials) and contains information about critical pairs as well as some extra information like
+the set of leading terms belonging to these generators.
+
+The most important operations are:
+\begin{itemize}
+    \item adding a generator
+    \item iterating over the system and accessing generators via indices
+    \item accessing generators via their leading term (heavily used inside our internal routines)
+    \item calculation of normal form via the method \functionname{nf} 
+\end{itemize}
+
+After construction several options can be set, e.\,g. \functionname{optRedTail} for tail reductions (affects also the \functionname{nf} method).
+
+The \functionname{GroebnerStrategy} keeps track not only of the single generators, but also of properties of the whole system:
+\begin{itemize}
+    \item critical pairs (managed automatically)
+    \item leading terms
+    \item minimal leading terms
+\end{itemize}
+\subsection{Adding a Generator}
+There are several methods for adding a generator to a Groebner Strategy.
+It may not contain two generators with the same leading monomial.
+In this way generators can be accessed with both their index and their leading term.
+
+\begin{verbatim}
+In [1]: g=GroebnerStrategy()
+
+In [2]: g.addGenerator(x(1))
+
+In [3]: g[x(1)]
+Out[3]: x(1)
+
+In [4]: g.addGenerator(x(1)+1)
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+
+/Users/michael/sing/PolyBoRi/<ipython console> in <module>()
+
+ValueError: strategy contains already a polynomial with same lead
+\end{verbatim}
+
+An alternative is to push the generator to the (generalized) set of critical pairs instead of adding it directly
+\begin{verbatim}
+In [5]: g.addGeneratorDelayed(x(1)+1)
+\end{verbatim}
+Due to the absence of other pairs, in this example the polynomial is on top of the pair queue
+\begin{verbatim}
+In [6]: g.nextSpoly()
+Out[6]: x(1) + 1
+\end{verbatim}
+
+A alternative approach is to let PolyBoRi decide, if an generator is added to the system directly or not.
+\begin{verbatim}
+In [1]: g=GroebnerStrategy()
+
+In [2]: g.addAsYouWish(x(1))
+\end{verbatim}
+
+\subsection{Interreduction}
+The \functionname{interred}-function gives back a system generating the same ideal, where no two leading terms coincide.
+Using the parameter \functionname{completely} it also makes sure that no leading term divides the terms in the tails of the other generators.
+It is even easier than the Buchberger algorithm, as no critical pairs have to be handled (actually the \functionname{GroebnerStrategy} applies some criteria, when adding a generator, which produces some overhead).
+The algorithm works by passing the generators sorted to the strategy. If a generator is (lead) rewriteable, it is rewriteable by generators with smaller leading terms.
+So it will be rewritten by this procedure.
+The algorithm stops, when no generator is lead rewriteable any more (\functionname{completely}=\functionname{False}) or rewriteable (\functionname{completely}=\functionname{True}).
+\begin{verbatim}
+def interred(l,completely=False):
+    """computes a new generating system (g1, ...,gn), spanning the same ideal modulo field equations.
+    The system is interreduced: For i!=j: gi.lead() does not divide any term of gj
+    """
+    l=[Polynomial(p) for p in l if not p==0]
+    l_old=None
+    l=tuple(l)
+    while l_old!=l:
+        l_old=l
+        l=sorted(l,key=Polynomial.lead)
+        g=GroebnerStrategy()
+        if completely:
+            g.optRedTail=True
+        for p in l:
+            p=g.nf(p)
+            if not p.isZero():
+                g.addGenerator(p)
+        l=tuple(g)
+    return l
+\end{verbatim}
+
+\subsection{A minimal Buchberger algorithm}
+In this section I present the \functionname{buchberger} function out of the module \functionname{simplebb} developed for teaching purposes:
+\begin{verbatim}
+def buchberger(l):
+    "calculates a (non minimal) Groebner basis"
+    l=interred(l)
+    #for making sure, that every polynomial has a different leading term
+    #needed for addGenerator
+    g=GroebnerStrategy()
+    for p in l:
+        g.addGenerator(p)
+    while g.npairs()>0:
+        g.cleanTopByChainCriterion()
+        p=g.nextSpoly()
+        p=g.nf(p)
+        if not p.isZero():
+            g.addGenerator(p)
+    return list(g)
+\end{verbatim}
+The criteria are handled by the \functionname{addGenerator}-method for criteria immediately applicable and by the \functionname{cleanTopByChainCriterion} for the chain criterion.
+
+
+\subsection{Estimating the number of solutions}
+In this section, I will present, how to use the building blocks for Buchberger algorithms for other tasks like estimating the number of solutions.
+
+First we observe the following:
+\begin{itemize}
+    \item By implicit use of the field equations, the number of solutions is always finite
+    \item we consider finitely many monomials (as we have a degree bound of one per variable)
+    \item The number of standard monomials (monomials not present in the leading ideal) is equal to the number of solutions
+    \item The leading ideal (w.\,r.\,t. to the increasing set of generators) growths monotone in every step
+\end{itemize}
+This gives a break condition for the number Buchberger algorithm. At a certain point of computations, it becomes clear, that no more than $n$ solutions exist.
+However, if there are more than $n$ solutions, the full \Groebner basis is computed by this presented algorithm.
+\begin{verbatim}
+def less_than_n_solutions(ideal,n):
+    l=interred(ideal)
+    g=GroebnerStrategy()
+    all_monomials=Monomial([Variable(i) for i in xrange(number_of_variables())]).divisors()
+    monomials_not_in_leading_ideal=all_monomials
+    for p in l:
+        g.addGenerator(p)
+    while g.npairs()>0:
+        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+        if len(monomials_not_in_leading_ideal)<n:
+            return True
+        g.cleanTopByChainCriterion()
+        p=g.nextSpoly()
+        p=g.nf(p)
+        if not p.isZero():
+            g.addGenerator(p)
+    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+    if len(monomials_not_in_leading_ideal)<n:
+        return True
+    else:
+        return False    
+\end{verbatim}
 \bibliographystyle{plain}
 
 % As long as there are noe citations...
