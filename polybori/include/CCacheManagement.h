@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2008/04/16 09:53:47  bricken
+ * + reducibility tests
+ *
  * Revision 1.41  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -226,6 +229,8 @@ public:
 
   struct graded_part: public binary_cache_tag { };
   struct mapping: public binary_cache_tag { };
+  
+  struct is_rewriteable: public binary_cache_tag{};
 };
 
 // Reserve integer Numbers for Ternary operations (for cudd)
