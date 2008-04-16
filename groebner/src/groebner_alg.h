@@ -18,6 +18,7 @@
 #include <utility>
 #include <iostream>
 #include "cache_manager.h"
+#include "polynomial_properties.h"
 #ifdef HAVE_HASH_MAP
 #include <ext/hash_map>
 #else
@@ -197,6 +198,9 @@ public:
   void log(const char* c){
       if (this->enabledLog)
           std::cout<<c<<endl;
+  }
+  bool canRewrite(const Polynomial& p) const{
+      return is_rewriteable(p,minimalLeadingTerms);
   }
   Polynomial redTail(const Polynomial& p);
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);

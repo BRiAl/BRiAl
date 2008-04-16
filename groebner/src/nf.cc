@@ -8,6 +8,7 @@
  */
 
 #include "nf.h"
+#include "polynomial_properties.h"
 #include "lexbuckets.h"
 #include <LexOrder.h>
 #include <iostream>
@@ -1550,6 +1551,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //typedef  (typename Helper::iterator_type) it_type;
     //typedef  (typename it_type::value_type) mon_type;
     //Monomial mymon;
+    if (strat.canRewrite(p)){
     while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
       if (Helper::knowRestIsIrreducible(it,strat)){
        rest_is_irreducible=true;
@@ -1559,6 +1561,8 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
         it++;
         
       }
+    }} else {
+        rest_is_irreducible=true;
     }
     Monomial rest_lead;
     
