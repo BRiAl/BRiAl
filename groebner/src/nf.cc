@@ -1396,6 +1396,28 @@ static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec,
     return Polynomial(unite_polynomials(res_vec,0,h, init).diagram().unite(unite_polynomials(res_vec,h,s,init).diagram()));
 }
 
+// static Polynomial add_up_polynomials(const std::vector<Polynomial>& res_vec, int
+// start, int end, Polynomial init){
+//     //we assume the polynomials to be pairwise different
+//     int s=end-start;
+//     if (s==0) return init;
+//     if (s==1) return res_vec[start];
+//     int h=s/2;
+//     return add_up_polynomials(res_vec,start,start+h,
+//              init)+add_up_polynomials(res_vec,start+h,end, 
+//                                                      init);
+//     //return add_up_monomials(res_vec,start,start+h)+add_up_monomials(res_vec,start+h,end);
+// }
+// static Polynomial add_up_polynomials(const std::vector<Polynomial>& res_vec,
+//                                     Polynomial init){
+//     //we assume the polynomials to be pairwise different
+//     int s=res_vec.size();
+//     if (s==0) return init;
+//     if (s==1) return res_vec[0];
+//     int h=s/2;
+//     
+//     return add_up_polynomials(res_vec,0,h, init)+add_up_polynomials(res_vec,h,s,init);
+// }
 
 #if 0
 Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
@@ -1508,7 +1530,7 @@ Polynomial red_tail_general(const GroebnerStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec, p.ring().zero());
+  res=add_up_polynomials(res_vec);
   return res;
 }
 
@@ -1552,16 +1574,27 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
     //typedef  (typename it_type::value_type) mon_type;
     //Monomial mymon;
     if (strat.canRewrite(p)){
-    while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
-      if (Helper::knowRestIsIrreducible(it,strat)){
-       rest_is_irreducible=true;
-       break;
-      } else{
-        irr.push_back(*it);
-        it++;
-        
-      }
-    }} else {
+        Polynomial irreducible_part=mod_mon_set(p.diagram(),strat.minimalLeadingTerms);
+        if (!(irreducible_part.isZero())){
+            res_vec.push_back(irreducible_part);
+            Polynomial p2=p+irreducible_part;
+            it=Helper::begin(p2);
+            it_orig=it;
+            end=Helper::end(p2);
+            p=p2;
+        }
+
+        while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
+            if (Helper::knowRestIsIrreducible(it,strat)){
+                rest_is_irreducible=true;
+                break;
+            } else{
+                irr.push_back(*it);
+                it++;
+
+            }
+        }
+    } else {
         rest_is_irreducible=true;
     }
     Monomial rest_lead;
@@ -1589,7 +1622,7 @@ template <class Helper> Polynomial red_tail_generic(const GroebnerStrategy& stra
   }
   
   //should use already added irr_p's
-  res=unite_polynomials(res_vec, p.ring().zero());
+  res=add_up_polynomials(res_vec);
   return res;
 }
 
