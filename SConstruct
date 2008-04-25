@@ -13,8 +13,8 @@ import sys
 from os import sep, path
 from glob import glob
 
-m4ri=["grayflex.cc", "packedmatrix.cc","watch.cc",
-"brilliantrussian.cc", "matrix.cc"]
+m4ri=["grayflex.c", "packedmatrix.c","watch.c","misc.c",
+"brilliantrussian.c"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
 # Fix some paths and names

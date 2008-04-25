@@ -35,17 +35,18 @@ typedef struct codestruct /*renamed as*/ code;
 
 extern code **codebook;
 
+#define MAXKAY 16
 #define TWOPOW(i) (1<<(i))
 
 void printBitString(int number, int length);
 
 /**
- * swaps length BITs in v naively.
+ * swaps length bits in v naively.
  *
- * WARNING: Uppper BITs of return value may contain garbage after
+ * WARNING: Uppper bits of return value may contain garbage after
  * operation.
  */
-int swap_BITs(int v,int length);
+int swap_bits(int v,int length);
 
 /**
  * Returns the 'number'-th gray code entry for a gray code of length
@@ -85,5 +86,14 @@ void buildCodeFlex(int *ord, int *inc, int length);
 void buildAllCodes();
 
 void destroyAllCodes();
+
+/**
+ * Return the optimal k for the given parameters. If c != 0 then the
+ * optimal k for multiplication is returned, else the optimal k for
+ * inversion is returned. The optiomal $k$ here means $0.75 log_2(n)$
+ * where $n$ is $min(a,b)$ for inversiona and $b$ for multiplication.
+ */
+
+int optK(int a,int b,int c);
 
 #endif //GRAYFLEX_H
