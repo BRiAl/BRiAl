@@ -167,7 +167,10 @@ public:
 		chainCriterions=0;
 		enabledLog=false;
         optLL=false;
-		optBrutalReductions=true;
+        //if (BooleEnv::ordering().isDegreeOrder())
+		//    optBrutalReductions=false;
+		//else
+        optBrutalReductions=true;
 		variableChainCriterions=0;
 		extendedProductCriterions=0;
 		easyProductCriterions=0;
