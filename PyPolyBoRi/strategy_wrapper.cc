@@ -258,7 +258,6 @@ void export_strategy(){
   def("mod_var_set",mod_var_set);
   def("interpolate",interpolate);
   def("interpolate_smallest_lex",interpolate_smallest_lex);
-  def("zeroes",zeroes);
   def("contained_vars",contained_variables_cudd_style);
   def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one);
   boost::python::register_exception_translator<

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2008/04/25 15:44:47  bricken
+ * + renamed zeros
+ *
  * Revision 1.42  2008/04/16 09:53:47  bricken
  * + reducibility tests
  *
@@ -198,7 +201,7 @@ public:
   
   struct mod_varset: public binary_cache_tag { };
   struct interpolate: public binary_cache_tag { };
-  struct zeroes: public binary_cache_tag { };
+  struct zeros: public binary_cache_tag { };
   struct interpolate_smallest_lex: public binary_cache_tag { };
   
   struct include_divisors: public unary_cache_tag { };

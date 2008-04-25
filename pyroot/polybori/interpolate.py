@@ -38,8 +38,9 @@ def bench_interpolate(degree,nvariables,points):
 
 
 def nf_lex_points(f,p):
+    f=Polynomial(f)
     p=BooleSet(p)
-    z=zeroes(f,p)
+    z=f.zerosIn(p)
     return interpolate_smallest_lex(z,p.diff(z))
 
 def gen_random_monomial():
@@ -90,7 +91,7 @@ def lex_groebner_basis_points(points,variables):
 
 def lex_groebner_basis_for_polynomial_via_variety(p):
     variables=p.vars()
-    return lex_groebner_basis_points(p.zeroesIn(variables.divisors()),variables)
+    return lex_groebner_basis_points(p.zerosIn(variables.divisors()),variables)
 if __name__=='__main__':
     nvariables=100
     r=Ring(nvariables)

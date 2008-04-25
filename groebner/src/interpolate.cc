@@ -31,7 +31,7 @@ std::vector<Polynomial> variety_lex_groebner_basis(const MonomialSet& points,con
 
             
 MonomialSet nf_lex_points(const Polynomial& f,const MonomialSet& p){
-    MonomialSet z=zeroes(f,p);
+    MonomialSet z=zeros(f,p);
     return interpolate_smallest_lex(z,p.diff(z));
 }
 MonomialSet gen_random_subset(const std::vector<Monomial>& vec,bool_gen_type&
@@ -77,7 +77,7 @@ MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial&
     res=res.minimalElements();
     return res;
 }
-MonomialSet zeroes(Polynomial p, MonomialSet candidates){
+MonomialSet zeros(Polynomial p, MonomialSet candidates){
     MonomialSet s=p.diagram();
     MonomialSet result;
     MonomialSet::navigator p_nav=s.navigation();
@@ -93,7 +93,7 @@ MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     while ((*p_nav)<index){
         p_nav.incrementElse();
     }
-    typedef PBORI::CacheManager<CCacheTypes::zeroes>
+    typedef PBORI::CacheManager<CCacheTypes::zeros>
       cache_mgr_type;
     cache_mgr_type cache_mgr(candidates.manager());
     MonomialSet::navigator cached=cache_mgr.find(p_nav, can_nav);
@@ -107,9 +107,9 @@ MonomialSet zeroes(Polynomial p, MonomialSet candidates){
     MonomialSet c1=candidates.subset1(index);
     MonomialSet c0=candidates.subset0(index);
     
-    MonomialSet z00=zeroes(p0,c0);
-    MonomialSet z01=zeroes(p0,c1);
-    MonomialSet z11=zeroes(p1,c1);
+    MonomialSet z00=zeros(p0,c0);
+    MonomialSet z01=zeros(p0,c1);
+    MonomialSet z11=zeros(p1,c1);
     //MonomialSet then_branch=z01.intersect(z11).unite(c1.diff(z01.unite(z11)));
     MonomialSet then_branch=c1.diff(z01.Xor(z11));
     assert (*then_branch.navigation()>index);
@@ -220,7 +220,7 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
         
         
         MonomialSet not_affected=to_zero1_not_in0.unite(to_one1_not_in0);
-        not_affected=zeroes(p1,not_affected);
+        not_affected=zeros(p1,not_affected);
         Polynomial p0=interpolate_smallest_lex(to_zero0.unite(not_affected.intersect(to_zero1_not_in0)).unite(to_one1_not_in0.diff(not_affected)),
                 to_one0.unite(not_affected.intersect(to_one1_not_in0)).unite(to_zero1_not_in0.diff(not_affected)));
         result=MonomialSet(index,p1.diagram(),p0.diagram());

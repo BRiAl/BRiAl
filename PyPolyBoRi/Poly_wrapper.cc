@@ -156,7 +156,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("__repr__", streamable_as_str<BoolePolynomial>)
   .def("mapEveryXToXPlusOne",map_every_x_to_x_plus_one, 
        "Replace every variable x by x + 1")
-  .def("zeroesIn",zeroes, 
+  .def("zerosIn",zeros, 
        "Get BooleSet representing the zeros of the Polynomial")
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);
