@@ -921,7 +921,7 @@ Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)},
 \end{verbatim}
 
 We distingish between procedures, which use subsets of the ambient space~(like
-finding zeroes of a polynomial),  and such procedures, where
+finding zeros of a polynomial),  and such procedures, where
 only the dimension/involved unit vectors/variables matter.
 The first kind of procedures usually gets the ambient space itself, the second kind gets the monomial consisting of all involved variables.
 
@@ -934,12 +934,12 @@ In [2]:ambient_space=(x(0)*x(1)*x(2)).divisors()
 In [3]:ambient_space
 Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
 
-In [4]:f.zeroesIn(ambient_space)
+In [4]:f.zerosIn(ambient_space)
 Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
 
 In [5]:S=BooleSet([x(0),x(1)*x(2)])
 
-In [6]:f.zeroesIn(S)
+In [6]:f.zerosIn(S)
 Out[6]:{{x(1),x(2)}}
 \end{verbatim}
 
@@ -989,7 +989,7 @@ It can be easily seen, that this polynomial forms the same function on $V$ as $f
 In fact, our computation is equivalent to the direct call of the interpolation function \verb|interpolate_smallest_lex|, which has two arguments: the set of interpolation points mapped to zero and the set of interpolation points mapped to one.
 
 \begin{verbatim}
-In [6]:z=f.zeroesIn(V)
+In [6]:z=f.zerosIn(V)
 
 In [7]:z
 Out[7]:{{x(1)}, {x(2)}}
@@ -1002,7 +1002,62 @@ Out[9]:{{x(0)}, {x(3)}, {}}
 In [11]:interpolate_smallest_lex(z,o)
 Out[11]:x(1) + x(2) + 1
 \end{verbatim}
+\section{Partial Boolean functions}
+A partial Boolean function $f$ is given by two disjoint set of points $O$, $Z$.
+$f$ is defined to have value $1$ on $O$, $0$ on $Z$ and is undefined elsewhere.
+For encoding sets of Boolean vectors we use the encoding defined in \ref{reinterpretation-of-zdd}.
 
+If we identify $1$ with the Boolean value \functionname{True} and $0$ with \functionname{False},
+operations from propositional logic get a meaning for Boolean functions.
+
+We can apply operations like xor, and, or to partial Boolean functions, defined everywhere where the result is uniquely determined on
+extensions of these functions. 
+
+\begin{verbatim}
+In [1]: from polybori.partial import PartialFunction
+
+In [2]: O=BooleSet([Monomial(),x(0)*x(1)])
+
+In [3]: Z=BooleSet([x(2),x(0)*x(2)])
+
+In [4]: f=PartialFunction(zeros=Z,ones=O)
+
+In [5]: f
+Out[5]: PartialFunction(zeros={{x(0),x(2)}, {x(2)}}, ones={{x(0),x(1)}, {}})
+
+In [6]: O2=BooleSet([x(1),x(2)])
+
+In [7]: Z2=Bool
+BooleConstant          BoolePolynomialVector  BooleRing              BooleSet
+
+In [7]: Z2=BooleSet([x(0)*x(1),x(1)*x(2),x(0)*x(2)])
+
+In [8]: g=PartialFunction(zeros=Z2,ones=O2)
+
+In [9]: f & g
+Out[9]: PartialFunction(zeros={{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {x(2)}}, ones={})
+
+In [10]: f|g
+Out[10]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(1)}, {x(2)}, {}})
+
+In [11]: f^g
+Out[11]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
+\end{verbatim}
+
+Since addition of in $\Ztwo$ is equivalent to xor (using this identification with Boolean logic), the operators \verb|&| and \verb|+| coincide.
+\begin{verbatim}
+In [12]: f+g
+Out[12]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
+\end{verbatim}
+
+We have also build our interpolation functions as method for our \functionname{PartialFunction} class, which is a more convenient way to use it.
+\begin{verbatim}
+In [13]: f.interpolateSmallestLex()
+Out[13]: x(2) + 1
+
+In [14]: g.interpolateSmallestLex()
+Out[14]: x(0) + x(1) + x(2)
+\end{verbatim}
 \section{Building your own \Groebner basis algorithm}
 
 The central class for writing your own \Groebner bases algorithm is called \functionname{GroebnerStrategy}
