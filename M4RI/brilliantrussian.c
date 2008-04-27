@@ -125,7 +125,7 @@ void makeTable( packedmatrix *m, int ai, int k,
 }
 
 
-static inline int getBits(packedmatrix *m, int x, int y, int k) {
+static INLINE int getBits(packedmatrix *m, int x, int y, int k) {
   int truerow = m->rowswap[x];
   int block;
   int spot;

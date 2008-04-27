@@ -1,6 +1,6 @@
 #ifndef PACKEDMATRIX_H
 #define PACKEDMATRIX_H
-
+#define INLINE
 /******************************************************************************
 *
 *            M4RI: Method of the Four Russians Inversion
@@ -50,7 +50,7 @@ packedmatrix *createMatrix(int r, int c);
 
 void destroyMatrix( packedmatrix *condemned );
 
-static inline void rowSwap( packedmatrix *m, int rowa, int rowb ) {
+static INLINE void rowSwap( packedmatrix *m, int rowa, int rowb ) {
   int temp=m->rowswap[rowa];
   m->rowswap[rowa]=m->rowswap[rowb];
   m->rowswap[rowb]=temp;
@@ -59,7 +59,7 @@ static inline void rowSwap( packedmatrix *m, int rowa, int rowb ) {
 /* Internal: do not call */
 void setupPackingMasks();
 
-static inline BIT readCell( packedmatrix *m, int row, int col ) {
+static INLINE BIT readCell( packedmatrix *m, int row, int col ) {
   int block=col/RADIX;
   int spot=col % RADIX;
   int truerow=m->rowswap[row];
@@ -71,7 +71,7 @@ static inline BIT readCell( packedmatrix *m, int row, int col ) {
   return (resolved >> (RADIX - spot -1));
 }
 
-static inline void writeCell( packedmatrix *m, int row, int col, BIT value) {
+static INLINE void writeCell( packedmatrix *m, int row, int col, BIT value) {
   int block=col/RADIX;
   int spot=col % RADIX;
   int truerow=m->rowswap[row];
@@ -86,7 +86,7 @@ static inline void writeCell( packedmatrix *m, int row, int col, BIT value) {
 
 /* Keep in mind that the row, col refer to a row and column (of bits), and
    you can address the block by any of the RADIX (usually 64) A_ijs there. */
-static inline void xorBlock( packedmatrix *m, int row, int col, word value) {
+static INLINE void xorBlock( packedmatrix *m, int row, int col, word value) {
   int block=col/RADIX;
   int truerow=m->rowswap[row];
 
@@ -96,7 +96,7 @@ static inline void xorBlock( packedmatrix *m, int row, int col, word value) {
 
 /* Keep in mind that the row, col refer to a row and column (of bits), and
    you can address the block by any of the RADIX (usually 64) A_ijs there. */
-static inline void writeBlock( packedmatrix *m, int row, int col, word value) {
+static INLINE void writeBlock( packedmatrix *m, int row, int col, word value) {
   int block=col/RADIX;
   int truerow=m->rowswap[row];
 
@@ -127,7 +127,7 @@ void wordToStringComma( char *destination, word data);
    inside of the block, and it will still return the correct entire block */
 /* Important note: You can specify any of the RADIX bits (64 bits usually),
    inside of the block, and it will still return the correct entire block */
-static inline word readBlock( packedmatrix *m, int row, int col ) {
+static INLINE word readBlock( packedmatrix *m, int row, int col ) {
   int block=col/RADIX;
   int truerow=m->rowswap[row];
 
@@ -155,7 +155,7 @@ int reduceGaussianDelayed(packedmatrix *m, int startcol, int full);
 
 int reduceGaussian(packedmatrix *m, int full);
 
-static inline BIT dotProduct( word a, word b ) {
+static INLINE BIT dotProduct( word a, word b ) {
   word temp=a & b;
   //int i, 
   int total=0;
@@ -197,7 +197,7 @@ matrix *unpackMatrix( packedmatrix *pm );
 
 packedmatrix *packMatrix( matrix *m );
 
-static inline BIT isEqualWord( word a, word b) {
+static INLINE BIT isEqualWord( word a, word b) {
   if (a==b) return YES;
   else return NO;
 }
