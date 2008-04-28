@@ -139,18 +139,18 @@ static INLINE int getBits(packedmatrix *m, int x, int y, int k) {
 
   if ( (y%RADIX + k -1 ) < RADIX ) {
     /* everything happens in one word here */
-    temp =  values[ y / RADIX + truerow ]; // get the value
-    temp <<= y%RADIX; // clear upper bits
-    temp >>= RADIX - k; // clear lower bits and move to correct position.
+    temp =  values[ y / RADIX + truerow ]; /*// get the value*/
+    temp <<= y%RADIX; /*// clear upper bits*/
+    temp >>= RADIX - k; /*// clear lower bits and move to correct position.*/
     return (int)temp;
 
   } else { 
     /* two words are affected */
-    block = y / RADIX + truerow; // correct block
-    spot = (y + k ) % RADIX; // correct offset
-    // make room by shifting spot times to the right, and add stuff from the second word
+    block = y / RADIX + truerow; /*// correct block*/
+    spot = (y + k ) % RADIX; /*// correct offset
+    // make room by shifting spot times to the right, and add stuff from the second word*/
     temp = (values[block] << spot) | ( values[block + 1] >> (RADIX - spot) ); 
-    return ((int)temp & ((1<<k)-1)); // clear upper bits and return
+    return ((int)temp & ((1<<k)-1)); /*// clear upper bits and return*/
    }
 }
 
@@ -173,12 +173,12 @@ void process(packedmatrix *m, int startrow, int stoprow, int startcol, int k, pa
   int tablerow;
   word *b1_ptr,*b2_ptr;
 
-  // for optimization reasons we distinguish several cases here.
+  /*// for optimization reasons we distinguish several cases here.*/
 
   switch(m->width - startcol/RADIX) {
 
   case 1:
-    // no loop needed as only one block is operated on.
+    /*// no loop needed as only one block is operated on.*/
     for (i=startrow; i<=stoprow; i++) {
       value = getBits(m, i, startcol, k);
       tablerow = lookuppacked[value];
@@ -189,7 +189,7 @@ void process(packedmatrix *m, int startrow, int stoprow, int startcol, int k, pa
     break;
 
   case 2:
-    // two blocks, no loop
+    /*// two blocks, no loop*/
     for (i=startrow; i<=stoprow; i++) {
       value = getBits(m, i, startcol, k);
       tablerow = lookuppacked[value];
@@ -201,7 +201,7 @@ void process(packedmatrix *m, int startrow, int stoprow, int startcol, int k, pa
     break;
 
   default:
-    // the real deal more than two blocks.
+    /*// the real deal more than two blocks.*/
     for (i=startrow; i<=stoprow; i++) {
       processRow(m, i, startcol, k, tablepacked, lookuppacked);
     }
@@ -284,9 +284,9 @@ int reduceM4RI(packedmatrix *m, int full, int k, packedmatrix *tablepacked, int 
     lookuppacked = (int *)safeCalloc( TWOPOW(k), sizeof(int) );
   }
   
-  // main loop
+  /*// main loop*/
   for (i=0; i<stop; i+=k) {
-    // not enough room for M4RI left.
+    /*// not enough room for M4RI left.*/
     if ( ((i+k*3) > m->nrows) || ((i+k) > m->ncols) ) {
       rank += reduceGaussianDelayed(m, i, full);
       break;
@@ -295,7 +295,7 @@ int reduceM4RI(packedmatrix *m, int full, int k, packedmatrix *tablepacked, int 
     submatrixrank=stepM4RI(m, full, k, i, tablepacked, lookuppacked);
 
     if (submatrixrank!=k) {
-      // not full rank, use Gaussian elimination :-(
+      /*// not full rank, use Gaussian elimination :-(*/
       rank += reduceGaussianDelayed(m, i, full);
       break;
     }
@@ -450,7 +450,7 @@ packedmatrix *multiplyM4RM(packedmatrix *A, packedmatrix *B, int k, packedmatrix
     }
   }
 
-  //handle rest
+  /*//handle rest*/
   if (b%k) {
     makeTable( B, b/k * k , b%k, tablepacked, lookuppacked, 1);
     

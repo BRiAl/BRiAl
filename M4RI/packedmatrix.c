@@ -45,9 +45,9 @@ packedmatrix *createMatrix(int r, int c) {
 
   newmatrix->rowswap=(int *)safeMalloc( r, sizeof(int));
 
-  // Rowswap does not contain the rowswap index i but the correct
+  /* // Rowswap does not contain the rowswap index i but the correct
   // offset in the values table. Rowswap is exclusively used to access
-  // elements in that table and this speeds up computation a little. (malb)
+  // elements in that table and this speeds up computation a little. (malb)*/
 
   for (i=0; i<r; i++) { newmatrix->rowswap[i]=i*(newmatrix->width); }
 
@@ -206,7 +206,7 @@ void rowClearOffset(packedmatrix *m, int row, int coloffset) {
   int i;
   word temp;
   
-  // make sure to start clearing at coloffset
+  /*// make sure to start clearing at coloffset*/
   if (coloffset%RADIX) {
     temp=readBlock(m, row, coloffset);
     temp &=  ~(((ONE<<(RADIX-coloffset%RADIX))) - ONE);
@@ -234,7 +234,7 @@ void rowAddOffset( packedmatrix *m, int sourcerow, int destrow,
   int i;
   word temp;
   
-  // make sure to start adding at coloffset
+  /*// make sure to start adding at coloffset*/
   temp=readBlock(m, sourcerow, startblock*RADIX);
   if (coloffset%RADIX)
     temp &= (ONE<<(RADIX - (coloffset%RADIX))) - ONE;
@@ -507,7 +507,7 @@ packedmatrix *clone( packedmatrix *p) {
 packedmatrix *concat( packedmatrix *a, packedmatrix *b) {
   packedmatrix *newmatrix;
   int i, j;
-  //word entry;
+  /*//word entry;*/
   
   if (a->nrows!=b->nrows) {
     die("Bad arguments to concat!\n");

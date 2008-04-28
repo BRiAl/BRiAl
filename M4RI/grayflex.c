@@ -40,8 +40,8 @@ void printBitString(int number, int length){
 }
 
 int swap_bits(int v,int length) {
- unsigned int r = v; // r will be reversed bits of v; first get LSB of v
- int s = length - 1; // extra shift needed at end
+ unsigned int r = v; /*// r will be reversed bits of v; first get LSB of v*/
+ int s = length - 1; /*// extra shift needed at end*/
  
  for (v >>= 1; v; v >>= 1)
     {   
