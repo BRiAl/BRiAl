@@ -157,7 +157,6 @@ int reduceGaussian(packedmatrix *m, int full);
 
 static INLINE BIT dotProduct( word a, word b ) {
   word temp=a & b;
-  //int i, 
   int total=0;
 
 /*   for (i=0; i<RADIX; i++) { */
@@ -207,7 +206,7 @@ BIT equalMatrix( packedmatrix *a, packedmatrix *b );
 int compareMatrix(packedmatrix *a, packedmatrix *b);
 
 /* MEMLEAK: use destroyMatrix */
-packedmatrix *clone( packedmatrix *p);
+packedmatrix *i_dont_need_clone( packedmatrix *p);
 
 /* MEMLEAK: use destroyMatrix */
 /* This is sometimes called augment */

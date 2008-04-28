@@ -481,7 +481,7 @@ int compareMatrix(packedmatrix *a, packedmatrix *b) {
 /********************************************************/
 
 /* MEMLEAK: use destroyMatrix */
-packedmatrix *clone( packedmatrix *p) {
+packedmatrix *i_dont_need_clone( packedmatrix *p) {
   packedmatrix *newmatrix=createMatrix(p->nrows, p->ncols);
   int i, j;
   word entry;
