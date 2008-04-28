@@ -96,4 +96,4 @@ void destroyAllCodes();
 
 int optK(int a,int b,int c);
 
-#endif //GRAYFLEX_H
+#endif 

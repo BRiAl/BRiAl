@@ -63,13 +63,13 @@ int grayCode(int number, int length) {
     lastbit = bit;
   };
   return swap_bits(res,length) & ((1<<length)-1);
-  //return res;
+  /*//return res;*/
 }
 
 void buildCodeFlex(int *ord, int *inc, int length) {
   int i,j;
 
-  // this one is easy.
+  
   for(i=0 ; i < TWOPOW(length) ; i++) {
     ord[i] = grayCode(i,length);
   }
