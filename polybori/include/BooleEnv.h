@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.2  2008/04/29 09:02:10  bricken
+ * + active_ring moved to BooleEnv.cc
+ *
  * Revision 1.1  2007/12/13 15:53:48  dreyer
  * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
  *
@@ -36,7 +39,7 @@ BEGIN_NAMESPACE_PBORI
 
 
 class BoolePolyRing;
-
+extern BoolePolyRing active_ring;
 class CDynamicOrderBase;
 
 /** @class BooleEnv
@@ -109,7 +112,9 @@ class BooleEnv:
   typedef BoolePolyRing ring_type;
 
   typedef CDynamicOrderBase order_type;
-  static ring_type& ring() { return active_ring; }
+  static ring_type& ring(){
+      return active_ring;
+  }
 
   static manager_type& manager();
   static order_type& ordering();
@@ -139,8 +144,10 @@ class BooleEnv:
 
 protected:
 
-  static ring_type active_ring;
+  
 };
+
+///please use BooleEnv::ring()
 
 END_NAMESPACE_PBORI
 

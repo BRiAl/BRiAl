@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2008/04/29 09:01:52  bricken
+ * + active_ring moved to BooleEnv.cc
+ *
  * Revision 1.2  2007/12/13 16:18:07  dreyer
  * CHANGE: removed unnecessary friend declaration
  *
@@ -36,11 +39,11 @@
 BEGIN_NAMESPACE_PBORI
 
 
-
+BooleEnv::ring_type active_ring;
 // Note, direct access via friends, to  active_ring.pOrder and pMgt, because
 // inline doesn't work up to now, because os the undefined type issue.
 
-
+//BooleEnv::ring_type& BooleEnv::ring() { return active_ring; }
 
 BooleEnv::block_iterator 
 BooleEnv::blockBegin() {
@@ -79,7 +82,7 @@ BooleEnv::manager_type& BooleEnv::manager() {
 BooleEnv::order_type& BooleEnv::ordering() { 
   return  ring().ordering(); }
 
-BooleEnv::ring_type BooleEnv::active_ring;
+
 
 
   /// Get empty decision diagram
