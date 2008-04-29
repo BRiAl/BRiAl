@@ -4,8 +4,8 @@ opts = Options('custom.py')
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
-pboriversion = "0.3"
-pborirelease = "1"
+pboriversion = "0.4"
+pborirelease = "0"
 
 import tarfile
 
