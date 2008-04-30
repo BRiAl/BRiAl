@@ -2282,36 +2282,39 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     
     
     for(i=0;i<polys_rest.size();i++){
-        Polynomial::exp_iterator it=polys_rest[i].expBegin();
-        Polynomial::exp_iterator end=polys_rest[i].expEnd();
-        //std:cout<<"write poly"<<std::endl;
-        int len;
+        Polynomial p_r=polys_rest[i];
+        Polynomial p_t=p_r.diagram().intersect(terms_step2);
+        Polynomial p_u=p_r.diagram().diff(p_t.diagram());
+        
+        Polynomial::exp_iterator it;
+        Polynomial::exp_iterator end;
+        
+        it=p_u.expBegin();
+        end=p_u.expEnd();
+        
         while(it!=end){
-            Exponent e=*it;
-            if (terms_unique.owns(e)){
-                
-                
+            Exponent e=*it; 
                 from_term_map_type::const_iterator from_it=eliminated2row_number.find(e);
                 assert(terms_as_exp_step1[row_start[from_it->second]]==e);
                 assert(from_it!=eliminated2row_number.end());
-        
-                
-                
-                
                 int index=from_it->second;//...translate e->line number;
                 writeCell(mat_step2_factor,i,index,1);
-                //std::cout<<"writing into factor mat:"<<i<<":"<<index<<std::endl;
-            } else{
-                
-                
+
+            it++;
+
+        }
+        it=p_t.expBegin();
+        end=p_t.expEnd();
+        while(it!=end){
+            Exponent e=*it;
                 from_term_map_type::const_iterator from_it=from_term_map_step2.find(e);
                 assert(from_it!=from_term_map_step2.end());
                 int index=from_it->second;
                 writeCell(mat_step2,i,index,1);
-                //std::cout<<"writing:"<<i<<":"<<index<<std::endl;
-            }
+
+            
             it++;
-            len++;
+            
         }
         //std::cout<<"len:1"<<std::endl;
     }
