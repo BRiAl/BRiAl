@@ -1,4 +1,3 @@
-#!/sw/bin/python
 # encoding: utf-8
 """
 untitled.py
