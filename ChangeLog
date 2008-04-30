@@ -1,4 +1,21 @@
 ------------------------------------------------------------------------------
+Release Name: 0.4
+
+* extended tutorial
+* updated BooleEnv to handle active_ring in a cleaner way
+* fast check for in rewriteability GroebnerStrategy::canRewrite
+* replaced function red_tail by redTail method for GroebnerStrategy
+* GroebnerStrategy stores internally reference to BoolePolyRing
+* GroebnerStrategy allows now access to generators via leading terms: strat[x(1)*x(2)]
+* GroebnerStrategy::nf respect optRedTail
+* new python module interred
+* new python module partial (for handling partial boolean function definitions)
+* new python module simplebb ( features a very simple Buchberger Implementation)
+* fixed comparison of polynomials with constants
+* relicensed under GPL2 or higher
+* new version of M4RI
+
+------------------------------------------------------------------------------
 Release Name: 0.3.1
 This release fixes minor issues. In particular, a monomial cannot be zero, and
 iterations over monomials may be a sequence of variables.
