@@ -6,6 +6,7 @@ opts = Options('custom.py')
 pboriname = 'PolyBoRi'
 pboriversion = "0.4"
 pborirelease = "0"
+libraryversion = "0.0.0"
 
 import tarfile
 
@@ -38,7 +39,7 @@ DebInstPath = PathJoiner('debian')
 
 RPMPath = PathJoiner('pkgs/rpm')
 SpecsPath = PathJoiner(RPMPath('SPECS'))
-                      
+
 # Split lists separated by colons and whitespaces
 def SplitColonSep(arg):
     result = []
@@ -86,6 +87,8 @@ DefaultBuild = Default
 if distribute or rpm_generation or deb_generation:
     def DefaultBuild(arg):
         return arg
+
+defaultenv = Environment()
 
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
@@ -140,6 +143,19 @@ opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
                     False))
 
 opts.Add(BoolOption('USE_TIMESTAMP', 'Use timestamp on distribution', True))
+opts.Add(BoolOption('VersionatedSharedLibrary',
+                    'Use dlltool-style versionated shared library', True))
+opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', '-Wl,-soname,')
+opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
+
+opts.Add('SHLINKFLAGS',
+         'Shared libraries link flags.', defaultenv['SHLINKFLAGS'] +
+         ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
+
+opts.Add('SHLIBVERSIONSUFFIX',
+         'Shared libraries suffix for library versioning.',
+         '-' + pboriversion +'.' + pborirelease +
+         defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
@@ -175,6 +191,22 @@ if HAVE_DOXYGEN:
 
     
 #print env.Dump()
+
+# soname related stuff
+def _sonamecmd(prefix, target, suffix, env):
+    """Creates soname."""
+
+    target = str(env.subst(target))
+    import re
+    soPattern = re.compile('(.*)\.[0-9]*\.[0-9]*$', re.I|re.S)
+    soname = soPattern.findall(path.basename(target))[0]
+    if soname:
+        return prefix + soname + suffix    
+    else:
+        return ''
+    
+env['_sonamecmd'] = _sonamecmd
+
 cache_opts_file=open(PBPath('include', 'cacheopts.h'), "w")
 for m in pbori_cache_macros:
     if env.get(m,None):
@@ -273,6 +305,27 @@ env = conf.Finish()
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
 
+# Builder for symlinks
+def build_symlink(target, source, env):
+    targetdir = str(target[0].dir)
+    target = target[0].path
+    source = source[0].path
+    if env['RELATIVE_SYMLINK'] :
+        source = relpath(targetdir, source)
+    
+    print "Symlinking from", source, "to", target
+    
+    try:
+        if path.exists(target):
+            env.Remove(target)
+        os.symlink(source, target)
+    except:
+        return True
+    return None
+
+symlinkbld = Builder(action = build_symlink)
+
+env.Append(BUILDERS={'SymLink' : symlinkbld})
 ######################################################################
 # Stuff for building Cudd library
 ######################################################################
@@ -317,12 +370,33 @@ DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
 
-slib=env.SharedLibrary
+def SymlinkReadableLibname(files):
+    """ Generate symbolik link with more readable library name."""
+    
+    suffix = env.subst('$SHLIBVERSIONSUFFIX')
+    simplesuffix = env.subst('$SHLIBSUFFIX')
+    result = []
+    for fname in files:
+        simple = str(fname).replace(suffix, simplesuffix)
+        if (str(fname) != simple) :
+            result += env.SymLink(simple, fname)
+    return result
+
+def VersionatedSharedLibrary(*args, **kwds):
+
+    kwds['SHLIBSUFFIX'] = env.subst('$SHLIBVERSIONSUFFIX')
+    
+    return env.SharedLibrary(*args, **kwds)
+
+slib = env.SharedLibrary
+if env['VersionatedSharedLibrary']:
+    slib = VersionatedSharedLibrary
 if env['PLATFORM']=="darwin":
     slib=env.LoadableModule
 
+
 libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
-#DefaultBuild(libCuddShared)
+
 
 ######################################################################
 # Stuff for building PolyBoRi's C++ part
@@ -615,36 +689,20 @@ if distribute:
     env.Alias('distribute', srcdistri)
     
 devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
+readabledevellibs = SymlinkReadableLibname(devellibs)
+
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
     DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
     
-    env.Install(DevelInstPath('lib'), devellibs)
+    SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
+    
     env.Install(DevelInstPath('include/polybori'), glob(PBPath('include/*.h')))
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('src/*.h')))
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
     env.Install(DevelInstPath('include/polybori/M4RI'), glob('M4RI/*.h'))
     env.Alias('devel-install', DevelInstPath())
-
-
-# Builder for symlinks
-def build_symlink(target, source, env):
-    targetdir = str(target[0].dir)
-    target = target[0].path
-    source = source[0].path
-    if env['RELATIVE_SYMLINK'] :
-        source = relpath(targetdir, source)
-    
-    print "Symlinking from", source, "to", target
-    
-    try:
-        if path.exists(target):
-            env.Remove(target)
-        os.symlink(source, target)
-    except:
-        return True
-    return None
 
 
 env.Append(COPYALL_PATTERNS = ['*'])
@@ -691,7 +749,6 @@ def cp_pydoc(target, source, env):
 cp_recbld = Builder(action = cp_all)
 cp_pydocbld = Builder(action = cp_pydoc)
 
-symlinkbld = Builder(action = build_symlink)
 
 # Note: target[0] needs to be the path resulting from latex2html
 # todo: More generic by moving actual result to given path?
@@ -802,7 +859,7 @@ def docu_emitter(target, source, env):
     
 masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
-env.Append(BUILDERS={'SymLink' : symlinkbld, 'CopyAll': cp_recbld, 'L2H': l2h,
+env.Append(BUILDERS={'CopyAll': cp_recbld, 'L2H': l2h,
                      'TeXToHt' : tex_to_ht_bld, 
                      'SubstInstallAs': substinstbld, 'CopyPyDoc':cp_pydocbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
@@ -1017,6 +1074,6 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
 
-env.Alias('prepare-devel', devellibs)
+env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 
