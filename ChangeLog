@@ -15,7 +15,7 @@ Release Name: 0.4
 * relicensed under GPL2 or higher
 * new version of M4RI
 * added dlltool-like shared library versioning and sonames
-
+* man page
 ------------------------------------------------------------------------------
 Release Name: 0.3.1
 This release fixes minor issues. In particular, a monomial cannot be zero, and

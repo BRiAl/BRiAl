@@ -1,0 +1,79 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH IPBORI 1 "May 2, 2008"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7) and groff_man(7)
+.\" .SH        section heading
+.\" .SS        secondary section heading
+.\"
+.\"
+.\" To preview this page as plain text: nroff -man ipbori.1
+.\"
+.SH NAME
+ipbori \- An Interactive PolyBoRi Shell
+.SH SYNOPSIS
+.B ipbori [ -ipythonprefix
+.I " prefix"
+.B ] [ 
+.I " ipython-options"
+.B ] 
+.SH DESCRIPTION
+An interactive IPython shell for interfacing with the
+PolyBoRi framework. It offers full support of specialized data structures as
+well as C/C++- and Python-based algorithms for treating polynomials over Boolean
+rings.
+.SH OPTIONS
+.TP
+.B \-ipythonprefix
+This options allows to select a path for the IPython executable in the case of
+multiple IPython installations.
+.br
+.sp 1
+Alternatively, the environment variable IPYTHONPREFIX may be set accordingly.
+.TP
+In addition IPython options may be added to the command line.
+
+.SH ENVIRONMENT
+.IP IPYTHONPREFIX
+Defines a path for the IPython executable. It can be overwritten by the
+.B -ipythonprefix
+option.
+
+.SH Background
+The core of PolyBoRi is a C++ library, which is wrapped and extended by a Python
+interface. Essentially, ipbori calls IPython together with a profile for using
+PolyBoRi's python interface.  It can be used as a special purpose
+computer-algebra system for computation with polynomials over Boolean rings.
+In ipbori a global ring is already predefined and a set of
+variables called x(0), ..., x(9999). The default ordering is lexicographical
+ordering (lp).
+.br
+.sp 1
+For more details, see the PolyBoRi documentation. In particular, have a look at
+the tutorial, the doxygen part for the core library, and pythondoc part for the
+high-level routines.
+.SH AUTHOR
+.nh
+The PolyBoRi framework was created by The PolyBoRi Team <polybori@mfo.de>,
+consisting of
+Michael Brickenstein <brickenstein@mfo.de> (high-level algorithms, primary
+designer) and
+Alexander Dreyer <alexander.dreyer@itwm.fraunhofer.de> (low-level routines,
+project infrastructure, and this man page).
+.hy
+.SH "SEE ALSO"
+.BR IPYTHON (1)
+
+
