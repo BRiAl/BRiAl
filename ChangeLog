@@ -10,7 +10,7 @@ Release Name: 0.4
 * GroebnerStrategy::nf respect optRedTail
 * new python module interred
 * new python module partial (for handling partial boolean function definitions)
-* new python module simplebb (features a very simple Buchberger Implementation)
+* new python module simplebb (features a very simple Buchberger implementation)
 * fixed comparison of polynomials with constants
 * relicensed under GPL2 or higher
 * new version of M4RI
