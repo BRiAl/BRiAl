@@ -8,4 +8,4 @@ PYTHON = /usr/bin/python2.5
 PYTHONSITE = `$(PYTHON) -c 'import setuptools; print setuptools.distutils.sysconfig.get_python_lib() '`
 
 DEB_SCONS_INSTALL_TARGET = install devel-install
-DEB_SCONS_INSTALL_OPTIONS += INSTALLDIR=$(DEB_DESTDIR)/usr/lib/polybori PYINSTALLPREFIX=$(DEB_DESTDIR)$(PYTHONSITE) PREFIX=$(DEB_DESTDIR)/usr EPREFIX=$(DEB_DESTDIR)/usr/bin DOCDIR=$(DEB_DESTDIR)/usr/share/doc/polybori PYTHON=$(PYTHON)
+DEB_SCONS_INSTALL_OPTIONS += INSTALLDIR=$(DEB_DESTDIR)/usr/lib/polybori PYINSTALLPREFIX=$(DEB_DESTDIR)$(PYTHONSITE) PREFIX=$(DEB_DESTDIR)/usr EPREFIX=$(DEB_DESTDIR)/usr/bin DOCDIR=$(DEB_DESTDIR)/usr/share/doc/polybori MANDIR=$(DEB_DESTDIR)/usr/share/man PYTHON=$(PYTHON)
