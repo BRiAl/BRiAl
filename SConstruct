@@ -40,6 +40,7 @@ DebInstPath = PathJoiner('debian')
 RPMPath = PathJoiner('pkgs/rpm')
 SpecsPath = PathJoiner(RPMPath('SPECS'))
 
+   
 # Split lists separated by colons and whitespaces
 def SplitColonSep(arg):
     result = []
@@ -143,7 +144,7 @@ opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
                     False))
 
 opts.Add(BoolOption('USE_TIMESTAMP', 'Use timestamp on distribution', True))
-opts.Add(BoolOption('VersionatedSharedLibrary',
+opts.Add(BoolOption('SHLIBVERSIONING',
                     'Use dlltool-style versionated shared library', True))
 opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', '-Wl,-soname,')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
@@ -389,7 +390,7 @@ def VersionatedSharedLibrary(*args, **kwds):
     return env.SharedLibrary(*args, **kwds)
 
 slib = env.SharedLibrary
-if env['VersionatedSharedLibrary']:
+if env['SHLIBVERSIONING']:
     slib = VersionatedSharedLibrary
 if env['PLATFORM']=="darwin":
     slib=env.LoadableModule
@@ -797,15 +798,30 @@ def relpath(p1, p2):
         return ''
     return os.path.join( *p )
 
+
+
+# more generic version
+class GenericSubst(object):
+    """  """ 
+    def __init__(self, kwds):
+        self.kwds = kwds
+    def __call__(self, target, source, env):
+        from string import Template
+        page = Template(open(str(source[0]), 'r').read()).safe_substitute(self.kwds)
+        open(str(target[0]), 'w').write(page)
+        return None
+
+# generate builder
+def generic_subst(name, substdict):
+    obj = GenericSubst(substdict)
+    env.Append(BUILDERS={name: Builder(action = obj.__call__)})
+
+# Simple variant using current environment
 def substitute_install(target, source, env):
-    from string import Template
-    page = Template(open(str(source[0]), 'r').read()).safe_substitute(env)
-
-    open(str(target[0]), 'w').write(page)
-
-    return None
+    return GenericSubst(env)(target, source, env)
 
 substinstbld  = Builder(action = substitute_install)
+
 
 def docu_master(target, source, env):
     import os, re
@@ -861,7 +877,8 @@ masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
 env.Append(BUILDERS={'CopyAll': cp_recbld, 'L2H': l2h,
                      'TeXToHt' : tex_to_ht_bld, 
-                     'SubstInstallAs': substinstbld, 'CopyPyDoc':cp_pydocbld})
+                     'SubstInstallAs': substinstbld,
+                     'CopyPyDoc':cp_pydocbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
 
@@ -951,10 +968,21 @@ if rpm_generation:
 
 if prepare_deb or generate_deb:
     debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
-    debsrc += FinalizeExecs(env.SpecBuilder(DebInstPath('control'),
-                                            DebPath('control.in')))
-    debsrc += env.Install(DebInstPath(), DebPath('rules'))
+    env['CDBS'] = 'cdbs (>= 0.4.23-1.1), debhelper (>= 5)'
+    debsrc += FinalizeNonExecs(env.SubstInstallAs(DebInstPath('control'),
+                                                  DebPath('control.in')))
 
+    generic_subst('ControlIn', dict(CDBS = '@cdbs@'))
+    debsrc += FinalizeNonExecs(env.ControlIn(DebInstPath('control.in'),
+                                             DebPath('control.in')))
+        
+    for src in ['rules', 'compat', 'libpolybori0.install',
+                'libpolybori-dev.install',  'polybori.install'] :
+        debsrc += env.Install(DebInstPath(), DebPath(src))
+
+    for src in ['scons.mk', 'scons-vars.mk']:
+        debsrc += env.Install(DebInstPath('cdbs'), DebPath('cdbs', src))
+    
     debname = "polybori-" + pboriversion
                   
     srcdeb = env.DistTar(debname, allsrcs + debsrc)
