@@ -647,7 +647,6 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
            coding.py """ + env.subst('*$SHLIBVERSIONSUFFIX')))
 
-print env['DISTTAR_EXCLUDEPATTERN']
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
     for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
