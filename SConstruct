@@ -116,6 +116,8 @@ opts.Add('INSTALLDIR', 'end user installation directory',
          '$PREFIX/share/polybori')
 opts.Add('DOCDIR', 'documentation installation directory',
          '$INSTALLDIR/doc')
+opts.Add('MANDIR', 'Man-pages installation directory',
+         '$PREFIX/man')
 opts.Add('PYINSTALLPREFIX',
          'python modules directory (default is built-in site)', '$PYTHONSITE')
 
@@ -667,7 +669,7 @@ if distribute or rpm_generation or deb_generation:
 
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
-    tutorial/tutorial.tex python/genpythondoc.py""") ]
+    tutorial/tutorial.tex python/genpythondoc.py man/ipbori.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
 if distribute:    
@@ -1030,10 +1032,13 @@ if 'install' in COMMAND_LINE_TARGETS:
     InstExecPath = PathJoiner(env['EPREFIX'])
     InstDocPath = PathJoiner(env['DOCDIR'])
     InstPyPath = PathJoiner(env['PYINSTALLPREFIX'])
-
-    for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath()]:
+    InstManPath = PathJoiner(env['MANDIR'])
+    
+    for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
+                      InstManPath()]:
         env.Alias('install', inst_path)
-        
+    env.Install(InstManPath('man1'), DocPath('man/ipbori.1'))
+    
     # Executables and shared libraries to be installed
     pyfiles = []
     for instfile in dynamic_modules :

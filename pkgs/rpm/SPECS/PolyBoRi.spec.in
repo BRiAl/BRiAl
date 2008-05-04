@@ -55,7 +55,8 @@ scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
               PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
               INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
               PYPREFIX=%{pbori_pyprefix} PYTHON=%{__python} \
-              DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} 
+              DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
+              MANDIR=$RPM_BUILD_ROOT/%{_mandir}
 
 # rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
 %__mv $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
@@ -66,8 +67,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
-
+%doc README LICENSE ChangeLog %{pbori_tmpdoc}/* 
+%attr(644,root,man) %{_mandir}/man1/ipbori.1*
 
 %attr(755, root, root) %{pbori_eprefix}/ipbori
 
@@ -76,6 +77,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun May 04 2008 Alexander Dreyer <adreyer@gmx.de> - 
+- Updating sources, adding man page (PolyBoRi 0.4-0).
 * Thu Mar 13 2008 Alexander Dreyer <adreyer@gmx.de> - 
 - Updating sources (PolyBoRi 0.3-1).
 * Wed Mar 07 2008 Alexander Dreyer <adreyer@gmx.de> - 
