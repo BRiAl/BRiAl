@@ -164,8 +164,9 @@ pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
 
-
-tools =  ["default", "disttar", "doxygen"]
+tools =  ["default"]
+if not GetOption('clean'):
+    tools +=  ["disttar", "doxygen"]
 
 # Get paths an related things from current environment
 # todo: Are these settings sane in any case?
@@ -179,7 +180,7 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
 # Extract some option values
-HAVE_DOXYGEN = env['HAVE_DOXYGEN']
+HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
 BOOST_WORKS = env['BOOST_WORKS']
 
@@ -252,8 +253,6 @@ class PythonConfig(object):
         self.libs = self.libs.replace('-l','').split()
         self.libname = 'python' + str(self.version)
 
-
-conf = Configure(env)
 pyconf = PythonConfig(env["PYTHON"])
 
 env.AppendUnique(PYTHONSITE = pyconf.sitedir)
@@ -262,48 +261,53 @@ env.AppendUnique(PYTHONSITE = pyconf.sitedir)
 # (PYTHONSITE is already evaluated, but not python-specific paths)
 Help(opts.GenerateHelpText(env))
 
-extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
-if HAVE_PYTHON_EXTENSION or extern_python_ext:
-    env.Append(CPPPATH=[pyconf.incdir])
-    env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
+have_pydoc = have_l2h = have_t4h = False
 
-env.Append(CPPPATH=[PBPath('include')])
-env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-env.Append(LIBPATH=["polybori","groebner"])
-env.Prepend(LIBS = pyconf.libs +["m"])
+if not env.GetOption('clean'):
+    conf = Configure(env)
+
+    extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
+    if HAVE_PYTHON_EXTENSION or extern_python_ext:
+        env.Append(CPPPATH=[pyconf.incdir])
+        env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
+
+        env.Append(CPPPATH=[PBPath('include')])
+        env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
+        env.Append(LIBPATH=["polybori","groebner"])
+        env.Prepend(LIBS = ["m"])
 
 
-from re import search
-for variable in os.environ:
-    if search("SAGE",variable):
-        env['ENV'][variable]=os.environ[variable]
+    from re import search
+    for variable in os.environ:
+        if search("SAGE",variable):
+            env['ENV'][variable]=os.environ[variable]
 
 
-if HAVE_PYTHON_EXTENSION:
-    if not (BOOST_WORKS or
-            conf.CheckCXXHeader(path.join('boost', 'python.hpp')) ):
-        HAVE_PYTHON_EXTENSION = False
-        print 'Warning Boost/python must be installed for python support'
+    if HAVE_PYTHON_EXTENSION:
+        if not (BOOST_WORKS or
+                conf.CheckCXXHeader(path.join('boost', 'python.hpp')) ):
+            HAVE_PYTHON_EXTENSION = False
+            print 'Warning Boost/python must be installed for python support'
 
-have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
+    have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
-have_t4h = False
-tex_to_ht = 'hevea'
+    tex_to_ht = 'hevea'
 
-if not have_l2h:
-    have_t4h = env['HAVE_HEVEA'] and env.Detect('hevea')
-    if not have_t4h:
-        have_t4h = env['HAVE_TEX4HT'] and env.Detect('htlatex')
-	tex_to_ht = 'htlatex'
+    if not have_l2h:
+        have_t4h = env['HAVE_HEVEA'] and env.Detect('hevea')
         if not have_t4h:
-            print "Warning: No LaTeX to html converter found,",
-            print "Tutorial will not be installed"
+            have_t4h = env['HAVE_TEX4HT'] and env.Detect('htlatex')
+            tex_to_ht = 'htlatex'
+            if not have_t4h:
+                print "Warning: No LaTeX to html converter found,",
+                print "Tutorial will not be installed"
 
 
-have_pydoc = env['HAVE_PYDOC']
+                have_pydoc = env['HAVE_PYDOC']
 
 
-env = conf.Finish()
+    env = conf.Finish()
+# end of not cleaning
 
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
@@ -502,13 +506,13 @@ if HAVE_PYTHON_EXTENSION:
         pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + python_absolute,
-            LIBS=LIBS,LDMODULESUFFIX=".so",
+            LIBS = pyconf.libs + LIBS,LDMODULESUFFIX=".so",
             CPPPATH=CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS,
             CPPPATH=CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
@@ -769,11 +773,12 @@ def t4h_emitter(target, source, env):
     return (target, source)
 
 
-#if have_hevea:
+if have_t4h :
+    t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE")
+    tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';'
+                            + t4h_str, emitter = t4h_emitter)
+    env.Append(BUILDERS={'TeXToHt' : tex_to_ht_bld})
 
-t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE")
-tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';'
-                        + t4h_str, emitter = t4h_emitter)
 
 
 def pathsplit(p, rest=[]):
@@ -877,7 +882,6 @@ def docu_emitter(target, source, env):
 masterdocubld  = Builder(action = docu_master, emitter = docu_emitter)
 
 env.Append(BUILDERS={'CopyAll': cp_recbld, 'L2H': l2h,
-                     'TeXToHt' : tex_to_ht_bld, 
                      'SubstInstallAs': substinstbld,
                      'CopyPyDoc':cp_pydocbld})
 env.Append(BUILDERS={'DocuMaster': masterdocubld})
