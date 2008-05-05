@@ -20,9 +20,9 @@ Description: Polynomials over Boolean Rings, Python module
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Gröbner base
+ as sophisticated and extendable strategies for Groebner base
  computation. PolyBoRi features a powerful reference implementation
- for Gröbner basis computation.
+ for Groebner basis computation.
 
 Package: libpolybori-dev
 Section: libdevel
@@ -36,9 +36,9 @@ Description: Polynomials over Boolean Rings, development files
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Gröbner base
+ as sophisticated and extendable strategies for Groebner base
  computation. PolyBoRi features a powerful reference implementation
- for Gröbner basis computation.
+ for Groebner basis computation.
 
 Package: libpolybori-$PBVERSION.$PBRELEASE-0
 Section: libs
@@ -52,6 +52,6 @@ Description: Polynomials over Boolean Rings, shared library
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Gröbner base
+ as sophisticated and extendable strategies for Groebner base
  computation. PolyBoRi features a powerful reference implementation
- for Gröbner basis computation.
+ for Groebner basis computation.
