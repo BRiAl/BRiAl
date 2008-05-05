@@ -198,15 +198,15 @@ if HAVE_DOXYGEN:
 #print env.Dump()
 
 # soname related stuff
-def _sonamecmd(prefix, target, suffix, env):
+def _sonamecmd(prefix, target, suffix, env = env):
     """Creates soname."""
 
     target = str(env.subst(target))
     import re
     soPattern = re.compile('(.*)\.[0-9]*\.[0-9]*$', re.I|re.S)
-    soname = soPattern.findall(path.basename(target))[0]
-    if soname:
-        return prefix + soname + suffix    
+    soname = soPattern.findall(path.basename(target))
+    if len(soname) > 0:
+        return prefix + soname[0] + suffix    
     else:
         return ''
     
@@ -388,10 +388,20 @@ def SymlinkReadableLibname(files):
     suffix = env.subst('$SHLIBVERSIONSUFFIX')
     simplesuffix = env.subst('$SHLIBSUFFIX')
     result = []
+    import re
+    soPattern = re.compile('(.*)\.[0-9]*\.[0-9]*$', re.I|re.S)
+    sonameversion = soPattern.findall(path.basename(libraryversion))[0]
+    
     for fname in files:
-        simple = str(fname).replace(suffix, simplesuffix)
-        if (str(fname) != simple) :
-            result += env.SymLink(simple, fname)
+        fname = str(fname)
+        soname = soPattern.sub(r'\1', fname)
+        versionname = fname.replace('.' + libraryversion, '')
+        simple = fname.replace(suffix, simplesuffix)
+
+        for (dest, src) in [(soname, fname), (versionname, soname),
+        (simple, versionname)]:
+            if (dest != src):
+                result += env.SymLink(dest, src)
     return result
 
 def VersionatedSharedLibrary(*args, **kwds):
