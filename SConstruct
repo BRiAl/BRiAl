@@ -165,7 +165,10 @@ for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
 
 tools =  ["default"]
-if not GetOption('clean'):
+if GetOption('clean'):
+    for pycfile in glob('*.pyc'):
+        Execute(Delete(pycfile))
+else:
     tools +=  ["disttar", "doxygen"]
 
 # Get paths an related things from current environment
@@ -537,13 +540,15 @@ if HAVE_PYTHON_EXTENSION:
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
             LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
-    sys.path.append(TestsPath("py"))
+
     from StringIO import StringIO
 
 
     # Converting cnf files to PolyBoRi python format
     def cnf2py_build_function(target,source,env):
+        sys.path.append(TestsPath("py"))
         from cnf2ideal import gen_clauses, process_input,convert_file_PB
+
         target=target[0]
         source=source[0]
         inp=process_input(open(source.path))
@@ -551,6 +556,7 @@ if HAVE_PYTHON_EXTENSION:
         clauses=gen_clauses(inp)
         out=open(target.path,"w")
         convert_file_PB(clauses,source.name,False, out)
+
         return None
     
     cnfbld = Builder(action = cnf2py_build_function,
@@ -601,6 +607,8 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
                                        DocPath('python/polybori.dynamic.html')],
                                source = documentable_python_modules)
         if env.GetOption('clean'):
+            env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
+                      glob(PyRootPath('polybori/dynamic/*.pyc')))
             env.Ignore(pydocu, dynamic_modules)
     #bld=Builder("cd")
 
