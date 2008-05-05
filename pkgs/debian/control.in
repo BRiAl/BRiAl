@@ -40,7 +40,7 @@ Description: Polynomials over Boolean Rings, development files
  computation. PolyBoRi features a powerful reference implementation
  for Gröbner basis computation.
 
-Package: libpolybori-0.4.0-0
+Package: libpolybori-$PBVERSION.$PBRELEASE-0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}

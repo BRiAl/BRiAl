@@ -36,6 +36,6 @@ clean::
 	scons . --keep-going --clean || true
 	rm -f debian/stamp-scons-build
 	rm -rf .sconf_temp/
-	rm -f .sconsign.dblite config.log
+	rm -f .sconsign.dblite
 	rm -f build build-python*
 

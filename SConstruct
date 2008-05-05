@@ -7,6 +7,7 @@ pboriname = 'PolyBoRi'
 pboriversion = "0.4"
 pborirelease = "0"
 libraryversion = "0.0.0"
+debname = "polybori-" + pboriversion
 
 import tarfile
 
@@ -310,6 +311,8 @@ env.Clean('.', glob('*.pyc') + ['config.log'] )
 
 have_pydoc = env['HAVE_PYDOC']
 
+env['PBVERSION'] = pboriversion
+env['PBRELEASE'] = pborirelease
 
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
@@ -683,12 +686,12 @@ if distribute or rpm_generation or deb_generation:
     tutorial/tutorial.tex python/genpythondoc.py man/ipbori.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
-if distribute:    
-    presrcdistri = env.DistTar("PolyBoRi", allsrcs)
+if distribute:
+    presrcdistri = env.DistTar(debname, allsrcs)
     (srcdistrname, srcdistrext1) = path.splitext(str(presrcdistri[0]))
     (srcdistrname, srcdistrext) = path.splitext(srcdistrname)
     srcdistrext += srcdistrext1
-    pborisuffix = "-" + pboriversion
+    pborisuffix = ""
 
     if env['USE_TIMESTAMP']:
         from datetime import date
@@ -813,25 +816,19 @@ def relpath(p1, p2):
 
 
 
-# more generic version
-class GenericSubst(object):
-    """  """ 
-    def __init__(self, kwds):
-        self.kwds = kwds
-    def __call__(self, target, source, env):
+# substition function 
+def substitute_install(target, source, env,
+                       preprocess = None, postprocess = None):
         from string import Template
-        page = Template(open(str(source[0]), 'r').read()).safe_substitute(self.kwds)
+        page = open(str(source[0]), 'r').read()
+
+        if preprocess:
+            page = preprocess(page) 
+        page = Template(page).safe_substitute(env)
+        if postprocess:
+            page = postprocess(page)     
         open(str(target[0]), 'w').write(page)
         return None
-
-# generate builder
-def generic_subst(name, substdict):
-    obj = GenericSubst(substdict)
-    env.Append(BUILDERS={name: Builder(action = obj.__call__)})
-
-# Simple variant using current environment
-def substitute_install(target, source, env):
-    return GenericSubst(env)(target, source, env)
 
 substinstbld  = Builder(action = substitute_install)
 
@@ -897,8 +894,6 @@ env.Append(BUILDERS={'DocuMaster': masterdocubld})
 
 def spec_builder(target, source, env):
 
-    env['PBVERSION'] = pboriversion
-    env['PBRELEASE'] = pborirelease
     substitute_install(target, source, env)
     return None
 
@@ -979,33 +974,41 @@ if rpm_generation:
 
 
 if prepare_deb or generate_deb:
-    debsrc = env.SpecBuilder(DebInstPath('changelog'), DebPath('changelog.in'))
-    env['CDBS'] = 'cdbs (>= 0.4.23-1.1), debhelper (>= 5)'
-    debsrc += FinalizeNonExecs(env.SubstInstallAs(DebInstPath('control'),
+    debsrc = env.SubstInstallAs(DebInstPath('changelog'),
+                                DebPath('changelog.in'))
+
+
+    debsrc += FinalizeNonExecs(env.SubstInstallAs(DebInstPath('control.in'),
                                                   DebPath('control.in')))
+    env['cdbs'] = 'cdbs (>= 0.4.23-1.1), debhelper (>= 5), quilt, patchutils (>= 0.2.25), cdbs (>= 0.4.27-1)'
 
-    generic_subst('ControlIn', dict(CDBS = '@cdbs@'))
-    debsrc += FinalizeNonExecs(env.ControlIn(DebInstPath('control.in'),
-                                             DebPath('control.in')))
+    def preprocessed_substitute(target, source, env):
+        def preprocess_at(page):
+            import re
+            p = re.compile('@([^@\n]*) @', re.VERBOSE)
+            return p.sub(r'$\1', page)
         
-    for src in ['rules', 'compat', 'libpolybori0.install',
-                'libpolybori-dev.install',  'polybori.install'] :
+        substitute_install(target, source, env, preprocess=preprocess_at)
+    
+    debsrc += FinalizeNonExecs(env.Command([DebInstPath('control')],
+                                           DebPath('control.in'),
+                                           preprocessed_substitute))
+        
+    for src in ['rules', 'compat', 'copyright', 
+                'libpolybori-dev.install',  'python-polybori.install'] :
         debsrc += env.Install(DebInstPath(), DebPath(src))
-
-    for src in ['scons.mk', 'scons-vars.mk']:
-        debsrc += env.Install(DebInstPath('cdbs'), DebPath('cdbs', src))
+        
+    debsrc += env.InstallAs(DebInstPath('libpolybori-' + pboriversion +
+                                        '.' + pborirelease   +'-0.install'),
+                            DebPath('libpolybori0.install'))
+        
+    env.Alias('prepare-debian', DebInstPath())
+    env.Clean(DebInstPath(), DebInstPath())
     
-    debname = "polybori-" + pboriversion
-                  
-    srcdeb = env.DistTar(debname, allsrcs + debsrc)
-
-    env.AlwaysBuild(env.Alias('prepare-debian', srcdeb))
-
-    pbdeb = env.DebBuilder(path.join('..', debname + '-' + pborirelease + '.' +
-                                     machtype + '.deb'), debsrc)
+    pbdeb = env.DebBuilder(path.join('..', debname + '-' + pborirelease +
+                                     '.' + machtype + '.deb'), debsrc)
     
-    env.AlwaysBuild(env.Alias('deb', pbdeb))
-    
+    env.AlwaysBuild(env.Alias('deb', pbdeb))    
     
 
 def GeneratePyc(sources):
