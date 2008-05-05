@@ -494,7 +494,7 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py memusage.py
-                               heuristics.py gbcore.py interpolate.py coding.py
+                               heuristics.py gbcore.py interpolate.py
                                interred.py ncf.py partial.py simplebb.py
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
                                ] 
@@ -1119,9 +1119,9 @@ if 'install' in COMMAND_LINE_TARGETS:
         FinalizeNonExecs(GeneratePyc(pyfiles))
 
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
-    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstExecPath(),env),
-                                      env['PYINSTALLPREFIX'])
-        
+    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(IPBPath(),env),
+                                      env['PYINSTALLPREFIX'])       
+
     for instfile in [IPBPath('ipythonrc-polybori') ] :
         FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))
       
