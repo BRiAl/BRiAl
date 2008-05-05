@@ -444,7 +444,7 @@ shared_resources += pb_shared
 libpbShared = slib(PBPath('polybori'), list(shared_resources))
 #DefaultBuild(libpbShared)
 
-env.Clean(libpb + pb_shared, cache_opts)
+env.Clean([libpb] + pb_shared, cache_opts)
 
 ######################################################################
 # Stuff for building Groebner library
@@ -476,7 +476,7 @@ CPPPATH=env['CPPPATH']+[GBPath('src')]
 for t in tests_pb:
     env.Program(TestsPath(t), 
         [TestsPath('src', t + ".cc"),  libpb] + libCudd, 
-        CPPPATH=CPPPATH)
+        CPPPATH=CPPPATH, LIBS = env['LIBS'] + pyconf.libs)
 
 for t in tests_gb:
     env.Program(TestsPath(t), 
@@ -553,7 +553,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS,
+            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
     from StringIO import StringIO
@@ -588,7 +588,9 @@ if HAVE_PYTHON_EXTENSION:
     cnffiles += ['uuf100/uuf100_01', 'uuf125/uuf125_1']
 
     for fname in cnffiles:
-        env.CNF(glob(DataPath(fname + ".cnf")))
+	files = glob(DataPath(fname + ".cnf"))
+	if len(files) > 0:
+            env.CNF(files)
 
     for fdir in Split("blocksworld qg gcp_large bejing"):
         add_cnf_dir(env, DataPath(fdir))
@@ -668,10 +670,10 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec """),
+           .kprof.html .rpm .spec .so.0 .so.0.0.0 """),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp SOURCES BUILD"),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
-           coding.py """ + env.subst('*$SHLIBVERSIONSUFFIX')))
+           coding.py """))
 
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
