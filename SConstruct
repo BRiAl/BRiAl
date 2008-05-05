@@ -261,7 +261,7 @@ env.AppendUnique(PYTHONSITE = pyconf.sitedir)
 # (PYTHONSITE is already evaluated, but not python-specific paths)
 Help(opts.GenerateHelpText(env))
 
-have_pydoc = have_l2h = have_t4h = False
+have_l2h = have_t4h = False
 
 if not env.GetOption('clean'):
     conf = Configure(env)
@@ -302,12 +302,11 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
 
-
-                have_pydoc = env['HAVE_PYDOC']
-
-
     env = conf.Finish()
 # end of not cleaning
+
+have_pydoc = env['HAVE_PYDOC']
+
 
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
@@ -543,8 +542,8 @@ if HAVE_PYTHON_EXTENSION:
 
 
     # Converting cnf files to PolyBoRi python format
-    from cnf2ideal import gen_clauses, process_input,convert_file_PB
     def cnf2py_build_function(target,source,env):
+        from cnf2ideal import gen_clauses, process_input,convert_file_PB
         target=target[0]
         source=source[0]
         inp=process_input(open(source.path))
