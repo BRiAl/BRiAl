@@ -1,14 +1,18 @@
 Source: polybori
 Section: math
 Priority: extra
-Maintainer: Tim Abbott <tabbott@mit.edu> 
-Build-Depends: $CDBS, scons, python-setuptools, libboost-dev, python2.5-dev, libboost-python-dev (>=1.33), doxygen (>= 1.4.6), hevea | tex4ht
-Standards-Version: 3.7.2
+Maintainer: Tim Abbott <tabbott@mit.edu>
+Homepage: http://polybori.sourceforge.net/
+Build-Depends: @cdbs@, scons, python-setuptools, libboost-dev, libboost-python-dev (>=1.33), doxygen (>= 1.4.6), hevea | tex4ht, python-all-dev (>= 2.3.5-11), python-central (>= 0.5.6)
+XS-Python-Version: all
+Standards-Version: 3.7.3
 
-Package: polybori
+Package: python-polybori
+Provides: polybori
+Section: python
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ipython, libpolybori-dev
-Description: Polynomials over Boolean Rings
+Depends: ${shlibs:Depends}, ${misc:Depends}, ipython, libpolybori-dev, ${python:Depends}
+Description: Polynomials over Boolean Rings, Python module
  The core of PolyBoRi is a C++ library, which provides high-level data
  types for Boolean polynomials and monomials, exponent vectors, as
  well as for the underlying polynomial rings and subsets of the
@@ -16,17 +20,15 @@ Description: Polynomials over Boolean Rings
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Groebner base
+ as sophisticated and extendable strategies for Gröbner base
  computation. PolyBoRi features a powerful reference implementation
- for Groebner basis computation.
- .
- Homepage: http://polybori.sourceforge.net/
+ for Gröbner basis computation.
 
 Package: libpolybori-dev
 Section: libdevel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libpolybori0
-Description: Polynomials over Boolean Rings
+Depends: ${shlibs:Depends}, ${misc:Depends}, libpolybori-0.4.0-0
+Description: Polynomials over Boolean Rings, development files
  The core of PolyBoRi is a C++ library, which provides high-level data
  types for Boolean polynomials and monomials, exponent vectors, as
  well as for the underlying polynomial rings and subsets of the
@@ -34,17 +36,15 @@ Description: Polynomials over Boolean Rings
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Groebner base
+ as sophisticated and extendable strategies for Gröbner base
  computation. PolyBoRi features a powerful reference implementation
- for Groebner basis computation.
- .
- Homepage: http://polybori.sourceforge.net/
+ for Gröbner basis computation.
 
-Package: libpolybori0
+Package: libpolybori-0.4.0-0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Polynomials over Boolean Rings
+Description: Polynomials over Boolean Rings, shared library
  The core of PolyBoRi is a C++ library, which provides high-level data
  types for Boolean polynomials and monomials, exponent vectors, as
  well as for the underlying polynomial rings and subsets of the
@@ -52,8 +52,6 @@ Description: Polynomials over Boolean Rings
  decision diagrams are used as internal storage type for polynomial
  structures. On top of this C++-library we provide a Python
  interface. This allows parsing of complex polynomial systems, as well
- as sophisticated and extendable strategies for Groebner base
+ as sophisticated and extendable strategies for Gröbner base
  computation. PolyBoRi features a powerful reference implementation
- for Groebner basis computation.
- .
- Homepage: http://polybori.sourceforge.net/
+ for Gröbner basis computation.

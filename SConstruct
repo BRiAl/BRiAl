@@ -165,10 +165,7 @@ for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
 
 tools =  ["default"]
-if GetOption('clean'):
-    for pycfile in glob('*.pyc'):
-        Execute(Delete(pycfile))
-else:
+if not GetOption('clean'):
     tools +=  ["disttar", "doxygen"]
 
 # Get paths an related things from current environment
@@ -214,7 +211,8 @@ def _sonamecmd(prefix, target, suffix, env):
     
 env['_sonamecmd'] = _sonamecmd
 
-cache_opts_file=open(PBPath('include', 'cacheopts.h'), "w")
+cache_opts = PBPath('include/cacheopts.h')
+cache_opts_file = open(cache_opts, "w")
 for m in pbori_cache_macros:
     if env.get(m,None):
         cache_opts_file.write("#define "+m+" " +str(env[m])+"\n")
@@ -307,6 +305,8 @@ if not env.GetOption('clean'):
 
     env = conf.Finish()
 # end of not cleaning
+
+env.Clean('.', glob('*.pyc') + ['config.log'] )
 
 have_pydoc = env['HAVE_PYDOC']
 
@@ -431,6 +431,7 @@ shared_resources += pb_shared
 libpbShared = slib(PBPath('polybori'), list(shared_resources))
 #DefaultBuild(libpbShared)
 
+env.Clean(libpb + pb_shared, cache_opts)
 
 ######################################################################
 # Stuff for building Groebner library
@@ -480,7 +481,8 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
                                specialsets.py aes.py memusage.py
-                               heuristics.py gbcore.py interpolate.py
+                               heuristics.py gbcore.py interpolate.py coding.py
+                               interred.py ncf.py partial.py simplebb.py
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
                                ] 
 
@@ -606,23 +608,21 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
         pydocu = env.PYTHONDOC(target=[DocPath('python/polybori.html'),
                                        DocPath('python/polybori.dynamic.html')],
                                source = documentable_python_modules)
-        if env.GetOption('clean'):
-            env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
-                      glob(PyRootPath('polybori/dynamic/*.pyc')))
-            env.Ignore(pydocu, dynamic_modules)
+
+        env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
+                  glob(PyRootPath('polybori/dynamic/*.pyc')))
+#        env.Ignore(pydocu, dynamic_modules)
     #bld=Builder("cd")
 
     
 HAVE_SINGULAR_EXTENSION=True
 
-
+docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
 if HAVE_DOXYGEN:
-    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], 
-                          target = [DocPath('c++', elt) for elt in Split("html latex")])
-    env.Clean(cxxdocu, cxxdocu)
+    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target = docutarget)
     env.AlwaysBuild(cxxdocu)
-    #    env.Doxygen (source=["groebner/doc/doxygen.conf"])
-#    dy = env.Doxygen (target="docs/gb/index.html", source=["groebner/doc/doxygen.conf"])
+
+env.Clean(DocPath('c++'), docutarget)
 
 import subprocess
 #import re
@@ -926,8 +926,6 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
                      'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld,
                      'DebBuilder': debbld})
 
-
-
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
                        DocPath('tutorial/tutorial.tex'))
@@ -936,6 +934,8 @@ else:
         tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
                                DocPath('tutorial/tutorial.tex'))
     
+# Clean, even, if L2H/TexToHt are not available anymore
+env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
 
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
