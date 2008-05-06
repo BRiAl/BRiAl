@@ -104,8 +104,12 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-opts.Add('CCFLAGS', "C compiler flags", "-O3 -std=c99", converter = Split)
-opts.Add('CXXFLAGS', "C++ compiler flags", "$CCFLAGS -ftemplate-depth-100",
+opts.Add('CC_CXXFLAGS', "C/C++ compiler flags", "-O3", converter = Split)
+
+opts.Add('CCFLAGS', "C compiler flags", "$CC_CXXFLAGS -std=c99",
+         converter = Split)
+opts.Add('CXXFLAGS', "C++ compiler flags",
+         "$CC_CXXFLAGS -std=c++98 -ftemplate-depth-100",
          converter = Split)
 opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
