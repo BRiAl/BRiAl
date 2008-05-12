@@ -707,16 +707,22 @@ if distribute:
     (srcdistrname, srcdistrext1) = path.splitext(str(presrcdistri[0]))
     (srcdistrname, srcdistrext) = path.splitext(srcdistrname)
     srcdistrext += srcdistrext1
-    pborisuffix = ""
+    pborisuffix = ''
+
+    if str(pborirelease) != "0" :
+        pborisuffix += "-" + str(pborirelease)
 
     if env['USE_TIMESTAMP']:
         from datetime import date
         pborisuffix += "-" + str(date.today())
-        
-    srcdistri = env.Command(srcdistrname + pborisuffix + srcdistrext,
-                            presrcdistri,                            
-                            Move("$TARGET", "$SOURCE"))
 
+    if pborisuffix :
+        srcdistri = env.Command(srcdistrname + pborisuffix + srcdistrext,
+                                presrcdistri,                            
+                                Move("$TARGET", "$SOURCE"))
+    else :
+        srcdistri = presrcdistri
+                
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
