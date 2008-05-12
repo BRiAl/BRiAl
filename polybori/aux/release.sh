@@ -18,8 +18,8 @@ scons srpm $@
 
 cd $OLDDIR
 
-cp $TMPDIR/*tar.gz .
+cp $TMPDIR/PolyBoRi/*tar.gz .
 
-cp `find $TMPDIR -name \*.rpm` .
+cp `find $TMPDIR/PolyBoRi -name \*.rpm` .
 
 rm -rf $TMPDIR
