@@ -79,7 +79,7 @@ for making other targets by alias. Valid aliases are
 
 distribute      gzipped source tarball
 srpm, rpm       generate (source)-rpm from data in pkgs/rpm
-prepare-debian  generate debian/ folder
+prepare-debian  generate debian/ folder from data in pkgs/debian
 deb             generate debian package
 
 install         install ipbori, documentation, and python iterface
