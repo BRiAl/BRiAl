@@ -67,6 +67,27 @@ Type
 
 for more infos about possible custom settings.
 
+
+Additional targets
+==================
+
+Type
+
+  scons <target>
+
+for making other targets by alias. Valid aliases are
+
+distribute      gzipped source tarball
+srpm, rpm       generate (source)-rpm from data in pkgs/rpm
+prepare-debian  generate debian/ folder
+deb             generate debian package
+
+install         install ipbori, documentation, and python iterface
+prepare-install build, what install needs
+
+devel-install   headers and standalone libraries (without python interface)
+prepare-devel   build, what devel-install needs
+
 Usage:
 ======
 Provided that /prefix/for/executables/bin is in your path, typing 
