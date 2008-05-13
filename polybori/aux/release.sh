@@ -1,7 +1,7 @@
 #!/bin/sh
 
 export TMPDIR="PB$$"
-export CVSROOT=":ext:alexanderdreyer@polybori.cvs.sourceforge.net:/cvsroot/polybori"
+export CVSROOT=":pserver:anonymous@polybori.cvs.sourceforge.net:/cvsroot/polybori"
 
 
 export OLDDIR=`pwd`
