@@ -5,7 +5,8 @@ opts = Options('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.4"
-pborirelease = "0"
+pborirelease = "1"
+
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
 
@@ -91,11 +92,11 @@ if distribute or rpm_generation or deb_generation:
         return arg
 
 defaultenv = Environment()
-
+#print defaultenv.Dump()
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
 opts.Add('CC', 'C Compiler', "gcc")
-opts.Add('PYTHON', 'Python executable', "python")
+opts.Add('PYTHON', 'Python executable', "python$PROGSUFFIX")
 
 opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
@@ -349,7 +350,7 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 if IS_x64:
     env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
 env.Append(CPPDEFINES=["HAVE_IEEE_754"])
-if not env['PLATFORM']=="darwin":
+if not env['PLATFORM'] in ["darwin", "cygwin"] :
     env.Append(CPPDEFINES=["BSD"])
 
 env.Append(LIBPATH=[CuddPath()])
