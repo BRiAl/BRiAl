@@ -1,230 +1,546 @@
+/**
+ * \file packedmatrix.h
+ * \brief Dense matrices over GF(2) represented as a bit field.
+ *
+ * \author Gregory Bard <bard@fordham.edu>
+ * \author Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
+ */
+
 #ifndef PACKEDMATRIX_H
 #define PACKEDMATRIX_H
-#define INLINE
-/******************************************************************************
-*
-*            M4RI: Method of the Four Russians Inversion
-*
-*       Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
-*
-*  Distributed under the terms of the GNU General Public License (GPL)
-*
-*    This code is distributed in the hope that it will be useful,
-*    but WITHOUT ANY WARRANTY; without even the implied warranty of
-*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-*    General Public License for more details.
-*
-*  The full text of the GPL is available at:
-*
-*                  http://www.gnu.org/licenses/
-******************************************************************************/
+ /*******************************************************************
+ *
+ *            M4RI: Method of the Four Russians Inversion
+ *
+ *       Copyright (C) 2007, 2008 Gregory Bard <bard@fordham.edu>
+ *       Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhu.ac.uk>
+ *
+ *  Distributed under the terms of the GNU General Public License (GPL)
+ *
+ *    This code is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *    General Public License for more details.
+ *
+ *  The full text of the GPL is available at:
+ *
+ *                  http://www.gnu.org/licenses/
+ *
+ ********************************************************************/
 
 #include "misc.h"
 #include <stdio.h>
 
-#define RADIX 64
-#define SAFECHAR 85 /* Radix*1.25 plus a few. */
-#define ONE 1ULL
+/**
+ * \brief Dense matrices over GF(2). 
+ * 
+ * The most fundamental data type in this library.
+ */
 
+typedef struct {
+  /**
+   * Contains the actual values packed into words of size RADIX.
+   */
 
-typedef unsigned long long word;
-
-struct packedmatrixstruct {
   word *values;
 
-  int nrows;
-  int ncols;
-  int width; /* rounded as floor(rows/RADIX)+1. */
+  /**
+   * Number of rows.
+   */
 
-  int *rowswap;
+  unsigned int nrows;
 
-};
+  /**
+   * Number of columns.
+   */
 
-typedef struct packedmatrixstruct packedmatrix;
+  unsigned int ncols;
 
-extern word packingmask[RADIX];
-extern word bytemask[RADIX/8];
-extern word sixteenmask[RADIX/16];
+  /**
+   * width = ceil(nrows/RADIX)
+   */
+  unsigned int width; 
 
-packedmatrix *createMatrix(int r, int c);
+  /**
+   * Offsets to each row, so e.g. the first word of the i-th row
+   * is m->values[m->rowswap[i]]
+   */
 
-void destroyMatrix( packedmatrix *condemned );
+  unsigned int *rowswap;
 
-static INLINE void rowSwap( packedmatrix *m, int rowa, int rowb ) {
-  int temp=m->rowswap[rowa];
-  m->rowswap[rowa]=m->rowswap[rowb];
-  m->rowswap[rowb]=temp;
-}
+} packedmatrix;
 
-/* Internal: do not call */
-void setupPackingMasks();
+/**
+ * \brief Create a new matrix of dimension r x c.
+ *
+ * Use mzd_free to kill it.
+ *
+ * \param r Number of rows
+ * \param c Number of columns
+ *
+ */
 
-static INLINE BIT readCell( packedmatrix *m, int row, int col ) {
-  int block=col/RADIX;
-  int spot=col % RADIX;
-  int truerow=m->rowswap[row];
-  
-  word entry=m->values[ block + truerow ];
+packedmatrix *mzd_init(int r, int c);
+
+/**
+ * \brief Free a matrix created with mzd_init.
+ * 
+ * \param A Matrix
+ */
+
+void mzd_free(packedmatrix *A);
+
+/**
+ * \brief Create a window/view into the matrix M.
+ *
+ * A matrix window for m is a meta structure on the matrix M. It is
+ * setup to point into the matrix so M \em must \em not be freed while the
+ * matrix window is used.
+ *
+ * This function puts restrictions on the provided parameters which
+ * are not enforced currently.
+ *
+ *  - lowc must be divisible by RADIX
+ *  - highc must be divisible by RADIX
+ *  - all parameters must be within range for M
+ *
+ * Use mzd_free_free to free the window.
+ *
+ * \param M Matrix
+ * \param lowr Starting row (inclusive)
+ * \param lowc Starting column (inclusive)
+ * \param highr End row (exclusive)
+ * \param highc End column (exclusive)
+ *
+ */
+
+packedmatrix *mzd_init_window(packedmatrix *M, const int lowr, const int lowc, const int highr, const int highc);
+
+/**
+ * \brief Free a matrix window created with mzd_init_window.
+ * 
+ * \param A Matrix
+ */
+
+void mzd_free_window(packedmatrix *A);
+
+/**
+ * \brief Swap the two rows rowa and rowb.
+ * 
+ * \param M Matrix
+ * \param rowa Row index
+ * \param rowb Row index
+ */
  
-  word resolved=entry & ((ONE)<<(RADIX - spot - 1));
-  
-  return (resolved >> (RADIX - spot -1));
+static inline void mzd_row_swap(packedmatrix *M, const int rowa, const int rowb) {
+  int temp=M->rowswap[rowa];
+  M->rowswap[rowa]=M->rowswap[rowb];
+  M->rowswap[rowb]=temp;
 }
 
-static INLINE void writeCell( packedmatrix *m, int row, int col, BIT value) {
-  int block=col/RADIX;
-  int spot=col % RADIX;
-  int truerow=m->rowswap[row];
+/**
+ * \brief Read the bit at position M[row,col]
+ * 
+ * \param M Matrix
+ * \param row Row index
+ * \param col Column index
+ */
 
-  if (value==0) {
-    m->values[ block + truerow ] &= ~((ONE) <<(RADIX - spot - 1));
-  } else {
-    m->values[ block + truerow ] |= ((ONE)<<(RADIX - spot - 1));
-  }
+static inline BIT mzd_read_bit(const packedmatrix *M, const int row, const int col ) {
+  return GET_BIT(M->values[ M->rowswap[row] + col/RADIX ], col%RADIX);
 }
 
+/**
+ * \brief Write the bit value to position M[row,col]
+ * 
+ * \param M Matrix
+ * \param row Row index
+ * \param col Column index
+ * \param value Either 0 or 1 
+ */
 
-/* Keep in mind that the row, col refer to a row and column (of bits), and
-   you can address the block by any of the RADIX (usually 64) A_ijs there. */
-static INLINE void xorBlock( packedmatrix *m, int row, int col, word value) {
+static inline void mzd_write_bit(packedmatrix *M, const int row, const int col, const BIT value) {
+  if (value==1)
+    SET_BIT(M->values[ M->rowswap[row] + col/RADIX ], col % RADIX);
+  else
+    CLR_BIT(M->values[ M->rowswap[row] + col/RADIX ], col % RADIX);
+}
+
+/**
+ * \brief Add value to the word at position M[row,col].
+ *
+ * \param M Matrix
+ * \param row Row index
+ * \param col Column index
+ * \param value Word of BITs.
+ *
+ * \note Keep in mind that the row, col refer to a row and column (of
+ *  bits), and you can address the block by any of the RADIX (usually
+ *  64) & A[i,j] there.
+ */
+
+static inline void mzd_xor_block(packedmatrix *M, const int row, const int col, const word value) {
   int block=col/RADIX;
-  int truerow=m->rowswap[row];
+  int truerow=M->rowswap[row];
 
-  word *entry=m->values + block + truerow;
+  word *entry=M->values + block + truerow;
   *entry ^= value;
 }
 
-/* Keep in mind that the row, col refer to a row and column (of bits), and
-   you can address the block by any of the RADIX (usually 64) A_ijs there. */
-static INLINE void writeBlock( packedmatrix *m, int row, int col, word value) {
-  int block=col/RADIX;
-  int truerow=m->rowswap[row];
+/**
+ * \brief Write value to the word at position M[row,col].
+ *
+ * \param M Matrix
+ * \param row Row index
+ * \param col Column index
+ * \param value Word of BITs.
+ *
+ * \note Keep in mind that the row, col refer to a row and column (of
+ * bits), and you can address the block by any of the RADIX (usually
+ * 64) A[i,j] there.
+ */
 
-  m->values[ block + truerow] = value;
+static inline void mzd_write_block(packedmatrix *M, const int row, const int col, const word value) {
+  M->values[ M->rowswap[row] + col/RADIX ] = value;
 }
 
+/**
+ * \brief Read the word  at position M[row,col].
+ *
+ * \param M Matrix
+ * \param row Row index
+ * \param col Column index
+ *
+ * \note Keep in mind that the row, col refer to a row and column (of
+ * bits), and you can address the block by any of the RADIX (usually
+ * 64) A[i,j] there.
+ */
 
-
-word fetchByte( word data, int which );
-
-/* The RADIX-bit word can be divided into RADIX/8 octets or 8 bit bytes */
-/* The most significant byte is numbered 0. */
-word fetch16( word data, int which );
-
-/* Warning: I assume *destination has RADIX+1 bytes available */
-
-void wordToString( char *destination, word data);
-
-/* Warning: I assume *destination has 9 bytes available */
-
-void byteToString( char *destination, word data);
-
-/* Warning: I assume *destination has RADIX*1.25 bytes available */
-
-void wordToStringComma( char *destination, word data);
-  
-/* Important note: You can specify any of the RADIX bits (64 bits usually),
-   inside of the block, and it will still return the correct entire block */
-/* Important note: You can specify any of the RADIX bits (64 bits usually),
-   inside of the block, and it will still return the correct entire block */
-static INLINE word readBlock( packedmatrix *m, int row, int col ) {
-  int block=col/RADIX;
-  int truerow=m->rowswap[row];
-
-  word entry=m->values[ block + truerow ];
-  
-  return entry;
+static inline word mzd_read_block(const packedmatrix *M, const int row, const int col ) {
+  return M->values[ M->rowswap[row] + col/RADIX ];
 }
 
-void printMatrix( packedmatrix *m );
+/**
+ * \brief Print a matrix to stdout. 
+ *
+ * The output will contain colons between  every 4-th column.
+ *
+ * \param M Matrix
+ */
 
-void printMatrixTight( packedmatrix *m );
+void mzd_print_matrix(const packedmatrix *M );
 
-/**********************************************************************/
-/* this adds rows sourcerow and destrow and stores the total in row
-   destrow, but only begins at the column coloffset */
+/**
+ * \brief Print the matrix to stdout.
+ *
+ * \param M Matrix
+ */
 
-void rowAddOffset( packedmatrix *m, int sourcerow, int destrow, 
-			 int coloffset );
+void mzd_print_matrix_tight(const packedmatrix *M );
 
-void rowClearOffset(packedmatrix *m, int row, int coloffset);
+/**
+ * \brief Add the rows sourcerow and destrow and stores the total in the row
+ * destrow, but only begins at the column coloffset.
+ *
+ * \param M Matrix
+ * \param sourcerow Index of source row
+ * \param destrow Index of target row
+ * \param coloffset Column offset
+ *
+ * \note this can be done much faster with mzd_combine.
+ */
 
-void rowAdd( packedmatrix *m, int sourcerow, int destrow);
+void mzd_row_add_offset(packedmatrix *M, const int sourcerow, const int destrow, const int coloffset );
 
-int reduceGaussianDelayed(packedmatrix *m, int startcol, int full);
+/**
+ * \brief Clear the given row, but only begins at the column coloffset.
+ *
+ * \param M Matrix
+ * \param row Index of row
+ * \param coloffset Column offset
+ *
+ */
 
-int reduceGaussian(packedmatrix *m, int full);
+void mzd_row_clear_offset(packedmatrix *M, const int row, const int coloffset);
 
-static INLINE BIT dotProduct( word a, word b ) {
-  word temp=a & b;
-  int total=0;
+/**
+ * \brief Add the rows sourcerow and destrow and stores the total in
+ * the row destrow.
+ *
+ * \param M Matrix
+ * \param sourcerow Index of source row
+ * \param destrow Index of target row
+ *
+ * \note this can be done much faster with mzd_combine.
+ */
 
-/*   for (i=0; i<RADIX; i++) { */
-/*     if ((temp & packingmask[i])!=0) total++; */
-/*   } */
-/*   return (total % 2); */
-  while (temp)  {
-    total = !total;
-    temp = temp & (temp - 1);
-  }
-  return total;
-}
+void mzd_row_add(packedmatrix *M, const int sourcerow, const int destrow);
 
-packedmatrix *transpose( packedmatrix *data );
+/**
+ * \brief Transpose a matrix.
+ *
+ * This is not efficient, but it is quadratic time, so who cares?
+ * Efficient, would be to use the fact that:
+ *
+\verbatim
+   [ A B ]T    [AT CT]
+   [ C D ]  =  [BT DT] 
+ \endverbatim 
+ * and thus rearrange the blocks recursively. 
+ *
+ * \param DST Preallocated return matrix, may be NULL for automatic creation.
+ * \param A Matrix
+ */
 
-BIT bigDotProduct( packedmatrix *a, packedmatrix *bT, int rowofa,
-			 int rowofb );
+packedmatrix *mzd_transpose(packedmatrix *DST, const packedmatrix *A );
 
-/* MEMLEAK use destroyMatrix */
+/**
+ * \brief Naive cubic matrix multiplication.
+ *
+ * That is, compute C such that C == AB.
+ *
+ * \param C Preallocated product matrix, may be NULL for automatic creation.
+ * \param A Input matrix A
+ * \param B Input matrix B
+ *
+ * \note Normally, if you will multiply several times by b, it is
+ * smarter to calculate bT yourself, and keep it, and then use the
+ * function called matrixTimesMatrixTranspose
+ */
+packedmatrix *mzd_mul_naiv(packedmatrix *C, const packedmatrix *A, const packedmatrix *B);
 
-packedmatrix *matrixTimesMatrixTranspose( packedmatrix *a, 
-						packedmatrix *bT );
-  
-/* MEMLEAK: use destroyMatrix */
-/* Normally, if you will multiply several times by b, it is smarter to
-  calculate bT yourself, and keep it, and then use the function called
-  matrixTimesMatrixTranspose */
-packedmatrix *matrixTimesMatrix( packedmatrix *a, 
-				       packedmatrix *b);
-word randomWord();
+/**
+ * \brief Fill matrix M with uniformly distributed bits.
+ *
+ * \param M Matrix
+ *
+ * \todo Allow the user to provide a RNG callback.
+ */
 
-void fillRandomly( packedmatrix *a );
+void mzd_randomize(packedmatrix *M );
 
-void makeIdentity( packedmatrix *a );
+/**
+ * \brief Set the matrix M to the value equivalent to the integer
+ * value provided.
+ *
+ * Specifically, this function does nothing if value%2 == 0 and
+ * returns the identity matrix if value%2 == 1.
+ *
+ * If the matrix is not square then the largest possible square
+ * submatrix is set to the identity matrix.
+ *
+ * \param M Matrix
+ * \param value Either 0 or 1
+ */
 
-matrix *unpackMatrix( packedmatrix *pm );
+void mzd_set_ui(packedmatrix *M, const unsigned value);
 
-packedmatrix *packMatrix( matrix *m );
+/**
+ * \brief Gaussian elimination.
+ * 
+ * This will do Gaussian elimination on the matrix m but will start
+ * not at column 0 necc but at column startcol. If full=FALSE, then it
+ * will do triangular style elimination, and if full=TRUE, it will do
+ * Gauss-Jordan style, or full elimination.
+ * 
+ * \param M Matrix
+ * \param startcol First column to consider for reduction.
+ * \param full Gauss-Jordan style or upper triangular form only.
+ */
 
-static INLINE BIT isEqualWord( word a, word b) {
-  if (a==b) return YES;
-  else return NO;
-}
+int mzd_gauss_delayed(packedmatrix *M, const int startcol, const int full);
 
-BIT equalMatrix( packedmatrix *a, packedmatrix *b );
+/**
+ * \brief Gaussian elimination.
+ * 
+ * This will do Gaussian elimination on the matrix m.  If  full =
+ *  FALSE, then it will do triangular style elimination, and if 
+ *  full = TRUE, it will do Gauss-Jordan style, or full elimination.
+ *
+ * \param M Matrix
+ * \param full Gauss-Jordan style or upper triangular form only.
+ */
+int mzd_reduce_naiv(packedmatrix *M, const int full);
 
-int compareMatrix(packedmatrix *a, packedmatrix *b);
+/**
+ * \brief Return TRUE if A == B.
+ *
+ * \param A Matrix
+ * \param B Matrix
+ */
 
-/* MEMLEAK: use destroyMatrix */
-packedmatrix *i_dont_need_clone( packedmatrix *p);
+BIT mzd_equal(const packedmatrix *A, const packedmatrix *B );
 
-/* MEMLEAK: use destroyMatrix */
-/* This is sometimes called augment */
-packedmatrix *concat( packedmatrix *a, packedmatrix *b);
+/**
+ * \brief Return -1,0,1 if if A < B, A == B or A > B respectively.
+ *
+ * \param A Matrix.
+ * \param B Matrix.
+ *
+ * \note This comparison is not well defined mathematically and
+ * relatively arbitrary since elements of GF(2) don't have an
+ * ordering.
+ */
 
+int mzd_cmp(const packedmatrix *A, const packedmatrix *B);
 
-/* MEMLEAK: use destroyMatrix */
-packedmatrix *copySubMatrix( packedmatrix *a, int lowr, int lowc,
-				   int highr, int highc);
+/**
+ * \brief Copy matrix  A to DST.
+ *
+ * \param DST May be NULL for automatic creation.
+ * \param A Source matrix.
+ */
 
-/* MEMLEAK: use destroyMatrix */
-packedmatrix *invertGaussian(packedmatrix *target, 
-				   packedmatrix *identity);
+packedmatrix *mzd_copy(packedmatrix *DST, const packedmatrix *A);
 
-/* MEMLEAK: use destroyMatrix */
-packedmatrix *add(packedmatrix *left, packedmatrix *right);
+/**
+ * \brief Concatenate B to A and write the result to C.
+ * 
+ * That is,
+ *
+\verbatim
+[ A ], [ B ] -> [ A  B ] = C
+\endverbatim
+ *
+ * The inputs are not modified but a new matrix is created.
+ *
+ * \param C Matrix, may be NULL for automatic creation
+ * \param A Matrix
+ * \param B Matrix
+ *
+ * \note This is sometimes called augment.
+ */
+packedmatrix *mzd_concat(packedmatrix *C, const packedmatrix *A, const packedmatrix *B);
 
-void lazyPrint(packedmatrix *a);
+/**
+ * \brief Stack A on top of B and write the result to C.
+ *
+ * That is, 
+ *
+\verbatim
+[ A ], [ B ] -> [ A ] = C
+                [ B ]
+\endverbatim
+ *
+ * The inputs are not modified but a new matrix is created.
+ *
+ * \param C Matrix, may be NULL for automatic creation
+ * \param A Matrix
+ * \param B Matrix
+ */
+
+packedmatrix *mzd_stack(packedmatrix *C, const packedmatrix *A, const packedmatrix *B);
+
+/**
+ * \brief Copy a submatrix.
+ * 
+ * Note that the upper bounds are not included.
+ *
+ * \param S Preallocated space for submatrix, may be NULL for automatic creation.
+ * \param M Matrix
+ * \param lowr start rows
+ * \param lowc start column
+ * \param highr stop row (this row is \em not included)
+ * \param highc stop column (this column is \em not included)
+ */
+packedmatrix *mzd_submatrix(packedmatrix *S, const packedmatrix *M, const int lowr, const int lowc, const int highr, const int highc);
+
+/**
+ * \brief Invert the matrix target using Gaussian elimination. 
+ *
+ * To avoid recomputing the identity matrix over and over again, I may
+ * be passed in as identity parameter.
+ *
+ * \param INV Preallocated space for inversion matrix, may be NULL for automatic creation.
+ * \param A Matrix to be reduced.
+ * \param I Identity matrix.
+ *
+ */
+
+packedmatrix *mzd_invert_naiv(packedmatrix *INV, packedmatrix *A, const packedmatrix *I);
+
+/**
+ * \brief Set C = A+B.
+ *
+ * C is also returned. If C is NULL then a new matrix is created which
+ * must be freed by mzd_free.
+ *
+ * \param C Preallocated sum matrix, may be NULL for automatic creation.
+ * \param A Matrix
+ * \param B Matrix
+ */
+
+packedmatrix *mzd_add(packedmatrix *C, const packedmatrix *A, const packedmatrix *B);
+
+/**
+ * \brief Same as mzd_add but without any checks on the input.
+ *
+ * \param C Preallocated sum matrix, may be NULL for automatic creation.
+ * \param A Matrix
+ * \param B Matrix
+ */
+
+packedmatrix *_mzd_add_impl(packedmatrix *C, const packedmatrix *A, const packedmatrix *B);
+
+/**
+ * \brief Same as mzd_add.
+ *
+ * \param C Preallocated difference matrix, may be NULL for automatic creation.
+ * \param A Matrix
+ * \param B Matrix
+ */
+
+#define mzd_sub mzd_add
+
+/**
+ * \brief Same as mzd_sub but without any checks on the input.
+ *
+ * \param C Preallocated difference matrix, may be NULL for automatic creation.
+ * \param A Matrix
+ * \param B Matrix
+ */
+
+#define _mzd_sub_impl _mzd_add_impl
+
+/**
+ * \brief row3[col3:] = row1[col1:] + row2[col2:]
+ * 
+ * Adds row1 of SC1, starting with startblock1 to the end, to
+ * row2 of SC2, starting with startblock2 to the end. This gets stored
+ * in DST, in row3, starting with startblock3.
+ *
+ * \param DST destination matrix
+ * \param row3 destination row for matrix dst
+ * \param startblock3 starting block to work on in matrix dst
+ * \param SC1 source matrix
+ * \param row1 source row for matrix sc1
+ * \param startblock1 starting block to work on in matrix sc1
+ * \param SC2 source matrix
+ * \param startblock2 starting block to work on in matrix sc2
+ * \param row2 source row for matrix sc2
+ */
+
+void mzd_combine(packedmatrix * DST, const int row3, const int startblock3,
+		 const packedmatrix * SC1, const int row1, const int startblock1, 
+		 const packedmatrix * SC2, const int row2, const int startblock2);
+
+packedmatrix *mzd_transpose(packedmatrix *newmatrix, const packedmatrix *data);
+
+#ifdef HAVE_SSE2
+/**
+ * Cutoff in words after which row length SSE2 instructions should be
+ * used.
+ */
+
+#define SSE2_CUTOFF 20
+#endif
+
+/**
+ * Defines the number of rows of the matrix A that are processed as
+ * one block during the execution of a multiplication algorithm.
+ */
+
+#define MZD_MUL_BLOCKSIZE 768
 
 
 #endif //PACKEDMATRIX_H

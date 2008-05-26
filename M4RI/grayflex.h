@@ -1,11 +1,16 @@
+/**
+ * \file grayflex.h
+ * \brief Gray code implementation.
+ * 
+ * The Gray code is a binary numeral system where two successive
+ * values differ in only one digit.
+ *
+ * \author Gregory Bard <bard@fordham.edu>
+ * \author Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
+ */
+
 #ifndef GRAYFLEX_H
 #define GRAYFLEX_H
-
-/**
- * gray code generation used by the M4RI algorithm.
- * 
- * AUTHOR: malb
- */
 
 /******************************************************************************
 *
@@ -26,74 +31,126 @@
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
  
-struct codestruct {
-  int *ord;
-  int *inc;
-};
+#include "misc.h"
 
-typedef struct codestruct /*renamed as*/ code;
+/**
+ * Maximum allowed value for k.
+ */
+
+#define MAXKAY 16
+
+/**
+ * \brief Gray codes.
+ *
+ * A codestruct represents one entry in the code book, i.e. it
+ * represents a Gray code of a given length.
+ *
+ * For example the Gray code table of length \f$2^3\f$ is:
+ *
+ * \verbatim
+-------------------
+|  i  | ord | inc |
+-------------------
+|  0  |  0  |  0  | 
+|  1  |  4  |  1  |
+|  2  |  6  |  0  |
+|  3  |  2  |  2  |
+|  4  |  3  |  0  |
+|  5  |  7  |  1  |
+|  6  |  5  |  0  |
+|  7  |  1  |  2  |
+-------------------
+ * \endverbatim
+ */
+
+typedef struct {
+  /**
+   * array of of Gray code entries
+   */
+  int *ord;
+  /**
+   * increment
+   */
+  int *inc;
+} code;
+
+/**
+ * Global codebook.
+ *
+ * \warning Not thread safe!
+ */ 
 
 extern code **codebook;
 
-#define MAXKAY 16
-#define TWOPOW(i) (1<<(i))
-
-void printBitString(int number, int length);
 
 /**
- * swaps length bits in v naively.
+ * Swaps l bits in v.
  *
- * WARNING: Uppper bits of return value may contain garbage after
+ * \warning Uppper bits of return value may contain garbage after
  * operation.
  */
-int swap_bits(int v,int length);
+
+int m4ri_swap_bits(int v,int l);
 
 /**
- * Returns the 'number'-th gray code entry for a gray code of length
- * $2^{length}$.
+ * Returns the i-th gray code entry for a gray code of length \f$2^l\f$.
  * 
- * INPUT:
- *     number -- index in the gray code table
- *     length -- length of the gray code
+ * \param i The ndex in the Gray code table.
+ * \param l Length of the Gray code.
  *
- * OUTPUT:
- *      number-th gray code entry
- *
- * AUTHOR: malb
- *
- * THANKS: Soroosh Yazdani explained the repeated sum idea to me.
+ * \return i-th Gray code entry.
+ */
+
+int m4ri_gray_code(int i, int l);
+
+/**
+ * Fills var ord and var inc with Gray code data for a Gray code of
+ * length \f$2^l\f$.
  * 
+ * \param ord Will hold gray code data, must be preallocated with correct size
+ * \param inc Will hold some increment data, must be preallocated with correct size
+ * \param l Logarithm of length of Gray code.
+ *
+ * \note Robert Miller had the idea for a non-recursive
+ * implementation.
  */
 
-int grayCode(int number, int length);
+void m4ri_build_code(int *ord, int *inc, int l);
 
 /**
- * Fills in 'ord' and 'inc' with gray code data for a gray code of
- * length $2^{length}$.
+ * \brief Generates global code book. 
  *
- * INPUT:
- *    ord -- will hold gray code data, must be preallocated with correct size
- *    inc -- will hold some increment data, must be preallocated with correct size
+ * This code \em must be run before any Gray code related functions
+ * are called.
  *
- * AUTHOR: malb
- *
- * THANKS: Robert Miller had the idea for a non-recursive implementation.
- *
+ * \warning Not thread safe!
  */
 
-void buildCodeFlex(int *ord, int *inc, int length);
-
-void buildAllCodes();
-
-void destroyAllCodes();
+void m4ri_build_all_codes();
 
 /**
- * Return the optimal k for the given parameters. If c != 0 then the
- * optimal k for multiplication is returned, else the optimal k for
- * inversion is returned. The optiomal $k$ here means $0.75 log_2(n)$
- * where $n$ is $min(a,b)$ for inversiona and $b$ for multiplication.
+ * Frees memory from the global code book.
+ *
+ * \warning Not thread safe!
  */
 
-int optK(int a,int b,int c);
+void m4ri_destroy_all_codes();
 
-#endif 
+/**
+ * \brief Return the optimal var k for the given parameters. 
+ *
+ * If var c != 0 then var k for multiplication is returned, else
+ * var k for inversion. The optimal var k here means \f$0.75 log_2(n)\f$ 
+ * where \f$n\f$ is \f$min(a,b)\f$ for inversion and
+ * \f$b\f$ for multiplication.
+ * 
+ * \param a Number of rows of (first) matrix
+ * \param b Number of columns of (first) matrix
+ * \param c Number of columns of second matrix (may be 0)
+ *
+ * \return k
+ */
+
+int m4ri_opt_k(int a,int b,int c);
+
+#endif //GRAYFLEX_H

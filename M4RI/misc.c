@@ -16,64 +16,118 @@
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
 
+#ifndef HAVE_SSE2
+#undef HAVE_MM_MALLOC
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <signal.h>
+#include <stdarg.h>
+#include <string.h>
 #include "misc.h"
+#ifdef HAVE_MM_MALLOC
+#include <mm_malloc.h>
+#endif
 
-/***************************************************/
-/***************************************************/
-void die(char *errormessage) {
+
+
+void m4ri_die(char *errormessage, ...) {
   /*This function prints the error message and raises SIGABRT.*/
 
-  fprintf(stderr, "\a%s\n", errormessage);
-  raise(SIGABRT);
+  va_list lst;
+  va_start(lst, errormessage);
+  vfprintf(stderr, errormessage, lst);
+  va_end(lst);
+  abort();
 }
 
-/***************************************************/
-/***************************************************/
-int min ( int a, int b) {
-  if (a<=b) return a;
-  else return b;
+void m4ri_print_bit_string(int number, int length){
+  int i;
+  for(i=length-1 ; i>=0; i--) {
+    ((1<<i) & number) ? printf("1") : printf("0");
+  }
+  printf("\n");
 }
 
-/***************************************************/
-/***************************************************/
+/* Warning: I assume *destination has RADIX+1 bytes available */
+void m4ri_word_to_str( char *destination, word data, int colon) {
+  int i;
+  int j = 0;
 
-/* MEMLEAK, use free */
-void *safeCalloc( int count, int size ) {
+  if (colon == 0) {
+
+    for (i=0; i<RADIX; i++) {
+      if (GET_BIT(data,i))
+	destination[i]='1';
+      else 
+	destination[i]='0';
+    }
+    destination[RADIX]='\0';
+
+  } else {
+
+    for (i=0; i<RADIX; i++) {
+      if (GET_BIT(data,i))
+	destination[j]='1';
+      else 
+	destination[j]='0';
+      j++;
+      if (((i % 4)==3) && (i!=RADIX-1)) {
+	destination[j]=':';
+	j++;
+      }
+    }
+
+    destination[j]='\0';
+  }
+}
+
+void *m4ri_mm_calloc( int count, int size ) {
   /* this function calls calloc with the given inputs, 
      but dies with an error message if a NULL is returned */
 
-  void *newthing=calloc( count, size );
+#ifdef HAVE_MM_MALLOC
+  void *newthing = _mm_malloc(count*size, 16);
+#else
+  void *newthing = calloc(count, size);
+#endif
   if (newthing==NULL) {
-    die("calloc returned NULL");
+    m4ri_die("m4ri_mm_calloc: calloc returned NULL\n");
     return NULL; /* unreachable. */
   }
-  else return newthing;
+#ifdef HAVE_MM_MALLOC
+  char *b = (char*)newthing;
+  int i;
+/*   for(i=0; i< count*size; i++) { */
+/*     b[i] = 0; */
+/*   } */
+  memset(b, 0, count*size);
+#endif
+  return newthing;
 }
 
-/***************************************************/
-/***************************************************/
-
-/* MEMLEAK, use free */
-void *safeMalloc( int count, int size ) {
-  /* this function calls malloc with the inputs, which are
-     to be provided in calloc notation. If the result is
-     NULL, the program dies with an error message.*/
-
-  void *newthing=malloc( count*size );
+void *m4ri_mm_malloc( int size ) {
+#ifdef HAVE_MM_MALLOC
+  void *newthing = _mm_malloc(size, 16);
+#else
+  void *newthing=malloc( size );
+#endif  
   if (newthing==NULL) {
-    die("malloc returned NULL");
+    m4ri_die("m4ri_mm_malloc: malloc returned NULL\n");
     return NULL; /* unreachable */
   }
   else return newthing;
 }
 
-/***************************************************/
-/***************************************************/
+void m4ri_mm_free(void *condemned) { 
+#ifdef HAVE_MM_MALLOC
+  _mm_free(condemned); 
+#else
+  free(condemned);
+#endif  
+}
 
-BIT coinFlip() {
+BIT m4ri_coin_flip() {
   if (rand() < RAND_MAX/2) {
     return 0;
   }  else {

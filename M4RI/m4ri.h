@@ -1,14 +1,16 @@
 /**
- * Include this file if you which to use this M4RI implementation and configure as you wish.
+ * \file m4ri.h
+ * \brief Main include file for the M4RI library.
  * 
- * AUTHOR: malb
+ * \author Gregory Bard <bard@fordham.edu>
+ * \author Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
  */
-
 /******************************************************************************
 *
-*   M4RI: Method of the Four Russians Inversion
+*            M4RI: Method of the Four Russians Inversion
 *
-*       Copyright (C) 2006, 2007 Gregory Bard <bardg@math.umd.edu>
+*       Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
+*       Copyright (C) 2007,2008 Martin Albrecht <malb@informatik.uni-bremen.de> 
 *
 *  Distributed under the terms of the GNU General Public License (GPL)
 *
@@ -21,9 +23,27 @@
 *
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
-
-#if ! defined M4RI_H
+#ifndef M4RI_H
 #define M4RI_H
+
+/**
+ * \mainpage 
+ * 
+ * M4RI is a library to do fast arithmetic with dense matrices over
+ * \f$F_2\f$. It was started by Gregory Bard and is now maintained by
+ * Martin Albrecht and Gregory Bard. This library implements Kronrod's
+ * method (or "Method of the Four Russians") for matrix multiplication
+ * and the "Method of the Four Russians Inversion" algorithm for
+ * matrix reduction. The Strassen-Winograd matrix multiplication
+ * algorithm is also implemented.
+ *
+ * M4RI is available under the GPLv2+ and used by the Sage mathematics
+ * software and the PolyBoRi library. See
+ * http://m4ri.sagemath.org for details.
+ *
+ * \example testsuite/test_multiplication.c
+ * \example testsuite/test_reduction.c
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -31,5 +51,8 @@
 #include "watch.h"
 #include "packedmatrix.h"
 #include "brilliantrussian.h"
+#include "strassen.h"
+#include "grayflex.h"
+#include "parity.h"
 
 #endif //M4RI_H
