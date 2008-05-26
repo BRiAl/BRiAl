@@ -418,8 +418,8 @@ def VersionatedSharedLibrary(*args, **kwds):
 slib = env.SharedLibrary
 if env['SHLIBVERSIONING']:
     slib = VersionatedSharedLibrary
-if env['PLATFORM']=="darwin":
-    slib=env.LoadableModule
+#if env['PLATFORM']=="darwin":
+#    slib=env.LoadableModule
 
 
 libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
