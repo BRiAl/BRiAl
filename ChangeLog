@@ -1,4 +1,4 @@
-
+Release Name: 0.4.1
 * cygwin support
 * added isEnd() to decision-diagram based iterators, as end of iteration check
 
