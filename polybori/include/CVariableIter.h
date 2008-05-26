@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2008/05/26 12:06:39  dreyer
+ * ADD: isEnd() as end of iteration check, sing iterator_facade
+ *
  * Revision 1.2  2008/03/06 09:18:53  bricken
  * + implement postincrement correctly
  *
@@ -43,7 +46,14 @@ BEGIN_NAMESPACE_PBORI
 
 
 template <class Iterator, class VariableType> 
-class CVariableIter {
+class CVariableIter : 
+  public boost::iterator_facade<
+  CVariableIter<Iterator, VariableType>,
+  VariableType,
+  typename Iterator::iterator_category,
+  VariableType
+  > {
+
 public:
   /// Fixing Iterator type to be extended
   typedef Iterator iterator_type;
@@ -53,18 +63,6 @@ public:
 
   /// Fixing ring, which is used to generate variables
   typedef typename var_type::ring_type ring_type;
-
-  /// Return type for dereferencing 
-  typedef var_type value_type;
-
-  /// @name Interface types for standard iterator access
-  //@{
-  typedef typename iterator_type::iterator_category iterator_category;
-  //   typedef std::iterator_traits<iterator_type>::difference_type difference_type;
-typedef int difference_type;
-  typedef void pointer;
-  typedef value_type reference;
-  //@}
 
   /// Get type of *this
   typedef CVariableIter<iterator_type, var_type> self;
@@ -76,32 +74,19 @@ typedef int difference_type;
   CVariableIter(const iterator_type& rhs, const ring_type& ring): 
     m_iter(rhs), m_ring(ring) {}
 
-  /// Prefix increment operator
-  self& operator++() {
-    ++m_iter;
-    return *this;
-  }
+  /// Check, whether end of iteration is reached
+  bool isEnd() const { return m_iter.isEnd(); }
 
-  /// Postfix increment operator
-  self operator++(int) {  
-      self copy=*this;
-      ++(*this);
-      return copy; }
+  /// Increment operation
+  void increment() { ++m_iter; }
 
   /// Constant dereference operator
-  reference operator*() const {  return var_type(*m_iter, m_ring); }
+  var_type dereference() const {  return var_type(*m_iter, m_ring); }
 
   /// Equality check
-  bool operator==(const self& rhs) const { 
-    return  m_iter == rhs.m_iter;
-  }
+  bool equal(const self& rhs) const { return  m_iter == rhs.m_iter; }
 
-  /// Unequality check
-  bool operator!=(const self& rhs) const { 
-    return m_iter != rhs.m_iter;
-  }
-
-protected:
+private:
   /// The actual iterator
   iterator_type m_iter;
 

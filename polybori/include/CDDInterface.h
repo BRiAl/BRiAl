@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.63  2008/05/26 12:06:39  dreyer
+ * ADD: isEnd() as end of iteration check, sing iterator_facade
+ *
  * Revision 1.62  2008/03/14 13:14:43  dreyer
  * Fix: Some doxygen syntax errors
  *
@@ -738,7 +741,7 @@ class CDDInterface:
 
   /// Start of first term
   first_iterator firstBegin() const {
-    return first_iterator(m_interfaced.getNode());
+    return first_iterator(navigation());
   }
 
   /// Finish of first term 

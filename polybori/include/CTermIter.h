@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2008/05/26 12:06:39  dreyer
+ * ADD: isEnd() as end of iteration check, sing iterator_facade
+ *
  * Revision 1.26  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -206,6 +209,9 @@ public:
 
   /// Determine whether term is zero (without explicit constructing)
   bool_type isZero() const { return m_stack.isZero(); }
+
+  /// Check, whether end of iteration is reached
+  bool_type isEnd() const { return isZero(); }
 
   /// Get degree of current term
   size_type deg() const { return m_stack.deg(); }

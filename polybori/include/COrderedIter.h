@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.24  2008/05/26 12:06:39  dreyer
+ * ADD: isEnd() as end of iteration check, sing iterator_facade
+ *
  * Revision 1.23  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -247,6 +250,9 @@ public:
 
   /// Determine whether term is zero (without explicit constructing)
   bool_type isZero() const { return p_iter->isZero(); }
+
+  /// Check, whether end of iteration is reached
+  bool_type isEnd() const { return isZero(); }
 
   /// Dereferencing operation
   MonomType dereference() const { 

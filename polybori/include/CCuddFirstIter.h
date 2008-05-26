@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/05/26 12:06:39  dreyer
+ * ADD: isEnd() as end of iteration check, sing iterator_facade
+ *
  * Revision 1.8  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -50,6 +53,9 @@
 // include basic definitions
 #include "CCuddNavigator.h"
 
+// include boost's interator facade
+#include <boost/iterator/iterator_facade.hpp>
+
 #ifndef CCuddFirstIter_h_
 #define CCuddFirstIter_h_
 
@@ -61,8 +67,13 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 
-class CCuddFirstIter :
-  public CCuddNavigator {
+class CCuddFirstIter : 
+  public boost::iterator_facade<
+  CCuddFirstIter,
+  CCuddNavigator::value_type,
+  std::forward_iterator_tag,
+  CCuddNavigator::reference
+  > {
 
 public:
 
@@ -72,80 +83,50 @@ public:
   /// Get type of *this
   typedef CCuddFirstIter self;
 
-  /// Get base type 
-  typedef CCuddNavigator base;
+  /// Get navigator type 
+  typedef CCuddNavigator navigator;
+
+  /// Type for constantly accessing node pointer
+  typedef navigator::const_access_type const_access_type;
+
+  /// Type for boolean values
+  typedef navigator::bool_type bool_type;
 
   /// Default constructor
-  CCuddFirstIter(): base() {}
+  CCuddFirstIter(): m_navi() {}
 
-  /// Construct from node pointer
-  CCuddFirstIter(pointer_type ptr); // inlined below
-
-  /// Copy Constructor
-  CCuddFirstIter(const self& rhs): base(rhs) {}
-
-  /// Copy Constructor
-  CCuddFirstIter(const base& rhs): base(rhs) {}
+  /// Construct from navigator over nodes
+  CCuddFirstIter(navigator rhs): m_navi(rhs) { terminateConstant(); }
 
   /// Destructor
   ~CCuddFirstIter() {}
 
-  /// Prefix increment operator
-  self& operator++();
+  /// Incrementation operation
+  void increment() {
+    m_navi.incrementThen();
+    terminateConstant();
+  }
 
-  /// Postfix increment operator
-  self operator++(int);
+  /// Equality test
+  bool_type equal (const self& rhs) const { return (m_navi == rhs.m_navi); }
+
+  /// Dereferencing of the iterator
+  navigator::reference dereference() const { return *m_navi; }
+
+  /// Check, whether end of iteration is reached
+  bool_type isEnd() const { return !m_navi.isValid(); }
 
 protected:
   /// Constant nodes are marked as the end of a path
-  void terminateConstant();
-};
-
-// constructor
-inline 
-CCuddFirstIter::CCuddFirstIter(pointer_type ptr):
-  base(ptr) {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::CCuddFirstIter(pointer_type)" );
-  terminateConstant();
-}
-
-
-
-// prefix increment operator
-inline CCuddFirstIter&
-CCuddFirstIter::operator++() {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator++()" );
-
-  incrementThen();
-  terminateConstant();
-  return *this;
-}
-
-// postfix increment operator
-inline CCuddFirstIter
-CCuddFirstIter::operator++(int) {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::operator++(int)" );
-
-  self tmp(*this);
-  operator++();
-
-  return tmp;
-}
-
-// go to valid node
-inline void
-CCuddFirstIter::terminateConstant() {
-
-  PBORI_TRACE_FUNC( "CCuddFirstIter::terminateConstant()" );
-
-  if (isConstant()) 
+  void terminateConstant() {
+    if (m_navi.isConstant()) 
       *this = self();           // mark end of path reached
 
-}
+  }
 
+  /// Use navigator to access diagram nodes
+  navigator m_navi;
+};
 
 END_NAMESPACE_PBORI
 
