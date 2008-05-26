@@ -524,7 +524,7 @@ void mzd_combine(packedmatrix * DST, const int row3, const int startblock3,
 		 const packedmatrix * SC1, const int row1, const int startblock1, 
 		 const packedmatrix * SC2, const int row2, const int startblock2);
 
-packedmatrix *mzd_transpose(packedmatrix *newmatrix, const packedmatrix *data);
+//packedmatrix *mzd_transpose(packedmatrix *newmatrix, const packedmatrix *data);
 
 #ifdef HAVE_SSE2
 /**
