@@ -73,9 +73,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   BoolePolyRing r;
 
   #ifdef HAVE_M4RI
-  buildAllCodes();
+  m4ri_build_all_codes();
   
-  setupPackingMasks();
+  //setupPackingMasks();
   #endif
    //workaround for having a current_ring
   implicitly_convertible<BooleVariable,BooleMonomial>();
