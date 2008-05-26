@@ -174,9 +174,12 @@ extern int memcmp(), strcmp();
 
 /* These arguably do NOT belong in util.h */
 #define ABS(a)			((a) < 0 ? -(a) : (a))
+#ifndef MAX
 #define MAX(a,b)		((a) > (b) ? (a) : (b))
+#endif
+#ifndef MIN
 #define MIN(a,b)		((a) < (b) ? (a) : (b))
-
+#endif
 
 #ifndef USE_MM
 extern char *MMalloc (long);
