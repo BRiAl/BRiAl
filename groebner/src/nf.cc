@@ -1320,7 +1320,7 @@ static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int s
     int limes=end;
     vec[start].popFirst();
     for(limes=start+1;limes<end;limes++){
-        if ((vec[limes].deg()==0)||(*vec[limes].begin()!=idx)){
+        if (UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
             assert((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
             break;
         } else 
