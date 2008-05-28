@@ -34,7 +34,7 @@ def update_cache2(h,cache):
     return (LG,LGM)
 
 
-matrix_prefix="matrix"
+matrix_prefix="hfe30_"
 print_matrices=False
 #used_polynomials=list()
 
@@ -47,6 +47,9 @@ def build_and_print_matrices(v,strat):
     rows=0
     polys_in_mat=[]
     #v_orig=list(v)
+    #print v
+    if len(v)==0:
+        return
     while(len(v)>0):
         rows=rows+1
         p=v[0]
@@ -62,9 +65,11 @@ def build_and_print_matrices(v,strat):
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
-    m2i=dict([(v,k) for (k,v) in enumerate(BooleSet(treated))])
+    m2i=dict([(v,k) for (k,v) in enumerate(list(Polynomial(BooleSet(treated))))])
+    #print polys_in_mat
+    polys_in_mat.sort(key=Polynomial.lead, reverse=True)
     polys_in_mat=[[m2i[t] for t in p] for p in polys_in_mat]
-    polys_in_mat.sort(key=pkey)
+    
 
     global mat_counter
     mat_counter=mat_counter+1
@@ -72,8 +77,9 @@ def build_and_print_matrices(v,strat):
     
     rows=len(polys_in_mat)
     cols=len(m2i)
+    #print cols,rows
     im=Image.new("1",(cols,rows),"white")
-
+    #im=Image.new("1",(,10000),"white")
     for i in xrange(len(polys_in_mat)):
         p=polys_in_mat[i]
         for j in p:
@@ -84,7 +90,7 @@ def build_and_print_matrices(v,strat):
 
     file_name=matrix_prefix+str(mat_counter)+".png"
     import os
-    os.system("rm -f file_name")
+    os.system("rm -f "+file_name)
     im.save(file_name)
     del im
 
@@ -250,13 +256,17 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         if use_noro or use_faugere:
              #res=noro_step(ps,strat)
              v=BoolePolynomialVector()
+
              for p in ps:
                     if not p.isZero():
                         v.append(p)
+             if print_matrices:
+                 build_and_print_matrices(v,strat)
              if use_noro:
                  res=strat.noroStep(v)
              else:
-                 res=strat.faugereStepDense(v) 
+                 res=strat.faugereStepDense(v)
+            
         else:
             v=BoolePolynomialVector()
             for p in ps:
@@ -266,7 +276,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 if not p.isZero():
                     v.append(p)
             if print_matrices:
-                build_and_print_matrices_deg_colored(v,strat)
+                build_and_print_matrices(v,strat)
             if len(v)>100:
                res=parallel_reduce(v,strat,int(step_factor*10),max_growth)
             else:
