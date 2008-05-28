@@ -95,3 +95,22 @@ Provided that /prefix/for/executables/bin is in your path, typing
   ipbori
 
 starts an IPython session with the PolyBoRi framework loaded.
+
+
+Workaround for scons 0.96.x
+===========================
+
+The currently used CFLAGS/CCFLAGS/CXXFLAGS mechanism was introduced in the 0.97
+branch of scons. Using a version from the 0.96 branch CCFLAGS must contain all
+flags for the C-compiler, while CXXFLAGS has to carry all flags for CXX.
+
+These settings may be changed using the file custom.py described above. One has
+to add the following lines:
+
+CXXFLAGS = "-O3 -std=c++98 -ftemplate-depth-100"
+CCFLAGS  = "-O3 -std=c99"
+
+Alternatively, one can append the following lines to custom.py:
+
+CXXFLAGS += " " + CCFLAGS
+CCFLAGS += " $CFLAGS"
