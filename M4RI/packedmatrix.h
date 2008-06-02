@@ -48,25 +48,25 @@ typedef struct {
    * Number of rows.
    */
 
-  unsigned int nrows;
+  int nrows;
 
   /**
    * Number of columns.
    */
 
-  unsigned int ncols;
+  int ncols;
 
   /**
    * width = ceil(nrows/RADIX)
    */
-  unsigned int width; 
+  int width; 
 
   /**
    * Offsets to each row, so e.g. the first word of the i-th row
    * is m->values[m->rowswap[i]]
    */
 
-  unsigned int *rowswap;
+  int *rowswap;
 
 } packedmatrix;
 
@@ -80,7 +80,7 @@ typedef struct {
  *
  */
 
-packedmatrix *mzd_init(int r, int c);
+packedmatrix *mzd_init(const int r, const int c);
 
 /**
  * \brief Free a matrix created with mzd_init.
@@ -114,7 +114,7 @@ void mzd_free(packedmatrix *A);
  *
  */
 
-packedmatrix *mzd_init_window(packedmatrix *M, const int lowr, const int lowc, const int highr, const int highc);
+packedmatrix *mzd_init_window(const packedmatrix *M, const int lowr, const int lowc, const int highr, const int highc);
 
 /**
  * \brief Free a matrix window created with mzd_init_window.
@@ -133,6 +133,10 @@ void mzd_free_window(packedmatrix *A);
  */
  
 static inline void mzd_row_swap(packedmatrix *M, const int rowa, const int rowb) {
+  /**
+   * \todo it might be better to actually copy stuff around if the
+   * rows are far apart to improve data locality.
+   */
   int temp=M->rowswap[rowa];
   M->rowswap[rowa]=M->rowswap[rowb];
   M->rowswap[rowb]=temp;
@@ -279,14 +283,12 @@ void mzd_row_add(packedmatrix *M, const int sourcerow, const int destrow);
 /**
  * \brief Transpose a matrix.
  *
- * This is not efficient, but it is quadratic time, so who cares?
- * Efficient, would be to use the fact that:
- *
+ * This function uses the fact that:
 \verbatim
    [ A B ]T    [AT CT]
    [ C D ]  =  [BT DT] 
  \endverbatim 
- * and thus rearrange the blocks recursively. 
+ * and thus rearranges the blocks recursively. 
  *
  * \param DST Preallocated return matrix, may be NULL for automatic creation.
  * \param A Matrix
@@ -523,8 +525,6 @@ packedmatrix *_mzd_add_impl(packedmatrix *C, const packedmatrix *A, const packed
 void mzd_combine(packedmatrix * DST, const int row3, const int startblock3,
 		 const packedmatrix * SC1, const int row1, const int startblock1, 
 		 const packedmatrix * SC2, const int row2, const int startblock2);
-
-//packedmatrix *mzd_transpose(packedmatrix *newmatrix, const packedmatrix *data);
 
 #ifdef HAVE_SSE2
 /**
