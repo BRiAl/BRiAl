@@ -369,14 +369,14 @@ def shared_object(o):
     else:
         return env.SharedObject(o,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
 
-for fdir in Split("cudd dddmp mtr st epd"):
+for fdir in Split("cudd mtr st epd"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
     cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
 
 # exclude the following files
-for fname in ['util/saveimage.c', 'util/test*.c','dddmp/*DdNode*.c']:
+for fname in ['util/saveimage.c', 'util/test*.c']:
     for file in glob(CuddPath(fname)):
         cudd_resources.remove(file)
 
@@ -688,7 +688,7 @@ if distribute or rpm_generation or deb_generation:
 
     # Cudd is not distributed completely (unused and unfree things removed)
     allsrcs += [CuddPath(src) for src in Split("""LICENSE Makefile README
-    RELEASE.NOTES""") ]
+    RELEASE.NOTES setup.sh shutdown.sh""") ]
     allsrcs += [env.Dir(CuddPath(src)) for src in Split("""cudd
     obj epd mtr st util""") ]
 
