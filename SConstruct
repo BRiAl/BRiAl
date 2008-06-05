@@ -675,16 +675,22 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec .so.0 .so.0.0.0 """),
+           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0"""),
            DISTTAR_EXCLUDEDIRS = Split("CVS .svn .sconf_temp SOURCES BUILD"),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
            coding.py """))
 
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
-    for dirname in Split("""Cudd extra groebner ipbori M4RI polybori 
+    for dirname in Split("""extra groebner ipbori M4RI polybori 
     PyPolyBoRi pyroot Singular pkgs"""):
         allsrcs.append(env.Dir(dirname))
+
+    # Cudd is not distributed completely (unused and unfree things removed)
+    allsrcs += [CuddPath(src) for src in Split("""LICENSE Makefile README
+    RELEASE.NOTES""") ]
+    allsrcs += [env.Dir(CuddPath(src)) for src in Split("""cudd
+    obj epd mtr st util""") ]
 
     # Testsuite is not distributed completely
     allsrcs += [TestsPath('execsuite')]
