@@ -1,7 +1,7 @@
 Release Name: 0.4.1
 * cygwin support
 * added isEnd() to decision-diagram based iterators, as end of iteration check
-
+* Cudd/dddmp removed from distribution due to license issues (unused anyway)
 ------------------------------------------------------------------------------
 Release Name: 0.4
 
