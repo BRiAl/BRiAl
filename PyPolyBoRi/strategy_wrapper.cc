@@ -217,7 +217,7 @@ void export_strategy(){
   .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
   .def("allGenerators", &GroebnerStrategy::allGenerators)
   
-#ifdef HAVE_NTL
+#if defined(HAVE_NTL) || defined(HAVE_M4RI)
   .def("noroStep", &GroebnerStrategy::noroStep)
 #endif
 #if defined(HAVE_NTL) || defined(HAVE_M4RI)
