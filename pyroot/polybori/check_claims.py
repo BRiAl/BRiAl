@@ -3,7 +3,7 @@
 untitled.py
 
 Created by Michael Brickenstein on 2007-03-05.
-Copyright (c) 2007 Mathematisches Forschungsinstitut Oberwolfach gGmbH. All rights reserved.
+Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 """
 
 import sys
