@@ -2,7 +2,7 @@
 //  untitled
 //
 //  Created by  on 2008-04-16.
-//  Copyright (c) 2008 Mathematisches Forschungsinstitut Oberwolfach. See LICENSE file.
+//  Copyright (c) 2008 The PolyBoRi Team. See LICENSE file.
 //  PolyBoRi Project
 #include "groebner_defs.h"
 BEGIN_NAMESPACE_PBORIGB
