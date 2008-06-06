@@ -191,8 +191,8 @@ def build_and_print_matrices_deg_colored(v,strat):
     print "MATRIX_SIZE:", rows,"x",cols   
     
 def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
-    if use_noro:
-        raise NotImplementedError
+    #if use_noro:
+    #    raise NotImplementedError
     if use_noro and use_faugere:
         raise Exception
     def add_to_basis(strat,p):
