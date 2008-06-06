@@ -2,7 +2,7 @@
 //  Interpolation
 //
 //  Created by Michael Brickenstein on 2007-07-02.
-//  Copyright (c) 2007 The PolyBoRi Team. All rights reserved.
+//  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 
 #include "groebner_defs.h"
 #include <CCacheManagement.h>

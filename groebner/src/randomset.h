@@ -2,7 +2,7 @@
 //  untitled
 //
 //  Created by  on 2007-12-13.
-//  Copyright (c) 2007 The PolyBoRi Team. All rights reserved.
+//  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 //  PolyBoRi Project
 
 #ifndef RANDOM_HEADER

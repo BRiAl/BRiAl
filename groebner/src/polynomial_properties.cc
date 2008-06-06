@@ -2,7 +2,7 @@
 //  untitled
 //
 //  Created by  on 2008-04-16.
-//  Copyright (c) 2008 Mathematisches Forschungsinstitut Oberwolfach. All rights reserved.
+//  Copyright (c) 2008 Mathematisches Forschungsinstitut Oberwolfach. See LICENSE file.
 //  PolyBoRi Project
 #include "groebner_defs.h"
 #include "polynomial_properties.h"
