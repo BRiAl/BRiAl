@@ -6,7 +6,10 @@
  *  Copyright 2006 The PolyBoRi Team. All rights reserved.
  *
  */
-
+#ifdef HAVE_GD
+#include <stdio.h>
+#include <gd.h>
+#endif
 #include "nf.h"
 #include "polynomial_properties.h"
 #include "lexbuckets.h"
@@ -28,6 +31,32 @@ using std::cout;
 using std::endl;
 
 BEGIN_NAMESPACE_PBORIGB
+
+
+#ifdef HAVE_GD
+void drawmatrix(packedmatrix* mat, const char* filename){
+    int i,r,c,j;
+    c=mat->ncols;
+    r=mat->nrows;
+    gdImagePtr im = gdImageCreate(c, r) ;
+     FILE * out = fopen(filename, "wb") ;
+ int black = gdImageColorAllocate(im, 0, 0, 0) ;
+ int white = gdImageColorAllocate(im, 255, 255, 255); 
+ gdImageFilledRectangle(im, 0, 0, c-1, r-1, white) ;
+ 
+ for(i=0;i<r;i++){
+     for(j=0;j<c;j++){
+         if (mzd_read_bit(mat, i, j))
+             gdImageSetPixel(im, j, i, black );
+     }
+ }
+  
+
+ gdImagePng(im, out);
+ gdImageDestroy(im);
+ fclose(out);
+}
+#endif
 static int log2_floor(int n){
     int i;
     for(i=0;TWOPOW(i)<=n;i++){}
@@ -1853,9 +1882,10 @@ Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     }
     return p2;
 }
-#ifdef HAVE_NTL
+#if  defined(HAVE_M4RI) || defined(HAVE_NTL)
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
+    log("reduction by linear algebra\n");
     vector<Polynomial> polys;
     int i;
     MonomialSet terms;
@@ -1882,9 +1912,11 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     if (this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
-
+    #ifndef HAVE_M4RI
     mat_GF2 mat(INIT_SIZE,rows,cols);
-
+    #else
+    packedmatrix* mat=mzd_init(rows,cols);
+    #endif
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
@@ -1898,22 +1930,37 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
+            #ifndef HAVE_M4RI
             mat[i][from_term_map[*it]]=1;
+            #else
+            mzd_write_bit(mat,i,from_term_map[*it],1);
+            #endif
             it++;
         }
     }
     polys.clear();
+    #ifndef HAVE_M4RI
     int rank=gauss(mat);
+    #else
+    int rank=mzd_reduce_m4ri(mat,TRUE,0,NULL,NULL);
+    #endif
     for(i=0;i<rank;i++){
         int j;
         vector<Exponent> p_t;
         for(j=0;j<cols;j++){
+            #ifndef HAVE_M4RI
             if (mat[i][j]==1){
+            #else
+            if (mzd_read_bit(mat,i,j)){
+            #endif
                 p_t.push_back(terms_as_exp[j]);
             }
         }
         polys.push_back(add_up_exponents(p_t));//,0,p_t.size()));
     }
+    #ifdef HAVE_M4RI
+    mzd_free(mat);
+    #endif
     return polys;
 }
 #endif
@@ -2104,7 +2151,8 @@ static packedmatrix* transposePackedMB(packedmatrix* mat){
 static void 
 linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat)
 {
-    
+    static int round=0;
+    round++;
     const int russian_k=16;
     MonomialSet     terms_unique;
     vector < Monomial > terms_unique_vec;
@@ -2183,7 +2231,13 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         fill_matrix(mat_step1,polys_triangular,from_term_map_step1);
 
         polys_triangular.clear();
-         
+        
+        #ifdef HAVE_GD
+        char matname[255];
+        sprintf(matname,"mat%d_step1.png",round);
+        
+        drawmatrix(mat_step1,matname);
+        #endif
         //optimize: call back subst directly
         mzd_top_reduce_m4ri
             (mat_step1,0,NULL,NULL);
@@ -2338,9 +2392,22 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step1->ncols==remaining_cols);
     // std::cout<<"step1 matrix"<<std::endl;
     // printPackedMatrixMB(mat_step1);
+    #ifdef HAVE_GD
+    {
+    
+    char matname[255];
+    sprintf(matname,"mat%d_mult_A.png",round);
+    drawmatrix(mat_step2_factor,matname);
+    sprintf(matname,"mat%d_mult_B.png",round);
+    drawmatrix(mat_step1,matname);
+    }
+    #endif
     if (strat.enabledLog){
         std::cout<<"start mult"<<std::endl;
     }
+    
+    
+    
     packedmatrix* eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);//,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
     mzd_free(mat_step2_factor);
     if (strat.enabledLog){
@@ -2369,6 +2436,13 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
      if (strat.enabledLog){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
+    #ifdef HAVE_GD
+    {
+        char matname[255];
+        sprintf(matname,"mat%d_step2.png",round);
+        drawmatrix(mat_step2,matname);
+    }
+    #endif
     int rank_step2=mzd_reduce_m4ri(mat_step2,TRUE,0,NULL,NULL);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
         if (strat.enabledLog){
