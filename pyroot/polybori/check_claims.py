@@ -8,10 +8,10 @@ Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 
 import sys
 from optparse import OptionParser
-if __name__ == "__main__":
-    import pathadjuster
+#if __name__ == "__main__":
+#    import pathadjuster
 from polybori.PyPolyBoRi import *
-from polybori.gbrefs import my_import, load_data, clean_data
+from polybori.gbrefs import my_import, load_data, clean_data,load_file
 from polybori.blocks import IfThen
 from copy import copy
 from polybori.ll import llredsb_Cudd_style, ll_encode
@@ -105,8 +105,8 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
   for p in ip_pre:
     p=Polynomial(p)
     if p.isZero(): continue
-    li=list(p.lead())
-    if len(li)==1 and (not (li[0] in list(Polynomial(reductors).lead()))):
+    li=list(p.lead().variables())
+    if len(li)==1 and (not (li[0] in list(Polynomial(reductors).lead().variables()))):
       assert not Polynomial(reductors).isZero()
       lead_index=li[0]
       if redsb:
@@ -157,7 +157,7 @@ def to_if_then(p):
     return IfThen([],[p])
 def main(argv=None):
      (opts,args)= parser.parse_args()
-     mydata=load_data(args[0])
+     mydata=load_file(args[0])
      claims=mydata.claims
      if opts.method==NF3:
        strat=gen_strat(mydata.ideal)

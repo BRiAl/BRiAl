@@ -90,7 +90,7 @@ def lex_groebner_basis_points(points,variables):
     return [nf_lex_points(l,points)+l for l in leads]
 
 def lex_groebner_basis_for_polynomial_via_variety(p):
-    variables=p.vars()
+    variables=p.varsAsMonomial()
     return lex_groebner_basis_points(p.zerosIn(variables.divisors()),variables)
 if __name__=='__main__':
     nvariables=100

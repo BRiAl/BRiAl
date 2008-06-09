@@ -14,10 +14,10 @@ def get_splitting(f,variables):
 def nested_canalyzing_function(f,variables=None):
     f=Polynomial(f)
     if variables is None:
-        variables=f.vars()
-    if not variables.reducibleBy(f.vars()):
+        variables=f.varsAsMonomial()
+    if not variables.reducibleBy(f.varsAsMonomial()):
         raise ValueError
-    if variables!=f.vars():
+    if variables!=f.varsAsMonomial():
         return False
     if len(variables)==0:
         return True

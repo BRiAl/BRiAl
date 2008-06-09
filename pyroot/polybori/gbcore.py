@@ -52,7 +52,7 @@ def ll_is_good(I):
     for p in I:
         m=p.lexLead()
         if m.deg()==1:
-            lex_lead.add(iter(m).next().index())
+            lex_lead.add(iter(m.variables()).next().index())
     if len(lex_lead)>=0.8*len(I):
         uv=len(used_vars_set(I))
         if len(lex_lead)>0.9*uv:

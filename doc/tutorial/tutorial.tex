@@ -235,7 +235,7 @@ In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
 
 In [2]: f=x(0)+x(1)*x(2)+x(2)
 
-In [3]: for t in f:
+In [3]: for t in f.terms():
    print t
    
 x(0)
@@ -244,7 +244,7 @@ x(2)
 
 In [4]: change_ordering(dp_asc)
 
-In [5]: for t in f:
+In [5]: for t in f.terms():
     print t
 
 x(1)*x(2)
@@ -548,7 +548,7 @@ In the following we will show five variants to implement a function, that comput
 \subsection{Simple, algebraic solution}
 \begin{verbatim}
 def simple_graded(f, d):
-    return sum((t for t in f if t.deg()==d))   
+    return sum((t for t in f.terms() if t.deg()==d))   
 \end{verbatim}
 This solution is obvious, but quite slow.
 
@@ -556,7 +556,7 @@ This solution is obvious, but quite slow.
 \begin{verbatim}
 def friendly_graded(f, d):
     vec=BoolePolynomialVector()
-    for t in f:
+    for t in f.terms:
         if t.deg()!=d:
             continue
         else:
@@ -568,7 +568,7 @@ We leave it to the heuristic of the \functionname{add\_up\_polynomials} function
 \subsection{Highlevel with set operations}
 \begin{verbatim}
 def highlevel_graded(f,d):
-    return Polynomial(f.set().intersect(all_monomials_of_degree_d(d,f.vars())))
+    return Polynomial(f.set().intersect(all_monomials_of_degree_d(d,f.varsAsMonomial())))
 \end{verbatim}
 This solution build on the fast intersection algorithm and decomposes the task in just two set operations, which is very good.
 
@@ -655,11 +655,11 @@ The method \functionname{reducibleBy} gives a test for divisibility.
 \begin{verbatim}
 def subst(f,x,c):
     if c==1:
-        return sum([t/x for t in f if t.reducibleBy(x)])+\
-            sum([t for t in f if not t.reducibleBy(x)])
+        return sum([t/x for t in f.terms() if t.reducibleBy(x)])+\
+            sum([t for t in f.terms() if not t.reducibleBy(x)])
     else:
         #c==0
-        return sum([t for t in f if not t.reducibleBy(x)])
+        return sum([t for t in f.terms() if not t.reducibleBy(x)])
 
 \end{verbatim}
 
@@ -738,10 +738,10 @@ First, we show it in a naive way, similar to the first solution above.
 \begin{verbatim}
 def evaluate(f,m):
     res=0
-    for term in f:
+    for term in f.terms():
         product=1
-        for index in term:
-            product=m[index]*product
+        for variable in term.variables():
+            product=m[variable]*product
         res=res+product
     return Polynomial(res)
 \end{verbatim}
@@ -755,7 +755,8 @@ def evaluate(f,m):
    while not f.constant():
        nav=f.navigation()
        i=nav.value()
-       c=m[i]
+       v=Variable(i)
+       c=m[v]
        if c==0:
            #terms with x evaluate to zero
            f=Polynomial(nav.thenBranch())

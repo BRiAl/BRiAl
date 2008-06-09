@@ -61,7 +61,7 @@ void export_poly(){
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("stableHash", &BoolePolynomial::stableHash, "Reproducible hash code")
   .def("__len__", &BoolePolynomial::length, "Number of terms")
-  .def("__iter__", 
+  .def("terms", 
        range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
   .def("__pow__",poly_power)
   .def(self+=self)
@@ -137,7 +137,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
        "Number of diagram nodes in the underlying ZDD structure")
   .def("nVars", &BoolePolynomial::nUsedVariables, 
        "Number of variables occurring in Polynomial")
-  .def("vars",&BoolePolynomial::usedVariables, 
+  .def("varsAsMonomial",&BoolePolynomial::usedVariables, 
        "Variables occurring in Polynomial")
   .def("totalDegree", &BoolePolynomial::totalDeg, "Total Polynomial degree")
   .def("gradedPart", &BoolePolynomial::gradedPart, "Get part of given degree")

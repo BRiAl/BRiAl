@@ -55,7 +55,7 @@ def build_and_print_matrices(v,strat):
         p=v[0]
         v=v[1:]
         #used_polynomials.append(p)
-        for m in list(p):
+        for m in list(p.terms()):
             m=Monomial(m)
             if not m in BooleSet(treated):
                 i=strat.select(m)
@@ -65,7 +65,7 @@ def build_and_print_matrices(v,strat):
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
-    m2i=dict([(v,k) for (k,v) in enumerate(list(Polynomial(BooleSet(treated))))])
+    m2i=dict([(v,k) for (k,v) in enumerate(list(Polynomial(BooleSet(treated)).terms()))])
     #print polys_in_mat
     polys_in_mat.sort(key=Polynomial.lead, reverse=True)
     polys_in_mat=[[m2i[t] for t in p] for p in polys_in_mat]
@@ -151,7 +151,7 @@ def build_and_print_matrices_deg_colored(v,strat):
         rows=rows+1
         p=v[0]
         v=v[1:]
-        for m in list(p):
+        for m in list(p.terms()):
             m=Monomial(m)
             if not m in BooleSet(treated):
                 i=strat.select(m)
@@ -166,7 +166,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     if max_deg==0:
         max_deg=1
     i2deg=dict([(m2i[m],m.deg()) for m in BooleSet(treated)])
-    polys_in_mat=[[m2i[t] for t in p] for p in polys_in_mat]
+    polys_in_mat=[[m2i[t] for t in p.terms()] for p in polys_in_mat]
     polys_in_mat.sort(key=pkey)
     global mat_counter
     mat_counter=mat_counter+1
