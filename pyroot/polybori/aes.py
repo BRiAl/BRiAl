@@ -5,24 +5,24 @@ from ll import ll_encode
 cache={}
 def m2code(m,table):
     res=0
-    for v in m:
+    for v in m.variables():
         res=res+(1<<table[v.index()])
     #print "m2code",m,res
     return res
 def p2code(p,table):
     res=0
-    for m in p:
+    for m in p.terms():
         res=res+(1<<m2code(m,table))
     return res
 def translate_m(m,table):
     res=Monomial()
-    for v in m:
+    for v in m.variables():
         res=Monomial(Variable(table[v.index()]))*res
     return res
 def translate(p,table):
     res=0
     #would be optimal to work on tree level
-    for m in Polynomial(p):
+    for m in Polynomial(p).terms():
         res=res+translate_m(m,table)
     #print "tranlated_p", p,"new",res
     return res
@@ -34,8 +34,8 @@ def cached_GB(I,prot=False):
     m=Monomial()
     for p in I:
         m=m*p.varsAsMonomial()
-    table_to_ring=dict(enumerate([v.index() for v in m]))
-    table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m)])
+    table_to_ring=dict(enumerate([v.index() for v in m.variables()]))
+    table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m.variables())])
     codes=tuple(sorted([p2code(p,table_to_123) for p in I]))
     if codes in cache:
         #print "codes found",codes
