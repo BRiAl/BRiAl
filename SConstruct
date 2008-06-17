@@ -92,6 +92,12 @@ if distribute or rpm_generation or deb_generation:
         return arg
 
 defaultenv = Environment()
+
+def sonameprefix(env):
+    if env['PLATFORM']=="darwin":
+        return "-Wl,-dylib_install_name -Wl,"
+    else:
+        return '-Wl,-soname,'
 #print defaultenv.Dump()
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
@@ -154,7 +160,7 @@ opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
 opts.Add(BoolOption('USE_TIMESTAMP', 'Use timestamp on distribution', True))
 opts.Add(BoolOption('SHLIBVERSIONING',
                     'Use dlltool-style versionated shared library', True))
-opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', '-Wl,-soname,')
+opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', sonameprefix(defaultenv))
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
 opts.Add('SHLINKFLAGS',
