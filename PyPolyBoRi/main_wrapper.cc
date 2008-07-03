@@ -66,7 +66,9 @@ translator_pboridivisionbyzero(const PBoRiGenericError<CTypes::division_by_zero>
                                & err) {  
   PyErr_SetString(PyExc_ZeroDivisionError, err.text());
 }
-
+static BooleMonomial used_var(const BooleVariable& v){
+    return v;
+}
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -110,7 +112,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 };*/
   def("get_order_code",&BooleEnv::getOrderCode);  
   def("print_ring_info", &BooleEnv::printInfo);
-
+  
   boost::python::class_<BooleRing>("BooleRing", "Boolean ring")
     .def(boost::python::init <BooleRing::size_type>());
 
@@ -167,7 +169,8 @@ with inverted variable order\n\
   .def(self<self)
   .def(self<=self)
   .def(self==self)
-
+  .def("varsAsMonomial",&used_var, 
+       "Variables occurring in Polynomial")
   .def("__str__", streamable_as_str<BooleVariable>)
   .def("__repr__", streamable_as_str<BooleVariable>)
   .def("__hash__", &BooleVariable::index)

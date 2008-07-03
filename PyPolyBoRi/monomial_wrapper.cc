@@ -36,6 +36,9 @@ static BooleMonomial mon_power(const BooleMonomial& p, int n){
 static boost::python::tuple mon2tuple(const BooleMonomial& m ){
   return tuple(m);
 }
+static BooleMonomial used_var(const BooleMonomial& m){
+    return m;
+}
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
@@ -61,6 +64,9 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self*int())
   .def(self/self)
   .def(self/int())
+  
+  .def("varsAsMonomial",&used_var, 
+       "Variables occurring in Polynomial")
     //  .def(self/BooleVariable())
   .def(self/=self)
   //.def("tuple",mon2tuple)
