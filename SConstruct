@@ -4,8 +4,8 @@ opts = Options('custom.py')
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
-pboriversion = "0.4"
-pborirelease = "1"
+pboriversion = "0.5"
+pborirelease = "0"
 
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
