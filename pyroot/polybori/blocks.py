@@ -309,7 +309,13 @@ def declare_ring(blocks,context):
   gives  a ring with x(0..9),y(0..4) and registers the ring as r, 
   and the variable blocks x and y in the context dictionary globals(), which consists of the global variables of the python module
   """
-  n=sum([len(b) for b in blocks])
+  n=0
+  for b in blocks:
+      if isinstance(b,str):
+          n=n+1
+      else:
+          n=n+len(b)
+  #n=sum([len(b) for b in blocks])
   r=Ring(n) 
   declare_block_scheme(blocks,context)
   context["r"]=r
