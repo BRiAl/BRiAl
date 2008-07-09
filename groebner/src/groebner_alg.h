@@ -147,6 +147,7 @@ public:
   int extendedProductCriterions;
   int averageLength;
   bool optRedTail;
+  bool optHFE;
   bool optLazy;
   bool optLL;
   bool optDelayNonMinimals;
@@ -176,6 +177,7 @@ public:
 		easyProductCriterions=0;
 		optRedTail=true;
 		optExchange=true;
+        optHFE=false;
 		optStepBounded=false;
 		optAllowRecursion=true;
         optLinearAlgebraInLastBlock=true;
