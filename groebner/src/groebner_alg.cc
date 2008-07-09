@@ -440,6 +440,7 @@ void PairManager::replacePair(int& i, int& j){
   }
 }
 void PairManager::introducePair(const Pair& pair){
+  if (!((strat->optHFE)&&(pair.getType()==IJ_PAIR)&& (pair.sugar>4)))
   queue.push(pair);
 }
 bool PairManager::pairSetEmpty() const{
@@ -524,7 +525,7 @@ minimalLeadingTerms(orig.minimalLeadingTerms),
   optStepBounded=orig.optStepBounded;
 
   optAllowRecursion=orig.optAllowRecursion;
-  
+  optHFE=orig.optHFE;
   optRedTailDegGrowth=orig.optRedTailDegGrowth;
   optLazy=orig.optLazy;
   optRedTail=orig.optRedTail;
@@ -1064,7 +1065,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
     int i;
     int s=generators.size();
     for(i=0;i<s;i++){      
-      if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
+      //if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
+      if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
         Polynomial new_p;
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
@@ -2190,7 +2192,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     if(divisors_from_minimal.emptiness()){
        
         
-        
+        assert(!(Polynomial(lm).isZero()));
         MonomialSet lm_multiples_min=minimalLeadingTerms.multiplesOf(lm);
         //minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
         lm_multiples_min=lm_multiples_min.diff(lm.diagram());
