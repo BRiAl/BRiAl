@@ -36,6 +36,7 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+
 #include "misc.h"
 #include "packedmatrix.h"
 
@@ -50,9 +51,11 @@
  * \param k
  * \param T prealloced matrix of dimension \f$2^k\f$ x m->ncols
  * \param L prealloced table of length \f$2^k\f$
+ *
+ * \wordoffset
  */
 
-void mzd_make_table( packedmatrix *M, int r, int c, int k, packedmatrix *T, int *L);
+void mzd_make_table( packedmatrix *M, size_t r, size_t c, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief The function looks up k bits from position i,startcol in each row
@@ -68,9 +71,11 @@ void mzd_make_table( packedmatrix *M, int r, int c, int k, packedmatrix *T, int 
  * \param k M4RI parameter
  * \param T contains the correct row to be added
  * \param L Contains row number to be added
+ *
+ * \wordoffset
  */
 
-void mzd_process_rows(packedmatrix *M, int startrow, int endrow, int startcol, int k, packedmatrix *T, int *L);
+void mzd_process_rows(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief Same as mzd_process_rows but works with two Gray code tables
@@ -85,9 +90,11 @@ void mzd_process_rows(packedmatrix *M, int startrow, int endrow, int startcol, i
  * \param L0 Contains row number to be added
  * \param T1 contains the correct row to be added
  * \param L1 Contains row number to be added
+ *
+ * \wordoffset
  */
 
-void mzd_process_rows2(packedmatrix *M, int startrow, int endrow, int startcol, int k, packedmatrix *T0, int *L0, packedmatrix *T1, int *L1);
+void mzd_process_rows2(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1);
 
 /**
  * \brief Same as mzd_process_rows but works with three Gray code tables
@@ -104,11 +111,13 @@ void mzd_process_rows2(packedmatrix *M, int startrow, int endrow, int startcol, 
  * \param L1 Contains row number to be added
  * \param T2 contains the correct row to be added
  * \param L2 Contains row number to be added
+ *
+ * \wordoffset
  */
 
-void mzd_process_rows3(packedmatrix *M, int startrow, int endrow, int startcol, int k, 
-                       packedmatrix *T0, int *L0, packedmatrix *T1, int *L1,
-                       packedmatrix *T2, int *L2);
+void mzd_process_rows3(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, 
+                       packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1,
+                       packedmatrix *T2, size_t *L2);
 
 /**
  * \brief Same as mzd_process_rows but works with four Gray code tables
@@ -127,11 +136,13 @@ void mzd_process_rows3(packedmatrix *M, int startrow, int endrow, int startcol, 
  * \param L2 Contains row number to be added
  * \param T3 contains the correct row to be added
  * \param L3 Contains row number to be added
+ *
+ * \wordoffset
  */
 
-void mzd_process_rows4(packedmatrix *M, int startrow, int endrow, int startcol, int k,
-                       packedmatrix *T0, int *L0, packedmatrix *T1, int *L1,
-                       packedmatrix *T2, int *L2, packedmatrix *T3, int *L3);
+void mzd_process_rows4(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k,
+                       packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1,
+                       packedmatrix *T2, size_t *L2, packedmatrix *T3, size_t *L3);
 
 /**
  * \brief Perform matrix reduction using the 'Method of the Four
@@ -142,9 +153,11 @@ void mzd_process_rows4(packedmatrix *M, int startrow, int endrow, int startcol, 
  * \param k M4RI parameter, may be 0 for auto-choose.
  * \param T Preallocated table, may be NULL for automatic creation.
  * \param L Preallocated lookup table, may be NULL for automatic creation.
+ *
+ * \wordoffset
  */
 
-int mzd_reduce_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, int *L);
+int mzd_reduce_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief Given a matrix in upper triangular form compute the reduced row
@@ -154,9 +167,11 @@ int mzd_reduce_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, int *L);
  * \param k M4RI parameter, may be 0 for auto-choose.
  * \param T Preallocated table, may be NULL for automatic creation.
  * \param L Preallocated lookup table, may be NULL for automatic creation.
+ *
+ * \wordoffset
  */
 
-void mzd_top_reduce_m4ri(packedmatrix *M, int k, packedmatrix *T, int *L);
+void mzd_top_reduce_m4ri(packedmatrix *M, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief Invert the matrix M using Konrod's method. To avoid
@@ -166,6 +181,8 @@ void mzd_top_reduce_m4ri(packedmatrix *M, int k, packedmatrix *T, int *L);
  * \param M Matrix to be reduced.
  * \param I Identity matrix.
  * \param k M4RI parameter, may be 0 for auto-choose.
+ *
+ * \wordoffset
  */
 
 packedmatrix *mzd_invert_m4ri(packedmatrix *M, packedmatrix *I, int k);
@@ -174,13 +191,15 @@ packedmatrix *mzd_invert_m4ri(packedmatrix *M, packedmatrix *I, int k);
  * \brief Matrix multiplication using Konrod's method, i.e. compute C
  * such that C == AB. 
  * 
- * This is the convenient wrapper function, please see
- * _mzd_mul_m4rm_impl for authors and implementation details.
+ * This is the convenient wrapper function, please see _mzd_mul_m4rm
+ * for authors and implementation details.
  *
  * \param C Preallocated product matrix, may be NULL for automatic creation.
  * \param A Input matrix A
  * \param B Input matrix B
  * \param k M4RI parameter, may be 0 for auto-choose.
+ *
+ * \wordoffset
  */
 
 packedmatrix *mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
@@ -193,6 +212,8 @@ packedmatrix *mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, in
  * \param A Input matrix A
  * \param B Input matrix B
  * \param k M4RI parameter, may be 0 for auto-choose.
+ *
+ * \wordoffset
  */
 
 packedmatrix *mzd_addmul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
@@ -211,9 +232,11 @@ packedmatrix *mzd_addmul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B,
  *
  * \author Martin Albrecht -- initial implementation
  * \author William Hart -- block matrix implementation, use of several Gray code tables, general speed-ups
+ *
+ * \wordoffset
  */
 
-packedmatrix *_mzd_mul_m4rm_impl(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k, int clear);
+packedmatrix *_mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k, int clear);
 
 /**
  * \brief Matrix multiplication using Konrod's method but transpose
@@ -223,6 +246,8 @@ packedmatrix *_mzd_mul_m4rm_impl(packedmatrix *C, packedmatrix *A, packedmatrix 
  * \param A Input matrix A
  * \param B Input matrix B
  * \param k M4RI parameter, may be 0 for auto-choose.
+ *
+ * \wordoffset
  */
 
 packedmatrix *mzd_mul_m4rm_t(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
@@ -233,5 +258,58 @@ packedmatrix *mzd_mul_m4rm_t(packedmatrix *C, packedmatrix *A, packedmatrix *B, 
  */
 
 #define M4RM_GRAY8
+
+
+/**
+ * Perform LQUP factorization on A.
+ *
+ * This code is a scratch only, do not call it.
+ *
+ * \param A Matrix.
+ * \param k Size of Gray code tables.
+ * \param P Preallocated row permutation.
+ * \param Q Preallocated column permutation.
+ *
+ * \wordoffset
+ * \internal
+ */
+
+size_t _mzd_lqup_m4ri(packedmatrix *A, int k, permutation * P, permutation * Q);
+
+/**
+ * Perform LQUP factorization on a submatrix of up to dimension k
+ * starting at (r,c).
+ *
+ * This code is a scratch only, do not call it.
+ *
+ * \param A Matrix.
+ * \param r Row Offset.
+ * \param c Column Offset.
+ * \param endrow Maximal row offset for pivot finding.
+ * \param k Size of Gray code tables.
+ * \param P Preallocated row permutation.
+ * \param Q Preallocated column permutation.
+ *
+ * \wordoffset
+ * \internal
+ */
+
+size_t _mzd_lqup_submatrix(packedmatrix *A, size_t r, size_t c, size_t endrow, int k, permutation *P, permutation *Q);
+
+/**
+ * Reduce LQUP factorized matrix to the identity matrix.
+ *
+ * This code is a scratch only, do not call it.
+ *
+ * \param A Matrix.
+ * \param r Row Offset.
+ * \param c Column Offset.
+ * \param k Size of Gray code tables.
+ *
+ * \wordoffset
+ * \internal
+ */
+
+void _mzd_lqup_submatrix_finish(packedmatrix *A, size_t r, size_t c, int k);
 
 #endif //BRILLIANTRUSSIAN_H

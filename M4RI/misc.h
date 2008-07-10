@@ -29,6 +29,9 @@
  ********************************************************************/
 
 #include <stdlib.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 /*
  * These define entirely the word width used in the library.
@@ -62,7 +65,7 @@ typedef unsigned long long word;
  */
 
 #ifndef MAX
-#define MAX(x,y) ((x > y)?x:y)
+#define MAX(x,y) (((x) > (y))?(x):(y))
 #endif
 
 /**
@@ -73,7 +76,7 @@ typedef unsigned long long word;
  */
 
 #ifndef MIN
-#define MIN(x,y) ((x < y)?x:y)
+#define MIN(x,y) (((x) < (y))?(x):(y))
 #endif
 
 /**
@@ -83,7 +86,7 @@ typedef unsigned long long word;
  * \param y Block size
  */
 
-#define DIV_CEIL(x,y) ((x%y)?x/y+1:x/y)
+#define DIV_CEIL(x,y) (((x)%(y))?(x)/(y)+1:(x)/(y))
 
 /**
  *\brief Pretty for 1.
@@ -118,7 +121,7 @@ typedef unsigned char BIT;
  * \param spot Integer with 0 <= spot < RADIX
  */
 
-#define CLR_BIT(w, spot) (w &= ~(ONE<<(RADIX - spot - 1)))
+#define CLR_BIT(w, spot) ((w) &= ~(ONE<<(RADIX - (spot) - 1)))
 
 /**
  * \brief Set the bit spot in the word w
@@ -127,7 +130,7 @@ typedef unsigned char BIT;
  * \param spot Integer with 0 <= spot < RADIX
  */
 
-#define SET_BIT(w, spot) (w |= (ONE<<(RADIX - spot - 1)))
+#define SET_BIT(w, spot) ((w) |= (ONE<<(RADIX - (spot) - 1)))
 
 /**
  * \brief Get the bit spot in the word w
@@ -136,7 +139,26 @@ typedef unsigned char BIT;
  * \param spot Integer with 0 <= spot < RADIX
  */
 
-#define GET_BIT(w, spot) ((w & (ONE<<(RADIX - spot - 1))) >> (RADIX - spot - 1))
+#define GET_BIT(w, spot) (((w) & (ONE<<(RADIX - (spot) - 1))) >> (RADIX - (spot) - 1))
+
+/**
+ * \brief Write the value to the bit spot in the word w
+ * 
+ * \param w Word.
+ * \param spot Integer with 0 <= spot < RADIX.
+ * \param value Either 0 or 1.
+ */
+
+#define WRITE_BIT(w, spot, value) ((w) = (((w) &~(ONE<<(RADIX - (spot) - 1))) | (((word)(value))<<(RADIX - (spot) - 1))))
+
+/**
+ * \brief Flip the spot in the word w
+ *
+ * \param w Word.
+ * \param spot Integer with 0 <= spot < RADIX.
+ */
+
+#define FLIP_BIT(w, spot) ((w) ^= (ONE<<(RADIX - (spot) - 1)))
 
 /**
 * \brief Return the n leftmost bits of the word w.
@@ -145,7 +167,7 @@ typedef unsigned char BIT;
 * \param n Integer with 0 <= spot < RADIX
 */
 
-#define LEFTMOST_BITS(w, n)  (w & ~((ONE<<(RADIX-n))-1))>>(RADIX-n)
+#define LEFTMOST_BITS(w, n)  ((w) & ~((ONE<<(RADIX-(n)))-1))>>(RADIX-(n))
 
 /**
 * \brief Return the n rightmost bits of the word w.
@@ -154,7 +176,7 @@ typedef unsigned char BIT;
 * \param n Integer with 0 <= spot < RADIX
 */
 
-#define RIGHTMOST_BITS(w, n) (w &  ((ONE<<n)-1))
+#define RIGHTMOST_BITS(w, n) (((w)<<(RADIX-(n)-1))>>(RADIX-(n)-1))
 
 /**
  * \brief return alignment of addr w.r.t. n. For example the address
@@ -164,7 +186,7 @@ typedef unsigned char BIT;
  * \param n
  */
 
-#define ALIGNMENT(addr, n) (((unsigned long)(addr))%n)
+#define ALIGNMENT(addr, n) (((unsigned long)(addr))%(n))
 
 /**** Error Handling *****/
 
