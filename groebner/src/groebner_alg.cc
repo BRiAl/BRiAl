@@ -1065,8 +1065,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
     int i;
     int s=generators.size();
     for(i=0;i<s;i++){      
-      //if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
-      if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
+      if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
+      //if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
         Polynomial new_p;
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
