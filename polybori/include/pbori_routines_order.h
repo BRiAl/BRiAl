@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2008/07/13 22:49:36  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.11  2008/01/17 15:18:41  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -92,8 +95,7 @@ lex_compare_3way(FirstIterator start, FirstIterator finish,
 }
 
 
-/// @func lex_compare
-/// @brief defines lexicographic comparison
+/// defines lexicographic comparison
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 lex_compare(const LhsType& lhs, const RhsType& rhs, 
@@ -109,8 +111,7 @@ lex_compare(const LhsType& lhs, const RhsType& rhs,
 }
 
 
-/// @func lex_compare
-/// @brief defines lexicographic comparison
+/// defines lexicographic comparison
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 lex_compare(const LhsType& lhs, const RhsType& rhs, 
@@ -120,8 +121,7 @@ lex_compare(const LhsType& lhs, const RhsType& rhs,
                           rhs.begin(), rhs.end(), idx_comp);
 }
 
-/// @func lex_compare
-/// @brief defines lexicographic comparison
+/// defines lexicographic comparison
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
@@ -132,8 +132,7 @@ lex_compare(const LhsType& lhs, const RhsType& rhs, BinaryPredicate idx_comp) {
   return lex_compare(lhs, rhs, idx_comp, equality_property());
 }
 
-/// @func deg_lex_compare
-/// @brief defines degree-lexicographic comparison
+/// defines degree-lexicographic comparison
 template<class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 deg_lex_compare(const LhsType& lhs, const RhsType& rhs, 

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2008/07/13 22:49:36  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.20  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -326,8 +329,7 @@ BooleMonomial::multiples(const self& monom) const {
 #endif
 }
 
-/// @function greater_variable
-/// @brief  
+// function greater_variable
 BooleMonomial::bool_type
 greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
 

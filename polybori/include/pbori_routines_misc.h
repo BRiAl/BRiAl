@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.38  2008/07/13 22:49:36  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.37  2007/12/17 16:12:02  dreyer
  * CHANGE: reviewed and optimized merge frim sf.net
  *
@@ -912,7 +915,6 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 }
 
 
-/// @func dd_first_divisors_of
 /// Function templates extracting the terms of a given decision diagram contain
 /// which contains only indices from first lexicographical path in 
 /// Note: Replacement for dd_intersect_some_index

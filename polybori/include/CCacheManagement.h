@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.43  2008/04/25 15:44:47  bricken
  * + renamed zeros
  *
@@ -269,7 +272,7 @@ public:
          ( ((Counted + Offset) & 0x1C ) << 3) | 0x2 };
 };
 
-/** @class CCuddLikeMgrStorage<ManagerType>
+/** @class CCuddLikeMgrStorage
  *
  * This template defines how to used the Cudd-like decision diagram managers
  * like Cudd and CCuddInterface.
@@ -335,12 +338,14 @@ private:
   typename manager_type::mgrcore_ptr  m_mgr;
 };
 
-/** @class CCacheManBase<ManagerType, CacheType, nArgs>
+/** @class CCacheManBase
  *
  * @brief This template forms the base for CCacheManagement. It implements
  * routines for finding and inserting results into the cache.
  *
- * @note We have template specilizations for nArgs = 1, 2, 3 corresponding to
+ * Template arguments: ManagerType, CacheType, nArgs
+ *
+ * @note We have template specializations for nArgs = 1, 2, 3 corresponding to
  * unary, binary and ternary funtions to be cached. In addition, nArgs = 0 is
  * used, when no cache is used.
  **/

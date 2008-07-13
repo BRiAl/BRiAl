@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.21  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -164,16 +167,16 @@ public:
   /// Destructor
   ~CCuddNavigator() {}
 
-  /// Increment in @i then direction
+  /// Increment in @c then direction
   self& incrementThen();        // inlined below
 
-  /// Increment in @i then direction
+  /// Increment in @c then direction
   self thenBranch() const { return self(*this).incrementThen(); }
 
-  /// Increment in @i else direction
+  /// Increment in @c else direction
   self& incrementElse();        // inlined below
 
-  /// Increment in @i else direction
+  /// Increment in @c else direction
   self elseBranch() const { return self(*this).incrementElse(); }
 
   /// Constant dereference operator

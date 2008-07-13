@@ -1,5 +1,5 @@
 // -*- c++ -*-
-//*****************************************************************************
+// //*****************************************************************************
 /** @file BlockDegLexOrder.cc
  *
  * @author Alexander Dreyer
@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2008/07/13 22:49:36  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.6  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *

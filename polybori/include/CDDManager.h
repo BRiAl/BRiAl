@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.22  2008/01/16 17:10:17  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -149,7 +152,7 @@ fetch_manager(const MgrType& mgr) {
 }
 
 
-/** @class CDDManagerBase<CuddLikeManType, StorageType>
+/** @class CDDManagerBase
  *
  * @brief this specialization of the template class CDDManager gives an
  * interface to Cudd-like ZDD manager (StorageType = CuddLikeManType) or a
@@ -278,7 +281,7 @@ private:
   mutable interfaced_store m_interfaced;
 };
 
-/** @class CDDManager<Cudd&>
+/** @class CDDManager
  *
  * @brief this specialization of the template class CDDManager gives an
  * interface to Cudd's ZDD manager reference.
@@ -313,7 +316,7 @@ public:
 
 };
 
-/** @class CDDManager<Cudd>
+/** @class CDDManager
  *
  * @brief this specialization of the template class CDDManager gives an
  * interface to Cudd's ZDD manager.
@@ -342,7 +345,7 @@ public:
 };
 
 
-/** @class CDDManager<CCuddInterface&>
+/** @class CDDManager
  *
  * @brief this specialization of the template class CDDManager gives an
  * interface to CCuddInterface's ZDD manager reference.
@@ -378,7 +381,7 @@ public:
 };
 
 
-/** @class CDDManager<CCuddInterface>
+/** @class CDDManager
  *
  * @brief this specialization of the template class CDDManager gives an
  * interface to CCuddInterface's ZDD manager.

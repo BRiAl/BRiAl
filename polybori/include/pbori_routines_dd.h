@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.9  2008/03/10 16:48:07  dreyer
  * Fix: exception for division by 0 and invalid monomial-zero
  *
@@ -60,8 +63,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/// @func dd_last_lexicographical_term
-/// @brief Get last term (wrt. lexicographical order).
+/// Get last term (wrt. lexicographical order).
 template<class DDType, class OutputType>
 OutputType
 dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {

@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.41  2008/03/11 10:04:11  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -477,7 +480,7 @@ LCM(const BooleMonomial& lhs, const BooleMonomial& rhs ){
   return lhs.LCM(rhs);
 }
 
-/// @function greater_variable
+/// @fn greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
 /// @brief Checks whether BooleVariable(lhs) > BooleVariable(rhs) 
 BooleMonomial::bool_type
 greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);

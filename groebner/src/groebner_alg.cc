@@ -2041,7 +2041,7 @@ std::vector<Polynomial> GroebnerStrategy::allGenerators(){
 }
 
 
-/// @note Core function which uses the manager given as firt argument
+// Core function which uses the manager given as firt argument
 template <class MgrType>
 MonomialSet recursively_insert(const MgrType& mgr,
                                MonomialSet::navigator p, 
@@ -2057,7 +2057,7 @@ MonomialSet recursively_insert(const MgrType& mgr,
     }
 }
 
-/// @note Wrapper for external use
+// Wrapper for external use
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset){
   return recursively_insert(mset.manager(), p, idx, mset.navigation());
 }

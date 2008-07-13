@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.40  2008/03/03 12:44:32  dreyer
  * Change: More inlining, and safer constructors
  *
@@ -657,8 +660,7 @@ bounded_max_element(Iterator start, Iterator finish, SizeType bound){
   return result;
 }
 
-/// @func generic_compare_3way
-/// @brief defines lexicographic comparison for variable indices
+/// defines lexicographic comparison for variable indices
 template <class LhsType, class RhsType, class BinaryPredicate>
 CTypes::comp_type
 generic_compare_3way(const LhsType& lhs, const RhsType& rhs, BinaryPredicate comp) {

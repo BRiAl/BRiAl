@@ -21,6 +21,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.24  2008/03/14 13:14:43  dreyer
  * Fix: Some doxygen syntax errors
  *
@@ -117,7 +120,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/// @func spoly
 /// Compute spoly of two polynomials
 inline BoolePolynomial 
 spoly(const BoolePolynomial& first, const BoolePolynomial& second){
@@ -202,7 +204,7 @@ upper_term_accumulate(UpperIterator ustart, UpperIterator ufinish,
   return BooleSet(*navi, resthen.navigation(), navi.elseBranch(), init.ring());
 }
 
-///@note: assuming lstart .. lfinish *not* marking the term one
+// assuming lstart .. lfinish *not* marking the term one
 template <class UpperIterator, class NaviType, class LowerIterator, 
           class ValueType>
 ValueType 
@@ -251,7 +253,6 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
 
 
 
-/// @func term_accumulate
 /// Routine for adding all terms given by iterators
 template <class InputIterator, class ValueType>
 ValueType 

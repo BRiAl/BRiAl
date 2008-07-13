@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/07/13 22:49:35  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.40  2008/01/17 15:18:41  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -201,8 +204,7 @@ template <class RhsType = void,
           class LhsType = typename pbori_traits<RhsType>::idx_type >
 class change_assign;
 
-/// @class change_assign
-/// @brief Accessing .changeAssign()
+// default variant
 template <class RhsType, class LhsType>
 class change_assign {
 public:
@@ -213,8 +215,7 @@ public:
 
 };
 
-/// @class changeAssign
-/// @brief Accessing .change(); variante using member templates
+// template specialization
 template<>
 class change_assign<void, pbori_traits<void>::idx_type> {
 public:
@@ -238,7 +239,7 @@ public:
   } 
 };
 
-/// @class subset1_assign
+/// @class subset0_assign
 /// @brief Accessing .subset1Assign()
 template <class RhsType, class LhsType>
 class subset0_assign {
@@ -272,7 +273,7 @@ public:
 template <unsigned int ITH, unsigned int NLEN = ITH>
 class project_ith;
 
-/// @class project_ith<0, NLEN>
+/// @class project_ith
 /// @brief Virtually does nothing with the given arguments
 template <unsigned int NLEN>
 class project_ith<0, NLEN> {
@@ -283,7 +284,7 @@ public:
   void operator() (const ValueType&, ...) const { } 
 };
 
-/// @class project_ith<1, NLEN>
+/// @class project_ith
 /// @brief Is the identity functional or projection to first argument
 template <unsigned int NLEN>
 class project_ith<1, NLEN> {
@@ -303,7 +304,7 @@ public:
 };
 
 
-/// @class project_ith<2, NLEN>
+/// @class project_ith
 /// @brief Project to the second of all given arguments
 template <unsigned int NLEN>
 class project_ith<2, NLEN> {
@@ -324,7 +325,7 @@ public:
 };
 
 
-/// @class project_ith<3, NLEN>
+/// @class project_ith
 /// @brief Project to the third of all given arguments
 template <unsigned int NLEN>
 class project_ith<3, NLEN> {

@@ -589,7 +589,7 @@ public:
     return p;
   }
   wlen_type eliminationLength() const{
-    ///@TODO optimize that using length optimization
+    ///@todo optimize that using length optimization
     wlen_type res=1;
     if (isZero()) return 0;
     res=res+(sugar-exp.deg()+1)*(length-1);

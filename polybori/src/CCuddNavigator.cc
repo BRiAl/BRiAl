@@ -5,9 +5,8 @@
  * @author Alexander Dreyer
  * @date 2006-03-26
  *
- * This file implements an iterator for navigating through then and else branches
- * of Cudd decision diagrams.
- *
+ * This file implements an iterator-like class over the first minimal term of a
+ * given ZDD node.
  * @note: Tested for Cudd's ZDDs only.
  *
  * @par Copyright:
@@ -19,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/07/13 22:49:36  dreyer
+ * Fix: Doxygen clean-up
+ *
  * Revision 1.8  2007/11/06 15:03:39  dreyer
  * CHANGE: More generic copyright
  *
@@ -52,7 +54,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class CCuddNavigator
+/* @class CCuddNavigator
  * @brief This class defines an iterator over the first minimal term of a given
  * ZDD node.
  *
