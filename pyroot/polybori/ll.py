@@ -23,7 +23,7 @@ def llredsb_Cudd_style(polys):
   assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
   for p in linear_lead:
-        reductors=combine(reductors,p,reduce=ll_red_nf)
+        reductors=combine(reductors,p,reduce=ll_red_nf_redsb)
   return reductors
 
 
@@ -66,7 +66,7 @@ def eliminate(polys, on_the_fly=False):
   if on_the_fly:
       red_fun=ll_red_nf_noredsb
   else:
-      red_fun=ll_red_nf
+      red_fun=ll_red_nf_redsb
   def llnf(p):
       return red_fun(p,reductors)
   return (linear_leads,llnf,[red_fun(p,reductors) for p in rest])

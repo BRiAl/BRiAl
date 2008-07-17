@@ -114,7 +114,7 @@ def noro_step(polys,strat):
         else:
             return nf3(strat,p,p.lead())
     llReductor=strat.llReductor
-    polys=[nf(ll_red_nf(p,llReductor),strat) for p  in polys]
+    polys=[nf(ll_red_nf_redsb(p,llReductor),strat) for p  in polys]
     polys=[strat.redTail(p) for p in polys if not p.isZero()]
     terms=BooleSet()
     for p in polys:

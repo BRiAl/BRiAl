@@ -137,6 +137,6 @@ def sbox_generator4(code):
         mymap=[Variable(i)+locals()["a"+str(4-i-1)] for i in xrange(4)]+[Variable(4+i)+locals()["b"+str(4-i-1)] for i in xrange(4)]
         mymap=ll_encode(mymap)
         #print Polynomial(mymap)
-        return (ll_red_nf(e,mymap) for e in equations)
+        return (ll_red_nf_redsb(e,mymap) for e in equations)
     return sbox
     #dirty

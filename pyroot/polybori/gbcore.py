@@ -261,7 +261,7 @@ def ll_constants_pre(I):
     encoded=ll_encode(ll)
     reduced=[]
     for p in I_new:
-        p=ll_red_nf(p,encoded)
+        p=ll_red_nf_redsb(p,encoded)
         if not p.isZero():
             reduced.append(p)
     #(eliminated,llnf, I)=eliminate(I,on_the_fly=False)
@@ -320,21 +320,18 @@ def fix_deg_bound_post(I,state):
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
-
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
-
 @with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True)
 @with_heuristic(linear_algebra_heuristic)
 @gb_with_pre_post_option("fix_deg_bound",if_not_option=["interpolation_gb"], post=fix_deg_bound_post,default=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb"],default=True)
-
 def groebner_basis(I, faugere=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,

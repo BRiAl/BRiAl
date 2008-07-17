@@ -110,8 +110,8 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
       assert not Polynomial(reductors).isZero()
       lead_index=li[0]
       if redsb:
-          p=ll_red_nf(p,reductors)
-          reductors=ll_red_nf(Polynomial(reductors),BooleSet(p.set()))
+          p=ll_red_nf_redsb(p,reductors)
+          reductors=ll_red_nf_redsb(Polynomial(reductors),BooleSet(p.set()))
 
       
       p_nav=p.navigation()
