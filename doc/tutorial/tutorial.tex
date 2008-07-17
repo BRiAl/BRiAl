@@ -715,7 +715,7 @@ ll_red_nf_noredsb(f,x+c)
     The second argument is converted implicitely to BooleSet.
     \item A second optimization is to call just
 \begin{verbatim}
-ll_red_nf(f,x+c)
+ll_red_nf_redsb(f,x+c)
 \end{verbatim}
     %
     As $\{x+c\}$ is a reduced Boolean \Groebner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced 
@@ -796,7 +796,7 @@ Furthermore, it contradicts the usual ZDD recursion and generates complex interm
 \subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
 The same problem can also be tackled by the linear-lead routines. In the case, when
 all variables are substituted by  constants, all intermediate results
-(generated during \verb|ll_red_nf|/\verb|ll_red_nf_noredsb|) are constant.
+(generated during \verb|ll_red_nf_redsb|/\verb|ll_red_nf_noredsb|) are constant.
 In general, we consider the overhead of generating the encoding $d$ as small, 
 since it consists of very few, tiny ZDD operations only (and some Python overhead in the quite general \verb|ll_encode|).
 \begin{verbatim}
@@ -809,7 +809,7 @@ Since the tails of the polynomials in the rewriting system   consist of
 constants only, this forms also a
 reduced \Groebner basis. Therefore, you may just call
 \begin{verbatim}
-ll_red_nf(f,d)   
+ll_red_nf_redsb(f,d)   
 \end{verbatim}
 %
 This is assumed to be the fastest way.
@@ -818,7 +818,7 @@ This is assumed to be the fastest way.
 
 \subsection{General Linear Lexicographical Lead Rewriting Systems}
 \label{linear-lexicographical-lead-rewriting-systems}
-We used \verb|ll_red_nf|/\verb|ll_red_nf_noredsb| functions on rewriting systems, where the tails of the polynomials was constant and the leading term linear.
+We used \verb|ll_red_nf_redsb|/\verb|ll_red_nf_noredsb| functions on rewriting systems, where the tails of the polynomials was constant and the leading term linear.
 They can be used in a more general setting (which allows to eliminate auxiliary variable).
 \begin{definition}
 Let $L$ be a list of Boolean polynomials.
@@ -828,7 +828,7 @@ then we call $L$ a \textbf{linear lexicographical lead rewriting system}.
 We know that such a system forms together with the complete set of field
 equations a \Groebner basis w.\,r.\,t.\ lexicographical ordering.
 
-In particular we can use \verb|ll_red_nf| to speedup substitution of a variable $x$ by a value $v$ also in the more general case, that the lexicographical leading term of $x+v$ is equal to $x$.
+In particular we can use \verb|ll_red_nf_redsb| to speedup substitution of a variable $x$ by a value $v$ also in the more general case, that the lexicographical leading term of $x+v$ is equal to $x$.
 This can be tested most efficiently by the expression
 \begin{verbatim}
 x.set().navigation().value()>v.set().navigation().value().
