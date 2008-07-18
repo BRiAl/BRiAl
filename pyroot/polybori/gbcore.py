@@ -401,7 +401,7 @@ def groebner_basis(I, faugere=False,
                 I=list(e.strat.allGenerators())
                 del e.strat
                 if prot:
-                    "print generator limit exceeded:", max_generators, "restarting algorithm"
+                    print "generator limit exceeded:", max_generators, "restarting algorithm"
     else:
         return call_algorithm(I)
 
