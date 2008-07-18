@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.95  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.94  2008/03/20 08:54:25  bricken
  * + fixed evil bug in comparison with constants
  *
@@ -370,10 +373,6 @@ template<class, class, class, class> class CDelayedTermIter;
 template<class OrderType, class NavigatorType, class MonomType>
 class CGenericIter;
 
-template<class OrderType, class NavigatorType, class MonomType>
-class MyCGenericIter;
-
-
 template<class NavigatorType, class ExpType>
 class CExpIter;
 
@@ -679,7 +678,7 @@ public:
   void prettyPrint() const;
 
   /// Pretty print to filename
-  void prettyPrint(const char* filename) const;
+  void prettyPrint(filename_type filename) const;
 
   /// Start of iteration over monomials
   const_iterator begin() const;

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.53  2008/07/18 22:37:51  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.52  2008/03/03 14:25:20  dreyer
  * Change: switched to new syntax
  *
@@ -199,7 +202,7 @@
 
 // include polybori iterator
 #include "CGenericIter.h"
-
+#include "LexOrder.h"
 
 BEGIN_NAMESPACE_PBORI
 

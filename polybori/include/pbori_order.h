@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.12  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.11  2007/12/11 15:37:35  dreyer
  * ADD: BooleOrdering started
  *
@@ -58,8 +61,6 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-
-#include "OrderedManager.h"
 
 // get all available orderings
 #include "LexOrder.h"

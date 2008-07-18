@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.13  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.12  2008/07/13 22:49:36  dreyer
  * Fix: Doxygen clean-up
  *
@@ -58,16 +61,12 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-#include "pbori_order.h"
 #include "pbori_algo.h"
 #include "pbori_traits.h"
 
 #include "CRestrictedIter.h"
 
 BEGIN_NAMESPACE_PBORI
-
-
-
 
 template <class FirstIterator, class SecondIterator, class BinaryPredicate>
 CTypes::comp_type
@@ -157,120 +156,6 @@ public:
   dummy_data_type() {}
 };
 
-// LexOrder
-template <class Iterator>
-class generic_iteration<LexOrder, Iterator> {
-public:
-
-  /// @name Get template parameters
-  //@{
-  typedef LexOrder order_type;
-  typedef Iterator iterator;
-  typedef typename order_type::poly_type poly_type;
-  typedef dummy_data_type<poly_type> data_type;
-  //@}
-
-  /// Define initial iterator generation for this ordering
-  iterator leadIterator(const poly_type& poly) const {
-    return iterator(poly.navigation());
-  }
-
-  /// Define iterator incrementation for this ordering
-  iterator incrementIterator(iterator& iter, const data_type&) const {
-    return ++iter;
-  }
-};
-
-// DegLexOrder
-template <class Iterator>
-class generic_iteration<DegLexOrder, Iterator> {
-public:
-  /// @name Get template parameters
-  //@{
-  typedef DegLexOrder order_type;
-  typedef Iterator iterator;
-  typedef typename order_type::poly_type poly_type;
-  typedef poly_type data_type;
-  typedef typename order_type::size_type size_type;
-  //@}
-
-  /// Define initial iterator generation for this ordering
-  iterator leadIterator(const poly_type& poly) const {
-    return std::max_element(iterator(poly.navigation()), 
-                            iterator(poly.endOfNavigation()) );
-  }
-
-  /// Define iterator incrementation for this ordering
-  iterator& incrementIterator(iterator& iter, const data_type& poly) const {
-    typedef CRestrictedIter<iterator> bounded_iterator;
-    
-    iterator m_start(poly.navigation());
-    iterator m_finish(poly.endOfNavigation());
-    
-    if (iter != m_finish) {
-      size_type deg = *iter;
-      ++iter;
-      iter = std::find(iter, m_finish, deg);
-      
-      if(iter == m_finish) {
-        iter = std::max_element( bounded_iterator(m_start, deg),
-                                 bounded_iterator(m_finish, deg) );
-        
-      }
-    }
-    return iter;
-  }
-};
-
-
-// DegRevLexAscOrder
-template <class Iterator>
-class generic_iteration<DegRevLexAscOrder, Iterator> {
-public:
-  /// @name Get template parameters
-  //@{
-  typedef DegRevLexAscOrder order_type;
-  typedef Iterator iterator;
-  typedef typename order_type::poly_type poly_type;
-  typedef poly_type data_type;
-  typedef typename order_type::size_type size_type;
-  //@}
-
-  /// Define initial iterator generation for this ordering
-  iterator leadIterator(const poly_type& poly) const {
-    return std::max_element(iterator(poly.navigation()), 
-                            iterator(poly.endOfNavigation()),
-                            std::less_equal<size_type>() );
-  }
-
-  /// Define iterator incrementation for this ordering
-  iterator& incrementIterator(iterator& iter, const data_type& poly) const {
-
-    typedef CRestrictedIter<iterator> bounded_iterator;
-    
-    iterator m_start(poly.navigation());
-    iterator m_finish(poly.endOfNavigation());
-    
-    if (iter != m_finish) {
-      
-      size_type deg = *iter;
-      --iter;
-      iter = std::find(reversed_iteration_adaptor<iterator>(iter), 
-                       reversed_iteration_adaptor<iterator>(m_finish), deg).get();
-      
-      if(iter == m_finish) {
-        iter = std::max_element( bounded_iterator(m_start, deg),
-                                 bounded_iterator(m_finish, deg), 
-                                 std::less_equal<size_type>() );
-        
-      }
-    }
-    return iter;
-  }
-};
-
-
-//////////////////////
 //////////////////////
 template <class StackType, class Iterator>
 void dummy_append(StackType& stack, Iterator start, Iterator finish) {

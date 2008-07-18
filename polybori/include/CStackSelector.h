@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.3  2007/11/06 15:03:35  dreyer
  * CHANGE: More generic copyright
  *
@@ -38,8 +41,6 @@
 
 // get stack types, which are used to store and handle paths of current terms
 #include "CTermStack.h"
-//#include "CDegTermStack.h"
-//#include "CBlockTermStack.h"
 
 // include standard iterator functionality
 #include <iterator>
@@ -49,7 +50,9 @@
 #define CStackSelector_h_
 
 BEGIN_NAMESPACE_PBORI
-
+/** @class CStackSelector
+ *
+ **/
 template <class OrderType, class NaviType, class BaseType = internal_tag> 
 class CStackSelector {
 

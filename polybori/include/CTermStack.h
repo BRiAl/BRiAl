@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.26  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.25  2008/01/17 15:18:40  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -110,15 +113,14 @@
 #include "pbori_traits.h"
 
 #include "pbori_routines.h"
-
+ 
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>
-
+   
 #include "BooleEnv.h"
 #include "CDegreeCache.h"
 #include "CBidirectTermIter.h"
-
-
+  
 
 #ifndef CTermStack_h_
 #define CTermStack_h_
@@ -197,7 +199,7 @@ private:
 
 
 
-/** @class CTermStack
+/** @class CTermStackBase
  * @brief This class defines an iterator for the monomials in a Boolean
  * polynomial.
  *
@@ -423,7 +425,11 @@ private:
 
 
 
-
+/** @class CTermStack
+ * @brief This class defines an iterator for the monomials in a Boolean
+ * polynomial.
+ *
+ **/
 template <class NavigatorType, class Category, class BaseType = internal_tag>
 class CTermStack:
   public CTermStackBase<NavigatorType, BaseType> {

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.119  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.118  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -441,7 +444,7 @@
 #include "CGenericIter.h"
 #include "CExpIter.h"
 
-#include "LexOrder.h"
+#include "pbori_order.h"
 
 BEGIN_NAMESPACE_PBORI
 

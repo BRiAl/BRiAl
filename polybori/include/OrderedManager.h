@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.31  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.30  2007/12/18 10:20:17  dreyer
  * CHANGE CNamedManager removed, names are in core now
  *
@@ -127,15 +130,13 @@
 
 #include "CGenericIter.h"
 
-  //#include "CIndirectIter.h"
-
-
-
 
 #include <vector>
 #ifndef OrderedManager_h_
 #define OrderedManager_h_
+
 #include "COrderedIter.h"
+
 BEGIN_NAMESPACE_PBORI
 
 template <class IdxType, class OrderType>
@@ -159,10 +160,7 @@ lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
   return (second < *upper);
 }
 
-/** @class CNamedManager
- * @brief This class adds an interface for variable names to CDDManager<>.
- *
- **/
+
 
 // template <class ManType>
 // class CNamedManager:

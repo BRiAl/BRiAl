@@ -1,5 +1,5 @@
 // -*- c++ -*-
-// //*****************************************************************************
+//*****************************************************************************
 /** @file BlockDegLexOrder.cc
  *
  * @author Alexander Dreyer
@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2008/07/18 22:37:50  dreyer
+ * Fix: doxygen clean-up (removed inclusion loop)
+ *
  * Revision 1.7  2008/07/13 22:49:36  dreyer
  * Fix: Doxygen clean-up
  *
