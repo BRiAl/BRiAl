@@ -5,7 +5,14 @@ import copy
 import sys
 from exceptions import NotImplementedError
 
-
+class GeneratorLimitExceeded(Exception):
+    """docstring for GeneratorLimitExceeded"""
+    def __init__(self, strat):
+        super(GeneratorLimitExceeded, self).__init__()
+        self.strat = strat
+        
+        
+        
 def myspoly(f,g):
     """only for the profiler to be noticed"""
     return spoly(f,g)
@@ -189,8 +196,8 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     
     print "MATRIX_SIZE:", rows,"x",cols   
-    
-def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True):
+
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True, max_generators=None):
     #if use_noro:
     #    raise NotImplementedError
     if use_noro and use_faugere:
@@ -234,6 +241,8 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         print "added delayed"
     i=0
     while strat.npairs()>0:
+        if max_generators and len(strat)>max_generators:
+            raise GeneratorLimitExceeded(strat)
         i=i+1
         if prot:
             print "Current Degree:", strat.topSugar()

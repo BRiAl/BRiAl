@@ -342,7 +342,7 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False):
+       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
@@ -381,19 +381,28 @@ def groebner_basis(I, faugere=False,
     if preprocess_only:
       for p in I:
         print p
-      del p
-      del I
       import sys
-      sys.exit(0)    
-    I=implementation(I, optRedTail=red_tail,\
-        max_growth=max_growth, step_factor=step_factor,
-        implications=implications,prot=prot,
-        full_prot=full_prot,deg_bound=deg_bound,
-        selection_size=selection_size, optLazy=lazy, 
-        optExchange=exchange, optAllowRecursion=recursion,
-        use_faugere=faugere,
-        use_noro=noro,ll=ll,
-        optLinearAlgebraInLastBlock=linear_algebra_in_last_block)
-    return I
+      sys.exit(0)
+    def call_algorithm(max_generators=None):
+        return implementation(I, optRedTail=red_tail,\
+            max_growth=max_growth, step_factor=step_factor,
+            implications=implications,prot=prot,
+            full_prot=full_prot,deg_bound=deg_bound,
+            selection_size=selection_size, optLazy=lazy, 
+            optExchange=exchange, optAllowRecursion=recursion,
+            use_faugere=faugere,
+            use_noro=noro,ll=ll,
+            optLinearAlgebraInLastBlock=linear_algebra_in_last_block,max_generators=max_generators)
+    if clean_and_restart_algorithm:
+        for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
+            try:
+                return call_algorithm(max_generators=max_generators)
+            except GeneratorLimitExceeded, e:
+                I=list(e.strat.allGenerators())
+                del e.strat
+                if prot:
+                    "print generator limit exceeded:", max_generators, "restarting algorithm"
+    else:
+        return call_algorithm(I)
 
 groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))+"\nTurn off heuristic by setting heuristic=False"
