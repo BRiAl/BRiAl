@@ -8,7 +8,7 @@ from exceptions import NotImplementedError
 class GeneratorLimitExceeded(Exception):
     """docstring for GeneratorLimitExceeded"""
     def __init__(self, strat):
-        super(GeneratorLimitExceeded, self).__init__()
+        #super(GeneratorLimitExceeded, self).__init__()
         self.strat = strat
         
         
