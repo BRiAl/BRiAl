@@ -19,7 +19,7 @@ For building the PolyBoRi framework, the following tools and libraries are
 needed:
 * gcc 3.3.0 or newer
 * python 2.4 (deprecated) or python 2.5 (recommended)
-* scons (v0.96 or later)
+* scons (v0.96 or later, recommended v0.97 or later)
 * the boost library, version 1.33.1 (for python 2.4; deprecated) or 
   version 1.34.1 (for python 2.5; recommended)
 
