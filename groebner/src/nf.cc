@@ -1031,7 +1031,13 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   
 }
 typedef LessWeightedLengthInStratModified StratComparerForSelect;
-static int select_short(const GroebnerStrategy& strat, const Polynomial& p){
+
+// Doxygen problems with the following syntax, so skip during docs generation
+
+#ifndef DOXYGEN_RUNNING
+static 
+#endif 
+int select_short(const GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.intersect(p.lmDivisors());
   //Polynomial workaround =Polynomial(ms);
   
@@ -1048,7 +1054,10 @@ static int select_short(const GroebnerStrategy& strat, const Polynomial& p){
   }
   
 }
-static int select_short(const GroebnerStrategy& strat, const Monomial& m){
+#ifndef DOXYGEN_RUNNING
+static 
+#endif 
+int select_short(const GroebnerStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.intersect(m.divisors());
   if (ms.emptiness())
     return -1;
@@ -1061,8 +1070,6 @@ static int select_short(const GroebnerStrategy& strat, const Monomial& m){
 
   }
 }
-
-
 
 int select1(const GroebnerStrategy& strat, const Polynomial& p){
   MonomialSet ms=strat.leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.lmDivisors());
