@@ -342,7 +342,7 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=True):
+       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
