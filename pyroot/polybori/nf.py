@@ -75,7 +75,7 @@ def build_and_print_matrices(v,strat):
     m2i=dict([(v,k) for (k,v) in enumerate(list(Polynomial(BooleSet(treated)).terms()))])
     #print polys_in_mat
     polys_in_mat.sort(key=Polynomial.lead, reverse=True)
-    polys_in_mat=[[m2i[t] for t in p] for p in polys_in_mat]
+    polys_in_mat=[[m2i[t] for t in p.terms()] for p in polys_in_mat]
     
 
     global mat_counter
