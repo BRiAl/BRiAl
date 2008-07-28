@@ -533,7 +533,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         strat.addGeneratorDelayed(g)
     branch(strat,[], proof_path, 0)
 
-def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True):
+def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True,max_generators=None):
     #print implications
     if use_noro:
         raise NotImplementedError, "noro not implemented for symmgb"    
