@@ -68,7 +68,7 @@ def build_and_print_matrices(v,strat):
                 i=strat.select(m)
                 if i>=0:
                     p2=strat[i]
-                    p2*=(m/p2.lead())
+                    p2=p2*(m/p2.lead())
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
@@ -164,7 +164,7 @@ def build_and_print_matrices_deg_colored(v,strat):
                 i=strat.select(m)
                 if i>=0:
                     p2=strat[i]
-                    p2*=(m/p2.lead())
+                    p2=p2*(m/p2.lead())
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
