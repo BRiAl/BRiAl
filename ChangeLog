@@ -1,4 +1,5 @@
 Release Name: 0.5.0
+* removed extra library from distribution
 * Python interface: renamed ll_red_nf to ll_red_nf_redsb
 * Python interface: removed +=, *= operators
 * Python interface: Polynomial.vars ->Polynomial.varsAsMonomial
