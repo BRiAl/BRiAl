@@ -177,7 +177,7 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False,pass_prot=False):
     def make_wrapper(f):
         def wrapper(I,**kwds):
             prot=False
@@ -194,21 +194,25 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
                     option_set=default
             kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
             state=None
+            extra_kwd_args=dict()
+            if pass_option_set:
+                   extra_kwd_args["option_set"]=option_set
+            if pass_prot:
+                   extra_kwd_args["prot"]=prot
             if option_set:
                if pre:
                    if prot:
                        print "preprocessing for option:", option
-                   if not pass_option_set:
-                       (I,state)=pre(I)
-                   else:
-                       (I,state)=pre(I,option_set)
+                   
+                   (I,state)=pre(I,**extra_kwd_args)
+ 
                
             res=f(I,**kwds)
             if option_set:
                 if post:
                     if prot:
                         print "postprocessing for option:", option
-                    res=post(res,state)
+                    res=post(res,state,**extra_kwd_args)
                 
 
             return res
@@ -240,8 +244,8 @@ def invert_all_pre(I):
 def invert_all_post(I,state):
     return invert_all(I)
     
-def llfirst_pre(I):
-    (eliminated,llnf, I)=eliminate(I,on_the_fly=False)
+def llfirst_pre(I,prot):
+    (eliminated,llnf, I)=eliminate(I,on_the_fly=False,prot=prot)
     return (I,eliminated)
 
 def ll_constants_pre(I):
@@ -268,12 +272,14 @@ def ll_constants_pre(I):
     
     return (reduced,ll)
 
-def other_ordering_pre(I,options):
+def other_ordering_pre(I,option_set):
+    options=option_set
     ocode=get_order_code()
     assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
     #in parcticular it does not work for block orderings, because of the block sizes
     old_ring=global_ring()
     change_ordering(options["switch_to"])
+    
     kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
     I_orig=I
     I=groebner_basis(I,**kwds)
@@ -284,10 +290,10 @@ def other_ordering_pre(I,options):
     #change_ordering(ocode)
     old_ring.set()
     return (I,None)
-def llfirstonthefly_pre(I):
+def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)
-def llfirst_post(I,eliminated):
+def llfirst_post(I,eliminated,prot):
     for p in I:
         if p.isOne():
             return [p]
@@ -295,7 +301,7 @@ def llfirst_post(I,eliminated):
         if len(eliminated)>0:
             I=list(chain(I,eliminated))
             #redsb just for safety, as don't know how option is set
-            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,redsb=True)
+            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,redsb=True,prot=prot)
     return I
 
 
@@ -324,8 +330,8 @@ def fix_deg_bound_post(I,state):
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
-@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
-@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
+@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
+@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
 @with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True)
 @with_heuristic(linear_algebra_heuristic)

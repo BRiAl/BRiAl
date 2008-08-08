@@ -28,7 +28,11 @@ def llredsb_Cudd_style(polys):
 
 
 
-def ll_encode(polys):
+def ll_encode(polys, reduce=False, prot=False):
+  if reduce:
+      reduce=ll_red_nf_redsb
+  else:
+      reduce=None
   polys=[Polynomial(p) for p in polys]
   reductors=Polynomial(1).set()
   
@@ -37,12 +41,20 @@ def ll_encode(polys):
   assert len([p for p in polys if p.constant()])==0
   assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
-
+  last=None
+  counter=0
   for p in linear_lead:
-      reductors=combine(reductors,p,reduce=None)
+
+      if prot:
+          counter=counter+1
+          progress=(counter*100)/len(linear_lead)
+          if last!=progress:
+              print str(progress)+"%"
+          last=progress
+      reductors=combine(reductors,p,reduce=reduce)
   return reductors
 
-def eliminate(polys, on_the_fly=False):
+def eliminate(polys, on_the_fly=False,prot=False):
   rest=[]
   linear_leads=[]
   linear_leading_monomials=set()
@@ -59,10 +71,8 @@ def eliminate(polys, on_the_fly=False):
         rest.append(p)
     else:
       rest.append(p)
-  if on_the_fly:
-      reductors=ll_encode(linear_leads)
-  else:
-      reductors=llredsb_Cudd_style(linear_leads)
+  reductors=ll_encode(linear_leads,reduce=(not on_the_fly),prot=prot)
+
   if on_the_fly:
       red_fun=ll_red_nf_noredsb
   else:
