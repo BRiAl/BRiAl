@@ -118,6 +118,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self!=bool())
   .def(self+self)
   .def(self-self)
+  .def("translate_indices", translate_indices)
   .def("isZero", &BoolePolynomial::isZero, "Test if Polynomial is zero")
   .def("isOne", &BoolePolynomial::isOne, "Test if Polynomial one")
 
