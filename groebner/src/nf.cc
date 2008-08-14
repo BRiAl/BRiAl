@@ -1893,9 +1893,12 @@ Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
     log("reduction by linear algebra\n");
+    static int round=0;
+    round++;
     vector<Polynomial> polys;
     int i;
     MonomialSet terms;
+    
     for(i=0;i<orig_system.size();i++){
         Polynomial p=orig_system[i];
         if (!(p.isZero())){
@@ -1903,6 +1906,11 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
             if (!(p.isZero())){
                 p=nf(p);
                 if (!(p.isZero())){
+                    if (UNLIKELY(p.isOne())){
+                        polys.clear();
+                        polys.push_back(p);
+                        return polys;
+                    }
                     p=red_tail(*this,p);
                     terms=terms.unite(p.diagram());
                     polys.push_back(p);
@@ -1947,11 +1955,20 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     }
     polys.clear();
     #ifndef HAVE_M4RI
+
     int rank=gauss(mat);
     #else
+    {        
+        #ifdef HAVE_GD
+            char matname[255];
+            sprintf(matname,"nmatlife%d.png",round);
+
+            drawmatrix(mat,matname);
+        #endif
+    }
     int rank=mzd_reduce_m4ri(mat,TRUE,0,NULL,NULL);
     #endif
-    for(i=0;i<rank;i++){
+    for(i=rank-1;i>=0;i--){
         int j;
         vector<Exponent> p_t;
         for(j=0;j<cols;j++){
@@ -1963,7 +1980,13 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
                 p_t.push_back(terms_as_exp[j]);
             }
         }
-        polys.push_back(add_up_exponents(p_t));//,0,p_t.size()));
+        Polynomial from_mat=add_up_exponents(p_t);
+        if (UNLIKELY(from_mat.isOne())){
+            polys.clear();
+            polys.push_back(from_mat);
+            return polys;
+        }
+        polys.push_back(from_mat);//,0,p_t.size()));
     }
     #ifdef HAVE_M4RI
     mzd_free(mat);
@@ -2241,7 +2264,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         
         #ifdef HAVE_GD
         char matname[255];
-        sprintf(matname,"mat%d_step1.png",round);
+        sprintf(matname,"matlife%d_step1.png",round);
         
         drawmatrix(mat_step1,matname);
         #endif
@@ -2403,9 +2426,9 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     {
     
     char matname[255];
-    sprintf(matname,"mat%d_mult_A.png",round);
+    sprintf(matname,"matlife%d_mult_A.png",round);
     drawmatrix(mat_step2_factor,matname);
-    sprintf(matname,"mat%d_mult_B.png",round);
+    sprintf(matname,"matlife%d_mult_B.png",round);
     drawmatrix(mat_step1,matname);
     }
     #endif
@@ -2446,7 +2469,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     #ifdef HAVE_GD
     {
         char matname[255];
-        sprintf(matname,"mat%d_step2.png",round);
+        sprintf(matname,"matlife%d_step2.png",round);
         drawmatrix(mat_step2,matname);
     }
     #endif
