@@ -6,7 +6,7 @@
  *  Copyright 2006 The PolyBoRi Team. See LICENSE file.
  *
  */
-#ifdef HAVE_GD
+#ifdef DRAW_MATRICES
 #include <stdio.h>
 #include <gd.h>
 #endif
@@ -33,7 +33,7 @@ using std::endl;
 BEGIN_NAMESPACE_PBORIGB
 
 
-#ifdef HAVE_GD
+#ifdef DRAW_MATRICES
 void drawmatrix(packedmatrix* mat, const char* filename){
     int i,r,c,j;
     c=mat->ncols;
@@ -1959,7 +1959,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     int rank=gauss(mat);
     #else
     {        
-        #ifdef HAVE_GD
+        #ifdef DRAW_MATRICES
             char matname[255];
             sprintf(matname,"nmatlife%d.png",round);
 
@@ -2262,7 +2262,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         polys_triangular.clear();
         
-        #ifdef HAVE_GD
+        #ifdef DRAW_MATRICES
         char matname[255];
         sprintf(matname,"matlife%d_step1.png",round);
         
@@ -2422,7 +2422,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step1->ncols==remaining_cols);
     // std::cout<<"step1 matrix"<<std::endl;
     // printPackedMatrixMB(mat_step1);
-    #ifdef HAVE_GD
+    #ifdef DRAW_MATRICES
     {
     
     char matname[255];
@@ -2466,7 +2466,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
      if (strat.enabledLog){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    #ifdef HAVE_GD
+    #ifdef DRAW_MATRICES
     {
         char matname[255];
         sprintf(matname,"matlife%d_step2.png",round);
