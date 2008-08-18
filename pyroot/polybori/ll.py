@@ -79,5 +79,14 @@ def eliminate(polys, on_the_fly=False,prot=False):
       red_fun=ll_red_nf_redsb
   def llnf(p):
       return red_fun(p,reductors)
-  return (linear_leads,llnf,[red_fun(p,reductors) for p in rest])
+  reduced_list=[]
+  for p in rest:
+      p=red_fun(p,reductors)
+      if p.isOne():
+          reduced_list=[p]
+          break
+      else:
+          reduced_list.append(p)
+
+  return (linear_leads,llnf,reduced_list)
   
