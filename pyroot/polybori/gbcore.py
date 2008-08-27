@@ -124,7 +124,7 @@ def linear_algebra_heuristic(d):
                 return True
         return False
     if not (("faugere" in d and (not d["faugere"])) or ("noro" in d and d["noro"])):
-        if want_la():
+        if ("faugere" in d and d["faugere"]) or want_la():
 
             d["faugere"]=True
             if not "red_tail" in d:
