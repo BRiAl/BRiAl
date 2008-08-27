@@ -123,7 +123,7 @@ def linear_algebra_heuristic(d):
             if n_used_vars<bound:
                 return True
         return False
-    if not (("faugere" in d) or ("noro" in d)):
+    if not (("faugere" in d and (not d["faugere"])) or ("noro" in d and d["noro"])):
         if want_la():
 
             d["faugere"]=True
