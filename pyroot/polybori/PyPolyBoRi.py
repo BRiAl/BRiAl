@@ -44,7 +44,7 @@ def booleset_new_init(self,arg=None, second=None):
         except:
             s=set()
             v=BoolePolynomialVector()
-            for i in arg:
+            for i in set(arg):
                 s.add(Monomial(i))
             for i in s:
                 v.append(i)
