@@ -275,6 +275,7 @@ env.AppendUnique(PYTHONSITE = pyconf.sitedir)
 Help(opts.GenerateHelpText(env))
 
 have_l2h = have_t4h = False
+external_m4ri = False
 
 if not env.GetOption('clean'):
     conf = Configure(env)
@@ -314,6 +315,11 @@ if not env.GetOption('clean'):
             if not have_t4h:
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
+    external_m4ri = conf.CheckLib('m4ri')
+    if external_m4ri:
+       env['LIBS'] += ['m4ri']
+    else:
+       env['CPPPATH'] += ['M4RI']
 
     env = conf.Finish()
 # end of not cleaning
@@ -462,7 +468,9 @@ env.Clean([libpb] + pb_shared, cache_opts)
 ######################################################################
 
 gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc polynomial_properties.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
-gb_src=[GBPath('src', source) for source in gb_src]+m4ri
+gb_src = [GBPath('src', source) for source in gb_src]
+if not(external_m4ri):
+   gb_src += m4ri
 gb=env.StaticLibrary(GBPath('groebner'), gb_src+[libpb])
 
 #print "gb:", gb, dir(gb)
@@ -752,7 +760,8 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('src/*.h')))
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
-    env.Install(DevelInstPath('include/polybori/M4RI'), glob('M4RI/*.h'))
+    if not(external_m4ri):
+        env.Install(DevelInstPath('include/polybori/M4RI'), glob('M4RI/*.h'))
     env.Alias('devel-install', DevelInstPath())
 
 

@@ -21,8 +21,8 @@
 #ifdef HAVE_M4RI
 #define PACKED 1
 extern "C"{
-#include "../M4RI/packedmatrix.h"
-#include "../M4RI/grayflex.h"
+#include "packedmatrix.h"
+#include "grayflex.h"
 }
 
 #endif
@@ -76,7 +76,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 
   #ifdef HAVE_M4RI
   m4ri_build_all_codes();
-  
+  //m4ri_init();
   //setupPackingMasks();
   #endif
    //workaround for having a current_ring

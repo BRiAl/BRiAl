@@ -23,7 +23,7 @@ NTL_CLIENT
 #endif
 #ifdef HAVE_M4RI
 extern "C"{
-#include "../../M4RI/m4ri.h"
+#include "m4ri.h"
 }
 const int M4RI_MAXKAY = 16;
 #endif
@@ -2438,7 +2438,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     
     
     
-    packedmatrix* eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);//,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
+    packedmatrix* eliminated;
+    if ((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
+        eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);
+    else
+        eliminated=mzd_init(mat_step2_factor->nrows,mat_step1->ncols);
+     //,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
     mzd_free(mat_step2_factor);
     if (strat.enabledLog){
         std::cout<<"end mult"<<std::endl;
