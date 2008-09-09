@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.120  2008/09/09 08:48:19  bricken
+ * + lmDeg of 0 -> -1
+ *
  * Revision 1.119  2008/07/18 22:37:50  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -738,7 +741,7 @@ BoolePolynomial::size_type
 BoolePolynomial::lmDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
-
+  if (UNLIKELY(isZero())) return -1;
 #ifndef PBORI_USE_CCUDDFIRSTITER
   // Equals number of nodes for monomials
   return lead().nNodes();
@@ -755,7 +758,7 @@ BoolePolynomial::size_type
 BoolePolynomial::lexLmDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lexLmDeg() const" );
-
+  if (UNLIKELY(isZero())) return -1;
   return std::distance(firstBegin(), firstEnd());
 }
 
