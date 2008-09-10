@@ -39,6 +39,9 @@ static boost::python::tuple mon2tuple(const BooleMonomial& m ){
 static BooleMonomial used_var(const BooleMonomial& m){
     return m;
 }
+static int one(const BooleMonomial& m){
+    return 1;
+}
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
@@ -86,6 +89,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self>self)
   .def(self<=self)
   .def(self>=self)
+  .def("gcd",&BooleMonomial::GCD)
   .def(self+int())
   .def(int()+self)
   .def(int()-self)
@@ -96,7 +100,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("isOne", &BooleMonomial::isOne)
   
     .def("deg", &BooleMonomial::deg, "Degree of the monomial")
-  .def("__len__", &BooleMonomial::deg, "Equivalent to deg")
+  .def("__len__", one, "Constant one function")
   .def("divisors", &BooleMonomial::divisors, 
        "Return Boolean set consisting of all divisors of the monomial")
   .def("multiples", &BooleMonomial::multiples, 
