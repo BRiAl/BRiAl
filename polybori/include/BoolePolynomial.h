@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.96  2008/09/17 08:17:17  bricken
+ * != bug
+ *
  * Revision 1.95  2008/07/18 22:37:50  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -592,7 +595,8 @@ public:
     return ( rhs? isOne(): isZero() );
   }
   bool_type operator!=(constant_type rhs) const {
-    return ( rhs? (!(isZero())): (!(isOne())) );
+    //return ( rhs? (!(isOne())): (!(isZero())) );
+      return (!(*this==rhs));
   }
   //@}
 
