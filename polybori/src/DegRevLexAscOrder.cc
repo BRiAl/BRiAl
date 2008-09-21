@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.18  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.17  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -148,7 +151,7 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
 
   exp_type result;
-  size_type deg(poly.deg());
+  deg_type deg(poly.deg());
   result.reserve(deg);
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
@@ -161,16 +164,16 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
 // Extraction of leading exponent
 DegRevLexAscOrder::exp_type 
-DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
+DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, size_type) const)" );
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)" );
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
   poly_type::navigator navi(poly.navigation());
-  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
+  deg_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
   exp_type result;
   result.reserve(deg);
@@ -181,16 +184,16 @@ DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
 // Extraction of leading term
 DegRevLexAscOrder::monom_type 
-DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
+DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
   poly_type::navigator navi(poly.navigation());
-  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
+  deg_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
   return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, set_type(), deg,
                                          descending_property()) );

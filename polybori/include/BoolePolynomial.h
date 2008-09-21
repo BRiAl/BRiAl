@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.97  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.96  2008/09/17 08:17:17  bricken
  * != bug
  *
@@ -410,6 +413,7 @@ public:
   typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
+  typedef CTypes::deg_type deg_type;
   typedef CTypes::idx_type idx_type;
   typedef CTypes::bool_type bool_type;
   typedef CTypes::ostream_type ostream_type;
@@ -497,7 +501,7 @@ public:
   typedef CExpIter<navigator, exp_type> exp_iterator;
 
   /// Iterator type for iterating all monomials (dereferencing to degree)
-  typedef CGenericIter<LexOrder, navigator, size_type> deg_iterator;
+  typedef CGenericIter<LexOrder, navigator, deg_type> deg_iterator;
 
   /// Type for lists of terms
   typedef std::vector<monom_type> termlist_type;
@@ -643,22 +647,22 @@ public:
   hash_type lmStableHash() const;
   
   /// Maximal degree of the polynomial
-  size_type deg() const;
+  deg_type deg() const;
 
   /// Degree of the leading term
-  size_type lmDeg() const;
+  deg_type lmDeg() const;
 
   /// Degree of the leading term w.r.t. lexicographical ordering
-  size_type lexLmDeg() const;
+  deg_type lexLmDeg() const;
 
   /// Total maximal degree of the polynomial
-  size_type totalDeg() const;
+  deg_type totalDeg() const;
 
   /// Total degree of the leading term
-  size_type lmTotalDeg() const;
+  deg_type lmTotalDeg() const;
 
   /// Get part of given degree
-  self gradedPart(size_type deg) const;
+  self gradedPart(deg_type deg) const;
 
   /// Number of nodes in the decision diagram
   size_type nNodes() const;
@@ -762,7 +766,7 @@ public:
   operator set_type() const { return set(); };
 
   size_type eliminationLength() const;
-  size_type eliminationLengthWithDegBound(size_type garantied_deg_bound) const;
+  size_type eliminationLengthWithDegBound(deg_type garantied_deg_bound) const;
   /// Get list of all terms
   void fetchTerms(termlist_type&) const;
 

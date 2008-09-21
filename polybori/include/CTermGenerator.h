@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.15  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.14  2008/03/11 14:21:25  dreyer
  * Fix: old compiter issue (but better code anyway)
  *
@@ -156,6 +159,17 @@ public:
 };
 
 
+template <class TermType>
+class CTermGeneratorBase<TermType, type_tag<CTypes::deg_type> > {
+public:
+  typedef TermType value_type;
+  typedef value_type result_type;
+
+  template <class SequenceType>
+  result_type operator()(const SequenceType& seq) const{
+    return seq.deg();
+  }
+};
 
 template <class TermType>
 class CTermGenerator:

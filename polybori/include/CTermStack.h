@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.27  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.26  2008/07/18 22:37:50  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -223,6 +226,7 @@ public:
 
   /// Type for lengths
   typedef typename navigator::size_type size_type;
+  typedef typename navigator::deg_type deg_type;
   typedef typename navigator::bool_type bool_type;
 
 
@@ -354,8 +358,8 @@ public:
     assert(empty());
   } 
 
-  size_type deg() const {
-    return (markedOne()? 0: size());
+  deg_type deg() const {
+    return (markedOne()? 0: (deg_type)size());
   }
 
   void invalidate() {
@@ -714,6 +718,7 @@ public:
                         std::forward_iterator_tag, BaseType> base;
 
   typedef typename base::size_type size_type;
+  typedef typename base::deg_type deg_type;
   typedef std::greater<size_type> size_comparer;
   typedef typename base::manager_type manager_type;
 
@@ -726,7 +731,7 @@ public:
 
   void incrementBranch() { base::incrementThen(); }
 
-  bool maxOnThen(size_type deg) const {
+  bool maxOnThen(deg_type deg) const {
     return (base::getDeg(base::top().thenBranch()) + 1 == deg);
   }
 
@@ -742,6 +747,7 @@ public:
   typedef CDegStackCore<NavigatorType, BlockProperty, 
                          std::bidirectional_iterator_tag, BaseType> base;
   typedef typename base::size_type size_type;
+  typedef typename base::deg_type deg_type;
   typedef std::greater_equal<size_type> size_comparer;
   typedef typename base::manager_type manager_type;
 
@@ -754,7 +760,7 @@ public:
 
   void incrementBranch() { base::incrementValidElse(); }
 
-  bool maxOnThen(size_type deg) const {
+  bool maxOnThen(deg_type deg) const {
     return !(base::getDeg(base::top().elseBranch())  ==  deg);
   }
 };
@@ -771,6 +777,7 @@ public:
 
   typedef typename base::navigator navigator;
   typedef typename navigator::size_type size_type;
+  typedef typename navigator::deg_type deg_type;
   typedef typename base::manager_type manager_type;
 
   CDegTermStack(): base(), m_start() {}
@@ -784,7 +791,7 @@ public:
   void followDeg() {
     assert(!base::empty());
     
-    size_type deg = base::getDeg(base::top());
+    deg_type deg = base::getDeg(base::top());
 
     while (deg > 0) {
 

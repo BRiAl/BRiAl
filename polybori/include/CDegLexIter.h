@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.6  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.5  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -61,6 +64,9 @@ public:
 
   /// Fix type for sizes
   typedef typename poly_type::size_type size_type;
+
+  /// Fix type for degrees
+  typedef typename poly_type::deg_type deg_type;
 
   /// Fix type for Boolean values
   typedef typename poly_type::bool_type bool_type;
@@ -110,7 +116,7 @@ public:
   /// Prefix increment operator
   self& operator++() {
     if (m_iter != m_finish) {
-      size_type deg = *m_iter;
+      deg_type deg = *m_iter;
       ++m_iter;
       m_iter = std::find(m_iter, m_finish, deg);
       

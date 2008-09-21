@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.27  2008/05/26 12:06:39  dreyer
  * ADD: isEnd() as end of iteration check, sing iterator_facade
  *
@@ -153,6 +156,9 @@ public:
   /// Type for lengths
   typedef typename navigator::size_type size_type;
 
+  /// Type for degrees
+  typedef typename navigator::deg_type deg_type;
+
   /// Type for functional, which generates actual term, for current path
   typedef TermGeneratorType term_generator;
 
@@ -214,7 +220,7 @@ public:
   bool_type isEnd() const { return isZero(); }
 
   /// Get degree of current term
-  size_type deg() const { return m_stack.deg(); }
+  deg_type deg() const { return m_stack.deg(); }
 
   /// Get first index of current term 
   idx_type firstIndex() const { 

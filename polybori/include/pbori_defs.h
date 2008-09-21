@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.44  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -422,6 +425,8 @@ struct CAuxTypes {
 
   /// Type for lengths, dimensions, etc.
   typedef unsigned int size_type;
+  /// Type for polynomial degrees
+  typedef int deg_type;
 
   /// Type for integer numbers
   typedef int integer_type;

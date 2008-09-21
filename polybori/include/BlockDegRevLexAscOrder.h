@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.8  2007/11/06 15:03:32  dreyer
  * CHANGE: More generic copyright
  *
@@ -109,13 +112,13 @@ class BlockDegRevLexAscOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, size_type) const;
+  monom_type lead(const poly_type& poly, deg_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, size_type) const;
+  exp_type leadExp(const poly_type&, deg_type) const;
 
   /// Initialize iterator corresponding to leading term
   indirect_iterator leadIteratorBegin(const poly_type&) const;

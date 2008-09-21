@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.21  2008/07/13 22:49:36  dreyer
  * Fix: Doxygen clean-up
  *
@@ -199,7 +202,7 @@ BooleMonomial::compare(const self& rhs) const {
 }
 
 // Degree of the lcm
-BooleMonomial::size_type
+BooleMonomial::deg_type
 BooleMonomial::LCMDeg(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::LCMDeg(const self&) const" );
@@ -213,7 +216,7 @@ BooleMonomial::LCMDeg(const self& rhs) const {
   if ( m_poly.isOne() )
     return rhs.deg();
 
-  size_type result = 0;
+  deg_type result = 0;
   const_iterator start(begin()), finish(end()),
     rhs_start(rhs.begin()), rhs_finish(rhs.end());
 

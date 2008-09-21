@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.24  2008/05/26 12:06:39  dreyer
  * ADD: isEnd() as end of iteration check, sing iterator_facade
  *
@@ -212,6 +215,7 @@ public:
   typedef typename iterator_core::const_reverse_iterator 
   const_reverse_iterator;
   typedef typename iterator_core::size_type size_type;
+  typedef typename iterator_core::deg_type deg_type;
   typedef typename iterator_core::idx_type idx_type;
 
 
@@ -265,7 +269,7 @@ public:
   const_reverse_iterator rbegin() const { return p_iter->rbegin(); }
   const_reverse_iterator rend() const { return p_iter->rend(); }
 
-  size_type deg() const { return p_iter->deg(); }
+  deg_type deg() const { return p_iter->deg(); }
   idx_type firstIndex() const { return *begin(); }
 
   /// Get navigator of term start

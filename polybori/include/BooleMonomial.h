@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.42  2008/07/13 22:49:35  dreyer
  * Fix: Doxygen clean-up
  *
@@ -197,6 +200,7 @@ class BooleMonomial {
   //@{
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
+  typedef CTypes::deg_type deg_type;
   typedef CTypes::idx_type idx_type;
   typedef CTypes::hash_type hash_type;
   typedef CTypes::bool_type bool_type;
@@ -289,7 +293,7 @@ class BooleMonomial {
   }
 
   /// Degree of the monomial
-  size_type deg() const {
+  deg_type deg() const {
     ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
     #if 0
     return m_poly.nNodes(); 
@@ -299,7 +303,7 @@ class BooleMonomial {
     }
 
   /// Size of the exponents
-  size_type size() const { return deg(); }
+  size_type size() const { return (size_type)deg(); }  // always nonnegative
 
   /// Divisors of the monomial
   set_type divisors() const { return m_poly.lmDivisors(); }
@@ -349,7 +353,7 @@ class BooleMonomial {
   comp_type compare(const self&) const;
 
   /// Degree of the least common multiple
-  size_type LCMDeg(const self&) const;
+  deg_type LCMDeg(const self&) const;
 
   /// Compute theleast common multiple and assign
   self& LCMAssign(const self&);

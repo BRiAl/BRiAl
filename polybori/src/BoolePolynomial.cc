@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.121  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.120  2008/09/09 08:48:19  bricken
  * + lmDeg of 0 -> -1
  *
@@ -718,7 +721,7 @@ BoolePolynomial::lmStableHash() const {
 }
 
 // Maximal degree of the polynomial
-BoolePolynomial::size_type
+BoolePolynomial::deg_type
 BoolePolynomial::deg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
@@ -730,17 +733,17 @@ BoolePolynomial::deg() const {
   return dd_cached_degree(CDegreeCache<>(m_dd.manager()), navigation());
 #else
   return ( isConstant() ? 
-           (size_type) 0 :
+           (deg_type) 0 :
            *std::max_element(degBegin(), degEnd()) );
 #endif           
 }
 
 
 // Degree of the leading term
-BoolePolynomial::size_type
+BoolePolynomial::deg_type
 BoolePolynomial::lmDeg() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::deg() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::lmDeg() const" );
   if (UNLIKELY(isZero())) return -1;
 #ifndef PBORI_USE_CCUDDFIRSTITER
   // Equals number of nodes for monomials
@@ -754,7 +757,7 @@ BoolePolynomial::lmDeg() const {
 
 
 // Degree of the leading term
-BoolePolynomial::size_type
+BoolePolynomial::deg_type
 BoolePolynomial::lexLmDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lexLmDeg() const" );
@@ -763,7 +766,7 @@ BoolePolynomial::lexLmDeg() const {
 }
 
 // Total (weighted) maximal degree of the polynomial
-BoolePolynomial::size_type
+BoolePolynomial::deg_type
 BoolePolynomial::totalDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::totalDeg() const" );
@@ -773,7 +776,7 @@ BoolePolynomial::totalDeg() const {
 }
 
 // Total (weighted) degree of the leading term
-BoolePolynomial::size_type
+BoolePolynomial::deg_type
 BoolePolynomial::lmTotalDeg() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lmTotalDeg() const" );
@@ -784,9 +787,9 @@ BoolePolynomial::lmTotalDeg() const {
 
 // Get part of  of given degree
 BoolePolynomial
-BoolePolynomial::gradedPart(size_type deg) const {
+BoolePolynomial::gradedPart(deg_type deg) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(size_type) const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(deg_type) const" );
   typedef CDegreeArgumentCache<CCacheTypes::graded_part> cache_type;
   return dd_graded_part(cache_type(m_dd.manager()), 
                         navigation(), deg, set_type());
@@ -1255,7 +1258,8 @@ BoolePolynomial::eliminationLength() const{
 }
 
 BoolePolynomial::size_type
-BoolePolynomial::eliminationLengthWithDegBound(BoolePolynomial::size_type garantied_deg_bound) const{
+BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
+  const {
   assert(garantied_deg_bound>=this->deg());
   if (BooleEnv::ordering().isTotalDegreeOrder())
     return this->length();

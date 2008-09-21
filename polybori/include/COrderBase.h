@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.15  2007/11/06 15:03:34  dreyer
  * CHANGE: More generic copyright
  *
@@ -110,6 +113,9 @@ class COrderBase:
   /// Type for sizes
   typedef poly_type::size_type size_type;
 
+  /// Type for degrees
+  typedef poly_type::deg_type deg_type;
+
   /// Type for indices
   typedef poly_type::idx_type idx_type;
 
@@ -169,13 +175,13 @@ class COrderBase:
   virtual monom_type lead(const poly_type&) const = 0;
 
    /// Get leading term (using an upper bound)
-  virtual monom_type lead(const poly_type&, size_type) const = 0;
+  virtual monom_type lead(const poly_type&, deg_type) const = 0;
 
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
 
   /// Get leading exponent (using an upper bound)
-  virtual exp_type leadExp(const poly_type&, size_type) const = 0;
+  virtual exp_type leadExp(const poly_type&, deg_type) const = 0;
 
   /// Initialize iterator corresponding to leading term
   virtual indirect_iterator leadIteratorBegin(const poly_type&) const = 0;

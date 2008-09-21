@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.64  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.63  2008/05/26 12:06:39  dreyer
  * ADD: isEnd() as end of iteration check, sing iterator_facade
  *
@@ -359,6 +362,9 @@ class CDDInterface:
 
   /// Define size type
   typedef CTypes::size_type size_type;
+
+  /// Define degree type
+  typedef CTypes::deg_type deg_type;
 
   /// Define index type
   typedef CTypes::idx_type idx_type;

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.8  2008/07/18 22:37:50  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -128,9 +131,9 @@ BlockDegLexOrder::lead(const poly_type& poly) const {
 
 // Extraction of leading term
 BlockDegLexOrder::monom_type 
-BlockDegLexOrder::lead(const poly_type& poly, size_type bound) const {
+BlockDegLexOrder::lead(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegLexOrder::lead(const poly_type&, size_type) const)" );
+  PBORI_TRACE_FUNC( "BlockDegLexOrder::lead(const poly_type&, deg_type) const)" );
 
   return lead(poly);
 }
@@ -149,9 +152,9 @@ BlockDegLexOrder::leadExp(const poly_type& poly) const {
 // maybe common template here
 // Extraction of leading exponent
 BlockDegLexOrder::exp_type 
-BlockDegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
+BlockDegLexOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&, size_type) const)");
+  PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&, deg_type) const)");
   return leadExp(poly);
 }
 

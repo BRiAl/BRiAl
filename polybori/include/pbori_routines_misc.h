@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.39  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.38  2008/07/13 22:49:36  dreyer
  * Fix: Doxygen clean-up
  *
@@ -175,10 +178,10 @@ index_vector_hash(Iterator start, Iterator finish){
 /// Function templates for determining the degree of a decision diagram
 /// with the help of cache (e. g. CDegreeCache)
 template <class DegreeCacher, class NaviType>
-typename NaviType::size_type
+typename NaviType::deg_type
 dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
 
-  typedef typename NaviType::size_type size_type;
+  typedef typename NaviType::deg_type deg_type;
 
   if (navi.isConstant()) // No need for caching of constant nodes' degrees
     return 0;
@@ -189,7 +192,7 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
     return *result;
 
   // Get degree of then branch (contains at least one valid path)...
-  size_type deg = dd_cached_degree(cache, navi.thenBranch()) + 1;
+  deg_type deg = dd_cached_degree(cache, navi.thenBranch()) + 1;
  
   // ... combine with degree of else branch
   deg = std::max(deg,  dd_cached_degree(cache, navi.elseBranch()) );
@@ -205,10 +208,10 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
 /// Variant *with* given upper bound
 /// Assumming that the bound is valid!
 template <class DegreeCacher, class NaviType, class SizeType>
-typename NaviType::size_type
+typename NaviType::deg_type
 dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
 
-  typedef typename NaviType::size_type size_type;
+  typedef typename NaviType::deg_type deg_type;
 
   // No need for caching of constant nodes' degrees
   if (bound == 0 || navi.isConstant())
@@ -220,7 +223,7 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
     return *result;
 
   // Get degree of then branch (contains at least one valid path)...
-  size_type deg = dd_cached_degree(cache, navi.thenBranch(), bound - 1) + 1;
+  deg_type deg = dd_cached_degree(cache, navi.thenBranch(), bound - 1) + 1;
 
   // ... combine with degree of else branch
   if (bound > deg)              // if deg <= bound, we are already finished

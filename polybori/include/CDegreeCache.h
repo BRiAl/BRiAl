@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.15  2008/01/17 15:18:40  dreyer
  * CHANGE: removed several calls of BooleEnv::*
  *
@@ -207,6 +210,7 @@ public:
   typedef typename base::node_type input_node_type;
   typedef typename base::manager_type manager_type;
   typedef typename dd_type::size_type size_type;
+  typedef typename dd_type::deg_type deg_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
   typedef CIndexCacheHandle<navi_type> node_cache_type;
@@ -229,12 +233,12 @@ public:
     return node_type(base::find(navi), base::manager()); }
 
   /// Store cached degree wrt. given navigator
-  void insert(input_node_type navi, size_type deg) const {
+  void insert(input_node_type navi, deg_type deg) const {
     base::insert(navi, node_cache_type(deg, base::manager()));
   }
 
   /// Store cached degree wrt. given navigator
-  void insert(navi_type navi, size_type deg) const {
+  void insert(navi_type navi, deg_type deg) const {
     base::insert(navi, node_cache_type(deg, base::manager()));
   }
 

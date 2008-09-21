@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.23  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.22  2008/07/13 22:49:35  dreyer
  * Fix: Doxygen clean-up
  *
@@ -129,6 +132,9 @@ public:
 
   /// Type for indices
   typedef CTypes::size_type size_type;
+
+  /// Type for degrees
+  typedef CTypes::deg_type deg_type;
 
   /// Type for hashing
   typedef CTypes::hash_type hash_type;

@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2008/09/21 22:21:02  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.15  2007/11/30 09:33:19  dreyer
  * CHANGE: more dd-like stableHash()
  *
@@ -95,6 +98,7 @@ class BooleExponent {
   //@{
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
+  typedef CTypes::deg_type deg_type;
   typedef CTypes::idx_type idx_type;
   typedef CTypes::hash_type hash_type;
   typedef CTypes::bool_type bool_type;
@@ -168,7 +172,7 @@ class BooleExponent {
   const_reverse_iterator rend() const { return m_data.rend(); }
 
   /// Degree of the corresponding monomial
-  size_type size() const { return m_data.size(); }
+  deg_type size() const { return (deg_type)m_data.size(); }
 
   /// Prepare memory for exponents
   void reserve(size_type nsize) { m_data.reserve(nsize); }

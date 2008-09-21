@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.14  2008/09/21 22:21:03  dreyer
+ * Change: deg_type replaces size_type for deg(), etc.
+ *
  * Revision 1.13  2008/07/18 22:37:50  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -318,11 +321,11 @@ private:
 /// Function templates for determining the degree of a decision diagram
 /// with the help of cache (e. g. CDegreeCache)
 template <class DegreeCacher, class NaviType, class IdxType>
-typename NaviType::size_type
+typename NaviType::deg_type
 dd_cached_block_degree(const DegreeCacher& cache, NaviType navi, 
                        IdxType nextBlock) {
 
-  typedef typename NaviType::size_type size_type;
+  typedef typename NaviType::deg_type deg_type;
 
   if( navi.isConstant() || (*navi >= nextBlock) ) // end of block reached
     return 0;
@@ -333,7 +336,7 @@ dd_cached_block_degree(const DegreeCacher& cache, NaviType navi,
     return *result;
   
   // Get degree of then branch (contains at least one valid path)...
-  size_type deg = dd_cached_block_degree(cache, navi.thenBranch(), nextBlock) + 1;
+  deg_type deg = dd_cached_block_degree(cache, navi.thenBranch(), nextBlock) + 1;
  
   // ... combine with degree of else branch
   deg = std::max(deg,  dd_cached_block_degree(cache, navi.elseBranch(), nextBlock) );
@@ -466,7 +469,7 @@ block_dlex_compare(LhsIterator lhsStart, LhsIterator lhsFinish,
   CTypes::comp_type result = CTypes::equality;
 
   while ( (start != finish) && (result == CTypes::equality) ) {
-    unsigned lhsdeg = 0, rhsdeg = 0;
+    CTypes::deg_type lhsdeg = 0, rhsdeg = 0;
     LhsIterator oldLhs(lhsStart); // maybe one can save this and do both
     RhsIterator oldRhs(rhsStart); // comparisons at once.
 
