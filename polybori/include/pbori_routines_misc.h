@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.40  2008/09/22 11:39:21  bricken
+ * + deg of 0 is -1
+ *
  * Revision 1.39  2008/09/21 22:21:03  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -183,8 +186,12 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
 
   typedef typename NaviType::deg_type deg_type;
 
-  if (navi.isConstant()) // No need for caching of constant nodes' degrees
-    return 0;
+  if (navi.isConstant()){ // No need for caching of constant nodes' degrees
+    if (navi.terminalValue())
+        return 0;
+    else
+        return -1;
+  }
  
   // Look whether result was cached before
   typename DegreeCacher::node_type result = cache.find(navi);
