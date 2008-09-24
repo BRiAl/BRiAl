@@ -15,21 +15,12 @@
 BEGIN_NAMESPACE_PBORIGB
 Polynomial add_up_exponents(const std::vector<Exponent>& vec);
 Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
-int select1(const GroebnerStrategy& strat, const Polynomial& p);
-int select1(const GroebnerStrategy& strat, const Monomial& m);
 
-int select_no_deg_growth(const GroebnerStrategy& strat, const Monomial& m);
 
-static int select_short(const GroebnerStrategy& strat, const Polynomial& p);
-static int select_short(const GroebnerStrategy& strat, const Monomial& m);
+int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m);
 
-Polynomial nf1(GroebnerStrategy& strat, Polynomial p);
 
-Polynomial nf2(GroebnerStrategy& strat, Polynomial p);
-Polynomial nf2_short(GroebnerStrategy& strat, Polynomial p);
 
-Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p);
-Polynomial nf_delaying_exchanging(GroebnerStrategy& strat, Polynomial p);
 
 class LMLessCompare{
 public:
@@ -68,11 +59,10 @@ template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
 }
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps, double delay_f);
-Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p);
-Polynomial red_tail_short(const GroebnerStrategy& strat, Polynomial p);
-Polynomial nf3(const GroebnerStrategy& strat, Polynomial p, Monomial rest_lead);
-Polynomial nf3_short(const GroebnerStrategy& strat, Polynomial p);
-Polynomial red_tail_self_tuning(const GroebnerStrategy& strat, Polynomial p);
+Polynomial red_tail(const ReductionStrategy& strat, Polynomial p);
+Polynomial red_tail_short(const ReductionStrategy& strat, Polynomial p);
+Polynomial nf3(const ReductionStrategy& strat, Polynomial p, Monomial rest_lead);
+Polynomial nf3_short(const ReductionStrategy& strat, Polynomial p);
 Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors);
 
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors);

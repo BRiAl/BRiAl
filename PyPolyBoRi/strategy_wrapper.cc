@@ -15,6 +15,7 @@
 #include <BoolePolyRing.h>
 #include "slimgb_wrapper.h"
 #include "interpolate.h"
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 //#include <iostream>
 //#include "polybori.h"
 //#include "pbori_defs.h"
@@ -23,6 +24,7 @@ using namespace std;
 #include "variable_block.h"
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
+
 class StrategyIndexException{
     
 };
@@ -141,12 +143,12 @@ static void implications(GroebnerStrategy& strat, int i){
     
 }
 int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
-    return select1(strat,m);
+    return strat.generators.select1(m);
 }
 static Polynomial get_gen_by_lead(const GroebnerStrategy& strat,  const Monomial& m){
     lm2Index_map_type::const_iterator it,end;
-    end=strat.lm2Index.end();
-    it=strat.lm2Index.find(m);
+    end=strat.generators.lm2Index.end();
+    it=strat.generators.lm2Index.find(m);
     if UNLIKELY(it==end){
         throw StrategyIndexException();
     }
@@ -172,7 +174,7 @@ static void translator_d(DuplicateLeadException const& x) {
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
     if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     Monomial m=p.lead();
-    if UNLIKELY(strat.leadingTerms.owns(m)) throw DuplicateLeadException();
+    if UNLIKELY(strat.generators.leadingTerms.owns(m)) throw DuplicateLeadException();
     strat.addGenerator(p);
 }
 static StrategyIterator stratbegin(const GroebnerStrategy& strat){
@@ -194,6 +196,42 @@ static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
 
 void export_strategy(){
   export_slimgb();
+  boost::python::class_<PolyEntry>("PolyEntry", "Entry with polynomial and statistical information")
+  .def(init<const Polynomial&>())
+  .def_readwrite("p",&PolyEntry::p)
+  .def_readwrite("lm",&PolyEntry::lm)
+  .def_readwrite("weightedLength",&PolyEntry::weightedLength)
+  .def_readwrite("length",&PolyEntry::length)
+  .def_readwrite("deg",&PolyEntry::deg)
+  .def_readwrite("lmDeg",&PolyEntry::lmDeg)
+  .def_readwrite("lmExp",&PolyEntry::lmExp)
+  .def_readwrite("gcdOfTerms",&PolyEntry::gcdOfTerms)
+  //.def_readwrite("usedVariables",PolyEntry::usedVariables)
+  //.def_readwrite("p",PolyEntry::tailVariables)
+  .def_readwrite("tail",&PolyEntry::tail)
+  .def("ecart",&PolyEntry::ecart)
+  .def_readwrite("minimal",&PolyEntry::minimal)
+  .def("recomputeInformation",&PolyEntry::recomputeInformation);
+  
+ 
+  boost::python::class_<vector<PolyEntry> > ("PolyEntryVector")
+      .def(vector_indexing_suite<vector<PolyEntry> >());
+ 
+  boost::python::class_<ReductionStrategy,boost::python::bases<vector<PolyEntry> > > ("ReductionStrategy")
+        .def(init<>())
+        .def_readwrite("optBrutalReductions",&ReductionStrategy::optBrutalReductions)
+        .def("add_generator", &ReductionStrategy::addGenerator)
+        .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
+        .def_readonly("minimal_leading_terms",&ReductionStrategy::minimalLeadingTerms)
+        .def_readwrite("optLL",&ReductionStrategy::optLL)
+        .def_readwrite("optRedTail",&ReductionStrategy::optRedTail)
+        .def_readwrite("optRedTailDegGrowth",&ReductionStrategy::optRedTailDegGrowth)
+        .def("can_rewrite",&ReductionStrategy::canRewrite)
+        .def("nf",&ReductionStrategy::nf)
+        .def("reducedNormalForm",&ReductionStrategy::reducedNormalForm)
+        .def("headNormalForm",&ReductionStrategy::headNormalForm)
+        .def_readonly("monomials",&ReductionStrategy::monomials);
+  
   boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
   .def(init<>())
   .def(init<const GroebnerStrategy&>())
@@ -203,7 +241,8 @@ void export_strategy(){
   .def("llReduceAll", &GroebnerStrategy::llReduceAll)
   .def("addAsYouWish",add_as_you_wish)
   .def("implications",implications)
-  .def("canRewrite",&GroebnerStrategy::canRewrite)
+  .def_readonly("reduction_strategy",&GroebnerStrategy::generators)
+  
   .def("redTail",&GroebnerStrategy::redTail)
   .def("nextSpoly", &GroebnerStrategy::nextSpoly)
   .def("allSpolysInNextDegree", nextDegreeSpolys)
@@ -226,19 +265,16 @@ void export_strategy(){
   .def("toStdOut", printGenerators)
   .def("variableHasValue",&GroebnerStrategy::variableHasValue)
   .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
-  .def_readonly("llReductor",&GroebnerStrategy::llReductor)
-  .def_readonly("minimalLeadingTerms",&GroebnerStrategy::minimalLeadingTerms)
-  .def_readonly("leadingTerms",&GroebnerStrategy::leadingTerms)
-  .def_readonly("monomials",&GroebnerStrategy::monomials)
-  .def_readwrite("optRedTail",&GroebnerStrategy::optRedTail)
-  .def_readwrite("optLL",&GroebnerStrategy::optLL)
+
+  
+  
   .def_readwrite("optLinearAlgebraInLastBlock",&GroebnerStrategy::optLinearAlgebraInLastBlock)
-  .def_readwrite("optBrutalReductions",&GroebnerStrategy::optBrutalReductions)
+  
   .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
   .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
   .def_readwrite("optAllowRecursion",&GroebnerStrategy::optAllowRecursion)
   .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
-  .def_readwrite("optRedTailDegGrowth",&GroebnerStrategy::optRedTailDegGrowth)
+  
   .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
   .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)

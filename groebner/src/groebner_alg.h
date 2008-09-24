@@ -100,21 +100,62 @@ public:
 };
 /*
 #ifdef HAVE_HASH_MAP
-typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> lm2Index_map_type;
+typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> generators.lm2Index_map_type;
 #else
-typedef std::map<Monomial,int> lm2Index_map_type;
+typedef std::map<Monomial,int> generators.lm2Index_map_type;
 #endif
 */
 
 
 typedef Monomial::idx_map_type lm2Index_map_type;
 typedef Exponent::idx_map_type exp2Index_map_type;
+class ReductionStrategy:public PolyEntryVector{
+public:
+    MonomialSet leadingTerms;
+    MonomialSet minimalLeadingTerms;
+    MonomialSet leadingTerms11;
+    MonomialSet leadingTerms00;
+    MonomialSet llReductor;
+    MonomialSet monomials;
+    MonomialSet monomials_plus_one;
+    lm2Index_map_type lm2Index;
+    exp2Index_map_type exp2Index;
+    bool optBrutalReductions;
+    bool optLL;
+    Polynomial nf(Polynomial p) const;
+    bool optRedTailDegGrowth;
+    bool optRedTail;
+    idx_type reducibleUntil;
+    void setupSetsForLastElement();
+    ReductionStrategy(){
+        optLL=false;
+        reducibleUntil=-1;
+        optBrutalReductions=true;
+        optRedTail=true;
+        optRedTailDegGrowth=true;
+    }
+    bool canRewrite(const Polynomial& p) const{
+        return is_rewriteable(p,minimalLeadingTerms);
+    }
+    void addGenerator(const Polynomial& p){
+        push_back(p);
+        setupSetsForLastElement();
+    }
+    int select1(const Polynomial& p) const;
+    int select1(const Monomial& m) const;
+
+    int select_short(const Polynomial& p) const;
+    int select_short(const Monomial& m) const;
+    Polynomial headNormalForm(Polynomial p) const;
+    
+    Polynomial reducedNormalForm(Polynomial p) const;
+};
 class GroebnerStrategy{
 public:
   bool containsOne() const{
-    return leadingTerms.ownsOne();
+    return generators.leadingTerms.ownsOne();
   }
-  idx_type reducibleUntil;
+  
   GroebnerStrategy(const GroebnerStrategy& orig);
   std::vector<Polynomial>  minimalizeAndTailReduce();
   std::vector<Polynomial>  minimalize();
@@ -127,14 +168,8 @@ public:
   void treat_m_p_1_case(const PolyEntry& e);
   PairManager pairs;
   bool reduceByTailReduced;
-  PolyEntryVector generators;
-  MonomialSet leadingTerms;
-  MonomialSet minimalLeadingTerms;
-  MonomialSet leadingTerms11;
-  MonomialSet leadingTerms00;
-  MonomialSet llReductor;
-  MonomialSet monomials;
-  MonomialSet monomials_plus_one;
+  ReductionStrategy generators;
+
   boost::shared_ptr<CacheManager> cache;
   BoolePolyRing r;
   bool enabledLog;
@@ -146,36 +181,35 @@ public:
   int easyProductCriterions;
   int extendedProductCriterions;
   int averageLength;
-  bool optRedTail;
+  
   bool optHFE;
   bool optLazy;
-  bool optLL;
+  
   bool optDelayNonMinimals;
-  bool optBrutalReductions;
+  
   bool optExchange;
   bool optAllowRecursion;
-  bool optRedTailDegGrowth;
+  
   bool optStepBounded;
   bool optLinearAlgebraInLastBlock;
   bool optRedTailInLastBlock;
-  lm2Index_map_type lm2Index;
-  exp2Index_map_type exp2Index;
+
 
 	GroebnerStrategy():r(BooleEnv::ring()),pairs(*this),cache(new CacheManager()){
-	  reducibleUntil=-1;
+	  
 	  optDelayNonMinimals=true;
-		optRedTailDegGrowth=true;
+		
 		chainCriterions=0;
 		enabledLog=false;
-        optLL=false;
+        
         //if (BooleEnv::ordering().isDegreeOrder())
 		//    optBrutalReductions=false;
 		//else
-        optBrutalReductions=true;
+        
 		variableChainCriterions=0;
 		extendedProductCriterions=0;
 		easyProductCriterions=0;
-		optRedTail=true;
+		
 		optExchange=true;
         optHFE=false;
 		optStepBounded=false;
@@ -191,7 +225,7 @@ public:
 		else
 			optLazy=true;
 		reduceByTailReduced=false;
-                llReductor=Polynomial(1).diagram(); // todo: is this unsafe?
+        generators.llReductor=Polynomial(1).diagram(); // todo: is this unsafe?
 	}
 
     Polynomial nextSpoly(){
@@ -204,9 +238,7 @@ public:
       if (this->enabledLog)
           std::cout<<c<<endl;
   }
-  bool canRewrite(const Polynomial& p) const{
-      return is_rewriteable(p,minimalLeadingTerms);
-  }
+
   Polynomial redTail(const Polynomial& p);
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
   std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
@@ -231,16 +263,16 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m);
 Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor);
 class LessWeightedLengthInStrat{
 public:
-  const GroebnerStrategy* strat;
-  LessWeightedLengthInStrat(const GroebnerStrategy& strat){
+  const ReductionStrategy* strat;
+  LessWeightedLengthInStrat(const ReductionStrategy& strat){
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    return strat->generators[strat->lm2Index.find(a)->second].weightedLength<strat->generators[strat->lm2Index.find(b)->second].weightedLength;
+    return (*strat)[strat->lm2Index.find(a)->second].weightedLength<(*strat)[strat->lm2Index.find(b)->second].weightedLength;
     
   }
   bool operator() (const Exponent& a , const Exponent& b){
-    return strat->generators[strat->exp2Index.find(a)->second].weightedLength<strat->generators[strat->exp2Index.find(b)->second].weightedLength;
+    return (*strat)[strat->exp2Index.find(a)->second].weightedLength<(*strat)[strat->exp2Index.find(b)->second].weightedLength;
     
   }
 };
@@ -257,20 +289,20 @@ inline wlen_type wlen_literal_exceptioned(const PolyEntry& e){
 ///@todo: in many cases, indices should be precalculated
 class LessWeightedLengthInStratModified{
 public:
-  const GroebnerStrategy* strat;
-  LessWeightedLengthInStratModified(const GroebnerStrategy& strat){
+  const ReductionStrategy* strat;
+  LessWeightedLengthInStratModified(const ReductionStrategy& strat){
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->lm2Index.find(a)->second]);
-    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->lm2Index.find(b)->second]);
+    wlen_type wa=wlen_literal_exceptioned((*strat)[strat->lm2Index.find(a)->second]);
+    wlen_type wb=wlen_literal_exceptioned((*strat)[strat->lm2Index.find(b)->second]);
     
     return wa<wb;
     
   }
   bool operator() (const Exponent& a , const Exponent& b){
-    wlen_type wa=wlen_literal_exceptioned(strat->generators[strat->exp2Index.find(a)->second]);
-    wlen_type wb=wlen_literal_exceptioned(strat->generators[strat->exp2Index.find(b)->second]);
+    wlen_type wa=wlen_literal_exceptioned((*strat)[strat->exp2Index.find(a)->second]);
+    wlen_type wb=wlen_literal_exceptioned((*strat)[strat->exp2Index.find(b)->second]);
     
     return wa<wb;
     
@@ -283,8 +315,8 @@ public:
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->lm2Index.find(a)->second;
-    int j=strat->lm2Index.find(b)->second;
+    int i=strat->generators.lm2Index.find(a)->second;
+    int j=strat->generators.lm2Index.find(b)->second;
     if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
       if (strat->generators[i].ecart()<strat->generators[j].ecart())
         return true;
@@ -296,8 +328,8 @@ public:
   }
   
   bool operator() (const Exponent& a , const Exponent& b){
-    int i=strat->exp2Index.find(a)->second;
-    int j=strat->exp2Index.find(b)->second;
+    int i=strat->generators.exp2Index.find(a)->second;
+    int j=strat->generators.exp2Index.find(b)->second;
     if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
       if (strat->generators[i].ecart()<strat->generators[j].ecart())
         return true;
@@ -315,8 +347,8 @@ public:
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b) const{
-    int i=strat->lm2Index.find(a)->second;
-    int j=strat->lm2Index.find(b)->second;
+    int i=strat->generators.lm2Index.find(a)->second;
+    int j=strat->generators.lm2Index.find(b)->second;
     deg_type d1=strat->generators[i].tailVariables.deg();
     deg_type d2=strat->generators[j].tailVariables.deg();;
     if (d1!=d2){
@@ -334,8 +366,8 @@ public:
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->lm2Index[a];
-    int j=strat->lm2Index[b];
+    int i=strat->generators.lm2Index[a];
+    int j=strat->generators.lm2Index[b];
         deg_type d1=strat->generators[i].tailVariables.deg();
     deg_type d2=strat->generators[j].tailVariables.deg();
     wlen_type w1=d1;

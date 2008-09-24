@@ -23,6 +23,12 @@
 class PolyEntry{
 public:
   PolyEntry(const Polynomial &p);
+  PolyEntry(){
+      
+  }
+  bool operator==(const PolyEntry& other) const{
+      return p==other.p;
+  }
   LiteralFactorization literal_factors;
   Polynomial p;
   Monomial lm;

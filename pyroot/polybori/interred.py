@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import GroebnerStrategy, Polynomial
+from polybori.PyPolyBoRi import GroebnerStrategy, Polynomial, ReductionStrategy
 
 def interred(l,completely=False):
     """computes a new generating system (g1, ...,gn), spanning the same ideal modulo field equations.
@@ -10,12 +10,12 @@ def interred(l,completely=False):
     while l_old!=l:
         l_old=l
         l=sorted(l,key=Polynomial.lead)
-        g=GroebnerStrategy()
+        g=ReductionStrategy()
         if completely:
             g.optRedTail=True
         for p in l:
             p=g.nf(p)
             if not p.isZero():
-                g.addGenerator(p)
-        l=tuple(g)
-    return l
+                g.add_generator(p)
+        l=tuple([e.p for e in g])
+    return list(l)

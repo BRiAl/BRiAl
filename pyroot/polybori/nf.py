@@ -119,7 +119,7 @@ def noro_step(polys,strat):
         if p.isZero():
             return p
         else:
-            return nf3(strat,p,p.lead())
+            return nf3(strat.reduction_strategy,p,p.lead())
     llReductor=strat.llReductor
     polys=[nf(ll_red_nf_redsb(p,llReductor),strat) for p  in polys]
     polys=[strat.redTail(p) for p in polys if not p.isZero()]
@@ -221,12 +221,12 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             return []
         G=[Polynomial(g) for g in G]  
         strat=GroebnerStrategy()
-        strat.optRedTail=optRedTail
+        strat.reduction_strategy.optRedTail=optRedTail
         strat.optLazy=optLazy
         strat.optExchange=optExchange
         strat.optAllowRecursion=optAllowRecursion
         strat.enabledLog=prot
-        strat.optLL=ll
+        strat.reduction_strategy.optLL=ll
         strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
         strat.redByReduced=False#True
         
@@ -280,7 +280,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             v=BoolePolynomialVector()
             for p in ps:
                 #print p
-                p=Polynomial(mod_mon_set(BooleSet(p.set()),strat.monomials))
+                p=Polynomial(mod_mon_set(BooleSet(p.set()),strat.reduction_strategy.monomials))
                 #p=ll_red_nf(p,strat.llReductor)
                 if not p.isZero():
                     v.append(p)
@@ -303,7 +303,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         res_cp=sorted(res, key=sort_key)
         #res_cp=list(res)
         #res_cp.reverse()
-        old_ll=strat.llReductor
+
         for p in  res_cp:
             old_len=len(strat)
             add_to_basis(strat,p)
@@ -316,7 +316,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 return strat
             if prot:
                 print "(", strat.npairs(), ")"
-        new_ll=strat.llReductor
+
 
         strat.cleanTopByChainCriterion()
     #strat.toStdOut()
@@ -453,7 +453,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         #return (p.deg(),p.lead(),p.elength())
         return (p.lead(),p.deg(),p.elength())
     strat=GroebnerStrategy()
-    strat.optRedTail=optRedTail#True
+    strat.reduction_strategy.optRedTail=optRedTail#True
     strat.optExchange=False
     strat.optAllowRecursion=False
     #strat.optRedTailDegGrowth=False
@@ -545,11 +545,11 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         
         G=[Polynomial(g) for g in G]    
         strat=GroebnerStrategy()
-        strat.optRedTail=optRedTail
+        strat.reduction_strategy.optRedTail=optRedTail
         strat.enabledLog=prot
         strat.optLazy=optLazy
         strat.optExchange=optExchange
-        strat.optLL=ll
+        strat.reduction_strategy.optLL=ll
         strat.optAllowRecursion=optAllowRecursion
         strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
         strat.enabledLog=prot

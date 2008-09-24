@@ -50,7 +50,7 @@ parser.add_option("--method",
 def my_red_nf(p,strat):
   if p.isZero():
     return Polynomial(0)
-  hr=nf3(strat,p,p.lead())
+  hr=nf3(strat.reduction_strategy,p,p.lead())
   if hr.isZero():
     return Polynomial(0)
   return red_tail(strat,hr)
@@ -87,7 +87,7 @@ def proof(ifthen,strat):
     print "TRUE (trivial)"
     return
   else:
-    c=nf3(strat,c,c.lead())
+    c=nf3(strat.reduction_strategy,c,c.lead())
     if c.isZero():
       print "TRUE"
       return

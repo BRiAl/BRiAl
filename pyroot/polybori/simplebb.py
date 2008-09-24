@@ -24,7 +24,7 @@ def less_than_n_solutions(ideal,n):
     for p in l:
         g.addGenerator(p)
     while g.npairs()>0:
-        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.reduction_strategy.minimal_leading_terms
         if len(monomials_not_in_leading_ideal)<n:
             return True
         g.cleanTopByChainCriterion()
@@ -32,7 +32,7 @@ def less_than_n_solutions(ideal,n):
         p=g.nf(p)
         if not p.isZero():
             g.addGenerator(p)
-    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.reduction_strategy.minimal_leading_terms
     if len(monomials_not_in_leading_ideal)<n:
         return True
     else:

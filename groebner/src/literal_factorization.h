@@ -21,6 +21,7 @@ BEGIN_NAMESPACE_PBORIGB
 class LiteralFactorization{
 public:
   LiteralFactorization(const Polynomial&);
+  LiteralFactorization(){}
   typedef std::map<idx_type, int> map_type;
   map_type factors;
   Polynomial rest;
