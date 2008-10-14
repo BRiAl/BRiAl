@@ -1659,8 +1659,15 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
       res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
       +Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch())))*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
    }else{
+#if 1
       res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
         +ll_red_nf_generic<have_redsb>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch())*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
+#else
+       res=ll_red_nf_generic<have_redsb>(
+           Polynomial(MonomialSet(cache_mgr.generate(p_nav.elseBranch())))
+           +Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch())))
+           *Polynomial(MonomialSet(cache_mgr.generate(p_nav.thenBranch()))),r_nav.thenBranch());
+#endif
    }
   } else{
       assert((*r_nav)>p_index);
@@ -2356,7 +2363,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step_modified(*this,polys,terms,leads_from_strat);
+    linalg_step(*this,polys,terms,leads_from_strat);
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 
