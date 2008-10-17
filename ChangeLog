@@ -1,4 +1,5 @@
 Release Name: 0.6.0
+* used genshi for generating dot files
 * new Class ReductionStrategy
 * many options and methods moved to ReductionStrategy
     * optBrutalReductions
@@ -35,6 +36,9 @@ Release Name: 0.6.0
 * Python interface, dropped functions
   * nSupport
   * firstTerm
+  * toStdOut
+* Python interface
+  * made var, one, zero, n_variables avaible not only to Ring, but also to BooleRing
 * optimized interred
 
 Release Name: 0.5.0
