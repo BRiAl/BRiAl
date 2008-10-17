@@ -13,6 +13,8 @@ from polybori.PyPolyBoRi import Ring, Polynomial, Variable, BooleSet
 
 graph_template="""
 digraph polynomial{
+graph [ ordering="out" ];
+
 #for n in nodes
 ${identifier(n)}[label="${label(n)}", shape="${shape(n)}"];
 #end
