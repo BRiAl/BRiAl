@@ -71,6 +71,12 @@ def main():
     x=Variable
     from os import system
     from polybori.specialsets import all_monomials_of_degree_d, power_set
+    full_set=list(power_set([Variable(i) for i in xrange(15)]))
+    from random import Random
+    generator=Random(123)
+    random_set=sum(generator.sample(full_set,30))
+    full_polynomial=list(all_monomials_of_degree_d(3, [Variable(i) for i in xrange(30)]))
+    random_poly=sum(generator.sample(full_polynomial,30))
     polynomials=[
     x(1)*x(2)+x(3),
     (x(1)+1)*(x(2)+x(3)),
@@ -78,7 +84,12 @@ def main():
     x(1)*x(2)+x(2)*x(3)+x(1)*x(3)+x(1),
     x(0)+x(1)+x(2)+x(3)+x(4)+x(5),
     all_monomials_of_degree_d(3,[x(i) for i in xrange(10)]),
-    power_set([x(i) for i in xrange(10)])
+    power_set([x(i) for i in xrange(10)]),
+    random_poly,
+    random_set,
+    Polynomial(all_monomials_of_degree_d(3,[x(i) for i in xrange(10)])) +
+        Polynomial(power_set([x(i) for i in xrange(10)])),
+    Polynomial(power_set([x(i) for i in xrange(10)]))+1
     ]
     for (i,p) in enumerate(polynomials):
         dot=plot(p)
