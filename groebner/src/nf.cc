@@ -2363,7 +2363,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step(*this,polys,terms,leads_from_strat);
+    linalg_step_modified(*this,polys,terms,leads_from_strat);
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 
