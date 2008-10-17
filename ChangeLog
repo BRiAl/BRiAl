@@ -1,3 +1,29 @@
+Release Name: 0.6.0
+* new Class ReductionStrategy
+* many options and methods moved to ReductionStrategy
+* Python interface - PEP8 compliance:
+varsAsMonomial -> vars_as_monomial
+nVars -> n_variables
+totalDegree -> total_degree
+gradedPart -> graded_part
+nNodes ->n_nodes
+terminalOne -> terminal_one
+thenBranch -> then_branch
+elseBranch -> else_branch
+lmDivisors -> lm_divisors
+lexLead -> lex_lead
+isZero -> is_zero
+isOne ->is_one
+divisorsOf -> divisors_of
+multiplesOf -> multiples_of
+reducibleBy ->reducible_by
+hasConstantPart -> has_constant_part
+map_every_x_to_x_plus_one -> mapEveryXToXPlusOne
+zerosIn -> zeros_in
+* Python interface, dropped functions
+  * nSupport
+  * firstTerm
+
 Release Name: 0.5.0
 * degree of 0-polynomial is -1
 * lmDeg() of 0-polynomial is -1
