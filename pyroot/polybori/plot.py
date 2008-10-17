@@ -34,6 +34,7 @@ def plot(p):
             if not nav.constant():
                 find_navs(nav.then_branch())
                 find_navs(nav.else_branch())
+    p=Polynomial(p)
     nodes=set()
     nav=p.navigation()
     find_navs(nav)
@@ -67,11 +68,15 @@ def main():
     r=Ring(1000)
     x=Variable
     from os import system
+    from polybori.specialsets import all_monomials_of_degree_d, power_set
     polynomials=[
     x(1)*x(2)+x(3),
     (x(1)+1)*(x(2)+x(3)),
     (x(1)+1)*(x(2)+1)*(x(3)+1),
-    x(1)*x(2)+x(2)*x(3)+x(1)*x(3)
+    x(1)*x(2)+x(2)*x(3)+x(1)*x(3)+x(1),
+    x(0)+x(1)+x(2)+x(3)+x(4)+x(5),
+    all_monomials_of_degree_d(3,[x(i) for i in xrange(10)]),
+    power_set([x(i) for i in xrange(10)])
     ]
     for (i,p) in enumerate(polynomials):
         dot=plot(p)
@@ -81,5 +86,6 @@ def main():
         f.close()
         png_file=str(i)+".png"
         system("dot -Tpng -o "+png_file+" " + dot_file)
+        
 if __name__ == '__main__':
     main()
