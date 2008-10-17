@@ -1,6 +1,32 @@
 Release Name: 0.6.0
 * new Class ReductionStrategy
 * many options and methods moved to ReductionStrategy
+    * optBrutalReductions
+    * add_generator
+    * leading_terms
+    * minimal_leading_terms
+    * optLL
+    * optRedTail
+    * optRedTailDegGrowth
+    * can_rewrite
+    * nf
+    * reducedNormalForm
+    * headNormalForm
+    * monomials
+boost::python::class_<ReductionStrategy,boost::python::bases<vector<PolyEntry> > > ("ReductionStrategy")
+        .def(init<>())
+        .def_readwrite("optBrutalReductions",&ReductionStrategy::optBrutalReductions)
+        .def("add_generator", &ReductionStrategy::addGenerator)
+        .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
+        .def_readonly("minimal_leading_terms",&ReductionStrategy::minimalLeadingTerms)
+        .def_readwrite("optLL",&ReductionStrategy::optLL)
+        .def_readwrite("optRedTail",&ReductionStrategy::optRedTail)
+        .def_readwrite("optRedTailDegGrowth",&ReductionStrategy::optRedTailDegGrowth)
+        .def("can_rewrite",&ReductionStrategy::canRewrite)
+        .def("nf",&ReductionStrategy::nf)
+        .def("reducedNormalForm",&ReductionStrategy::reducedNormalForm)
+        .def("headNormalForm",&ReductionStrategy::headNormalForm)
+        .def_readonly("monomials",&ReductionStrategy::monomials);
 * Python interface - PEP8 compliance:
     * varsAsMonomial -> vars_as_monomial
     * nVars -> n_variables
