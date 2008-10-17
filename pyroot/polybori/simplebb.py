@@ -12,7 +12,7 @@ def buchberger(l):
         g.cleanTopByChainCriterion()
         p=g.nextSpoly()
         p=g.nf(p)
-        if not p.isZero():
+        if not p.is_zero():
             g.addGenerator(p)
     return list(g)
 
@@ -30,7 +30,7 @@ def less_than_n_solutions(ideal,n):
         g.cleanTopByChainCriterion()
         p=g.nextSpoly()
         p=g.nf(p)
-        if not p.isZero():
+        if not p.is_zero():
             g.addGenerator(p)
     monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.reduction_strategy.minimal_leading_terms
     if len(monomials_not_in_leading_ideal)<n:

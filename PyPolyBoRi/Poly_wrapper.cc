@@ -119,29 +119,29 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self+self)
   .def(self-self)
   .def("translate_indices", translate_indices)
-  .def("isZero", &BoolePolynomial::isZero, "Test if Polynomial is zero")
-  .def("isOne", &BoolePolynomial::isOne, "Test if Polynomial one")
+  .def("is_zero", &BoolePolynomial::isZero, "Test if Polynomial is zero")
+  .def("is_one", &BoolePolynomial::isOne, "Test if Polynomial one")
 
   .def("deg", &BoolePolynomial::deg, "Polynomial degree")
-  .def("lmDivisors", &BoolePolynomial::lmDivisors, "Divisors of leading term")
+  .def("lm_divisors", &BoolePolynomial::lmDivisors, "Divisors of leading term")
   .def("lead", &BoolePolynomial::lead, "Leading term with respect to current ordering")
-  .def("lexLead", &BoolePolynomial::lexLead, "Lexicographical leading term")
-  .def("firstTerm", &BoolePolynomial::firstTerm, "First lexicographical term")
-  .def("reducibleBy", &BoolePolynomial::reducibleBy)
+  .def("lex_lead", &BoolePolynomial::lexLead, "Lexicographical leading term")
 
-  .def("lmDeg", &BoolePolynomial::lmDeg, "Degree of the leading term")
-  .def("lexLmDeg", &BoolePolynomial::lexLmDeg, 
+  .def("reducible_by", &BoolePolynomial::reducibleBy)
+
+  .def("lm_deg", &BoolePolynomial::lmDeg, "Degree of the leading term")
+  .def("lex_lm_deg", &BoolePolynomial::lexLmDeg, 
        "Degree of the lexicographical leading term")
   .def("constant", &BoolePolynomial::isConstant, 
        "Test, whether Polynomial os constant")
-  .def("nNodes", &BoolePolynomial::nNodes, 
+  .def("n_nodes", &BoolePolynomial::nNodes, 
        "Number of diagram nodes in the underlying ZDD structure")
-  .def("nVars", &BoolePolynomial::nUsedVariables, 
+  .def("n_variables", &BoolePolynomial::nUsedVariables, 
        "Number of variables occurring in Polynomial")
-  .def("varsAsMonomial",&BoolePolynomial::usedVariables, 
+  .def("vars_as_monomial",&BoolePolynomial::usedVariables, 
        "Variables occurring in Polynomial")
-  .def("totalDegree", &BoolePolynomial::totalDeg, "Total Polynomial degree")
-  .def("gradedPart", &BoolePolynomial::gradedPart, "Get part of given degree")
+  .def("total_degree", &BoolePolynomial::totalDeg, "Total Polynomial degree")
+  .def("graded_part", &BoolePolynomial::gradedPart, "Get part of given degree")
   //.def("diagram", diagram, return_internal_reference<1>())
   //.def("diagram",poly_diagram_as_set)
   .def("set", set, "Convert to BooleSet")
@@ -149,15 +149,15 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("navigation", &BoolePolynomial::navigation, 
        "Navigate through underlying ZDD structure")
   .def("elength", &BoolePolynomial::eliminationLength, "Elimination length")
-  .def("hasConstantPart", &BoolePolynomial::hasConstantPart,
+  .def("has_constant_part", &BoolePolynomial::hasConstantPart,
        "Check, whether Polynomials owns constant term")
   .def("plot",plot)
     //  .def("__len__", &BoolePolynomial::length, "Number of terms")
   .def("__str__", streamable_as_str<BoolePolynomial>)
   .def("__repr__", streamable_as_str<BoolePolynomial>)
-  .def("mapEveryXToXPlusOne",map_every_x_to_x_plus_one, 
+  .def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one, 
        "Replace every variable x by x + 1")
-  .def("zerosIn",zeros, 
+  .def("zeros_in",zeros, 
        "Get BooleSet representing the zeros of the Polynomial")
   //wrap usedVariables
   .def("toStdOut", &print_polynomial);

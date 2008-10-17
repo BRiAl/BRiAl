@@ -24,7 +24,7 @@ def intersect(i,j,**gb_opts):
     """
     uv=used_vars_set(i)*used_vars_set(j)
     t=Variable(0)
-    if uv.reducibleBy(t):
+    if uv.reducible_by(t):
         raise ValueError, "First ring variable has to be reserved as helper variable t"
     if not t>uv:
         raise ValueError, "need elimination ordering for first ring variable"

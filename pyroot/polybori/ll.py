@@ -2,12 +2,12 @@ from polybori.PyPolyBoRi import *
 
 lead_index=top_index
 #(p):
-#  return iter(p.lexLead()).next().index()#first index
+#  return iter(p.lex_lead()).next().index()#first index
  
 def combine(reductors,p, reduce=None):
     p_nav=p.navigation()
     assert p_nav.value()<reductors.navigation().value()
-    p_else=BooleSet(p_nav.elseBranch(), p.ring())
+    p_else=BooleSet(p_nav.else_branch(), p.ring())
     if reduce:
         p_else=reduce(p_else,reductors)
     return if_then_else(p_nav.value(),reductors,p_else)
@@ -18,9 +18,9 @@ def llredsb_Cudd_style(polys):
   reductors=Polynomial(1).set()
   
   linear_lead=sorted(polys,key=lead_index,reverse=True)
-  assert len(set([p.lexLead() for p in linear_lead]))==len(polys)
+  assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
   assert len([p for p in polys if p.constant()])==0
-  assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
+  assert len([p for p in polys if p.lex_lm_deg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
   for p in linear_lead:
         reductors=combine(reductors,p,reduce=ll_red_nf_redsb)
@@ -37,9 +37,9 @@ def ll_encode(polys, reduce=False, prot=False):
   reductors=Polynomial(1).set()
   
   linear_lead=sorted(polys,key=lead_index, reverse=True)
-  assert len(set([p.lexLead() for p in linear_lead]))==len(polys)
+  assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
   assert len([p for p in polys if p.constant()])==0
-  assert len([p for p in polys if p.lexLmDeg()==1])==len(polys)
+  assert len([p for p in polys if p.lex_lm_deg()==1])==len(polys)
   assert len(set([p.navigation().value() for p in polys]))==len(polys)
   last=None
   counter=0
@@ -55,13 +55,14 @@ def ll_encode(polys, reduce=False, prot=False):
   return reductors
 
 def eliminate(polys, on_the_fly=False,prot=False):
+  polys=[Polynomial(p) for p in polys]
   rest=[]
   linear_leads=[]
   linear_leading_monomials=set()
   for p in polys:
-    if p.isZero():
+    if p.is_zero():
       continue
-    lm=p.lexLead()
+    lm=p.lex_lead()
     if lm.deg()==1:
       
       if not (lm in linear_leading_monomials):
@@ -82,7 +83,7 @@ def eliminate(polys, on_the_fly=False,prot=False):
   reduced_list=[]
   for p in rest:
       p=red_fun(p,reductors)
-      if p.isOne():
+      if p.is_one():
           reduced_list=[p]
           break
       else:

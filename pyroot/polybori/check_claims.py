@@ -18,7 +18,7 @@ from polybori.ll import llredsb_Cudd_style, ll_encode
 
 def find_one(p,res=None):
     def zero_nav(n):
-        return n.constant() and (not n.terminalOne())
+        return n.constant() and (not n.terminal_one())
     try:
         p=p.navigation()
     except AttributeError:
@@ -27,12 +27,12 @@ def find_one(p,res=None):
         res=dict()
     if zero_nav(p):
         raise ValueError
-    if p.terminalOne():
+    if p.terminal_one():
         return res
-    else_branch=p.elseBranch()
+    else_branch=p.else_branch()
     if zero_nav(else_branch):
         res[Monomial(Variable(p.value()))]=1
-        find_one(p.thenBranch(),res)
+        find_one(p.then_branch(),res)
     else:
         res[Monomial(Variable(p.value()))]=0
         find_one(else_branch,res)
@@ -48,15 +48,15 @@ parser.add_option("--method",
                   help="select method")
 
 def my_red_nf(p,strat):
-  if p.isZero():
+  if p.is_zero():
     return Polynomial(0)
   hr=nf3(strat.reduction_strategy,p,p.lead())
-  if hr.isZero():
+  if hr.is_zero():
     return Polynomial(0)
   return red_tail(strat,hr)
 def gen_strat(polys):
   polys=[Polynomial(p) for p in polys]
-  polys=[p for p in polys if not p.isZero()]
+  polys=[p for p in polys if not p.is_zero()]
   assert len(set([p.lead() for p in polys]))==len(polys)
   strat=GroebnerStrategy()
   for p in polys:
@@ -83,12 +83,12 @@ def proof(ifthen,strat):
   it=ifthen.thenpart
   print "proofing:", ifthen
   c=logicalor([1+logicaland(ip),logicaland(it)])
-  if c.isZero():
+  if c.is_zero():
     print "TRUE (trivial)"
     return
   else:
     c=nf3(strat.reduction_strategy,c,c.lead())
-    if c.isZero():
+    if c.is_zero():
       print "TRUE"
       return
     else:
@@ -104,10 +104,10 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
 
   for p in ip_pre:
     p=Polynomial(p)
-    if p.isZero(): continue
+    if p.is_zero(): continue
     li=list(p.lead().variables())
     if len(li)==1 and (not (li[0] in list(Polynomial(reductors).lead().variables()))):
-      assert not Polynomial(reductors).isZero()
+      assert not Polynomial(reductors).is_zero()
       lead_index=li[0]
       if redsb:
           p=ll_red_nf_redsb(p,reductors)
@@ -115,7 +115,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
 
       
       p_nav=p.navigation()
-      reductors=recursively_insert(p_nav.elseBranch(),p_nav.value(),reductors)
+      reductors=recursively_insert(p_nav.else_branch(),p_nav.value(),reductors)
     else:
       ip.append(p)
   it=ifthen.thenpart
@@ -127,7 +127,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
         print "proofing part:",c
     c=logicalor([1+ip,c])
 
-    if c.isZero():
+    if c.is_zero():
       if prot:
          print "TRUE (trivial)"
       return True
@@ -137,7 +137,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
           c=ll_red_nf(c,reductors)
       else:
           c=ll_red_nf_noredsb(c,reductors)
-      if c.isZero():
+      if c.is_zero():
         if prot:
             print "TRUE"
         return True

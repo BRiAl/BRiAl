@@ -2,7 +2,7 @@ from polybori.PyPolyBoRi import Polynomial
 from nf import symmGB_F2_python
 def dense_system(I):
     I=(Polynomial(p) for p in I)
-    I=(p for p in I if not p.isZero())
+    I=(p for p in I if not p.is_zero())
     for p in I:
         d=p.deg()
         if p.deg()==1:
@@ -16,7 +16,7 @@ def gauss_on_linear(I):
     linear=[]
     non_linear=[]
     for p in I:
-        if p.isZero():
+        if p.is_zero():
             continue
         if p.deg()<=1:
             linear.append(p)

@@ -72,5 +72,5 @@ def preprocess(I,prot=True):
       res.extend([u_im*p for p in min_gb(systems[u])])
       #print [u_im*p for p in min_gb(systems[u])]
   print "lin:", len(lin), "res:", len(res),"square:", len(square)
-  res=[p for p in (Polynomial(p) for p in res) if not p.isZero()]
+  res=[p for p in (Polynomial(p) for p in res) if not p.is_zero()]
   return res

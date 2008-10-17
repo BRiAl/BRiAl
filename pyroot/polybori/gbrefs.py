@@ -48,7 +48,7 @@ def number_of_declared_vars(data):
     try:
         return data.number_of_declared_vars
     except:
-        return data.r.nVars()
+        return data.r.ngens()
 def load_ref_gz_uu(s,o,b):
     s=sub("data/","",s)
     s=sub(r"data\.","",s)

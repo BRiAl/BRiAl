@@ -13,32 +13,6 @@ class GeneratorLimitExceeded(Exception):
         
         
         
-def myspoly(f,g):
-    """only for the profiler to be noticed"""
-    return spoly(f,g)
-    
-
-def lm_tuple(f):
-    if isinstance(f,Polynomial):
-        f=f.lead()
-  
-    res=tuple(f)
-    
-    return res
-def product_criterion(f,g):
-    f=set(lm_tuple(f))
-    g=set(lm_tuple(g))
-    if len(f.intersection(g))==0:
-        return True
-    else:
-        return False
-def update_cache2(h,cache):
-    (LG,LGM)=cache
-    lead=h.lead()
-    l=lm_tuple(lead)
-    LGM[l]=h
-    LG=LG.union(lead.set())
-    return (LG,LGM)
 
 
 matrix_prefix="hfe30_"
@@ -104,45 +78,6 @@ def build_and_print_matrices(v,strat):
     print "MATRIX_SIZE:", rows,"x",cols
     
    
-def sum_terms(terms):
-    l=len(terms)
-    if l==0:
-        return Polynomial(0)
-    if l==1:
-        return Polynomial(terms[0])
-    if l==2:
-        return Polynomial(terms[1]+terms[0])
-    s=l/2
-    return sum_terms(terms[:s])+sum_terms(terms[s:])
-def noro_step(polys,strat):
-    def nf(p,strat):
-        if p.isZero():
-            return p
-        else:
-            return nf3(strat.reduction_strategy,p,p.lead())
-    llReductor=strat.llReductor
-    polys=[nf(ll_red_nf_redsb(p,llReductor),strat) for p  in polys]
-    polys=[strat.redTail(p) for p in polys if not p.isZero()]
-    terms=BooleSet()
-    for p in polys:
-        terms=terms.union(p.set())
-    terms=list(BooleSet(terms))
-    terms.sort(reverse=True)
-    i2term=list(enumerate(terms))
-    term2i=dict(((i,j) for (j,i) in i2term))
-    i2term=dict(i2term)
-    rows=len(polys)
-    cols=len(terms)
-    m=createMatGF2(rows,cols)
-    for (i,p) in enumerate(polys):
-        for t in BooleSet(p.set()):
-            j=term2i[t]
-            m[i,j]=1
-    rank=m.gauss()
-    
-    polys=[sum_terms([i2term[j] for j in xrange(cols) if m[i,j]]) for i in xrange(rank)]
-
-    return polys
 
 def build_and_print_matrices_deg_colored(v,strat):
     
@@ -203,7 +138,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
     if use_noro and use_faugere:
         raise Exception
     def add_to_basis(strat,p):
-        if p.isZero():
+        if p.is_zero():
             if prot:
                 print "-"
         else:
@@ -232,7 +167,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         
 
         for g in  G:
-            if not g.isZero():
+            if not g.is_zero():
                 strat.addGeneratorDelayed(g)
     else:
         strat=G
@@ -267,7 +202,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
              v=BoolePolynomialVector()
 
              for p in ps:
-                    if not p.isZero():
+                    if not p.is_zero():
                         v.append(p)
              if print_matrices:
                  build_and_print_matrices(v,strat)
@@ -282,7 +217,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 #print p
                 p=Polynomial(mod_mon_set(BooleSet(p.set()),strat.reduction_strategy.monomials))
                 #p=ll_red_nf(p,strat.llReductor)
-                if not p.isZero():
+                if not p.is_zero():
                     v.append(p)
             if print_matrices:
                 build_and_print_matrices(v,strat)
@@ -309,7 +244,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             add_to_basis(strat,p)
             if implications and old_len==len(strat)-1:
                 strat.implications(len(strat)-1)
-            if p.isOne():
+            if p.is_one():
                 #strat.toStdOut()
                 if prot:
                     print "GB is 1"
@@ -432,7 +367,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         index=strat.suggestPluginVariable();
         if index<0:
             uv=set(used_vars_set(strat))
-            lv=set([iter(p.lead()).next().index() for p in strat if p.lmDeg()==1])
+            lv=set([iter(p.lead()).next().index() for p in strat if p.lm_deg()==1])
             candidates=uv.difference(lv)
             if len(candidates)>0:
                 index=iter(candidates).next().index()
@@ -561,7 +496,7 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         #if PROT:
         #    print "added first"
         for g in G:#[1:]:
-            if not g.isZero():
+            if not g.is_zero():
                 strat.addGeneratorDelayed(g)
     strat.symmGB_F2()
     return strat

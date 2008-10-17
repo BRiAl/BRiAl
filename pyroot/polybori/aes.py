@@ -33,7 +33,7 @@ def cached_GB(I,prot=False):
     
     m=Monomial()
     for p in I:
-        m=m*p.varsAsMonomial()
+        m=m*p.vars_as_monomial()
     table_to_ring=dict(enumerate([v.index() for v in m.variables()]))
     table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m.variables())])
     codes=tuple(sorted([p2code(p,table_to_123) for p in I]))
@@ -65,7 +65,7 @@ def preprocess(I, prot=False):
     linear=[]
     square=[]
     for p in I:
-        if p.isZero():
+        if p.is_zero():
             continue
         if p.deg()==1:
             linear.append(p)
@@ -74,7 +74,7 @@ def preprocess(I, prot=False):
             square.append(p)
     subs={}        
     for p in square:
-        m=p.varsAsMonomial()
+        m=p.vars_as_monomial()
         if m in subs:
             subs[m].append(p)
         else:

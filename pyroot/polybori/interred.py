@@ -15,7 +15,7 @@ def interred(l,completely=False):
             g.optRedTail=True
         for p in l:
             p=g.nf(p)
-            if not p.isZero():
+            if not p.is_zero():
                 g.add_generator(p)
         l=tuple([e.p for e in g])
     return list(l)

@@ -135,7 +135,7 @@ with inverted variable order\n\
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
 //#endif
-    .def("nVars", &BoolePolyRing::nVariables, "Number of ring variables");
+    .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables");
   
   def("append_ring_block", &BooleEnv::appendBlock, 
       "Append integer, which marks start of next block (for block orderings)");
@@ -169,7 +169,7 @@ with inverted variable order\n\
   .def(self<self)
   .def(self<=self)
   .def(self==self)
-  .def("varsAsMonomial",&used_var, 
+  .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")
   .def("__str__", streamable_as_str<BooleVariable>)
   .def("__repr__", streamable_as_str<BooleVariable>)
@@ -177,8 +177,7 @@ with inverted variable order\n\
   .def("__pow__", var_power)
   .def("index", &BooleVariable::index, "Variable position in the ring")
   .def("set",&BooleVariable::set, "Convert to BooleSet")
-  .def("ring", &BooleVariable::ring, "Get corresponding ring")
-  .def("toStdOut", print_variable);
+  .def("ring", &BooleVariable::ring, "Get corresponding ring");
   boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
   typedef PBoRiGenericError<CTypes::division_by_zero> pbori_div_by_zero;
   boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);

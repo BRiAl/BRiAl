@@ -14,7 +14,7 @@ from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
-        if p.isOne():
+        if p.is_one():
             return True
     return False
 
@@ -41,16 +41,16 @@ def want_interpolation_gb(G):
     if len(G)!=1:
         return False
     p=Polynomial(G[0])
-    if p.lmDeg()<=1:
+    if p.lm_deg()<=1:
         return False
-    if p.set().nNodes()>1000:
+    if p.set().n_nodes()>1000:
         return False
     return True
 
 def ll_is_good(I):
     lex_lead=set()
     for p in I:
-        m=p.lexLead()
+        m=p.lex_lead()
         if m.deg()==1:
             lex_lead.add(iter(m.variables()).next().index())
     if len(lex_lead)>=0.8*len(I):
@@ -173,7 +173,7 @@ def with_heuristic(heuristic_function):
     return make_wrapper
 def clean_polys(I):
     zero=Polynomial(0)
-    I=[Polynomial(p) for p in I if p!=zero]
+    I=list(set((Polynomial(p) for p in I if p!=zero)))
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
@@ -238,7 +238,7 @@ def minsb_post(I,state):
     else:
         return I.minimalize()
 def invert_all(I):
-    return [p.mapEveryXToXPlusOne() for p in I]
+    return [p.map_every_x_to_x_plus_one() for p in I]
 def invert_all_pre(I):
     return (invert_all(I),None)
 def invert_all_post(I,state):
@@ -253,7 +253,7 @@ def ll_constants_pre(I):
     ll=[]
     leads=set()
     for p in I:
-        if p.lexLmDeg()==1:
+        if p.lex_lm_deg()==1:
             l=p.lead()
             if not (l in leads) and len(p)<=2:
                 tail=p+l
@@ -266,7 +266,7 @@ def ll_constants_pre(I):
     reduced=[]
     for p in I_new:
         p=ll_red_nf_redsb(p,encoded)
-        if not p.isZero():
+        if not p.is_zero():
             reduced.append(p)
     #(eliminated,llnf, I)=eliminate(I,on_the_fly=False)
     
@@ -295,7 +295,7 @@ def llfirstonthefly_pre(I,prot):
     return (I,eliminated)
 def llfirst_post(I,eliminated,prot):
     for p in I:
-        if p.isOne():
+        if p.is_one():
             return [p]
     else:
         if len(eliminated)>0:
@@ -307,7 +307,7 @@ def llfirst_post(I,eliminated,prot):
 
 def ll_constants_post(I,eliminated):
     for p in I:
-        if p.isOne():
+        if p.is_one():
             return [p]
     else:
         if len(eliminated)>0:
@@ -350,6 +350,10 @@ def groebner_basis(I, faugere=False,
        draw_matrices= False, llfirstonthefly= False,
        linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
+    if full_prot:
+        prot=True
+    if prot:
+        print "number of passed generators:",len(I)
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
             raise ValueError
@@ -366,8 +370,7 @@ def groebner_basis(I, faugere=False,
     if gauss_on_linear_first:
         I=gauss_on_linear(I)
     import nf
-    if full_prot:
-        prot=True
+
     
     nf.print_matrices=draw_matrices
     nf.matrix_prefix=matrix_prefix

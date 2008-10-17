@@ -69,8 +69,8 @@ corresponding to Variables of given index is replaced by its else-branch")
     .def("change", &BooleSet::change, 
          "Substitute variable of given index by its complement")
     .def("empty", &BooleSet::emptiness, "Check, whether BooleSet is empty")
-    .def("nNodes", &BooleSet::nNodes, "Number of nodes of the underlying ZDD")
-    .def("nSupport", &BooleSet::nSupport)
+    .def("n_nodes", &BooleSet::nNodes, "Number of nodes of the underlying ZDD")
+ 
     .def("union",&BooleSet::unite, "Set union")
     .def("vars",&BooleSet::usedVariables, "Variables occurring in BooleSet")
     .def("navigation", &BooleSet::navigation,
@@ -81,9 +81,9 @@ corresponding to Variables of given index is replaced by its else-branch")
          "Get minimal elements with respect to inclusion")
     .def("__contains__", (owns_func_type) &BooleSet::owns, 
          "Check whether a term is included in BooleSet")
-    .def("multiplesOf",(divisors_func_type) &BooleSet::multiplesOf, 
+    .def("multiples_of",(divisors_func_type) &BooleSet::multiplesOf, 
          "Compute intersection with multiples of the right-hand side term")
-    .def("divisorsOf",(divisors_func_type) &BooleSet::divisorsOf, 
+    .def("divisors_of",(divisors_func_type) &BooleSet::divisorsOf, 
          "Compute intersection with divisors of the right-hand side term")
     .def("existAbstract",&BooleSet::existAbstract, "a.existsAbstract(m) returns\
  a BooleSet, where every term t is included, where exists n such that n*m=t*m\
