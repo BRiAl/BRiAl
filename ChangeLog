@@ -24,6 +24,7 @@ Release Name: 0.6.0
     * thenBranch -> then_branch
     * elseBranch -> else_branch
     * lmDivisors -> lm_divisors
+    * lexLmDeg -> lex_lm_deg
     * lexLead -> lex_lead
     * isZero -> is_zero
     * isOne -> is_one
@@ -31,14 +32,14 @@ Release Name: 0.6.0
     * multiplesOf -> multiples_of
     * reducibleBy ->reducible_by
     * hasConstantPart -> has_constant_part
-    * map_every_x_to_x_plus_one -> mapEveryXToXPlusOne
+    * mapEveryXToXPlusOne -> map_every_x_to_x_plus_one
     * zerosIn -> zeros_in
 * Python interface, dropped functions
   * nSupport
   * firstTerm
   * toStdOut
 * Python interface
-  * made var, one, zero, n_variables avaible not only to Ring, but also to BooleRing
+  * made var, one, zero, n_variables availabel not only to Ring, but also to BooleRing
 * optimized interred
 
 Release Name: 0.5.0
