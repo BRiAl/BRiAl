@@ -47,13 +47,13 @@ bool have_degree_order(){
 
 
 BoolePolynomial
-ring_var(const BoolePolyRing& ring, BooleVariable::idx_type idx) {
+ring_var(const BooleRing& ring, BooleVariable::idx_type idx) {
   return ring.variable(idx);
 }
-BoolePolynomial ring_one(const BoolePolyRing& ring) {
+BoolePolynomial ring_one(const BooleRing& ring) {
   return ring.one();
 }
-BoolePolynomial ring_zero(const BoolePolyRing& ring) {
+BoolePolynomial ring_zero(const BooleRing& ring) {
   return ring.zero();
 }
 
@@ -114,8 +114,13 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   def("print_ring_info", &BooleEnv::printInfo);
   
   boost::python::class_<BooleRing>("BooleRing", "Boolean ring")
-    .def(boost::python::init <BooleRing::size_type>());
+    .def(boost::python::init <BooleRing::size_type>())
 
+    .def("var", ring_var, "i-th ring Variable")
+    .def("one", ring_one, "Polynomial one")
+    .def("zero", ring_zero, "Polynomial zero")
+
+    .def("n_variables", &BooleRing::nVariables, "Number of ring variables");
   boost::python::class_<BoolePolyRing,boost::python::bases<BooleRing> >("Ring", "Boolean polynomial ring")
     //.def(boost::python::init <>())
     .def("set",&BooleEnv::set, "Activate current Ring")
@@ -129,13 +134,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
                 dp_asc: degree reverse lexicographical ordering \
 with inverted variable order\n\
                 block_dp_asc: Block ordering with blocks consisting of dp_asc\n\
-                block_dlex: Block ordering with blocks consisting of dlex\n") )
-//#ifdef WRAP_ALSO_CUUD
-    .def("var", ring_var, "i-th ring Variable")
-    .def("one", ring_one, "Polynomial one")
-    .def("zero", ring_zero, "Polynomial zero")
-//#endif
-    .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables");
+                block_dlex: Block ordering with blocks consisting of dlex\n") );
+
   
   def("append_ring_block", &BooleEnv::appendBlock, 
       "Append integer, which marks start of next block (for block orderings)");

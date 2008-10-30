@@ -146,7 +146,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 if full_prot:
                     print p
                 print "Result: ", "deg:", p.deg(), "lm: ", p.lead(), "el: ", p.elength()
-            strat.addAsYouWish(p)
+            strat.add_as_you_wish(p)
             
             if prot:
                 print "#Generators:", len(strat)
@@ -168,7 +168,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
 
         for g in  G:
             if not g.is_zero():
-                strat.addGeneratorDelayed(g)
+                strat.add_generator_delayed(g)
     else:
         strat=G
         
@@ -263,7 +263,7 @@ def GPS(G,vars_start, vars_end):
         print "npairs", strat.npairs()
         strat=GroebnerStrategy(strat)
         print "npairs", strat.npairs()
-        strat.addGeneratorDelayed(Polynomial(Monomial(Variable(var))+val))
+        strat.add_generator_delayed(Polynomial(Monomial(Variable(var))+val))
         strat=symmGB_F2_python(strat,prot=True,deg_bound=2, over_deg_bound=10)
         if var<=vars_start:
             strat=symmGB_F2_python(strat, prot=True, optLazy=False, redTail=False)
@@ -286,9 +286,9 @@ def GPS(G,vars_start, vars_end):
         step(strat, trace, var, 0)
         step(strat, trace, var, 1)
     strat=GroebnerStrategy()
-    #strat.addGenerator(G[0])
+    #strat.add_generator(G[0])
     for g in G[:]:
-        strat.addGeneratorDelayed(g)
+        strat.add_generator_delayed(g)
     branch(strat,[],vars_end-1)
 
 
@@ -305,9 +305,9 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
         plug_p_lead=plug_p.lead()
         if len(plug_p)==2 and (plug_p+plug_p_lead).deg()==0:
             for v in plug_p_lead:
-                strat.addGeneratorDelayed(v+1)
+                strat.add_generator_delayed(v+1)
         else:
-            strat.addGeneratorDelayed(plug_p)
+            strat.add_generator_delayed(plug_p)
         print "npairs", strat.npairs()
         print "pos:", pos
         strat=symmGB_F2_python(strat,deg_bound=deg_bound, optLazy=False,over_deg_bound=over_deg_bound,prot=True)
@@ -336,9 +336,9 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
         step(strat, trace,  proof_path, pos, 0)
         step(strat, trace,  proof_path, pos, 1)
     strat=GroebnerStrategy()
-    strat.addGenerator(Polynomial(G[0]))
+    strat.add_generator(Polynomial(G[0]))
     for g in G[1:]:
-        strat.addGeneratorDelayed(Polynomial(g))
+        strat.add_generator_delayed(Polynomial(g))
     branch(strat,[], proof_path, 0)
 
 
@@ -353,7 +353,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
  
 
         
-        strat.addGeneratorDelayed(plug_p)
+        strat.add_generator_delayed(plug_p)
         print "npairs", strat.npairs()
         
         strat=symmGB_F2_python(strat,deg_bound=deg_bound,optLazy=optLazy,over_deg_bound=over_deg_bound,prot=True)
@@ -403,14 +403,14 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
           print g
           index=strat.select(g.lead())
           if p.deg()==1:#(index<0):
-              strat.addAsYouWish(g)
+              strat.add_as_you_wish(g)
           else:
               first_deg_bound=max(first_deg_bound,g.deg())
-              strat.addGeneratorDelayed(g)
+              strat.add_generator_delayed(g)
           print g,len(strat)
     else:
       for g in G:
-        strat.addAsYouWish(g)
+        strat.add_as_you_wish(g)
     if initial_bb:
       strat=symmGB_F2_python(strat,deg_bound=max(deg_bound,first_deg_bound), optLazy=optLazy,over_deg_bound=0,prot=True)
     strat.optLazy=optLazy
@@ -429,7 +429,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         print "npairs", strat.npairs()
         for p in proof_path[pos][choice]:
             print p
-            strat.addGeneratorDelayed(Polynomial(p))
+            strat.add_generator_delayed(Polynomial(p))
  
         print "npairs", strat.npairs()
         print "pos:", pos
@@ -463,9 +463,9 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
             step(strat, trace,  proof_path, pos, i)
  
     strat=GroebnerStrategy()
-    strat.addGenerator(G[0])
+    strat.add_generator(G[0])
     for g in G[1:]:
-        strat.addGeneratorDelayed(g)
+        strat.add_generator_delayed(g)
     branch(strat,[], proof_path, 0)
 
 def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True,max_generators=None):
@@ -488,7 +488,7 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         strat.optAllowRecursion=optAllowRecursion
         strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
         strat.enabledLog=prot
-        #strat.addGenerator(G[0])
+        #strat.add_generator(G[0])
         
         
         strat.redByReduced=False#True
@@ -497,6 +497,6 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         #    print "added first"
         for g in G:#[1:]:
             if not g.is_zero():
-                strat.addGeneratorDelayed(g)
+                strat.add_generator_delayed(g)
     strat.symmGB_F2()
     return strat

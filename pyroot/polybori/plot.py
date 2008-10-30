@@ -20,16 +20,25 @@ ${identifier(n)}[label="${label(n)}", shape="${shape(n)}"];
 #end
 
 #for n in non_constant_nodes
-${identifier(n)} -> ${identifier(n.else_branch())} [style="dotted"];
-${identifier(n)} -> ${identifier(n.then_branch())};
+${identifier(n)} -> ${identifier(n.else_branch())} [style="dashed", color="${color_else}" arrowhead="vee"];
+${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrowhead="vee"];
 #end
 }
 """
 
 
 
-def plot(p):
+def plot(p, colored=True):
     """docstring for plot"""
+    
+    if not colored:
+        color_then="black"
+        color_else="black"
+    else:
+        color_then="red"
+        color_else="blue"
+    
+    
     def find_navs(nav):
         if not nav in nodes:
             nodes.add(nav)
@@ -91,14 +100,20 @@ def main():
         Polynomial(power_set([x(i) for i in xrange(10)])),
     Polynomial(power_set([x(i) for i in xrange(10)]))+1
     ]
-    for (i,p) in enumerate(polynomials):
-        dot=plot(p)
-        dot_file=str(i) +".dot"
-        f=open(dot_file, "w")
-        f.write(dot)
-        f.close()
-        png_file=str(i)+".png"
-        system("dot -Tpng -o "+png_file+" " + dot_file)
+    for colored in [True,False]:
+        if colored:
+            colored_suffix="_colored"
+        else:
+            colored_suffix=""
+        
+        for (i,p) in enumerate(polynomials):
+            dot=plot(p,colored=colored)
+            dot_file=str(i) +colored_suffix+".dot"
+            f=open(dot_file, "w")
+            f.write(dot)
+            f.close()
+            png_file=str(i)+colored_suffix+".png"
+            system("dot -Tpng -o "+png_file+" " + dot_file)
         
 if __name__ == '__main__':
     main()

@@ -61,7 +61,7 @@ def gen_strat(polys):
   strat=GroebnerStrategy()
   for p in polys:
     print "Adding"
-    strat.addGenerator(p)
+    strat.add_generator(p)
   print "finished"
   return strat
 def logicaland(l):

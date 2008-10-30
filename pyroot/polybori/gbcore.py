@@ -319,7 +319,7 @@ def result_to_list_post(I,state):
     return list(I)
 def fix_deg_bound_post(I,state):
     if isinstance(I,GroebnerStrategy):
-        return I.allGenerators()
+        return I.all_generators()
     else:
         return I
 
@@ -407,7 +407,7 @@ def groebner_basis(I, faugere=False,
             try:
                 return call_algorithm(I,max_generators=max_generators)
             except GeneratorLimitExceeded, e:
-                I=list(e.strat.allGenerators())
+                I=list(e.strat.all_generators())
                 del e.strat
                 if prot:
                     print "generator limit exceeded:", max_generators, "restarting algorithm"

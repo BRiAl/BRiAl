@@ -34,10 +34,19 @@ Release Name: 0.6.0
     * hasConstantPart -> has_constant_part
     * mapEveryXToXPlusOne -> map_every_x_to_x_plus_one
     * zerosIn -> zeros_in
+    * suggestPluginVariable -> suggest_plugin_variable
+    * addGenerator -> add_generator
+    * addGeneratorDelayed -> add_generator_delayed
+    * addAsYouWish -> add_as_you_wish
+    * llReduceAll -> ll_reduce_all
+    * allGenerators -> all_generators
+
 * Python interface, dropped functions
   * nSupport
   * firstTerm
   * toStdOut
+  * smallSpolysInNextDegree
+  * allSpolysInNextDegree
 * Python interface
   * made var, one, zero, n_variables availabel not only to Ring, but also to BooleRing
 * optimized interred
