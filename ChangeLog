@@ -40,6 +40,12 @@ Release Name: 0.6.0
     * addAsYouWish -> add_as_you_wish
     * llReduceAll -> ll_reduce_all
     * allGenerators -> all_generators
+    * strat:redTail -> red_tail
+    * nextSpoly ->next_spoly
+    * someSpolysInNextDegree -> some_spolys_in_next_degree
+    * variableHasValue -> variable_has_value
+    * chainCriterions -> chain_criterions
+    * cleanTopByChainCriterion -> clean_top_by_chain_criterion
 
 * Python interface, dropped functions
   * nSupport

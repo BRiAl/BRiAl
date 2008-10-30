@@ -9,7 +9,7 @@ def buchberger(l):
     for p in l:
         g.add_generator(p)
     while g.npairs()>0:
-        g.cleanTopByChainCriterion()
+        g.clean_top_by_chain_criterion()
         p=g.nextSpoly()
         p=g.nf(p)
         if not p.is_zero():
@@ -27,7 +27,7 @@ def less_than_n_solutions(ideal,n):
         monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.reduction_strategy.minimal_leading_terms
         if len(monomials_not_in_leading_ideal)<n:
             return True
-        g.cleanTopByChainCriterion()
+        g.clean_top_by_chain_criterion()
         p=g.nextSpoly()
         p=g.nf(p)
         if not p.is_zero():

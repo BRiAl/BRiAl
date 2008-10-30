@@ -238,21 +238,21 @@ void export_strategy(){
   .def("suggest_plugin_variable",&GroebnerStrategy::suggestPluginVariable)
   .def("add_generator", add_generator)//&GroebnerStrategy::addGenerator)
   .def("add_generator_delayed", add_generator_delayed)
-  .def("llReduceAll", &GroebnerStrategy::llReduceAll)
+  .def("ll_reduce_all", &GroebnerStrategy::llReduceAll)
   .def("add_as_you_wish",add_as_you_wish)
   .def("implications",implications)
   .def_readonly("reduction_strategy",&GroebnerStrategy::generators)
   
-  .def("redTail",&GroebnerStrategy::redTail)
-  .def("nextSpoly", &GroebnerStrategy::nextSpoly)
-  .def("someSpolysInNextDegree", someNextDegreeSpolys)
+  .def("red_tail",&GroebnerStrategy::redTail)
+  .def("next_spoly", &GroebnerStrategy::nextSpoly)
+  .def("some_spolys_in_next_degree", someNextDegreeSpolys)
   .def("__len__",nGenerators)
   .def("__iter__",range(stratbegin, stratend))
   .def("__getitem__", get_ith_gen)
   .def("__getitem__", get_gen_by_lead)
   
-  .def("cleanTopByChainCriterion", cleanTopByChainCriterion)
-  .def("allGenerators", &GroebnerStrategy::allGenerators)
+  .def("clean_top_by_chain_criterion", cleanTopByChainCriterion)
+  .def("all_generators", &GroebnerStrategy::allGenerators)
   
 #if defined(HAVE_NTL) || defined(HAVE_M4RI)
   .def("noroStep", &GroebnerStrategy::noroStep)
@@ -260,9 +260,8 @@ void export_strategy(){
 #if defined(HAVE_NTL) || defined(HAVE_M4RI)
   .def("faugereStepDense", &GroebnerStrategy::faugereStepDense)
 #endif
-  .def("toStdOut", printGenerators)
-  .def("variableHasValue",&GroebnerStrategy::variableHasValue)
-  .def_readonly("chainCriterions",&GroebnerStrategy::chainCriterions)
+  .def("variable_has_value",&GroebnerStrategy::variableHasValue)
+  .def_readonly("chain_criterions",&GroebnerStrategy::chainCriterions)
 
   
   

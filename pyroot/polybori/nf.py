@@ -184,10 +184,10 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         if (strat.topSugar()>deg_bound) and (over_deg_bound<=0):
             return strat
         if (strat.topSugar()>deg_bound):
-            ps=strat.someSpolysInNextDegree(over_deg_bound)
+            ps=strat.some_spolys_in_next_degree(over_deg_bound)
             over_deg_bound-=len(ps)
         else:
-            ps=strat.someSpolysInNextDegree(selection_size)
+            ps=strat.some_spolys_in_next_degree(selection_size)
             
         if prot:
             print "(", strat.npairs(), ")"
@@ -253,7 +253,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 print "(", strat.npairs(), ")"
 
 
-        strat.cleanTopByChainCriterion()
+        strat.clean_top_by_chain_criterion()
     #strat.toStdOut()
     return strat
 
