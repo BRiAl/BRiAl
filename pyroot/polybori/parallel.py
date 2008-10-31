@@ -27,6 +27,8 @@ def to_fast_pickable(l):
     [[0], []]
     >>> to_fast_pickable([x(0)])
     [[2], [(0, 1, 0)]]
+    >>> to_fast_pickable([x(0)*x(1)+x(1)])
+    [[2], [(0, 3, 3), (1, 1, 0)]]
     >>> to_fast_pickable([x(1)])
     [[2], [(1, 1, 0)]]
     >>> to_fast_pickable([x(0)+1])
