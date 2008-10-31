@@ -1,49 +1,58 @@
 from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
 
-def to_fast_pickable(f):
+def to_fast_pickable(l):
     """
-    to_fast_pickable(f) converts a polynomial a builtin Python value, which is fast pickable and compact.
-    It is converted to a list of conversions of nodes. The nodes are sorted, that
-    n occurs before n.else_branch(), n.then_branch()
-    Nodes are only listed, if they are not constant (except for the root node, which might also become constant).
+    to_fast_pickable(l) converts a list of polynomials into a builtin Python value, which is fast pickable and compact.
+    It is converted to a tuple consisting of
+    - codes referring to the polynomials
+    - list of conversions of nodes. 
+        The nodes are sorted, that
+        n occurs before n.else_branch(), n.then_branch()
+        Nodes are only listed, if they are not constant.
+    
     A node is converted in this way:
         0 -> 0
         1 -> 1
         if_then_else(v,t,e) -> (v, index of then branch +2, index of else branch +2)
         The shift of +2 is for the constant values implicitly contained in the list.
+    Each code c refers to the c-2-th position in the conversion list, if c >=2, else to
+    the corresponding Boolean constant if c in {0, 1}
     >>> from polybori.PyPolyBoRi import Ring, Variable
     >>> r=Ring(1000)
     >>> x=Variable
-    >>> to_fast_pickable(Polynomial(1))
-    [1]
-    >>> to_fast_pickable(Polynomial(0))
-    [0]
-    >>> to_fast_pickable(x(0))
-    [(0, 1, 0)]
-    >>> to_fast_pickable(x(1))
-    [(1, 1, 0)]
-    >>> to_fast_pickable(x(0)+1)
-    [(0, 1, 1)]
-    >>> to_fast_pickable(x(0)*x(1))
-    [(0, 3, 0), (1, 1, 0)]
-    >>> to_fast_pickable(x(0)*x(1)+x(1))
-    [(0, 3, 3), (1, 1, 0)]
-    >>> to_fast_pickable(x(0)*x(1)+x(2))
-    [(0, 3, 4), (1, 1, 0), (2, 1, 0)]
+    >>> to_fast_pickable([Polynomial(1)])
+    [[1], []]
+    >>> to_fast_pickable([Polynomial(0)])
+    [[0], []]
+    >>> to_fast_pickable([x(0)])
+    [[2], [(0, 1, 0)]]
+    >>> to_fast_pickable([x(1)])
+    [[2], [(1, 1, 0)]]
+    >>> to_fast_pickable([x(0)+1])
+    [[2], [(0, 1, 1)]]
+    >>> to_fast_pickable([x(0)*x(1)])
+    [[2], [(0, 3, 0), (1, 1, 0)]]
+    >>> to_fast_pickable([x(0)*x(1)+x(1)])
+    [[2], [(0, 3, 3), (1, 1, 0)]]
+    >>> to_fast_pickable([x(0)*x(1)+x(2)])
+    [[2], [(0, 3, 4), (1, 1, 0), (2, 1, 0)]]
     >>> p=x(5)*x(23) + x(5)*x(24)*x(59) + x(5) + x(6)*x(23)*x(89) + x(6)*x(60)*x(89) + x(23) + x(24)*x(89) + x(24) + x(60)*x(89) + x(89) + 1
-    >>> from_fast_pickable(to_fast_pickable(p))==p
+    >>> from_fast_pickable(to_fast_pickable([p]))==[p]
     True
+    >>> to_fast_pickable([x(0)*x(1), Polynomial(0), Polynomial(1), x(3)])
+    [[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]]
     """
+    if len(l)==0:
+        return [[], []]
+    
+    f=l[0]
     f=f.set()
     r=f.ring()
     one=r.one().navigation()
     zero=r.zero().navigation()
-    f_nav=f.navigation()
-    if f_nav==one:
-        return [1]
-    if f_nav==zero:
-        return [0]
+    
+
     nodes=set()
     
     def find_navs(nav):
@@ -51,7 +60,9 @@ def to_fast_pickable(f):
             nodes.add(nav)
             find_navs(nav.then_branch())
             find_navs(nav.else_branch())
-    find_navs(f_nav)
+    for f in l:
+        f_nav=f.set().navigation()
+        find_navs(f_nav)
     nodes_sorted=sorted(nodes, key=CCuddNavigator.value)
     nodes2i={one:1,zero:0}
     for (i,n) in enumerate(nodes_sorted):
@@ -61,54 +72,51 @@ def to_fast_pickable(f):
         t=nodes2i[n.then_branch()]
         e=nodes2i[n.else_branch()]
         nodes_sorted[i]=(n.value(),t,e)
-    return nodes_sorted
+    return [[nodes2i[f.set().navigation()] for f in  l], nodes_sorted]
 
-def from_fast_pickable(f,r=None):
-    """from_fast_pickable(f) undoes the operation to_fast_pickable. The first argument is an object created by to_fast_pickable.
+def from_fast_pickable(l,r=None):
+    """from_fast_pickable(l) undoes the operation to_fast_pickable. The first argument is an object created by to_fast_pickable.
     For the specified format, see the documentation of to_fast_pickable.
     The second argument is ring, in which this polynomial should be created.
     >>> from polybori.PyPolyBoRi import Ring, Variable
     >>> r=Ring(1000)
     >>> x=Variable
-    >>> from_fast_pickable([1])
-    1
-    >>> from_fast_pickable([0])
-    0
-    >>> from_fast_pickable([(0, 1, 0)])
-    x(0)
-    >>> from_fast_pickable([(1, 1, 0)])
-    x(1)
-    >>> from_fast_pickable([(0, 1, 1)])
-    x(0) + 1
-    >>> from_fast_pickable([(0, 3, 0), (1, 1, 0)])
-    x(0)*x(1)
-    >>> from_fast_pickable([(0, 3, 3), (1, 1, 0)])
-    x(0)*x(1) + x(1)
-    >>> from_fast_pickable([(0, 3, 4), (1, 1, 0), (2, 1, 0)])
-    x(0)*x(1) + x(2)
+    >>> from_fast_pickable([[1], []])
+    [1]
+    >>> from_fast_pickable([[0], []])
+    [0]
+    >>> from_fast_pickable([[2], [(0, 1, 0)]])
+    [x(0)]
+    >>> from_fast_pickable([[2], [(1, 1, 0)]])
+    [x(1)]
+    >>> from_fast_pickable([[2], [(0, 1, 1)]])
+    [x(0) + 1]
+    >>> from_fast_pickable([[2], [(0, 3, 0), (1, 1, 0)]])
+    [x(0)*x(1)]
+    >>> from_fast_pickable([[2], [(0, 3, 3), (1, 1, 0)]])
+    [x(0)*x(1) + x(1)]
+    >>> from_fast_pickable([[2], [(0, 3, 4), (1, 1, 0), (2, 1, 0)]])
+    [x(0)*x(1) + x(2)]
+    >>> from_fast_pickable([[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]])
+    [x(0)*x(1), 0, 1, x(3)]
     """
     if r is None:
         r=global_ring()
-    i2poly={0:r.zero(),1:r.one()}
-    for i in reversed(xrange(1,len(f))):
-        (v,t,e)=f[i]
+    i2poly={0:r.zero(), 1:r.one()}
+    (indices, terms)=l
+    for i in reversed(xrange(len(terms))):
+        (v,t,e)=terms[i]
         t=i2poly[t]
         e=i2poly[e]
-        f[i]=if_then_else(v,t,e)
-        i2poly[i+2]=f[i]
-    if isinstance(f[0],int):
-        return i2poly[f[0]]
-    else:
-        (v,t,e)=f[0]
-        t=i2poly[t]
-        e=i2poly[e]
-        return Polynomial(if_then_else(v,t,e))
+        terms[i]=if_then_else(v,t,e)
+        i2poly[i+2]=terms[i]
+    return [Polynomial(i2poly[i]) for i in indices]
 
 def f(x):
     (I,kwds_as_single_arg)=x
-    I=[from_fast_pickable(p) for p in I]
+    I=from_fast_pickable(I)
     res=groebner_basis(I,**kwds_as_single_arg)
-    res=[to_fast_pickable(p) for p in res]
+    res=to_fast_pickable(res)
     return res
 def groebner_basis_first_finished(I, *l):
     """l is a list of keyword dictionaries, which will be keyword arguments to groebner_basis.
@@ -124,12 +132,12 @@ def groebner_basis_first_finished(I, *l):
 
 
     pool = Pool(processes=len(l))            
-    I=[to_fast_pickable(Polynomial(p)) for p in I]
+    I=to_fast_pickable(I)
     it = pool.imap_unordered(f, [(I,kwds) for kwds in l])  
    
     res=it.next() 
     pool.terminate()
-    return [from_fast_pickable(p) for p in res]
+    return from_fast_pickable(res)
 def _test():
     import doctest
     doctest.testmod()
