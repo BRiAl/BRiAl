@@ -62,18 +62,23 @@ def to_fast_pickable(l):
             nodes.add(nav)
             find_navs(nav.then_branch())
             find_navs(nav.else_branch())
+
     for f in l:
         f_nav=f.set().navigation()
         find_navs(f_nav)
+
     nodes_sorted=sorted(nodes, key=CCuddNavigator.value)
     nodes2i={one:1,zero:0}
+
     for (i,n) in enumerate(nodes_sorted):
         nodes2i[n]=i+2
+
     for i in xrange(len(nodes_sorted)):
         n=nodes_sorted[i]
         t=nodes2i[n.then_branch()]
         e=nodes2i[n.else_branch()]
         nodes_sorted[i]=(n.value(),t,e)
+
     return [[nodes2i[f.set().navigation()] for f in  l], nodes_sorted]
 
 def from_fast_pickable(l,r=None):
@@ -106,20 +111,23 @@ def from_fast_pickable(l,r=None):
         r=global_ring()
     i2poly={0:r.zero(), 1:r.one()}
     (indices, terms)=l
+
     for i in reversed(xrange(len(terms))):
         (v,t,e)=terms[i]
         t=i2poly[t]
         e=i2poly[e]
         terms[i]=if_then_else(v,t,e)
         i2poly[i+2]=terms[i]
+
     return [Polynomial(i2poly[i]) for i in indices]
 
-def f(x):
+def _calculate_gb_with_keywords(x):
     (I,kwds_as_single_arg)=x
     I=from_fast_pickable(I)
     res=groebner_basis(I,**kwds_as_single_arg)
     res=to_fast_pickable(res)
     return res
+
 def groebner_basis_first_finished(I, *l):
     """l is a list of keyword dictionaries, which will be keyword arguments to groebner_basis.
     First finished computes in parallel in just returns the result of the first finished process. Arguments are supposed to pickable.
@@ -130,16 +138,15 @@ def groebner_basis_first_finished(I, *l):
     >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
     [x(1), x(2)]
     """
+    
     from processing import Pool
-
-
     pool = Pool(processes=len(l))            
     I=to_fast_pickable(I)
-    it = pool.imap_unordered(f, [(I,kwds) for kwds in l])  
-   
+    it = pool.imap_unordered(_calculate_gb_with_keywords, [(I,kwds) for kwds in l])  
     res=it.next() 
     pool.terminate()
     return from_fast_pickable(res)
+
 def _test():
     import doctest
     doctest.testmod()
