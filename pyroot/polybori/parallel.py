@@ -1,5 +1,6 @@
 from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring
 from polybori.gbcore import groebner_basis
+
 def to_fast_pickable(f):
     """
     to_fast_pickable(f) converts a polynomial a builtin Python value, which is fast pickable and compact.
@@ -99,8 +100,33 @@ def from_fast_pickable(f,r=None):
         t=i2poly[t]
         e=i2poly[e]
         return Polynomial(if_then_else(v,t,e))
-        
 
+def f(x):
+    (I,kwds_as_single_arg)=x
+    I=[from_fast_pickable(p) for p in I]
+    res=groebner_basis(I,**kwds_as_single_arg)
+    res=[to_fast_pickable(p) for p in res]
+    return res
+def groebner_basis_first_finished(I, *l):
+    """l is a list of keyword dictionaries, which will be keyword arguments to groebner_basis.
+    First finished computes in parallel in just returns the result of the first finished process. Arguments are supposed to pickable.
+
+    >>> from polybori.PyPolyBoRi import Ring, Variable
+    >>> r=Ring(1000)
+    >>> x=Variable
+    >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
+    [x(1), x(2)]
+    """
+    from processing import Pool
+
+
+    pool = Pool(processes=len(l))            
+    I=[to_fast_pickable(Polynomial(p)) for p in I]
+    it = pool.imap_unordered(f, [(I,kwds) for kwds in l])  
+   
+    res=it.next() 
+    pool.terminate()
+    return [from_fast_pickable(p) for p in res]
 def _test():
     import doctest
     doctest.testmod()
