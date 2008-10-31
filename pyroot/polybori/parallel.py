@@ -1,6 +1,8 @@
-# 
+#!/usr/bin/env python
+# coding=utf-8
+
 #  parallel.py
-#  «PolyBoRi»
+#  PolyBoRi
 #  
 #  Created by Michael Brickenstein on 2008-10-31.
 #  Copyright 2008 The PolyBoRi Team
