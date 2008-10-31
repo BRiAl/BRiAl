@@ -1,3 +1,11 @@
+# 
+#  parallel.py
+#  «PolyBoRi»
+#  
+#  Created by Michael Brickenstein on 2008-10-31.
+#  Copyright 2008 The PolyBoRi Team
+# 
+
 from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
 
