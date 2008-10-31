@@ -146,9 +146,14 @@ def _calculate_gb_with_keywords(x):
     return res
 
 def groebner_basis_first_finished(I, *l):
-    """l is a list of keyword dictionaries, which will be keyword arguments to groebner_basis.
-    First finished computes in parallel in just returns the result of the first finished process. Arguments are supposed to pickable.
-
+    """
+    INPUT:
+        - I ideal
+        - l: keyword dictionaries, which will be keyword arguments to groebner_basis.
+    OUTPUT:
+        - tries to compute groebner_basis(I, **kwd) for kwd in l
+        - returns the result of the first terminated computation
+    
     >>> from polybori.PyPolyBoRi import Ring, Variable
     >>> r=Ring(1000)
     >>> x=Variable
