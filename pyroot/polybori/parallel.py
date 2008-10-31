@@ -153,12 +153,12 @@ def groebner_basis_first_finished(I, *l):
     OUTPUT:
         - tries to compute groebner_basis(I, **kwd) for kwd in l
         - returns the result of the first terminated computation
-    
-    >>> from polybori.PyPolyBoRi import Ring, Variable
-    >>> r=Ring(1000)
-    >>> x=Variable
-    >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
-    [x(1), x(2)]
+    EXAMPLES:    
+        >>> from polybori.PyPolyBoRi import Ring, Variable
+        >>> r=Ring(1000)
+        >>> x=Variable
+        >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
+        [x(1), x(2)]
     """
     
     from processing import Pool
