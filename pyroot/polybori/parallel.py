@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring
+from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
 
 def to_fast_pickable(f):
@@ -31,6 +31,9 @@ def to_fast_pickable(f):
     [(0, 3, 3), (1, 1, 0)]
     >>> to_fast_pickable(x(0)*x(1)+x(2))
     [(0, 3, 4), (1, 1, 0), (2, 1, 0)]
+    >>> p=x(5)*x(23) + x(5)*x(24)*x(59) + x(5) + x(6)*x(23)*x(89) + x(6)*x(60)*x(89) + x(23) + x(24)*x(89) + x(24) + x(60)*x(89) + x(89) + 1
+    >>> from_fast_pickable(to_fast_pickable(p))==p
+    True
     """
     f=f.set()
     r=f.ring()
@@ -42,14 +45,14 @@ def to_fast_pickable(f):
     if f_nav==zero:
         return [0]
     nodes=set()
-    nodes_sorted=list()
+    
     def find_navs(nav):
         if not nav in nodes and not nav.constant():
             nodes.add(nav)
-            nodes_sorted.append(nav)
             find_navs(nav.then_branch())
             find_navs(nav.else_branch())
     find_navs(f_nav)
+    nodes_sorted=sorted(nodes, key=CCuddNavigator.value)
     nodes2i={one:1,zero:0}
     for (i,n) in enumerate(nodes_sorted):
         nodes2i[n]=i+2
