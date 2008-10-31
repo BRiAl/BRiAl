@@ -53,8 +53,6 @@ def to_fast_pickable(l):
     r=f.ring()
     one=r.one().navigation()
     zero=r.zero().navigation()
-    
-
     nodes=set()
     
     def find_navs(nav):
