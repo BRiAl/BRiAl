@@ -10,6 +10,8 @@ Copyright (c) 2008 Mathematisches Forschungsinstitut Oberwolfach. All rights res
 import sys
 import os
 from polybori.PyPolyBoRi import Ring, Polynomial, Variable, BooleSet
+from subprocess import Popen, PIPE
+
 
 graph_template="""
 digraph polynomial{
@@ -28,8 +30,16 @@ ${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrow
 
 
 
-def plot(p, colored=True):
-    """docstring for plot"""
+def plot(p, filename, colored=True,format="png"):
+    """plots ZDD structure to <filename> in format <format>
+
+    EXAMPLES:
+
+    >>> r=Ring(1000)
+    >>> x=Variable
+    >>> plot(x(1)+x(0),"/dev/null", colored=True)
+    >>> plot(x(1)+x(0),"/dev/null", colored=False)
+    """
     
     if not colored:
         color_then="black"
@@ -72,7 +82,15 @@ def plot(p, colored=True):
     from genshi.template import TextTemplate
     tmpl = TextTemplate(graph_template)
     stream = tmpl.generate(**locals())
-    return str(stream)
+
+    
+    dot_input=str(stream)
+    
+    process = Popen(["dot", "-T"+format, "-o",filename], stdin=PIPE, stdout=PIPE)
+
+    process.stdin.write(dot_input)
+    process.stdin.close()
+    process.wait()
     
         
 def main():
@@ -105,15 +123,16 @@ def main():
             colored_suffix="_colored"
         else:
             colored_suffix=""
-        
-        for (i,p) in enumerate(polynomials):
-            dot=plot(p,colored=colored)
-            dot_file=str(i) +colored_suffix+".dot"
-            f=open(dot_file, "w")
-            f.write(dot)
-            f.close()
-            png_file=str(i)+colored_suffix+".png"
-            system("dot -Tpng -o "+png_file+" " + dot_file)
+        for format in ["png", "svg"]:
+            for (i,p) in enumerate(polynomials):
+            
+                #dot_file=str(i) +colored_suffix+".dot"
+                #f=open(dot_file, "w")
+                #f.write(dot)
+                #f.close()
+                out_file=str(i)+colored_suffix+"."+format
+                plot(p, out_file, colored=colored,format=format)
+                #system("dot -Tpng -o "+png_file+" " + dot_file)
         
 if __name__ == '__main__':
     main()
