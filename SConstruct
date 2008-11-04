@@ -664,7 +664,11 @@ if SINGULAR_HOME:
   HAVE_SINGULAR_EXTENSION=True
 else:
   HAVE_SINGULAR_EXTENSION=False
+
 if HAVE_SINGULAR_EXTENSION:
+
+    SINGULAR_LIBS = env['LIBS'] + ['groebner', 'polybori']
+    
     SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
     SING_ARCH=SING_ARCH.replace("\n","")
     SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
@@ -673,12 +677,12 @@ if HAVE_SINGULAR_EXTENSION:
     if env['PLATFORM']=="darwin":
         singpb=env.LoadableModule('Singular/polybori_module', wrapper_files,
             LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
-            LIBS=LIBS,LDMODULESUFFIX=".so",
+            LIBS=SINGULAR_LIBS,LDMODULESUFFIX=".so",
             CPPPATH=SING_INCLUDES+CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
     else:
         #print "l:", l
         singpb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=LIBS+USERLIBS,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=SINGULAR_LIBS,
             CPPPATH=SING_INCLUDES+CPPPATH)
             #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
             #SHLIBPREFIX="")
