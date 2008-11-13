@@ -467,7 +467,7 @@ env.Clean([libpb] + pb_shared, cache_opts)
 # Stuff for building Groebner library
 ######################################################################
 
-gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc polynomial_properties.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
+gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc fglm.cc polynomial_properties.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src = [GBPath('src', source) for source in gb_src]
 if not(external_m4ri):
    gb_src += m4ri
