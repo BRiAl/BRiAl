@@ -57,6 +57,7 @@ void FGLMStrategy::setupMultiplicationTables(){
             size_t divided_index=standardMonomialsFrom2Index[divided];
             packedmatrix* mat=multiplicationTables[our_var_index];
             mzd_write_bit(mat, divided_index,i, 1);
+            it++;
         }
     }
     for(i=0;i<gbFrom.size();i++){
@@ -83,7 +84,7 @@ void FGLMStrategy::setupMultiplicationTables(){
             for(j=0;j<varietySize;j++){
                 mzd_write_bit(mat, divided_index, j, mzd_read_bit(row,0,j));
             }
-            it++;
+            it_lm++;
         }
         //optimize that;
         mzd_free(row);
@@ -99,14 +100,16 @@ void FGLMStrategy::setupMultiplicationTables(){
     BooleEnv::set(backup_ring);
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
-    ring_with_ordering_type backup_ring=BooleEnv::ring();
-    BooleEnv::set(from);
+    //ring_with_ordering_type backup_ring=BooleEnv::ring();
+    //BooleEnv::set(from);
     vars=gb.leadingTerms.usedVariables();
     int i;
     for (i=0;i<gb.size();i++){
         vars=vars * Monomial(gb[i].usedVariables, from);
     }
-    size_t nVariables=vars.deg();
+    nVariables=vars.deg();
+    ring2Index.resize(nVariables);
+    index2Ring.resize(nVariables);
     idx_type ring_index;
     idx_type our_index=0;
     Monomial::const_iterator it=vars.begin();
@@ -121,9 +124,10 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     }
     
     standardMonomialsFrom=mod_mon_set(vars.divisors(), gb.leadingTerms);
+    cout<<endl<<standardMonomialsFrom<<endl;
     leadingTermsFrom=gb.leadingTerms;
     varietySize=standardMonomialsFrom.size();
-    BooleEnv::set(backup_ring);
+    //BooleEnv::set(backup_ring);
 }
 
 END_NAMESPACE_PBORIGB

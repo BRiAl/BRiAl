@@ -33,8 +33,8 @@ public:
             it++;
         }
         analyzeGB(this->gbFrom);
-        setupStandardMonomialsFromTables();
-        setupMultiplicationTables();
+        //setupStandardMonomialsFromTables();
+        //setupMultiplicationTables();
         
     }
     
