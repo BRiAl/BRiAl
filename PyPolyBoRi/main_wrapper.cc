@@ -115,7 +115,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   boost::python::class_<BooleRing>("BooleRing", "Boolean ring")
     .def(boost::python::init <BooleRing::size_type>())
-
+    
     .def("var", ring_var, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
@@ -125,6 +125,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     //.def(boost::python::init <>())
     .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
+    
     .def(boost::python::init <BoolePolyRing::size_type, int>(
          "Construct a Boolean polynomial ring with the following parameters:\n\
             n -- number of variables (integer)\n\
