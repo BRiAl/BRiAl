@@ -13,7 +13,7 @@ USING_NAMESPACE_PBORIGB
 void export_fglm(){
     boost::python::class_<FGLMStrategy > ("FGLMStrategy")
          .def(boost::python::init<>())
-            .def(boost::python::init<const BooleEnv::ring_type& , const BooleEnv::ring_type& , std::vector<Polynomial>  >());
+            .def(boost::python::init<const BooleEnv::ring_type& , const BooleEnv::ring_type& , const std::vector<Polynomial>&  >());
 
 }
 
