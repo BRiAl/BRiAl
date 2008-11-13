@@ -21,7 +21,8 @@ typedef std::vector<Polynomial> poly_vec;
 class FGLMStrategy{
 public:
     typedef BooleEnv::ring_type ring_with_ordering_type;
-    FGLMStrategy(ring_with_ordering_type& from, ring_with_ordering_type& to,  const PolynomialVector& gb){
+    FGLMStrategy(){}
+    FGLMStrategy(const ring_with_ordering_type& from, const ring_with_ordering_type& to,  const PolynomialVector& gb){
         this->from=from;
         this->to=to;
         PolynomialVector::const_iterator it=gb.begin();

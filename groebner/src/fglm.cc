@@ -90,6 +90,7 @@ void FGLMStrategy::setupMultiplicationTables(){
     }
     //todo: transpose
     for(i=0;i<nVariables;i++){
+        //unnecassary many allocations of matrices
         packedmatrix* new_mat=mzd_init(varietySize,varietySize);
         mzd_transpose(new_mat, multiplicationTables[i]);
         mzd_free(multiplicationTables[i]);

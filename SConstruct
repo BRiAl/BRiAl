@@ -534,6 +534,7 @@ python_absolute = shell_output("which", env["PYTHON"])
 
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
+    fglm_wrapper.cc
     dd_wrapper.cc Poly_wrapper.cc navigator_wrap.cc variable_block.cc
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
     slimgb_wrapper.cc""") ] 

@@ -15,6 +15,7 @@
 #include "set_wrapper.h"
 #include "out_helper.h"
 #include "test_util.h"
+#include "fglm_wrapper.h"
 #ifdef HAVE_NTL
 #include "ntl_wrapper.h"
 #endif
@@ -184,6 +185,7 @@ with inverted variable order\n\
   boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);
 
   export_strategy();
+  export_fglm();
   export_monomial();
   export_bset();
   export_variable_block();
