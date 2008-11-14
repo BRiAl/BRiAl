@@ -212,5 +212,16 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     varietySize=standardMonomialsFrom.size();
     BooleEnv::set(backup_ring);
 }
-
+PolynomialVector FGLMStrategy::main(){
+    PolynomialVector res;
+    return res;
+}
+Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
+    ring_with_ordering_type bak_ring=BooleEnv::ring();
+    BooleEnv::set(to);
+    Polynomial res=gbFrom.reducedNormalForm(f);
+    BooleEnv::set(bak_ring);
+    return res;
+    
+}
 END_NAMESPACE_PBORIGB

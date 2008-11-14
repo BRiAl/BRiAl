@@ -44,7 +44,7 @@ public:
             assert(standardMonomialsFrom2Index[monomial_one]==0);
         }
     }
-    
+    PolynomialVector main();
     void analyzeGB(const ReductionStrategy& gb);
     void setupMultiplicationTables();
     void setupStandardMonomialsFromTables();
@@ -94,7 +94,7 @@ private:
     lm2Index_map_type monomial2MultiplicationMatrix;
     lm2Index_map_type monomial2MultiplicationMatrixRowIndex;
     MatrixVector multiplicationTables;
-    
+    Polynomial reducedNormalFormInFromRing(Polynomial f);
     
     };
 END_NAMESPACE_PBORIGB
