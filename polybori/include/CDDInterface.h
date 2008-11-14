@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.65  2008/11/14 15:06:49  dreyer
+ * Fix: optimized routine for BooleSet.minimalElements
+ *
  * Revision 1.64  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -842,12 +845,6 @@ class CDDInterface:
    return Cudd_ReadZddSize(manager().getManager() );
   }
 
-  /// Returns minimal factors of all minimal terms
-  self minimalElements() const {
-        return interfaced_type(m_interfaced.manager(),
-            Extra_zddMinimal(manager().getManager(),m_interfaced.getNode()));
-  }
-
   self cofactor0(const self& rhs) const {
 
     return interfaced_type(m_interfaced.manager(),
@@ -866,14 +863,7 @@ class CDDInterface:
   }
 
   /// Test whether the empty set is included
-  bool_type ownsOne() const {
-    navigator navi(navigation());
-
-    while (!navi.isConstant() )
-      navi.incrementElse();
-    
-    return navi.terminalValue();
-  }
+  bool_type ownsOne() const { return owns_one(navigation()); }
   double sizeDouble() const {
     return m_interfaced.CountDouble();
   }

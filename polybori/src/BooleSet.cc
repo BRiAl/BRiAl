@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.54  2008/11/14 15:06:49  dreyer
+ * Fix: optimized routine for BooleSet.minimalElements
+ *
  * Revision 1.53  2008/07/18 22:37:51  dreyer
  * Fix: doxygen clean-up (removed inclusion loop)
  *
@@ -393,24 +396,12 @@ BooleSet::hasTermOfVariables(const term_type& rhs) const {
 BooleSet
 BooleSet::minimalElements() const { 
 
-  //  return base::minimalElements(); 
-  // base 
+  typedef CacheManager<CCacheTypes::minimal_elements> cache_mgr_type;
+  typedef CacheManager<CCacheTypes::mod_mon_set> modmon_mgr_type;
 
-  navigator  resultMultiples;
-  std::vector<idx_type> indices(0);
-
-  usedIndices(indices);
-  dd_operations<navigator> apply(manager().getManager());
-  //  std::cerr<< "b4"<<std::endl;
-  navigator result= dd_minimal_elements(navigation(),
-  resultMultiples, indices.rbegin(), indices.rend(),  
-                                        apply);
-  // std::cerr<< "aft"<<std::endl;
-  self res(result, ring());
-
-  result.decRef();
-  resultMultiples.recursiveDecRef(manager().getManager());
-  return res;
+  return dd_minimal_elements(cache_mgr_type(base::manager()),
+                             modmon_mgr_type(base::manager()),
+                             base::navigation(), self());
 }
 
 

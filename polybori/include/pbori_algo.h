@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2008/11/14 15:06:49  dreyer
+ * Fix: optimized routine for BooleSet.minimalElements
+ *
  * Revision 1.41  2008/07/13 22:49:35  dreyer
  * Fix: Doxygen clean-up
  *
@@ -446,6 +449,109 @@ limited_length(NaviType navi, SizeType limit) {
   return limited_distance(iterator(navi), iterator(), limit);
 }
 #endif
+
+/// Test whether the empty set is included
+template <class NaviType>
+bool owns_one(NaviType navi) {
+  while (!navi.isConstant() )
+    navi.incrementElse();
+  
+  return navi.terminalValue();
+}
+
+template <class CacheMgr, class NaviType, class SetType>
+SetType
+dd_modulo_monomials(const CacheMgr& cache_mgr,  
+                 NaviType navi, NaviType rhs, const SetType& init){
+
+  // Managing trivial cases
+  if (owns_one(rhs)) return cache_mgr.zero();
+
+  if (navi.isConstant())
+    return cache_mgr.generate(navi);
+
+  typename SetType::idx_type index = *navi;
+  while(*rhs < index )
+    rhs.incrementElse();
+
+  if (rhs.isConstant())
+    return cache_mgr.generate(navi);
+
+  if (rhs == navi)
+    return cache_mgr.zero(); 
+
+  // Cache look-up
+  NaviType cached = cache_mgr.find(navi, rhs);
+  if (cached.isValid()) 
+    return cache_mgr.generate(cached);
+
+  // Actual computations
+  SetType result;
+  if (index == *rhs){
+
+    NaviType rhselse = rhs.elseBranch();
+    SetType thenres =
+      dd_modulo_monomials(cache_mgr, navi.thenBranch(), rhs.thenBranch(), init);
+
+    result = 
+      SetType(index,
+              dd_modulo_monomials(cache_mgr, 
+                                  thenres.navigation(), rhselse, init),
+              dd_modulo_monomials(cache_mgr, 
+                                  navi.elseBranch(), rhselse, init)
+              );
+    
+  } 
+  else {
+    assert(*rhs > index);
+    result = 
+      SetType(index,
+              dd_modulo_monomials(cache_mgr, navi.thenBranch(), rhs, init),
+              dd_modulo_monomials(cache_mgr, navi.elseBranch(), rhs, init)
+              );
+  }
+  cache_mgr.insert(navi, rhs, result.navigation());
+  return result;
+}
+
+/// Get minimal elements with respect to inclusion
+template <class CacheMgr, class ModMonCacheMgr, class NaviType, class SetType>
+SetType
+dd_minimal_elements(const CacheMgr& cache_mgr, const ModMonCacheMgr& modmon_mgr,
+                 NaviType navi, const SetType& init){
+
+  // Trivial Cases
+  if (navi.isEmpty()) 
+    return cache_mgr.generate(navi);
+  
+  if (owns_one(navi)) return cache_mgr.one();
+
+  NaviType ms0 = navi.elseBranch();
+  NaviType ms1 = navi.thenBranch();
+
+  // Cache look-up
+  NaviType cached = cache_mgr.find(navi);
+  if (cached.isValid())
+    return cache_mgr.generate(cached);
+  
+  SetType minimal_else = dd_minimal_elements(cache_mgr, modmon_mgr, ms0, init);
+  SetType minimal_then = 
+    dd_minimal_elements(cache_mgr, modmon_mgr,
+                        dd_modulo_monomials(modmon_mgr, ms1,
+                                            minimal_else.navigation(),
+                                            init).navigation(),
+                     init);
+  SetType result;
+  if ( (minimal_else.navigation() == ms0) 
+       && (minimal_then.navigation() == ms1) )
+    result = cache_mgr.generate(navi);
+  else
+    result = SetType(*navi, minimal_then, minimal_else);
+
+  cache_mgr.insert(navi, result.navigation());
+  return result;
+}
+
 
 /// A first version
 /// Function templates extracting minimal elements of dd wrt. inclusion

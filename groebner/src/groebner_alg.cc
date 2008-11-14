@@ -1310,7 +1310,7 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
     return result;
 }
 MonomialSet minimal_elements(const MonomialSet& s){
-#if 1
+#if 0
     //return minimal_elements_internal2(s);
     return minimal_elements_cudd_style_unary(s);
 #else

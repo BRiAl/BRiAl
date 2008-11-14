@@ -77,7 +77,7 @@ corresponding to Variables of given index is replaced by its else-branch")
          "Navigate through underlying ZDD structure")
     .def("ring", &BooleSet::ring, "Get corresponding ring")
     .def("includeDivisors",include_divisors)
-    .def("minimalElements",minimal_elements, 
+    .def("minimalElements", &BooleSet::minimalElements, 
          "Get minimal elements with respect to inclusion")
     .def("__contains__", (owns_func_type) &BooleSet::owns, 
          "Check whether a term is included in BooleSet")
