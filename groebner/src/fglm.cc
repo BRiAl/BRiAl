@@ -36,7 +36,7 @@ void FGLMStrategy::writeTailToRow(MonomialSet tail, packedmatrix* row){
             //optimize that;
     while(it!=end){
         idx_type tail_idx=standardMonomialsFrom2Index[*it];
-        mzd_write_bit(row,tail_idx,0,1);
+        mzd_write_bit(row,0, tail_idx,1);
         it++;
     }
 }
@@ -99,25 +99,16 @@ void FGLMStrategy::setupMultiplicationTables(){
     }
     
     //leading monomials from gb: vertices/
+    packedmatrix* row=mzd_init(1, varietySize);
     for(i=0;i<gbFrom.size();i++){
         Monomial lm=gbFrom[i].lm;
         MonomialSet tail=gbFrom[i].tail.diagram();
-        packedmatrix* row=mzd_init(1, varietySize);
+        mzd_row_clear_offset(row,0,0);
         writeTailToRow(tail, row);
         writeRowToVariableDivisors(row,lm);
-        mzd_free(row);
+        
     }
-    
-    /*
-    //From now on, we multiply, so here we transpose
-    for(i=0;i<multiplicationTables.size();i++){
-        //unnecassary many allocations of matrices
-        packedmatrix* new_mat=mzd_init(varietySize,varietySize);
-        mzd_transpose(new_mat, multiplicationTables[i]);
-        mzd_free(multiplicationTables[i]);
-        multiplicationTables[i]=new_mat;
-    }*/
-    
+    mzd_free(row);
     //edges
     MonomialSet edges=standardMonomialsFrom.cartesianProduct(varsSet).
         diff(standardMonomialsFrom).diff(leadingTermsFrom);
@@ -159,12 +150,22 @@ void FGLMStrategy::setupMultiplicationTables(){
         mzd_free(transposed_mult_table);
         mzd_free_window(window);
         it_edges++;
-        
-        
-        
     }
    
     mzd_free(multiplied_row);
+    
+    
+    
+    //From now on, we multiply, so here we transpose
+    for(i=0;i<multiplicationTables.size();i++){
+        //unnecassary many allocations of matrices
+        packedmatrix* new_mat=mzd_init(varietySize,varietySize);
+        mzd_transpose(new_mat, multiplicationTables[i]);
+        mzd_free(multiplicationTables[i]);
+        multiplicationTables[i]=new_mat;
+    }
+    
+    
     BooleEnv::set(backup_ring);
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){

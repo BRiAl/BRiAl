@@ -38,7 +38,11 @@ public:
         analyzeGB(this->gbFrom);
         setupStandardMonomialsFromTables();
         setupMultiplicationTables();
-        
+        Monomial monomial_one(from_ring);
+        if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
+            //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
+            assert(standardMonomialsFrom2Index[monomial_one]==0);
+        }
     }
     
     void analyzeGB(const ReductionStrategy& gb);
@@ -82,7 +86,7 @@ private:
     ring_with_ordering_type to;
     
     //indices in multiplicationTables correspond to reverse standard BooleSet iteration of standardMonomialsFrom
-
+    
     IndexVector ring2Index;
     IndexVector index2Ring;
     idx_type nVariables;
