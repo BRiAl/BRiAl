@@ -22,9 +22,11 @@ class FGLMStrategy{
 public:
     typedef BooleEnv::ring_type ring_with_ordering_type;
     FGLMStrategy(){}
-    FGLMStrategy(const ring_with_ordering_type& from, const ring_with_ordering_type& to,  const PolynomialVector& gb){
-        this->from=from;
-        this->to=to;
+    FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
+   :to(to_ring), from(from_ring)
+    {
+ 
+        
         PolynomialVector::const_iterator it=gb.begin();
         PolynomialVector::const_iterator end=gb.end();
         
@@ -32,15 +34,29 @@ public:
             this->gbFrom.addGenerator(*it);
             it++;
         }
+        //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
         analyzeGB(this->gbFrom);
-        //setupStandardMonomialsFromTables();
-        //setupMultiplicationTables();
+        setupStandardMonomialsFromTables();
+        setupMultiplicationTables();
         
     }
     
     void analyzeGB(const ReductionStrategy& gb);
     void setupMultiplicationTables();
     void setupStandardMonomialsFromTables();
+    void writeRowToVariableDivisors(packedmatrix* row, Monomial lm);
+
+    void writeTailToRow(MonomialSet tail, packedmatrix* row);
+    
+    //allocates a window, free it with mzd_free_window
+    packedmatrix* findVectorInMultTables(Monomial m){
+        packedmatrix* mat=multiplicationTables[monomial2MultiplicationMatrix[m]];
+        size_t idx=monomial2MultiplicationMatrixRowIndex[m];
+        return mzd_init_window(mat, idx, 0, idx+1, varietySize);
+    }
+    packedmatrix* multiplicationTableForVariable(const Variable& v){
+        return multiplicationTables[ring2Index[v.index()]];
+    }
     ~FGLMStrategy(){
         int i;
         for(i=0;i<multiplicationTables.size();i++){
@@ -50,20 +66,29 @@ public:
 private:
     Monomial vars;
     size_t varietySize;
-    MonomialSet standardMonomialsFrom;
-    std::vector<Monomial> standardMonomialsFromVector;
-    MonomialSet leadingTermsFrom;
-    ReductionStrategy gbFrom; //reduced gb
-    ring_with_ordering_type from;
-    ring_with_ordering_type to;
-    //indices in multiplicationTables correspond to reverse standard BooleSet iteration of standardMonomialsFrom
+    typedef std::vector<Monomial> MonomialVector;
     typedef std::vector<packedmatrix*> MatrixVector;
     typedef std::vector<Variable> VariableVector;
     typedef std::vector<idx_type> IndexVector;
+    
+    MonomialSet standardMonomialsFrom;
+    MonomialVector standardMonomialsFromVector;
+    MonomialSet leadingTermsFrom;
+    MonomialSet varsSet;
+    VariableVector varsVector;
+    ReductionStrategy gbFrom; //reduced gb
+    
+    ring_with_ordering_type from;
+    ring_with_ordering_type to;
+    
+    //indices in multiplicationTables correspond to reverse standard BooleSet iteration of standardMonomialsFrom
+
     IndexVector ring2Index;
     IndexVector index2Ring;
     idx_type nVariables;
     lm2Index_map_type standardMonomialsFrom2Index;
+    lm2Index_map_type monomial2MultiplicationMatrix;
+    lm2Index_map_type monomial2MultiplicationMatrixRowIndex;
     MatrixVector multiplicationTables;
     
     
