@@ -10,9 +10,18 @@
 #include <vector>
 #include <queue>
 #include "groebner_alg.h"
+#if HAVE_M4RI
+extern "C"{
+#include "m4ri.h"
+}
+#endif
 #ifndef PBORI_GB_NF_H
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB
+#ifdef DRAW_MATRICES
+
+void drawmatrix(packedmatrix* mat, const char* filename);
+#endif
 Polynomial add_up_exponents(const std::vector<Exponent>& vec);
 Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
 

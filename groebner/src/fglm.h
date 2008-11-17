@@ -38,6 +38,7 @@ public:
         analyzeGB(this->gbFrom);
         setupStandardMonomialsFromTables();
         setupMultiplicationTables();
+        testMultiplicationTables();
         Monomial monomial_one(from_ring);
         if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
             //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
@@ -49,9 +50,9 @@ public:
     void setupMultiplicationTables();
     void setupStandardMonomialsFromTables();
     void writeRowToVariableDivisors(packedmatrix* row, Monomial lm);
-
+    void testMultiplicationTables();
     void writeTailToRow(MonomialSet tail, packedmatrix* row);
-    
+    Polynomial rowToPoly(packedmatrix* row);
     //allocates a window, free it with mzd_free_window
     packedmatrix* findVectorInMultTables(Monomial m){
         packedmatrix* mat=multiplicationTables[monomial2MultiplicationMatrix[m]];
@@ -80,6 +81,7 @@ private:
     MonomialSet leadingTermsFrom;
     MonomialSet varsSet;
     VariableVector varsVector;
+    
     ReductionStrategy gbFrom; //reduced gb
     
     ring_with_ordering_type from;
@@ -95,7 +97,7 @@ private:
     lm2Index_map_type monomial2MultiplicationMatrixRowIndex;
     MatrixVector multiplicationTables;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
-    
+    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat, packedmatrix* v);
     };
 END_NAMESPACE_PBORIGB
 #endif    
