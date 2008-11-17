@@ -36,7 +36,7 @@ void FGLMStrategy::setupStandardMonomialsFromTables(){
      
 }
 void FGLMStrategy::writeTailToRow(MonomialSet tail, packedmatrix* row){
-    assert(tail!=Variable(0)+Variable(1));
+
     MonomialSet::const_iterator it=tail.begin();
     MonomialSet::const_iterator end=tail.end();
             //optimize that;
