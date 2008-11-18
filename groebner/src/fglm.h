@@ -64,7 +64,7 @@ public:
     void writeTailToRow(MonomialSet tail, packedmatrix* row);
     Polynomial rowToPoly(packedmatrix* row);
     //allocates a window, free it with mzd_free_window
-    packedmatrix* findVectorInMultTables(Monomial m);
+    void findVectorInMultTables(packedmatrix* dst, Monomial m);
     packedmatrix* multiplicationTableForVariable(const Variable& v){
         return multiplicationTables[ring2Index[v.index()]];
     }
