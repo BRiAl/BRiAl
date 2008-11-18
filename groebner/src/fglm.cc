@@ -378,7 +378,7 @@ PolynomialVector FGLMStrategy::main(){
     lm2Index_map_type mon2index;
 
     //initialize with one monomial
-    packedmatrix* v=mzd_init(1, varietySize);//write vectors in rows;
+    packedmatrix* v=mzd_init(varietySize, varietySize);//write vectors in rows;
     MonomialSet b_set=Polynomial(1).diagram();
     MonomialVector b;
     b.push_back(monomial_one);
@@ -389,6 +389,7 @@ PolynomialVector FGLMStrategy::main(){
     mon2index[monomial_one]=0;
     packedmatrix* v_d=mzd_init(1,varietySize);
     while(!(C.empty())){
+        const int d=b.size();
         Monomial m=*(C.begin());
         
         //TODO: multiply
@@ -397,6 +398,7 @@ PolynomialVector FGLMStrategy::main(){
         assert(m!=monomial_one);
         Polynomial divisors;
         if ((divisors=Polynomial(b_set.divisorsOf(m)).gradedPart(m.deg()-1)).length()==m.deg()/*varsM=Zm,Ecke oder Standard Monom*/) {
+            
             //packedmatrix* v_d=mzd_init(1,varietySize);
             mzd_row_clear_offset(v_d,0,0);
             assert(varietySize>0);
@@ -415,11 +417,11 @@ PolynomialVector FGLMStrategy::main(){
             mzd_free_window(v_j);
             assert (v_d->nrows==1);
             assert (v_d->ncols=varietySize);
-            
+            packedmatrix* v_window=mzd_init_window(v,0,0,d,varietySize);
             try
             {    
-
-                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(v, v_d);
+               
+                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(v_window, v_d);
                 MonomialVector p_vec;
                 for(i=0;i<lin_combination.size();i++){
                     assert (lin_combination[i]<b.size());
@@ -435,19 +437,23 @@ PolynomialVector FGLMStrategy::main(){
 
                 b_set=b_set.unite(m.diagram());
                 b.push_back(m);
-                packedmatrix* v_new=mzd_stack(NULL, v, v_d);
-                assert(mzd_read_bit(v_new,0,0)==1);
-                mzd_free(v);
-                v=v_new;
+                packedmatrix* copy_window=mzd_init_window(v,d,0,d+1,varietySize);
+                mzd_copy(copy_window, v_d);
+                mzd_free_window(copy_window);
+                //packedmatrix* v_new=mzd_stack(NULL, v, v_d);
+                //assert(mzd_read_bit(v_new,0,0)==1);
+                //mzd_free(v);
+                //v=v_new;
                 for(i=0;i<varsVector.size();i++){
-                    Variable v=varsVector[i];
-                    if (!(m.reducibleBy(v))){
-                        Monomial m_v=v*m;
+                    Variable var=varsVector[i];
+                    if (!(m.reducibleBy(var))){
+                        Monomial m_v=var*m;
                         C.insert(m_v);
                     }
                 }
                 mon2index[m]=b.size()-1;
             }
+            mzd_free_window(v_window);
            
         } 
         
