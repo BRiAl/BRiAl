@@ -25,6 +25,7 @@ public:
     FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
    :to(to_ring), from(from_ring)
     {
+        prot=false;
         transposed=false;
         ring_with_ordering_type backup_ring=BooleEnv::ring();
         BooleEnv::set(from);
@@ -40,18 +41,27 @@ public:
         Monomial monomial_one(from_ring);
         if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
             //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
-            cout<<"analyzing gb..."<<endl;
+            if (prot)
+                cout<<"analyzing gb..."<<endl;
             analyzeGB(this->gbFrom);
-            cout<<"varietySize:"<<varietySize<<endl;
-            cout<<"standard monomials tables..."<<endl;
+            if (prot){
+                cout<<"varietySize:"<<varietySize<<endl;
+                cout<<"standard monomials tables..."<<endl;
+            }
             setupStandardMonomialsFromTables();
-            cout<<"multiplication tables..."<<endl;
+            if (prot)
+                cout<<"multiplication tables..."<<endl;
             setupMultiplicationTables();
-            cout<<"test multiplication table..."<<endl;
+
+#ifndef NDEBUG
+            if (prot)
+                cout<<"test multiplication table..."<<endl;
             testMultiplicationTables();
+#endif
             assert(standardMonomialsFrom2Index[monomial_one]==0);
         }
-        cout<<"initialization finished"<<endl;
+        if (prot)
+            cout<<"initialization finished"<<endl;
         BooleEnv::set(backup_ring);
     }
     PolynomialVector main();
@@ -75,6 +85,7 @@ public:
         }
     }
 private:
+    bool prot;
     Monomial vars;
     size_t varietySize;
     typedef std::vector<Monomial> MonomialVector;

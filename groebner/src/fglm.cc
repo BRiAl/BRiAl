@@ -142,10 +142,11 @@ void FGLMStrategy::setupMultiplicationTables(){
     //edges
     MonomialSet edges=standardMonomialsFrom.cartesianProduct(varsSet).
         diff(standardMonomialsFrom).diff(leadingTermsFrom);
+    Polynomial edges_poly=edges;
     MonomialVector edges_vec(edges.size());
-    std::copy(edges.begin(), edges.end(), edges_vec.begin());
+    std::copy(edges_poly.orderedBegin(), edges_poly.orderedEnd(), edges_vec.begin());
     
-    //reverse is important, so that divisors have already been treated
+    //reverse is important, so that divisors and elements in the tail have already been treated
     
     transposeMultiplicationTables();
     
@@ -190,6 +191,7 @@ void FGLMStrategy::setupMultiplicationTables(){
             _mzd_mul_naiv(multiplied_row, reduced_problem_to_row, mult_table);
             //mzd_free(transposed_vec);
         }
+
         writeRowToVariableDivisors(multiplied_row, m);
         //matrices are transposed, so now we have write to columns
         
@@ -490,7 +492,8 @@ void FGLMStrategy::testMultiplicationTables(){
                 }
 
             }
-
+            if (sum!=product)
+                cout<<"v:"<<v<<"\tm:"<<m<<"\tsum:"<<sum<<"\tproduct:"<<product<<endl;
             assert(sum==product);
         }
     }
