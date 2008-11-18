@@ -109,8 +109,11 @@ void FGLMStrategy::setupMultiplicationTables(){
             size_t divided_index=standardMonomialsFrom2Index[divided];
             packedmatrix* mat=multiplicationTables[our_var_index];
             mzd_write_bit(mat, divided_index,i, 1);
+            //finally treat the "edge" case: m*v->m, where v divides m
+            mzd_write_bit(mat,i,i,1);
             it++;
         }
+        
     }
     
     //leading monomials from gb: vertices/
@@ -198,6 +201,10 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     ring_with_ordering_type backup_ring=BooleEnv::ring();
     BooleEnv::set(from);
     vars=gb.leadingTerms.usedVariables();
+    int i;
+    for (i=0;i<gb.size();i++){
+        vars=vars * Monomial(gb[i].usedVariables,BooleEnv::ring());
+    }
     
     Monomial::variable_iterator it_var=vars.variableBegin();
     Monomial::variable_iterator end_var=vars.variableEnd();
@@ -212,10 +219,7 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
         it_varvec++;
     }
 
-    int i;
-    for (i=0;i<gb.size();i++){
-        vars=vars * Monomial(gb[i].usedVariables,BooleEnv::ring());
-    }
+
     nVariables=vars.deg();
     ring2Index.resize(BooleEnv::ring().nVariables());
     index2Ring.resize(nVariables);
@@ -231,11 +235,12 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
         our_index++;
         it++;
     }
-    
+
     standardMonomialsFrom=mod_mon_set(vars.divisors(), gb.leadingTerms);
     
     leadingTermsFrom=gb.leadingTerms;
     varietySize=standardMonomialsFrom.size();
+
     BooleEnv::set(backup_ring);
 }
 class FGLMNoLinearCombinationException: public std::exception
@@ -338,6 +343,7 @@ PolynomialVector FGLMStrategy::main(){
         
         //TODO: multiply
         C.erase(C.begin());
+        
         assert(m!=monomial_one);
         Polynomial divisors;
         if ((divisors=Polynomial(b_set.divisorsOf(m)).gradedPart(m.deg()-1)).length()==m.deg()/*varsM=Zm,Ecke oder Standard Monom*/) {
@@ -361,7 +367,8 @@ PolynomialVector FGLMStrategy::main(){
             assert (v_d->ncols=varietySize);
             
             try
-            {
+            {    
+
                 IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(v, v_d);
                 MonomialVector p_vec;
                 for(i=0;i<lin_combination.size();i++){
@@ -408,13 +415,14 @@ void FGLMStrategy::testMultiplicationTables(){
     int j;
     
     for(i=0;i<varsVector.size();i++){
-        assert (varsVector[i].index()>=i);
+        Variable v=varsVector[i];
+        assert (v.index()>=i);
         for (j=0;j<standardMonomialsFromVector.size(); j++){
             Monomial m=standardMonomialsFromVector[j];
-            packedmatrix* table=multiplicationTableForVariable(varsVector[i]);
+            packedmatrix* table=multiplicationTableForVariable(v);
             int k;
-            if (m==varsVector[i]){continue;}
-            Polynomial product=reducedNormalFormInFromRing(m*varsVector[i]);
+            if (m==v){continue;}
+            Polynomial product=reducedNormalFormInFromRing(m*v);
 
             MonomialSet product_set=product.diagram();
             Polynomial sum;
@@ -435,7 +443,7 @@ void FGLMStrategy::testMultiplicationTables(){
 }
 Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
     ring_with_ordering_type bak_ring=BooleEnv::ring();
-    BooleEnv::set(to);
+    BooleEnv::set(from);
     Polynomial res=gbFrom.reducedNormalForm(f);
     BooleEnv::set(bak_ring);
     return res;

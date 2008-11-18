@@ -26,7 +26,8 @@ public:
    :to(to_ring), from(from_ring)
     {
  
-        
+        ring_with_ordering_type backup_ring=BooleEnv::ring();
+        BooleEnv::set(from);
         PolynomialVector::const_iterator it=gb.begin();
         PolynomialVector::const_iterator end=gb.end();
         
@@ -35,15 +36,17 @@ public:
             it++;
         }
         //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
-        analyzeGB(this->gbFrom);
-        setupStandardMonomialsFromTables();
-        setupMultiplicationTables();
-        testMultiplicationTables();
+
         Monomial monomial_one(from_ring);
         if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
             //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
+            analyzeGB(this->gbFrom);
+            setupStandardMonomialsFromTables();
+            setupMultiplicationTables();
+            testMultiplicationTables();
             assert(standardMonomialsFrom2Index[monomial_one]==0);
         }
+        BooleEnv::set(backup_ring);
     }
     PolynomialVector main();
     void analyzeGB(const ReductionStrategy& gb);
