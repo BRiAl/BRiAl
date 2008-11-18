@@ -224,12 +224,17 @@ void FGLMStrategy::findVectorInMultTables(packedmatrix* dst, Monomial m){
 void FGLMStrategy::transposeMultiplicationTables(){
     //From now on, we multiply, so here we transpose
     int i;
+    //packedmatrix* new_mat=mzd_init(varietySize,varietySize);
+    packedmatrix* swap;
     for(i=0;i<multiplicationTables.size();i++){
         //unnecassary many allocations of matrices
         packedmatrix* new_mat=mzd_init(varietySize,varietySize);
         mzd_transpose(new_mat, multiplicationTables[i]);
-        mzd_free(multiplicationTables[i]);
-        multiplicationTables[i]=new_mat;
+        
+        swap=new_mat;
+        new_mat=multiplicationTables[i];
+        multiplicationTables[i]=swap;
+        mzd_free(new_mat);
         {
             #ifdef DRAW_MATRICES
                 char matname[255];
@@ -239,6 +244,7 @@ void FGLMStrategy::transposeMultiplicationTables(){
             #endif
         }
     }
+    //mzd_free(new_mat);
     transposed=(!(transposed));
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
