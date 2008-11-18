@@ -25,7 +25,7 @@ public:
     FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
    :to(to_ring), from(from_ring)
     {
- 
+        transposed=false;
         ring_with_ordering_type backup_ring=BooleEnv::ring();
         BooleEnv::set(from);
         PolynomialVector::const_iterator it=gb.begin();
@@ -40,12 +40,18 @@ public:
         Monomial monomial_one(from_ring);
         if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
             //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
+            cout<<"analyzing gb..."<<endl;
             analyzeGB(this->gbFrom);
+            cout<<"varietySize:"<<varietySize<<endl;
+            cout<<"standard monomials tables..."<<endl;
             setupStandardMonomialsFromTables();
+            cout<<"multiplication tables..."<<endl;
             setupMultiplicationTables();
+            cout<<"test multiplication table..."<<endl;
             testMultiplicationTables();
             assert(standardMonomialsFrom2Index[monomial_one]==0);
         }
+        cout<<"initialization finished"<<endl;
         BooleEnv::set(backup_ring);
     }
     PolynomialVector main();
@@ -54,14 +60,11 @@ public:
     void setupStandardMonomialsFromTables();
     void writeRowToVariableDivisors(packedmatrix* row, Monomial lm);
     void testMultiplicationTables();
+    void transposeMultiplicationTables();
     void writeTailToRow(MonomialSet tail, packedmatrix* row);
     Polynomial rowToPoly(packedmatrix* row);
     //allocates a window, free it with mzd_free_window
-    packedmatrix* findVectorInMultTables(Monomial m){
-        packedmatrix* mat=multiplicationTables[monomial2MultiplicationMatrix[m]];
-        size_t idx=monomial2MultiplicationMatrixRowIndex[m];
-        return mzd_init_window(mat, idx, 0, idx+1, varietySize);
-    }
+    packedmatrix* findVectorInMultTables(Monomial m);
     packedmatrix* multiplicationTableForVariable(const Variable& v){
         return multiplicationTables[ring2Index[v.index()]];
     }
@@ -95,6 +98,7 @@ private:
     IndexVector ring2Index;
     IndexVector index2Ring;
     idx_type nVariables;
+    bool transposed;
     lm2Index_map_type standardMonomialsFrom2Index;
     lm2Index_map_type monomial2MultiplicationMatrix;
     lm2Index_map_type monomial2MultiplicationMatrixRowIndex;

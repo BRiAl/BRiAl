@@ -64,15 +64,27 @@ void FGLMStrategy::writeRowToVariableDivisors(packedmatrix* row, Monomial lm){
                 first=false;
             }
             int j;
-            for(j=0;j<varietySize;j++){
-                mzd_write_bit(mat, divided_index, j, mzd_read_bit(row,0,j));
+            if (transposed){
+                for(j=0;j<varietySize;j++){
+                    mzd_write_bit(mat, j, divided_index, mzd_read_bit(row,0,j));
+                }
+            } else {
+                for(j=0;j<varietySize;j++){
+                    mzd_write_bit(mat, divided_index, j, mzd_read_bit(row,0,j));
+                }
             }
         }
         it_lm++;
     }
 }
 
-
+void transpose_window_to_row(packedmatrix* transposed_vec, packedmatrix* window){
+    int i;
+    const int n=window->nrows;
+    for(i=0;i<n;i++){
+        mzd_write_bit(transposed_vec,0,i, mzd_read_bit(window,i,0));
+    }
+}
 Polynomial FGLMStrategy::rowToPoly(packedmatrix* row){
     MonomialVector vec;
     int i;
@@ -135,6 +147,8 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     //reverse is important, so that divisors have already been treated
     
+    
+    
     MonomialVector::reverse_iterator it_edges=edges_vec.rbegin();
     MonomialVector::reverse_iterator end_edges=edges_vec.rend();
     MonomialSet EdgesUnitedVertices=edges.unite(leadingTermsFrom);
@@ -156,6 +170,8 @@ void FGLMStrategy::setupMultiplicationTables(){
         
         packedmatrix* window=findVectorInMultTables(reduced_problem_to);
 
+        if (!(transposed)){
+            
         //standardMonomialsFrom2Index[reduced_problem_to];
         
         //highly inefficient/far to many allocations
@@ -164,7 +180,15 @@ void FGLMStrategy::setupMultiplicationTables(){
         //which is a little bit tricky as we multiply from left
         //packedmatrix* transposed_mult_table=mzd_transpose(NULL, mult_table);
         mzd_mul_naiv(multiplied_row, window, mult_table);
-
+            
+        } else {
+            packedmatrix* transposed_vec=mzd_init(1,varietySize);
+            assert (window->nrows==varietySize);
+            assert (window->ncols==1);
+            transpose_window_to_row(transposed_vec, window);
+            _mzd_mul_naiv(multiplied_row, transposed_vec, mult_table);
+            mzd_free(transposed_vec);
+        }
         writeRowToVariableDivisors(multiplied_row, m);
         //matrices are transposed, so now we have write to columns
         
@@ -177,7 +201,22 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     
     
+    transposeMultiplicationTables();
+    
+    
+    BooleEnv::set(backup_ring);
+}
+packedmatrix* FGLMStrategy::findVectorInMultTables(Monomial m){
+    packedmatrix* mat=multiplicationTables[monomial2MultiplicationMatrix[m]];
+    size_t idx=monomial2MultiplicationMatrixRowIndex[m];
+    if (!(transposed))
+    return mzd_init_window(mat, idx, 0, idx+1, varietySize);
+    else
+      return mzd_init_window(mat, 0, idx, varietySize, idx+1);
+}
+void FGLMStrategy::transposeMultiplicationTables(){
     //From now on, we multiply, so here we transpose
+    int i;
     for(i=0;i<multiplicationTables.size();i++){
         //unnecassary many allocations of matrices
         packedmatrix* new_mat=mzd_init(varietySize,varietySize);
@@ -193,9 +232,7 @@ void FGLMStrategy::setupMultiplicationTables(){
             #endif
         }
     }
-    
-    
-    BooleEnv::set(backup_ring);
+    transposed=(!(transposed));
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     ring_with_ordering_type backup_ring=BooleEnv::ring();
