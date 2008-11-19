@@ -76,6 +76,7 @@ private:
     MatrixVector multiplicationTables;
     bool canAddThisElementLaterToGB(Polynomial p);
     PolynomialVector addTheseLater;
+    Exponent::idx_map_type standardExponentsFrom2Index;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
     IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& start_indices, packedmatrix* v);
     };
