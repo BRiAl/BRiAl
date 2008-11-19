@@ -223,20 +223,27 @@ void FGLMStrategy::findVectorInMultTables(packedmatrix* dst, Monomial m){
         }
     }
 }
+void clear_mat(packedmatrix* mat){
+    int i;
+    for(i=0;i<mat->nrows;i++){
+        mzd_row_clear_offset(mat,i,0);
+    }
+}
 void FGLMStrategy::transposeMultiplicationTables(){
     //From now on, we multiply, so here we transpose
     int i;
-    //packedmatrix* new_mat=mzd_init(varietySize,varietySize);
+    packedmatrix* new_mat=mzd_init(varietySize,varietySize);
     packedmatrix* swap;
     for(i=0;i<multiplicationTables.size();i++){
         //unnecassary many allocations of matrices
-        packedmatrix* new_mat=mzd_init(varietySize,varietySize);
+        //packedmatrix* new_mat=mzd_init(varietySize,varietySize);
+        clear_mat(new_mat);
         mzd_transpose(new_mat, multiplicationTables[i]);
         
         swap=new_mat;
         new_mat=multiplicationTables[i];
         multiplicationTables[i]=swap;
-        mzd_free(new_mat);
+        //mzd_free(new_mat);
         {
             #ifdef DRAW_MATRICES
                 char matname[255];
@@ -246,7 +253,7 @@ void FGLMStrategy::transposeMultiplicationTables(){
             #endif
         }
     }
-    //mzd_free(new_mat);
+    mzd_free(new_mat);
     transposed=(!(transposed));
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
@@ -573,7 +580,7 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
 :to(to_ring), from(from_ring)
 {
-    prot=false;
+    prot=true;
     transposed=false;
     ring_with_ordering_type backup_ring=BooleEnv::ring();
     BooleEnv::set(from);
