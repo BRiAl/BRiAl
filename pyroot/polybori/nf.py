@@ -193,8 +193,8 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             print "(", strat.npairs(), ")"
         if prot:
             print "start reducing"
-            print "Chain Crit. : ",strat.chainCriterions, "VC:",strat.variableChainCriterions,\
-            "EASYP",strat.easyProductCriterions,"EXTP",strat.extendedProductCriterions
+            print "Chain Crit. : ",strat.chain_criterions, "VC:",strat.variable_chain_criterions,\
+            "EASYP",strat.easy_product_criterions,"EXTP",strat.extended_product_criterions
             print len(ps), "spolys added"
             
         if use_noro or use_faugere:

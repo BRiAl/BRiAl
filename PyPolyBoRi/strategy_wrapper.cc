@@ -272,9 +272,9 @@ void export_strategy(){
   .def_readwrite("optAllowRecursion",&GroebnerStrategy::optAllowRecursion)
   .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
   
-  .def_readonly("variableChainCriterions",&GroebnerStrategy::variableChainCriterions)
-  .def_readonly("easyProductCriterions",&GroebnerStrategy::easyProductCriterions)
-  .def_readonly("extendedProductCriterions",&GroebnerStrategy::extendedProductCriterions)
+  .def_readonly("variable_chain_criterions",&GroebnerStrategy::variableChainCriterions)
+  .def_readonly("easy_product_criterions",&GroebnerStrategy::easyProductCriterions)
+  .def_readonly("extended_product_criterions",&GroebnerStrategy::extendedProductCriterions)
   .def("topSugar",pairs_top_sugar)
   .def("containsOne",contains_one)
   .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)

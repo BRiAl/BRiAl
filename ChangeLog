@@ -45,6 +45,9 @@ Release Name: 0.6.0
     * someSpolysInNextDegree -> some_spolys_in_next_degree
     * variableHasValue -> variable_has_value
     * chainCriterions -> chain_criterions
+    * variableChainCriterions -> variable_chain_criterions
+    * easyProductCriterions -> easy_product_criterions
+    * extendedProductCriterions -> extended_product_criterions
     * cleanTopByChainCriterion -> clean_top_by_chain_criterion
 
 * Python interface, dropped functions
