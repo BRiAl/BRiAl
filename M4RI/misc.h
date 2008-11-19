@@ -33,6 +33,8 @@
 #include "config.h"
 #endif
 
+#include <string.h>
+
 /*
  * These define entirely the word width used in the library.
  */
@@ -45,13 +47,13 @@
 typedef unsigned long long word;
 
 /**
- * The number of bits in a word.
+ * \brief The number of bits in a word.
  */
 
 #define RADIX (sizeof(word)<<3)
 
 /**
- * The number one as a word.
+ * \brief The number one as a word.
  */
 
 #define ONE ((word)1)
@@ -101,7 +103,7 @@ typedef unsigned long long word;
 #define FALSE 0
 
 /**
- * \brief 2^i
+ * \brief $2^i$
  *
  * \param i Integer.
  */ 
@@ -109,7 +111,7 @@ typedef unsigned long long word;
 #define TWOPOW(i) (1<<(i))
 
 /**
- * Pretty for unsigned char.
+ * \brief Pretty for unsigned char.
  */
 
 typedef unsigned char BIT;
@@ -179,7 +181,27 @@ typedef unsigned char BIT;
 #define RIGHTMOST_BITS(w, n) (((w)<<(RADIX-(n)-1))>>(RADIX-(n)-1))
 
 /**
- * \brief return alignment of addr w.r.t. n. For example the address
+* \brief creat a bit mask to zero out all but he n%RADIX leftmost
+* bits.
+*
+* \param n Integer
+*/
+
+#define LEFT_BITMASK(n) (~((ONE << ((RADIX - (n % RADIX))%RADIX) ) - 1))
+
+/**
+* \brief creat a bit mask to zero out all but he n%RADIX rightmost
+* bits.
+*
+* \param n Integer
+*
+* \warn Does not handle multiples of RADIX correctly
+*/
+
+#define RIGHT_BITMASK(n) ((ONE << (n % RADIX)) - 1)
+
+/**
+ * \brief Return alignment of addr w.r.t. n. For example the address
  * 17 would be 1 aligned w.r.t. 16.
  *
  * \param addr
@@ -205,7 +227,7 @@ typedef unsigned char BIT;
  * \warning The provided string is not free'd.
  */
 
-void m4ri_die(char *errormessage, ...);
+void m4ri_die(const char *errormessage, ...);
 
 /**** IO *****/
 
@@ -219,7 +241,67 @@ void m4ri_die(char *errormessage, ...);
  */
 void m4ri_word_to_str( char *destination, word data, int colon);
 
+/**
+ * \brief Return 1 or 0 uniformly randomly distributed.
+ *
+ * \todo Allow user to provide her own random() function.
+ */
+
+BIT m4ri_coin_flip(void);
+
+/***** Initialization *****/
+
+/**
+ * \brief Initialize global data structures for the M4RI library.
+ *
+ * On Linux/Solaris this is called automatically when the shared
+ * library is loaded, but it doesn't harm if it is called twice.
+ */
+
+#if defined(__GNUC__)
+void __attribute__ ((constructor)) m4ri_init(void);
+#else
+void m4ri_init(void);
+#endif
+
+#ifdef __SUNPRO_C
+#pragma init(m4ri_init)
+#endif
+
+/**
+ * \brief De-initialize global data structures from the M4RI library. 
+ *
+ * On Linux/Solaris this is called automatically when the shared
+ * library is unloaded, but it doesn't harm if it is called twice.
+ */
+
+#if defined(__GNUC__)
+void __attribute__ ((destructor)) m4ri_fini(void);
+#else
+void m4ri_fini(void);
+#endif
+
+#ifdef __SUNPRO_C
+#pragma fini(m4ri_fini)
+#endif
+
 /***** Memory Management *****/
+
+#if CPU_L2_CACHE == 0
+/**
+ * Fix some standard value for L2 cache size if it couldn't be
+ * determined by configure.
+ */
+#define CPU_L2_CACHE 524288
+#endif //CPU_L2_CACHE
+
+#if CPU_L1_CACHE == 0
+/**
+ * Fix some standard value for L1 cache size if it couldn't be
+ * determined by configure.
+ */
+#define CPU_L1_CACHE 16384
+#endif //CPU_L1_CACHE
 
 /**
  * \brief Calloc wrapper.
@@ -250,14 +332,147 @@ void *m4ri_mm_malloc( int size );
  * \todo Allow user to register free function.
  */
 
-void m4ri_mm_free(void *condemned);
+void m4ri_mm_free(void *condemned, ...);
 
 /**
- * \brief Return 1 or 0 uniformly randomly distributed.
- *
- * \todo Allow user to provide her own random() function.
+ * \brief Enable memory block cache (default: disabled)
+ */
+//#define ENABLE_MMC
+
+/**
+ * \brief Number of blocks that are cached.
  */
 
-BIT m4ri_coin_flip();
+#define M4RI_MMC_NBLOCKS 16
+
+/**
+ * \brief Maximal size of blocks stored in cache.
+ */
+
+#define M4RI_MMC_THRESHOLD CPU_L2_CACHE
+
+/**
+ * The mmc memory management functions check a cache for re-usable
+ * unused memory before asking the system for it.
+ */
+
+typedef struct _mm_block {
+  /**
+   * Size in bytes of the data.
+   */
+  size_t size;
+
+  /**
+   * Pointer to buffer of data.
+   */
+  void *data;
+
+} mm_block;
+
+/**
+ * The actual memory block cache.
+ */
+
+extern mm_block m4ri_mmc_cache[M4RI_MMC_NBLOCKS];
+
+/**
+ * \brief Return handle for locale memory management cache.
+ * 
+ * \todo Make thread safe.
+ */
+
+static inline mm_block *m4ri_mmc_handle(void) {
+  return m4ri_mmc_cache;
+}
+
+/**
+ * \brief Allocate size bytes.
+ *
+ * \param size Number of bytes.
+ */
+
+static inline void *m4ri_mmc_malloc(size_t size) {
+#ifdef ENABLE_MMC
+  mm_block *mm = m4ri_mmc_handle();
+  if (size <= M4RI_MMC_THRESHOLD) {
+    size_t i;
+    for (i=0; i<M4RI_MMC_NBLOCKS; i++) {
+      if(mm[i].size == size) {
+        void *ret = mm[i].data;
+        mm[i].data = NULL;
+        mm[i].size = 0;
+        return ret;
+      }
+    }
+  }
+#endif //ENABLE_MMC
+  return m4ri_mm_malloc(size);
+}
+
+/**
+ * \brief Allocate size times count zeroed bytes.
+ *
+ * \param size Number of bytes per block.
+ * \param count Number of blocks.
+ *
+ * \warning Not thread safe.
+ */
+
+static inline void *m4ri_mmc_calloc(size_t size, size_t count) {
+  void *ret = m4ri_mmc_malloc(size*count);
+  memset(ret, 0, count*size);
+  return ret;
+}
+
+/**
+ * \brief Free the data pointed to by condemned of the given size.
+ *
+ * \param condemned Pointer to memory.
+ * \param size Number of bytes.
+ *
+ * \warning Not thread safe.
+ */
+
+static inline void m4ri_mmc_free(void *condemned, size_t size) {
+#ifdef ENABLE_MMC
+  static size_t j = 0;
+  mm_block *mm = m4ri_mmc_handle();
+  if (size < M4RI_MMC_THRESHOLD) {
+    size_t i;
+    for(i=0; i<M4RI_MMC_NBLOCKS; i++) {
+      if(mm[i].size == 0) {
+        mm[i].size = size;
+        mm[i].data = condemned;
+        return;
+      }
+    }
+    m4ri_mm_free(mm[j].data);
+    mm[j].size = size;
+    mm[j].data = condemned;
+    j = (j+1) % M4RI_MMC_NBLOCKS;
+    return;
+  }
+#endif //ENABLE_MMC
+  m4ri_mm_free(condemned);
+}
+
+/**
+ * \brief Cleans up the cache.
+ *
+ * This function is called automatically when the shared library is
+ * loaded.
+ *
+ * \warning Not thread safe.
+ */
+
+static inline void m4ri_mmc_cleanup(void) {
+  mm_block *mm = m4ri_mmc_handle();
+  size_t i;
+  for(i=0; i < M4RI_MMC_NBLOCKS; i++) {
+    if (mm[i].size)
+      m4ri_mm_free(mm[i].data);
+    mm[i].size = 0;
+  }
+}
 
 #endif //MISC_H

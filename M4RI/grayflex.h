@@ -120,21 +120,24 @@ void m4ri_build_code(int *ord, int *inc, int l);
 /**
  * \brief Generates global code book. 
  *
- * This code \em must be run before any Gray code related functions
- * are called.
+ * This function is called automatically when the shared library is
+ * loaded.
  *
  * \warning Not thread safe!
  */
 
-void m4ri_build_all_codes();
+void m4ri_build_all_codes(void);
 
 /**
  * Frees memory from the global code book.
  *
+ * This function is called automatically when the shared library is
+ * unloaded.
+ *
  * \warning Not thread safe!
  */
 
-void m4ri_destroy_all_codes();
+void m4ri_destroy_all_codes(void);
 
 /**
  * \brief Return the optimal var k for the given parameters. 

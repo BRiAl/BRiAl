@@ -35,18 +35,28 @@
  * http://m4ri.sagemath.org for details.
  *
  * \example testsuite/test_multiplication.c
- * \example testsuite/test_reduction.c
+ * \example testsuite/test_elimination.c
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "watch.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif //__cplusplus
+
 #include "permutation.h"
 #include "packedmatrix.h"
 #include "brilliantrussian.h"
 #include "strassen.h"
 #include "grayflex.h"
 #include "parity.h"
+#include "trsm.h"
+#include "lqup.h"
+
+#ifdef __cplusplus
+}
+#endif //__cplusplus
 
 #endif //M4RI_H
