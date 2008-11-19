@@ -297,8 +297,13 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
 }
 class FGLMNoLinearCombinationException: public std::exception
 {
- 
+public:
+    size_t firstNonZeroIndex;
+    FGLMNoLinearCombinationException(size_t firstNonZeroIndex){
+        this->firstNonZeroIndex=firstNonZeroIndex;
+    }
 };
+#if 0
 FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, packedmatrix* v){
     //returns vector with indices, where the coefficients in this linear combination are 1
     //if no such combination exists, raises Exception
@@ -360,6 +365,46 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
     
     return res;
 }
+#else
+FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& start_indices, packedmatrix* v){
+    const int d=mat->nrows-1;
+    mzd_row_clear_offset(mat,d,0);
+    assert (mat->ncols==2*varietySize);
+    
+    packedmatrix* copy_v_into=mzd_init_window(mat,d,0,d+1,varietySize);
+    mzd_copy(copy_v_into,v);
+    mzd_free_window(copy_v_into);
+    
+    
+
+    int i,j;
+    for(i=0;i<varietySize;i++){
+        if (mzd_read_bit(mat,d,i)==1){
+            bool succ=false;
+            for (j=0;j<d;j++){
+                if (start_indices[j]==i){
+                    succ=true;
+                    mzd_row_add_offset(mat, d, j, i);
+                    break;
+                }
+                
+            }
+            if (!(succ)){
+                FGLMNoLinearCombinationException ex(i);
+                throw ex;
+                
+            }
+        }
+    }
+    IndexVector res;
+    for(i=0;i<d;i++){
+        if (mzd_read_bit(mat,d,i+varietySize)==1){
+            res.push_back(i);
+        }
+    }
+    return res;
+}
+#endif
 PolynomialVector FGLMStrategy::main(){
     PolynomialVector F;
     const Monomial monomial_one;
@@ -381,10 +426,15 @@ PolynomialVector FGLMStrategy::main(){
 
     //initialize with one monomial
     packedmatrix* v=mzd_init(varietySize, varietySize);//write vectors in rows;
+    packedmatrix* w=mzd_init(varietySize+1, varietySize*2);
+    IndexVector w_start_indices;
     MonomialSet b_set=Polynomial(1).diagram();
     MonomialVector b;
     b.push_back(monomial_one);
     mzd_write_bit(v,0,0,1);
+    mzd_write_bit(w,0,0,1);
+    mzd_write_bit(w,0,varietySize+0,1);
+    w_start_indices.push_back(0);
     for(i=0;i<varsVector.size();i++){
         C.insert(varsVector[i]);
     }
@@ -393,15 +443,13 @@ PolynomialVector FGLMStrategy::main(){
     while(!(C.empty())){
         const int d=b.size();
         Monomial m=*(C.begin());
-        
-        //TODO: multiply
+
         C.erase(C.begin());
         
         assert(m!=monomial_one);
         Polynomial divisors;
         if ((divisors=Polynomial(b_set.divisorsOf(m)).gradedPart(m.deg()-1)).length()==m.deg()/*varsM=Zm,Ecke oder Standard Monom*/) {
-            
-            //packedmatrix* v_d=mzd_init(1,varietySize);
+ 
             mzd_row_clear_offset(v_d,0,0);
             assert(varietySize>0);
             
@@ -419,11 +467,13 @@ PolynomialVector FGLMStrategy::main(){
             mzd_free_window(v_j);
             assert (v_d->nrows==1);
             assert (v_d->ncols=varietySize);
-            packedmatrix* v_window=mzd_init_window(v,0,0,d,varietySize);
+            packedmatrix* w_window=mzd_init_window(w,0,0,d+1,2*varietySize);
+            //packedmatrix* w_row_window=mzd_init_window(w,d,0,d+1,varietySize);
             try
             {    
-               
-                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(v_window, v_d);
+                
+                
+                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window, w_start_indices, v_d);
                 MonomialVector p_vec;
                 for(i=0;i<lin_combination.size();i++){
                     assert (lin_combination[i]<b.size());
@@ -439,13 +489,11 @@ PolynomialVector FGLMStrategy::main(){
 
                 b_set=b_set.unite(m.diagram());
                 b.push_back(m);
+                w_start_indices.push_back(e.firstNonZeroIndex);
+                mzd_write_bit(w,d,varietySize+d,1);
                 packedmatrix* copy_window=mzd_init_window(v,d,0,d+1,varietySize);
                 mzd_copy(copy_window, v_d);
                 mzd_free_window(copy_window);
-                //packedmatrix* v_new=mzd_stack(NULL, v, v_d);
-                //assert(mzd_read_bit(v_new,0,0)==1);
-                //mzd_free(v);
-                //v=v_new;
                 for(i=0;i<varsVector.size();i++){
                     Variable var=varsVector[i];
                     if (!(m.reducibleBy(var))){
@@ -455,14 +503,18 @@ PolynomialVector FGLMStrategy::main(){
                 }
                 mon2index[m]=b.size()-1;
             }
-            mzd_free_window(v_window);
-           
+
+            mzd_free_window(w_window);
         } 
         
     }
+    mzd_free(w);
     mzd_free(v_d);
     mzd_free(v);
     BooleEnv::set(bak_ring);
+    for(i=0;i<addTheseLater.size();i++){
+        F.push_back(addTheseLater[i]);
+    }
     return F;
 }
 void FGLMStrategy::testMultiplicationTables(){
@@ -507,5 +559,62 @@ Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
     BooleEnv::set(bak_ring);
     return res;
     
+}
+bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
+    Monomial lm_from=from.ordering().lead(p);
+    if (lm_from.deg()==1){
+        Monomial lm_to=to.ordering().lead(p);
+        if (lm_from==lm_to){
+            return true;
+        }
+    }
+    return false;
+}
+FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
+:to(to_ring), from(from_ring)
+{
+    prot=false;
+    transposed=false;
+    ring_with_ordering_type backup_ring=BooleEnv::ring();
+    BooleEnv::set(from);
+    PolynomialVector::const_iterator it=gb.begin();
+    PolynomialVector::const_iterator end=gb.end();
+    
+    while(it!=end){
+        Polynomial gen=*it;
+        if (canAddThisElementLaterToGB(gen)){
+            addTheseLater.push_back(gen);
+        } else{
+            this->gbFrom.addGenerator(gen);
+        }
+        it++;
+    }
+    //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
+
+    Monomial monomial_one(from_ring);
+    if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
+        //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
+        if (prot)
+            cout<<"analyzing gb..."<<endl;
+        analyzeGB(this->gbFrom);
+        if (prot){
+            cout<<"varietySize:"<<varietySize<<endl;
+            cout<<"standard monomials tables..."<<endl;
+        }
+        setupStandardMonomialsFromTables();
+        if (prot)
+            cout<<"multiplication tables..."<<endl;
+        setupMultiplicationTables();
+
+#ifndef NDEBUG
+        if (prot)
+            cout<<"test multiplication table..."<<endl;
+        testMultiplicationTables();
+#endif
+        assert(standardMonomialsFrom2Index[monomial_one]==0);
+    }
+    if (prot)
+        cout<<"initialization finished"<<endl;
+    BooleEnv::set(backup_ring);
 }
 END_NAMESPACE_PBORIGB

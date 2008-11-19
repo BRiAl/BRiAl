@@ -22,48 +22,8 @@ class FGLMStrategy{
 public:
     typedef BooleEnv::ring_type ring_with_ordering_type;
     FGLMStrategy(){}
-    FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
-   :to(to_ring), from(from_ring)
-    {
-        prot=false;
-        transposed=false;
-        ring_with_ordering_type backup_ring=BooleEnv::ring();
-        BooleEnv::set(from);
-        PolynomialVector::const_iterator it=gb.begin();
-        PolynomialVector::const_iterator end=gb.end();
-        
-        while(it!=end){
-            this->gbFrom.addGenerator(*it);
-            it++;
-        }
-        //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
-
-        Monomial monomial_one(from_ring);
-        if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
-            //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
-            if (prot)
-                cout<<"analyzing gb..."<<endl;
-            analyzeGB(this->gbFrom);
-            if (prot){
-                cout<<"varietySize:"<<varietySize<<endl;
-                cout<<"standard monomials tables..."<<endl;
-            }
-            setupStandardMonomialsFromTables();
-            if (prot)
-                cout<<"multiplication tables..."<<endl;
-            setupMultiplicationTables();
-
-#ifndef NDEBUG
-            if (prot)
-                cout<<"test multiplication table..."<<endl;
-            testMultiplicationTables();
-#endif
-            assert(standardMonomialsFrom2Index[monomial_one]==0);
-        }
-        if (prot)
-            cout<<"initialization finished"<<endl;
-        BooleEnv::set(backup_ring);
-    }
+    FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb);
+ 
     PolynomialVector main();
     void analyzeGB(const ReductionStrategy& gb);
     void setupMultiplicationTables();
@@ -114,8 +74,10 @@ private:
     lm2Index_map_type monomial2MultiplicationMatrix;
     lm2Index_map_type monomial2MultiplicationMatrixRowIndex;
     MatrixVector multiplicationTables;
+    bool canAddThisElementLaterToGB(Polynomial p);
+    PolynomialVector addTheseLater;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
-    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat, packedmatrix* v);
+    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& start_indices, packedmatrix* v);
     };
 END_NAMESPACE_PBORIGB
 #endif    
