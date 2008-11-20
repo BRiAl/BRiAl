@@ -60,7 +60,7 @@ private:
     VariableVector varsVector;
     
     ReductionStrategy gbFrom; //reduced gb
-    
+    MonomialSet edgesUnitedVerticesFrom;
     ring_with_ordering_type from;
     ring_with_ordering_type to;
     
@@ -78,7 +78,7 @@ private:
     PolynomialVector addTheseLater;
     Exponent::idx_map_type standardExponentsFrom2Index;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
-    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& start_indices, packedmatrix* v);
+    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat,  IndexVector& row_starting_with_index, packedmatrix* v);
     };
 END_NAMESPACE_PBORIGB
 #endif    

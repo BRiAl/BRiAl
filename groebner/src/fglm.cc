@@ -12,7 +12,33 @@
 BEGIN_NAMESPACE_PBORIGB
 
 
-
+void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedmatrix* B, packedmatrix* acc1, packedmatrix* acc2){
+    int i,j;
+    const int m=A->nrows;
+    const int n=A->ncols;
+    packedmatrix* res_row=acc1;
+    packedmatrix* dest_row=acc2;
+    assert(acc1->ncols==B->ncols);
+    assert(acc2->ncols==B->ncols);
+    assert(dest->nrows==A->nrows);
+    assert(dest->ncols==B->ncols);
+    for(i=0;i<m;i++){
+        mzd_row_clear_offset(acc1, 0,0);
+        mzd_row_clear_offset(acc2, 0,0);
+        mzd_row_clear_offset(dest,i,0);
+        for(j=0;j<n;j++){
+            if (mzd_read_bit(A,i,j)){
+                mzd_combine(dest_row,0,0,B,j,0,res_row,0,0);
+                std::swap(res_row,dest_row);
+            }
+        }
+        //how to do that most efficiently?
+        //copy res_row to dest
+        mzd_row_clear_offset(dest_row,0,0);
+        mzd_combine(dest,i,0,res_row,0,0,dest_row,0,0);
+    }
+    
+}
 
 
 void FGLMStrategy::setupStandardMonomialsFromTables(){
@@ -36,6 +62,7 @@ void FGLMStrategy::setupStandardMonomialsFromTables(){
      BooleEnv::set(backup_ring);
      
 }
+#if 0
 void FGLMStrategy::writeTailToRow(MonomialSet tail, packedmatrix* row){
 
     MonomialSet::const_iterator it=tail.begin();
@@ -47,6 +74,19 @@ void FGLMStrategy::writeTailToRow(MonomialSet tail, packedmatrix* row){
         it++;
     }
 }
+#else
+void FGLMStrategy::writeTailToRow(MonomialSet tail, packedmatrix* row){
+
+    MonomialSet::exp_iterator it=tail.expBegin();
+    MonomialSet::exp_iterator end=tail.expEnd();
+            //optimize that;
+    while(it!=end){
+        idx_type tail_idx=standardExponentsFrom2Index[*it];
+        mzd_write_bit(row,0, tail_idx,1);
+        it++;
+    }
+}
+#endif
 void FGLMStrategy::writeRowToVariableDivisors(packedmatrix* row, Monomial lm){
     Monomial::const_iterator it_lm=lm.begin();
     Monomial::const_iterator end_lm=lm.end();
@@ -150,19 +190,23 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     //reverse is important, so that divisors and elements in the tail have already been treated
     
-    transposeMultiplicationTables();
+    
     
     MonomialVector::reverse_iterator it_edges=edges_vec.rbegin();
     MonomialVector::reverse_iterator end_edges=edges_vec.rend();
-    MonomialSet EdgesUnitedVertices=edges.unite(leadingTermsFrom);
+    edgesUnitedVerticesFrom=edges.unite(leadingTermsFrom);
     
     packedmatrix* multiplied_row=mzd_init(1,varietySize);
     packedmatrix* reduced_problem_to_row=mzd_init(1,varietySize);
+    
+    packedmatrix* acc1=mzd_init(1, varietySize);
+    packedmatrix* acc2=mzd_init(1, varietySize);
+    
     while(it_edges!=end_edges){
         mzd_row_clear_offset(multiplied_row, 0, 0);
         Monomial m=*it_edges;
 
-        MonomialSet candidates=Polynomial(EdgesUnitedVertices.divisorsOf(m)).gradedPart(m.deg()-1).set();
+        MonomialSet candidates=Polynomial(edgesUnitedVerticesFrom.divisorsOf(m)).gradedPart(m.deg()-1).set();
         
         Monomial reduced_problem_to=*(candidates.begin());
 
@@ -183,8 +227,9 @@ void FGLMStrategy::setupMultiplicationTables(){
         //mzd_mul expects second arg to be transposed
         //which is a little bit tricky as we multiply from left
         //packedmatrix* transposed_mult_table=mzd_transpose(NULL, mult_table);
-        mzd_mul_naiv(multiplied_row,reduced_problem_to_row, mult_table);
         
+        //mzd_mul_naiv(multiplied_row,reduced_problem_to_row, mult_table);
+        mult_by_combining_rows(multiplied_row, reduced_problem_to_row, mult_table, acc1, acc2);
         } else {
             //packedmatrix* transposed_vec=mzd_init(1,varietySize);
             //assert (window->nrows==varietySize);
@@ -205,7 +250,10 @@ void FGLMStrategy::setupMultiplicationTables(){
    
     mzd_free(multiplied_row);
     
+    mzd_free(acc1);
+    mzd_free(acc2);
     
+    //transposeMultiplicationTables();
     
     {
         #ifdef DRAW_MATRICES
@@ -377,7 +425,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
     return res;
 }
 #else
-FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& start_indices, packedmatrix* v){
+FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& row_starting_with_index, packedmatrix* v){
     const int d=mat->nrows-1;
     mzd_row_clear_offset(mat,d,0);
     assert (mat->ncols==2*varietySize);
@@ -392,14 +440,21 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
     for(i=0;i<varietySize;i++){
         if (mzd_read_bit(mat,d,i)==1){
             bool succ=false;
+            int row_idx=row_starting_with_index[i];
+            if (row_idx>=0){
+                succ=true;
+                mzd_row_add_offset(mat, d, row_idx, i);
+            }
+            /*
             for (j=0;j<d;j++){
                 if (start_indices[j]==i){
                     succ=true;
                     mzd_row_add_offset(mat, d, j, i);
                     break;
                 }
-                
             }
+            */
+            
             if (!(succ)){
                 FGLMNoLinearCombinationException ex(i);
                 throw ex;
@@ -427,6 +482,9 @@ PolynomialVector FGLMStrategy::main(){
     //variables are oriented at Tim Wichmanns Diploma thesis
     BooleEnv::set(to);
 
+    packedmatrix* acc1=mzd_init(1, varietySize);
+    packedmatrix* acc2=mzd_init(1, varietySize);
+
     int i;
     
     typedef std::set<Monomial> MonomialSetSTL;
@@ -439,6 +497,10 @@ PolynomialVector FGLMStrategy::main(){
     packedmatrix* v=mzd_init(varietySize, varietySize);//write vectors in rows;
     packedmatrix* w=mzd_init(varietySize+1, varietySize*2);
     IndexVector w_start_indices;
+    IndexVector row_starting_with_index(varietySize);
+    for(i=0;i<row_starting_with_index.size();i++){
+        row_starting_with_index[i]=-1;
+    }
     MonomialSet b_set=Polynomial(1).diagram();
     MonomialVector b;
     b.push_back(monomial_one);
@@ -446,6 +508,7 @@ PolynomialVector FGLMStrategy::main(){
     mzd_write_bit(w,0,0,1);
     mzd_write_bit(w,0,varietySize+0,1);
     w_start_indices.push_back(0);
+    row_starting_with_index[0]=0;
     for(i=0;i<varsVector.size();i++){
         C.insert(varsVector[i]);
     }
@@ -466,18 +529,33 @@ PolynomialVector FGLMStrategy::main(){
             mzd_row_clear_offset(v_d,0,0);
             assert(varietySize>0);
             
-            Exponent b_j=*divisors.expBegin();
-            int j=exp2index[b_j];
-            Exponent x_i_m=(m.exp()-b_j);
-            assert (x_i_m.deg()==1);
-            //Variable x_i=*x_i_m.variableBegin();
-            packedmatrix* mult_table=multiplicationTables[ring2Index[*x_i_m.begin()]];//multiplicationTableForVariable(x_i);
-            packedmatrix* v_j=mzd_init_window(v,j,0,j+1,varietySize);
             
-            assert (v_j->nrows==1);
-            assert ( v_j->ncols==varietySize);
-            v_d=_mzd_mul_naiv(v_d, v_j, mult_table, FALSE);
-            mzd_free_window(v_j);
+            if (edgesUnitedVerticesFrom.owns(m)){
+                findVectorInMultTables(v_d, m);
+            } else {
+                if (standardMonomialsFrom.owns(m)){
+                    mzd_write_bit(v_d,0, standardMonomialsFrom2Index[m],1);
+                } else{
+                    Exponent b_j=*divisors.expBegin();
+                    int j=exp2index[b_j];
+                    Exponent x_i_m=(m.exp()-b_j);
+                    assert (x_i_m.deg()==1);
+                    //Variable x_i=*x_i_m.variableBegin();
+                    packedmatrix* mult_table=multiplicationTables[ring2Index[*x_i_m.begin()]];//multiplicationTableForVariable(x_i);
+                    packedmatrix* v_j=mzd_init_window(v,j,0,j+1,varietySize);
+
+                    assert (v_j->nrows==1);
+                    assert ( v_j->ncols==varietySize);
+                    if (transposed)
+                        v_d=_mzd_mul_naiv(v_d, v_j, mult_table, FALSE);
+                    else{
+                        mult_by_combining_rows(v_d, v_j, mult_table, acc1, acc2);
+                    }
+                    mzd_free_window(v_j);
+                }
+                
+            }
+            
             assert (v_d->nrows==1);
             assert (v_d->ncols=varietySize);
             packedmatrix* w_window=mzd_init_window(w,0,0,d+1,2*varietySize);
@@ -486,7 +564,7 @@ PolynomialVector FGLMStrategy::main(){
             {    
                 
                 
-                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window, w_start_indices, v_d);
+                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window,  row_starting_with_index, v_d);
                 MonomialVector p_vec;
                 for(i=0;i<lin_combination.size();i++){
                     assert (lin_combination[i]<b.size());
@@ -502,7 +580,8 @@ PolynomialVector FGLMStrategy::main(){
 
                 b_set=b_set.unite(m.diagram());
                 b.push_back(m);
-                w_start_indices.push_back(e.firstNonZeroIndex);
+                
+                row_starting_with_index[e.firstNonZeroIndex]=d;
                 mzd_write_bit(w,d,varietySize+d,1);
                 packedmatrix* copy_window=mzd_init_window(v,d,0,d+1,varietySize);
                 mzd_copy(copy_window, v_d);
@@ -530,6 +609,10 @@ PolynomialVector FGLMStrategy::main(){
     for(i=0;i<addTheseLater.size();i++){
         F.push_back(addTheseLater[i]);
     }
+    
+    mzd_free(acc1);
+    mzd_free(acc2);
+    
     return F;
 }
 void FGLMStrategy::testMultiplicationTables(){
