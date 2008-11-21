@@ -20,6 +20,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2008/11/21 10:28:43  dreyer
+ * ADD: BooleSet::containsDivisorsOfDecDeg and contains
+ *
  * Revision 1.42  2008/11/14 15:06:49  dreyer
  * Fix: optimized routine for BooleSet.minimalElements
  *
@@ -462,7 +465,7 @@ bool owns_one(NaviType navi) {
 template <class CacheMgr, class NaviType, class SetType>
 SetType
 dd_modulo_monomials(const CacheMgr& cache_mgr,  
-                 NaviType navi, NaviType rhs, const SetType& init){
+                    NaviType navi, NaviType rhs, const SetType& init){
 
   // Managing trivial cases
   if (owns_one(rhs)) return cache_mgr.zero();
@@ -518,7 +521,7 @@ dd_modulo_monomials(const CacheMgr& cache_mgr,
 template <class CacheMgr, class ModMonCacheMgr, class NaviType, class SetType>
 SetType
 dd_minimal_elements(const CacheMgr& cache_mgr, const ModMonCacheMgr& modmon_mgr,
-                 NaviType navi, const SetType& init){
+                    NaviType navi, const SetType& init){
 
   // Trivial Cases
   if (navi.isEmpty()) 

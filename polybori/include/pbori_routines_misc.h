@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.41  2008/11/21 10:28:44  dreyer
+ * ADD: BooleSet::containsDivisorsOfDecDeg and contains
+ *
  * Revision 1.40  2008/09/22 11:39:21  bricken
  * + deg of 0 is -1
  *
@@ -889,6 +892,48 @@ dd_owns(NaviType navi, Iterator start, Iterator finish) {
 
   return dd_owns(navi.thenBranch(), ++start, finish);
 }
+
+/// Test whether a set of monomials contains all divisors of degree - 1 of a
+/// given monomial
+template <class NaviType, class MonomIterator>
+bool
+dd_contains_divs_of_dec_deg(NaviType navi, 
+                            MonomIterator start, MonomIterator finish) {
+
+  // Managing trivial cases
+
+  if (start == finish)          // divisors of monomial 1 is the empty set,
+                                // which is always contained
+    return true;
+
+  if (navi.isConstant()) {      // set is empty or owns 1 only
+    if (navi.terminalValue())   // set == {1}
+      return (++start == finish);  // whether monom is of degree one
+    else                        // empty set contains no divisors
+      return false;
+
+  }
+
+  // Actual computations
+
+  if (*navi < *start)
+    return dd_contains_divs_of_dec_deg(navi.elseBranch(), start, finish);
+
+
+  if (*navi > *start) {
+    if (++start == finish)      // if monom is of degree one
+      return owns_one(navi);
+    else                        
+      return false;
+  }  
+
+  // (*navi == *start) here
+  ++start;
+  return dd_owns(navi.elseBranch(), start, finish) && 
+    dd_contains_divs_of_dec_deg(navi.thenBranch(), start, finish);
+}
+
+
 
 // determine the part of a polynomials of a given degree
 template <class CacheType, class NaviType, class DegType, class SetType>

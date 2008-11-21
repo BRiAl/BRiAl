@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.55  2008/11/21 10:28:44  dreyer
+ * ADD: BooleSet::containsDivisorsOfDecDeg and contains
+ *
  * Revision 1.54  2008/11/14 15:06:49  dreyer
  * Fix: optimized routine for BooleSet.minimalElements
  *
@@ -496,6 +499,18 @@ BooleSet::size_type BooleSet::countIndex(idx_type idx) const {
 double BooleSet::countIndexDouble(idx_type idx) const {
   double size(0);
   return count_index(size, idx, *this);
+}
+
+// Test whether, all divisors of degree -1 of term rhs are contained in this
+BooleSet::bool_type 
+BooleSet::containsDivisorsOfDecDeg(const term_type& rhs) const { 
+  return dd_contains_divs_of_dec_deg(navigation(), rhs.begin(), rhs.end());
+}
+
+// Test for term corresponding to exponent rhs
+BooleSet::bool_type 
+BooleSet::containsDivisorsOfDecDeg(const exp_type& rhs) const { 
+  return dd_contains_divs_of_dec_deg(navigation(), rhs.begin(), rhs.end());
 }
 
 END_NAMESPACE_PBORI

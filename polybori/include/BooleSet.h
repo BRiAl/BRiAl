@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2008/11/21 10:28:43  dreyer
+ * ADD: BooleSet::containsDivisorsOfDecDeg and contains
+ *
  * Revision 1.45  2008/03/11 10:04:11  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -396,6 +399,11 @@ public:
   PBORI_DDFUNCS(divideFirstAssign)
   //@}
 
+  /// Test containment
+  bool_type contains(const self& rhs) const { 
+    return base::diffConst(rhs).emptiness();  
+  }
+
   /// Get unique hash value (may change from run to run)
   using base::hash;
 
@@ -416,6 +424,12 @@ public:
 
   /// Access ring, where this belongs to
   ring_type ring() const { return ring_type(base::manager()); } 
+
+  /// Test whether, all divisors of degree -1 of term rhs are contained in this
+  bool_type containsDivisorsOfDecDeg(const term_type& rhs) const;
+
+  /// Test for term corresponding to exponent rhs
+  bool_type containsDivisorsOfDecDeg(const exp_type& rhs) const;
 };
 
 /// Stream output operator
