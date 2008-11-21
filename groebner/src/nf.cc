@@ -193,7 +193,7 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
       Polynomial p_old=p;
       #endif
       
-      assert(deg=p.lmDeg());
+      assert(deg==p.lmDeg());
       Polynomial pg=p.gradedPart(deg);
       p=p-pg+reduce_complete(pg,strat[index],dummy);
       //p=reduce_complete(p,strat.generators[index],dummy);
@@ -1705,7 +1705,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
         assert(!(m_nav.isConstant()));
         m_nav.incrementElse();
     }
-    assert (p_index=*p_nav);
+    assert (p_index==*p_nav);
     typedef PBORI::CacheManager<CCacheTypes::plug_1>
       cache_mgr_type;
     cache_mgr_type cache_mgr(p.diagram().manager());

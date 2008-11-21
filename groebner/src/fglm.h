@@ -44,6 +44,7 @@ public:
             mzd_free(multiplicationTables[i]);
         }
     }
+    typedef std::vector<idx_type> IndexVector;
 private:
     bool prot;
     Monomial vars;
@@ -51,7 +52,7 @@ private:
     typedef std::vector<Monomial> MonomialVector;
     typedef std::vector<packedmatrix*> MatrixVector;
     typedef std::vector<Variable> VariableVector;
-    typedef std::vector<idx_type> IndexVector;
+    
     
     MonomialSet standardMonomialsFrom;
     MonomialVector standardMonomialsFromVector;
