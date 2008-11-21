@@ -177,7 +177,7 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False,pass_prot=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False,pass_prot=False, pass_kwds=False):
     def make_wrapper(f):
         def wrapper(I,**kwds):
             prot=False
@@ -199,14 +199,14 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
                    extra_kwd_args["option_set"]=option_set
             if pass_prot:
                    extra_kwd_args["prot"]=prot
+            if pass_kwds:
+                extra_kwd_args["kwds"]=kwds
             if option_set:
                if pre:
                    if prot:
                        print "preprocessing for option:", option
                    
                    (I,state)=pre(I,**extra_kwd_args)
- 
-               
             res=f(I,**kwds)
             if option_set:
                 if post:
@@ -272,23 +272,27 @@ def ll_constants_pre(I):
     
     return (reduced,ll)
 
-def other_ordering_pre(I,option_set):
+def other_ordering_pre(I,option_set,kwds):
+    main_kwds=kwds
     options=option_set
     ocode=get_order_code()
     assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
     #in parcticular it does not work for block orderings, because of the block sizes
     old_ring=global_ring()
     change_ordering(options["switch_to"])
-    
+    new_ring=global_ring()
     kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
+    kwds["redsb"]=True
     I_orig=I
     I=groebner_basis(I,**kwds)
-    for p in I:
-        if p.deg()>1:
-            I=list(chain(I,I_orig))
-            break
+    #for p in I:
+    #    if p.deg()>1:
+    #        I=list(chain(I,I_orig))
+    #        break
     #change_ordering(ocode)
     old_ring.set()
+    main_kwds["convert_with_fglm_from_ring"]=new_ring
+    
     return (I,None)
 def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
@@ -333,11 +337,11 @@ def fix_deg_bound_post(I,state):
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
 @with_heuristic(change_order_heuristic)
-@gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True)
+@gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True, pass_kwds=True)
 @with_heuristic(linear_algebra_heuristic)
 @gb_with_pre_post_option("fix_deg_bound",if_not_option=["interpolation_gb"], post=fix_deg_bound_post,default=True)
-@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb"],default=True)
-@gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb"],default=True)
+@gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
+@gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
 def groebner_basis(I, faugere=False,
        preprocess_only=False, selection_size= 1000,
        full_prot= False, recursion= False,
@@ -348,12 +352,21 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False):
+       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if full_prot:
         prot=True
     if prot:
         print "number of passed generators:",len(I)
+    if not convert_with_fglm_from_ring is None:
+        from_ring=convert_with_fglm_from_ring
+        to_ring=global_ring()
+        if I==[1]:
+            return [Polynomial(1)]
+        vec=BoolePolynomialVector()
+        for p in I:
+            vec.append(Polynomial(p))
+        return FGLMStrategy(from_ring,to_ring,vec).main()
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
             raise ValueError
