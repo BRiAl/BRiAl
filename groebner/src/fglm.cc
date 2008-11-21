@@ -720,6 +720,7 @@ PolynomialVector FGLMStrategy::main(){
     
     return F;
 }
+
 void FGLMStrategy::testMultiplicationTables(){
     #ifndef NDEBUG
     ring_with_ordering_type backup_ring=BooleEnv::ring();
@@ -776,7 +777,7 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
 :to(to_ring), from(from_ring)
 {
-    prot=true;
+    
     transposed=false;
     ring_with_ordering_type backup_ring=BooleEnv::ring();
     BooleEnv::set(from);
