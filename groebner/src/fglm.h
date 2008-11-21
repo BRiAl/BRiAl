@@ -68,17 +68,21 @@ private:
     
     IndexVector ring2Index;
     IndexVector index2Ring;
+    IndexVector rowStartingWithIndex;
     idx_type nVariables;
     bool transposed;
+    std::vector<IndexVector> tableXRowYIsMonomialFromWithIndex;
     lm2Index_map_type standardMonomialsFrom2Index;
     lm2Index_map_type monomial2MultiplicationMatrix;
     lm2Index_map_type monomial2MultiplicationMatrixRowIndex;
     MatrixVector multiplicationTables;
+    
     bool canAddThisElementLaterToGB(Polynomial p);
     PolynomialVector addTheseLater;
+    IndexVector rowIsStandardMonomialToWithIndex;
     Exponent::idx_map_type standardExponentsFrom2Index;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
-    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat,  IndexVector& row_starting_with_index, packedmatrix* v);
+    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat,   packedmatrix* v);
     };
 END_NAMESPACE_PBORIGB
 #endif    

@@ -11,7 +11,19 @@
 #include "interpolate.h"
 BEGIN_NAMESPACE_PBORIGB
 
-
+void copy_row(packedmatrix* dst, int dest_row, packedmatrix* src, int src_row){
+    assert (dst->offset=0);
+    assert (src->offset=0);
+    int i;
+    const int width=std::min(dst->width, src->width);
+    //assert(dst_width==src->width);
+    word* dst_values=dst->values+dst->rowswap[dest_row];
+    word* src_values=src->values+src->rowswap[src_row];
+    for(i=0;i<width;i++){
+        *(dst_values++)=*(src_values++);
+    }
+    
+}
 void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedmatrix* B, packedmatrix* acc1, packedmatrix* acc2){
     int i,j;
     const int m=A->nrows;
@@ -34,8 +46,11 @@ void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedmatrix* B
         }
         //how to do that most efficiently?
         //copy res_row to dest
-        mzd_row_clear_offset(dest_row,0,0);
-        mzd_combine(dest,i,0,res_row,0,0,dest_row,0,0);
+        
+        //mzd_row_clear_offset(dest_row,0,0);
+        //mzd_combine(dest,i,0,res_row,0,0,dest_row,0,0);
+        
+        copy_row(dest,i,res_row,0);
     }
     
 }
@@ -111,9 +126,16 @@ void FGLMStrategy::writeRowToVariableDivisors(packedmatrix* row, Monomial lm){
                     mzd_write_bit(mat, j, divided_index, mzd_read_bit(row,0,j));
                 }
             } else {
-                for(j=0;j<varietySize;j++){
+                
+                /*packedmatrix* window=mzd_init_window(mat,divided_index,0,divided_index+1,varietySize);
+                mzd_copy(window,row);
+                mzd_free_window(window);*/
+                
+                copy_row(mat, divided_index, row,0);
+                
+                /*for(j=0;j<varietySize;j++){
                     mzd_write_bit(mat, divided_index, j, mzd_read_bit(row,0,j));
-                }
+                }*/
             }
         }
         it_lm++;
@@ -144,10 +166,15 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     //first we write into rows, later we transpose
     //algorithm here
-    int i;
+    int i,j;
     multiplicationTables.resize(nVariables);
+    tableXRowYIsMonomialFromWithIndex.resize(nVariables);
     for(i=0;i<nVariables;i++){
         multiplicationTables[i]=mzd_init(varietySize,varietySize);
+        tableXRowYIsMonomialFromWithIndex[i].resize(varietySize);
+        for(j=0;j<varietySize;j++){
+            tableXRowYIsMonomialFromWithIndex[i][j]=-1;
+        }
     }
     
     //standard monomials
@@ -425,36 +452,37 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
     return res;
 }
 #else
-FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, IndexVector& row_starting_with_index, packedmatrix* v){
+FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packedmatrix* mat, packedmatrix* v){
     const int d=mat->nrows-1;
     mzd_row_clear_offset(mat,d,0);
     assert (mat->ncols==2*varietySize);
     
-    packedmatrix* copy_v_into=mzd_init_window(mat,d,0,d+1,varietySize);
-    mzd_copy(copy_v_into,v);
-    mzd_free_window(copy_v_into);
+    //packedmatrix* copy_v_into=mzd_init_window(mat,d,0,d+1,varietySize);
+    //mzd_copy(copy_v_into,v);
+    //mzd_free_window(copy_v_into);
     
-    
+    copy_row(mat,d,v,0);
+    //mzd_row_clear_offset(mat,d,varietySize);//might be random data at the end as mat is wider
+
 
     int i,j;
     for(i=0;i<varietySize;i++){
         if (mzd_read_bit(mat,d,i)==1){
             bool succ=false;
-            int row_idx=row_starting_with_index[i];
+            int row_idx=rowStartingWithIndex[i];
             if (row_idx>=0){
                 succ=true;
-                mzd_row_add_offset(mat, d, row_idx, i);
-            }
-            /*
-            for (j=0;j<d;j++){
-                if (start_indices[j]==i){
-                    succ=true;
-                    mzd_row_add_offset(mat, d, j, i);
-                    break;
+                int standard_idx;
+                if ((standard_idx=rowIsStandardMonomialToWithIndex[row_idx])>=0){
+                    mzd_write_bit(mat,d,i,0);
+                    const int standard_idx_with_offset=varietySize+standard_idx;
+                    mzd_write_bit(mat,d,standard_idx_with_offset,(1+mzd_read_bit(mat,d,standard_idx_with_offset)));
+                } else {
+                    mzd_row_add_offset(mat, d, row_idx, i);
                 }
+                
             }
-            */
-            
+
             if (!(succ)){
                 FGLMNoLinearCombinationException ex(i);
                 throw ex;
@@ -497,9 +525,11 @@ PolynomialVector FGLMStrategy::main(){
     packedmatrix* v=mzd_init(varietySize, varietySize);//write vectors in rows;
     packedmatrix* w=mzd_init(varietySize+1, varietySize*2);
     IndexVector w_start_indices;
-    IndexVector row_starting_with_index(varietySize);
-    for(i=0;i<row_starting_with_index.size();i++){
-        row_starting_with_index[i]=-1;
+    rowStartingWithIndex.resize(varietySize);
+    rowIsStandardMonomialToWithIndex.resize(varietySize);
+    for(i=0;i<rowStartingWithIndex.size();i++){
+        rowStartingWithIndex[i]=-1;
+        rowIsStandardMonomialToWithIndex[i]=-1;
     }
     MonomialSet b_set=Polynomial(1).diagram();
     MonomialVector b;
@@ -508,7 +538,8 @@ PolynomialVector FGLMStrategy::main(){
     mzd_write_bit(w,0,0,1);
     mzd_write_bit(w,0,varietySize+0,1);
     w_start_indices.push_back(0);
-    row_starting_with_index[0]=0;
+    rowStartingWithIndex[0]=0;
+    rowIsStandardMonomialToWithIndex[0]=0;
     for(i=0;i<varsVector.size();i++){
         C.insert(varsVector[i]);
     }
@@ -528,13 +559,14 @@ PolynomialVector FGLMStrategy::main(){
  
             mzd_row_clear_offset(v_d,0,0);
             assert(varietySize>0);
-            
+            bool is_standard_monomial_from=false;
             
             if (edgesUnitedVerticesFrom.owns(m)){
                 findVectorInMultTables(v_d, m);
             } else {
                 if (standardMonomialsFrom.owns(m)){
                     mzd_write_bit(v_d,0, standardMonomialsFrom2Index[m],1);
+                    is_standard_monomial_from=true;
                 } else{
                     Exponent b_j=*divisors.expBegin();
                     int j=exp2index[b_j];
@@ -564,7 +596,7 @@ PolynomialVector FGLMStrategy::main(){
             {    
                 
                 
-                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window,  row_starting_with_index, v_d);
+                IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window,  v_d);
                 MonomialVector p_vec;
                 for(i=0;i<lin_combination.size();i++){
                     assert (lin_combination[i]<b.size());
@@ -581,11 +613,29 @@ PolynomialVector FGLMStrategy::main(){
                 b_set=b_set.unite(m.diagram());
                 b.push_back(m);
                 
-                row_starting_with_index[e.firstNonZeroIndex]=d;
+                rowStartingWithIndex[e.firstNonZeroIndex]=d;
                 mzd_write_bit(w,d,varietySize+d,1);
-                packedmatrix* copy_window=mzd_init_window(v,d,0,d+1,varietySize);
+                if (is_standard_monomial_from){
+                    idx_type from_idx=standardMonomialsFrom2Index[m];
+                    if (e.firstNonZeroIndex==from_idx){
+                        //we assume, the row is untached
+                        rowIsStandardMonomialToWithIndex[d]=d;
+                        //might swap rows and use a vector of bools
+                    } else {
+                        const int reduced_with_this_row=rowStartingWithIndex[from_idx];
+                        assert(reduced_with_this_row>=0);
+                        mzd_row_clear_offset(w, reduced_with_this_row,0);
+                        mzd_write_bit(w, reduced_with_this_row, from_idx,1);
+                        mzd_write_bit(w, reduced_with_this_row, varietySize+d,1);
+                        rowIsStandardMonomialToWithIndex[reduced_with_this_row]=d;
+                        //still generate the same vector space
+                    }
+                }
+                /*packedmatrix* copy_window=mzd_init_window(v,d,0,d+1,varietySize);
                 mzd_copy(copy_window, v_d);
-                mzd_free_window(copy_window);
+                mzd_free_window(copy_window);*/
+                copy_row(v,d,v_d,0);
+                
                 idx_type m_begin=*m.begin();
                 for(i=0;(i<varsVector.size())&&(index2Ring[i]<m_begin);i++){
                     Variable var=varsVector[i];
