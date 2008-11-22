@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.28  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.27  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -595,6 +598,29 @@ inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   incrementThen();
 }
 
+template <class NavigatorType, class Category>
+class CReverseTermStack:
+  public CTermStack<NavigatorType, Category> {
+public: 
+  typedef NavigatorType navigator;
+  typedef CTermStack<NavigatorType, Category> base;
+
+  /// Default constructor
+  CReverseTermStack(): base() { }
+
+  /// Construct from initial navigator
+  CReverseTermStack(navigator navi): base(navi) {  }
+
+  /// Construct from initial navigator, second argument is just for having the
+  /// same interface with block and degree-stacks
+  template <class Dummy>
+  CReverseTermStack(navigator navi, const Dummy&): base(navi) { }
+
+  void init() { base::initLast(); }
+  void initLast() { base::init(); }
+  void increment() { base::decrement(); }
+  void decrement() { base::increment(); }
+};
 
 template <class NavigatorType, class BlockProperty, class Category, class
           BaseType = internal_tag>

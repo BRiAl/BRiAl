@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.28  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -190,6 +193,11 @@ public:
   /// Incrementation operation
   void increment() {
     m_stack.increment();
+  }
+
+  /// Decrementation operation
+  void decrement() {
+    m_stack.decrement();
   }
 
   /// Equality test

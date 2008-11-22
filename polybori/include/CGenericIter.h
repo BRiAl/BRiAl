@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.21  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.20  2008/01/16 17:10:18  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -134,8 +137,28 @@ public:
 };
 
 ///////////////
+template <class OrderType, class NaviType, class RefType>
+struct pbori_base<CReverseIter<OrderType, NaviType, RefType> > {
+
+  typedef CReverseTermStack<NaviType, std::bidirectional_iterator_tag> stack_type;
+
+  typedef CTermIter<stack_type, CTermGenerator<RefType> > type;
+};
 
 
+template <class OrderType, class NaviType, class RefType>
+class CReverseIter: 
+  public pbori_base<CReverseIter<OrderType, NaviType, RefType> >::type {
+  
+public:
+  typedef typename pbori_base<CReverseIter>::type base;
+  typedef typename base::term_generator term_generator;
+
+  template <class MgrType>
+  CReverseIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
+
+  CReverseIter(): base() {}
+};
 
 
 

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.46  2008/11/21 10:28:43  dreyer
  * ADD: BooleSet::containsDivisorsOfDecDeg and contains
  *
@@ -166,6 +169,7 @@
 #include "pbori_func.h"
 #include "BooleRing.h"
 
+
 #ifndef BooleSet_h_
 #define BooleSet_h_
 
@@ -180,8 +184,8 @@ class CGenericIter;
 // temporarily
 class LexOrder;
 
-//template<class OrderType, class NavigatorType, class MonomType>
-//class CGenericIter;
+template<class OrderType, class NavigatorType, class MonomType>
+class CReverseIter;
 
 
 #define PBORI_CONST_DDFUNCS(func)   \
@@ -229,6 +233,9 @@ public:
   /// Iterator type for iterating all exponent vectors 
   typedef CGenericIter<LexOrder, navigator, exp_type> exp_iterator;
 
+  /// Iterator type for iterating all monomials
+  typedef CReverseIter<LexOrder, navigator, term_type> const_reverse_iterator;
+
   /// Default constructor
   BooleSet();
 
@@ -271,6 +278,12 @@ public:
 
   /// Finish of iteration over terms
   const_iterator end() const;
+
+  /// Start of backward iteration over terms
+  const_reverse_iterator rbegin() const;
+
+  /// Finish of backward iteration over terms
+  const_reverse_iterator rend() const;
 
   /// Start of iteration over exponent vectors
   exp_iterator expBegin() const;

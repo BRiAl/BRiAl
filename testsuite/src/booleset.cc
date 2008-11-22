@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.7  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.6  2008/02/28 17:05:48  dreyer
  * Fix: treating constants (0, 1) accordingly
  *
@@ -202,16 +205,34 @@ main(){
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout  <<bset.multiplesOf(monom) <<std::endl;
+    /*
     monom = BoolePolynomial(0).lead();
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
-
+    */
     std::cout  <<bset.multiplesOf(monom) <<std::endl;
  
     monom = BoolePolynomial(1).lead();;
     std::cout  << "multiplesOf " << bset <<"|"<<monom <<std::endl;
 
     std::cout << std::endl;
-               
+
+    poly = x * y+x * y*z + y * z*v + w;
+    bset = poly.diagram();
+    std::cout  << "reversed iterator testing of " <<bset<<std::endl;
+    std::cout.flush();
+    BooleSet::const_reverse_iterator riter(bset.rbegin());
+
+    std::cout  << *riter <<std::endl;
+    ++riter;
+    std::cout  << *riter <<std::endl;
+    --riter;
+    std::cout  << *riter <<std::endl;
+    --riter;
+    std::cout  << "at end? "<<riter.isZero() <<std::endl;
+
+    ++riter;
+    std::cout  << "at end? "<<riter.isZero() <<std::endl;
+    std::cout  << *riter <<std::endl; 
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

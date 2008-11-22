@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.56  2008/11/22 23:47:31  dreyer
+ * ADD: BooleSet::rbegin(),end()
+ *
  * Revision 1.55  2008/11/21 10:28:44  dreyer
  * ADD: BooleSet::containsDivisorsOfDecDeg and contains
  *
@@ -305,6 +308,21 @@ BooleSet::end() const {
 
   PBORI_TRACE_FUNC( "BooleSet::end() const" );
   return const_iterator();
+}
+// Start of iteration over monomials
+BooleSet::const_reverse_iterator 
+BooleSet::rbegin() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::rbegin() const" );
+  return const_reverse_iterator(navigation(), managerCore());
+}
+
+// Finish of iteration over monomials
+BooleSet::const_reverse_iterator 
+BooleSet::rend() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::rend() const" );
+  return const_reverse_iterator();
 }
 
 // Start of iteration over exponent vectors
