@@ -768,7 +768,7 @@ Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
 bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     Monomial lm_from=from.ordering().lead(p);
     size_t length=p.length();
-    if ((length==1)||((length==2) && (p.hasConstantPart()))){
+    if ((lm_from.deg()==1)&& ((length==1)||((length==2) && (p.hasConstantPart())))){
         return true;
     }/*
     if (lm_from.deg()==1){
