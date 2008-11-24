@@ -75,7 +75,7 @@ def change_order_heuristic(d):
     d_orig=d
     d=copy(d)
     I=d["I"]
-    switch_table={OrderCode.lp:OrderCode.dlex,OrderCode.dlex:OrderCode.dp_asc}
+    switch_table={OrderCode.lp:OrderCode.dp_asc,OrderCode.dlex:OrderCode.dp_asc}
     if not "other_ordering_first" in d:
         #TODO after ll situation might look much different, so heuristic is on wrong place
         code=get_order_code()
@@ -361,8 +361,6 @@ def groebner_basis(I, faugere=False,
     if not convert_with_fglm_from_ring is None:
         from_ring=convert_with_fglm_from_ring
         to_ring=global_ring()
-        if I==[1]:
-            return [Polynomial(1)]
         vec=BoolePolynomialVector()
         for p in I:
             vec.append(Polynomial(p))
