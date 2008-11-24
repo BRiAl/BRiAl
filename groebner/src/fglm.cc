@@ -426,9 +426,9 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
         our_index++;
         it++;
     }
-
+ 
     standardMonomialsFrom=mod_mon_set(vars.divisors(), gb.leadingTerms);
-    
+
     leadingTermsFrom=gb.leadingTerms;
     varietySize=standardMonomialsFrom.size();
 
@@ -555,6 +555,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
 PolynomialVector FGLMStrategy::main(){
     PolynomialVector F;
     const Monomial monomial_one;
+
     if (leadingTermsFrom.owns(monomial_one)){
         F.push_back(monomial_one);
         return F;
@@ -766,18 +767,22 @@ Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
 }
 bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     Monomial lm_from=from.ordering().lead(p);
+    size_t length=p.length();
+    if ((length==1)||((length==2) && (p.hasConstantPart()))){
+        return true;
+    }/*
     if (lm_from.deg()==1){
         Monomial lm_to=to.ordering().lead(p);
         if (lm_from==lm_to){
             return true;
         }
-    }
+    }*/
     return false;
 }
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
 :to(to_ring), from(from_ring)
 {
-    
+    prot=false;
     transposed=false;
     ring_with_ordering_type backup_ring=BooleEnv::ring();
     BooleEnv::set(from);
@@ -794,13 +799,14 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
         it++;
     }
     //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
-
+    
     Monomial monomial_one(from_ring);
+    if (prot)
+        cout<<"analyzing gb..."<<endl;
+    analyzeGB(this->gbFrom);
     if (!(this->gbFrom.leadingTerms.owns(monomial_one))){
         //cout<<standardMonomialsFrom2Index[monomial_one]<<endl;
-        if (prot)
-            cout<<"analyzing gb..."<<endl;
-        analyzeGB(this->gbFrom);
+        
         if (prot){
             cout<<"varietySize:"<<varietySize<<endl;
             cout<<"standard monomials tables..."<<endl;
