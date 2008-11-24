@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.29  2008/11/24 23:40:22  dreyer
+ * Fix: reversed iterator at begin issue
+ *
  * Revision 1.28  2008/11/22 23:47:31  dreyer
  * ADD: BooleSet::rbegin(),end()
  *
@@ -263,12 +266,14 @@ protected:
 
   void clear() { m_stack.clear(); }
 
-  // reference top() { return m_stack.back(); }
 
 public:
-  const_reference top() const { return m_stack.back(); }
-  idx_type index() const { return *top(); }
   bool_type empty() const { return m_stack.empty(); }
+  const_reference top() const { 
+    assert(!empty());
+    return m_stack.back();
+  }
+  idx_type index() const { return *top(); }
   size_type size() const { return m_stack.size(); }
 
   const_iterator begin() const { return stackBegin(); }
@@ -460,7 +465,7 @@ public:
   using base::incrementThen;
   using base::followThen;
 
- /// Default constructor
+  /// Default constructor
   CTermStack(): base() { }
 
   /// Construct from initial navigator
@@ -482,7 +487,6 @@ public:
   }
 
   void incrementElse() {
-    assert(!base::empty());
     handleElse(base::top());
     base::incrementElse();
   }
@@ -522,10 +526,11 @@ public:
     if (base::markedOne()) {
       base::clearOne();
     }
-      
     previous();
-    followElse();
-    base::decrementNode();
+    if (!base::empty()){
+      followElse();
+      base::decrementNode();
+    }
 
   }
 
@@ -551,6 +556,7 @@ public:
     else
       incrementThen();
   } 
+
 protected:
   template <class TermStack>
   void append(const TermStack& rhs) {
@@ -586,8 +592,7 @@ inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   }
 
   navigator navi = handleElse.top();
-
-  assert(base::top().isValid());
+  assert(base::empty() || base::top().isValid());
 
   while(!base::empty() && (base::index() >= *navi) ) {
     base::decrementNode();
@@ -598,6 +603,11 @@ inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   incrementThen();
 }
 
+/** @class CReverseTermStack
+ * @brief This class defines an iterator for the monomials in a Boolean
+ * polynomial in reversed lexicographicxal order.
+ *
+ **/
 template <class NavigatorType, class Category>
 class CReverseTermStack:
   public CTermStack<NavigatorType, Category> {

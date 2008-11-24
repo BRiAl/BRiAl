@@ -50,10 +50,24 @@ static unsigned long iterate_lex(BoolePolynomial& p){
 }
 
 
+static unsigned long iterate_lex_reversed(BoolePolynomial& p){
+    BooleSet bset(p.set());
+    unsigned long res=0;
+    BooleSet::const_reverse_iterator it=bset.rbegin();
+    BooleSet::const_reverse_iterator end=bset.rend();
+
+    while(it!=end){
+      res++;
+      it++;
+    }
+    return res;
+
+}
+
 void export_test_util(){
 
   def("test_iterate_lex", iterate_lex);
   def("test_iterate_reference_ordered",iterate_reference_ordered);
   def("test_iterate_ordered",iterate_ordered);
-
+  def("test_iterate_lex_reversed", iterate_lex_reversed);
 }
