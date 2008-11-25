@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.30  2008/11/25 11:10:46  dreyer
+ * CHANGE: UNLIKELY constructs in CTermStack
+ *
  * Revision 1.29  2008/11/24 23:40:22  dreyer
  * Fix: reversed iterator at begin issue
  *
@@ -355,7 +358,7 @@ public:
   }
 
   bool_type markedOne() const {
-    if (empty())
+    if UNLIKELY(empty())
       return false;
     else
       return !m_stack.front().isValid();
@@ -508,13 +511,13 @@ public:
 
   void increment() {
     assert(!base::empty());
-    if (base::markedOne()) {
+    if UNLIKELY(base::markedOne()) {
       base::clearOne();
       return;
     }
       
     next();
-    if (!base::empty()) {
+    if UNLIKELY(!base::empty()) {
       followThen();
       terminate();
     }
@@ -523,11 +526,11 @@ public:
 
    void decrement() {
 
-    if (base::markedOne()) {
+    if UNLIKELY(base::markedOne()) {
       base::clearOne();
     }
     previous();
-    if (!base::empty()){
+    if UNLIKELY(!base::empty()){
       followElse();
       base::decrementNode();
     }
@@ -539,7 +542,7 @@ public:
 
     bool isZero = base::isInvalid();
     base::decrementNode();
-    if (base::empty() && !isZero)
+    if UNLIKELY(base::empty() && !isZero)
       base::markOne();
   }
 
