@@ -68,7 +68,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self/self)
   .def(self/int())
   
-  .def("varsAsMonomial",&used_var, 
+  .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")
     //  .def(self/BooleVariable())
   .def(self/=self)
