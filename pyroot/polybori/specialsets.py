@@ -11,13 +11,13 @@ def all_monomials_of_degree_d(d,variables):
     for v in variables[:-1]:
         m=v+m
     m=m.set()
-    def do_all_monomials(d):
-        if d==0:
-            return Polynomial(1).set()
-        else:
-            prev=do_all_monomials(d-1)
-            return prev.cartesianProduct(m).diff(prev)
-    return do_all_monomials(d)
+    i=0
+    res=Polynomial(1).set()
+    while(i<d):
+        i=i+1
+        res=res.cartesianProduct(m).diff(res)
+    return res
+
 def power_set(variables):
     variables=sorted(set(variables),reverse=True,key=top_index)
     res=Polynomial(1).set()
