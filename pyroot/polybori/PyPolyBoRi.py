@@ -27,10 +27,11 @@ def monomial_new_init(self,arg=None):
         try:
             monomial_old_init(self,arg)
         except:
-            monomial_old_init(self)
+            prototype=Monomial()
             items=sorted((x for x in arg),reverse=True, key=top_index)
             for x in items:
-                self*=x
+                prototype*=x
+            monomial_old_init(self,prototype)
 Monomial.__init__=monomial_new_init
 booleset_old_init=BooleSet.__init__
 def booleset_new_init(self,arg=None, second=None):
