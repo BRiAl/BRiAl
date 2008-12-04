@@ -1,6 +1,6 @@
 from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else, Monomial, top_index
 
-def all_monomials_of_degree_d(d,variables):
+def all_monomials_of_degree_d_old(d,variables):
     if d==0:
         return Polynomial(1).set()
     if len(variables)==0:
@@ -17,6 +17,37 @@ def all_monomials_of_degree_d(d,variables):
         i=i+1
         res=res.cartesianProduct(m).diff(res)
     return res
+
+def all_monomials_of_degree_d(d, variables):
+    
+    variables=Monomial(variables)
+    variables=list(variables.variables())
+    if d>len(variables):
+        return Polynomial(0)
+    if d<0:
+        return Polynomial(1)
+    if len(variables)==0:
+        assert d==0
+        return 1
+    deg_variables=variables[-d:]
+    #this ensures sorting by indices
+    res=Monomial(deg_variables)
+    ring=Polynomial(variables[0]).ring()
+    for i in xrange(1, len(variables)-d):
+        deg_variables=variables[-d-i:-i]
+        res=Polynomial(res)
+        nav=res.navigation()
+        navs=[]
+        while not nav.constant():
+            navs.append(BooleSet(nav,ring))
+            nav=nav.then_branch()
+        #navs=reversed(nav)
+        acc=Polynomial(1)
+        for (nav, v) in reversed(zip(navs, deg_variables)):
+            acc=if_then_else(v, acc, nav)
+        res=acc
+    return res.set()
+    
 
 def power_set(variables):
     variables=sorted(set(variables),reverse=True,key=top_index)
