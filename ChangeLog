@@ -49,6 +49,7 @@ Release Name: 0.6.0
     * easyProductCriterions -> easy_product_criterions
     * extendedProductCriterions -> extended_product_criterions
     * cleanTopByChainCriterion -> clean_top_by_chain_criterion
+    * stableHash -> stable_hash
 
 * Python interface, dropped functions
   * nSupport

@@ -57,7 +57,7 @@ void export_monomial(){
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash, "Fast hash code, based on the \
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
-  .def("stableHash", &BooleMonomial::stableHash, "Reproducible hash code")
+  .def("stable_hash", &BooleMonomial::stableHash, "Reproducible hash code")
   //.def("__len__", &BooleMonomial::length)
   //.def(self+=self)
   //.def(self*=self)
@@ -115,7 +115,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("totalDegree", &BooleMonomial::totalDeg)
   //.def("diagram", diagram,return_internal_reference<1>());
     .def("set", set, "Convert to BooleSet")
-    .def("reducibleBy", reducibleBy, "Test for reducibility")
+    .def("reducible_by", reducibleBy, "Test for reducibility")
     .def("ring", &BooleMonomial::ring, "Get corresponding ring");
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);

@@ -8,7 +8,7 @@ from polybori.gbcore import groebner_basis
 
 #from data import stas1 as data
 from polybori.nf import *
-from polybori.PyPolyBoRi import change_ordering, OrderCode
+from polybori.PyPolyBoRi import *
 
 datafilename="data.stas1"
 ordername="lp"
@@ -25,6 +25,12 @@ except:
 data=load_data(datafilename, base_dir="../testsuite/py/")
 change_ordering(getattr(OrderCode,ordername))
 I=groebner_basis(data.ideal)
-del I
-clean_data(data)
-del data
+from_ring=global_ring()
+change_ordering(lp)
+to_ring=global_ring()
+vec=BoolePolynomialVector()
+for p in I:
+    vec.append(p)
+from time import sleep
+sleep(30)
+res=FGLMStrategy(from_ring,to_ring, vec).main()
