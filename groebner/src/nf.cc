@@ -2040,6 +2040,13 @@ static packedmatrix* transposePackedMB(packedmatrix* mat){
 static void 
 linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat)
 {
+    
+    int unmodified_rows=polys.size();
+    int unmodified_cols=terms.size();
+    if (((long long) unmodified_cols)*((long long) unmodified_rows)>1000ll){
+        PBoRiError error(CTypes::failed);
+        throw error;
+    }
     static int round=0;
     round++;
     const int russian_k=16;
