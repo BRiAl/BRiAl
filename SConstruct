@@ -625,9 +625,11 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
         TargetPath = PathJoiner(target[0].dir)
         for file in source:
             (fname, fext) = path.splitext(str(file).replace(pyroot,''))
-            if fext in ['.so', '.py']:
-                fname = TargetPath(fname.replace(sep,'.') + '.html')
-                target.append(env.File(fname))
+
+            if not fname.split(sep)[-1] == "__init__" :
+                if fext in ['.so', '.py'] :
+                    fname = TargetPath(fname.replace(sep,'.') + '.html')
+                    target.append(env.File(fname))
 
         return (target, source)
 
@@ -655,7 +657,8 @@ HAVE_SINGULAR_EXTENSION=True
 docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target = docutarget)
-    env.AlwaysBuild(cxxdocu)
+    #env.AlwaysBuild(cxxdocu)
+    env.Depends(cxxdocu, [PBPath(), 'groebner'])
 
 env.Clean(DocPath('c++'), docutarget)
 
