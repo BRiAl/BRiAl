@@ -22,15 +22,33 @@ ${identifier(n)}[label="${label(n)}", shape="${shape(n)}"];
 #end
 
 #for n in non_constant_nodes
-${identifier(n)} -> ${identifier(n.else_branch())} [style="dashed", color="${color_else}" arrowhead="vee"];
-${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrowhead="vee"];
+${identifier(n)} -> ${identifier(n.else_branch())} [style="dashed", color="${color_else}", arrowhead="vee", penwidth="${penwidth_else(n)}"];
+${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrowhead="vee", penwidth="${penwidth_then(n)}"];
 #end
 }
 """
 
-
-
-def plot(p, filename, colored=True,format="png"):
+ELSE="else"
+THEN="then"
+def monomial_path_in_zdd(mon, graph):
+    res=[]
+    if not mon in BooleSet(graph):
+        raise ValueError
+    graph_nav=BooleSet(graph).navigation()
+    mon_nav=BooleSet(mon).navigation()
+    while not mon_nav.constant():
+        while graph_nav.value()<mon_nav.value():
+            res.append((graph_nav, ELSE))
+            graph_nav=graph_nav.else_branch()
+        assert mon_nav.value()==graph_nav.value()
+        res.append((graph_nav,THEN))
+        mon_nav=mon_nav.then_branch()
+        graph_nav=graph_nav.then_branch()
+    while not graph_nav.constant():
+        res.append((graph_nav, ELSE))
+        graph_nav=graph_nav.else_branch()
+    return dict(res)
+def plot(p, filename, colored=True,format="png", highlight_monomial=None):
     """plots ZDD structure to <filename> in format <format>
 
     EXAMPLES:
@@ -40,7 +58,19 @@ def plot(p, filename, colored=True,format="png"):
     >>> plot(x(1)+x(0),"/dev/null", colored=True)
     >>> plot(x(1)+x(0),"/dev/null", colored=False)
     """
-    
+    THICK_PEN=5
+    highlight_path=dict()
+    if highlight_monomial:
+        highlight_path=monomial_path_in_zdd(highlight_monomial, p)
+    def penwidth_else(n):
+        if n in highlight_path and highlight_path[n]==ELSE:
+            return THICK_PEN
+        return 1
+        
+    def penwidth_then(n):
+        if n in highlight_path and highlight_path[n]==THEN:
+            return THICK_PEN
+        return 1
     if not colored:
         color_then="black"
         color_else="black"
