@@ -15,7 +15,11 @@ from subprocess import Popen, PIPE
 
 graph_template="""
 digraph polynomial{
-graph [ ordering="out" ];
+graph [ ordering="out"
+#if highlight_monomial
+, label = "${str(highlight_monomial)}"
+#end
+];
 
 #for n in nodes
 ${identifier(n)}[label="${label(n)}", shape="${shape(n)}"];
