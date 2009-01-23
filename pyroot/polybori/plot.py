@@ -17,7 +17,7 @@ graph_template="""
 digraph polynomial{
 graph [ ordering="out"
 #if highlight_monomial
-, label = "${str(highlight_monomial)}"
+, label = "${display_monomial(highlight_monomial)}"
 #end
 ];
 
@@ -66,6 +66,8 @@ def plot(p, filename, colored=True,format="png", highlight_monomial=None):
     highlight_path=dict()
     if highlight_monomial:
         highlight_path=monomial_path_in_zdd(highlight_monomial, p)
+    def display_monomial(m):
+        return unicode(m).replace("*",u"⋅")
     def penwidth_else(n):
         if n in highlight_path and highlight_path[n]==ELSE:
             return THICK_PEN
