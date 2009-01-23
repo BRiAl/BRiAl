@@ -1,4 +1,10 @@
-from polybori.PyPolyBoRi import *
+from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy
+
+def fglm(I, from_ring, to_ring):
+    vec=BoolePolynomialVector()
+    for p in I:
+        vec.append(p)
+    return FGLMStrategy(from_ring,to_ring,vec).main()
 
 def vars_real_divisors(monomial, monomial_set):
     """
