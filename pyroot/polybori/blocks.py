@@ -300,7 +300,7 @@ class IfThen(object):
     return "If(AND("+", ".join([str(p)+" == 0" for p in self.ifpart])+")), THEN " +", ".join([str(p)+" == 0" for p in self.thenpart])
 def if_then(i,t,supposed_to_be_valid=True):
   return IfThen(i,t,supposed_to_be_valid)
-def declare_ring(blocks,context):
+def declare_ring(blocks,context=None):
   """Declare Ring is the preferred function to create a ring and declare a variable scheme, 
   the number of variables is automatically determined,
   usually you pass globals() as context argument to store the ring and the variable mapping.
@@ -309,6 +309,7 @@ def declare_ring(blocks,context):
   gives  a ring with x(0..9),y(0..4) and registers the ring as r, 
   and the variable blocks x and y in the context dictionary globals(), which consists of the global variables of the python module
   """
+  blocks=list(blocks)
   n=0
   for b in blocks:
       if isinstance(b,str):
