@@ -97,7 +97,7 @@ def sonameprefix(env):
     if env['PLATFORM']=="darwin":
         return "-Wl,-dylib_install_name -Wl,"
     else:
-        return '-Wl,-soname,'
+        return '-Wl,-soname -Wl,'
 #print defaultenv.Dump()
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
