@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2009/02/04 09:40:13  dreyer
+ * ADD: fast multiplication may be used explicitely
+ *
  * Revision 1.41  2008/11/21 10:28:44  dreyer
  * ADD: BooleSet::containsDivisorsOfDecDeg and contains
  *
@@ -299,10 +302,11 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 }
 
 
-template <class CacheType, class NaviType, class PolyType>
+template <class CacheType, class NaviType, class PolyType, class IntegralConstant>
 PolyType
 dd_multiply_recursively(const CacheType& cache_mgr,
-                        NaviType firstNavi, NaviType secondNavi, PolyType init){
+                        NaviType firstNavi, NaviType secondNavi, PolyType init,
+                        IntegralConstant use_fast_multiplication ){
   // Extract subtypes
   typedef typename PolyType::dd_type dd_type;
   typedef typename NaviType::idx_type idx_type;
@@ -355,9 +359,8 @@ dd_multiply_recursively(const CacheType& cache_mgr,
       bs1 = result.navigation();
     }
 
-
-#ifdef PBORI_FAST_MULTIPLICATION
-    if (*firstNavi == *secondNavi) {
+    // use fast multiplication
+    if (use_fast_multiplication() && (*firstNavi == *secondNavi)) {
 
       PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init);
 
@@ -372,9 +375,9 @@ dd_multiply_recursively(const CacheType& cache_mgr,
                                 init) - res00;
 
       result = dd_type(index, res11.diagram(), res00.diagram());
-    } else
-#endif
-    { 
+    } 
+    else {    // not using fast multiplication
+
         bool as1_zero=false;
         if (as0 == as1)
           bs1 = result.navigation();
@@ -414,13 +417,27 @@ dd_multiply_recursively(const CacheType& cache_mgr,
   return result;
 }
 
-
-template <class CacheType, class NaviType, class PolyType,
-          class MonomTag>
+template <class CacheType, class NaviType, class PolyType>
 PolyType
 dd_multiply_recursively(const CacheType& cache_mgr,
-                        NaviType monomNavi, NaviType navi, PolyType init,
-                        MonomTag monom_tag ){
+                        NaviType firstNavi, NaviType secondNavi, PolyType init){
+
+  enum { use_fast = 
+#ifdef PBORI_FAST_MULTIPLICATION
+         true
+#else
+         false
+#endif
+  };
+
+  return dd_multiply_recursively(cache_mgr, firstNavi, secondNavi, init,
+                                 integral_constant<bool, use_fast>() );
+}
+
+template <class CacheType, class NaviType, class PolyType>
+PolyType
+dd_multiply_recursively_monom(const CacheType& cache_mgr,
+                        NaviType monomNavi, NaviType navi, PolyType init){
 
   // Extract subtypes
   typedef typename PolyType::dd_type dd_type;
@@ -459,8 +476,8 @@ dd_multiply_recursively(const CacheType& cache_mgr,
   idx_type monomIndex = *monomNavi;
 
   if (monomIndex < index) {     // Case: index may occure within monom
-    init = dd_multiply_recursively(cache_mgr, monomNavi.thenBranch(), navi,
-                                   init, monom_tag).diagram().change(monomIndex);
+    init = dd_multiply_recursively_monom(cache_mgr, monomNavi.thenBranch(), navi,
+                                   init).diagram().change(monomIndex);
   }
   else if (monomIndex == index) { // Case: monom and poly start with same index
 
@@ -470,19 +487,18 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     navigator naviElse = navi.elseBranch();
 
     if (naviThen != naviElse)
-      init = (dd_multiply_recursively(cache_mgr, monomThen, naviThen, init,
-                                      monom_tag)
-              + dd_multiply_recursively(cache_mgr, monomThen, naviElse, init,
-                                        monom_tag)).diagram().change(index);
+      init = (dd_multiply_recursively_monom(cache_mgr, monomThen, naviThen, init)
+              + dd_multiply_recursively_monom(cache_mgr, monomThen, naviElse,
+                                              init)).diagram().change(index);
   }
   else {                        // Case: var(index) not part of monomial
     
     init = 
       dd_type(index,  
-              dd_multiply_recursively(cache_mgr, monomNavi, navi.thenBranch(), 
-                                      init, monom_tag).diagram(),
-              dd_multiply_recursively(cache_mgr, monomNavi, navi.elseBranch(),
-                                      init, monom_tag).diagram() );
+              dd_multiply_recursively_monom(cache_mgr, monomNavi, navi.thenBranch(), 
+                                      init).diagram(),
+              dd_multiply_recursively_monom(cache_mgr, monomNavi, navi.elseBranch(),
+                                      init).diagram() );
   }
   
   // Insert in cache

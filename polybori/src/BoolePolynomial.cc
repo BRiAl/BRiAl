@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.122  2009/02/04 09:40:13  dreyer
+ * ADD: fast multiplication may be used explicitely
+ *
  * Revision 1.121  2008/09/21 22:21:03  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -511,10 +514,10 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
     cache_mgr_type;
 
-  self result = dd_multiply_recursively(cache_mgr_type(diagram().manager()), 
-                                        rhs.diagram().navigation(),
-                                        navigation(),  self(), 
-                                        int());
+  self result = 
+    dd_multiply_recursively_monom(cache_mgr_type(diagram().manager()), 
+                                  rhs.diagram().navigation(),
+                                  navigation(),  self());
 
   return (*this = result);
 }
