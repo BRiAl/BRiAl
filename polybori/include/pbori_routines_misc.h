@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2009/02/04 11:50:32  dreyer
+ * FIX: really using fast-multiplication, if desired
+ *
  * Revision 1.42  2009/02/04 09:40:13  dreyer
  * ADD: fast multiplication may be used explicitely
  *
@@ -362,7 +365,8 @@ dd_multiply_recursively(const CacheType& cache_mgr,
     // use fast multiplication
     if (use_fast_multiplication() && (*firstNavi == *secondNavi)) {
 
-      PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init);
+      PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init,
+                                               use_fast_multiplication);
 
       PolyType res10 = PolyType(cache_mgr.generate(as1)) +
         PolyType(cache_mgr.generate(as0));
@@ -372,7 +376,7 @@ dd_multiply_recursively(const CacheType& cache_mgr,
       PolyType res11 = 
         dd_multiply_recursively(cache_mgr,
                                 res10.navigation(), res01.navigation(),
-                                init) - res00;
+                                init, use_fast_multiplication) - res00;
 
       result = dd_type(index, res11.diagram(), res00.diagram());
     } 
@@ -391,21 +395,22 @@ dd_multiply_recursively(const CacheType& cache_mgr,
         if (as1_zero){
           result = dd_type(index,  
                          dd_multiply_recursively(cache_mgr, as0, bs1,
-                                                 init).diagram(),
+                                                 init, use_fast_multiplication).diagram(),
                          dd_multiply_recursively(cache_mgr, as0, bs0,
-                                                 init).diagram() );
+                                                 init, use_fast_multiplication).diagram() );
         } else{
           PolyType bs01 = PolyType(cache_mgr.generate(bs0)) + 
             PolyType(cache_mgr.generate(bs1));
           result = dd_type(index,
                          ( dd_multiply_recursively(cache_mgr,
                                                    bs01.navigation(), 
-                                                   as1, init) + 
-                           dd_multiply_recursively(cache_mgr, as0, bs1, init)
+                                                   as1, init, use_fast_multiplication) + 
+                           dd_multiply_recursively(cache_mgr, as0, bs1, init, 
+                                                   use_fast_multiplication)
                            ).diagram(),
                          dd_multiply_recursively(cache_mgr, 
                                                  as0, bs0,
-                                                 init).diagram()
+                                                 init, use_fast_multiplication).diagram()
                          ); 
           }
         
