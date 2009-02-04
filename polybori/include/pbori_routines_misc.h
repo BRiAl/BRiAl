@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2009/02/04 22:42:20  dreyer
+ * CHANGE: Optimzied multiplication
+ *
  * Revision 1.43  2009/02/04 11:50:32  dreyer
  * FIX: really using fast-multiplication, if desired
  *
@@ -361,63 +364,45 @@ dd_multiply_recursively(const CacheType& cache_mgr,
       bs0 = secondNavi;
       bs1 = result.navigation();
     }
+    PolyType result0 = dd_multiply_recursively(cache_mgr, as0, bs0, init,
+                                               use_fast_multiplication);
+    PolyType result1;
 
     // use fast multiplication
     if (use_fast_multiplication() && (*firstNavi == *secondNavi)) {
-
-      PolyType res00 = dd_multiply_recursively(cache_mgr, as0, bs0, init,
-                                               use_fast_multiplication);
 
       PolyType res10 = PolyType(cache_mgr.generate(as1)) +
         PolyType(cache_mgr.generate(as0));
       PolyType res01 = PolyType(cache_mgr.generate(bs0)) +
         PolyType(cache_mgr.generate(bs1));
-
-      PolyType res11 = 
-        dd_multiply_recursively(cache_mgr,
-                                res10.navigation(), res01.navigation(),
-                                init, use_fast_multiplication) - res00;
-
-      result = dd_type(index, res11.diagram(), res00.diagram());
+      
+      result1 = dd_multiply_recursively(cache_mgr, res10.navigation(),
+                                        res01.navigation(), init, 
+                                        use_fast_multiplication) - result0;
     } 
-    else {    // not using fast multiplication
+    // not using fast multiplication
+    else if (as0 == as1) {
+      result1 = dd_multiply_recursively(cache_mgr, bs0, as1, init,
+                                        use_fast_multiplication);
 
-        bool as1_zero=false;
-        if (as0 == as1)
-          bs1 = result.navigation();
-        else if (bs0 == bs1){
-          as1 = result.navigation();
-          as1_zero=true;  
-        }
-        // Do recursion
-        NaviType zero_ptr = result.navigation();
+    }
+    else {
+      result1 = dd_multiply_recursively(cache_mgr, as0, bs1, init,
+                                        use_fast_multiplication); 
+      if (bs0 != bs1){
+        PolyType bs01 = PolyType(cache_mgr.generate(bs0)) + 
+          PolyType(cache_mgr.generate(bs1));
         
-        if (as1_zero){
-          result = dd_type(index,  
-                         dd_multiply_recursively(cache_mgr, as0, bs1,
-                                                 init, use_fast_multiplication).diagram(),
-                         dd_multiply_recursively(cache_mgr, as0, bs0,
-                                                 init, use_fast_multiplication).diagram() );
-        } else{
-          PolyType bs01 = PolyType(cache_mgr.generate(bs0)) + 
-            PolyType(cache_mgr.generate(bs1));
-          result = dd_type(index,
-                         ( dd_multiply_recursively(cache_mgr,
-                                                   bs01.navigation(), 
-                                                   as1, init, use_fast_multiplication) + 
-                           dd_multiply_recursively(cache_mgr, as0, bs1, init, 
-                                                   use_fast_multiplication)
-                           ).diagram(),
-                         dd_multiply_recursively(cache_mgr, 
-                                                 as0, bs0,
-                                                 init, use_fast_multiplication).diagram()
-                         ); 
-          }
-        
+        result1 += 
+          dd_multiply_recursively(cache_mgr, bs01.navigation(), as1, init,
+                                  use_fast_multiplication);
       }
+    }
+    result = dd_type(index, result1.diagram(), result0.diagram());
+
     // Insert in cache
     cache_mgr.insert(firstNavi, secondNavi, result.navigation());
-  }
+  } // end of Cache lookup not sucessful
 
   return result;
 }
