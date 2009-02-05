@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2009/02/05 08:56:33  dreyer
+ * CHANGE: nicer syntax dd_multiply<bool>
+ *
  * Revision 1.44  2009/02/04 22:42:20  dreyer
  * CHANGE: Optimzied multiplication
  *
@@ -308,11 +311,12 @@ dd_print_terms(Iterator start, Iterator finish, const NameGenerator& get_name,
 }
 
 
-template <class CacheType, class NaviType, class PolyType, class IntegralConstant>
+template <bool use_fast, 
+          class CacheType, class NaviType, class PolyType>
 PolyType
-dd_multiply_recursively(const CacheType& cache_mgr,
-                        NaviType firstNavi, NaviType secondNavi, PolyType init,
-                        IntegralConstant use_fast_multiplication ){
+dd_multiply(const CacheType& cache_mgr,
+            NaviType firstNavi, NaviType secondNavi, PolyType init){
+
   // Extract subtypes
   typedef typename PolyType::dd_type dd_type;
   typedef typename NaviType::idx_type idx_type;
@@ -364,38 +368,33 @@ dd_multiply_recursively(const CacheType& cache_mgr,
       bs0 = secondNavi;
       bs1 = result.navigation();
     }
-    PolyType result0 = dd_multiply_recursively(cache_mgr, as0, bs0, init,
-                                               use_fast_multiplication);
+    PolyType result0 = dd_multiply<use_fast>(cache_mgr, as0, bs0, init);
     PolyType result1;
 
     // use fast multiplication
-    if (use_fast_multiplication() && (*firstNavi == *secondNavi)) {
+    if (use_fast && (*firstNavi == *secondNavi)) {
 
       PolyType res10 = PolyType(cache_mgr.generate(as1)) +
         PolyType(cache_mgr.generate(as0));
       PolyType res01 = PolyType(cache_mgr.generate(bs0)) +
         PolyType(cache_mgr.generate(bs1));
       
-      result1 = dd_multiply_recursively(cache_mgr, res10.navigation(),
-                                        res01.navigation(), init, 
-                                        use_fast_multiplication) - result0;
+      result1 = dd_multiply<use_fast>(cache_mgr, res10.navigation(),
+                                        res01.navigation(), init) - result0;
     } 
     // not using fast multiplication
     else if (as0 == as1) {
-      result1 = dd_multiply_recursively(cache_mgr, bs0, as1, init,
-                                        use_fast_multiplication);
+      result1 = dd_multiply<use_fast>(cache_mgr, bs0, as1, init);
 
     }
     else {
-      result1 = dd_multiply_recursively(cache_mgr, as0, bs1, init,
-                                        use_fast_multiplication); 
+      result1 = dd_multiply<use_fast>(cache_mgr, as0, bs1, init); 
       if (bs0 != bs1){
         PolyType bs01 = PolyType(cache_mgr.generate(bs0)) + 
           PolyType(cache_mgr.generate(bs1));
         
         result1 += 
-          dd_multiply_recursively(cache_mgr, bs01.navigation(), as1, init,
-                                  use_fast_multiplication);
+          dd_multiply<use_fast>(cache_mgr, bs01.navigation(), as1, init);
       }
     }
     result = dd_type(index, result1.diagram(), result0.diagram());
@@ -420,8 +419,7 @@ dd_multiply_recursively(const CacheType& cache_mgr,
 #endif
   };
 
-  return dd_multiply_recursively(cache_mgr, firstNavi, secondNavi, init,
-                                 integral_constant<bool, use_fast>() );
+  return dd_multiply<use_fast>(cache_mgr, firstNavi, secondNavi, init);
 }
 
 template <class CacheType, class NaviType, class PolyType>
