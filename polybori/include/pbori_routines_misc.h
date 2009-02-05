@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2009/02/05 11:55:30  dreyer
+ * + Minor optomization
+ *
  * Revision 1.45  2009/02/05 08:56:33  dreyer
  * CHANGE: nicer syntax dd_multiply<bool>
  *
@@ -340,7 +343,7 @@ dd_multiply(const CacheType& cache_mgr,
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(firstNavi, secondNavi);
-  PolyType result = cache_mgr.zero();
+  PolyType result;
 
   if (cached.isValid()) {       // Cache lookup sucessful
     return cache_mgr.generate(cached);
@@ -366,7 +369,7 @@ dd_multiply(const CacheType& cache_mgr,
     }
     else {
       bs0 = secondNavi;
-      bs1 = result.navigation();
+      bs1 = cache_mgr.zero().navigation();
     }
     PolyType result0 = dd_multiply<use_fast>(cache_mgr, as0, bs0, init);
     PolyType result1;
