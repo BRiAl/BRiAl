@@ -15,5 +15,6 @@ typedef boost::minstd_rand base_generator_type;
 typedef boost::uniform_smallint<> distribution_type;
 typedef boost::variate_generator<base_generator_type&, distribution_type> bool_gen_type;
 MonomialSet random_set(const Monomial& variables, unsigned int len);
+void set_random_seed(unsigned int seed);
 END_NAMESPACE_PBORIGB
 #endif

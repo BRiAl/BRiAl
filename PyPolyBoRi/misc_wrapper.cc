@@ -43,6 +43,7 @@ void export_misc(){
   def("testvalidstrat",testvalidstrat);
   def("count_double",count_double);
   def("random_set",random_set);
+  def("set_random_seed",set_random_seed);
   def("variety_lex_leading_terms",variety_lex_leading_terms);
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
   def("global_ring",&BooleEnv::ring, return_value_policy<copy_non_const_reference>());
