@@ -25,18 +25,18 @@ static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolyno
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
 
-    return dd_multiply_recursively(cache_mgr_type(p.diagram().manager()), 
-                                          p.navigation(), q.navigation(),
-                                          BoolePolynomial(), integral_constant<bool, true>() ); 
+    return dd_multiply<true>(cache_mgr_type(p.diagram().manager()), 
+                             p.navigation(), q.navigation(),
+                             BoolePolynomial()); 
     
 }
 static BoolePolynomial multiply_traditionally(const BoolePolynomial& p, const BoolePolynomial& q){
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
 
-    return dd_multiply_recursively(cache_mgr_type(p.diagram().manager()), 
-                                          p.navigation(), q.navigation(),
-                                          BoolePolynomial(), integral_constant<bool, false>() ); 
+    return dd_multiply<false>(cache_mgr_type(p.diagram().manager()), 
+                              p.navigation(), q.navigation(),
+                              BoolePolynomial() ); 
     
 }
 static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
