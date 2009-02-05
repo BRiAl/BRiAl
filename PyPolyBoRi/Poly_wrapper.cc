@@ -19,7 +19,26 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
 #include "strategy_wrapper.h"
+#include "pbori_algo.h"
 
+static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolynomial& q){
+    typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
+      cache_mgr_type;
+
+    return dd_multiply_recursively(cache_mgr_type(p.diagram().manager()), 
+                                          p.navigation(), q.navigation(),
+                                          BoolePolynomial(), integral_constant<bool, true>() ); 
+    
+}
+static BoolePolynomial multiply_traditionally(const BoolePolynomial& p, const BoolePolynomial& q){
+    typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
+      cache_mgr_type;
+
+    return dd_multiply_recursively(cache_mgr_type(p.diagram().manager()), 
+                                          p.navigation(), q.navigation(),
+                                          BoolePolynomial(), integral_constant<bool, false>() ); 
+    
+}
 static BoolePolynomial poly_power(const BoolePolynomial& p, int n){
   if (n==0) return BooleMonomial(p.ring());
   return p;
@@ -146,6 +165,8 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("diagram",poly_diagram_as_set)
   .def("set", set, "Convert to BooleSet")
   .def("ring", &BoolePolynomial::ring, "Get corresponding ring")
+  .def("multiply_fast", multiply_fast)
+  .def("multiply_traditionally", multiply_traditionally)
   .def("navigation", &BoolePolynomial::navigation, 
        "Navigate through underlying ZDD structure")
   .def("elength", &BoolePolynomial::eliminationLength, "Elimination length")
