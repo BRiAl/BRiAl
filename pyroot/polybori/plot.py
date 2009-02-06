@@ -19,6 +19,7 @@ graph [ ordering="out"
 #if highlight_monomial
 , label = "${display_monomial(highlight_monomial)}"
 #end
+, fontsize=${fontsize}
 ];
 
 #for n in nodes
@@ -52,7 +53,7 @@ def monomial_path_in_zdd(mon, graph):
         res.append((graph_nav, ELSE))
         graph_nav=graph_nav.else_branch()
     return dict(res)
-def plot(p, filename, colored=True,format="png", highlight_monomial=None):
+def plot(p, filename, colored=True,format="png", highlight_monomial=None, fontsize=14):
     """plots ZDD structure to <filename> in format <format>
 
     EXAMPLES:
