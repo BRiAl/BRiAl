@@ -1825,7 +1825,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
             drawmatrix(mat,matname);
         #endif
     }
-    int rank=mzd_reduce_m4ri(mat,TRUE,0,NULL,NULL);
+    int rank=mzd_echelonize_m4ri(mat,TRUE,0,NULL,NULL);
     #endif
     for(i=rank-1;i>=0;i--){
         int j;
@@ -2003,7 +2003,7 @@ static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, Mono
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
-    int rank=mzd_reduce_m4ri(mat, TRUE, 0,NULL,NULL);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
+    int rank=mzd_echelonize_m4ri(mat, TRUE, 0,NULL,NULL);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
     if (strat.enabledLog){
         std::cout<<"finished gauss"<<std::endl;
@@ -2135,7 +2135,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         drawmatrix(mat_step1,matname);
         #endif
         //optimize: call back subst directly
-        mzd_top_reduce_m4ri
+        mzd_top_echelonize_m4ri
             (mat_step1,0,NULL,NULL);
 //          optimal_k_for_gauss(mat_step1->nrows,mat_step1->ncols,strat));//gaussianPacked(mat_step1,TRUE);
         if (strat.enabledLog){
@@ -2344,7 +2344,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         drawmatrix(mat_step2,matname);
     }
     #endif
-    int rank_step2=mzd_reduce_m4ri(mat_step2,TRUE,0,NULL,NULL);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
+    int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0,NULL,NULL);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
         if (strat.enabledLog){
             std::cout<<"finished gauss"<<std::endl;

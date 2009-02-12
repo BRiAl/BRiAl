@@ -9,6 +9,9 @@
 #include "fglm.h"
 #include "nf.h"
 #include "interpolate.h"
+extern "C" {
+#include <packedmatrix.h>
+}
 BEGIN_NAMESPACE_PBORIGB
 
 static void copy_row(packedmatrix* dst, int dest_row, packedmatrix* src, int src_row){
@@ -24,6 +27,7 @@ static void copy_row(packedmatrix* dst, int dest_row, packedmatrix* src, int src
     }
     
 }
+#if 0
 static void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedmatrix* B, packedmatrix* acc1, packedmatrix* acc2, FGLMStrategy::IndexVector& row_is_monomial){
 
     int i,j;
@@ -71,7 +75,7 @@ static void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedma
     }
         
        
-#if 0
+//if 0
     int i,j;
        const int m=A->nrows;
        const int n=A->ncols;
@@ -100,9 +104,10 @@ static void mult_by_combining_rows(packedmatrix* dest, packedmatrix* A, packedma
            copy_row(dest,i,res_row,0);
        }
 
-#endif
+//endif
     
 }
+#endif
 
 
 void FGLMStrategy::setupStandardMonomialsFromTables(){
@@ -308,14 +313,18 @@ void FGLMStrategy::setupMultiplicationTables(){
         //packedmatrix* transposed_mult_table=mzd_transpose(NULL, mult_table);
         
         //mzd_mul_naiv(multiplied_row,reduced_problem_to_row, mult_table);
+        #if 0
         mult_by_combining_rows(multiplied_row, reduced_problem_to_row, 
             mult_table, acc1, acc2,tableXRowYIsMonomialFromWithIndex[ring2Index[var.index()]]);
+        #else
+        _mzd_mul_va(multiplied_row, reduced_problem_to_row, mult_table, 1);
+        #endif
         } else {
             //packedmatrix* transposed_vec=mzd_init(1,varietySize);
             //assert (window->nrows==varietySize);
             //assert (window->ncols==1);
             //transpose_window_to_row(transposed_vec, window);
-            _mzd_mul_naiv(multiplied_row, reduced_problem_to_row, mult_table, FALSE);
+            _mzd_mul_va(multiplied_row, reduced_problem_to_row, mult_table, FALSE);
             //mzd_free(transposed_vec);
         }
 
@@ -465,7 +474,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(packe
     packedmatrix* col_combined=mzd_transpose(NULL, row_combined);
     mzd_free(row_combined);
     
-    mzd_reduce_m4ri(col_combined,TRUE,0,NULL,NULL);
+    mzd_echelonize_m4ri(col_combined,TRUE,0,NULL,NULL);
     {        
         #ifdef DRAW_MATRICES
             char matname[255];
@@ -635,9 +644,13 @@ PolynomialVector FGLMStrategy::main(){
                     assert (v_j->nrows==1);
                     assert ( v_j->ncols==varietySize);
                     if (transposed)
-                        v_d=_mzd_mul_naiv(v_d, v_j, mult_table, FALSE);
+                        v_d=_mzd_mul_va(v_d, v_j, mult_table, FALSE);
                     else{
+                        #if 0
                         mult_by_combining_rows(v_d, v_j, mult_table, acc1, acc2, tableXRowYIsMonomialFromWithIndex[our_x_i_index]);
+                        #else
+                        _mzd_mul_va(v_d, v_j, mult_table, 1);
+                        #endif
                     }
                     mzd_free_window(v_j);
                 }

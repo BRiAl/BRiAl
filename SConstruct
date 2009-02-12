@@ -17,7 +17,7 @@ from os import sep, path
 from glob import glob
 
 m4ri=["grayflex.c", "permutation.c", "packedmatrix.c","watch.c","strassen.c","misc.c",
-"brilliantrussian.c", "pluq_mmpf.c", "solve.c"]
+"brilliantrussian.c"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
 # Fix some paths and names
