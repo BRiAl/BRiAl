@@ -1,109 +1,117 @@
 /**
  * \file lqup.h
  *
- * \brief LQUP matrix decomposition routines
- *
- * This is scratch, experimental code.
+ * \brief PLUQ matrix decomposition routines.
  *
  * \author Clement Pernet <clement.pernet@gmail.com>
- *
- * \internal
  */
 
 
-#ifndef LQUP_H
-#define LQUP_H
- /*******************************************************************
- *
- *            M4RI: Method of the Four Russians Inversion
- *
- *       Copyright (C) 2008 Clement Pernet <clement.pernet@gmail.com>
- *
- *  Distributed under the terms of the GNU General Public License (GPL)
- *
- *    This code is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *  The full text of the GPL is available at:
- *
- *                  http://www.gnu.org/licenses/
- *
- ********************************************************************/
+#ifndef PLUQ_H
+#define PLUQ_H
+/*******************************************************************
+*
+*                 M4RI: Linear Algebra over GF(2)
+*
+*    Copyright (C) 2008 Clement Pernet <clement.pernet@gmail.com>
+*
+*  Distributed under the terms of the GNU General Public License (GPL)
+*  version 2 or higher.
+*
+*    This code is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*  The full text of the GPL is available at:
+*
+*                  http://www.gnu.org/licenses/
+*
+********************************************************************/
 
 #include "misc.h"
 #include "packedmatrix.h"
 
 /**
- * Crossover point for LQUP factorization.
+ * Crossover point for PLUQ factorization.
  */
 
-#define LQUP_CUTOFF 1024
+#define PLUQ_CUTOFF 512
 
 /**
- * \brief LQUP matrix decomposition (unfinished).
+ * \brief PLUQ matrix decomposition.
  *
- * Computes the transposed LQUP matrix decomposition using a block recursive algorithm
+ * Computes the transposed PLUQ matrix decomposition using a block
+ * recursive algorithm.
  *
- * If (L,Q,U,P) satisfy LQUP = A^T, it returns (L^T, Q^T, U^T, P^T).
- * The Row echelon form (not reduced) can be read from the upper triangular matrix L^T.
+ * If (P,L,U,Q) satisfy PLUQ = A, it returns (P^T, L, U, Q^T).
+ *
+ * The row echelon form (not reduced) can be read from the upper
+ * triangular matrix U. See mzd_echelonize_pluq() for details.
  * 
  * This is the wrapper function including bounds checks. See
- * _mzd_lqup for implementation details.
+ * _mzd_pluq() for implementation details.
  *
- * The matrix L and U are stored in place over A.
- * L^T is represented by the matrix Q^T L^T Q
- * 
  * \param A Input matrix
  * \param P Output row permutation matrix
  * \param Q Output column permutation matrix
  * \param cutoff Minimal dimension for Strassen recursion.
  *
- * \internal
  */
-size_t mzd_lqup(packedmatrix *A, permutation *P, permutation * Q, const int cutoff);
+
+size_t mzd_pluq(packedmatrix *A, permutation *P, permutation * Q, const int cutoff);
 
 /**
- * \brief LQUP matrix decomposition (unfinished).
+ * \brief PLUQ matrix decomposition.
  *
- * Computes the transposed LQUP matrix decomposition using a block recursive algorithm
+ * Computes the PLUQ matrix decomposition using a block recursive
+ * algorithm.
  *
- * If (L,Q,U,P) satisfy LQUP = A^T, it returns (L^T, Q^T, U^T, P^T).
- * The Row echelon form (not reduced) can be read from the upper triangular matrix L^T.
+ * If (P,L,U,Q) satisfy PLUQ = A, this routine returns (P^T,L,U,Q^T).
+ *
+ * The row echelon form (not reduced) can be read from the upper
+ * triangular matrix U*Q. See mzd_echelonize_pluq() for (reduced) row
+ * echelon forms using PLUQ factorisation.
  * 
  * The matrix L and U are stored in place over A.
- * L^T is represented by the matrix Q^T L^T Q
  * 
  * \param A Input matrix
  * \param P Output row permutation matrix
  * \param Q Output column permutation matrix
  * \param cutoff Minimal dimension for Strassen recursion.
- *
- * \internal
  */
 
-size_t _mzd_lqup(packedmatrix *A, permutation * P, permutation * Q, const int cutoff);
+size_t _mzd_pluq(packedmatrix *A, permutation * P, permutation * Q, const int cutoff);
 
 /**
- * \brief LQUP matrix decomposition (naiv base case).
+ * \brief PLUQ matrix decomposition (naive base case).
  *
- * Computes the LQUP matrix decomposition using a block recursive
- * algorithm
+ * Computes the PLUQ matrix decomposition using the naive algorithm.
  *
- * If (L,Q,U,P) satisfy LQUP = A, it returns (L, Q, U, P).  The Row
- * echelon form (not reduced) can be read from the upper triangular
- * matrix L.
+ * If (P,L,U,Q) satisfy PLUQ = A, it returns (P^T, L, U, Q^T). 
  * 
- * The matrix L and U are stored in place over A.  L is represented by
- * the matrix Q L Q
+ * The matrix L and U are stored in place over A.
  * 
  * \param A Input matrix
  * \param P Output row permutation matrix
  * \param Q Output column permutation matrix
- * \internal
+ *
+ * \sa mzd_pluq()
  */
 
-size_t _mzd_lqup_naiv(packedmatrix *A, permutation * P, permutation * Q);
+size_t _mzd_pluq_naive(packedmatrix *A, permutation * P, permutation * Q);
+
+/**
+ * \brief (Reduced) row echelon form using PLUQ factorisation.
+ *
+ * \param A Matrix.
+ * \param full Return the reduced row echelon form, not only upper triangular form.
+ *
+ * \wordoffset
+ * \sa mzd_pluq()
+ */
+
+
+size_t mzd_echelonize_pluq(packedmatrix *A, int full);
 
 #endif

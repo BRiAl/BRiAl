@@ -1,21 +1,23 @@
- /*******************************************************************
- *
- *            M4RI: Method of the Four Russians Inversion
- *
- *       Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhu.ac.uk>
- *
- *  Distributed under the terms of the GNU General Public License (GPL)
- *
- *    This code is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *  The full text of the GPL is available at:
- *
- *                  http://www.gnu.org/licenses/
- *
- ********************************************************************/
+/*******************************************************************
+*
+*                 M4RI: Linear Algebra over GF(2)
+*
+*    Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
+*    Copyright (C) 2008 Clement Pernet <pernet@math.washington.edu>
+*
+*  Distributed under the terms of the GNU General Public License (GPL)
+*  version 2 or higher.
+*
+*    This code is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*  The full text of the GPL is available at:
+*
+*                  http://www.gnu.org/licenses/
+*
+********************************************************************/
 
 #include "grayflex.h"
 #include "strassen.h"
@@ -39,6 +41,9 @@ packedmatrix *_mzd_mul_even(packedmatrix *C, packedmatrix *A, packedmatrix *B, i
   a = A->nrows;
   b = A->ncols;
   c = B->ncols;
+
+  if(C->nrows == 0 || C->ncols == 0)
+    return C;
 
   /* handle case first, where the input matrices are too small already */
   if (CLOSER(A->nrows, A->nrows/2, cutoff) || CLOSER(A->ncols, A->ncols/2, cutoff) || CLOSER(B->ncols, B->ncols/2, cutoff)) {
@@ -180,7 +185,7 @@ packedmatrix *_mzd_mul_even(packedmatrix *C, packedmatrix *A, packedmatrix *B, i
 #ifdef HAVE_OPENMP
 packedmatrix *_mzd_mul_mp_even(packedmatrix *C, packedmatrix *A, packedmatrix *B, int cutoff) {
   /**
-   * \todo: make sure not to overwrite crap after ncols and before width*RADIX
+   * \todo make sure not to overwrite crap after ncols and before width*RADIX
    */
   size_t a,b,c;
   size_t anr, anc, bnr, bnc;
@@ -317,6 +322,13 @@ packedmatrix *mzd_mul(packedmatrix *C, packedmatrix *A, packedmatrix *B, int cut
     m4ri_die("mzd_mul: C (%d x %d) has wrong dimensions, expected (%d x %d)\n",
 	     C->nrows, C->ncols, A->nrows, B->ncols);
   }
+
+  if(A->offset || B->offset || C->offset) {
+    mzd_set_ui(C, 0);
+    mzd_addmul(C, A, B, cutoff);
+    return C;
+  }
+
 #ifdef HAVE_OPENMP
   /* this one isn't optimal */
   if (omp_get_max_threads() > 1) {
@@ -332,12 +344,15 @@ packedmatrix *mzd_mul(packedmatrix *C, packedmatrix *A, packedmatrix *B, int cut
 
 packedmatrix *_mzd_addmul_even(packedmatrix *C, packedmatrix *A, packedmatrix *B, int cutoff) {
   /**
-   * \todo: make sure not to overwrite crap after ncols and before width*RADIX
+   * \todo make sure not to overwrite crap after ncols and before width*RADIX
    */
 
   size_t a,b,c;
   size_t anr, anc, bnr, bnc;
   
+  if(C->nrows == 0 || C->ncols == 0)
+    return C;
+
   a = A->nrows;
   b = A->ncols;
   c = B->ncols;
@@ -346,8 +361,8 @@ packedmatrix *_mzd_addmul_even(packedmatrix *C, packedmatrix *A, packedmatrix *B
     /* we copy the matrix first since it is only constant memory
        overhead and improves data locality, if you remove it make sure
        there are no speed regressions */
-    packedmatrix *Cbar = mzd_copy (NULL, C);
-    mzd_addmul_m4rm (Cbar, A, B, 0);
+    packedmatrix *Cbar = mzd_copy(NULL, C);
+    mzd_addmul_m4rm(Cbar, A, B, 0);
     mzd_copy(C, Cbar);
     mzd_free(Cbar);
     return C;

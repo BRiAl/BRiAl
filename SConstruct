@@ -17,7 +17,7 @@ from os import sep, path
 from glob import glob
 
 m4ri=["grayflex.c", "permutation.c", "packedmatrix.c","watch.c","strassen.c","misc.c",
-"brilliantrussian.c"]
+"brilliantrussian.c", "pluq_mmpf.c", "solve.c"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
 # Fix some paths and names
@@ -608,8 +608,8 @@ if HAVE_PYTHON_EXTENSION:
     cnffiles += ['uuf100/uuf100_01', 'uuf125/uuf125_1']
 
     for fname in cnffiles:
-	files = glob(DataPath(fname + ".cnf"))
-	if len(files) > 0:
+        files = glob(DataPath(fname + ".cnf"))
+        if len(files) > 0:
             env.CNF(files)
 
     for fdir in Split("blocksworld qg gcp_large bejing"):

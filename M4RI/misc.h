@@ -8,31 +8,33 @@
 
 #ifndef MISC_H
 #define MISC_H
- /*******************************************************************
- *
- *            M4RI: Method of the Four Russians Inversion
- *
- *       Copyright (C) 2007, 2008 Gregory Bard <bard@fordham.edu>
- *       Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhu.ac.uk>
- *
- *  Distributed under the terms of the GNU General Public License (GPL)
- *
- *    This code is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *    General Public License for more details.
- *
- *  The full text of the GPL is available at:
- *
- *                  http://www.gnu.org/licenses/
- *
- ********************************************************************/
+/*******************************************************************
+*
+*                 M4RI: Linear Algebra over GF(2)
+*
+*    Copyright (C) 2007, 2008 Gregory Bard <bard@fordham.edu>
+*    Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
+*
+*  Distributed under the terms of the GNU General Public License (GPL)
+*  version 2 or higher.
+*
+*    This code is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+*    General Public License for more details.
+*
+*  The full text of the GPL is available at:
+*
+*                  http://www.gnu.org/licenses/
+*
+********************************************************************/
 
-#include <stdlib.h>
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
+#include <stdlib.h>
+#include <assert.h>
 #include <string.h>
 
 /*
@@ -58,6 +60,12 @@ typedef unsigned long long word;
 
 #define ONE ((word)1)
 
+
+/**
+ * \brief The number 2^64-1 as a word.
+ */
+
+#define FFFF ((word)0xffffffffffffffffull)
 
 /**
  * \brief Return the maximal element of x and y
@@ -108,7 +116,7 @@ typedef unsigned long long word;
  * \param i Integer.
  */ 
 
-#define TWOPOW(i) (1<<(i))
+#define TWOPOW(i) (ONE<<(i))
 
 /**
  * \brief Pretty for unsigned char.
@@ -117,7 +125,7 @@ typedef unsigned long long word;
 typedef unsigned char BIT;
 
 /**
- * \brief Clear the bit spot in the word w
+ * \brief Clear the bit spot (counting from the left) in the word w
  * 
  * \param w Word
  * \param spot Integer with 0 <= spot < RADIX
@@ -126,7 +134,7 @@ typedef unsigned char BIT;
 #define CLR_BIT(w, spot) ((w) &= ~(ONE<<(RADIX - (spot) - 1)))
 
 /**
- * \brief Set the bit spot in the word w
+ * \brief Set the bit spot (counting from the left) in the word w
  * 
  * \param w Word
  * \param spot Integer with 0 <= spot < RADIX
@@ -135,7 +143,7 @@ typedef unsigned char BIT;
 #define SET_BIT(w, spot) ((w) |= (ONE<<(RADIX - (spot) - 1)))
 
 /**
- * \brief Get the bit spot in the word w
+ * \brief Get the bit spot (counting from the left) in the word w
  * 
  * \param w Word
  * \param spot Integer with 0 <= spot < RADIX
@@ -181,7 +189,7 @@ typedef unsigned char BIT;
 #define RIGHTMOST_BITS(w, n) (((w)<<(RADIX-(n)-1))>>(RADIX-(n)-1))
 
 /**
-* \brief creat a bit mask to zero out all but he n%RADIX leftmost
+* \brief creat a bit mask to zero out all but the n%RADIX leftmost
 * bits.
 *
 * \param n Integer
@@ -190,15 +198,25 @@ typedef unsigned char BIT;
 #define LEFT_BITMASK(n) (~((ONE << ((RADIX - (n % RADIX))%RADIX) ) - 1))
 
 /**
-* \brief creat a bit mask to zero out all but he n%RADIX rightmost
+* \brief creat a bit mask to zero out all but the n%RADIX rightmost
 * bits.
 *
 * \param n Integer
 *
-* \warn Does not handle multiples of RADIX correctly
+* \warning Does not handle multiples of RADIX correctly
 */
 
-#define RIGHT_BITMASK(n) ((ONE << (n % RADIX)) - 1)
+#define RIGHT_BITMASK(n) (FFFF>>( (RADIX - (n%RADIX))%RADIX ))
+
+/**
+* \brief creat a bit mask to zero out all but the n%RADIX bit.
+*
+* \param n Integer
+*
+*/
+
+#define BITMASK(n) (ONE<<(RADIX-((n)%RADIX)-1))
+
 
 /**
  * \brief Return alignment of addr w.r.t. n. For example the address
@@ -209,6 +227,33 @@ typedef unsigned char BIT;
  */
 
 #define ALIGNMENT(addr, n) (((unsigned long)(addr))%(n))
+
+/**
+ * Return the index of the leftmost bit in a for a nonzero.
+ *
+ * \param a Word
+ */
+
+static inline int leftmost_bit(word a) {
+  int r = 0;
+  if(a>>32)
+    r+=32, a>>=32;
+  if(a>>16)
+    r+=16, a>>=16;
+  if(a>>8)
+    r+=8, a>>=8;
+  if(a>>4)
+    r+=4, a>>=4;
+  if(a>>2)
+    r+=2, a>>=2;
+  if(a>>1)
+    r+=1, a>>=1;
+  if(a)
+    r+=1, a>>=1;
+  return r;
+}
+
+
 
 /**** Error Handling *****/
 
@@ -248,6 +293,14 @@ void m4ri_word_to_str( char *destination, word data, int colon);
  */
 
 BIT m4ri_coin_flip(void);
+
+/**
+ * \brief Return uniformly randomly distributed random word.
+ *
+ * \todo Allow user to provide her own random() function.
+ */
+
+word m4ri_random_word();
 
 /***** Initialization *****/
 
@@ -377,8 +430,8 @@ extern mm_block m4ri_mmc_cache[M4RI_MMC_NBLOCKS];
 
 /**
  * \brief Return handle for locale memory management cache.
- * 
- * \todo Make thread safe.
+ *
+ * \attention Not thread safe.
  */
 
 static inline mm_block *m4ri_mmc_handle(void) {
@@ -474,5 +527,6 @@ static inline void m4ri_mmc_cleanup(void) {
     mm[i].size = 0;
   }
 }
+
 
 #endif //MISC_H

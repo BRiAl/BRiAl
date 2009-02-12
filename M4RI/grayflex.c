@@ -1,11 +1,12 @@
 /******************************************************************************
 *
-*            M4RI: Method of the Four Russians Inversion
+*                 M4RI: Linear Algebra over GF(2)
 *
-*       Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
-*       Copyright (C) 2007 Martin Albrecht <malb@informatik.uni-bremen.de> 
+*    Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
+*    Copyright (C) 2007 Martin Albrecht <malb@informatik.uni-bremen.de> 
 *
 *  Distributed under the terms of the GNU General Public License (GPL)
+*  version 2 or higher.
 *
 *    This code is distributed in the hope that it will be useful,
 *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -90,7 +91,7 @@ void m4ri_destroy_all_codes() {
   codebook = NULL;
 }
 
-static int log2_floor(int n){
+static inline int log2_floor(int n){
   int i;
   for(i=0;TWOPOW(i)<=n;i++){}
   return i;

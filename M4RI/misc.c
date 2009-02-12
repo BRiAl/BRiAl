@@ -1,10 +1,11 @@
 /******************************************************************************
 *
-*            M4RI: Method of the Four Russians Inversion
+*                 M4RI: Linear Algebra over GF(2)
 *
-*       Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
+*    Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org> 
 *
 *  Distributed under the terms of the GNU General Public License (GPL)
+*  version 2 or higher.
 *
 *    This code is distributed in the hope that it will be useful,
 *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,6 +35,7 @@
 
 #include "grayflex.h"
 
+
 /* blocks of memory we like to keep around for later re-use */
 mm_block m4ri_mmc_cache[M4RI_MMC_NBLOCKS];
 
@@ -56,7 +58,7 @@ void m4ri_word_to_str( char *destination, word data, int colon) {
       if (GET_BIT(data,i))
 	destination[i]='1';
       else 
-	destination[i]='0';
+	destination[i]=' ';
     }
     destination[RADIX]='\0';
 
@@ -66,7 +68,7 @@ void m4ri_word_to_str( char *destination, word data, int colon) {
       if (GET_BIT(data,i))
 	destination[j]='1';
       else 
-	destination[j]='0';
+	destination[j]=' ';
       j++;
       if (((i % 4)==3) && (i!=RADIX-1)) {
 	destination[j]=':';
@@ -102,7 +104,7 @@ void *m4ri_mm_malloc( int size ) {
 #else
   void *newthing=malloc( size );
 #endif  
-  if ((newthing==NULL) && (size>0)) {
+  if (newthing==NULL && (size>0)) {
     m4ri_die("m4ri_mm_malloc: malloc returned NULL\n");
     return NULL; /* unreachable */
   }
@@ -117,6 +119,12 @@ void m4ri_mm_free(void *condemned, ...) {
 #endif  
 }
 
+#define RAND_SHORT ((word)(rand()&((1<<16)-1)))
+
+word m4ri_random_word() {
+  return RAND_SHORT ^ RAND_SHORT<<16 ^ RAND_SHORT<<32 ^ RAND_SHORT<<48;
+}
+
 BIT m4ri_coin_flip() {
   if (rand() < RAND_MAX/2) {
     return 0;
@@ -124,6 +132,7 @@ BIT m4ri_coin_flip() {
     return 1;
   }
 }
+
 
 #ifdef __GNUC__
 void __attribute__ ((constructor)) m4ri_init()

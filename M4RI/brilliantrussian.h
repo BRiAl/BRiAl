@@ -1,6 +1,6 @@
 /**
  * \file brilliantrussian.h
- * \brief Matrix operations using Gray codes.
+ * \brief M4RI and M4RM.
  *
  * \author Gregory Bard <bard@fordham.edu>
  * \author Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
@@ -15,12 +15,13 @@
 #define BRILLIANTRUSSIAN_H
  /*******************************************************************
  *
- *            M4RI: Method of the Four Russians Inversion
+ *                 M4RI:  Linear Algebra over GF(2)
  *
- *       Copyright (C) 2007, 2008 Gregory Bard <bard@fordham.edu>
- *       Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhu.ac.uk>
+ *    Copyright (C) 2007, 2008 Gregory Bard <bard@fordham.edu>
+ *    Copyright (C) 2008 Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
  *
  *  Distributed under the terms of the GNU General Public License (GPL)
+ *  version 2 or higher.
  *
  *    This code is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,7 +40,7 @@
 
 #include "misc.h"
 #include "packedmatrix.h"
-
+#include "permutation.h"
 
 /**
  * \brief Constructs all possible \f$2^k\f$ row combinations using the gray
@@ -145,8 +146,8 @@ void mzd_process_rows4(packedmatrix *M, size_t startrow, size_t endrow, size_t s
                        packedmatrix *T2, size_t *L2, packedmatrix *T3, size_t *L3);
 
 /**
- * \brief Perform matrix reduction using the 'Method of the Four
- * Russians' (M4RI) or Kronrod-Method.
+ * \brief Matrix elimination using the 'Method of the Four Russians'
+ * (M4RI).
  * 
  * \param M Matrix to be reduced.
  * \param full Return the reduced row echelon form, not only upper triangular form.
@@ -154,10 +155,13 @@ void mzd_process_rows4(packedmatrix *M, size_t startrow, size_t endrow, size_t s
  * \param T Preallocated table, may be NULL for automatic creation.
  * \param L Preallocated lookup table, may be NULL for automatic creation.
  *
+ * \example testsuite/test_elimination.c
+ * \example testsuite/bench_elimination.c
+ * 
  * \wordoffset
  */
 
-int mzd_reduce_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_t *L);
+int mzd_echelonize_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief Given a matrix in upper triangular form compute the reduced row
@@ -171,7 +175,7 @@ int mzd_reduce_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_t *L
  * \wordoffset
  */
 
-void mzd_top_reduce_m4ri(packedmatrix *M, int k, packedmatrix *T, size_t *L);
+void mzd_top_echelonize_m4ri(packedmatrix *M, int k, packedmatrix *T, size_t *L);
 
 /**
  * \brief Invert the matrix M using Konrod's method. To avoid
@@ -239,76 +243,9 @@ packedmatrix *mzd_addmul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B,
 packedmatrix *_mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k, int clear);
 
 /**
- * \brief Matrix multiplication using Konrod's method but transpose
- * all matrices first, i.e. compute C = AB = (B^T A^T)^T.
- *
- * \param C Preallocated product matrix, may be NULL for automatic creation.
- * \param A Input matrix A
- * \param B Input matrix B
- * \param k M4RI parameter, may be 0 for auto-choose.
- *
- * \wordoffset
- */
-
-packedmatrix *mzd_mul_m4rm_t(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
-
-
-/**
  * \brief If defined 8 Gray code tables are used in parallel.
  */
 
 #define M4RM_GRAY8
-
-
-/**
- * Perform LQUP factorization on A.
- *
- * This code is a scratch only, do not call it.
- *
- * \param A Matrix.
- * \param k Size of Gray code tables.
- * \param P Preallocated row permutation.
- * \param Q Preallocated column permutation.
- *
- * \wordoffset
- * \internal
- */
-
-size_t _mzd_lqup_m4rf(packedmatrix *A, int k, permutation * P, permutation * Q);
-
-/**
- * Perform LQUP factorization on a submatrix of up to dimension k
- * starting at (r,c).
- *
- * This code is a scratch only, do not call it.
- *
- * \param A Matrix.
- * \param r Row Offset.
- * \param c Column Offset.
- * \param endrow Maximal row offset for pivot finding.
- * \param k Size of Gray code tables.
- * \param P Preallocated row permutation.
- * \param Q Preallocated column permutation.
- *
- * \wordoffset
- * \internal
- */
-
-size_t _mzd_lqup_submatrix(packedmatrix *A, size_t r, size_t c, size_t endrow, int k, permutation *P, permutation *Q);
-
-/**
- * Reduce LQUP factorized matrix to the identity matrix.
- *
- * This code is a scratch only, do not call it.
- *
- * \param A Matrix.
- * \param c Column Offset.
- * \param k Size of Gray code tables.
- *
- * \wordoffset
- * \internal
- */
-
-void _mzd_lqup_submatrix_finish(packedmatrix *A, size_t c, int k);
 
 #endif //BRILLIANTRUSSIAN_H
