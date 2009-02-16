@@ -297,6 +297,7 @@ def other_ordering_pre(I,option_set,kwds):
 def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)
+
 def llfirst_post(I,eliminated,prot):
     for p in I:
         if p.is_one():
@@ -327,6 +328,23 @@ def fix_deg_bound_post(I,state):
     else:
         return I
 
+def incremental_pre(I,prot, kwds):
+    def sort_key(p):
+        p=Polynomial(p)
+        return (p.navigation().value(), -p.deg())
+    I=sorted(I, key=sort_key)
+    inc_sys=[]
+    kwds=copy(kwds)
+    kwds['incremental']=False
+
+    for p in I[:-1]:
+        inc_sys.append(p)
+        inc_sys=groebner_basis(inc_sys, **kwds)
+        if prot:
+            print "incrementally calculating GB, adding generator:", p
+    inc_sys.append(I[:-1])
+   
+    return (inc_sys,None)
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
@@ -336,6 +354,7 @@ def fix_deg_bound_post(I,state):
 @gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
+@gb_with_pre_post_option("incremental",pre=incremental_pre,pass_prot=True, pass_kwds=True)
 @with_heuristic(change_order_heuristic)
 @gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True, pass_kwds=True)
 @with_heuristic(linear_algebra_heuristic)
