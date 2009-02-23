@@ -6,7 +6,7 @@ class PartialFunction(object):
         super(PartialFunction, self).__init__()
         self.zeros = zeros.set()
         self.ones = ones.set()
-    def interpolateSmallestLex(self):
+    def interpolate_smallest_lex(self):
         return interpolate_smallest_lex(self.zeros,self.ones)
     def __str__(self):
         return "PartialFunction(zeros="+str(self.zeros)+", ones="+str(self.ones)+")"
