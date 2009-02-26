@@ -95,7 +95,24 @@ def add_words(words):
             res.append(bits[0])
             words.append(bits[1:])
     return res
-    
+
+def multiply_by_addition(word_a, word_b):
+    """Multiply two words
+    >>> from polybori import Ring
+    >>> r=Ring(1000)
+    >>> x=Variable
+    >>> n=9
+    >>> res=multiply_by_addition([x(200+2*i)  for i in xrange(n)], [x(200+2*i+1)  for i in xrange(n)])
+    >>> [p.n_nodes() for p in res]
+    [2, 4, 7, 17, 38, 85, 222, 632, 1952, 6367, 15764, 21610, 23017, 22080, 19317, 14570, 7746, 3441]
+    """
+    word_a=list(word_a)
+    word_b=list(word_b)
+    summands=[]
+    for (i, a) in enumerate(word_a):
+        summands.append(i*[Polynomial(0)]+[a*b for b in word_b])
+    return add_words(summands)
+
 def _test():
     import doctest
     doctest.testmod()
