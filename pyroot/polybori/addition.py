@@ -33,7 +33,7 @@ def add_bits(bits):
     >>> add_bits([Variable(i) for i in xrange(3)])
     [x(0) + x(1) + x(2), x(0)*x(1) + x(0)*x(2) + x(1)*x(2)]
     >>> add_bits([Variable(i) for i in xrange(4)])
-    [x(0) + x(1) + x(2) + x(3), x(0)*x(1) + x(0)*x(2) + x(0)*x(3) + x(1)*x(2) + x(1)*x(3) + x(2)*x(3)]
+    [x(0) + x(1) + x(2) + x(3), x(0)*x(1) + x(0)*x(2) + x(0)*x(3) + x(1)*x(2) + x(1)*x(3) + x(2)*x(3), x(0)*x(1)*x(2)*x(3)]
     >>> add_bits([Variable(0)])
     [x(0)]
     """
@@ -44,7 +44,7 @@ def add_bits(bits):
     
     bits_expr=[]#[sum(bits)]
     step=0
-    while n>2**step:
+    while n>=2**step:
         bits_expr.append(Polynomial(all_monomials_of_degree_d(2**step, bits)))
         step=step+1
     return bits_expr
@@ -59,7 +59,7 @@ def add_bit_expressions(bit_expressions):
     >>> add_bit_expressions([Variable(i) for i in xrange(10,13)])
     [x(10) + x(11) + x(12), x(10)*x(11) + x(10)*x(12) + x(11)*x(12)]
     >>> add_bit_expressions([Variable(11), Variable(11)])
-    [0]
+    [0, x(11)]
     >>> add_bit_expressions([Variable(11),Variable(12),Variable(13)])
     [x(11) + x(12) + x(13), x(11)*x(12) + x(11)*x(13) + x(12)*x(13)]
     """
@@ -75,14 +75,14 @@ def add_words(words):
     >>> from polybori import *
     >>> r=Ring(1000)
     >>> add_words([[Variable(100+i*3+j) for i in xrange(2)] for j in xrange(3)])
-    [x(100) + x(101) + x(102), x(100)*x(101) + x(100)*x(102) + x(101)*x(102) + x(103) + x(104) + x(105), x(100)*x(101)*x(103) + x(100)*x(101)*x(104) + x(100)*x(101)*x(105) + x(100)*x(102)*x(103) + x(100)*x(102)*x(104) + x(100)*x(102)*x(105) + x(101)*x(102)*x(103) + x(101)*x(102)*x(104) + x(101)*x(102)*x(105) + x(103)*x(104) + x(103)*x(105) + x(104)*x(105)]
+    [x(100) + x(101) + x(102), x(100)*x(101) + x(100)*x(102) + x(101)*x(102) + x(103) + x(104) + x(105), x(100)*x(101)*x(103) + x(100)*x(101)*x(104) + x(100)*x(101)*x(105) + x(100)*x(102)*x(103) + x(100)*x(102)*x(104) + x(100)*x(102)*x(105) + x(101)*x(102)*x(103) + x(101)*x(102)*x(104) + x(101)*x(102)*x(105) + x(103)*x(104) + x(103)*x(105) + x(104)*x(105), x(100)*x(101)*x(103)*x(104)*x(105) + x(100)*x(102)*x(103)*x(104)*x(105) + x(101)*x(102)*x(103)*x(104)*x(105)]
     >>> res=add_words([[Variable(100+i*9+j) for i in xrange(4)] for j in xrange(9)])
     >>> [len(p) for p in res]
-    [9, 45, 495, 12870, 735462, 70285482, 1891358892]
+    [9, 45, 495, 12870, 735462, 70285482, 1891358892, 6435]
     >>> [p.deg() for p in res]
-    [1, 2, 4, 8, 12, 18, 25]
+    [1, 2, 4, 8, 12, 18, 25, 33]
     >>> [p.n_nodes() for p in res]
-    [9, 25, 54, 100, 153, 211, 249]
+    [9, 25, 54, 100, 153, 211, 249, 100]
     """
 
     max_word_length=max((len(w) for w in words))
@@ -104,7 +104,7 @@ def multiply_by_addition(word_a, word_b):
     >>> n=9
     >>> res=multiply_by_addition([x(200+2*i)  for i in xrange(n)], [x(200+2*i+1)  for i in xrange(n)])
     >>> [p.n_nodes() for p in res]
-    [2, 4, 7, 17, 38, 85, 222, 632, 1952, 6367, 15764, 21610, 23017, 22080, 19317, 14570, 7746, 3441]
+    [2, 4, 7, 17, 38, 85, 222, 632, 1952, 6367, 15764, 21610, 23017, 22080, 19317, 14564, 7746, 1577, 0]
     """
     word_a=list(word_a)
     word_b=list(word_b)
