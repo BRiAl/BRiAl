@@ -529,19 +529,18 @@ def all_monomials_of_degree_d(d,variables):
         return Polynomial(1).set()
     if len(variables)==0:
         return BooleSet()
-    variables=sorted(set(variables),reverse=True,key=key)
+    variables=sorted(set(variables),reverse=True,key=top_index)
 
     m=variables[-1]
     for v in variables[:-1]:
         m=v+m
     m=m.set()
-    def do_all_monomials(d):
-        if d==0:
-            return Polynomial(1).set()
-        else:
-            prev=do_all_monomials(d-1)
-            return prev.cartesianProduct(m).diff(prev)
-    return do_all_monomials(d)
+    i=0
+    res=Polynomial(1).set()
+    while(i<d):
+        i=i+1
+        res=res.cartesianProduct(m).diff(res)
+    return res
 \end{verbatim}
 We use the set of all monomials of one degree lower using the cartesian product with the set of variables and remove every term, where the degree did not increase (boolean multiplication: $x^2=x$).
 \subsection{Direct constructions of diagrams}
