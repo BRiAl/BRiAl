@@ -1195,16 +1195,16 @@ def buchberger(l):
     "calculates a (non minimal) Groebner basis"
     l=interred(l)
     #for making sure, that every polynomial has a different leading term
-    #needed for addGenerator
+    #needed for add_generator
     g=GroebnerStrategy()
     for p in l:
-        g.addGenerator(p)
+        g.add_generator(p)
     while g.npairs()>0:
-        g.cleanTopByChainCriterion()
-        p=g.nextSpoly()
+        g.clean_top_by_chain_criterion()
+        p=g.next_spoly()
         p=g.nf(p)
-        if not p.isZero():
-            g.addGenerator(p)
+        if not p.is_zero():
+            g.add_generator(p)
     return list(g)
 \end{lstlisting}
 The criteria are handled by the \functionname{addGenerator}-method for
