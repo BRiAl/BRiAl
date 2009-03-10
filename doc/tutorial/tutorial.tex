@@ -530,7 +530,6 @@ def all_monomials_of_degree_d(d,variables):
     if len(variables)==0:
         return BooleSet()
     variables=sorted(set(variables),reverse=True,key=top_index)
-
     m=variables[-1]
     for v in variables[:-1]:
         m=v+m
