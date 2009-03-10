@@ -1228,24 +1228,27 @@ However, if there are more than $n$ solutions, the full \Groebner basis is compu
 def less_than_n_solutions(ideal,n):
     l=interred(ideal)
     g=GroebnerStrategy()
-    all_monomials=Monomial([Variable(i) for i in xrange(number_of_variables())]).divisors()
+    all_monomials=Monomial([Variable(i) for i 
+        in xrange(number_of_variables())]).divisors()
     monomials_not_in_leading_ideal=all_monomials
     for p in l:
-        g.addGenerator(p)
+        g.add_generator(p)
     while g.npairs()>0:
-        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal\
+            % g.reduction_strategy.minimal_leading_terms
         if len(monomials_not_in_leading_ideal)<n:
             return True
-        g.cleanTopByChainCriterion()
-        p=g.nextSpoly()
+        g.clean_top_by_chain_criterion()
+        p=g.next_spoly()
         p=g.nf(p)
-        if not p.isZero():
-            g.addGenerator(p)
-    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal%g.minimalLeadingTerms
+        if not p.is_zero():
+            g.add_generator(p)
+    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal\
+        % g.reduction_strategy.minimal_leading_terms
     if len(monomials_not_in_leading_ideal)<n:
         return True
     else:
-        return False    
+        return False
 \end{lstlisting}
 \bibliographystyle{plain}
 
