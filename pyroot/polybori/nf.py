@@ -132,7 +132,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
 
-def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True, max_generators=None):
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True, max_generators=None, red_tail_deg_growth=True):
     #if use_noro:
     #    raise NotImplementedError
     if use_noro and use_faugere:
@@ -164,6 +164,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         strat.reduction_strategy.optLL=ll
         strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
         strat.redByReduced=False#True
+        strat.reduction_strategy.optRedTailDegGrowth=red_tail_deg_growth
         
 
         for g in  G:
@@ -468,7 +469,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         strat.add_generator_delayed(g)
     branch(strat,[], proof_path, 0)
 
-def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True,max_generators=None):
+def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True,max_generators=None, red_tail_deg_growth=True):
     #print implications
     if use_noro:
         raise NotImplementedError, "noro not implemented for symmgb"    
@@ -488,6 +489,7 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         strat.optAllowRecursion=optAllowRecursion
         strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
         strat.enabledLog=prot
+        strat.reduction_strategy.optRedTailDegGrowth=red_tail_deg_growth
         #strat.add_generator(G[0])
         
         

@@ -24,7 +24,6 @@ def all_monomials_of_degree_d_old(d,variables):
     return res
 
 def all_monomials_of_degree_d(d, variables):
-    
     variables=Monomial(variables)
     variables=list(variables.variables())
     if d>len(variables):
@@ -46,7 +45,6 @@ def all_monomials_of_degree_d(d, variables):
         while not nav.constant():
             navs.append(BooleSet(nav,ring))
             nav=nav.then_branch()
-        #navs=reversed(nav)
         acc=Polynomial(1)
         for (nav, v) in reversed(zip(navs, deg_variables)):
             acc=if_then_else(v, acc, nav)

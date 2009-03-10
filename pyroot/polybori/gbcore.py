@@ -371,7 +371,7 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None):
+       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None, red_tail_deg_growth=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if full_prot:
         prot=True
@@ -431,7 +431,7 @@ def groebner_basis(I, faugere=False,
             optExchange=exchange, optAllowRecursion=recursion,
             use_faugere=faugere,
             use_noro=noro,ll=ll,
-            optLinearAlgebraInLastBlock=linear_algebra_in_last_block,max_generators=max_generators)
+            optLinearAlgebraInLastBlock=linear_algebra_in_last_block,max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:
