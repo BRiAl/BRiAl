@@ -423,15 +423,15 @@ def groebner_basis(I, faugere=False,
       import sys
       sys.exit(0)
     def call_algorithm(I,max_generators=None):
-        return implementation(I, optRedTail=red_tail,\
+        return implementation(I, opt_red_tail=red_tail,\
             max_growth=max_growth, step_factor=step_factor,
             implications=implications,prot=prot,
             full_prot=full_prot,deg_bound=deg_bound,
-            selection_size=selection_size, optLazy=lazy, 
-            optExchange=exchange, optAllowRecursion=recursion,
+            selection_size=selection_size, opt_lazy=lazy, 
+            opt_exchange=exchange, opt_allow_recursion=recursion,
             use_faugere=faugere,
             use_noro=noro,ll=ll,
-            optLinearAlgebraInLastBlock=linear_algebra_in_last_block,max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
+            opt_linear_algebra_in_last_block=linear_algebra_in_last_block,max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:

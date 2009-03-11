@@ -132,7 +132,7 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
 
-def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,optLazy=True,optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optExchange=True, optAllowRecursion=False,ll=False,optLinearAlgebraInLastBlock=True, max_generators=None, red_tail_deg_growth=True):
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,opt_lazy=True,opt_red_tail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, opt_exchange=True, opt_allow_recursion=False,ll=False,opt_linear_algebra_in_last_block=True, max_generators=None, red_tail_deg_growth=True):
     #if use_noro:
     #    raise NotImplementedError
     if use_noro and use_faugere:
@@ -156,15 +156,15 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             return []
         G=[Polynomial(g) for g in G]  
         strat=GroebnerStrategy()
-        strat.reduction_strategy.optRedTail=optRedTail
-        strat.optLazy=optLazy
-        strat.optExchange=optExchange
-        strat.optAllowRecursion=optAllowRecursion
+        strat.reduction_strategy.opt_red_tail=opt_red_tail
+        strat.opt_lazy=opt_lazy
+        strat.opt_exchange=opt_exchange
+        strat.opt_allow_recursion=opt_allow_recursion
         strat.enabledLog=prot
-        strat.reduction_strategy.optLL=ll
-        strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
+        strat.reduction_strategy.opt_ll=ll
+        strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
         strat.redByReduced=False#True
-        strat.reduction_strategy.optRedTailDegGrowth=red_tail_deg_growth
+        strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
         
 
         for g in  G:
@@ -181,10 +181,10 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             raise GeneratorLimitExceeded(strat)
         i=i+1
         if prot:
-            print "Current Degree:", strat.topSugar()
-        if (strat.topSugar()>deg_bound) and (over_deg_bound<=0):
+            print "Current Degree:", strat.top_sugar()
+        if (strat.top_sugar()>deg_bound) and (over_deg_bound<=0):
             return strat
-        if (strat.topSugar()>deg_bound):
+        if (strat.top_sugar()>deg_bound):
             ps=strat.some_spolys_in_next_degree(over_deg_bound)
             over_deg_bound-=len(ps)
         else:
@@ -208,9 +208,9 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
              if print_matrices:
                  build_and_print_matrices(v,strat)
              if use_noro:
-                 res=strat.noroStep(v)
+                 res=strat.noro_step(v)
              else:
-                 res=strat.faugereStepDense(v)
+                 res=strat.faugere_step_dense(v)
             
         else:
             v=BoolePolynomialVector()
@@ -267,7 +267,7 @@ def GPS(G,vars_start, vars_end):
         strat.add_generator_delayed(Polynomial(Monomial(Variable(var))+val))
         strat=symmGB_F2_python(strat,prot=True,deg_bound=2, over_deg_bound=10)
         if var<=vars_start:
-            strat=symmGB_F2_python(strat, prot=True, optLazy=False, redTail=False)
+            strat=symmGB_F2_python(strat, prot=True, opt_lazy=False, redTail=False)
         if strat.containsOne():
             pass
         else:
@@ -311,7 +311,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
             strat.add_generator_delayed(plug_p)
         print "npairs", strat.npairs()
         print "pos:", pos
-        strat=symmGB_F2_python(strat,deg_bound=deg_bound, optLazy=False,over_deg_bound=over_deg_bound,prot=True)
+        strat=symmGB_F2_python(strat,deg_bound=deg_bound, opt_lazy=False,over_deg_bound=over_deg_bound,prot=True)
         print "npairs", strat.npairs()
         pos=pos+1
         if pos>=len(proof_path):
@@ -344,7 +344,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
 
 
 
-def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=True,initial_bb=True):
+def GPS_with_suggestions(G,deg_bound,over_deg_bound, opt_lazy=True,opt_red_tail=True,initial_bb=True):
     def step(strat,trace, var,val):
         print trace
         plug_p=val+var
@@ -357,7 +357,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         strat.add_generator_delayed(plug_p)
         print "npairs", strat.npairs()
         
-        strat=symmGB_F2_python(strat,deg_bound=deg_bound,optLazy=optLazy,over_deg_bound=over_deg_bound,prot=True)
+        strat=symmGB_F2_python(strat,deg_bound=deg_bound,opt_lazy=opt_lazy,over_deg_bound=over_deg_bound,prot=True)
         
         #pos=pos+1
         if not strat.containsOne():
@@ -389,12 +389,12 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
         #return (p.deg(),p.lead(),p.elength())
         return (p.lead(),p.deg(),p.elength())
     strat=GroebnerStrategy()
-    strat.reduction_strategy.optRedTail=optRedTail#True
-    strat.optExchange=False
-    strat.optAllowRecursion=False
-    #strat.optRedTailDegGrowth=False
-    strat.optLazy=optLazy
-    #strat.optLazy=True
+    strat.reduction_strategy.opt_red_tail=opt_red_tail#True
+    strat.opt_exchange=False
+    strat.opt_allow_recursion=False
+    #strat.opt_red_tail_deg_growth=False
+    strat.opt_lazy=opt_lazy
+    #strat.opt_lazy=True
     first_deg_bound=1
     G=[Polynomial(p) for p in G]
     G.sort(key=sort_crit)
@@ -413,8 +413,8 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
       for g in G:
         strat.add_as_you_wish(g)
     if initial_bb:
-      strat=symmGB_F2_python(strat,deg_bound=max(deg_bound,first_deg_bound), optLazy=optLazy,over_deg_bound=0,prot=True)
-    strat.optLazy=optLazy
+      strat=symmGB_F2_python(strat,deg_bound=max(deg_bound,first_deg_bound), opt_lazy=opt_lazy,over_deg_bound=0,prot=True)
+    strat.opt_lazy=opt_lazy
     print "INITIALIZED"
     branch(strat,[])
 
@@ -445,10 +445,10 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         else:
             if pos>=len(proof_path):
                 print "npairs", strat.npairs()
-                strat.toStdOut()
+                #strat.to_std_out()
                 l=[p for p in strat]
                 strat2=symmGB_F2_python(l)
-                strat2.toStdOut()
+                #strat2.to_std_out()
                 #bug: may contain Delayed polynomials
                 print "!!!!!!! SOLUTION",trace
                 raise Exception
@@ -469,7 +469,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         strat.add_generator_delayed(g)
     branch(strat,[], proof_path, 0)
 
-def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_deg_bound=0, optRedTail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, optAllowRecursion=False, use_noro=False,use_faugere=False,ll=False,optLinearAlgebraInLastBlock=True,max_generators=None, red_tail_deg_growth=True):
+def symmGB_F2_C(G,opt_exchange=True,deg_bound=1000000000000,opt_lazy=False,over_deg_bound=0, opt_red_tail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, opt_allow_recursion=False, use_noro=False,use_faugere=False,ll=False,opt_linear_algebra_in_last_block=True,max_generators=None, red_tail_deg_growth=True):
     #print implications
     if use_noro:
         raise NotImplementedError, "noro not implemented for symmgb"    
@@ -481,15 +481,15 @@ def symmGB_F2_C(G,optExchange=True,deg_bound=1000000000000,optLazy=False,over_de
         
         G=[Polynomial(g) for g in G]    
         strat=GroebnerStrategy()
-        strat.reduction_strategy.optRedTail=optRedTail
+        strat.reduction_strategy.opt_red_tail=opt_red_tail
         strat.enabledLog=prot
-        strat.optLazy=optLazy
-        strat.optExchange=optExchange
-        strat.reduction_strategy.optLL=ll
-        strat.optAllowRecursion=optAllowRecursion
-        strat.optLinearAlgebraInLastBlock=optLinearAlgebraInLastBlock
+        strat.opt_lazy=opt_lazy
+        strat.opt_exchange=opt_exchange
+        strat.reduction_strategy.opt_ll=ll
+        strat.opt_allow_recursion=opt_allow_recursion
+        strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
         strat.enabledLog=prot
-        strat.reduction_strategy.optRedTailDegGrowth=red_tail_deg_growth
+        strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
         #strat.add_generator(G[0])
         
         

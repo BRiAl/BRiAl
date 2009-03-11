@@ -219,13 +219,13 @@ void export_strategy(){
  
   boost::python::class_<ReductionStrategy,boost::python::bases<vector<PolyEntry> > > ("ReductionStrategy")
         .def(init<>())
-        .def_readwrite("optBrutalReductions",&ReductionStrategy::optBrutalReductions)
+        .def_readwrite("opt_brutal_reductions",&ReductionStrategy::optBrutalReductions)
         .def("add_generator", &ReductionStrategy::addGenerator)
         .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
         .def_readonly("minimal_leading_terms",&ReductionStrategy::minimalLeadingTerms)
-        .def_readwrite("optLL",&ReductionStrategy::optLL)
-        .def_readwrite("optRedTail",&ReductionStrategy::optRedTail)
-        .def_readwrite("optRedTailDegGrowth",&ReductionStrategy::optRedTailDegGrowth)
+        .def_readwrite("opt_ll",&ReductionStrategy::optLL)
+        .def_readwrite("opt_red_tail",&ReductionStrategy::optRedTail)
+        .def_readwrite("opt_red_tail_deg_growth",&ReductionStrategy::optRedTailDegGrowth)
         .def("can_rewrite",&ReductionStrategy::canRewrite)
         .def("nf",&ReductionStrategy::nf)
         .def("reduced_normal_form",&ReductionStrategy::reducedNormalForm)
@@ -255,33 +255,33 @@ void export_strategy(){
   .def("all_generators", &GroebnerStrategy::allGenerators)
   
 #if defined(HAVE_NTL) || defined(HAVE_M4RI)
-  .def("noroStep", &GroebnerStrategy::noroStep)
+  .def("noro_step", &GroebnerStrategy::noroStep)
 #endif
 #if defined(HAVE_NTL) || defined(HAVE_M4RI)
-  .def("faugereStepDense", &GroebnerStrategy::faugereStepDense)
+  .def("faugere_step_dense", &GroebnerStrategy::faugereStepDense)
 #endif
   .def("variable_has_value",&GroebnerStrategy::variableHasValue)
   .def_readonly("chain_criterions",&GroebnerStrategy::chainCriterions)
 
   
   
-  .def_readwrite("optLinearAlgebraInLastBlock",&GroebnerStrategy::optLinearAlgebraInLastBlock)
+  .def_readwrite("opt_linear_algebra_in_last_block",&GroebnerStrategy::optLinearAlgebraInLastBlock)
   
-  .def_readwrite("optLazy",&GroebnerStrategy::optLazy)
-  .def_readwrite("optExchange",&GroebnerStrategy::optExchange)
-  .def_readwrite("optAllowRecursion",&GroebnerStrategy::optAllowRecursion)
+  .def_readwrite("opt_lazy",&GroebnerStrategy::optLazy)
+  .def_readwrite("opt_exchange",&GroebnerStrategy::optExchange)
+  .def_readwrite("opt_allow_recursion",&GroebnerStrategy::optAllowRecursion)
   .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
   
   .def_readonly("variable_chain_criterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easy_product_criterions",&GroebnerStrategy::easyProductCriterions)
   .def_readonly("extended_product_criterions",&GroebnerStrategy::extendedProductCriterions)
-  .def("topSugar",pairs_top_sugar)
-  .def("containsOne",contains_one)
-  .def("minimalizeAndTailReduce",&GroebnerStrategy::minimalizeAndTailReduce)
+  .def("top_sugar",pairs_top_sugar)
+  .def("contains_one",contains_one)
+  .def("minimalize_and_tail_reduce",&GroebnerStrategy::minimalizeAndTailReduce)
   .def("minimalize",&GroebnerStrategy::minimalize)
 	
   .def("select", select_wrapped)
-  .def_readwrite("optRedByReduced",&GroebnerStrategy::reduceByTailReduced)
+  .def_readwrite("opt_red_by_reduced",&GroebnerStrategy::reduceByTailReduced)
   .def("symmGB_F2",&GroebnerStrategy::symmGB_F2)
   .def("nf",&GroebnerStrategy::nf)
   .def("npairs", npairs);
