@@ -50,7 +50,7 @@
 \newcommand{\CUDD}{{CUDD}\xspace}
 \newcommand{\ite}{{ite}\xspace}
 \DeclareMathOperator{\I}{I}
-\newcommand{\functionname}[1]{\textit{#1}\xspace}
+\newcommand{\functionname}[1]{{\lstinline|#1|}}%{\textit{#1}\xspace}
 \newcommand{\pythonconstant}[1]{\textit{#1}\xspace}
 \newcommand{\explfieldequations}{{x_1^2+x_1,\ldots,x_n^2+x_n}}
 \newcommand{\Ztwo}{\mathbb{Z}_2}
@@ -335,7 +335,7 @@ Out[8]:{{x(1),x(2)}, {x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 In [9]:nav.value()
 Out[9]:1
 
-In [10]:nav_else=nav.elseBranch()
+In [10]:nav_else=nav.else_branch()
 
 In [11]:nav_else
 Out[11]:<polybori.dynamic.PyPolyBoRi.CCuddNavigator object at 0xb6e1e7d4>
@@ -630,8 +630,8 @@ def recursive_graded(f,d):
                 return BooleSet()
             return if_then_else(
                 nav.value(),
-                do_recursive_graded(BooleSet(nav.thenBranch(),f.ring()),d-1),
-                do_recursive_graded(BooleSet(nav.elseBranch(),f.ring()),d))
+                do_recursive_graded(BooleSet(nav.then_branch(),f.ring()),d-1),
+                do_recursive_graded(BooleSet(nav.else_branch(),f.ring()),d))
     return Polynomial(do_recursive_graded(f.set(),d))
         
 \end{lstlisting}
@@ -666,8 +666,8 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 
   SetType result = 
     SetType(*navi,  
-            dd_graded_part(cache, navi.thenBranch(), deg - 1, init),
-            dd_graded_part(cache, navi.elseBranch(), deg, init)
+            dd_graded_part(cache, navi.then_branch(), deg - 1, init),
+            dd_graded_part(cache, navi.else_branch(), deg, init)
             );
 
   // store result for later reuse
@@ -796,10 +796,10 @@ def evaluate(f,m):
        c=m[v]
        if c==0:
            #terms with x evaluate to zero
-           f=Polynomial(nav.thenBranch())
+           f=Polynomial(nav.then_branch())
        else:
            #c==1
-           f=Polynomial(nav.thenBranch())+Polynomial(nav.elseBranch())
+           f=Polynomial(nav.then_branch())+Polynomial(nav.else_branch())
        return f   
 \end{lstlisting}
 For example, the call
@@ -817,7 +817,7 @@ to ensure, that~$f$ is still valid, as long as we use a navigator on~$f$.
 But it will show its value on optimized code (e.\,g.\ PyRex), where it causes
 less overhead. 
 A second point, why it is desirable to use navigators is, that their
-\lstinline|thenBranch|- and \lstinline|elseBranch|-methods immediately return~(without
+\lstinline|then_branch|- and \lstinline|else_branch|-methods immediately return~(without
 further calculations) the
 results of the \lstinline|subset0| and \lstinline|subset1|-functions, when the latter are
 called together  with the top variable of the diagram~$f$.
@@ -972,12 +972,12 @@ In [2]:ambient_space=(x(0)*x(1)*x(2)).divisors()
 In [3]:ambient_space
 Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
 
-In [4]:f.zerosIn(ambient_space)
+In [4]:f.zeros_in(ambient_space)
 Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
 
 In [5]:S=BooleSet([x(0),x(1)*x(2)])
 
-In [6]:f.zerosIn(S)
+In [6]:f.zeros_in(S)
 Out[6]:{{x(1),x(2)}}
 \end{lstlisting}
 
@@ -1027,7 +1027,7 @@ It can be easily seen, that this polynomial forms the same function on $V$ as $f
 In fact, our computation is equivalent to the direct call of the interpolation function \lstinline|interpolate_smallest_lex|, which has two arguments: the set of interpolation points mapped to zero and the set of interpolation points mapped to one.
 
 \begin{lstlisting}
-In [6]:z=f.zerosIn(V)
+In [6]:z=f.zeros_in(V)
 
 In [7]:z
 Out[7]:{{x(1)}, {x(2)}}
@@ -1124,12 +1124,12 @@ In this way generators can be accessed with both their index and their leading t
 \begin{lstlisting}
 In [1]: g=GroebnerStrategy()
 
-In [2]: g.addGenerator(x(1))
+In [2]: g.add_generator(x(1))
 
 In [3]: g[x(1)]
 Out[3]: x(1)
 
-In [4]: g.addGenerator(x(1)+1)
+In [4]: g.add_generator(x(1)+1)
 ---------------------------------------------------------------------------
 ValueError                                Traceback (most recent call last)
 
@@ -1140,11 +1140,11 @@ ValueError: strategy contains already a polynomial with same lead
 
 An alternative is to push the generator to the (generalized) set of critical pairs instead of adding it directly
 \begin{lstlisting}
-In [5]: g.addGeneratorDelayed(x(1)+1)
+In [5]: g.add_generator_delayed(x(1)+1)
 \end{lstlisting}
 Due to the absence of other pairs, in this example the polynomial is on top of the pair queue
 \begin{lstlisting}
-In [6]: g.nextSpoly()
+In [6]: g.next_spoly()
 Out[6]: x(1) + 1
 \end{lstlisting}
 
@@ -1152,7 +1152,7 @@ A alternative approach is to let PolyBoRi decide, if an generator is added to th
 \begin{lstlisting}
 In [1]: g=GroebnerStrategy()
 
-In [2]: g.addAsYouWish(x(1))
+In [2]: g.add_as_you_wish(x(1))
 \end{lstlisting}
 
 \subsection{Interreduction}
@@ -1207,8 +1207,8 @@ def buchberger(l):
             g.add_generator(p)
     return list(g)
 \end{lstlisting}
-The criteria are handled by the \functionname{addGenerator}-method for
-immediately applicable criteria and by the function \functionname{cleanTopByChainCriterion} for the chain criterion.
+The criteria are handled by the \functionname{add_generator}-method for
+immediately applicable criteria and by the function \functionname{clean_top_by_chain_criterion} for the chain criterion.
 
 
 \subsection{Estimating the number of solutions}
