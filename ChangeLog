@@ -1,4 +1,5 @@
 Release Name: 0.6.0
+* FGLM implementation
 * used genshi for generating dot files
 * new Class ReductionStrategy
 * many options and methods moved to ReductionStrategy
@@ -50,7 +51,12 @@ Release Name: 0.6.0
     * extendedProductCriterions -> extended_product_criterions
     * cleanTopByChainCriterion -> clean_top_by_chain_criterion
     * stableHash -> stable_hash
-
+    * opt*** -> snake_case(opt**)
+    * containsOne -> ...
+    * minimalizeAndTailReduce -> ...
+    * faugereStepDense -> ...
+    * noroStep -> ...
+    * topSugar ->...
 * Python interface, dropped functions
   * nSupport
   * firstTerm
