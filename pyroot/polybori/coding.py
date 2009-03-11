@@ -23,11 +23,11 @@ class OccCounter(object):
 def preprocess(I,prot=True):
   def min_gb(I):
       strat=symmGB_F2_C(I, optLazy=False,optExchange=False,prot=prot,selection_size=10000,optRedTail=True)
-      return list(strat.minimalizeAndTailReduce())
+      return list(strat.minimalize_and_tail_reduce())
   I=[Polynomial(p) for p in I]
   lin=[p for p in I if p.deg()==1]
   #lin_strat=symmGB_F2_C(lin, optLazy=False,optExchange=False,prot=prot,selection_size=10000,optRedTail=True)
-  lin=min_gb(lin)#list(lin_strat.minimalizeAndTailReduce())
+  lin=min_gb(lin)#list(lin_strat.minimalize_and_tail_reduce())
   for m in sorted([p.lead() for p in lin]):
       print m
   lin_ll=ll_encode(lin)

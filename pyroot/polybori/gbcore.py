@@ -231,7 +231,7 @@ def redsb_post(I,state):
     if I==[]:
         return []
     else:
-        return I.minimalizeAndTailReduce()
+        return I.minimalize_and_tail_reduce()
 def minsb_post(I,state):
     if I==[]:
         return []

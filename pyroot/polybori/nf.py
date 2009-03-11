@@ -323,7 +323,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
             if pos>=len(proof_path):
                 print "npairs", strat.npairs()
                 print "minimized:"
-                for p in strat.minimalizeAndTailReduce():
+                for p in strat.minimalize_and_tail_reduce():
                     print p
                 #bug: may contain Delayed polynomials
                 print "!!!!!!! SOLUTION",trace
@@ -382,7 +382,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, optLazy=True,optRedTail=Tru
             if not strat.containsOne():
                 print "TRACE", trace
                 print "SOLUTION"
-                for p in strat.minimalizeAndTailReduce():
+                for p in strat.minimalize_and_tail_reduce():
                     print p
                 raise Exception
     def sort_crit(p):

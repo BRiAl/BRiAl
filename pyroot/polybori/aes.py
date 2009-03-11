@@ -28,7 +28,7 @@ def translate(p,table):
     return res
 def cached_GB(I,prot=False):
     
-    #return list(symmGB_F2_C(I,prot=True, optLazy=False,optExchange=False).minimalizeAndTailReduce())
+    #return list(symmGB_F2_C(I,prot=True, optLazy=False,optExchange=False).minimalize_and_tail_reduce())
     
     
     m=Monomial()
@@ -45,7 +45,7 @@ def cached_GB(I,prot=False):
     I_t=[translate(p,table_to_123) for p in I]
     #print "orig",I_t
     I=I_t
-    I_t=list(symmGB_F2_C(I_t, optLazy=False,optExchange=False,prot=prot).minimalizeAndTailReduce())
+    I_t=list(symmGB_F2_C(I_t, optLazy=False,optExchange=False,prot=prot).minimalize_and_tail_reduce())
     #print "GB", I_t
     #print "code:",codes
     #print "ideal:", I
@@ -80,7 +80,7 @@ def preprocess(I, prot=False):
         else:
             subs[m]=[p]
     
-    res=list(symmGB_F2_python(linear,prot=prot).minimalizeAndTailReduce())
+    res=list(symmGB_F2_python(linear,prot=prot).minimalize_and_tail_reduce())
     for m in subs:
     
         sub_system=subs[m]
@@ -131,7 +131,7 @@ def sbox_generator4(code):
       a2+b3*b2*b0+b3*b0+b2*b0+b1*b0+b3+b2,
       a3+b3*b2*b1+b3*b2+b3*b1+b3*b0+b3+b2+b1]
     equations=symmGB_F2_python(equations)
-    equations=list(equations.minimalizeAndTailReduce())
+    equations=list(equations.minimalize_and_tail_reduce())
     change_ordering(OrderCode.lp)
     def sbox(a3,a2,a1,a0,b3,b2,b1,b0):
         mymap=[Variable(i)+locals()["a"+str(4-i-1)] for i in xrange(4)]+[Variable(4+i)+locals()["b"+str(4-i-1)] for i in xrange(4)]

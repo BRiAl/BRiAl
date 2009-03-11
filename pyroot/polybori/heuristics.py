@@ -24,5 +24,5 @@ def gauss_on_linear(I):
             non_linear.append(p)
     if len(linear)==0:
         return non_linear
-    linear=list(symmGB_F2_python(linear).minimalizeAndTailReduce())
+    linear=list(symmGB_F2_python(linear).minimalize_and_tail_reduce())
     return linear+non_linear
