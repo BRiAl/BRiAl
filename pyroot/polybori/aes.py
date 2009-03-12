@@ -28,7 +28,7 @@ def translate(p,table):
     return res
 def cached_GB(I,prot=False):
     
-    #return list(symmGB_F2_C(I,prot=True, optLazy=False,optExchange=False).minimalize_and_tail_reduce())
+    #return list(symmGB_F2_C(I,prot=True, opt_lazy=False,opt_exchange=False).minimalize_and_tail_reduce())
     
     
     m=Monomial()
@@ -45,7 +45,7 @@ def cached_GB(I,prot=False):
     I_t=[translate(p,table_to_123) for p in I]
     #print "orig",I_t
     I=I_t
-    I_t=list(symmGB_F2_C(I_t, optLazy=False,optExchange=False,prot=prot).minimalize_and_tail_reduce())
+    I_t=list(symmGB_F2_C(I_t, opt_lazy=False,opt_exchange=False,prot=prot).minimalize_and_tail_reduce())
     #print "GB", I_t
     #print "code:",codes
     #print "ideal:", I

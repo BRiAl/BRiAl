@@ -14,7 +14,7 @@ def interred(l,completely=False):
         l=sorted(l,key=Polynomial.lead)
         g=ReductionStrategy()
         if completely:
-            g.optRedTail=True
+            g.opt_red_tail=True
         for p in l:
             p=g.nf(p)
             if not p.is_zero():

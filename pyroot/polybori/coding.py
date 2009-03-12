@@ -22,11 +22,11 @@ class OccCounter(object):
         return ifilter(filter_fun,self.impl.keys())
 def preprocess(I,prot=True):
   def min_gb(I):
-      strat=symmGB_F2_C(I, optLazy=False,optExchange=False,prot=prot,selection_size=10000,optRedTail=True)
+      strat=symmGB_F2_C(I, opt_lazy=False,opt_exchange=False,prot=prot,selection_size=10000,opt_red_tail=True)
       return list(strat.minimalize_and_tail_reduce())
   I=[Polynomial(p) for p in I]
   lin=[p for p in I if p.deg()==1]
-  #lin_strat=symmGB_F2_C(lin, optLazy=False,optExchange=False,prot=prot,selection_size=10000,optRedTail=True)
+  #lin_strat=symmGB_F2_C(lin, opt_lazy=False,opt_exchange=False,prot=prot,selection_size=10000,opt_red_tail=True)
   lin=min_gb(lin)#list(lin_strat.minimalize_and_tail_reduce())
   for m in sorted([p.lead() for p in lin]):
       print m
