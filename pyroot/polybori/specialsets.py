@@ -20,7 +20,7 @@ def all_monomials_of_degree_d_old(d,variables):
     res=Polynomial(1).set()
     while(i<d):
         i=i+1
-        res=res.cartesianProduct(m).diff(res)
+        res=res.cartesian_product(m).diff(res)
     return res
 
 def all_monomials_of_degree_d(d, variables):

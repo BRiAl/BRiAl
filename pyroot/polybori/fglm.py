@@ -31,7 +31,7 @@ def m_k_plus_one(completed_elements, variables):
     >>> m_k_plus_one(s,variables)
     x(1)*x(3)
     """
-    return sorted(completed_elements.cartesianProduct(variables).diff(completed_elements))[0]
+    return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]
 def _test():
     import doctest
     doctest.testmod()

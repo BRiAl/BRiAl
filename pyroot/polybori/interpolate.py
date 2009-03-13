@@ -32,7 +32,7 @@ def bench_interpolate(degree,nvariables,points):
     c1=clock()
     res1=interpolate(p,q)
     c2=clock()
-    print "finished interpolate(p,q)"+len("_smallest_lex")*" "+",len:",res1.set().sizeDouble(),"time:",c2-c1
+    print "finished interpolate(p,q)"+len("_smallest_lex")*" "+",len:",res1.set().size_double(),"time:",c2-c1
     return res2
 
 
@@ -79,11 +79,11 @@ def variety_lex_leading_terms(points,variables):
         standards=standards.union(gen_random_o_z(points_tuple,points))
         
         if standards_old!=standards:
-            standards=BooleSet(standards).includeDivisors()
+            standards=BooleSet(standards).include_divisors()
             len_standards=len(standards)
             standards_old=standards
 
-    leading_terms=BooleSet(myvars_div.diff(standards)).minimalElements()
+    leading_terms=BooleSet(myvars_div.diff(standards)).minimal_elements()
     return leading_terms
 def lex_groebner_basis_points(points,variables):
     leads=variety_lex_leading_terms(points,variables)
