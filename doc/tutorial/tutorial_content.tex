@@ -331,6 +331,20 @@ Important options are the following:
     \item \lstinline|clean_and_restart_algorithm|, from time to time restart the algorithm to clean the system of non minimal elements
 \end{itemize}
 
+\subsubsection{Parallelization}
+It is also possible to try different strategies in parallel.
+For this case the function \functionname{groebner_basis_first_finished} can be used. It expects as first argument the set equation system.
+The following arguments are the options for the different strategies (in form of dictionaries with keyword arguments for \functionname{groebner_basis}).
+
+It gives back the result of the variant, that terminates first.
+
+\begin{lstlisting}
+In [1]: from polybori.parallel import groebner_basis_first_finished
+
+In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1], {'heuristic':False}, {'heuristic': True})
+Out[2]: [x(2), x(1) + 1]
+\end{lstlisting}
+
 \subsubsection{Elimination of variables}
 
 Given Boolean generators $G$ of an ideal $I\subset \Ztwo[x_1,\ldots,x_n,y_1,\ldots,y_m]/\langle x_1^2+x_1,\ldots,x_n^2+x_n,y_1,\ldots,y_m \rangle$
@@ -353,8 +367,7 @@ In [2]: change_ordering(block_dp_asc)
 
 In [3]: for b in block_start_hints:
    ...:     append_ring_block(b)
-   ...:     
-   ...:     
+     
 
 In [4]: G=[x(0)*x(2)*y(0)*y(1) + y(1)*y(2) + y(1),
    ...:  x(1)*x(2)*y(0)*y(2) + x(0)*x(1)*y(2) + y(1),
@@ -1002,10 +1015,10 @@ Out[12]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
 
 We have also build our interpolation functions as method for our \functionname{PartialFunction} class, which is a more convenient way to use it.
 \begin{lstlisting}
-In [13]: f.interpolateSmallestLex()
+In [13]: f.interpolate_smallest_lex()
 Out[13]: x(2) + 1
 
-In [14]: g.interpolateSmallestLex()
+In [14]: g.interpolate_smallest_lex()
 Out[14]: x(0) + x(1) + x(2)
 \end{lstlisting}
 \section{Building your own \Groebner basis algorithm}
