@@ -1,5 +1,6 @@
 Release Name: 0.6.0
 * FGLM implementation
+* new Python module polybori.parallel (uses and requires pyprocessing)
 * used genshi for generating dot files
 * new Class ReductionStrategy
 * many options and methods moved to ReductionStrategy
