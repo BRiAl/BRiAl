@@ -375,7 +375,7 @@ Out[2]: [x(2), x(1) + 1]
 This parallelization, running different strategies in parallel, seems to be the most promising approach for computational,
 as it can provide a nonlinear speedup (higher factor than number of CPUs). This can also be observed in other domains: Current SAT-solvers do that by choosing different random seeds.
 
-On the other hand, this approach does not contain any cooperation between the threads/processes. So in the best case, it's just as fast, as the best variant.
+On the other hand, this approach does not contain any cooperation between the threads/processes. So in the best case, it's just as fast, as the best variant. When studying a particular kind of systems, usually at some point, there is a good guess in advance for this variant and then it would be better to use all CPUs to follow this single strategy.
 The used data structure in \PolyBoRi and the functional approach to handle them, seems to be very suited to a cooperative shared memory parallelization. However, the underlying library \CUDD does not provide any support for that. In this way, this kind of parallelization, remains a challenge for the future.
 While the ZDD operations cannot be parallelized, the linear algebra backend using M4RI, can make use of several CPUs (when compiled with the right settings).
 
