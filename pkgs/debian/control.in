@@ -3,7 +3,7 @@ Section: math
 Priority: extra
 Maintainer: Tim Abbott <tabbott@mit.edu>
 Homepage: http://polybori.sourceforge.net/
-Build-Depends: @cdbs@, scons, python-setuptools, libboost-dev, libboost-python-dev (>=1.33), doxygen (>= 1.4.6), hevea | tex4ht, python-all-dev (>= 2.3.5-11), python-central (>= 0.5.6)
+Build-Depends: @cdbs@, scons, python-setuptools, libboost-dev, libboost-python-dev (>=1.33), doxygen (>= 1.4.6), tex4ht, python-all-dev (>= 2.3.5-11), python-central (>= 0.5.6)
 XS-Python-Version: all
 Standards-Version: 3.7.3
 

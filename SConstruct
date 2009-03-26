@@ -148,9 +148,9 @@ opts.Add(BoolOption('BOOST_WORKS',
 opts.Add(BoolOption('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
 
-opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off', True))
-opts.Add(BoolOption('HAVE_HEVEA', 'Switch hevea on/off (if latex2html is not available)', True))
-opts.Add(BoolOption('HAVE_TEX4HT', 'Switch tex4ht on/off (if latex2html and hevea are not available) ', True))
+opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off (deprecated)', False))
+opts.Add(BoolOption('HAVE_HEVEA', 'Switch hevea on/off (deprecated)', False))
+opts.Add(BoolOption('HAVE_TEX4HT', 'Switch tex4ht on/off', True))
 
 
 opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
@@ -309,9 +309,11 @@ if not env.GetOption('clean'):
 
     if not have_l2h:
         have_t4h = env['HAVE_HEVEA'] and env.Detect('hevea')
+        t4h_opts = ''
         if not have_t4h:
             have_t4h = env['HAVE_TEX4HT'] and env.Detect('htlatex')
             tex_to_ht = 'htlatex'
+
             if not have_t4h:
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
@@ -826,7 +828,7 @@ def l2h_emitter(target, source, env):
     env.Clean(target, target[0].dir)
     return (target, source)
 
-l2h = Builder(action = 'latex2html -html_version 4.0,unicode,utf-8 $SOURCE',
+l2h = Builder(action = 'cd `dirname $SOURCE`; latex2html -html_version 4.0,unicode,utf-8 $SOURCE',
               emitter = l2h_emitter)
 
 def t4h_emitter(target, source, env):
@@ -837,9 +839,17 @@ def t4h_emitter(target, source, env):
 
 
 if have_t4h :
-    t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE")
-    tex_to_ht_bld = Builder(action = 'cd `dirname $TARGET`;' + t4h_str + ';'
-                            + t4h_str, emitter = t4h_emitter)
+    t4h_str =  tex_to_ht + ' ' + path.join(env.Dir('').abspath, "$SOURCE") + t4h_opts
+    os.environ['TEXINPUTS'] = env.Dir('doc/tutorial').abspath
+
+    def t4h_action(source, target, env, for_signature):
+        subdir = path.splitext(target[0].name)[0]
+        if tex_to_ht == 'htlatex':
+            t4h_opts = ' "html,2,charset=utf-8" " -cunihtf -utf8" "-d%s/"' % subdir
+   
+        return ('cd %s;' + tex_to_ht + ' %s ' +  t4h_opts) % (source[0].dir, source[0].abspath)
+
+    tex_to_ht_bld = Builder(generator = t4h_action, emitter = t4h_emitter)
     env.Append(BUILDERS={'TeXToHt' : tex_to_ht_bld})
 
 
@@ -889,7 +899,7 @@ substinstbld  = Builder(action = substitute_install)
 def docu_master(target, source, env):
     import os, re
 
-    basefiles = ['index.html', 'polybori.html']
+    basefiles = ['index.html', 'polybori.html', 'tutorial.html']
     basesfound = []
     
     for item in source:
@@ -974,19 +984,23 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
                      'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld,
                      'DebBuilder': debbld})
 
+tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + glob(DocPath('tutorial/*.tex'))
 if have_l2h:
-    tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')),
-                       DocPath('tutorial/tutorial.tex'))
+    tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')), tutorial_srcs)
 else:
     if have_t4h :
         tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
-                               DocPath('tutorial/tutorial.tex'))
+                               tutorial_srcs)
     
 # Clean, even, if L2H/TexToHt are not available anymore
 env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
 
+documastersubdirs = "tutorial/tutorial python"
+if HAVE_DOXYGEN:
+    documastersubdirs += " c++"
+
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
-    env.Dir(DocPath(srcs)) for srcs in Split("""tutorial python c++""") ] + [
+    env.Dir(DocPath(srcs)) for srcs in Split(documastersubdirs) ] + [
     env.Dir('Cudd/cudd/doc')])  
 
 pbrpmname = pboriname + '-' + pboriversion + "-" + pborirelease 
@@ -1147,7 +1161,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Generate html master
     FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
                                     [DocPath('index.html.in')] + [ 
-        env.Dir(InstDocPath(srcs)) for srcs in Split("""tutorial python
+        env.Dir(InstDocPath(srcs)) for srcs in Split("""tutorial/tutorial python
         c++ cudd""") ] ))
 
     # Non-executables to be installed
