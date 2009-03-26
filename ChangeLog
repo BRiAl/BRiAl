@@ -73,6 +73,7 @@ Release Name: 0.6.0
 * Python interface
   * made var, one, zero, n_variables available not only to Ring, but also to BooleRing
 * optimized interred
+* better TeX4ht support for tutorial generation (latex2html, hevea deprecated)
 
 Release Name: 0.5.0
 * degree of 0-polynomial is -1
