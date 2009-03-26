@@ -341,9 +341,43 @@ It gives back the result of the variant, that terminates first.
 \begin{lstlisting}
 In [1]: from polybori.parallel import groebner_basis_first_finished
 
-In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1], {'heuristic':False}, {'heuristic': True})
+In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
+   {'heuristic':False}, {'heuristic': True}) 
 Out[2]: [x(2), x(1) + 1]
+\end{lstlisting} 
+The two option sets, with and without heuristic,
+present a reasonable choice, when there are two CPUs and not much
+is known about the ideal, as they usually can differ quite much:
+The heuristic is designed in a very progressive way to choose the
+apparently best settings. As it of course is not always possible
+without trying, to decide, which option leads to a smaller
+computation time, it will be imperfect, as all attempts in this
+area. Still, as there is much experience behind this strategies, it
+will help in many cases, to achieve better results and yield the
+best out of the box experience (as far as it is possible in that
+domain). Disabling the heuristics will usually result in an
+algorithm, which is much nearer to the original Buchberger
+algorithm and of course removes the overhead of the heuristic
+functionality itself.
+
+Another important set of alternative option sets, consists in computing with and without (dense) linear algebra.
+
+\begin{lstlisting}
+In [1]: from polybori.parallel import groebner_basis_first_finished
+
+In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
+   ...:    {'faugere':False, 'linear_algebra_in_last_block': False}, 
+   ...:   {'faugere':True, 'linear_algebra_in_last_block': True})
+Out[2]: [x(2), x(1) + 1]
+
 \end{lstlisting}
+
+This parallelization, running different strategies in parallel, seems to be the most promising approach for computational,
+as it can provide a nonlinear speedup (higher factor than number of CPUs). This can also be observed in other domains: Current SAT-solvers do that by choosing different random seeds.
+
+On the other hand, this approach does not contain any cooperation between the threads/processes. So in the best case, it's just as fast, as the best variant.
+The used data structure in \PolyBoRi and the functional approach to handle them, seems to be very suited to a cooperative shared memory parallelization. However, the underlying library \CUDD does not provide any support for that. In this way, this kind of parallelization, remains a challenge for the future.
+While the ZDD operations cannot be parallelized, the linear algebra backend using M4RI, can make use of several CPUs (when compiled with the right settings).
 
 \subsubsection{Elimination of variables}
 
