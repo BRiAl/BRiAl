@@ -279,8 +279,8 @@ In [5]:if_then_else(x(5),f0,f1)
 
 /home/user/PolyBoRi/<ipython console> in <module>()
 
-<type 'exceptions.ValueError'>: Node index must be smaller than top indices of then- and
-else-branch.
+<type 'exceptions.ValueError'>: Node index must be smaller
+   than top indices of then- and else-branch.
 \end{lstlisting}
 
 It is strictly necessary that the index of the created node is smaller than the index of the branches.
@@ -333,7 +333,7 @@ Important options are the following:
 
 \subsubsection{Parallelization}
 It is also possible to try different strategies in parallel.
-For this case the function \functionname{groebner_basis_first_finished} can be used. It expects as first argument the set equation system.
+For this case the function\\\functionname{groebner_basis_first_finished} can be used. It expects as first argument the set equation system.
 The following arguments are the options for the different strategies (in form of dictionaries with keyword arguments for \functionname{groebner_basis}).
 
 It gives back the result of the variant, that terminates first.
@@ -1032,10 +1032,14 @@ In [7]: Z2=BooleSet([x(0)*x(1),x(1)*x(2),x(0)*x(2)])
 In [8]: g=PartialFunction(zeros=Z2,ones=O2)
 
 In [9]: f & g
-Out[9]: PartialFunction(zeros={{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {x(2)}}, ones={})
+Out[9]: PartialFunction(
+          zeros={{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {x(2)}}, 
+          ones={})
 
 In [10]: f|g
-Out[10]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(1)}, {x(2)}, {}})
+Out[10]: PartialFunction(
+            zeros={{x(0),x(2)}}, 
+            ones={{x(0),x(1)}, {x(1)}, {x(2)}, {}})
 
 In [11]: f^g
 Out[11]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
