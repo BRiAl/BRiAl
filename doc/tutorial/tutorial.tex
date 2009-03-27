@@ -79,7 +79,13 @@
 \author{Michael Brickenstein}
 
 
-\lstset{language=Python} 
+\lstdefinelanguage[IPython]{Python}[]{Python}{%
+  moredelim=[s][\bfseries]{In\ \[}{\]:},
+  moredelim=[s][\bfseries]{Out\[}{\]:}
+}
+\lstset{language=[IPython]{Python}} 
+
+
 \lstset{basicstyle=\ttfamily}
 \lstset{fontadjust=true}
 \lstset{showstringspaces=false}
