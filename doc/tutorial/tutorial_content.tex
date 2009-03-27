@@ -649,15 +649,15 @@ Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to pl
 \subsubsection{Naive approach}
 The following code shows how to tackle the problem, by manipulating individual terms.
 While this is a very direct approach, it is quite slow.
-The method \functionname{reducibleBy} gives a test for divisibility.
+The method \functionname{reducible_by} gives a test for divisibility.
 \begin{lstlisting}
 def subst(f,x,c):
     if c==1:
-        return sum([t/x for t in f.terms() if t.reducibleBy(x)])+\
-            sum([t for t in f.terms() if not t.reducibleBy(x)])
+        return sum([t/x for t in f.terms() if t.reducible_by(x)])+\
+            sum([t for t in f.terms() if not t.reducible_by(x)])
     else:
         #c==0
-        return sum([t for t in f.terms() if not t.reducibleBy(x)])
+        return sum([t for t in f.terms() if not t.reducible_by(x)])
 
 \end{lstlisting}
 
