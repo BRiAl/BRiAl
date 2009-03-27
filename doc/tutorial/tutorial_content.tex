@@ -917,7 +917,8 @@ The full vector space can be constructed by multiplying all needed variables and
 
 \begin{lstlisting}
 In [4]:(x(1)*x(2)*x(3)).divisors()
-Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
+Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, 
+        {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
 \end{lstlisting}
 
 We distingish between procedures, which use subsets of the ambient space~(like
@@ -932,7 +933,8 @@ In [1]:f=x(0)+x(1)+x(2)
 In [2]:ambient_space=(x(0)*x(1)*x(2)).divisors()
 
 In [3]:ambient_space
-Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
+Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, 
+        {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
 
 In [4]:f.zeros_in(ambient_space)
 Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
@@ -943,7 +945,8 @@ In [6]:f.zeros_in(S)
 Out[6]:{{x(1),x(2)}}
 \end{lstlisting}
 
-A example of the second kind, where only the full ambient space can be considered count \lstinline|lex_groebner_basis_points|
+A example of the second kind, where only the full ambient space can be considered count\\
+\lstinline|lex_groebner_basis_points|
 \begin{lstlisting}
 In [1]:S=BooleSet([x(0),x(1)*x(2)])
 
