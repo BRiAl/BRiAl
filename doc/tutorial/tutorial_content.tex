@@ -597,8 +597,8 @@ def recursive_graded(f,d):
     return Polynomial(
         do_recursive_graded(f.set(),d))
 \end{lstlisting}
-Recursive implementations are very compatible with our data structures, so are quite fast. However this implementation does not use any caching techniques. Cudd recursive caching requires functions to have one, two or three parameters, which are of ZDD structure (so no integers).
-Of course we can encode the degree $d$ by the d-th Variable in the Polynomial
+Recursive implementations are very compatible with our data structures, so are quite fast. However this implementation does not use any caching techniques. \CUDD recursive caching requires functions to have one, two or three parameters, which are of ZDD structure (so no integers).
+Of course we can encode the degree $d$ by the $d$-th Variable in the Polynomial
 ring.
 
 \subsection{Decision-diagram style recursive implementation in \PolyBoRi}
@@ -638,7 +638,7 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
   return result;
 }
 \end{lstlisting}
-The encoding of integers for the degree as variable is done implicitely by our cache lookup functions.
+The encoding of integers for the degree as variable is done implicitly by our cache lookup functions.
 
 \section{Case study: Evaluation of a polynomial}
 
@@ -702,7 +702,7 @@ This can be simplified in our special case in two ways.
 \begin{enumerate}
     \item If our system consists of exactly \textbf{one} Boolean polynomial,
     \lstinline|ll_encode| does essentially  a type conversion only (and much overhead).
-    This type conversion can be done implicitely (at least using the
+    This type conversion can be done implicitly (at least using the
 \lstinline|boost::python|-based  interface \lstinline|ipbori|).
 
     So you may call
@@ -711,7 +711,7 @@ ll_red_nf_noredsb(f,x+c)
 \end{lstlisting}
 %
     In this case, there is no need for calling \lstinline|ll_encode|.
-    The second argument is converted implicitely to BooleSet.
+    The second argument is converted implicitly to BooleSet.
     \item A second optimization is to call just
 \begin{lstlisting}
 ll_red_nf_redsb(f,x+c)
@@ -921,7 +921,7 @@ Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)},
         {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
 \end{lstlisting}
 
-We distingish between procedures, which use subsets of the ambient space~(like
+We distinguish between procedures, which use subsets of the ambient space~(like
 finding zeros of a polynomial),  and such procedures, where
 only the dimension/involved unit vectors/variables matter.
 The first kind of procedures usually gets the ambient space itself, the second kind gets the monomial consisting of all involved variables.
@@ -1077,7 +1077,7 @@ The most important operations are:
     \item calculation of normal form via the method \functionname{nf} 
 \end{itemize}
 
-After construction several options can be set, e.\,g.\ \functionname{optRedTail} for tail reductions (affects also the \functionname{nf} method).
+After construction several options can be set, e.\,g.\ \functionname{opt_red_tail} for tail reductions (affects also the \functionname{nf} method).
 %
 The \functionname{GroebnerStrategy} keeps track not only of the single generators, but also of properties of the whole system:
 \begin{itemize}
@@ -1146,7 +1146,7 @@ def interred(l,completely=False):
         l=sorted(l,key=Polynomial.lead)
         g=ReductionStrategy()
         if completely:
-            g.optRedTail=True
+            g.opt_red_tail=True
         for p in l:
             p=g.nf(p)
             if not p.is_zero():
@@ -1188,7 +1188,7 @@ First, we observe the following:
     \item By implicit use of the field equations, the number of solutions is always finite.
     \item We consider finitely many monomials (as we have a degree bound of one per variable).
     \item The number of standard monomials (monomials not present in the leading ideal) is equal to the number of solutions.
-    \item The leading ideal (w.\,r.\,t. to the increasing set of generators) growths monotonely in each step.
+    \item The leading ideal (w.\,r.\,t. to the increasing set of generators) growths monotonously in each step.
 \end{itemize}
 This gives a break condition for the number Buchberger algorithm. It becomes
 clear at a certain point of the computations,  that no more than~$n$ solutions exist.
