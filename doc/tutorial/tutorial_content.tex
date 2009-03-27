@@ -6,7 +6,7 @@ The main difference is, that \PolyBoRi's built-in Python interface makes use of
 the boost library, while the SAGE interface relies on Cython. 
 However the wrappers for SAGE and the original Python interface are designed, that it is possible to run the same code under both bindings.
 
-We provide an interactive shell for \PolyBoRi using ipython for the SAGE
+We provide an interactive shell for \PolyBoRi using \ipython for the SAGE
 interface~(which is invoked the command~\texttt{sage}) as well as for the
 built-in one, which can be accessed by typing~\texttt{ipbori}
 at the command line prompt.
@@ -298,9 +298,9 @@ Out[3]: {{x(1),x(3)}, {x(2)}, {x(4)}}
 \end{lstlisting}
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
-It has quite a lot of options and a exchangable heuristic.
+It has quite a lot of options and a exchangeable heuristic.
 In principle, there exist  standard settings, but~-- in case an option is not
-provided explicitely by the user~-- the active heuristic function
+provided explicitly by the user~-- the active heuristic function
 may decide dynamically by taking the ideal, the ordering and the other options into account, which is the best configuration.
 \begin{lstlisting}
 In [1]: groebner_basis([x(1)+x(2),(x(2)+x(1)+1)*x(3)])
@@ -310,7 +310,7 @@ Out[1]: [x(1) + x(2), x(3)]
 There exists a set of default options for \functionname{groebner\_basis}.
 They can be seen, but not manipulated via accessing \lstinline|groebner_basis.options|.
 A second layer of heuristics is incorporated into the \functionname{groebner\_basis}-function, to choose dynamically the best options depending on the ordering and the given ideal.
-Every option given explicitely by the user takes effect, but for the other options the default may be overwritten by the script.
+Every option given explicitly by the user takes effect, but for the other options the default may be overwritten by the script.
 This behaviour can be turned off by calling
 \begin{lstlisting}
 groebner_basis(I,heuristic=False).
@@ -603,6 +603,8 @@ ring.
 
 \subsection{Decision-diagram style recursive implementation in \PolyBoRi}
 The C++ implementation of the functionality in \PolyBoRi is given in this section, which is recursive and uses caching techniques.
+{
+\lstset{language=C++}
 \begin{lstlisting}
 // determine the part of a polynomials of a given degree
 template <class CacheType, class NaviType, class DegType, class SetType>
@@ -637,7 +639,8 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 
   return result;
 }
-\end{lstlisting}
+\end{lstlisting}}
+\lstset{language=Python}
 The encoding of integers for the degree as variable is done implicitly by our cache lookup functions.
 
 \section{Case study: Evaluation of a polynomial}
