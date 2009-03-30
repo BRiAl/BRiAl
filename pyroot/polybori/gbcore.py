@@ -309,7 +309,7 @@ def llfirst_post(I,eliminated,prot):
         if len(eliminated)>0:
             I=list(chain(I,eliminated))
             #redsb just for safety, as don't know how option is set
-            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,redsb=True,prot=prot)
+            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,eliminate_identical_variables=False, redsb=True,prot=prot)
     return I
 
 
@@ -349,6 +349,39 @@ def incremental_pre(I,prot, kwds):
    
     return (inc_sys,None)
 
+def eliminate_identical_variables_pre(I, prot):
+    changed=True
+    ll_system=[]
+    treated_linears=set()
+    while changed:
+        changed=False
+        rules=dict()
+        for p in I:
+            t=p+p.lead()
+            if p.lm_deg()==1:
+                l=p.lead()
+                if l in treated_linears:
+                    continue
+                else:
+                    treated_linears.add(l)
+                if t.deg()>0:
+                    rules.setdefault(t, [])
+                    leads=rules[t]
+                    leads.append(l)
+        def my_sort_key(l):
+            return l.navigation().value()
+        for (t, leads) in rules.iteritems():
+            if len(leads)>1:
+                changed=True
+                leads=sorted(leads, key=my_sort_key)
+                chosen=leads[0]
+                for v in leads[1:]:
+                    ll_system.append(chosen+v)
+    if len(ll_system)>0:
+        ll_system=gauss_on_linear(ll_system)
+        ll_system=ll_encode(ll_system)
+        I=set([ll_red_nf_redsb(p, ll_system) for p in I])
+    return (I, ll_system)
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
@@ -356,8 +389,9 @@ def incremental_pre(I,prot, kwds):
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("gauss_on_linear", pre=gauss_on_linear_pre, pass_prot=True, default=True)
-#@gb_with_pre_post_option("eliminate_identical", pre=)
-@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
+@gb_with_pre_post_option("ll_constants", pre=ll_constants_pre,post=ll_constants_post,default=True)
+#@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
+@gb_with_pre_post_option("eliminate_identical_variables", pre=eliminate_identical_variables_pre, post=llfirst_post, default=True, pass_prot=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
 @gb_with_pre_post_option("incremental",pre=incremental_pre,pass_prot=True, pass_kwds=True)
