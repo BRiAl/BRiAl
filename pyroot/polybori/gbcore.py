@@ -298,6 +298,9 @@ def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)
 
+def gauss_on_linear_pre(I, prot):
+    return (gauss_on_linear(I), None)
+
 def llfirst_post(I,eliminated,prot):
     for p in I:
         if p.is_one():
@@ -346,11 +349,14 @@ def incremental_pre(I,prot, kwds):
    
     return (inc_sys,None)
 
+
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
 @with_heuristic(ll_heuristic)
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
+@gb_with_pre_post_option("gauss_on_linear", pre=gauss_on_linear_pre, pass_prot=True, default=True)
+#@gb_with_pre_post_option("eliminate_identical", pre=)
 @gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
@@ -371,7 +377,7 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, gauss_on_linear_first=True,heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None, red_tail_deg_growth=True):
+       linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None, red_tail_deg_growth=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if full_prot:
         prot=True
@@ -397,8 +403,7 @@ def groebner_basis(I, faugere=False,
         for p in I:
             prod=(p+1)*prod
         I=[prod+Polynomial(1)]
-    if gauss_on_linear_first:
-        I=gauss_on_linear(I)
+
     import nf
 
     
