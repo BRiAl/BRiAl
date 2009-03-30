@@ -70,6 +70,9 @@ translator_pboridivisionbyzero(const PBoRiGenericError<CTypes::division_by_zero>
 static BooleMonomial used_var(const BooleVariable& v){
     return v;
 }
+static BoolePolynomial::navigator nav(const BoolePolynomial& p){
+    return p.navigation();
+}
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -171,6 +174,7 @@ with inverted variable order\n\
   .def(self<self)
   .def(self<=self)
   .def(self==self)
+  .def("navigation", nav)
   .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")
   .def("__str__", streamable_as_str<BooleVariable>)

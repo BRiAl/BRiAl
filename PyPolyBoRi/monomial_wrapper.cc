@@ -42,6 +42,9 @@ static BooleMonomial used_var(const BooleMonomial& m){
 static int one(const BooleMonomial& m){
     return 1;
 }
+static BoolePolynomial::navigator nav(const BoolePolynomial& p){
+    
+}
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
@@ -67,7 +70,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self*int())
   .def(self/self)
   .def(self/int())
-  
+  .def("navigation", nav)
   .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")
     //  .def(self/BooleVariable())
