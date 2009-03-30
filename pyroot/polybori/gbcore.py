@@ -373,7 +373,7 @@ def eliminate_identical_variables_pre(I, prot):
         for (t, leads) in rules.iteritems():
             if len(leads)>1:
                 changed=True
-                leads=sorted(leads, key=my_sort_key)
+                leads=sorted(leads, key=my_sort_key, reverse=True)
                 chosen=leads[0]
                 for v in leads[1:]:
                     ll_system.append(chosen+v)
