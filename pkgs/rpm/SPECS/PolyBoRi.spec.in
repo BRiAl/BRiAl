@@ -8,7 +8,7 @@
 #
 # norootforbuild
 
-BuildRequires: scons boost-devel gcc python-devel doxygen latex2html
+BuildRequires: scons boost-devel gcc python-devel doxygen 
 
 Requires: python >= 2.4
 Requires: IPython >= 0.6
