@@ -3,7 +3,7 @@ polybori (0.6-0) unstable; urgency=low
   * New version of the PolyBoRi framework.
   * Dropped hevea as alternative dependency for tex4ht 
 
- -- Alexander Dreyer <adreyer@gmx.de>  Tue, Mar 31 12:30:03 +0100
+ -- Alexander Dreyer <adreyer@gmx.de>  Tue, Mar 31 2009 12:30:03 +0100
 
 polybori (0.5-0) unstable; urgency=low
 
