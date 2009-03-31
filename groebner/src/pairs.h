@@ -31,12 +31,12 @@ public:
   }
   LiteralFactorization literal_factors;
   Polynomial p;
-  Monomial lm;
+  Monomial lead;
   wlen_type weightedLength;
   len_type length;
   deg_type deg;
-  deg_type lmDeg;
-  Exponent lmExp;
+  deg_type leadDeg;
+  Exponent leadExp;
   Monomial gcdOfTerms;
   Exponent usedVariables;
   Exponent tailVariables;
@@ -44,7 +44,7 @@ public:
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
   deg_type ecart() const{
-    return deg-lmDeg;
+    return deg-leadDeg;
   }
   bool minimal;
   void recomputeInformation();
@@ -119,7 +119,7 @@ public:
   }
   PairLS(int i, int j, const PolyEntryVector &v):
     data(new IJPairData(i,j)),
-    lm(v[i].lm*v[j].lm),
+    lm(v[i].lead*v[j].lead),
     wlen(v[i].weightedLength+v[j].weightedLength-2)
   {
     type=IJ_PAIR;
@@ -130,7 +130,7 @@ public:
     sugar(gen[i].deg+1),
    // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].lm)
+  lm(gen[i].lead)
   
   {
     assert(type==VARIABLE_PAIR);
@@ -164,7 +164,7 @@ public:
   }
   PairE(int i, int j, const PolyEntryVector &v):
     data(new IJPairData(i,j)),
-    lm(v[i].lmExp+v[j].lmExp),
+    lm(v[i].leadExp+v[j].leadExp),
     wlen(v[i].weightedLength+v[j].weightedLength-2)
   {
     type=IJ_PAIR;
@@ -175,12 +175,12 @@ public:
     sugar(gen[i].deg+1),
    // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].lmExp)
+  lm(gen[i].leadExp)
   
   {
     assert(type==VARIABLE_PAIR);
     this->type=type;
-    if (gen[i].lmExp==gen[i].usedVariables)
+    if (gen[i].leadExp==gen[i].usedVariables)
         sugar=gen[i].deg;
     if (gen[i].tailVariables.deg()<gen[i].deg)
         sugar=gen[i].deg;

@@ -257,7 +257,7 @@ void FGLMStrategy::setupMultiplicationTables(){
     //leading monomials from gb: vertices/
     packedmatrix* row=mzd_init(1, varietySize);
     for(i=0;i<gbFrom.size();i++){
-        Monomial lm=gbFrom[i].lm;
+        Monomial lm=gbFrom[i].lead;
         MonomialSet tail=gbFrom[i].tail.diagram();
         mzd_row_clear_offset(row,0,0);
         writeTailToRow(tail, row);

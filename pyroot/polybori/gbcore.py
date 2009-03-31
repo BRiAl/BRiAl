@@ -41,7 +41,7 @@ def want_interpolation_gb(G):
     if len(G)!=1:
         return False
     p=Polynomial(G[0])
-    if p.lm_deg()<=1:
+    if p.lead_deg()<=1:
         return False
     if p.set().n_nodes()>1000:
         return False
@@ -253,7 +253,7 @@ def ll_constants_pre(I):
     ll=[]
     leads=set()
     for p in I:
-        if p.lex_lm_deg()==1:
+        if p.lex_lead_deg()==1:
             l=p.lead()
             if not (l in leads) and len(p)<=2:
                 tail=p+l
@@ -358,7 +358,7 @@ def eliminate_identical_variables_pre(I, prot):
         rules=dict()
         for p in I:
             t=p+p.lead()
-            if p.lm_deg()==1:
+            if p.lead_deg()==1:
                 l=p.lead()
                 if l in treated_linears:
                     continue

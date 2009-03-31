@@ -25,7 +25,7 @@ void testvalidstrat(const GroebnerStrategy& strat){
     int i;
     for(i=0;i<s;i++){
         assert(strat.generators[i].p.navigation().isValid());
-        cout<<i<<":"<<strat.generators[i].lm<<endl;
+        cout<<i<<":"<<strat.generators[i].lead<<endl;
     }
 }
 

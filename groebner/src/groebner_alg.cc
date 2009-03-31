@@ -42,7 +42,7 @@ void GroebnerStrategy::treat_m_p_1_case(const PolyEntry& e){
         it++;
         assert(it!=e.p.end());
         if (it->deg()==0){
-            generators.monomials_plus_one=generators.monomials_plus_one.unite(e.lm.diagram());
+            generators.monomials_plus_one=generators.monomials_plus_one.unite(e.lead.diagram());
         }
     }
 }
@@ -54,7 +54,7 @@ void GroebnerStrategy::llReduceAll(){
             Polynomial tail=generators[i].tail;
             tail=ll_red_nf(tail,generators.llReductor);
             if (tail!=generators[i].tail){
-                generators[i].p=tail+generators[i].lm;
+                generators[i].p=tail+generators[i].lead;
                 generators[i].recomputeInformation();
                 if (generators[i].length==1) generators.monomials=generators.monomials.unite(generators[i].p.diagram());
                 //treat_m_p_1_case(generators[i]);
@@ -402,14 +402,14 @@ static bool extended_product_criterion(const PolyEntry& m, const PolyEntry& m2){
   //BooleMonomial m;
   ///@todo need GCDdeg
   
-  bool res=(m.lm.GCD(m2.lm).deg()==common_literal_factors_deg(m.literal_factors, m2.literal_factors));
+  bool res=(m.lead.GCD(m2.lead).deg()==common_literal_factors_deg(m.literal_factors, m2.literal_factors));
   //if (res)
   //  cout<<"EXTENDED PRODUCT_CRIT";
   return res;
 }
 
 void PairManager::replacePair(int& i, int& j){
-  MonomialSet m=strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
+  MonomialSet m=strat->generators.leadingTerms.divisorsOf(strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
   MonomialSet::exp_iterator it=m.expBegin();
   MonomialSet::exp_iterator end=m.expEnd();
   int i_n=i;
@@ -490,7 +490,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
       if (!(res.isZero())){
         Monomial lm=res.lead();
       
-        if (lm==this->strat->generators[i].lm)
+        if (lm==this->strat->generators[i].lead)
           res+=this->strat->generators[i].p;
       }
       
@@ -616,7 +616,7 @@ void PairManager::cleanTopByChainCriterion(){
       const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
       const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors());
-      assert(lm==strat->generators[i].lmExp.LCM(strat->generators[j].lmExp));
+      assert(lm==strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
       //assert(strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
       //should be set
       //if (lms.length()>2)
@@ -677,17 +677,17 @@ void PairManager::cleanTopByChainCriterion(){
 PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->p=p;
   this->deg=p.deg();
-  this->lm=p.boundedLead(deg);
-  this->lmExp=lm.exp();
-  this->lmDeg=lmExp.deg();
+  this->lead=p.boundedLead(deg);
+  this->leadExp=lead.exp();
+  this->leadDeg=leadExp.deg();
   this->length=p.length();
-  if(lmDeg==deg)
+  if(leadDeg==deg)
     this->weightedLength=this->length;
   else
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariablesExp();
-  tail=p-lm;
+  tail=p-lead;
   this->tailVariables=tail.usedVariablesExp();
   
   this->minimal=true;
@@ -695,22 +695,22 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
 
 
 void PolyEntry::recomputeInformation(){
-  assert(this->lm==p.lead());
+  assert(this->lead==p.lead());
   if (!(BooleEnv::ordering().isDegreeOrder()))
       this->deg=p.deg();
   //so also lmExp keeps constant
   this->length=p.length();
-  if (lmDeg==deg)
+  if (leadDeg==deg)
     this->weightedLength=this->length;
   else
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
   
   this->usedVariables=p.usedVariablesExp();
-  tail=p-lm;
+  tail=p-lead;
   this->tailVariables=tail.usedVariablesExp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
-  assert(this->lmDeg==p.leadDeg());
+  assert(this->leadDeg==p.leadDeg());
 }
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
   
@@ -973,8 +973,8 @@ Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_
       return reduce_by_binom(p,reductor.p);
   }
   MonomialSet rewriteable_terms_divided=p.diagram();
-  Exponent::const_iterator it=reductor.lmExp.begin();
-  Exponent::const_iterator end=reductor.lmExp.end();
+  Exponent::const_iterator it=reductor.leadExp.begin();
+  Exponent::const_iterator end=reductor.leadExp.end();
   while (it!=end){
     rewriteable_terms_divided=rewriteable_terms_divided.subset1(*it);
     it++;
@@ -1058,8 +1058,8 @@ bool should_propagate(const PolyEntry& e){
 void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
   
   if (should_propagate(e)){
-    Monomial lm=e.lm;
-    Exponent exp=e.lmExp;
+    Monomial lm=e.lead;
+    Exponent exp=e.leadExp;
     int i;
     int s=generators.size();
     for(i=0;i<s;i++){      
@@ -1067,7 +1067,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
       //if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
         Polynomial new_p;
         if (e.length==1){
-          new_p=cancel_monomial_in_tail(this->generators[i].p,e.lm);
+          new_p=cancel_monomial_in_tail(this->generators[i].p,e.lead);
         } else {
           assert(e.length==2);
           new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
@@ -1464,8 +1464,8 @@ static Polynomial code_2_poly_4(unsigned int code, std::vector<idx_type> back_2_
 
 
 static void mark_all_variable_pairs_as_calculated(GroebnerStrategy& strat, int s){
-    BooleExponent::const_iterator it=strat.generators[s].lmExp.begin();
-    BooleExponent::const_iterator end=strat.generators[s].lmExp.end();
+    BooleExponent::const_iterator it=strat.generators[s].leadExp.begin();
+    BooleExponent::const_iterator end=strat.generators[s].leadExp.end();
      while(it!=end){
           strat.generators[s].vPairCalculated.insert(*it);
           it++;
@@ -1648,10 +1648,10 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     
 }
 void GroebnerStrategy::addVariablePairs(int s){
-     Exponent::const_iterator it=generators[s].lmExp.begin();
-     Exponent::const_iterator end=generators[s].lmExp.end();
+     Exponent::const_iterator it=generators[s].leadExp.begin();
+     Exponent::const_iterator end=generators[s].leadExp.end();
      while(it!=end){
-         if ((generators[s].lm.deg()==1) ||
+         if ((generators[s].lead.deg()==1) ||
             generators[s].literal_factors.occursAsLeadOfFactor(*it))
          {
               //((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
@@ -1794,7 +1794,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   if ((have_ordering_for_tables())||((have_base_ordering_for_tables())&&(polynomial_in_one_block(generators[s].p)))){
     int uv=e.usedVariables.deg();
     if (uv<=4){
-      impl=add4ImplDelayed(e.p,e.lmExp,e.usedVariables,s,false);
+      impl=add4ImplDelayed(e.p,e.leadExp,e.usedVariables,s,false);
     } else {
 
       int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
@@ -1956,7 +1956,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
     
     if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
      {
-       BooleMonomial lm=e.lm;
+       BooleMonomial lm=e.lead;
 
   #ifndef EXP_FOR_PAIRS
           //MonomialSet already_used;
@@ -1973,7 +1973,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
               assert(t.reducibleBy(lm));
   #else
               Exponent t_divided=mt_vec[mt_i];
-              Exponent t=t_divided+e.lmExp;
+              Exponent t=t_divided+e.leadExp;
   #endif
               //MonomialSet lm_d=t_divided.divisors();
               assert((other_terms.intersect(t_divided.divisors()).emptiness()));
@@ -2081,7 +2081,7 @@ void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
 void ReductionStrategy::setupSetsForLastElement(){
     int s=size()-1;
     PolyEntry e=(*this)[s];
-    Monomial lm=e.lm;
+    Monomial lm=e.lead;
     MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
 
     if(divisors_from_minimal.emptiness()){
@@ -2101,8 +2101,8 @@ void ReductionStrategy::setupSetsForLastElement(){
             MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
             MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
             while(mfm_start!=mfm_end){
-                assert((*mfm_start)!=e.lmExp);
-                assert((*mfm_start).reducibleBy(e.lmExp));
+                assert((*mfm_start)!=e.leadExp);
+                assert((*mfm_start).reducibleBy(e.leadExp));
                 (*this)[exp2Index[*mfm_start]].minimal=false;
                 mfm_start++;
             }
@@ -2126,8 +2126,8 @@ void ReductionStrategy::setupSetsForLastElement(){
     //doesn't need to be undone on simplification
     if ((*this)[s].literal_factors.is00Factorization())
         leadingTerms00.uniteAssign(Polynomial(lm).diagram());
-    lm2Index[(*this)[s].lm]=s;
-    exp2Index[(*this)[s].lmExp]=s;
+    lm2Index[(*this)[s].lead]=s;
+    exp2Index[(*this)[s].leadExp]=s;
 
     
     if (e.length==1){
@@ -2137,7 +2137,7 @@ void ReductionStrategy::setupSetsForLastElement(){
     #ifdef LL_RED_FOR_GROEBNER
     if (optLL){
 
-            if (((*this)[s].lmDeg==1) &&(*((*this)[s].p.navigation())==*((*this)[s].lm.diagram().navigation()))){
+            if (((*this)[s].leadDeg==1) &&(*((*this)[s].p.navigation())==*((*this)[s].lead.diagram().navigation()))){
                 addPolynomialToReductor((*this)[s].p,llReductor);
             }
     }
@@ -2150,7 +2150,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
 
   MonomialSet ext_prod_terms;
   PolyEntry e(p);
-  Monomial lm=e.lm;
+  Monomial lm=e.lead;
 
   Polynomial lm_as_poly=lm;
   idx_type idx_from_navigation=*lm_as_poly.navigation();
@@ -2159,8 +2159,8 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   //here we make use of the fact, that the index of the 1 node is bigger than that of variables
   this->propagate(e);
   //do this before adding leading term
-  Monomial::const_iterator it=e.lm.begin();
-  Monomial::const_iterator end=e.lm.end();
+  Monomial::const_iterator it=e.lead.begin();
+  Monomial::const_iterator end=e.lead.end();
   BooleSet other_terms=this->generators.leadingTerms;
   MonomialSet intersecting_terms;
   bool is00=e.literal_factors.is00Factorization();
@@ -2490,7 +2490,7 @@ class ShorterEliminationLengthModified{
     assert(e.deg()<=lm_deg);
 
     const PolyEntry* p=&strat->generators[strat->generators.exp2Index.find(e)->second];
-    return p->weightedLength<=el+(lm_deg-p->lmDeg)*p->length;
+    return p->weightedLength<=el+(lm_deg-p->leadDeg)*p->length;
   }
 };
 

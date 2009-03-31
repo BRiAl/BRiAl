@@ -368,7 +368,7 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, opt_lazy=True,opt_red_tail=
         index=strat.suggestPluginVariable();
         if index<0:
             uv=set(used_vars_set(strat))
-            lv=set([iter(p.lead()).next().index() for p in strat if p.lm_deg()==1])
+            lv=set([iter(p.lead()).next().index() for p in strat if p.lead_deg()==1])
             candidates=uv.difference(lv)
             if len(candidates)>0:
                 index=iter(candidates).next().index()

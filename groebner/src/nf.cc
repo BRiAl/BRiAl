@@ -93,16 +93,16 @@ Polynomial nf3(const ReductionStrategy& strat, Polynomial p, Monomial rest_lead)
   
     const Polynomial* g=&strat[index].p;
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    (((strat.optBrutalReductions) && (rest_lead!=strat[index].lm))||((strat[index].length<4) &&(strat[index].ecart()==0) 
-    && (rest_lead!=strat[index].lm))){
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+    (((strat.optBrutalReductions) && (rest_lead!=strat[index].lead))||((strat[index].length<4) &&(strat[index].ecart()==0) 
+    && (rest_lead!=strat[index].lead))){
       wlen_type dummy;
       p=reduce_complete(p,strat[index], dummy);
 
     } else{
       //p=spoly(p,*g);
       Exponent exp=rest_lead.exp();
-      p+=(exp-strat[index].lmExp)*(*g);
+      p+=(exp-strat[index].leadExp)*(*g);
     }
     if (p.isZero())
         return p;
@@ -122,12 +122,12 @@ Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial 
   
     const Polynomial* g=&strat.generators[index].p;
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    (((strat.generators.optBrutalReductions) && (rest_lead!=strat.generators[index].lm))||((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
-    && (rest_lead!=strat.generators[index].lm))){
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+    (((strat.generators.optBrutalReductions) && (rest_lead!=strat.generators[index].lead))||((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
+    && (rest_lead!=strat.generators[index].lead))){
       //wlen_type dummy;
       Polynomial front=bucket.getFront();
-      front/=strat.generators[index].lmExp;
+      front/=strat.generators[index].leadExp;
       front*=*g;
       bucket+=front;
       
@@ -136,8 +136,8 @@ Polynomial nf3_lexbuckets(const GroebnerStrategy& strat, Polynomial p, Monomial 
     } else{
       //p=spoly(p,*g);
       Exponent exp=rest_lead.exp();
-      //Monomial lm=strat.generators[index].lm
-      bucket+=(exp-strat.generators[index].lmExp)*(*g);
+      //Monomial lm=strat.generators[index].lead
+      bucket+=(exp-strat.generators[index].leadExp)*(*g);
     }
     if (bucket.isZero())
       return p.ring().zero();
@@ -154,17 +154,17 @@ Polynomial nf3_no_deg_growth(const ReductionStrategy& strat, Polynomial p, Monom
   
     const Polynomial* g=&strat[index].p;
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    (((strat.optBrutalReductions) && (rest_lead!=strat[index].lm))|| 
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+    (((strat.optBrutalReductions) && (rest_lead!=strat[index].lead))|| 
 			((strat[index].length<4) &&(strat[index].ecart()==0) && 
-			(rest_lead!=strat[index].lm))){
+			(rest_lead!=strat[index].lead))){
 			wlen_type dummy;
       p=reduce_complete(p,strat[index],dummy);
 
     } else{
       //p=spoly(p,*g);
       Exponent exp=rest_lead.exp();
-      p+=(exp-strat[index].lmExp)*(*g);
+      p+=(exp-strat[index].leadExp)*(*g);
     }
     if (p.isZero())
         return p;
@@ -183,10 +183,10 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
   
     const Polynomial* g=&strat[index].p;
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    (((strat.optBrutalReductions) && (lead!=strat[index].lm))||
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+    (((strat.optBrutalReductions) && (lead!=strat[index].lead))||
 			((strat[index].length<4) &&(strat[index].ecart()==0)
- 			&& (lead!=strat[index].lm)))
+ 			&& (lead!=strat[index].lead)))
 
 {     wlen_type dummy;
       #ifndef NDEBUG
@@ -202,7 +202,7 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
       #endif
 
     } else{
-      p+=(exp-strat[index].lmExp)*(*g);
+      p+=(exp-strat[index].leadExp)*(*g);
       //p=spoly(p,*g);
     }
     if (!(p.isZero())){
@@ -220,8 +220,8 @@ Polynomial nf3_short(const ReductionStrategy& strat, Polynomial p){
     assert(index<strat.size());
     const Polynomial* g=&strat[index].p;
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-    ((strat[index].length<4) &&(strat[index].ecart()==0) && (p.lead()!=strat[index].lm)){
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+    ((strat[index].length<4) &&(strat[index].ecart()==0) && (p.lead()!=strat[index].lead)){
       wlen_type dummy;
       p=reduce_complete(p,strat[index].p,dummy);
       
@@ -264,7 +264,7 @@ const int FARE_WORSE=10;
 // }
 
 static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p){
-  assert(p.lead()==strat.generators[i].lm);
+  assert(p.lead()==strat.generators[i].lead);
   PolyEntry e(p);
   e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=spoly(strat.generators[i].p,p);
@@ -273,7 +273,7 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
 }
 
 static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const Polynomial & p){
-  assert(p.lead()==strat.generators[i].lm);
+  assert(p.lead()==strat.generators[i].lead);
   //PolyEntry e(p);
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
   bool minimal=strat.generators[i].minimal;
@@ -285,7 +285,7 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
   //if ((strat.generators[i].length==2))
     strat.addNonTrivialImplicationsDelayed(strat.generators[i]);
-  if (strat.generators[i].lmDeg==1)
+  if (strat.generators[i].leadDeg==1)
     strat.propagate(strat.generators[i]);
   return res;
 }
@@ -307,7 +307,7 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
 //         p=Polynomial(p.diagram().subset0(v))+p2;
 //       }
 //     } else {
-//       if ((p.lead()==strat.generators[index].lm) && (p.eliminationLength()<strat.generators[index].weightedLength)){
+//       if ((p.lead()==strat.generators[index].lead) && (p.eliminationLength()<strat.generators[index].weightedLength)){
 //         p=exchange(strat,index,p);
 //         strat.log("Exchange");
 //       } else{
@@ -344,7 +344,7 @@ template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
     //cout.flush();
     int index=strat->generators.select1(lm);
     if (index>=0){
-      Polynomial p_high=(lm/strat->generators[index].lm)*strat->generators[index].p;
+      Polynomial p_high=(lm/strat->generators[index].lead)*strat->generators[index].p;
       int i,s;
       s=curr.size();
       assert(p_high.lead()==lm);
@@ -497,18 +497,18 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
   
   
   
-  if ((strat.generators[index].length>2)||(lm==strat.generators[index].lm)){
+  if ((strat.generators[index].length>2)||(lm==strat.generators[index].lead)){
     
     
     
-    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lm)){
-	  (((strat.generators.optBrutalReductions) && (lm!=strat.generators[index].lm)) ||
+    if //((strat.generators[index].deg==1)&&(lm!=strat.generators[index].lead)){
+	  (((strat.generators.optBrutalReductions) && (lm!=strat.generators[index].lead)) ||
     ((strat.generators[index].length<4) &&(strat.generators[index].ecart()==0) 
-		&& (lm!=strat.generators[index].lm))){
+		&& (lm!=strat.generators[index].lead))){
       //implies lmDeg==1, ecart=0
       //cout<<"REDUCE_COMPLETE\n";
       //assert(strat.generators[index].ecart()==0);
-      //assert(strat.generators[index].lmDeg==1);
+      //assert(strat.generators[index].leadDeg==1);
       //p=reduce_complete(p,strat.generators[index].p);
       
       for(int i=0;i<s;i++){
@@ -526,10 +526,10 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
       
     }
     else{
-      Polynomial p_high=(lm/strat.generators[index].lm)*strat.generators[index].p;
+      Polynomial p_high=(lm/strat.generators[index].lead)*strat.generators[index].p;
       
       wlen_type len_high=strat.generators[index].length;
-      if (lm!=strat.generators[index].lm) len_high=p_high.length();
+      if (lm!=strat.generators[index].lead) len_high=p_high.length();
       if ((strat.reduceByTailReduced) && (p_high!=strat.generators[index].p)){
           p_high=red_tail(strat.generators, p_high);
           len_high=p_high.length();
@@ -565,7 +565,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
       for(int i=0;i<s;i++){
         Polynomial to_red=curr[i].value();
         wlen_type new_len=curr[i].getLengthEstimation();
-        to_red=reduce_complete(to_red,strat.generators[index],new_len);//BooleSet(to_red).diff(strat.generators[index].lm.multiples(to_red.usedVariables()));
+        to_red=reduce_complete(to_red,strat.generators[index],new_len);//BooleSet(to_red).diff(strat.generators[index].lead.multiples(to_red.usedVariables()));
         //curr[i]=PolynomialSugar(to_red);
         if (BooleEnv::ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(),new_len);
@@ -619,8 +619,8 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
       ///@todo different prototpye
     }
     #if 1
-    if ((pivot.deg()<=strat.generators[index].deg) &&(lm.deg()==strat.generators[index].lmDeg)){
-      assert(lm==strat.generators[index].lm);
+    if ((pivot.deg()<=strat.generators[index].deg) &&(lm.deg()==strat.generators[index].leadDeg)){
+      assert(lm==strat.generators[index].lead);
       assert(curr[found].getSugar()>=curr[found].value().deg());
       assert(curr[found].value().lead()==lm);
       wlen_type old_length=strat.generators[index].length;
@@ -631,7 +631,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     #endif
     
     deg_type deg_high=strat.generators[index].ecart()+lm.deg();
-    curr[found].add((lm/strat.generators[index].lm)*strat.generators[index].p, deg_high,strat.generators[index].length);
+    curr[found].add((lm/strat.generators[index].lead)*strat.generators[index].p, deg_high,strat.generators[index].length);
     //assert(!(curr[found].value().isZero()));
   } else 
     step_S(curr,result,lm, index,strat);
@@ -821,7 +821,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     if (index>=0){
       steps=steps+curr.size();
       if ((strat.optExchange) && (curr.size()>1)){
-        if (strat.generators[index].lmDeg==lm.deg())
+        if (strat.generators[index].leadDeg==lm.deg())
           step_S_T(curr,result,lm, index,strat);
         else
           step_S(curr,result,lm, index,strat);
@@ -940,7 +940,7 @@ int ReductionStrategy::select_short(const Monomial& m) const{
 }
 
 int ReductionStrategy::select1( const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.lmDivisors());
+  MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.leadDivisors());
   //Polynomial workaround =Polynomial(ms);
   
   if (ms.emptiness())
@@ -1118,7 +1118,7 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
     assert(index<strat.generators.size());
     Polynomial* g=&strat.generators[index].p;
     
-    if((strat.generators[index].ecart()==0) && (strat.generators[index].length<=4) &&(strat.generators[index].lm!=p.lead())){
+    if((strat.generators[index].ecart()==0) && (strat.generators[index].length<=4) &&(strat.generators[index].lead!=p.lead())){
       wlen_type dummy;
       p=reduce_complete(p,strat.generators[index],dummy);
       
@@ -1911,7 +1911,7 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
                 int index=strat.generators.select1(m);
                 if (index>=0){
 
-                        Monomial m2=m/strat.generators[index].lm;
+                        Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
                 }
