@@ -28,12 +28,20 @@ def llredsb_Cudd_style(polys):
 
 
 
-def ll_encode(polys, reduce=False, prot=False):
+def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
+  polys=[Polynomial(p) for p in polys]
+
+  if (not reduce) and reduce_by_linear:
+        linear_polys=[p for p in polys if p.deg()==1]
+        if linear_polys:
+            linear_ll=ll_encode(linear_polys, reduce=True, reduce_by_linear=False)
+            polys=[p.lead()+ll_red_nf_redsb(p+p.lead(), linear_ll) for p in polys]
   if reduce:
       reduce=ll_red_nf_redsb
   else:
       reduce=None
-  polys=[Polynomial(p) for p in polys]
+
+  
   reductors=Polynomial(1).set()
   
   linear_lead=sorted(polys,key=lead_index, reverse=True)
