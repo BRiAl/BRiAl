@@ -43,7 +43,7 @@ static int one(const BooleMonomial& m){
     return 1;
 }
 static BoolePolynomial::navigator nav(const BoolePolynomial& p){
-    
+    return p.navigation();
 }
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
