@@ -113,7 +113,6 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("__repr__", streamable_as_str<BooleMonomial>)
   .def("__pow__",mon_power)
     //  .def("divisors", &BooleMonomial::divisors)
-  //.def("lmDeg", &BooleMonomial::lmDeg)
 
   //.def("totalDegree", &BooleMonomial::totalDeg)
   //.def("diagram", diagram,return_internal_reference<1>());

@@ -710,7 +710,7 @@ void PolyEntry::recomputeInformation(){
   this->tailVariables=tail.usedVariablesExp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
-  assert(this->lmDeg==p.lmDeg());
+  assert(this->lmDeg==p.leadDeg());
 }
 Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
   

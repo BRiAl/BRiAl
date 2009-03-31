@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.42  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.41  2008/07/13 22:49:35  dreyer
  * Fix: Doxygen clean-up
  *
@@ -749,17 +752,6 @@ public:
 
   hash_type operator() (const Type& rhs) const{
     return rhs.hash();
-  }
-};
-
-template <class Type>
-class lm_hashes {
-public:
-
-  typedef typename Type::hash_type hash_type;
-
-  hash_type operator() (const Type& rhs) const{
-    return rhs.lmHash();
   }
 };
 

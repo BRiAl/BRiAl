@@ -142,14 +142,14 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("is_one", &BoolePolynomial::isOne, "Test if Polynomial one")
 
   .def("deg", &BoolePolynomial::deg, "Polynomial degree")
-  .def("lm_divisors", &BoolePolynomial::lmDivisors, "Divisors of leading term")
+  .def("lm_divisors", &BoolePolynomial::leadDivisors, "Divisors of leading term")
   .def("lead", &BoolePolynomial::lead, "Leading term with respect to current ordering")
   .def("lex_lead", &BoolePolynomial::lexLead, "Lexicographical leading term")
 
   .def("reducible_by", &BoolePolynomial::reducibleBy)
 
-  .def("lm_deg", &BoolePolynomial::lmDeg, "Degree of the leading term")
-  .def("lex_lm_deg", &BoolePolynomial::lexLmDeg, 
+  .def("lm_deg", &BoolePolynomial::leadDeg, "Degree of the leading term")
+  .def("lex_lm_deg", &BoolePolynomial::lexLeadDeg, 
        "Degree of the lexicographical leading term")
   .def("constant", &BoolePolynomial::isConstant, 
        "Test, whether Polynomial os constant")

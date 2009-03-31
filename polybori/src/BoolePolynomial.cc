@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.123  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.122  2009/02/04 09:40:13  dreyer
  * ADD: fast multiplication may be used explicitely
  *
@@ -683,7 +686,7 @@ BoolePolynomial::boundedLeadExp(size_type bound) const {
 BoolePolynomial::set_type
 BoolePolynomial::firstDivisors() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lmDivisors() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::firstDivisors() const" );
 
 #ifdef PBORI_DIVISORS_HIGHLEVEL
 
@@ -696,7 +699,7 @@ BoolePolynomial::firstDivisors() const {
     terms = manager_reference(m_dd).blank();
 
     // store indices in list
-    CIdxPath<idx_type> indices(lmDeg());
+    CIdxPath<idx_type> indices(leadDeg());
 
     // define iterator, which uses appends the divisors wrt. a Boolean
     // variable of given index
@@ -714,11 +717,11 @@ BoolePolynomial::firstDivisors() const {
 #endif 
 }
 
-// hash value of lm
+// hash value of lead
 BoolePolynomial::hash_type 
-BoolePolynomial::lmStableHash() const {
+BoolePolynomial::leadStableHash() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lmStableHash() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadStableHash() const" );
   self ld1st(leadFirst());
   return stable_first_hash_range(ld1st.navigation());
 }
@@ -744,9 +747,9 @@ BoolePolynomial::deg() const {
 
 // Degree of the leading term
 BoolePolynomial::deg_type
-BoolePolynomial::lmDeg() const {
+BoolePolynomial::leadDeg() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lmDeg() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadDeg() const" );
   if (UNLIKELY(isZero())) return -1;
 #ifndef PBORI_USE_CCUDDFIRSTITER
   // Equals number of nodes for monomials
@@ -754,16 +757,16 @@ BoolePolynomial::lmDeg() const {
 
 #else
   self ld1st(leadFirst());
-  return ld1st.lexLmDeg();
+  return ld1st.lexLeadDeg();
 #endif
 }
 
 
 // Degree of the leading term
 BoolePolynomial::deg_type
-BoolePolynomial::lexLmDeg() const {
+BoolePolynomial::lexLeadDeg() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lexLmDeg() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::lexLeadDeg() const" );
   if (UNLIKELY(isZero())) return -1;
   return std::distance(firstBegin(), firstEnd());
 }
@@ -780,12 +783,12 @@ BoolePolynomial::totalDeg() const {
 
 // Total (weighted) degree of the leading term
 BoolePolynomial::deg_type
-BoolePolynomial::lmTotalDeg() const {
+BoolePolynomial::leadTotalDeg() const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lmTotalDeg() const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadTotalDeg() const" );
 
   // No weighted degrees yet, so map to non-weighted variant
-  return lmDeg();
+  return leadDeg();
 }
 
 // Get part of  of given degree
@@ -1238,7 +1241,7 @@ BoolePolynomial::eliminationLength() const{
   if (BooleEnv::ordering().isTotalDegreeOrder())
     return this->length();
   size_type deg=this->deg();
-  if (deg==this->lmDeg()){
+  if (deg==this->leadDeg()){
     return this->length();
   }
 //   BoolePolynomial::navigator navi = navigation();
@@ -1257,7 +1260,7 @@ BoolePolynomial::eliminationLength() const{
 //   return len_cheated;
 
   return std::accumulate( degBegin(), degEnd(), size_type(0), 
-                          AddEliminationDegree<size_type>(lmDeg()) );
+                          AddEliminationDegree<size_type>(leadDeg()) );
 }
 
 BoolePolynomial::size_type
@@ -1266,7 +1269,7 @@ BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
   assert(garantied_deg_bound>=this->deg());
   if (BooleEnv::ordering().isTotalDegreeOrder())
     return this->length();
-  if (this->lmDeg()==garantied_deg_bound)
+  if (this->leadDeg()==garantied_deg_bound)
     return this->length();
   else 
     return this->eliminationLength();

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.7  2008/11/22 23:47:31  dreyer
  * ADD: BooleSet::rbegin(),end()
  *
@@ -74,7 +77,7 @@ main(){
 
     poly = x*y*z;
 
-    BooleSet bset = poly.lmDivisors();
+    BooleSet bset = poly.leadDivisors();
 
     BooleSet bset2 (bset.divisorsOf(x*y*w)); 
      std::cout <<  bset2 << std::endl;
@@ -97,7 +100,7 @@ main(){
    std::cout <<   bset.hasTermOfVariables((z) ) << std::endl;
 
 
-    bset = BoolePolynomial(x*z*w).lmDivisors();
+    bset = BoolePolynomial(x*z*w).leadDivisors();
 
     std::cout <<   bset.divisorsOf((x*y*w) ) << std::endl;
     std::cout <<   bset.divisorsOf((x*y*w) ) << std::endl;

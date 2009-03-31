@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.25  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.24  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -180,7 +183,7 @@ LexOrder::lead(const poly_type& poly) const {
   monom_type leadterm(poly.ring());
    
   // store indices in list
-  CIdxPath<idx_type> indices(poly.lexLmDeg());
+  CIdxPath<idx_type> indices(poly.lexLeadDeg());
   
   // iterator, which uses changeAssign to insert variable
   // wrt. given indices to a monomial
@@ -204,7 +207,7 @@ LexOrder::leadExp(const poly_type& poly) const {
    
   if (!poly.isZero() && !poly.isOne()) {
 
-    leadterm.reserve(poly.lexLmDeg());
+    leadterm.reserve(poly.lexLeadDeg());
     // wrt. given indices to a monomial
     PBoRiOutIter<exp_type, idx_type, inserts<exp_type> >  
       outiter(leadterm) ;

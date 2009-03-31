@@ -18,6 +18,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.28  2009/03/31 08:30:49  dreyer
+// CHANGE: started consistent use of lead* instea of lm*
+//
 // Revision 1.27  2007/12/13 15:53:50  dreyer
 // CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
 //
@@ -205,8 +208,8 @@ void test_ordered(CTypes::ordercode_type order_marker) {
             <<std::endl;
 
   std::cout << "deg() " << poly.deg() <<std::endl;
-  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
-  std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
+  std::cout << "leadDeg() " << poly.leadDeg() <<std::endl;
+  std::cout << "leadDivisors() " << poly.leadDivisors() <<std::endl;
 
 
   BoolePolynomial::ordered_iterator ordStart(poly.orderedBegin());
@@ -273,8 +276,8 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
             <<std::endl;
 
   std::cout << "deg() " << poly.deg() <<std::endl;
-  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
-  std::cout << "lmDivisors() " << poly.lmDivisors();
+  std::cout << "leadDeg() " << poly.leadDeg() <<std::endl;
+  std::cout << "leadDivisors() " << poly.leadDivisors();
 
 
   BoolePolynomial::ordered_iterator ordStart(poly.orderedBegin());
@@ -299,8 +302,8 @@ void test_ordered_changed(CTypes::ordercode_type order_marker,
             <<std::endl;
 
   std::cout << "deg() " << poly.deg() <<std::endl;
-  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
-  std::cout << "lmDivisors() " << poly.lmDivisors();
+  std::cout << "leadDeg() " << poly.leadDeg() <<std::endl;
+  std::cout << "leadDivisors() " << poly.leadDivisors();
 
 
   BoolePolynomial::ordered_iterator ordStart2(poly.orderedBegin());
@@ -438,8 +441,8 @@ main(){
 
   std::cout << "lead() " << poly.lead() <<std::endl;
   std::cout << "leadExp() " << poly.leadExp() <<std::endl;
-  std::cout << "lmDeg() " << poly.lmDeg() <<std::endl;
-  std::cout << "lmDivisors() " << poly.lmDivisors() <<std::endl;
+  std::cout << "leadDeg() " << poly.leadDeg() <<std::endl;
+  std::cout << "leadDivisors() " << poly.leadDivisors() <<std::endl;
 
   BoolePolynomial::ordered_iterator iter(poly.orderedBegin()), 
     finish(poly.orderedEnd());

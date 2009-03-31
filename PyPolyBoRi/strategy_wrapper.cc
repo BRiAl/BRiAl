@@ -204,7 +204,6 @@ void export_strategy(){
   .def_readwrite("length",&PolyEntry::length)
   .def_readwrite("deg",&PolyEntry::deg)
   .def_readwrite("lm_deg",&PolyEntry::lmDeg)
-  /*.def_readwrite("lm_exp",&PolyEntry::lmExp)*/
   .def_readwrite("gcd_of_terms",&PolyEntry::gcdOfTerms)
   //.def_readwrite("usedVariables",PolyEntry::usedVariables)
   //.def_readwrite("p",PolyEntry::tailVariables)

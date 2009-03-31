@@ -198,7 +198,7 @@ static bool has_factor_x_plus_y(const MonomialSet& m, const Variable& x,const Va
 LiteralFactorization::LiteralFactorization(const Polynomial& p){
   assert(!(p.isZero()));
   Exponent lead_variables=p.leadExp();
-  lmDeg=p.lmDeg();
+  lmDeg=p.leadDeg();
   Exponent other_variables=p.usedVariablesExp()-lead_variables;
   //only vars in the lead can factor out, independently of the order
   BooleSet r(p);
@@ -341,7 +341,7 @@ deg_type common_literal_factors_deg(const LiteralFactorization& a, const Literal
   }
   
   if (a.rest==b.rest){
-    res+=a.rest.lmDeg();
+    res+=a.rest.leadDeg();
   }
   
   return res;
@@ -360,7 +360,7 @@ bool LiteralFactorization::occursAsLeadOfFactor(idx_type v) const{
     return true;
   }
   else{
-    if (rest.lmDeg()==1){
+    if (rest.leadDeg()==1){
       Exponent m=rest.leadExp();
       return ((*(m.begin()))==v);
     }

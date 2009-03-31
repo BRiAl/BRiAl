@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.98  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.97  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -635,7 +638,7 @@ public:
   exp_type boundedLeadExp(size_type bound) const;
 
   /// Get all divisors of the leading term
-  set_type lmDivisors() const { return leadFirst().firstDivisors(); };
+  set_type leadDivisors() const { return leadFirst().firstDivisors(); };
   
   /// Get unique hash value (may change from run to run)
   hash_type hash() const { return m_dd.hash(); }
@@ -644,22 +647,22 @@ public:
   hash_type stableHash() const { return m_dd.stableHash(); } 
 
   /// Hash value of the leading term
-  hash_type lmStableHash() const;
+  hash_type leadStableHash() const;
   
   /// Maximal degree of the polynomial
   deg_type deg() const;
 
   /// Degree of the leading term
-  deg_type lmDeg() const;
+  deg_type leadDeg() const;
 
   /// Degree of the leading term w.r.t. lexicographical ordering
-  deg_type lexLmDeg() const;
+  deg_type lexLeadDeg() const;
 
   /// Total maximal degree of the polynomial
   deg_type totalDeg() const;
 
   /// Total degree of the leading term
-  deg_type lmTotalDeg() const;
+  deg_type leadTotalDeg() const;
 
   /// Get part of given degree
   self gradedPart(deg_type deg) const;

@@ -16,6 +16,10 @@ Release Name: 0.6.0
     * reducedNormalForm
     * headNormalForm
     * monomials
+* Consistent C++ class members in BoolePolynomial
+    * lmDivisors -> leadDivisors
+    * lexLmDeg lexLeadDeg
+    * lmDeg -> leadDeg
 * Python interface - PEP8 compliance:
     * varsAsMonomial -> vars_as_monomial
     * nVars -> n_variables
@@ -25,8 +29,9 @@ Release Name: 0.6.0
     * terminalOne -> terminal_one
     * thenBranch -> then_branch
     * elseBranch -> else_branch
-    * lmDivisors -> lm_divisors
-    * lexLmDeg -> lex_lm_deg
+    * lmDivisors -> lead_divisors (!)
+    * lexLmDeg -> lex_lead_deg (!)
+    * lmDeg -> lead_deg (!)
     * lexLead -> lex_lead
     * isZero -> is_zero
     * isOne -> is_one

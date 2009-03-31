@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.9  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.8  2008/03/11 10:04:13  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -91,8 +94,8 @@ main(){
     std::cout << "# ring variabled: "<<std::endl;
     std::cout << the_ring.nVariables()<<std::endl;
  
-    std::cout << "lmdeg()"<<std::endl;
-    std::cout << poly.lmDeg() <<std::endl;
+    std::cout << "leadDeg()"<<std::endl;
+    std::cout << poly.leadDeg() <<std::endl;
 
     std::cout << "usedVariables()"<<std::endl;
     std::cout << poly.usedVariables() <<std::endl;

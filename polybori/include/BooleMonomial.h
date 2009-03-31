@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.43  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -306,7 +309,7 @@ class BooleMonomial {
   size_type size() const { return (size_type)deg(); }  // always nonnegative
 
   /// Divisors of the monomial
-  set_type divisors() const { return m_poly.lmDivisors(); }
+  set_type divisors() const { return m_poly.leadDivisors(); }
 
   /// multiples of the monomial wrt. given monomial
   set_type multiples(const self&) const; 

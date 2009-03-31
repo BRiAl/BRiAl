@@ -8,7 +8,10 @@
  */
 
 /* low-level diagrams removed from PyPolyBoRi*/
-#if 0
+
+// Infact, this file is not in use anymore
+#define DD_WRAPPER_RETIRED
+#ifndef DD_WRAPPER_RETIRED
 
 #include <boost/python.hpp>
 #include <iostream>
@@ -44,7 +47,7 @@ static dd_type one_path(const dd_type& m_dd){
   return leadterm;
 }
 unsigned long dd_hash(const dd_type& d){
-    return BoolePolynomial(d).lmHash();
+    return BoolePolynomial(d).leadStableHash();
 }
 
 void export_dd(){

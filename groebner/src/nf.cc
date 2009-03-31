@@ -193,7 +193,7 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
       Polynomial p_old=p;
       #endif
       
-      assert(deg==p.lmDeg());
+      assert(deg==p.leadDeg());
       Polynomial pg=p.gradedPart(deg);
       p=p-pg+reduce_complete(pg,strat[index],dummy);
       //p=reduce_complete(p,strat.generators[index],dummy);
@@ -908,7 +908,7 @@ typedef LessWeightedLengthInStratModified StratComparerForSelect;
 
  
 int ReductionStrategy::select_short(const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.intersect(p.lmDivisors());
+  MonomialSet ms=leadingTerms.intersect(p.leadDivisors());
   //Polynomial workaround =Polynomial(ms);
   
   if (ms.emptiness())

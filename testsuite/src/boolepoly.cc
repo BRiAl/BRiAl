@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.32  2009/03/31 08:30:49  dreyer
+ * CHANGE: started consistent use of lead* instea of lm*
+ *
  * Revision 1.31  2008/03/11 10:04:13  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -256,7 +259,7 @@ main(){
     std::cout <<  (1 == poly) <<std::endl;
     
     std::cout <<"Divisors of the leading monomial of  (x*z + y): "<<std::endl;
-    std::cout <<   (x*z + y).lmDivisors()  <<std::endl;
+    std::cout <<   (x*z + y).leadDivisors()  <<std::endl;
 
     std::cout <<  "(x*z + y).reducibleBy(z): ";
     std::cout <<  (x*z + y).reducibleBy(z)  <<std::endl;
