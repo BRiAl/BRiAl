@@ -66,7 +66,7 @@ def ll_heuristic(d):
     I=d["I"]
 
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
-        d["llfirst"]=True
+        d["llfirstonthefly"]=True
     return d
 
 
@@ -379,8 +379,8 @@ def eliminate_identical_variables_pre(I, prot):
                     ll_system.append(chosen+v)
     if len(ll_system)>0:
         ll_system=gauss_on_linear(ll_system)
-        ll_system=ll_encode(ll_system)
-        I=set([ll_red_nf_redsb(p, ll_system) for p in I])
+        ll_encoded=ll_encode(ll_system)
+        I=set([ll_red_nf_redsb(p, ll_encoded) for p in I])
     return (I, ll_system)
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
