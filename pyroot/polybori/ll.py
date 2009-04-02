@@ -35,7 +35,7 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
         linear_polys=[p for p in polys if p.deg()==1]
         if linear_polys:
             linear_ll=ll_encode(linear_polys, reduce=True, reduce_by_linear=False)
-            polys=[p.lead()+ll_red_nf_redsb(p+p.lead(), linear_ll) for p in polys]
+            polys=[p.lex_lead()+ll_red_nf_redsb(p+p.lex_lead(), linear_ll) for p in polys]
   if reduce:
       reduce=ll_red_nf_redsb
   else:
