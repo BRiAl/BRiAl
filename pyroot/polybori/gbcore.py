@@ -11,6 +11,7 @@ from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
+from inspect import getargspec
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
@@ -177,12 +178,10 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False, pass_option_set=False,pass_prot=False, pass_kwds=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):# pass_option_set=False,pass_prot=False, pass_kwds=False):
     def make_wrapper(f):
-        def wrapper(I,**kwds):
-            prot=False
-            if "prot" in kwds:
-                prot=kwds["prot"]
+        def wrapper(I, prot=False, **kwds):
+
             for o in if_not_option:
                 if (o in kwds and kwds[o]) or (o not in kwds and groebner_basis.options[o]):
                     option_set=False
@@ -194,28 +193,21 @@ def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),defa
                     option_set=default
             kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
             state=None
-            extra_kwd_args=dict()
-            if pass_option_set:
-                   extra_kwd_args["option_set"]=option_set
-            if pass_prot:
-                   extra_kwd_args["prot"]=prot
-            if pass_kwds:
-                extra_kwd_args["kwds"]=kwds
             if option_set:
                if pre:
+                   pre_args=getargspec(pre)[0]
                    if prot:
                        print "preprocessing for option:", option
                    
-                   (I,state)=pre(I,**extra_kwd_args)
-            res=f(I,**kwds)
+                   (I,state)=pre(**dict([(k,v) for (k,v) in locals().iteritems() if k in pre_args]))
+            I=f(I,**kwds)
             if option_set:
                 if post:
+                    post_args=getargspec(post)[0]
                     if prot:
                         print "postprocessing for option:", option
-                    res=post(res,state,**extra_kwd_args)
-                
-
-            return res
+                    I=post(**dict([(k,v) for (k,v) in locals().iteritems() if k in post_args]))
+            return I
         wrapper.__name__=f.__name__
         wrapper.__doc__=f.__doc__
         if hasattr(f,"options"):
@@ -301,7 +293,8 @@ def llfirstonthefly_pre(I,prot):
 def gauss_on_linear_pre(I, prot):
     return (gauss_on_linear(I), None)
 
-def llfirst_post(I,eliminated,prot):
+def llfirst_post(I,state,prot):
+    eliminated=state
     for p in I:
         if p.is_one():
             return [p]
@@ -313,7 +306,8 @@ def llfirst_post(I,eliminated,prot):
     return I
 
 
-def ll_constants_post(I,eliminated):
+def ll_constants_post(I,state):
+    eliminated=state
     for p in I:
         if p.is_one():
             return [p]
@@ -388,15 +382,15 @@ def eliminate_identical_variables_pre(I, prot):
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
-@gb_with_pre_post_option("gauss_on_linear", pre=gauss_on_linear_pre, pass_prot=True, default=True)
+@gb_with_pre_post_option("gauss_on_linear", pre=gauss_on_linear_pre, default=True)
 @gb_with_pre_post_option("ll_constants", pre=ll_constants_pre,post=ll_constants_post,default=True)
 #@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
-@gb_with_pre_post_option("eliminate_identical_variables", pre=eliminate_identical_variables_pre, post=llfirst_post, default=True, pass_prot=True)
-@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False,pass_prot=True)
-@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False,pass_prot=True)
-@gb_with_pre_post_option("incremental",pre=incremental_pre,pass_prot=True, pass_kwds=True)
+@gb_with_pre_post_option("eliminate_identical_variables", pre=eliminate_identical_variables_pre, post=llfirst_post, default=True)
+@gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
+@gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
+@gb_with_pre_post_option("incremental",pre=incremental_pre)
 @with_heuristic(change_order_heuristic)
-@gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False,pass_option_set=True, pass_kwds=True)
+@gb_with_pre_post_option("other_ordering_first",if_not_option=["interpolation_gb"],pre=other_ordering_pre,default=False)
 @with_heuristic(linear_algebra_heuristic)
 @gb_with_pre_post_option("fix_deg_bound",if_not_option=["interpolation_gb"], post=fix_deg_bound_post,default=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
