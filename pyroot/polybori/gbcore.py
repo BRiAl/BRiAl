@@ -372,8 +372,8 @@ def eliminate_identical_variables_pre(I, prot):
                 for v in leads[1:]:
                     ll_system.append(chosen+v)
     if len(ll_system)>0:
-        ll_system=gauss_on_linear(ll_system)
-        ll_encoded=ll_encode(ll_system)
+        #ll_system=gauss_on_linear(ll_system)
+        ll_encoded=ll_encode(ll_system, reduce=True)
         I=set([ll_red_nf_redsb(p, ll_encoded) for p in I])
     return (I, ll_system)
 
