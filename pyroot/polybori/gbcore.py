@@ -67,7 +67,7 @@ def ll_heuristic(d):
     I=d["I"]
 
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
-        d["llfirstonthefly"]=True
+        d["llfirst"]=True
     return d
 
 
