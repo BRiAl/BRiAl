@@ -1618,20 +1618,27 @@ Polynomial red_tail_short(const ReductionStrategy& strat, Polynomial p){
 }
 
 
-template <bool have_redsb> Polynomial 
+template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial 
 ll_red_nf_generic(const Polynomial&, const BooleSet&);
 
-template <bool have_redsb>
+template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
 Polynomial
 ll_red_nf_generic(const Polynomial&  p, const BooleSet::navigator navi) {
 
-  return ll_red_nf_generic<have_redsb>(p,
+  return ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(p,
                                        (BooleSet)BooleSet::dd_type(p.diagram().manager(), 
                                                       navi));
 }
 
+template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial& q){
+    typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
+      cache_mgr_type;
 
-template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
+    return dd_multiply<fast>(cache_mgr_type(p.diagram().manager()), 
+                             p.navigation(), q.navigation(),
+                             BoolePolynomial());
+}
+template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
     
     if (p.isConstant()) return p;
     //if (reductors.emptiness()) return p;
@@ -1656,18 +1663,22 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
   Polynomial res;
   if ((*r_nav)==p_index){
     if (have_redsb){  
-      res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
-      +Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch())))*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
+      res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
+      +multiply<fast_multiplication>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),ll_red_nf_generic<have_redsb,single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch()));
    }else{
-#if 1
-      res=ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
-        +ll_red_nf_generic<have_redsb>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch())*ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch());
-#else
-       res=ll_red_nf_generic<have_redsb>(
+       if (!(single_call_for_noredsb)){
+      res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(
+          cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
+        +multiply<fast_multiplication>(ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(Polynomial(MonomialSet(
+            cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch()),
+        ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(
+            cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch()));
+}{
+       res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(
            Polynomial(MonomialSet(cache_mgr.generate(p_nav.elseBranch())))
-           +Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch())))
-           *Polynomial(MonomialSet(cache_mgr.generate(p_nav.thenBranch()))),r_nav.thenBranch());
-#endif
+           +multiply<fast_multiplication>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),
+           Polynomial(MonomialSet(cache_mgr.generate(p_nav.thenBranch())))),r_nav.thenBranch());
+}
    }
   } else{
       assert((*r_nav)>p_index);
@@ -1675,8 +1686,8 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
       res=
       MonomialSet(
         p_index,
-        ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav).diagram(),
-        ll_red_nf_generic<have_redsb>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav).diagram());
+        ll_red_nf_generic<have_redsb, single_call_for_noredsb,fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav).diagram(),
+        ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav).diagram());
       
   }
   cache_mgr.insert(p_nav,r_nav,res.navigation());
@@ -1685,10 +1696,10 @@ template <bool have_redsb> Polynomial ll_red_nf_generic(const Polynomial& p,cons
     
 }
 Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
-    return ll_red_nf_generic<true>(p,reductors);
+    return ll_red_nf_generic<true, false, false>(p,reductors);
 }
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
-    return ll_red_nf_generic<false>(p,reductors);
+    return ll_red_nf_generic<false, false, false>(p,reductors);
 }
 
 
@@ -1977,13 +1988,13 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,pack
 }
 
 
-static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat){
+static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log){
     if (polys.size()==0) return;
  
     
     int rows=polys.size();
     int cols=terms.size();
-    if (strat.enabledLog){
+    if (log){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
     #ifndef HAVE_M4RI
@@ -2005,7 +2016,7 @@ static void linalg_step(GroebnerStrategy& strat, vector<Polynomial>& polys, Mono
     #else
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0,NULL,NULL);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
-    if (strat.enabledLog){
+    if (log){
         std::cout<<"finished gauss"<<std::endl;
     }
     translate_back(polys, leads_from_strat, mat,ring_order2lex, terms_as_exp,terms_as_exp_lex,rank);
@@ -2038,7 +2049,7 @@ static packedmatrix* transposePackedMB(packedmatrix* mat){
 
 
 static void 
-linalg_step_modified(GroebnerStrategy & strat, vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat)
+linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log)
 {
     
      int unmodified_rows=polys.size();
@@ -2112,7 +2123,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
         rows_step1=rows;
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"STEP1: ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
 
@@ -2138,7 +2149,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         mzd_top_echelonize_m4ri
             (mat_step1,0,NULL,NULL);
 //          optimal_k_for_gauss(mat_step1->nrows,mat_step1->ncols,strat));//gaussianPacked(mat_step1,TRUE);
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished gauss"<<std::endl;
         }
         int rank=mat_step1->nrows;
@@ -2172,7 +2183,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             }
             
         }
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished sort"<<std::endl;
         }
         assert(pivot_row==rows);
@@ -2180,14 +2191,14 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         // printPackedMatrixMB(mat_step1);
         translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
         
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished translate"<<std::endl;
         }
         // std::cout<<"after translate"<<std::endl;
         //     printPackedMatrixMB(mat_step1);
         //delete columns
         packedmatrix* transposed_step1=mzd_transpose(NULL,mat_step1);
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(mat_step1);
@@ -2200,7 +2211,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             if (i!=source) mzd_row_swap(transposed_step1,source,i);
             
         }
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished permute"<<std::endl;
         }
         // std::cout<<"before submat"<<std::endl;
@@ -2211,12 +2222,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         packedmatrix* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
 
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished submat"<<std::endl;
         }
         mzd_free(transposed_step1);
         mat_step1=mzd_transpose(NULL,sub_step1);
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(sub_step1);
@@ -2275,7 +2286,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         //std::cout<<"len:1"<<std::endl;
     }
     
-    if (strat.enabledLog){
+    if (log){
         std::cout<<"iterate over rest polys"<<std::endl;
     }
     
@@ -2298,7 +2309,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     drawmatrix(mat_step1,matname);
     }
     #endif
-    if (strat.enabledLog){
+    if (log){
         std::cout<<"start mult"<<std::endl;
     }
     
@@ -2311,7 +2322,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         eliminated=mzd_init(mat_step2_factor->nrows,mat_step1->ncols);
      //,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
     mzd_free(mat_step2_factor);
-    if (strat.enabledLog){
+    if (log){
         std::cout<<"end mult"<<std::endl;
     }
     mzd_free(mat_step1);
@@ -2334,7 +2345,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     // printPackedMatrixMB(eliminated);
     mzd_free(eliminated);
     
-     if (strat.enabledLog){
+     if (log){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
     #ifdef DRAW_MATRICES
@@ -2346,7 +2357,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     #endif
     int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0,NULL,NULL);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
-        if (strat.enabledLog){
+        if (log){
             std::cout<<"finished gauss"<<std::endl;
         }
     // std::cout<<"step2matrix"<<std::endl;
@@ -2360,7 +2371,15 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 }
 
 
-
+vector<Polynomial> gauss_on_polys(const vector<Polynomial>& orig_system){
+    Polynomial init(0);//from current ring
+    MonomialSet terms=unite_polynomials(orig_system, init);
+    MonomialSet from_strat;//no strat
+    vector<Polynomial> polys(orig_system);
+    
+    linalg_step(polys, terms, from_strat, false);
+    return polys;
+}
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
     vector<Polynomial> polys;
     //vector<Monomial> leads_from_strat_vec;
@@ -2370,7 +2389,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step_modified(*this,polys,terms,leads_from_strat);
+    linalg_step_modified(polys,terms,leads_from_strat, enabledLog);
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 

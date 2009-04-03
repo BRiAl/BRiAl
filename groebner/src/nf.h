@@ -78,5 +78,6 @@ Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors);
 Polynomial add_up_polynomials(const std::vector<Polynomial>& vec);
 Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones);
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
+std::vector<Polynomial> gauss_on_polys(const std::vector<Polynomial>& orig_system);
 END_NAMESPACE_PBORIGB
 #endif
