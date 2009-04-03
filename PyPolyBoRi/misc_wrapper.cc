@@ -13,6 +13,7 @@ using namespace std;
 #include "groebner_alg.h"
 #include "randomset.h"
 #include "interpolate.h"
+#include "nf.h"
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
@@ -48,5 +49,6 @@ void export_misc(){
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
   def("global_ring",&BooleEnv::ring, return_value_policy<copy_non_const_reference>());
   def("top_index",top_index);
+  def("gauss_on_polys", gauss_on_polys);
   
 }
