@@ -75,3 +75,7 @@ def variable_python_div(self, arg):
         return Polynomial(0, self.ring())
 
 Variable.__div__ = variable_python_div
+_gauss_on_polys=gauss_on_polys
+def gauss_on_polys(l):
+    vec=BoolePolynomialVector(l)
+    return list(_gauss_on_polys(vec))
