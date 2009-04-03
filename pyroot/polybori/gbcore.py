@@ -12,29 +12,13 @@ from heuristics import dense_system,gauss_on_linear
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
+from polybori.fglm import fglm
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
         if p.is_one():
             return True
     return False
-
-
-#strategy brainstorming
-
-#count number of unbound vars to see, if ll is a good choice
-
-#-direct computation
-#-ll first
-#-dp_asc first (don't need walk, as result is usually quite nice)
-#-conjunction and factoring first
-#-inversion
-
-#LA at few variables and no ll
-#LA at "dense" systems
-
-
-#@TODO: implement this to work with *args, **args for wrapped function
 
 def want_interpolation_gb(G):
     if get_order_code()!=OrderCode.lp:
@@ -61,11 +45,8 @@ def ll_is_good(I):
     return False
     
 def ll_heuristic(d):
-    d_orig=d
     d=copy(d)
-
     I=d["I"]
-
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
         d["llfirst"]=True
     return d
@@ -145,18 +126,14 @@ class HeuristicalFunction(object):
         heuristic=True
         try:
             heuristic=complete_dict["heuristic"]
-            #del complete_dict["heuristic"]
         except KeyError:
             pass
-
-
         for (k,v) in zip(self.argnames,args):
             complete_dict[k]=v 
         if heuristic:
             complete_dict=self.heuristicFunction(complete_dict)
         return self.f(**complete_dict)
     def __init__(self,f,heuristic_function):
-        
         (self.argnames,self.varargs,self.varopts,self.defaults)=getargspec(f)
         if hasattr(f,"options"):
             self.options=f.options
@@ -164,7 +141,7 @@ class HeuristicalFunction(object):
             self.options=dict(zip(self.argnames[-len(self.defaults):],self.defaults))
         self.heuristicFunction=heuristic_function
         self.f=f
-        self.__doc__=f.__doc__#
+        self.__doc__=f.__doc__
         
 def with_heuristic(heuristic_function):
     def make_wrapper(f):
@@ -178,7 +155,7 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):# pass_option_set=False,pass_prot=False, pass_kwds=False):
+def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):
     def make_wrapper(f):
         def wrapper(I, prot=False, **kwds):
 
@@ -260,16 +237,12 @@ def ll_constants_pre(I):
         p=ll_red_nf_redsb(p,encoded)
         if not p.is_zero():
             reduced.append(p)
-    #(eliminated,llnf, I)=eliminate(I,on_the_fly=False)
-    
     return (reduced,ll)
 
 def other_ordering_pre(I,option_set,kwds):
     main_kwds=kwds
     options=option_set
     ocode=get_order_code()
-    assert (ocode==OrderCode.lp) or (ocode==OrderCode.dlex)
-    #in parcticular it does not work for block orderings, because of the block sizes
     old_ring=global_ring()
     change_ordering(options["switch_to"])
     new_ring=global_ring()
@@ -277,11 +250,6 @@ def other_ordering_pre(I,option_set,kwds):
     kwds["redsb"]=True
     I_orig=I
     I=groebner_basis(I,**kwds)
-    #for p in I:
-    #    if p.deg()>1:
-    #        I=list(chain(I,I_orig))
-    #        break
-    #change_ordering(ocode)
     old_ring.set()
     main_kwds["convert_with_fglm_from_ring"]=new_ring
     
@@ -340,7 +308,6 @@ def incremental_pre(I,prot, kwds):
         if prot:
             print "incrementally calculating GB, adding generator:", p
     inc_sys.append(I[:-1])
-   
     return (inc_sys,None)
 
 def eliminate_identical_variables_pre(I, prot):
@@ -372,7 +339,6 @@ def eliminate_identical_variables_pre(I, prot):
                 for v in leads[1:]:
                     ll_system.append(chosen+v)
     if len(ll_system)>0:
-        #ll_system=gauss_on_linear(ll_system)
         ll_encoded=ll_encode(ll_system, reduce=True)
         I=set([ll_red_nf_redsb(p, ll_encoded) for p in I])
     return (I, ll_system)
@@ -384,7 +350,6 @@ def eliminate_identical_variables_pre(I, prot):
 @gb_with_pre_post_option("invert",pre=invert_all_pre,post=invert_all_post,default=False)
 @gb_with_pre_post_option("gauss_on_linear", pre=gauss_on_linear_pre, default=True)
 @gb_with_pre_post_option("ll_constants", pre=ll_constants_pre,post=ll_constants_post,default=True)
-#@gb_with_pre_post_option("ll_constants",if_not_option=["llfirstonthefly","llfirst"],pre=ll_constants_pre,post=ll_constants_post,default=True)
 @gb_with_pre_post_option("eliminate_identical_variables", pre=eliminate_identical_variables_pre, post=llfirst_post, default=True)
 @gb_with_pre_post_option("llfirst",if_not_option=["llfirstonthefly"],pre=llfirst_pre,post=llfirst_post,default=False)
 @gb_with_pre_post_option("llfirstonthefly",pre=llfirstonthefly_pre,post=llfirst_post,default=False)
@@ -414,10 +379,7 @@ def groebner_basis(I, faugere=False,
     if not convert_with_fglm_from_ring is None:
         from_ring=convert_with_fglm_from_ring
         to_ring=global_ring()
-        vec=BoolePolynomialVector()
-        for p in I:
-            vec.append(Polynomial(p))
-        return FGLMStrategy(from_ring,to_ring,vec).main()
+        return fglm(I, from_ring, to_ring)
     if interpolation_gb:
         if len(I)!=1 or get_order_code()!=OrderCode.lp:
             raise ValueError
@@ -433,8 +395,6 @@ def groebner_basis(I, faugere=False,
         I=[prod+Polynomial(1)]
 
     import nf
-
-    
     nf.print_matrices=draw_matrices
     nf.matrix_prefix=matrix_prefix
     

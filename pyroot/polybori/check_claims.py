@@ -14,7 +14,7 @@ from polybori.PyPolyBoRi import *
 from polybori.gbrefs import my_import, load_data, clean_data,load_file
 from polybori.blocks import IfThen
 from copy import copy
-from polybori.ll import llredsb_Cudd_style, ll_encode
+from polybori.ll import ll_encode
 
 def find_one(p,res=None):
     def zero_nav(n):
@@ -134,7 +134,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
     else:
       c_orig=c
       if redsb:
-          c=ll_red_nf(c,reductors)
+          c=ll_red_nf_redsb(c,reductors)
       else:
           c=ll_red_nf_noredsb(c,reductors)
       if c.is_zero():
@@ -179,7 +179,7 @@ def main(argv=None):
            except NameError:
                 pass
        else:
-           reductors=BooleSet(llredsb_Cudd_style(mydata.ideal).set())
+           reductors=ll_encode(mydata.ideal, reduce=True)
            for c in claims:
              proofll(to_if_then(c),reductors)
            del reductors
