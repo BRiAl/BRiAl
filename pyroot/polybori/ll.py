@@ -30,7 +30,11 @@ def llredsb_Cudd_style(polys):
 
 def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
   polys=[Polynomial(p) for p in polys]
-
+  linear_lead=sorted(polys,key=lead_index, reverse=True)
+  assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
+  assert len([p for p in polys if p.constant()])==0
+  assert len([p for p in polys if p.lex_lead_deg()==1])==len(polys)
+  assert len(set([p.navigation().value() for p in polys]))==len(polys)
   if (not reduce) and reduce_by_linear:
         linear_polys=[p for p in polys if p.deg()==1]
         if linear_polys:
@@ -44,11 +48,8 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
   
   reductors=Polynomial(1).set()
   
-  linear_lead=sorted(polys,key=lead_index, reverse=True)
-  assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
-  assert len([p for p in polys if p.constant()])==0
-  assert len([p for p in polys if p.lex_lead_deg()==1])==len(polys)
-  assert len(set([p.navigation().value() for p in polys]))==len(polys)
+  
+  
   last=None
   counter=0
   for p in linear_lead:
