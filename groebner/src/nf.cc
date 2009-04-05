@@ -2054,7 +2054,7 @@ linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSe
     
      int unmodified_rows=polys.size();
      int unmodified_cols=terms.size();
-     if (((long long) unmodified_cols)*((long long) unmodified_rows)>10000000000ll){
+     if (((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
          PBoRiError error(CTypes::failed);
          throw error;
      }
