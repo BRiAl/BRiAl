@@ -1162,7 +1162,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Generate html master
     FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
                                     [DocPath('index.html.in')] + [ 
-        env.Dir(InstDocPath(srcs)) for srcs in Split("""tutorial/tutorial python
+        env.Dir(InstDocPath(srcs)) for srcs in Split("""tutorial python
         c++ cudd""") ] ))
 
     # Non-executables to be installed
