@@ -731,7 +731,8 @@ if distribute or rpm_generation or deb_generation:
 
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
-    tutorial/tutorial.tex python/genpythondoc.py man/ipbori.1 """) ]
+    tutorial/tutorial.tex tutorial/tutorial_content.tex python/genpythondoc.py
+    man/ipbori.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
 if distribute:
