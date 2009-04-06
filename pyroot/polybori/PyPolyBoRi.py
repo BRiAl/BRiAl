@@ -1,5 +1,7 @@
 from sys import modules
 from itertools import chain
+import re
+import warnings
 # First try, whether PyPolyBoRi is already in modules (e.g. static profiling)
 try:
     pb = modules["PyPolyBoRi"]
@@ -79,3 +81,39 @@ _gauss_on_polys=gauss_on_polys
 def gauss_on_polys(l):
     vec=BoolePolynomialVector(l)
     return list(_gauss_on_polys(vec))
+
+snake_pattern=re.compile('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
+def to_snake_case(s):
+    return snake_pattern.sub('_\\1', s).lower().strip('_')
+    
+def warn_snake_case(a, snaked):
+    warnings.warn("access to %s is deprecated, use %s instead" % (a, snaked), stacklevel=3)
+def _strategy_getattr(self, a):
+    if hasattr(self.reduction_strategy, a):
+        return getattr(self.reduction_strategy,a)
+    snaked=to_snake_case(a)
+
+    if snaked in self.__dict__:
+        warn_snake_case(a, snaked)
+        return self.__dict__[snaked]
+    if hasattr(self.reduction_strategy, snaked):
+        warn_snake_case(a, snaked)
+        return getattr(self.reduction_strategy, snaked)
+    raise AttributeError
+def _strategy_setattr(self, a, v):
+    if a in self.__dict__:
+        self.__dict__[a]=v
+        return
+    if hasattr(self.reduction_strategy, a):
+        return setattr(self.reduction_strategy, a, v)
+    snaked=to_snake_case(a)
+    if snaked in self.__dict__:
+        warn_snake_case(a, snaked)
+        return setattr(self, snaked, v)
+    
+    if hasattr(self.reduction_strategy, snaked):
+        warn_snake_case(a, snaked)
+        return setattr(self.reduction_strategy, snaked, v)
+    self.__dict__[a]=v
+GroebnerStrategy.__getattr__=_strategy_getattr
+GroebnerStrategy.__setattr__=_strategy_setattr
