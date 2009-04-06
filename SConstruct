@@ -5,7 +5,7 @@ opts = Options('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.6"
-pborirelease = "0rc0"
+pborirelease = "0rc1"
 
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
@@ -805,8 +805,10 @@ def cp_pydoc(target, source, env):
     if not path.exists(target):
         Execute(Mkdir(target))
     showpath = relpath(env.Dir(target).abspath,
-                       env.Dir(env['PYINSTALLPREFIX']).abspath) +'/'
+                       env.Dir(env['PYINSTALLPREFIX']).abspath)
 
+    if showpath != '' and showpath[-1] != '/':
+         showpath += '/'
     for file in glob(path.join(source, '*.html')):
         if not path.isdir(file):
             fcontent = open(file).read()
