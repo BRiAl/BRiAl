@@ -1699,7 +1699,7 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<true, false, false>(p,reductors);
 }
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
-    return ll_red_nf_generic<false, false, false>(p,reductors);
+    return ll_red_nf_generic<false, true, false>(p,reductors);
 }
 
 
