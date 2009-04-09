@@ -19,13 +19,6 @@
 #include <iostream>
 #include "cache_manager.h"
 #include "polynomial_properties.h"
-#ifdef HAVE_HASH_MAP
-#include <ext/hash_map>
-#else
-#include <map>
-#endif
-
-
 
 #ifndef PBORI_GB_ALG_H
 #define PBORI_GB_ALG_H
@@ -98,14 +91,6 @@ public:
     return m.hash();
   }
 };
-/*
-#ifdef HAVE_HASH_MAP
-typedef __gnu_cxx::hash_map<Monomial,int, MonomialHasher> generators.lm2Index_map_type;
-#else
-typedef std::map<Monomial,int> generators.lm2Index_map_type;
-#endif
-*/
-
 
 typedef Monomial::idx_map_type lm2Index_map_type;
 typedef Exponent::idx_map_type exp2Index_map_type;

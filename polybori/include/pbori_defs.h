@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2009/04/09 13:55:14  dreyer
+ * Fix: Compatibility: gcc4.3, python 2.6, c++0x
+ *
  * Revision 1.45  2008/09/21 22:21:03  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -506,7 +509,7 @@ struct CTypes:
   typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
 
   /// Fix type and value of maximal index
-  static idx_type max_index() { return CCompareEnums::max_idx; }
+  static idx_type max_index() { return max_idx; }
 };
 
 END_NAMESPACE_PBORI

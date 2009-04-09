@@ -280,6 +280,13 @@ external_m4ri = False
 if not env.GetOption('clean'):
     conf = Configure(env)
 
+
+
+    if conf.CheckCXXHeader('unordered_map'):
+        env.Append(CPPDEFINES=["HAVE_UNORDERED_MAP"])
+    elif conf.CheckCXXHeader('tr1/unordered_map'):
+        env.Append(CPPDEFINES=["HAVE_TR1_UNORDERED_MAP"])
+        
     extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         env.Append(CPPPATH=[pyconf.incdir])

@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.43  2009/04/09 13:55:14  dreyer
+ * Fix: Compatibility: gcc4.3, python 2.6, c++0x
+ *
  * Revision 1.42  2009/03/31 08:30:49  dreyer
  * CHANGE: started consistent use of lead* instea of lm*
  *
@@ -165,10 +168,19 @@
 
 // get map/hash_map functionality from stl/stl-ext
 #define HAVE_HASH_MAP 1
-#ifdef HAVE_HASH_MAP
-#  include <ext/hash_map>
-#else
-#  include <map>
+
+#ifdef HAVE_TR1_UNORDERED_MAP
+#  include <tr1/unordered_map>
+#else 
+#  ifdef HAVE_UNORDERED_MAP
+#    include <unordered_map>
+#  else
+#    ifdef HAVE_HASH_MAP
+#      include <ext/hash_map>
+#    else
+#     include <map>
+#    endif
+#  endif
 #endif
 
 #ifndef pbori_func_h_
@@ -761,10 +773,19 @@ class generate_index_map {
   typedef typename Type::idx_type idx_type;
 public:
   /// Type for index maps
-#ifdef HAVE_HASH_MAP
-  typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
+
+#ifdef HAVE_TR1_UNORDERED_MAP
+  typedef std::tr1::unordered_map<Type, idx_type, hashes<Type> > type;
 #else
-  typedef std::map<Type, idx_type> type;
+#  ifdef HAVE_UNORDERED_MAP
+     typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
+#  else
+#    ifdef HAVE_HASH_MAP
+      typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
+#    else
+       typedef std::map<Type, idx_type> type;
+#    endif
+#  endif
 #endif
 };
 

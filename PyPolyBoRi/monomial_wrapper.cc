@@ -34,7 +34,7 @@ static BooleMonomial mon_power(const BooleMonomial& p, int n){
 //  p.prettyPrint(c);
 //}
 static boost::python::tuple mon2tuple(const BooleMonomial& m ){
-  return tuple(m);
+  return boost::python::tuple(m);
 }
 static BooleMonomial used_var(const BooleMonomial& m){
     return m;

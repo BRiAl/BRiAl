@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2009/04/09 13:55:14  dreyer
+ * Fix: Compatibility: gcc4.3, python 2.6, c++0x
+ *
  * Revision 1.9  2008/09/21 22:21:02  dreyer
  * Change: deg_type replaces size_type for deg(), etc.
  *
@@ -90,7 +93,7 @@ class BlockDegRevLexAscOrder:
   /// Default Constructor
   BlockDegRevLexAscOrder(): base(), m_indices() {
     m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_idx); 
+    m_indices.push_back(CTypes::max_index()); 
   };
 
   /// Copy Constructor
@@ -132,12 +135,12 @@ class BlockDegRevLexAscOrder:
   block_iterator blockEnd() const { return m_indices.end(); }
   void appendBlock(idx_type idx) { 
     m_indices.back() = idx;
-    m_indices.push_back(CTypes::max_idx);
+    m_indices.push_back(CTypes::max_index());
   }
   void clearBlocks() {
     m_indices.clear(); 
     m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_idx); 
+    m_indices.push_back(CTypes::max_index()); 
   }
   //@}
 
