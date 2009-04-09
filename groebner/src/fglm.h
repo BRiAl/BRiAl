@@ -28,14 +28,14 @@ public:
     void analyzeGB(const ReductionStrategy& gb);
     void setupMultiplicationTables();
     void setupStandardMonomialsFromTables();
-    void writeRowToVariableDivisors(packedmatrix* row, Monomial lm);
+    void writeRowToVariableDivisors(mzd_t* row, Monomial lm);
     void testMultiplicationTables();
     void transposeMultiplicationTables();
-    void writeTailToRow(MonomialSet tail, packedmatrix* row);
-    Polynomial rowToPoly(packedmatrix* row);
+    void writeTailToRow(MonomialSet tail, mzd_t* row);
+    Polynomial rowToPoly(mzd_t* row);
     //allocates a window, free it with mzd_free_window
-    void findVectorInMultTables(packedmatrix* dst, Monomial m);
-    packedmatrix* multiplicationTableForVariable(const Variable& v){
+    void findVectorInMultTables(mzd_t* dst, Monomial m);
+    mzd_t* multiplicationTableForVariable(const Variable& v){
         return multiplicationTables[ring2Index[v.index()]];
     }
     ~FGLMStrategy(){
@@ -50,7 +50,7 @@ private:
     Monomial vars;
     size_t varietySize;
     typedef std::vector<Monomial> MonomialVector;
-    typedef std::vector<packedmatrix*> MatrixVector;
+    typedef std::vector<mzd_t*> MatrixVector;
     typedef std::vector<Variable> VariableVector;
     
     
@@ -83,7 +83,7 @@ private:
     IndexVector rowIsStandardMonomialToWithIndex;
     Exponent::idx_map_type standardExponentsFrom2Index;
     Polynomial reducedNormalFormInFromRing(Polynomial f);
-    IndexVector rowVectorIsLinearCombinationOfRows(packedmatrix* mat,   packedmatrix* v);
+    IndexVector rowVectorIsLinearCombinationOfRows(mzd_t* mat,   mzd_t* v);
     };
 END_NAMESPACE_PBORIGB
 #endif    

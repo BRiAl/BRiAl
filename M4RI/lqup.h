@@ -4,6 +4,9 @@
  * \brief PLUQ matrix decomposition routines.
  *
  * \author Clement Pernet <clement.pernet@gmail.com>
+ * 
+ * \note This file should be called pluq.h and will be renamed in the
+ * future.
  */
 
 
@@ -46,60 +49,65 @@
  *
  * If (P,L,U,Q) satisfy PLUQ = A, it returns (P^T, L, U, Q^T).
  *
+ * P and Q must be preallocated but they don't have to be
+ * identity permutations. If cutoff is zero a value is chosen
+ * automatically. It is recommended to set cutoff to zero for most
+ * applications.
+ *
  * The row echelon form (not reduced) can be read from the upper
  * triangular matrix U. See mzd_echelonize_pluq() for details.
  * 
  * This is the wrapper function including bounds checks. See
  * _mzd_pluq() for implementation details.
  *
- * \param A Input matrix
- * \param P Output row permutation matrix
- * \param Q Output column permutation matrix
+ * \param A Input m x n matrix
+ * \param P Output row permutation of length m
+ * \param Q Output column permutation matrix of length n
  * \param cutoff Minimal dimension for Strassen recursion.
  *
+ * \sa _mzd_pluq() _mzd_pluq_mmpf() mzd_echelonize_pluq()
+ *
+ * \wordoffset
+ *
+ * \return Rank of A.
  */
 
-size_t mzd_pluq(packedmatrix *A, permutation *P, permutation * Q, const int cutoff);
+size_t mzd_pluq(mzd_t *A, mzp_t *P, mzp_t * Q, const int cutoff);
 
 /**
  * \brief PLUQ matrix decomposition.
  *
- * Computes the PLUQ matrix decomposition using a block recursive
- * algorithm.
+ * See mzd_pluq() for details.
  *
- * If (P,L,U,Q) satisfy PLUQ = A, this routine returns (P^T,L,U,Q^T).
- *
- * The row echelon form (not reduced) can be read from the upper
- * triangular matrix U*Q. See mzd_echelonize_pluq() for (reduced) row
- * echelon forms using PLUQ factorisation.
- * 
- * The matrix L and U are stored in place over A.
- * 
  * \param A Input matrix
- * \param P Output row permutation matrix
- * \param Q Output column permutation matrix
+ * \param P Output row mzp_t matrix
+ * \param Q Output column mzp_t matrix
  * \param cutoff Minimal dimension for Strassen recursion.
+ *
+ * \sa mzd_pluq()
+ *
+ * \wordoffset
+ * \return Rank of A.
  */
 
-size_t _mzd_pluq(packedmatrix *A, permutation * P, permutation * Q, const int cutoff);
+size_t _mzd_pluq(mzd_t *A, mzp_t * P, mzp_t * Q, const int cutoff);
 
 /**
  * \brief PLUQ matrix decomposition (naive base case).
  *
- * Computes the PLUQ matrix decomposition using the naive algorithm.
- *
- * If (P,L,U,Q) satisfy PLUQ = A, it returns (P^T, L, U, Q^T). 
- * 
- * The matrix L and U are stored in place over A.
+ * See mzd_pluq() for details.
  * 
  * \param A Input matrix
- * \param P Output row permutation matrix
- * \param Q Output column permutation matrix
+ * \param P Output row mzp_t matrix
+ * \param Q Output column mzp_t matrix
  *
  * \sa mzd_pluq()
+ *
+ * \wordoffset
+ * \return Rank of A.
  */
 
-size_t _mzd_pluq_naive(packedmatrix *A, permutation * P, permutation * Q);
+size_t _mzd_pluq_naive(mzd_t *A, mzp_t * P, mzp_t * Q);
 
 /**
  * \brief (Reduced) row echelon form using PLUQ factorisation.
@@ -108,10 +116,13 @@ size_t _mzd_pluq_naive(packedmatrix *A, permutation * P, permutation * Q);
  * \param full Return the reduced row echelon form, not only upper triangular form.
  *
  * \wordoffset
+ *
  * \sa mzd_pluq()
+ *
+ * \return Rank of A.
  */
 
 
-size_t mzd_echelonize_pluq(packedmatrix *A, int full);
+size_t mzd_echelonize_pluq(mzd_t *A, int full);
 
 #endif

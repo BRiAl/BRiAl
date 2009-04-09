@@ -34,7 +34,7 @@ BEGIN_NAMESPACE_PBORIGB
 
 
 #ifdef DRAW_MATRICES
-void drawmatrix(packedmatrix* mat, const char* filename){
+void drawmatrix(mzd_t* mat, const char* filename){
     int i,r,c,j;
     c=mat->ncols;
     r=mat->nrows;
@@ -1800,7 +1800,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     #ifndef HAVE_M4RI
     mat_GF2 mat(INIT_SIZE,rows,cols);
     #else
-    packedmatrix* mat=mzd_init(rows,cols);
+    mzd_t* mat=mzd_init(rows,cols);
     #endif
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
@@ -1836,7 +1836,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
             drawmatrix(mat,matname);
         #endif
     }
-    int rank=mzd_echelonize_m4ri(mat,TRUE,0,NULL,NULL);
+    int rank=mzd_echelonize_m4ri(mat,TRUE,0);
     #endif
     for(i=rank-1;i>=0;i--){
         int j;
@@ -1933,7 +1933,7 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
         }
     leads_from_strat=res_terms.diff(mod_mon_set(res_terms,strat.generators.minimalLeadingTerms));
 }
-void fill_matrix(packedmatrix* mat,vector<Polynomial> polys, from_term_map_type from_term_map){
+void fill_matrix(mzd_t* mat,vector<Polynomial> polys, from_term_map_type from_term_map){
     int i;
     for(i=0;i<polys.size();i++){
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
@@ -1951,7 +1951,7 @@ void fill_matrix(packedmatrix* mat,vector<Polynomial> polys, from_term_map_type 
     }
 }
 
-void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,packedmatrix* mat,const vector<int>& ring_order2lex, const vector<Exponent>& terms_as_exp,const vector<Exponent>& terms_as_exp_lex,int rank){
+void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_t* mat,const vector<int>& ring_order2lex, const vector<Exponent>& terms_as_exp,const vector<Exponent>& terms_as_exp_lex,int rank){
     int cols=mat->ncols;
     int rows=mat->nrows;
     
@@ -2000,7 +2000,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #ifndef HAVE_M4RI
     mat_GF2 mat(INIT_SIZE,rows,cols);
     #else
-    packedmatrix* mat=mzd_init(rows,cols);
+    mzd_t* mat=mzd_init(rows,cols);
     #endif
     vector<Exponent> terms_as_exp;
     vector<Exponent> terms_as_exp_lex;
@@ -2014,7 +2014,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
-    int rank=mzd_echelonize_m4ri(mat, TRUE, 0,NULL,NULL);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
+    int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
     if (log){
         std::cout<<"finished gauss"<<std::endl;
@@ -2026,7 +2026,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #endif
 }
 
-static void printPackedMatrixMB(packedmatrix* mat){
+static void printPackedMatrixMB(mzd_t* mat){
     int i,j;
     for(i=0;i<mat->nrows;i++){
         for(j=0;j<mat->ncols;j++){
@@ -2035,9 +2035,9 @@ static void printPackedMatrixMB(packedmatrix* mat){
         std::cout<<std::endl;
     }
 }
-static packedmatrix* transposePackedMB(packedmatrix* mat){
+static mzd_t* transposePackedMB(mzd_t* mat){
     return mzd_transpose(NULL,mat);
-    /*packedmatrix* res=mzd_init(mat->ncols,mat->nrows);
+    /*mzd_t* res=mzd_init(mat->ncols,mat->nrows);
     int i,j;
     for(i=0;i<mat->nrows;i++){
         for(j=0;j<mat->ncols;j++){
@@ -2113,7 +2113,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;
     int remaining_cols;
-    packedmatrix* mat_step1;
+    mzd_t* mat_step1;
     vector<int> compactified_columns2old_columns;
     int rows_step1;
     vector<int> row_start;
@@ -2147,7 +2147,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         #endif
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri
-            (mat_step1,0,NULL,NULL);
+            (mat_step1,0);
 //          optimal_k_for_gauss(mat_step1->nrows,mat_step1->ncols,strat));//gaussianPacked(mat_step1,TRUE);
         if (log){
             std::cout<<"finished gauss"<<std::endl;
@@ -2197,7 +2197,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         // std::cout<<"after translate"<<std::endl;
         //     printPackedMatrixMB(mat_step1);
         //delete columns
-        packedmatrix* transposed_step1=mzd_transpose(NULL,mat_step1);
+        mzd_t* transposed_step1=mzd_transpose(NULL,mat_step1);
         if (log){
             std::cout<<"finished transpose"<<std::endl;
         }
@@ -2220,7 +2220,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         
         //cols, rows arguments are swapped, as matrix is transposed
 
-        packedmatrix* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
+        mzd_t* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
 
         if (log){
             std::cout<<"finished submat"<<std::endl;
@@ -2237,8 +2237,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     MonomialSet terms_step2=terms.diff(terms_unique);
     const int rows_step2=polys_rest.size();
     const int cols_step2=terms_step2.size();
-    packedmatrix* mat_step2=mzd_init(rows_step2,cols_step2);
-    packedmatrix* mat_step2_factor=mzd_init(rows_step2,mat_step1->nrows);
+    mzd_t* mat_step2=mzd_init(rows_step2,cols_step2);
+    mzd_t* mat_step2_factor=mzd_init(rows_step2,mat_step1->nrows);
     
     vector<Exponent> terms_as_exp_step2;
     vector<Exponent> terms_as_exp_lex_step2;
@@ -2315,7 +2315,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     
     
     
-    packedmatrix* eliminated;
+    mzd_t* eliminated;
     if ((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
         eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);
     else
@@ -2355,7 +2355,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         drawmatrix(mat_step2,matname);
     }
     #endif
-    int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0,NULL,NULL);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
+    int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
         if (log){
             std::cout<<"finished gauss"<<std::endl;

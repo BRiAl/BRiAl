@@ -56,11 +56,11 @@
  * \wordoffset
  */
 
-void mzd_make_table( packedmatrix *M, size_t r, size_t c, int k, packedmatrix *T, size_t *L);
+void mzd_make_table( mzd_t *M, size_t r, size_t c, int k, mzd_t *T, size_t *L);
 
 /**
- * \brief The function looks up k bits from position i,startcol in each row
- * and adds the appropriate row from T to the row i. 
+ * \brief The function looks up k bits from position i,startcol in
+ * each row and adds the appropriate row from T to the row i.
  *
  * This process is iterated for i from startrow to stoprow
  * (exclusive).
@@ -76,7 +76,7 @@ void mzd_make_table( packedmatrix *M, size_t r, size_t c, int k, packedmatrix *T
  * \wordoffset
  */
 
-void mzd_process_rows(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, packedmatrix *T, size_t *L);
+void mzd_process_rows(mzd_t *M, size_t startrow, size_t endrow, size_t startcol, int k, mzd_t *T, size_t *L);
 
 /**
  * \brief Same as mzd_process_rows but works with two Gray code tables
@@ -95,7 +95,7 @@ void mzd_process_rows(packedmatrix *M, size_t startrow, size_t endrow, size_t st
  * \wordoffset
  */
 
-void mzd_process_rows2(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1);
+void mzd_process_rows2(mzd_t *M, size_t startrow, size_t endrow, size_t startcol, int k, mzd_t *T0, size_t *L0, mzd_t *T1, size_t *L1);
 
 /**
  * \brief Same as mzd_process_rows but works with three Gray code tables
@@ -116,9 +116,9 @@ void mzd_process_rows2(packedmatrix *M, size_t startrow, size_t endrow, size_t s
  * \wordoffset
  */
 
-void mzd_process_rows3(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k, 
-                       packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1,
-                       packedmatrix *T2, size_t *L2);
+void mzd_process_rows3(mzd_t *M, size_t startrow, size_t endrow, size_t startcol, int k, 
+                       mzd_t *T0, size_t *L0, mzd_t *T1, size_t *L1,
+                       mzd_t *T2, size_t *L2);
 
 /**
  * \brief Same as mzd_process_rows but works with four Gray code tables
@@ -141,27 +141,27 @@ void mzd_process_rows3(packedmatrix *M, size_t startrow, size_t endrow, size_t s
  * \wordoffset
  */
 
-void mzd_process_rows4(packedmatrix *M, size_t startrow, size_t endrow, size_t startcol, int k,
-                       packedmatrix *T0, size_t *L0, packedmatrix *T1, size_t *L1,
-                       packedmatrix *T2, size_t *L2, packedmatrix *T3, size_t *L3);
+void mzd_process_rows4(mzd_t *M, size_t startrow, size_t endrow, size_t startcol, int k,
+                       mzd_t *T0, size_t *L0, mzd_t *T1, size_t *L1,
+                       mzd_t *T2, size_t *L2, mzd_t *T3, size_t *L3);
 
 /**
  * \brief Matrix elimination using the 'Method of the Four Russians'
  * (M4RI).
- * 
+ *
  * \param M Matrix to be reduced.
  * \param full Return the reduced row echelon form, not only upper triangular form.
  * \param k M4RI parameter, may be 0 for auto-choose.
- * \param T Preallocated table, may be NULL for automatic creation.
- * \param L Preallocated lookup table, may be NULL for automatic creation.
  *
  * \example testsuite/test_elimination.c
  * \example testsuite/bench_elimination.c
  * 
  * \wordoffset
+ *
+ * \return Rank of A.
  */
 
-int mzd_echelonize_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_t *L);
+size_t mzd_echelonize_m4ri(mzd_t *M, int full, int k);
 
 /**
  * \brief Given a matrix in upper triangular form compute the reduced row
@@ -169,27 +169,33 @@ int mzd_echelonize_m4ri(packedmatrix *M, int full, int k, packedmatrix *T, size_
  * 
  * \param M Matrix to be reduced.
  * \param k M4RI parameter, may be 0 for auto-choose.
- * \param T Preallocated table, may be NULL for automatic creation.
- * \param L Preallocated lookup table, may be NULL for automatic creation.
  *
  * \wordoffset
+ *
+ * \note This function isn't as optimized as it should be.
  */
 
-void mzd_top_echelonize_m4ri(packedmatrix *M, int k, packedmatrix *T, size_t *L);
+void mzd_top_echelonize_m4ri(mzd_t *M, int k);
 
 /**
- * \brief Invert the matrix M using Konrod's method. To avoid
- * recomputing the identity matrix over and over again, I may be
- * passed in as identity parameter.
+ * \brief Invert the matrix M using Konrod's method. 
+ * 
+ * To avoid recomputing the identity matrix over and over again, I may
+ * be passed in as identity parameter.
  *
  * \param M Matrix to be reduced.
  * \param I Identity matrix.
  * \param k M4RI parameter, may be 0 for auto-choose.
  *
  * \wordoffset
+ *
+ * \return Inverse of M
+ *
+ * \note This function allocates a new matrix for the inverse which
+ * must be free'd using mzd_free() once not needed anymore.
  */
 
-packedmatrix *mzd_invert_m4ri(packedmatrix *M, packedmatrix *I, int k);
+mzd_t *mzd_invert_m4ri(mzd_t *M, mzd_t *I, int k);
 
 /**
  * \brief Matrix multiplication using Konrod's method, i.e. compute C
@@ -204,9 +210,11 @@ packedmatrix *mzd_invert_m4ri(packedmatrix *M, packedmatrix *I, int k);
  * \param k M4RI parameter, may be 0 for auto-choose.
  *
  * \wordoffset
+ *
+ * \return Pointer to C.
  */
 
-packedmatrix *mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
+mzd_t *mzd_mul_m4rm(mzd_t *C, mzd_t *A, mzd_t *B, int k);
 
 
 /**
@@ -218,9 +226,11 @@ packedmatrix *mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, in
  * \param k M4RI parameter, may be 0 for auto-choose.
  *
  * \wordoffset
+ *
+ * \return Pointer to C.
  */
 
-packedmatrix *mzd_addmul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k);
+mzd_t *mzd_addmul_m4rm(mzd_t *C, mzd_t *A, mzd_t *B, int k);
 
 /**
  * \brief Matrix multiplication using Konrod's method, i.e. compute C such
@@ -238,9 +248,11 @@ packedmatrix *mzd_addmul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B,
  * \author William Hart -- block matrix implementation, use of several Gray code tables, general speed-ups
  *
  * \wordoffset
+ *
+ * \return Pointer to C.
  */
 
-packedmatrix *_mzd_mul_m4rm(packedmatrix *C, packedmatrix *A, packedmatrix *B, int k, int clear);
+mzd_t *_mzd_mul_m4rm(mzd_t *C, mzd_t *A, mzd_t *B, int k, int clear);
 
 /**
  * \brief If defined 8 Gray code tables are used in parallel.

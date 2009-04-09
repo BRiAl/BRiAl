@@ -20,7 +20,7 @@ extern "C"{
 BEGIN_NAMESPACE_PBORIGB
 #ifdef DRAW_MATRICES
 
-void drawmatrix(packedmatrix* mat, const char* filename);
+void drawmatrix(mzd_t* mat, const char* filename);
 #endif
 Polynomial add_up_exponents(const std::vector<Exponent>& vec);
 Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
