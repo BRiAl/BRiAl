@@ -2,6 +2,7 @@ from sys import modules
 from itertools import chain
 import re
 import warnings
+compatibility_mode=False
 # First try, whether PyPolyBoRi is already in modules (e.g. static profiling)
 try:
     pb = modules["PyPolyBoRi"]
@@ -115,5 +116,6 @@ def _strategy_setattr(self, a, v):
         warn_snake_case(a, snaked)
         return setattr(self.reduction_strategy, snaked, v)
     self.__dict__[a]=v
-GroebnerStrategy.__getattr__=_strategy_getattr
-GroebnerStrategy.__setattr__=_strategy_setattr
+if compatibility_mode:
+    GroebnerStrategy.__getattr__=_strategy_getattr
+    GroebnerStrategy.__setattr__=_strategy_setattr
