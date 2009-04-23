@@ -332,16 +332,18 @@ if not env.GetOption('clean'):
     else:
        env['CPPPATH'] += ['M4RI']
 
+       # generate M4RI/m4ri, to allow canonical #include <m4ri/m4ri.h>
+       if not path.exists(m4ri_inc):
+           print "Symlinking to", m4ri_inc, "..."
+           os.symlink('.', m4ri_inc)
+
     env = conf.Finish()
 
-    # generate M4RI/m4ri, to allow canonical #include <m4ri/m4ri.h>
-    if not path.exists(m4ri_inc):
-        print "Symlinking to", m4ri_inc, "..."
-        os.symlink('.', m4ri_inc)
+
 else:
     # Removing symlink M4RI/m4ri
-    print "Removing symbolic link to ", m4ri_inc, "..."
     if path.exists(m4ri_inc) and path.islink(m4ri_inc):
+        print "Removing symbolic link to ", m4ri_inc, "..."
         os.remove(m4ri_inc)
 
 # end of not cleaning
