@@ -20,6 +20,8 @@ m4ri=["grayflex.c", "permutation.c", "packedmatrix.c","strassen.c","misc.c",
 "brilliantrussian.c"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
+m4ri_inc = 'M4RI/m4ri'
+
 # Fix some paths and names
 class PathJoiner(object):
     """Generates a valid path from lists of strings, with custom prefix (set at
@@ -331,6 +333,17 @@ if not env.GetOption('clean'):
        env['CPPPATH'] += ['M4RI']
 
     env = conf.Finish()
+
+    # generate M4RI/m4ri, to allow canonical #include <m4ri/m4ri.h>
+    if not path.exists(m4ri_inc):
+        print "Symlinking to", m4ri_inc, "..."
+        os.symlink('.', m4ri_inc)
+else:
+    # Removing symlink M4RI/m4ri
+    print "Removing symbolic link to ", m4ri_inc, "..."
+    if path.exists(m4ri_inc) and path.islink(m4ri_inc):
+        os.remove(m4ri_inc)
+
 # end of not cleaning
 
 env.Clean('.', glob('*.pyc') + ['config.log'] )
@@ -350,12 +363,14 @@ def build_symlink(target, source, env):
     source = source[0].path
     if env['RELATIVE_SYMLINK'] :
         source = relpath(targetdir, source)
-    
+    if not source:
+        source = '.'
+        
     print "Symlinking from", source, "to", target
     
     try:
         if path.exists(target):
-            env.Remove(target)
+            os.remove(target)
         os.symlink(source, target)
     except:
         return True
@@ -364,6 +379,7 @@ def build_symlink(target, source, env):
 symlinkbld = Builder(action = build_symlink)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld})
+
 ######################################################################
 # Stuff for building Cudd library
 ######################################################################

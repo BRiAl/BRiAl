@@ -10,7 +10,7 @@
 #include "nf.h"
 #include "interpolate.h"
 extern "C" {
-#include <packedmatrix.h>
+#include <m4ri/packedmatrix.h>
 }
 BEGIN_NAMESPACE_PBORIGB
 

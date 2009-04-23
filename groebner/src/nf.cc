@@ -22,9 +22,6 @@
 NTL_CLIENT
 #endif
 #ifdef HAVE_M4RI
-extern "C"{
-#include "m4ri.h"
-}
 const int M4RI_MAXKAY = 16;
 #endif
 using std::cout;

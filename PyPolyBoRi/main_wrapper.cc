@@ -22,8 +22,8 @@
 #ifdef HAVE_M4RI
 #define PACKED 1
 extern "C"{
-#include "packedmatrix.h"
-#include "grayflex.h"
+#include "m4ri/packedmatrix.h"
+#include "m4ri/grayflex.h"
 }
 
 #endif

@@ -12,7 +12,7 @@
 #include <BooleEnv.h>
 #include "groebner_alg.h"
 extern "C" {
-#include <m4ri.h>
+#include <m4ri/m4ri.h>
 }
 BEGIN_NAMESPACE_PBORIGB
 
