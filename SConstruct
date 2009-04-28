@@ -798,7 +798,8 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
                 glob(GBPath('src/*.h')))
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
     if not(external_m4ri):
-        env.Install(DevelInstPath('include/polybori/M4RI'), glob('M4RI/*.h'))
+        env.Install(DevelInstPath('include/m4ri'), glob('M4RI/*.h'))
+        
     env.Alias('devel-install', DevelInstPath())
 
 
