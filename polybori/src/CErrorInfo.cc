@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2009/05/15 12:27:22  dreyer
+ * Fix: exception for matrix size exceeded
+ *
  * Revision 1.9  2008/03/11 10:04:12  dreyer
  * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
  *
@@ -75,6 +78,7 @@ CErrorInfo::CErrorInfo() {
     "Node index must be smaller than top indices of then- and else-branch.";
   pErrorText[CTypes::not_implemented] =
     "Sorry! Functionality not implemented yet.";
+  pErrorText[CTypes::matrix_size_exceeded] = "Built-in matrix-size exceeded!";
 }
 
 // convert error code to description text

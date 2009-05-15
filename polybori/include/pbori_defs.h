@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2009/05/15 12:27:22  dreyer
+ * Fix: exception for matrix size exceeded
+ *
  * Revision 1.46  2009/04/09 13:55:14  dreyer
  * Fix: Compatibility: gcc4.3, python 2.6, c++0x
  *
@@ -391,6 +394,7 @@ struct CErrorEnums {
     division_by_zero,
     invalid_ite,
     not_implemented,
+    matrix_size_exceeded,
 
     last_error
   };
