@@ -1,3 +1,6 @@
+Release Name: 0.6.1
+* Fixed performance critical bug in normal form.
+
 Release Name: 0.6.0
 * FGLM implementation
 * new Python module polybori.parallel (uses and requires pyprocessing)
@@ -183,7 +186,7 @@ Changes:
 Release Name: 0.2
 
 Notes:
-Most important changes are refined Gröbner algorithms and several
+Most important changes are refined Grbner algorithms and several
 stability improvements. 
 The main modifications for library users are,
 that the static parts of BoolePolyRing were moved to the new class BooleEnv.
@@ -211,7 +214,7 @@ Changes:
 * The static elements from BoolePolyRing were moved to the new class BooleEnv
 * C++-based core procedures should now select the correct ring internally
 * Better hashes for Boolean polynomials
-* Algorithmic improvements in Gröbner routines
+* Algorithmic improvements in Grbner routines
 * Interpolation of Boolean polynomials added
 
 ------------------------------------------------------------------------------
@@ -235,7 +238,7 @@ Release Name: 0.2rc0
 
 Notes:
 This is a release candidate  for upcoming PolyBoRi 0.2. 
-Most important changes are refined Gröbner algorithms and several
+Most important changes are refined Grbner algorithms and several
 stability improvements. 
 The main modifications for library users are,
 that the static parts of BoolePolyRing were moved to the new class BooleEnv.
