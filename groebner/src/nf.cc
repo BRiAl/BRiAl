@@ -1670,7 +1670,7 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
             cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch()),
         ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(
             cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch()));
-}{
+} else {
        res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(
            Polynomial(MonomialSet(cache_mgr.generate(p_nav.elseBranch())))
            +multiply<fast_multiplication>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),
