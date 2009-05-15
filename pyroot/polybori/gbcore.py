@@ -157,8 +157,8 @@ def clean_polys_pre(I):
     return (clean_polys(I),None) 
 def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):
     def make_wrapper(f):
-        def wrapper(I, prot=False, **kwds):
-
+        def wrapper(I, **kwds):
+            prot=kwds.get("prot", False)
             for o in if_not_option:
                 if (o in kwds and kwds[o]) or (o not in kwds and groebner_basis.options[o]):
                     option_set=False
