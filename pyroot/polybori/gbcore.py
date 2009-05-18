@@ -239,6 +239,13 @@ def ll_constants_pre(I):
             reduced.append(p)
     return (reduced,ll)
 
+
+def variety_size_from_gb(I):
+    sm=Monomial(used_vars_set(I)).divisors()
+    for p in I:
+        m=p.lead()
+        sm=sm.diff(sm.multiples_of(m))
+    return sm.size_double()
 def other_ordering_pre(I,option_set,kwds):
     main_kwds=kwds
     options=option_set
@@ -250,8 +257,10 @@ def other_ordering_pre(I,option_set,kwds):
     kwds["redsb"]=True
     I_orig=I
     I=groebner_basis(I,**kwds)
+    variety_size=variety_size_from_gb(I)
     old_ring.set()
-    main_kwds["convert_with_fglm_from_ring"]=new_ring
+    if variety_size_from_gb<50000:
+        main_kwds["convert_with_fglm_from_ring"]=new_ring
     
     return (I,None)
 def llfirstonthefly_pre(I,prot):
