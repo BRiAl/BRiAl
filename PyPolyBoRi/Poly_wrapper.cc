@@ -78,7 +78,7 @@ void export_poly(){
   .def(boost::python::init<int>())
   .def("__hash__", &BoolePolynomial::hash, "Fast hash code, based on the \
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
-  .def("stableHash", &BoolePolynomial::stableHash, "Reproducible hash code")
+  .def("stable_hash", &BoolePolynomial::stableHash, "Reproducible hash code")
   .def("__len__", &BoolePolynomial::length, "Number of terms")
   .def("terms", 
        range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))

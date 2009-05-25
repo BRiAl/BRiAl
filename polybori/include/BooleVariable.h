@@ -18,6 +18,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.22  2009/05/25 10:40:39  dreyer
+ * Fix: hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
+ *
  * Revision 1.21  2008/03/05 16:23:37  dreyer
  * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
  *
@@ -117,6 +120,7 @@ class BooleVariable {
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::idx_type idx_type;
+  typedef CTypes::hash_type hash_type;
   //@}
 
   /// Generic access to current type
@@ -151,9 +155,19 @@ class BooleVariable {
   bool operator== (const self& other) const{
       return m_poly==other.m_poly;
   }
+
+  // Nonequality check
   bool operator!= (const self& other) const{
         return m_poly!=other.m_poly;
   }
+
+  /// Hash value of the variable
+  hash_type stableHash() const{  return m_poly.stableHash(); }
+
+  /// Get unique hash value (valid only per runtime)
+  hash_type hash() const {  return m_poly.hash(); }
+
+  /// Convert to Boolean set
   set_type set() const { return m_poly.set(); }
 
   /// Access ring, where this belongs to
