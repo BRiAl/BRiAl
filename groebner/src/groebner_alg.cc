@@ -2079,7 +2079,7 @@ void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
 
 
 void ReductionStrategy::setupSetsForLastElement(){
-    int s=size()-1;
+    const int s=size()-1;
     PolyEntry e=(*this)[s];
     Monomial lm=e.lead;
     MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
