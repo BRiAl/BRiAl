@@ -639,7 +639,7 @@ if HAVE_PYTHON_EXTENSION:
         if len(files) > 0:
             env.CNF(files)
 
-    for fdir in Split("blocksworld qg gcp_large bejing"):
+    for fdir in Split("blocksworld"):
         add_cnf_dir(env, DataPath(fdir))
 
 else:
