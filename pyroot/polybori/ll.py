@@ -1,5 +1,7 @@
 from polybori.PyPolyBoRi import *
+from polybori.statistics import used_vars_set
 
+from polybori.rank import rank
 lead_index=top_index
 #(p):
 #  return iter(p.lex_lead()).next().index()#first index
@@ -63,7 +65,10 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
       reductors=combine(reductors,p,reduce=reduce)
   return reductors
 
-def eliminate(polys, on_the_fly=False,prot=False):
+def eliminate(polys, on_the_fly=False,prot=False, optimized=True):
+  """There exists an optimized variant, which reorders the variable in a different
+  ring.
+  """
   polys=[Polynomial(p) for p in polys]
   rest=[]
   linear_leads=[]
@@ -81,7 +86,7 @@ def eliminate(polys, on_the_fly=False,prot=False):
         rest.append(p)
     else:
       rest.append(p)
-  reductors=ll_encode(linear_leads,reduce=(not on_the_fly),prot=prot)
+  
 
   if on_the_fly:
       red_fun=ll_red_nf_noredsb
@@ -90,13 +95,78 @@ def eliminate(polys, on_the_fly=False,prot=False):
   def llnf(p):
       return red_fun(p,reductors)
   reduced_list=[]
-  for p in rest:
-      p=red_fun(p,reductors)
-      if p.is_one():
-          reduced_list=[p]
-          break
-      else:
-          reduced_list.append(p)
+  if optimized:
+      (llnf, reduced_list)=eliminate_ll_ranked(
+        linear_leads,
+        rest,
+        reduction_function=red_fun,
+        reduce_ll_system=(not on_the_fly),
+        prot=prot)
+  else:
+      reductors=ll_encode(linear_leads,reduce=(not on_the_fly),prot=prot)
+      for p in rest:
+          p=red_fun(p,reductors)
+          if p.is_one():
+              reduced_list=[p]
+              break
+          else:
+              reduced_list.append(p)
 
   return (linear_leads,llnf,reduced_list)
   
+def construct_map_by_indices(to_ring, idx_mapping):
+  v=BoolePolynomialVector(to_ring.n_variables()*[to_ring.zero()])
+  for (from_idx, to_idx) in idx_mapping.iteritems():
+      v[from_idx]=to_ring.var(to_idx)
+  return v
+
+
+def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_noredsb, reduce_ll_system=False, prot=False):
+  from_ring=global_ring()
+  to_ring=Ring(from_ring)
+  ll_ranks=rank(ll_system)
+  add_vars=set(used_vars_set(to_reduce).variables()).difference(ll_ranks.keys())
+  for v in add_vars:
+      ll_ranks[v]=-1
+      #pushing variables ignored by ll to the front means,
+      #that the routines will quickly eliminate them
+      #and they won't give any overhead
+  def sort_key(v):
+      return ll_ranks[v]
+  sorted_vars=sorted(ll_ranks.keys(), key=sort_key)
+  def var_index(v):
+      return Monomial(v).variables().next().index()
+  #sorted_var_indices=[var_index(v) for v in sorted_vars]
+  map_back_indices = dict([(i, var_index(v)) for (i, v) in enumerate(sorted_vars)])
+  map_from_indices = dict([(var_index(v), i) for (i, v) in enumerate(sorted_vars)])
+  #dict([(v,k) for (k,v) in enumerate(sorted_var_indices)])
+  var_names=[str(v) for v in sorted_vars]
+  # try:
+  #     to_ring.set()
+  #     for (i, v) in enumerate(sorted_vars):
+  #       print i, var_index(v)
+  #       assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
+  #       set_variable_name(i, var_names[i])
+  # finally:
+  #     from_ring.set()
+      
+  map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
+  map_back_vec=construct_map_by_indices(from_ring, map_back_indices)
+  def map_from(p):
+      res=substitute_variables(map_from_vec, p)
+      #assert str(p)==str(res), (str(p), str(res), list(map_from_vec), list(map_back_vec))
+      return res
+  def map_back(p):
+      return substitute_variables(map_back_vec, p)
+  to_ring.set()
+  try:
+      ll_opt_encoded=ll_encode([map_from(p) for p in ll_system],
+            prot=False,
+            reduce=reduce_ll_system)
+      
+      def llnf(p):
+          return map_back(reduction_function(map_from(p), ll_opt_encoded))
+      opt_eliminated=[llnf(p) for p in to_reduce]
+  finally:
+      from_ring.set()
+  return (llnf, opt_eliminated)
