@@ -89,9 +89,12 @@ def eliminate(polys, on_the_fly=False,prot=False, optimized=True):
   
 
   if on_the_fly:
-      red_fun=ll_red_nf_noredsb
+      if optimized:
+          red_fun = ll_red_nf_noredsb_single_recursive_call
+      else:
+          red_fun = ll_red_nf_noredsb
   else:
-      red_fun=ll_red_nf_redsb
+      red_fun = ll_red_nf_redsb
   def llnf(p):
       return red_fun(p,reductors)
   reduced_list=[]
