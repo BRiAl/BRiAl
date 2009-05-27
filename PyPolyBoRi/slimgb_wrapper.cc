@@ -34,6 +34,7 @@ void export_slimgb(){
   def("mod_mon_set", mod_mon_set);
   def("ll_red_nf_redsb",ll_red_nf);
   def("ll_red_nf_noredsb",ll_red_nf_noredsb);
+  def("ll_red_nf_noredsb_single_recursive_call",ll_red_nf_noredsb_single_recursive_call);
   def("recursively_insert",recursively_insert);
   def("add_up_polynomials",add_up_polynomials);
   def("mod_mon_set",mod_mon_set);
