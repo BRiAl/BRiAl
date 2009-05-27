@@ -1657,7 +1657,7 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
   MonomialSet::navigator cached =
     cache_mgr.find(p_nav,r_nav);
   if (cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
-  Polynomial res;
+  Polynomial res(0, p.ring());
   if ((*r_nav)==p_index){
     if (have_redsb){  
       res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
@@ -1698,7 +1698,9 @@ Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<false, false, false>(p,reductors);
 }
-
+Polynomial ll_red_nf_noredsb_single_recursive_call(const Polynomial& p,const BooleSet& reductors){
+    return ll_red_nf_generic<false, true, false>(p,reductors);
+}
 
 Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     MonomialSet::navigator m_nav=m_plus_ones.navigation();
