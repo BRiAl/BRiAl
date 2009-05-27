@@ -1,6 +1,7 @@
 Release Name: 
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
 * Python interface Polynomial.stableHash -> Polynomial.stable_hash
+* added substitute_variables function in python and c++
 
 Release Name: 0.6.1
 * Fixed performance critical bug in normal form.

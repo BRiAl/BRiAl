@@ -30,24 +30,22 @@ void testvalidstrat(const GroebnerStrategy& strat){
     }
 }
 
-BoolePolynomial
-do_mapping(const BoolePolynomial& poly, const BooleMonomial& fromVars, 
-           const BooleMonomial& toVars) {
-
-  return mapping(poly, fromVars, toVars);
-}
 idx_type top_index(const BooleSet& s){
     return *(s.navigation());
 }
+
 void export_misc(){
-  def("mapping", do_mapping);
+  def("mapping", mapping<BoolePolynomial, BooleMonomial>);
+  def("substitute_variables",
+      substitute_variables<std::vector<BoolePolynomial>, BoolePolynomial> );
   def("testvalidstrat",testvalidstrat);
   def("count_double",count_double);
   def("random_set",random_set);
   def("set_random_seed",set_random_seed);
   def("variety_lex_leading_terms",variety_lex_leading_terms);
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
-  def("global_ring",&BooleEnv::ring, return_value_policy<copy_non_const_reference>());
+  def("global_ring",&BooleEnv::ring, 
+      return_value_policy<copy_non_const_reference>());
   def("top_index",top_index);
   def("gauss_on_polys", gauss_on_polys);
   

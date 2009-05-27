@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2009/05/27 07:42:40  dreyer
+ * Add: substitute_variables
+ *
  * Revision 1.46  2009/02/05 11:55:30  dreyer
  * + Minor optomization
  *
@@ -1055,6 +1058,31 @@ dd_first_multiples_of(const CacheType& cache_mgr,
 
   return init;
 }
+
+
+/// Internal variant: Maps a polynomial from one ring to another, using a given
+/// map old_index -> new_polynomial 
+template <class MapType, class NaviType, class PolyType>
+PolyType
+substitute_variables__(const MapType& idx2poly, NaviType navi, 
+                       const PolyType& zero) {
+
+  if (navi.isConstant())
+    return (zero + navi.terminalValue());
+  
+  return (idx2poly[*navi] * 
+          substitute_variables__(idx2poly, navi.thenBranch(), zero)) + 
+    substitute_variables__(idx2poly, navi.elseBranch(), zero);
+} 
+
+/// Maps a polynomial from one ring to another, using a given map
+/// old_index -> new_polynomial 
+template <class MapType, class PolyType>
+PolyType
+substitute_variables(const MapType& idx2poly, const PolyType& poly) {
+
+  return substitute_variables__(idx2poly, poly.navigation(), poly*0);
+} 
 
 
 END_NAMESPACE_PBORI
