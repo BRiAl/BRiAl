@@ -65,7 +65,7 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
       reductors=combine(reductors,p,reduce=reduce)
   return reductors
 
-def eliminate(polys, on_the_fly=False,prot=False, optimized=True):
+def eliminate(polys, on_the_fly=False,prot=False, reduction_function=None, optimized=True):
   """There exists an optimized variant, which reorders the variable in a different
   ring.
   """
@@ -87,28 +87,28 @@ def eliminate(polys, on_the_fly=False,prot=False, optimized=True):
     else:
       rest.append(p)
   
-
-  if on_the_fly:
-      if optimized:
-          red_fun = ll_red_nf_noredsb_single_recursive_call
+  if reduction_function is None:
+      if on_the_fly:
+          if optimized:
+              reduction_function = ll_red_nf_noredsb_single_recursive_call
+          else:
+              reduction_function = ll_red_nf_noredsb
       else:
-          red_fun = ll_red_nf_noredsb
-  else:
-      red_fun = ll_red_nf_redsb
+          reduction_function = ll_red_nf_redsb
   def llnf(p):
-      return red_fun(p,reductors)
+      return reduction_function(p,reductors)
   reduced_list=[]
   if optimized:
       (llnf, reduced_list)=eliminate_ll_ranked(
         linear_leads,
         rest,
-        reduction_function=red_fun,
+        reduction_function=reduction_function,
         reduce_ll_system=(not on_the_fly),
         prot=prot)
   else:
       reductors=ll_encode(linear_leads,reduce=(not on_the_fly),prot=prot)
       for p in rest:
-          p=red_fun(p,reductors)
+          p=reduction_function(p,reductors)
           if p.is_one():
               reduced_list=[p]
               break
