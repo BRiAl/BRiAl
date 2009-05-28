@@ -48,7 +48,7 @@ def ll_heuristic(d):
     d=copy(d)
     I=d["I"]
     if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
-        d["llfirst"]=True
+        d["llfirstonthefly"]=True
     return d
 
 
@@ -251,17 +251,19 @@ def other_ordering_pre(I,option_set,kwds):
     options=option_set
     ocode=get_order_code()
     old_ring=global_ring()
-    change_ordering(options["switch_to"])
-    new_ring=global_ring()
-    kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
-    kwds["redsb"]=True
-    I_orig=I
-    I=groebner_basis(I,**kwds)
-    variety_size=variety_size_from_gb(I)
-    old_ring.set()
-    if variety_size_from_gb<50000:
-        main_kwds["convert_with_fglm_from_ring"]=new_ring
+    try:
+        change_ordering(options["switch_to"])
+        new_ring=global_ring()
+        kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
+        kwds["redsb"]=True
+        I_orig=I
+        I=groebner_basis(I,**kwds)
+        variety_size=variety_size_from_gb(I)
     
+        if variety_size_from_gb<50000:
+            main_kwds["convert_with_fglm_from_ring"]=new_ring
+    finally:
+        old_ring.set()
     return (I,None)
 def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
