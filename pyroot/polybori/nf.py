@@ -163,7 +163,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         strat.enabledLog=prot
         strat.reduction_strategy.opt_ll=ll
         strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
-        strat.redByReduced=False#True
+        strat.opt_red_by_reduced=False#True
         strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
         
 
