@@ -41,14 +41,19 @@ def ll_is_good(I):
     if len(lex_lead)>=0.8*len(I):
         uv=len(used_vars_set(I))
         if len(lex_lead)>0.9*uv:
-            return True
+            if uv- len(lex_lead)>16:
+                return "llfirstonthefly"
+            else:
+                return "llfirst"
     return False
     
 def ll_heuristic(d):
     d=copy(d)
     I=d["I"]
-    if (not "llfirstonthefly" in d) and (not "llfirst" in d) and ll_is_good(I):
-        d["llfirstonthefly"]=True
+    if (not "llfirstonthefly" in d) and (not "llfirst" in d):
+        hint=ll_is_good(I)
+        if hint:
+            d[hint]=True
     return d
 
 
