@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2009/06/21 22:46:28  dreyer
+ * CHANGE: preparing ring-cloning (deep copy)
+ *
  * Revision 1.44  2008/07/13 22:49:35  dreyer
  * Fix: Doxygen clean-up
  *
@@ -317,18 +320,18 @@ public:
 
   /// Get constant one
   dd_type one() const {
-    return dd_base(m_mgr, DD_ONE(m_mgr->manager));//manager().zddOne();
+    return dd_base(m_mgr, DD_ONE(m_mgr->manager()));//manager().zddOne();
   }
   /// Get constant zero
   dd_type zero() const {
-    return dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager));//manager().zddZero();
+    return dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager()));//manager().zddZero();
   }
 
   ring_type ring() const { return ring_type(manager()); }
 protected:
   /// Accessing Cudd-internal decision diagram manager
   internal_manager_type internalManager() const { 
-    return m_mgr->manager; 
+    return m_mgr->manager(); 
     //  return manager().getManager(); 
   }
 

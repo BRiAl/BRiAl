@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.10  2009/06/21 22:46:28  dreyer
+ * CHANGE: preparing ring-cloning (deep copy)
+ *
  * Revision 1.9  2008/04/12 22:22:36  dreyer
  * + CCuddCore even cleaner
  *
@@ -64,8 +67,26 @@
 
 #include <vector>
 #include "cuddInt.h"
+/// Increment reference count
+inline void 
+intrusive_ptr_add_ref(DdManager* ptr){
+  ++(ptr->hooks);
+}
+
+/// Release current pointer by decrementing reference counting
+inline void 
+intrusive_ptr_release(DdManager* ptr) {
+  if (!(--(ptr->hooks))) {
+    int retval = Cudd_CheckZeroRef(ptr);
+    // Check for unexpected non-zero reference counts
+    assert(retval == 0);
+
+    Cudd_Quit(ptr);
+  }
+}
 
 BEGIN_NAMESPACE_PBORI
+
 
 /** @class CCuddCore
  * @brief This class prepares the CUDD's raw decision diagram manager structure
@@ -97,7 +118,7 @@ public:
   typedef variable_names_type::const_reference const_varname_reference;
 
   /// Current raw decision diagram management
-  mgrcore_type manager;
+  boost::intrusive_ptr<DdManager> pmanager;
 
   /// Functions for handling errors from CUDD functions
   static errorfunc_type errorHandler;
@@ -120,16 +141,31 @@ public:
             size_type numSlots = CUDD_UNIQUE_SLOTS,
             size_type cacheSize = CUDD_CACHE_SLOTS,
             large_size_type maxMemory = 0):  
-    ref(0), m_names(numVarsZ), m_vars(numVarsZ) {
-    manager = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
-
+    ref(0), m_names(numVarsZ), m_vars(numVarsZ), 
+    pmanager(getMan(numVars,numVarsZ,numSlots,cacheSize,maxMemory)) {
 
     for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
-      m_vars[idx] = cuddUniqueInterZdd(manager, idx, DD_ONE(manager),
-                                       DD_ZERO(manager)); 
+      m_vars[idx] = cuddUniqueInterZdd(manager(), idx, DD_ONE(manager()),
+                                       DD_ZERO(manager())); 
       Cudd_Ref(m_vars[idx]);
     }
 
+  }
+
+  DdManager* manager() {
+    return pmanager.get();
+  }
+  DdManager* 
+  getMan(size_type numVars = 0,
+         size_type numVarsZ = 0,
+         size_type numSlots = CUDD_UNIQUE_SLOTS,
+         size_type cacheSize = CUDD_CACHE_SLOTS,
+         large_size_type maxMemory = 0) {
+
+    DdManager* ptr
+      = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
+    ptr->hooks = NULL;
+    return ptr;
   }
 
   /// Destructor
@@ -138,14 +174,14 @@ public:
     for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
            m_vars.end(); ++iter) {
       
-      Cudd_RecursiveDerefZdd(manager, *iter);
+      Cudd_RecursiveDerefZdd(manager(), *iter);
     }
     
-    int retval = Cudd_CheckZeroRef(manager);
-    // Check for unexpected non-zero reference counts
-    assert(retval == 0);
+///    int retval = Cudd_CheckZeroRef(manager);
+//     // Check for unexpected non-zero reference counts
+//     assert(retval == 0);
 
-    Cudd_Quit(manager);
+//     Cudd_Quit(manager);
   }
 
   /// Increment reference count
@@ -172,6 +208,9 @@ intrusive_ptr_release(CCuddCore* pCore) {
     delete pCore;
   }
 }
+
+
+
 //@}
 
 END_NAMESPACE_PBORI

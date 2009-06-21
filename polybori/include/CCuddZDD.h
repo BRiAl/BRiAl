@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.8  2009/06/21 22:46:28  dreyer
+ * CHANGE: preparing ring-cloning (deep copy)
+ *
  * Revision 1.7  2007/11/06 15:03:33  dreyer
  * CHANGE: More generic copyright
  *
@@ -120,7 +123,7 @@ public:
   mgrcore_ptr manager() const { return ddMgr; }
 
   /// Get raw decision diagram manager
-  mgrcore_type getManager() const { return ddMgr->manager; }
+  mgrcore_type getManager() const { return ddMgr->manager(); }
 
   /// Get raw node structure
   node_type getNode() const{  return node; }

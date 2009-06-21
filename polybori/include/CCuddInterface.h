@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.16  2009/06/21 22:46:28  dreyer
+ * CHANGE: preparing ring-cloning (deep copy)
+ *
  * Revision 1.15  2008/01/16 17:10:17  dreyer
  * CHANGE: term-iterators use correct manager now
  *
@@ -151,7 +154,7 @@ public:
   errorfunc_type getHandler() const {  return pMgr->errorHandler; }
 
   /// Get pure CUDD structure
-  mgrcore_type getManager() const { return pMgr->manager; }
+  mgrcore_type getManager() const { return pMgr->manager(); }
 
   /// Get (shared) pointer to initialized manager
   mgrcore_ptr managerCore() const { return pMgr; }
