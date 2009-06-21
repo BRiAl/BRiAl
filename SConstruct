@@ -174,6 +174,10 @@ opts.Add('SHLIBVERSIONSUFFIX',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
+opts.Add(BoolOption('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
+"hash_map extension, even if unordered_map is available (avoiding of buggy " +
+"unordered_map)", False))
+
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
@@ -283,11 +287,16 @@ if not env.GetOption('clean'):
     conf = Configure(env)
 
 
-
-    if conf.CheckCXXHeader('unordered_map'):
-        env.Append(CPPDEFINES=["HAVE_UNORDERED_MAP"])
-    elif conf.CheckCXXHeader('tr1/unordered_map'):
-        env.Append(CPPDEFINES=["HAVE_TR1_UNORDERED_MAP"])
+    if env['FORCE_HASH_MAP']:
+        if conf.CheckCXXHeader('ext/hash_map'):
+            env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
+    else:
+        if conf.CheckCXXHeader('unordered_map'):
+            env.Append(CPPDEFINES=["HAVE_UNORDERED_MAP"])
+        elif conf.CheckCXXHeader('tr1/unordered_map'):
+            env.Append(CPPDEFINES=["HAVE_TR1_UNORDERED_MAP"])
+        elif conf.CheckCXXHeader('ext/hash_map'):
+            env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
         
     extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
     if HAVE_PYTHON_EXTENSION or extern_python_ext:

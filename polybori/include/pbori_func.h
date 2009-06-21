@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.44  2009/06/21 20:41:20  dreyer
+ * Add: FORCE_HASH_MAP
+ *
  * Revision 1.43  2009/04/09 13:55:14  dreyer
  * Fix: Compatibility: gcc4.3, python 2.6, c++0x
  *
@@ -166,8 +169,6 @@
 #include <sstream>
 
 
-// get map/hash_map functionality from stl/stl-ext
-#define HAVE_HASH_MAP 1
 
 #ifdef HAVE_TR1_UNORDERED_MAP
 #  include <tr1/unordered_map>
