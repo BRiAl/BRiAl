@@ -16,6 +16,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.11  2009/06/21 22:57:28  dreyer
+ * CHANGE: preparing ring-cloning (deep copy) even more
+ *
  * Revision 1.10  2009/06/21 22:46:28  dreyer
  * CHANGE: preparing ring-cloning (deep copy)
  *
@@ -151,6 +154,19 @@ public:
     }
 
   }
+
+  /// Copy Constructor (nearly deep copy, but shallow copy of manager)
+  CCuddCore(const self& rhs):
+    ref(0), pmanager(rhs.pmanager), m_names(rhs.m_names), m_vars(rhs.m_vars) {
+
+    std::vector<node_type>::iterator start(m_vars.begin()), 
+      finish(m_vars.end());
+    while (start != finish) {
+      Cudd_Ref(*start);
+      ++start;
+    }
+  }
+
 
   DdManager* manager() {
     return pmanager.get();
