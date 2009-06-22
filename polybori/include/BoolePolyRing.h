@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.45  2009/06/22 07:58:42  dreyer
+ * ADD: cloning of rings
+ *
  * Revision 1.44  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -239,7 +242,10 @@ class BoolePolyRing:
   /// Make this global ring
   void activate();
 
-
+  /// Support for deep copy constructor
+  BoolePolyRing(const base& rhs, order_ptr order):
+    base(rhs), pOrder(order) {}
+  
   /// Change order of current ring
   void changeOrdering(ordercode_type);
 
@@ -256,6 +262,10 @@ class BoolePolyRing:
   /// Access ordering of *this
   order_reference ordering() const { return *pOrder; }
 
+  /// Construct ring with similiar properties
+  self clone() const {
+    return self(base::clone(), pOrder);
+  }
 protected:
   /// *Ordering of *this
   order_ptr pOrder;

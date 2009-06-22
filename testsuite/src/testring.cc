@@ -18,6 +18,9 @@
 // Last edit by $Author$ on $Date$
 // 
 // $Log$
+// Revision 1.29  2009/06/22 07:58:42  dreyer
+// ADD: cloning of rings
+//
 // Revision 1.28  2009/03/31 08:30:49  dreyer
 // CHANGE: started consistent use of lead* instea of lm*
 //
@@ -631,6 +634,23 @@ main(){
   std::cout<< "" << int() <<std::endl;
 //   BoolePolyRing ring5(100002);
 //   std::cout<< "" << BooleVariable(100000) <<std::endl;
+
+
+
+  BoolePolyRing ringold(10);
+
+  BoolePolynomial polyold(BooleVariable(1)+BooleVariable(2));
+
+  std::cout << polyold <<std::endl;
+
+
+  BoolePolyRing ringnew(ringold.clone());
+  ringnew.activate();
+  BooleEnv::setVariableName(1, "FUNNYVARNAME1");
+  BoolePolynomial polynew(BooleVariable(1)+BooleVariable(2));
+
+  std::cout << polyold <<std::endl;
+  std::cout << polynew <<std::endl;
 
   return 0;
 }

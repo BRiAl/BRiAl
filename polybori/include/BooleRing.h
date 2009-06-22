@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.3  2009/06/22 07:58:42  dreyer
+ * ADD: cloning of rings
+ *
  * Revision 1.2  2008/03/03 18:07:19  dreyer
  * Fix: missing things in Python-interface
  *
@@ -114,6 +117,11 @@ class BooleRing:
   /// Print out statistics and settings for current ring
   void printInfo() {  return m_mgr.printInfo(); }
 
+
+  self clone() const {
+    return self( (manager_type)CCuddCore::mgrcore_ptr(new
+      CCuddCore(*m_mgr.manager().managerCore()))  );
+  }
 protected: 
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
   manager_type m_mgr;
