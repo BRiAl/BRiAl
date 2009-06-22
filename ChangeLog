@@ -2,7 +2,11 @@ Release Name:
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
 * Python interface Polynomial.stableHash -> Polynomial.stable_hash
 * added substitute_variables function in python and c++
-
+* Cloning of rings added. This results in rings with similar properties.
+  They share the same decision diagram management, but ordering and
+  variable names may be changed independently.
+* FORCE_HASH_MAP can now to used to force scons to use deprecated hash_map
+	
 Release Name: 0.6.1
 * Fixed performance critical bug in normal form.
 
