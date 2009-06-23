@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-untitled.py
+plot.py
 
 Created by Michael Brickenstein on 2008-10-17.
-Copyright (c) 2008 Mathematisches Forschungsinstitut Oberwolfach. All rights reserved.
+Copyright (c) 2008 The PolyBoRi Team. 
 """
 
 import sys
