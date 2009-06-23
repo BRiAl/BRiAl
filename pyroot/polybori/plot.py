@@ -33,8 +33,42 @@ ${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrow
 }
 """
 
+graph_template_jinja="""
+digraph polynomial{
+graph [ ordering="out"
+{% if highlight_monomial %}
+, label = "{{display_monomial(highlight_monomial)}}"
+{% endif %}
+, fontsize={{fontsize}}
+];
+
+{% for n in nodes %}
+{{identifier(n)}}[label="{{label(n)}}", shape="{{shape(n)}}"];
+{% endfor %}
+
+{% for n in non_constant_nodes %}
+{{identifier(n)}} -> {{identifier(n.else_branch())}} [style="dashed", color="{{color_else}}", arrowhead="vee", penwidth="{{penwidth_else(n)}}"];
+{{identifier(n)}} -> {{identifier(n.then_branch())}} [color="{{color_then}}", arrowhead="vee", penwidth="{{penwidth_then(n)}}"];
+{% endfor %}
+}
+"""
+
+
 ELSE="else"
 THEN="then"
+
+def render_genshi(data_dict):
+    from genshi.template import TextTemplate
+    tmpl = TextTemplate(graph_template)
+    stream = tmpl.generate(**data_dict)
+    return str(stream)
+
+def render_jinja(data_dict):
+    from jinja import Environment
+    env = Environment()
+    tmpl = env.from_string(graph_template_jinja)
+    return tmpl.render(**data_dict)
+    
 def monomial_path_in_zdd(mon, graph):
     res=[]
     if not mon in BooleSet(graph):
@@ -53,7 +87,10 @@ def monomial_path_in_zdd(mon, graph):
         res.append((graph_nav, ELSE))
         graph_nav=graph_nav.else_branch()
     return dict(res)
-def plot(p, filename, colored=True,format="png", highlight_monomial=None, fontsize=14):
+def plot(p, filename, colored=True,format="png", 
+    highlight_monomial=None, fontsize=14,
+    template_engine='jinja'
+    ):
     """plots ZDD structure to <filename> in format <format>
 
     EXAMPLES:
@@ -116,13 +153,10 @@ def plot(p, filename, colored=True,format="png", highlight_monomial=None, fontsi
             return "box"
         else:
             return "ellipse"
-    from genshi.template import TextTemplate
-    tmpl = TextTemplate(graph_template)
-    stream = tmpl.generate(**locals())
+    renderers=dict(genshi=render_genshi, jinja=render_jinja)
 
-    
-    dot_input=str(stream)
-    
+    dot_input=renderers[template_engine](locals())
+        
     process = Popen(["dot", "-T"+format, "-o",filename], stdin=PIPE, stdout=PIPE)
 
     process.stdin.write(dot_input)
