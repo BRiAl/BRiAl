@@ -39,7 +39,7 @@ def ll_is_good(I):
         if m.deg()==1:
             lex_lead.add(iter(m.variables()).next().index())
     if len(lex_lead)>=0.8*len(I):
-        uv=len(used_vars_set(I))
+        uv=used_vars_set(I).deg()#don't use len here, which will yield 1
         if len(lex_lead)>0.9*uv:
             if uv- len(lex_lead)>16:
                 return "llfirstonthefly"
@@ -98,14 +98,14 @@ def linear_algebra_heuristic(d):
         bound=None
         if have_degree_order():
             new_bound=200
-            n_used_vars=len(used_vars_set(I,bound=new_bound))
+            n_used_vars=used_vars_set(I,bound=new_bound).deg()
             if n_used_vars<new_bound:
                 return True
             bound=new_bound
         if dense_system(I):
             new_bound=100
             if not (bound and new_bound<bound):
-                n_used_vars=len(used_vars_set(I,bound=new_bound))
+                n_used_vars=used_vars_set(I,bound=new_bound).deg()
                 bound=new_bound
             if n_used_vars<bound:
                 return True
@@ -264,8 +264,7 @@ def other_ordering_pre(I,option_set,kwds):
         I_orig=I
         I=groebner_basis(I,**kwds)
         variety_size=variety_size_from_gb(I)
-    
-        if variety_size_from_gb<50000:
+        if variety_size<50000:
             main_kwds["convert_with_fglm_from_ring"]=new_ring
     finally:
         old_ring.set()
