@@ -123,14 +123,14 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("var", ring_var, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
-
+    .def("clone", &BooleRing::clone, "somewhat deeper copy")
     .def("n_variables", &BooleRing::nVariables, "Number of ring variables");
   boost::python::class_<BoolePolyRing,boost::python::bases<BooleRing> >("Ring", "Boolean polynomial ring")
     //.def(boost::python::init <>())
     .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def(boost::python::init <const BoolePolyRing&>())
-    .def("clone", &BoolePolyRing::clone, "somewhat deeper copy")
+    
     .def(boost::python::init <BoolePolyRing::size_type, int>(
          "Construct a Boolean polynomial ring with the following parameters:\n\
             n -- number of variables (integer)\n\
