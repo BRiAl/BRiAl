@@ -126,7 +126,7 @@ def construct_map_by_indices(to_ring, idx_mapping):
 
 def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_noredsb, reduce_ll_system=False, prot=False):
   from_ring=global_ring()
-  to_ring=Ring(from_ring)
+  to_ring=from_ring.clone()
   ll_ranks=rank(ll_system)
   add_vars=set(used_vars_set(to_reduce).variables()).difference(ll_ranks.keys())
   for v in add_vars:
@@ -144,14 +144,14 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
   map_from_indices = dict([(var_index(v), i) for (i, v) in enumerate(sorted_vars)])
   #dict([(v,k) for (k,v) in enumerate(sorted_var_indices)])
   var_names=[str(v) for v in sorted_vars]
-  # try:
-  #     to_ring.set()
-  #     for (i, v) in enumerate(sorted_vars):
-  #       print i, var_index(v)
-  #       assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
-  #       set_variable_name(i, var_names[i])
-  # finally:
-  #     from_ring.set()
+  try:
+      to_ring.set()
+      for (i, v) in enumerate(sorted_vars):
+        print i, var_index(v)
+        assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
+        set_variable_name(i, var_names[i])
+  finally:
+      from_ring.set()
       
   map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
   map_back_vec=construct_map_by_indices(from_ring, map_back_indices)
