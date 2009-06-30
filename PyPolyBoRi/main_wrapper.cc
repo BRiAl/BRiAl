@@ -130,6 +130,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def(boost::python::init <const BoolePolyRing&>())
+    .def("clone", &BoolePolyRing::clone, "somewhat deeper copy")
     .def(boost::python::init <BoolePolyRing::size_type, int>(
          "Construct a Boolean polynomial ring with the following parameters:\n\
             n -- number of variables (integer)\n\
@@ -146,7 +147,6 @@ with inverted variable order\n\
       "Append integer, which marks start of next block (for block orderings)");
   def("have_degree_order", have_degree_order, 
       "Determines, whether ring ordering is a degree ordering");
-
   boost::python::class_<BooleConstant>("BooleConstant", 
                                        "Boolean constant value")
     .def(init<const BooleConstant &>())
