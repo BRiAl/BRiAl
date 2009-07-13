@@ -286,7 +286,9 @@ external_m4ri = False
 if not env.GetOption('clean'):
     conf = Configure(env)
 
-
+    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
+        env.Append(LIBS=[gd])
+        env.Append(CPPDEFINES=["HAVE_GD"])
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
             env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
