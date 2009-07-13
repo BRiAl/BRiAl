@@ -107,6 +107,7 @@ public:
     exp2Index_map_type exp2Index;
     bool optBrutalReductions;
     bool optLL;
+
     Polynomial nf(Polynomial p) const;
     bool optRedTailDegGrowth;
     bool optRedTail;
@@ -154,7 +155,8 @@ public:
   PairManager pairs;
   bool reduceByTailReduced;
   ReductionStrategy generators;
-
+  bool optDrawMatrices;
+  const char* matrixPrefix;
   boost::shared_ptr<CacheManager> cache;
   BoolePolyRing r;
   bool enabledLog;
@@ -181,7 +183,8 @@ public:
 
 
 	GroebnerStrategy():r(BooleEnv::ring()),pairs(*this),cache(new CacheManager()){
-	  
+        optDrawMatrices=false;
+        matrixPrefix="mat";
 	  optDelayNonMinimals=true;
 		
 		chainCriterions=0;

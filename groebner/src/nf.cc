@@ -6,6 +6,9 @@
  *  Copyright 2006 The PolyBoRi Team. See LICENSE file.
  *
  */
+#ifdef HAVE_GD
+#define DRAW_MATRICES
+#endif
 #ifdef DRAW_MATRICES
 #include <stdio.h>
 #include <gd.h>
@@ -30,8 +33,9 @@ using std::endl;
 BEGIN_NAMESPACE_PBORIGB
 
 
-#ifdef DRAW_MATRICES
+
 void drawmatrix(mzd_t* mat, const char* filename){
+    #ifdef DRAW_MATRICES
     int i,r,c,j;
     c=mat->ncols;
     r=mat->nrows;
@@ -52,8 +56,11 @@ void drawmatrix(mzd_t* mat, const char* filename){
  gdImagePng(im, out);
  gdImageDestroy(im);
  fclose(out);
+ #else
+ std::cerr<<"warning: for drawing matrices compile with GD";
+ #endif
 }
-#endif
+
 static int log2_floor(int n){
     int i;
     for(i=0;TWOPOW(i)<=n;i++){}
@@ -1828,12 +1835,12 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     int rank=gauss(mat);
     #else
     {        
-        #ifdef DRAW_MATRICES
+       if (optDrawMatrices){
             char matname[255];
             sprintf(matname,"nmatlife%d.png",round);
 
             drawmatrix(mat,matname);
-        #endif
+        }
     }
     int rank=mzd_echelonize_m4ri(mat,TRUE,0);
     #endif
@@ -2048,7 +2055,7 @@ static mzd_t* transposePackedMB(mzd_t* mat){
 
 
 static void 
-linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log)
+linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices)
 {
     
      int unmodified_rows=polys.size();
@@ -2138,12 +2145,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         polys_triangular.clear();
         
-        #ifdef DRAW_MATRICES
+        if (optDrawMatrices) {
         char matname[255];
         sprintf(matname,"matlife%d_step1.png",round);
         
         drawmatrix(mat_step1,matname);
-        #endif
+        }
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri
             (mat_step1,0);
@@ -2298,7 +2305,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step1->ncols==remaining_cols);
     // std::cout<<"step1 matrix"<<std::endl;
     // printPackedMatrixMB(mat_step1);
-    #ifdef DRAW_MATRICES
+    if (optDrawMatrices)
     {
     
     char matname[255];
@@ -2307,7 +2314,6 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     sprintf(matname,"matlife%d_mult_B.png",round);
     drawmatrix(mat_step1,matname);
     }
-    #endif
     if (log){
         std::cout<<"start mult"<<std::endl;
     }
@@ -2347,13 +2353,14 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
      if (log){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    #ifdef DRAW_MATRICES
+    if (optDrawMatrices)
     {
         char matname[255];
         sprintf(matname,"matlife%d_step2.png",round);
         drawmatrix(mat_step2,matname);
     }
-    #endif
+
+
     int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
         if (log){
@@ -2388,7 +2395,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step_modified(polys,terms,leads_from_strat, enabledLog);
+    linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices);
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 
