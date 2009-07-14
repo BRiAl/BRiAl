@@ -95,11 +95,27 @@ if distribute or rpm_generation or deb_generation:
 
 defaultenv = Environment()
 
+# See also:  http://trac.sagemath.org/sage_trac/ticket/6437
+def sun_linker_detected():
+    if os.system('ld --version > /dev/null 2>&1 ') == 0:
+        print ("GNU linker detected!")
+        return False
+    else:
+        print ("Sun linker detected.")
+        return True
+    
+
 def sonameprefix(env):
     if env['PLATFORM']=="darwin":
         return "-Wl,-dylib_install_name -Wl,"
+
+    elif (env['PLATFORM']=="sunos") and sun_linker_detected():
+        return '-Wl,-h'
+
     else:
-        return '-Wl,-soname -Wl,'
+        return '-Wl,-soname,'
+
+    
 #print defaultenv.Dump()
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler', "g++")
@@ -286,7 +302,6 @@ external_m4ri = False
 if not env.GetOption('clean'):
     conf = Configure(env)
 
-    print env['CPPPATH']
     if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
         env.Append(LIBS=["gd"])
         env.Append(CPPDEFINES=["HAVE_GD"])
