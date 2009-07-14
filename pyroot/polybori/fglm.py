@@ -1,6 +1,20 @@
-from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy
-
+from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy,\
+    get_order_code, dp_asc, global_ring, Variable, Monomial, Ring, change_ordering
+from polybori.blocks import declare_ring
 def fglm(I, from_ring, to_ring):
+    """
+    converts *reduced* Groebner Basis in from_ring to a GroebnerBasis in to_ring.
+    It acts independend of the global ring, which is restored at the end of the
+    computation,
+    >>> r=declare_ring(['x','y','z'],dict())
+    >>> (x,y,z)=[Variable(i) for i in xrange(3)]
+    >>> old_ring=global_ring()
+    >>> change_ordering(dp_asc)
+    >>> new_ring=global_ring()
+    >>> ideal=[x+z, y+z]# lp Groebner basis
+    >>> list(fglm(ideal, old_ring, new_ring))
+    [y + x, z + x]
+    """
     vec=BoolePolynomialVector(I)
     return FGLMStrategy(from_ring,to_ring,vec).main()
 

@@ -269,8 +269,9 @@ void export_strategy(){
   .def_readwrite("opt_lazy",&GroebnerStrategy::optLazy)
   .def_readwrite("opt_exchange",&GroebnerStrategy::optExchange)
   .def_readwrite("opt_allow_recursion",&GroebnerStrategy::optAllowRecursion)
-  .def_readwrite("enabledLog",&GroebnerStrategy::enabledLog)
-  
+  .def_readwrite("enabled_log",&GroebnerStrategy::enabledLog)
+  .def("opt_draw_matrices", &GroebnerStrateg::optDrawMatrices)
+  .def("matrix_prefix", &GroebnerStrateg::matrixPrefix) 
   .def_readonly("variable_chain_criterions",&GroebnerStrategy::variableChainCriterions)
   .def_readonly("easy_product_criterions",&GroebnerStrategy::easyProductCriterions)
   .def_readonly("extended_product_criterions",&GroebnerStrategy::extendedProductCriterions)

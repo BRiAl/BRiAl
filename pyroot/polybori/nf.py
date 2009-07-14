@@ -15,7 +15,7 @@ class GeneratorLimitExceeded(Exception):
         
 
 
-matrix_prefix="hfe30_"
+matrix_prefix="matrix_prefix"
 print_matrices=False
 #used_polynomials=list()
 
@@ -160,12 +160,13 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         strat.opt_lazy=opt_lazy
         strat.opt_exchange=opt_exchange
         strat.opt_allow_recursion=opt_allow_recursion
-        strat.enabledLog=prot
+        strat.enabled_log=prot
         strat.reduction_strategy.opt_ll=ll
         strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
         strat.opt_red_by_reduced=False#True
         strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
-        
+        strat.opt_draw_matrices = print_matrices
+        strat.matrix_prefix = matrix_prefix
 
         for g in  G:
             if not g.is_zero():
@@ -205,8 +206,8 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
              for p in ps:
                     if not p.is_zero():
                         v.append(p)
-             if print_matrices:
-                 build_and_print_matrices(v,strat)
+             #if print_matrices:
+             #    build_and_print_matrices(v,strat)
              if use_noro:
                  res=strat.noro_step(v)
              else:
@@ -220,8 +221,8 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 #p=ll_red_nf(p,strat.llReductor)
                 if not p.is_zero():
                     v.append(p)
-            if print_matrices:
-                build_and_print_matrices(v,strat)
+            #if print_matrices:
+            #    build_and_print_matrices(v,strat)
             if len(v)>100:
                res=parallel_reduce(v,strat,int(step_factor*10),max_growth)
             else:
@@ -482,13 +483,13 @@ def symmGB_F2_C(G,opt_exchange=True,deg_bound=1000000000000,opt_lazy=False,over_
         G=[Polynomial(g) for g in G]    
         strat=GroebnerStrategy()
         strat.reduction_strategy.opt_red_tail=opt_red_tail
-        strat.enabledLog=prot
+        strat.enabled_log=prot
         strat.opt_lazy=opt_lazy
         strat.opt_exchange=opt_exchange
         strat.reduction_strategy.opt_ll=ll
         strat.opt_allow_recursion=opt_allow_recursion
         strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
-        strat.enabledLog=prot
+        strat.enabled_log=prot
         strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
         #strat.add_generator(G[0])
         
