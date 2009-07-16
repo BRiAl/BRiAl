@@ -1,4 +1,8 @@
-Release Name: 
+Release Name: 0.6.3
+* fixed heuristics
+* Python enabledLog -> enabled_log
+* fixed bug in new ll routines
+Release Name: 0.6.2 
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
 * Python interface Polynomial.stableHash -> Polynomial.stable_hash
 * added substitute_variables function in python and c++
@@ -6,7 +10,11 @@ Release Name:
   They share the same decision diagram management, but ordering and
   variable names may be changed independently.
 * FORCE_HASH_MAP can now to used to force scons to use deprecated hash_map
-	
+* fixed bug in groebner basis heuristic
+* new linear lexicographical lead 
+  functions / also included in 
+  groebner_basis for some cases
+
 Release Name: 0.6.1
 * Fixed performance critical bug in normal form.
 
