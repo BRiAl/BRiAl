@@ -1,12 +1,13 @@
 def input_signals(p):
     return list((p+p.lex_lead()).vars_as_monomial().variables())
 def output_signal(p):
-    return p.lead().variables().next()
+    return p.lex_lead().variables().next()
 
 def rank(data):
     parents=dict()
     res=dict()
     for p in data:
+        print p, output_signal(p)
         out=output_signal(p)
         parents.setdefault(out, [])
         for v in input_signals(p):
