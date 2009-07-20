@@ -7,7 +7,7 @@ def rank(data):
     parents=dict()
     res=dict()
     for p in data:
-        print p, output_signal(p)
+#        print p, output_signal(p)
         out=output_signal(p)
         parents.setdefault(out, [])
         for v in input_signals(p):
