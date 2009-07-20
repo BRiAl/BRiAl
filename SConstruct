@@ -1,6 +1,7 @@
 # Emacs edit mode for this file is -*- python -*-
 #$Id$
-opts = Options('custom.py')
+opts = Variables('custom.py')
+
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
@@ -156,27 +157,27 @@ opts.Add('DEVEL_PREFIX',
 
 opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
-opts.Add(BoolOption('HAVE_DOXYGEN',
+opts.Add(BoolVariable('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
-opts.Add(BoolOption('HAVE_PYTHON_EXTENSION',
+opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
                     'Build python extension, if possible', True))
-opts.Add(BoolOption('BOOST_WORKS',
+opts.Add(BoolVariable('BOOST_WORKS',
                     'Skip check for Boost libraries', False))
 
-opts.Add(BoolOption('RELATIVE_SYMLINK',
+opts.Add(BoolVariable('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
 
-opts.Add(BoolOption('HAVE_L2H', 'Switch latex2html on/off (deprecated)', False))
-opts.Add(BoolOption('HAVE_HEVEA', 'Switch hevea on/off (deprecated)', False))
-opts.Add(BoolOption('HAVE_TEX4HT', 'Switch tex4ht on/off', True))
+opts.Add(BoolVariable('HAVE_L2H', 'Switch latex2html on/off (deprecated)', False))
+opts.Add(BoolVariable('HAVE_HEVEA', 'Switch hevea on/off (deprecated)', False))
+opts.Add(BoolVariable('HAVE_TEX4HT', 'Switch tex4ht on/off', True))
 
 
-opts.Add(BoolOption('HAVE_PYDOC', 'Switch python doc generation on/off', True))
-opts.Add(BoolOption('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
+opts.Add(BoolVariable('HAVE_PYDOC', 'Switch python doc generation on/off', True))
+opts.Add(BoolVariable('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
                     False))
 
-opts.Add(BoolOption('USE_TIMESTAMP', 'Use timestamp on distribution', True))
-opts.Add(BoolOption('SHLIBVERSIONING',
+opts.Add(BoolVariable('USE_TIMESTAMP', 'Use timestamp on distribution', True))
+opts.Add(BoolVariable('SHLIBVERSIONING',
                     'Use dlltool-style versionated shared library', True))
 opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', sonameprefix(defaultenv))
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
@@ -190,7 +191,7 @@ opts.Add('SHLIBVERSIONSUFFIX',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
-opts.Add(BoolOption('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
+opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
 
@@ -302,9 +303,13 @@ external_m4ri = False
 if not env.GetOption('clean'):
     conf = Configure(env)
 
+<<<<<<< SConstruct
+
+=======
     if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
         env.Append(LIBS=["gd"])
         env.Append(CPPDEFINES=["HAVE_GD"])
+>>>>>>> 1.243
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
             env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
@@ -354,6 +359,9 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
     external_m4ri = conf.CheckLib('m4ri')
+    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
+        env.Append(LIBS=["gd"])
+        env.Append(CPPDEFINES=["HAVE_GD"])
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
