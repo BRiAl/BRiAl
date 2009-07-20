@@ -1,3 +1,5 @@
+Release Name: 
+
 Release Name: 0.6.2 
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
 * Python interface Polynomial.stableHash -> Polynomial.stable_hash
