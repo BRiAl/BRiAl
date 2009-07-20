@@ -1,7 +1,3 @@
-Release Name: 0.6.3
-* fixed heuristics
-* Python enabledLog -> enabled_log
-* fixed bug in new ll routines
 Release Name: 0.6.2 
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
 * Python interface Polynomial.stableHash -> Polynomial.stable_hash
@@ -14,7 +10,12 @@ Release Name: 0.6.2
 * new linear lexicographical lead 
   functions / also included in 
   groebner_basis for some cases
-
+* fixed heuristics
+* Python enabledLog -> enabled_log
+* fixed bug in new ll routines
+* Solaris port supported
+* Compatibility with upcoming scons versions (removing deprecated stuff)
+	
 Release Name: 0.6.1
 * Fixed performance critical bug in normal form.
 
