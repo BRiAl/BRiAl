@@ -14,6 +14,7 @@
 #include "pairs.h"
 #include <boost/dynamic_bitset.hpp>
 #include <vector>
+#include <string>
 #include <algorithm>
 #include <utility>
 #include <iostream>
@@ -156,7 +157,8 @@ public:
   bool reduceByTailReduced;
   ReductionStrategy generators;
   bool optDrawMatrices;
-  const char* matrixPrefix;
+  std::string matrixPrefix;
+  //const char* matrixPrefix;
   boost::shared_ptr<CacheManager> cache;
   BoolePolyRing r;
   bool enabledLog;

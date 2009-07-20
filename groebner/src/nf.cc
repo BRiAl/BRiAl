@@ -1837,7 +1837,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     {        
        if (optDrawMatrices){
             char matname[255];
-            sprintf(matname,"nmatlife%d.png",round);
+            sprintf(matname,"%s%d.png", matrixPrefix.data(), round);
 
             drawmatrix(mat,matname);
         }
@@ -2055,7 +2055,7 @@ static mzd_t* transposePackedMB(mzd_t* mat){
 
 
 static void 
-linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices)
+linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
 {
     
      int unmodified_rows=polys.size();
@@ -2147,7 +2147,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         
         if (optDrawMatrices) {
         char matname[255];
-        sprintf(matname,"matlife%d_step1.png",round);
+        sprintf(matname,"%s%d_step1.png", matrixPrefix, round);
         
         drawmatrix(mat_step1,matname);
         }
@@ -2309,9 +2309,9 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     {
     
     char matname[255];
-    sprintf(matname,"matlife%d_mult_A.png",round);
+    sprintf(matname,"%s%d_mult_A.png", matrixPrefix, round);
     drawmatrix(mat_step2_factor,matname);
-    sprintf(matname,"matlife%d_mult_B.png",round);
+    sprintf(matname,"%s%d_mult_B.png", matrixPrefix, round);
     drawmatrix(mat_step1,matname);
     }
     if (log){
@@ -2356,7 +2356,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     if (optDrawMatrices)
     {
         char matname[255];
-        sprintf(matname,"matlife%d_step2.png",round);
+        sprintf(matname,"%s%d_step2.png", matrixPrefix, round);
         drawmatrix(mat_step2,matname);
     }
 
@@ -2395,7 +2395,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
 
-    linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices);
+    linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 
