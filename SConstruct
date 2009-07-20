@@ -119,8 +119,12 @@ def sonameprefix(env):
     
 #print defaultenv.Dump()
 # Define option handle, may be changed from command line or custom.py
-opts.Add('CXX', 'C++ Compiler', "g++")
-opts.Add('CC', 'C Compiler', "gcc")
+opts.Add('CXX', 'C++ Compiler',  defaultenv['CXX'])
+opts.Add('CC', 'C Compiler', defaultenv['CC'])
+
+opts.Add('SHCXX', 'C++ Compiler (preparing shared libraries)', '$CXX')
+opts.Add('SHCC', 'C Compiler (preparing shared libraries)', '$CC')
+
 opts.Add('PYTHON', 'Python executable', "python$PROGSUFFIX")
 
 opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
@@ -200,6 +204,19 @@ for m in pbori_cache_macros:
     opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
 
 tools =  ["default"]
+
+if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
+    def is_gcc():
+        compilerenv = Environment(options = opts)
+        return compilerenv['CC']  == 'gcc'
+    
+    if is_gcc():
+        tools = defaultenv['TOOLS']
+        for arg in ['default', 'suncc', 'sunc++', 'sunar']:
+            if arg in tools:
+                tools.remove(arg)
+                tools +=  [ 'gcc', 'g++', 'ar']
+
 if not GetOption('clean'):
     tools +=  ["disttar", "doxygen"]
 
