@@ -1,7 +1,12 @@
 # Emacs edit mode for this file is -*- python -*-
 #$Id$
-opts = Variables('custom.py')
 
+# Backward compatibility
+if not 'Variables' in globals():
+    Variables = Options
+    BoolVariable = BoolOption
+
+opts = Variables('custom.py')
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
