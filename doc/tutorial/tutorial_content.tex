@@ -28,7 +28,7 @@ In [2]: r
 Out[2]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 
 
-In [3]: [Variable(i) for i in xrange(r.nVars())]
+In [3]: [Variable(i) for i in xrange(r.n_variables())]
 Out[3]: [x(0), x(1), y(0), y(1), y(2)]
 
 In [4]: declare_ring([AlternatingBlock(["x","y"],2)],globals())
@@ -36,17 +36,17 @@ Out[4]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2370b70>
 
 
 
-In [5]: [Variable(i) for i in xrange(r.nVars())]
+In [5]: [Variable(i) for i in xrange(r.n_variables())]
 Out[5]: [x(0), y(0), x(1), y(1)]
 
 
-In [6]: [Variable(i) for i in xrange(r.nVars())]
+In [6]: [Variable(i) for i in xrange(r.n_variables())]
 Out[6]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
 
 In [7]: declare_ring(["x","y","z"],globals())
 Out[7]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
 
-In [8]: [Variable(i) for i in xrange(r.nVars())]
+In [8]: [Variable(i) for i in xrange(r.n_variables())]
 Out[8]: [x, y, z]  
 \end{lstlisting}
 
@@ -553,17 +553,17 @@ def all_monomials_of_degree_d(d, variables):
     return res.set()
 \end{lstlisting}
 
-\section{Case study: Graded part of a polynomial}
+\subsection{Case study: Graded part of a polynomial}
 In the following we will show five variants to implement a function, that computes the sum of all terms of degree $d$ in a polynomial $f$.
 
-\subsection{Simple, algebraic solution}
+\subsubsection{Simple, algebraic solution}
 \begin{lstlisting}
 def simple_graded(f, d):
     return sum((t for t in f.terms() if t.deg()==d))   
 \end{lstlisting}
 This solution is obvious, but quite slow.
 
-\subsection{Low level friendly, algebraic solution}
+\subsubsection{Low level friendly, algebraic solution}
 \begin{lstlisting}
 def friendly_graded(f, d):
     vec=BoolePolynomialVector()
@@ -576,7 +576,7 @@ def friendly_graded(f, d):
 \end{lstlisting}
 We leave it to the heuristic of the \functionname{add\_up\_polynomials} function how to add up the monomials. For example a divide and conquer strategy is quite good here.
 
-\subsection{Highlevel with set operations}
+\subsubsection{Highlevel with set operations}
 \begin{lstlisting}
 def highlevel_graded(f,d):
     return Polynomial(
@@ -589,7 +589,7 @@ This solution build on the fast intersection algorithm and decomposes the task i
 However it can be quite inefficient, when f has many variables.
 This can increase the number of steps in the intersection algorithm (which takes with high probability the else branch of the second argument in each step).
 
-\subsection{Recursive}
+\subsubsection{Recursive}
 The repeated unnecessary iteration over all variables in $f$ (during the \functionname{intersection} call in the last section) can be avoided by taking just integers as second argument for the recursive algorithm (in the last section this was \functionname{intersection}).
 
 \begin{lstlisting}
@@ -623,7 +623,7 @@ Recursive implementations are very compatible with our data structures, so are q
 Of course we can encode the degree $d$ by the $d$-th Variable in the Polynomial
 ring.
 
-\subsection{Decision-diagram style recursive implementation in \PolyBoRi}
+\subsubsection{Decision-diagram style recursive implementation in \PolyBoRi}
 The C++ implementation of the functionality in \PolyBoRi is given in this section, which is recursive and uses caching techniques.
 {
 \lstset{language=C++}
@@ -665,13 +665,13 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 \lstset{language=[IPython]Python}
 The encoding of integers for the degree as variable is done implicitly by our cache lookup functions.
 
-\section{Case study: Evaluation of a polynomial}
+\subsection{Case study: Evaluation of a polynomial}
 
-\subsection{Substitute a single variable $x$ in a polynomial by a constant $c$}
+\subsubsection{Substitute a single variable $x$ in a polynomial by a constant $c$}
 
 Given a Boolean polynomial $f$, a variable $x$ and a constant $c$, we want to plug in the constant $c$ for the variable $x$.
 
-\subsubsection{Naive approach}
+\paragraph{Naive approach}
 The following code shows how to tackle the problem, by manipulating individual terms.
 While this is a very direct approach, it is quite slow.
 The method \functionname{reducible_by} gives a test for divisibility.
@@ -686,7 +686,7 @@ def subst(f,x,c):
 
 \end{lstlisting}
 
-\subsubsection{Solution 1: Set operations}
+\paragraph{Solution 1: Set operations}
 In fact, the problem can be tackled quite efficiently using set operations.
 \begin{lstlisting}
 def subst(f,x,c):
@@ -702,7 +702,7 @@ def subst(f,x,c):
        return Polynomial(s.subset1(i))+Polynomial(s.subset0(i))    
 \end{lstlisting}
 
-\subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
+\paragraph{Solution 2: Linear Lexicographical Lead rewriting systems}
 On the other hand, this linear rewriting forms a rewriting problem and can be solved by calculating a normal form against a \Groebner 
 basis.
 In this case the system is $\{x+c\} \cup \{\explfieldequations\}$ (we assume that $x=x_i$ for some $i$).
@@ -749,14 +749,14 @@ basis).
 
 
 
-\subsection{Evaluate a polynomial by plugging in a constant for each variable}
+\subsubsection{Evaluate a polynomial by plugging in a constant for each variable}
     We want to a polynomial
     $f(x_1,\ldots, x_n)$
     by
     $x_i\mapsto c_i$, where
     $c_1,\ldots, c_y$ are constants.
 
-\subsubsection{Naive approach}
+\paragraph{Naive approach}
 First, we show it in a naive way, similar to the first solution above.
 
 \begin{lstlisting}
@@ -771,7 +771,7 @@ def evaluate(f,m):
 \end{lstlisting}
 
 
-\subsubsection{Solution 1: $n$ set operations}
+\paragraph{Solution 1: $n$ set operations}
 The following approach is faster, as it does not involve individual terms, but set operations
 
 \begin{lstlisting}
@@ -817,7 +817,7 @@ This is quite fast, but suboptimal, because only the inner functions (additions)
 %
 Furthermore, it contradicts the usual ZDD recursion and generates complex intermediate results.
 
-\subsubsection{Solution 2: Linear Lexicographical Lead rewriting systems}
+\paragraph{Solution 2: Linear Lexicographical Lead rewriting systems}
 The same problem can also be tackled by the linear-lead routines. In the case, when
 all variables are substituted by  constants, all intermediate results
 (generated during \lstinline|ll_red_nf_redsb|/\lstinline|ll_red_nf_noredsb|) are constant.
@@ -840,7 +840,7 @@ This is assumed to be the fastest way.
 %
 
 
-\subsection{General Linear Lexicographical Lead Rewriting Systems}
+\subsubsection{General Linear Lexicographical Lead Rewriting Systems}
 \label{linear-lexicographical-lead-rewriting-systems}
 We used \lstinline|ll_red_nf_redsb|/\lstinline|ll_red_nf_noredsb| functions on rewriting systems, where the tails of the polynomials was constant and the leading term linear.
 They can be used in a more general setting (which allows to eliminate auxiliary variable).
@@ -884,8 +884,8 @@ Out[5]: [x(3)*x(4) + 1]
 In [6]: f(x(1)+x(2))
 Out[6]: x(3)*x(4) + 1
 \end{lstlisting}
-
-\section{Storing polynomial data in a file}
+\section{Other techniques}
+\subsection{Storing polynomial data in a file}
 
 In \PolyBoRi we have default file format and tools, which read the files and generate references for our test suite.
 
@@ -915,7 +915,7 @@ In [3]: data.ideal
 Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \end{lstlisting}
 
-\section{Reinterpretation of Boolean sets as subsets of the vector space~$\Ztwo^n$}
+\subsection{Reinterpretation of Boolean sets as subsets of the vector space~$\Ztwo^n$}
 \label{reinterpretation-of-zdd}
 Let \pythonconstant{S} be a Boolean set. For example:
 \begin{lstlisting}
@@ -951,7 +951,7 @@ finding zeros of a polynomial),  and such procedures, where
 only the dimension/involved unit vectors/variables matter.
 The first kind of procedures usually gets the ambient space itself, the second kind gets the monomial consisting of all involved variables.
 
-\subsection{Examples}
+\subsubsection{Examples}
 \begin{lstlisting}
 In [1]:f=x(0)+x(1)+x(2)
 
@@ -987,7 +987,7 @@ Out[4]:[x(0) + x(2) + 1, x(1) + x(2), x(3)]
 This function calculates the reduced lexicographical \Groebner basis of the vanishing ideal of $S$.
 Here the ambient space matters, as an additional component would mean, that the corresponding entries are zero, so we would get an additional generator for the ideal $x_3$.
 
-\section{Lexicographical normal form of a polynomial against a variety}
+\subsection{Lexicographical normal form of a polynomial against a variety}
 
 Let $V$ be a set of points in $\Ztwo^n$, $f$ a Boolean polynomial. $V$ can be encoded as a BooleSet as described in \ref{reinterpretation-of-zdd}.
 Then we are interested in the normal form of $f$ against the vanishing ideal of $V$: $\I(V)$.
@@ -1030,7 +1030,7 @@ Out[9]:{{x(0)}, {x(3)}, {}}
 In [11]:interpolate_smallest_lex(z,o)
 Out[11]:x(1) + x(2) + 1
 \end{lstlisting}
-\section{Partial Boolean functions}
+\subsection{Partial Boolean functions}
 A partial Boolean function $f$ is given by two disjoint set of points $O$, $Z$.
 $f$ is defined to have value $1$ on $O$, $0$ on $Z$ and is undefined elsewhere.
 For encoding sets of Boolean vectors we use the encoding defined in \ref{reinterpretation-of-zdd}.
@@ -1087,7 +1087,7 @@ Out[13]: x(2) + 1
 In [14]: g.interpolate_smallest_lex()
 Out[14]: x(0) + x(1) + x(2)
 \end{lstlisting}
-\section{Building your own \Groebner basis algorithm}
+\subsection{Building your own \Groebner basis algorithm}
 
 The central class for writing your own \Groebner bases algorithm is called \functionname{GroebnerStrategy}
 %
@@ -1110,7 +1110,7 @@ The \functionname{GroebnerStrategy} keeps track not only of the single generator
     \item leading terms
     \item minimal leading terms
 \end{itemize}
-\subsection{Adding a Generator}
+\subsubsection{Adding a Generator}
 There are several methods for adding a generator to a \functionname{GroebnerStrategy}.
 It may not contain two generators with the same leading monomial.
 In this way generators can be accessed with both their index and their leading term.
@@ -1149,7 +1149,7 @@ In [1]: g=GroebnerStrategy()
 In [2]: g.add_as_you_wish(x(1))
 \end{lstlisting}
 
-\subsection{Interreduction}
+\subsubsection{Interreduction}
 The \functionname{interred}-function gives back a system generating the same ideal, where no two leading terms coincide.
 Also, using the parameter \functionname{completely} ensures that no leading term divides the terms in the tails of the other generators.
 Even more, it is easier than the Buchberger algorithm, because no critical pairs have to be handled (actually the \functionname{GroebnerStrategy} applies some criteria, when adding a generator, which produces some overhead).
@@ -1180,7 +1180,7 @@ def interred(l,completely=False):
     return list(l)
 \end{lstlisting}
 
-\subsection{A minimal Buchberger algorithm}
+\subsubsection{A minimal Buchberger algorithm}
 In this section   the \functionname{buchberger} function from the module
 \functionname{simplebb} is presented. Unlike \PolyBoRi's more sophisticated
 routines this procedure was developed for educational purposes only:
@@ -1205,7 +1205,7 @@ The criteria are handled by the \functionname{add_generator}-method for
 immediately applicable criteria and by the function \functionname{clean_top_by_chain_criterion} for the chain criterion.
 
 
-\subsection{Estimating the number of solutions}
+\subsubsection{Estimating the number of solutions}
 In this section, it is presented, how to use the building blocks for Buchberger algorithms for other tasks like estimating the number of solutions.
 
 First, we observe the following:
