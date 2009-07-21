@@ -223,6 +223,7 @@ void export_strategy(){
         .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
         .def_readonly("minimal_leading_terms",&ReductionStrategy::minimalLeadingTerms)
         .def_readwrite("opt_ll",&ReductionStrategy::optLL)
+
         .def_readwrite("opt_red_tail",&ReductionStrategy::optRedTail)
         .def_readwrite("opt_red_tail_deg_growth",&ReductionStrategy::optRedTailDegGrowth)
         .def("can_rewrite",&ReductionStrategy::canRewrite)
@@ -265,7 +266,8 @@ void export_strategy(){
   
   
   .def_readwrite("opt_linear_algebra_in_last_block",&GroebnerStrategy::optLinearAlgebraInLastBlock)
-  
+  .def_readwrite("opt_modified_linear_algebra",
+      &GroebnerStrategy::optModifiedLinearAlgebra)
   .def_readwrite("opt_lazy",&GroebnerStrategy::optLazy)
   .def_readwrite("opt_exchange",&GroebnerStrategy::optExchange)
   .def_readwrite("opt_allow_recursion",&GroebnerStrategy::optAllowRecursion)
