@@ -15,20 +15,19 @@ class GeneratorLimitExceeded(Exception):
         
 
 
-matrix_prefix="matrix_prefix"
-print_matrices=False
+
 #used_polynomials=list()
 
 def pkey(p):
     return (p[0],len(p))
 mat_counter=0
-def build_and_print_matrices(v,strat): 
+def build_and_print_matrices(v,strat):
+    """"old solution using PIL, the currently used implementation is done in C++
+    and plots the same matrices, as being calculated"""
     treated=BooleSet()
     v=list(v)
     rows=0
     polys_in_mat=[]
-    #v_orig=list(v)
-    #print v
     if len(v)==0:
         return
     while(len(v)>0):
@@ -80,7 +79,7 @@ def build_and_print_matrices(v,strat):
    
 
 def build_and_print_matrices_deg_colored(v,strat):
-    
+    """old PIL solution using a different color for each degree"""
     if len(v)==0:
         return
     
@@ -132,11 +131,16 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
 
-def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,use_noro=False,opt_lazy=True,opt_red_tail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, opt_exchange=True, opt_allow_recursion=False,ll=False,opt_linear_algebra_in_last_block=True, max_generators=None, red_tail_deg_growth=True):
-    #if use_noro:
-    #    raise NotImplementedError
+def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,
+    use_noro=False,opt_lazy=True,opt_red_tail=True,
+    max_growth=2.0, step_factor=1.0,
+    implications=False, prot=False,
+    full_prot=False,selection_size=1000,
+    opt_exchange=True,
+    opt_allow_recursion=False,ll=False,
+    opt_linear_algebra_in_last_block=True, max_generators=None, red_tail_deg_growth=True, matrix_prefix='mat', modified_linear_algebra=True, draw_matrices=False):
     if use_noro and use_faugere:
-        raise Exception
+        raise ValueError, 'both use_noro and use_faugere specified'
     def add_to_basis(strat,p):
         if p.is_zero():
             if prot:
@@ -162,10 +166,12 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         strat.opt_allow_recursion=opt_allow_recursion
         strat.enabled_log=prot
         strat.reduction_strategy.opt_ll=ll
+        strat.opt_modified_linear_algebra=modified_linear_algebra
         strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
         strat.opt_red_by_reduced=False#True
         strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
-        strat.opt_draw_matrices = print_matrices
+        
+        strat.opt_draw_matrices = draw_matrices
         strat.matrix_prefix = matrix_prefix
 
         for g in  G:
@@ -200,14 +206,11 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             print len(ps), "spolys added"
             
         if use_noro or use_faugere:
-             #res=noro_step(ps,strat)
              v=BoolePolynomialVector()
 
              for p in ps:
                     if not p.is_zero():
                         v.append(p)
-             #if print_matrices:
-             #    build_and_print_matrices(v,strat)
              if use_noro:
                  res=strat.noro_step(v)
              else:
@@ -216,13 +219,11 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         else:
             v=BoolePolynomialVector()
             for p in ps:
-                #print p
-                p=Polynomial(mod_mon_set(BooleSet(p.set()),strat.reduction_strategy.monomials))
-                #p=ll_red_nf(p,strat.llReductor)
+                p=Polynomial(
+                    mod_mon_set(
+                    BooleSet(p.set()),strat.reduction_strategy.monomials))
                 if not p.is_zero():
                     v.append(p)
-            #if print_matrices:
-            #    build_and_print_matrices(v,strat)
             if len(v)>100:
                res=parallel_reduce(v,strat,int(step_factor*10),max_growth)
             else:
@@ -230,16 +231,11 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                   res=parallel_reduce(v,strat,int(step_factor*30),max_growth)
                else:
                   res=parallel_reduce(v,strat,int(step_factor*100), max_growth)
-        
-        #red.reduce()
         if prot:
             print "end reducing"
-        #res=red.result
         def sort_key(p):
             return p.lead()
         res_cp=sorted(res, key=sort_key)
-        #res_cp=list(res)
-        #res_cp.reverse()
 
         for p in  res_cp:
             old_len=len(strat)
@@ -247,7 +243,6 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             if implications and old_len==len(strat)-1:
                 strat.implications(len(strat)-1)
             if p.is_one():
-                #strat.toStdOut()
                 if prot:
                     print "GB is 1"
                 return strat
@@ -470,7 +465,17 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         strat.add_generator_delayed(g)
     branch(strat,[], proof_path, 0)
 
-def symmGB_F2_C(G,opt_exchange=True,deg_bound=1000000000000,opt_lazy=False,over_deg_bound=0, opt_red_tail=True, max_growth=2.0, step_factor=1.0, implications=False, prot=False, full_prot=False,selection_size=1000, opt_allow_recursion=False, use_noro=False,use_faugere=False,ll=False,opt_linear_algebra_in_last_block=True,max_generators=None, red_tail_deg_growth=True):
+def symmGB_F2_C(G,opt_exchange=True,
+    deg_bound=1000000000000,opt_lazy=False,
+    over_deg_bound=0, opt_red_tail=True,
+    max_growth=2.0, step_factor=1.0,
+    implications=False, prot=False,
+    full_prot=False,selection_size=1000,
+    opt_allow_recursion=False, use_noro=False,use_faugere=False,
+    ll=False,opt_linear_algebra_in_last_block=True,
+    max_generators=None, red_tail_deg_growth=True, 
+    modified_linear_algebra=True, matrix_prefix="",
+    draw_matrices=False):
     #print implications
     if use_noro:
         raise NotImplementedError, "noro not implemented for symmgb"    
@@ -490,6 +495,9 @@ def symmGB_F2_C(G,opt_exchange=True,deg_bound=1000000000000,opt_lazy=False,over_
         strat.opt_allow_recursion=opt_allow_recursion
         strat.opt_linear_algebra_in_last_block=opt_linear_algebra_in_last_block
         strat.enabled_log=prot
+        strat.opt_modified_linear_algebra=modified_linear_algebra
+        strat.matrix_prefix=matrix_prefix
+        strat.opt_draw_matrices=draw_matrices
         strat.reduction_strategy.opt_red_tail_deg_growth=red_tail_deg_growth
         #strat.add_generator(G[0])
         

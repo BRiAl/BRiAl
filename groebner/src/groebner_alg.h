@@ -107,6 +107,7 @@ public:
     lm2Index_map_type lm2Index;
     exp2Index_map_type exp2Index;
     bool optBrutalReductions;
+    
     bool optLL;
 
     Polynomial nf(Polynomial p) const;
@@ -173,7 +174,7 @@ public:
   
   bool optHFE;
   bool optLazy;
-  
+  bool optModifiedLinearAlgebra;
   bool optDelayNonMinimals;
   
   bool optExchange;
@@ -186,6 +187,7 @@ public:
 
 	GroebnerStrategy():r(BooleEnv::ring()),pairs(*this),cache(new CacheManager()){
         optDrawMatrices=false;
+        optModifiedLinearAlgebra=false;
         matrixPrefix="mat";
 	  optDelayNonMinimals=true;
 		

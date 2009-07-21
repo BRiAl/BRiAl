@@ -514,7 +514,8 @@ r(orig.r)
 
 {
  
-
+  optDrawMatrices=orig.optDrawMatrices;
+  optModifiedLinearAlgebra=orig.optModifiedLinearAlgebra; 
   optRedTailInLastBlock=orig.optRedTailInLastBlock;
   optLinearAlgebraInLastBlock=orig.optLinearAlgebraInLastBlock;
   optDelayNonMinimals=orig.optDelayNonMinimals;

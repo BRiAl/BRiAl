@@ -160,7 +160,10 @@ def clean_polys(I):
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
-def gb_with_pre_post_option(option,pre=None,post=None,if_not_option=tuple(),default=False):
+def gb_with_pre_post_option(
+    option,pre=None,
+    post=None,if_not_option=tuple(),
+    default=False):
     def make_wrapper(f):
         def wrapper(I, **kwds):
             prot=kwds.get("prot", False)
@@ -385,7 +388,8 @@ def groebner_basis(I, faugere=False,
        implementation="Python", aes= False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None, red_tail_deg_growth=True):
+       linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
+       red_tail_deg_growth=True, modified_linear_algebra=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     if full_prot:
         prot=True
@@ -439,7 +443,11 @@ def groebner_basis(I, faugere=False,
             opt_exchange=exchange, opt_allow_recursion=recursion,
             use_faugere=faugere,
             use_noro=noro,ll=ll,
-            opt_linear_algebra_in_last_block=linear_algebra_in_last_block,max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
+            draw_matrices=draw_matrices,
+            matrix_prefix=matrix_prefix,
+            modified_linear_algebra=modified_linear_algebra,
+            opt_linear_algebra_in_last_block=linear_algebra_in_last_block,
+            max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:

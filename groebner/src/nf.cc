@@ -1837,7 +1837,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     {        
        if (optDrawMatrices){
             char matname[255];
-            sprintf(matname,"%s%d.png", matrixPrefix.data(), round);
+            snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
 
             drawmatrix(mat,matname);
         }
@@ -1994,10 +1994,11 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
 }
 
 
-static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log){
+static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log, bool optDrawMatrices=false, const char* matrixPrefix="mat"){
     if (polys.size()==0) return;
  
-    
+    static int round=0;
+
     int rows=polys.size();
     int cols=terms.size();
     if (log){
@@ -2020,6 +2021,13 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
+    if (optDrawMatrices){
+         char matname[255];
+         ++round;
+         snprintf(matname,255,"%s%d.png", matrixPrefix, round);
+         
+         drawmatrix(mat,matname);
+     }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
     if (log){
@@ -2147,7 +2155,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         
         if (optDrawMatrices) {
         char matname[255];
-        sprintf(matname,"%s%d_step1.png", matrixPrefix, round);
+        snprintf(matname,255, "%s%d_step1.png", matrixPrefix, round);
         
         drawmatrix(mat_step1,matname);
         }
@@ -2309,9 +2317,9 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     {
     
     char matname[255];
-    sprintf(matname,"%s%d_mult_A.png", matrixPrefix, round);
+    snprintf(matname,255, "%s%d_mult_A.png", matrixPrefix, round);
     drawmatrix(mat_step2_factor,matname);
-    sprintf(matname,"%s%d_mult_B.png", matrixPrefix, round);
+    snprintf(matname,255, "%s%d_mult_B.png", matrixPrefix, round);
     drawmatrix(mat_step1,matname);
     }
     if (log){
@@ -2356,7 +2364,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     if (optDrawMatrices)
     {
         char matname[255];
-        sprintf(matname,"%s%d_step2.png", matrixPrefix, round);
+        snprintf(matname,255, "%s%d_step2.png", matrixPrefix, round);
         drawmatrix(mat_step2,matname);
     }
 
@@ -2382,7 +2390,6 @@ vector<Polynomial> gauss_on_polys(const vector<Polynomial>& orig_system){
     MonomialSet terms=unite_polynomials(orig_system, init);
     MonomialSet from_strat;//no strat
     vector<Polynomial> polys(orig_system);
-    
     linalg_step(polys, terms, from_strat, false);
     return polys;
 }
@@ -2394,8 +2401,11 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     MonomialSet terms;
     MonomialSet leads_from_strat;
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
-
+    if (optModifiedLinearAlgebra){
     linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
+    } else {
+        linalg_step(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
+    }
     //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
 
 

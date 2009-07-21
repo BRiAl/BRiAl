@@ -156,7 +156,8 @@ def plot(p, filename, colored=True,format="png",
     renderers=dict(genshi=render_genshi, jinja=render_jinja)
 
     dot_input=renderers[template_engine](locals())
-        
+    if isinstance(dot_input, unicode):
+        dot_input=dot_input.encode('utf-8') 
     process = Popen(["dot", "-T"+format, "-o",filename], stdin=PIPE, stdout=PIPE)
 
     process.stdin.write(dot_input)
