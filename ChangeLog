@@ -1,4 +1,7 @@
-Release Name: 
+Release Name: 0.6.3:
+* introduced parameter modified_linear_algebra for groebner_basis,
+  modifies, if linear algebra is modified or not,
+  not, that this option doesn't influence, if linear algebra is used at all.
 
 Release Name: 0.6.2 
 * hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
