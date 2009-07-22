@@ -68,14 +68,14 @@ static int log2_floor(int n){
 }
 static int optimal_k_for_multiplication(int a,int b,int c,const GroebnerStrategy& strat){
     int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(b)));
-    if (strat.enabledLog)
+    if UNLIKELY(strat.enabledLog)
         std::cout<<"optimal k for multiplication:"<<res<<std::endl;
     return res;
 }
 static int optimal_k_for_gauss(int m, int n, const GroebnerStrategy& strat){
     int l=std::min(n,m);
     int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(l)+1-log2_floor(log2_floor(l))));
-    if (strat.enabledLog)
+    if UNLIKELY(strat.enabledLog)
         std::cout<<"optimal k for gauss:"<<res<<std::endl;
     return res;
 }
@@ -1303,7 +1303,7 @@ static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec, int
 start, int end, Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=end-start;
-    if (s==0) return init;
+    if UNLIKELY(s==0) return init;
     if (s==1) return res_vec[start];
     int h=s/2;
     return Polynomial(unite_polynomials(res_vec,start,start+h,
@@ -1315,7 +1315,7 @@ static Polynomial unite_polynomials(const std::vector<Polynomial>& res_vec,
                                     Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
-    if (s==0) return init;
+    if UNLIKELY(s==0) return init;
     if (s==1) return res_vec[0];
     int h=s/2;
     
@@ -1403,7 +1403,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
   bool changed=false;
-  if (!(p.isZero())){
+  if LIKELY(!(p.isZero())){
     Monomial lm=p.lead();
     res_vec.push_back(lm);
     p=Polynomial(p.diagram().diff(lm.diagram()));
@@ -1423,10 +1423,10 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
     }
     Monomial rest_lead;
     
-    if ((!(changed))&& (it==end)) return orig_p;
+    if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
-    if (it!=end) {
+    if LIKELY(it!=end) {
       irr_p=add_up_generic(irr, p.ring().zero());
         rest_lead=*it;
         }
@@ -1441,7 +1441,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
     res_vec.push_back(irr_p);
     //p=p-irr_p;
     p=Polynomial(p.diagram().diff(irr_p.diagram()));
-    if(p.isZero()) break;
+    if UNLIKELY(p.isZero()) break;
     //Monomial lm=p.lead();
     //res_vec.push_back(lm);
     
@@ -1466,7 +1466,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
   bool changed=false;
-  if (!(p.isZero())){
+  if LIKELY(!(p.isZero())){
     Monomial lm=p.lead();
     res_vec.push_back(lm);
     p=Polynomial(p.diagram().diff(lm.diagram()));
@@ -1499,7 +1499,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     //typedef  (typename Helper::iterator_type) it_type;
     //typedef  (typename it_type::value_type) mon_type;
     //Monomial mymon;
-    if (strat.canRewrite(p)){
+    if LIKELY(strat.canRewrite(p)){
         Polynomial irreducible_part=mod_mon_set(p.diagram(),strat.minimalLeadingTerms);
         if (!(irreducible_part.isZero())){
             res_vec.push_back(irreducible_part);
@@ -1511,7 +1511,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
         }
 
         while((it!=end)&& (Helper::irreducible_lead(*it,strat))){
-            if (Helper::knowRestIsIrreducible(it,strat)){
+            if UNLIKELY(Helper::knowRestIsIrreducible(it,strat)){
                 rest_is_irreducible=true;
                 break;
             } else{
@@ -1525,10 +1525,10 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     }
     Monomial rest_lead;
     
-    if ((!(changed))&& (it==end)) return orig_p;
+    if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
     Polynomial irr_p;
-    if ((it!=end) &&(!(rest_is_irreducible))) {
+    if LIKELY((it!=end) &&(!(rest_is_irreducible))) {
       irr_p=Helper::sum_range(irr,it_orig,it, p.ring().zero());//add_up_monomials(irr);
         rest_lead=*it;
         
@@ -1542,7 +1542,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     res_vec.push_back(irr_p);
 
     p=Polynomial(p.diagram().diff(irr_p.diagram()));
-    if(p.isZero()) break;
+    if UNLIKELY(p.isZero()) break;
     p=Helper::nf(strat,p,rest_lead);
     changed=true;
   }
@@ -1644,7 +1644,7 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
 }
 template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
     
-    if (p.isConstant()) return p;
+    if UNLIKELY(p.isConstant()) return p;
     //if (reductors.emptiness()) return p;
     
   MonomialSet::navigator p_nav=p.navigation();
@@ -1656,14 +1656,14 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
       
       r_nav.incrementThen();
   }
-  if (r_nav.isConstant())
+  if UNLIKELY(r_nav.isConstant())
       return p;
   typedef PBORI::CacheManager<CCacheTypes::ll_red_nf>
     cache_mgr_type;
   cache_mgr_type cache_mgr(p.diagram().manager());
   MonomialSet::navigator cached =
     cache_mgr.find(p_nav,r_nav);
-  if (cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
+  if LIKELY(cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
   Polynomial res(0, p.ring());
   if ((*r_nav)==p_index){
     if (have_redsb){  
@@ -1716,7 +1716,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
         return p;
     }
     Polynomial::navigator p_nav=p.navigation();
-    if (p_nav.isConstant()) return p;
+    if UNLIKELY(p_nav.isConstant()) return p;
     idx_type p_index=*p_nav;
     while(p_index>*m_nav){
         assert(!(m_nav.isConstant()));
@@ -1777,11 +1777,11 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     
     for(i=0;i<orig_system.size();i++){
         Polynomial p=orig_system[i];
-        if (!(p.isZero())){
+        if LIKELY(!(p.isZero())){
             p=ll_red_nf(p,generators.llReductor);
-            if (!(p.isZero())){
+            if LIKELY(!(p.isZero())){
                 p=nf(p);
-                if (!(p.isZero())){
+                if LIKELY(!(p.isZero())){
                     if (UNLIKELY(p.isOne())){
                         polys.clear();
                         polys.push_back(p);
@@ -1794,13 +1794,13 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
             }
         }
     }
-    if (polys.size()==0) return vector<Polynomial>();
+    if UNLIKELY(polys.size()==0) return vector<Polynomial>();
     typedef std::map<int,Exponent> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
     
     int rows=polys.size();
     int cols=terms.size();
-    if (this->enabledLog){
+    if UNLIKELY(this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
     #ifndef HAVE_M4RI
@@ -1835,7 +1835,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     int rank=gauss(mat);
     #else
     {        
-       if (optDrawMatrices){
+       if UNLIKELY(optDrawMatrices){
             char matname[255];
             snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
 
@@ -1912,7 +1912,7 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
             Polynomial p_orig=extendable_system[i];
 
 
-            if (p_orig.isZero()) continue;
+            if UNLIKELY(p_orig.isZero()) continue;
             Polynomial p=mod_mon_set(p_orig.diagram(),strat.generators.monomials);
             if (strat.generators.optLL){
                 Polynomial p_bak2=p;
@@ -1926,13 +1926,13 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
                 Monomial m=*it;
 
                 int index=strat.generators.select1(m);
-                if (index>=0){
+                if LIKELY(index>=0){
 
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
                 }
-                it++;
+                ++it;
             }
             res_terms=res_terms.unite(new_terms);
             res1.push_back(p);
@@ -1971,7 +1971,7 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
             #ifndef HAVE_M4RI
             if (mat[i][j]==1){
             #else
-            if(mzd_read_bit(mat,i,j)==1){
+            if UNLIKELY(mzd_read_bit(mat,i,j)==1){
             #endif
                 if (p_t_i.size()==0){
                     if (leads_from_strat.owns(terms_as_exp[j])) {
@@ -1995,13 +1995,13 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
 
 
 static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log, bool optDrawMatrices=false, const char* matrixPrefix="mat"){
-    if (polys.size()==0) return;
+    if UNLIKELY(polys.size()==0) return;
  
     static int round=0;
 
     int rows=polys.size();
     int cols=terms.size();
-    if (log){
+    if UNLIKELY(log){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
     #ifndef HAVE_M4RI
@@ -2021,7 +2021,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
-    if (optDrawMatrices){
+    if UNLIKELY(optDrawMatrices){
          char matname[255];
          ++round;
          snprintf(matname,255,"%s%d.png", matrixPrefix, round);
@@ -2030,7 +2030,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
-    if (log){
+    if UNLIKELY(log){
         std::cout<<"finished gauss"<<std::endl;
     }
     translate_back(polys, leads_from_strat, mat,ring_order2lex, terms_as_exp,terms_as_exp_lex,rank);
@@ -2068,7 +2068,7 @@ linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSe
     
      int unmodified_rows=polys.size();
      int unmodified_cols=terms.size();
-     if (((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
+     if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
        PBoRiError error(CTypes::matrix_size_exceeded);
          throw error;
      }
@@ -2084,15 +2084,15 @@ linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSe
     vector < pair < Polynomial, Monomial > >polys_lm;
     //polys_lm.resize(polys.size());
     for (i = 0; i < polys.size(); i++) {
-        if (!(polys[i].isZero()))
+        if LIKELY(!(polys[i].isZero()))
             polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
 std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess());
     polys.clear();
-    if (polys_lm.size() == 0)
+    if UNLIKELY(polys_lm.size() == 0)
         return;
     Monomial        last;
-    if (polys_lm[0].second.deg() == 0) {
+    if UNLIKELY(polys_lm[0].second.deg() == 0) {
         assert(polys_lm[0].first.isOne());
         //vector < Polynomial > res_one;
         polys.resize(1);
@@ -2110,7 +2110,7 @@ vector < pair < Polynomial, Monomial > >::iterator it = polys_lm.begin();
 vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         while (it != end) {
-            if (it->second != last) {
+            if LIKELY(it->second != last) {
                 last = it->second;
                 polys_triangular.push_back(it->first);
         assert(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
@@ -2137,7 +2137,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
         rows_step1=rows;
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"STEP1: ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
 
@@ -2153,7 +2153,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         polys_triangular.clear();
         
-        if (optDrawMatrices) {
+        if UNLIKELY(optDrawMatrices) {
         char matname[255];
         snprintf(matname,255, "%s%d_step1.png", matrixPrefix, round);
         
@@ -2163,7 +2163,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         mzd_top_echelonize_m4ri
             (mat_step1,0);
 //          optimal_k_for_gauss(mat_step1->nrows,mat_step1->ncols,strat));//gaussianPacked(mat_step1,TRUE);
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
         int rank=mat_step1->nrows;
@@ -2180,7 +2180,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         for(i=0;i<cols;i++){
             int j;
             for(j=pivot_row;j<rows;j++){
-                if(mzd_read_bit(mat_step1,j,i)==1){
+                if UNLIKELY(mzd_read_bit(mat_step1,j,i)==1){
                     if (j!=pivot_row)
                         mzd_row_swap(mat_step1,j,pivot_row);
                     
@@ -2191,13 +2191,13 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                     break;
                 }
             }
-            if (j==rows){
+            if UNLIKELY(j==rows){
                 assert(i>=pivot_row);
                 compactified_columns2old_columns[i-pivot_row]=i;
             }
             
         }
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished sort"<<std::endl;
         }
         assert(pivot_row==rows);
@@ -2205,14 +2205,14 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         // printPackedMatrixMB(mat_step1);
         translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
         
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished translate"<<std::endl;
         }
         // std::cout<<"after translate"<<std::endl;
         //     printPackedMatrixMB(mat_step1);
         //delete columns
         mzd_t* transposed_step1=mzd_transpose(NULL,mat_step1);
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(mat_step1);
@@ -2222,10 +2222,10 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             int source=compactified_columns2old_columns[i];
             assert(i<=source);
             assert(source<=transposed_step1->nrows);
-            if (i!=source) mzd_row_swap(transposed_step1,source,i);
+            if LIKELY(i!=source) mzd_row_swap(transposed_step1,source,i);
             
         }
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished permute"<<std::endl;
         }
         // std::cout<<"before submat"<<std::endl;
@@ -2236,12 +2236,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         mzd_t* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
 
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished submat"<<std::endl;
         }
         mzd_free(transposed_step1);
         mat_step1=mzd_transpose(NULL,sub_step1);
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(sub_step1);
@@ -2300,7 +2300,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         //std::cout<<"len:1"<<std::endl;
     }
     
-    if (log){
+    if UNLIKELY(log){
         std::cout<<"iterate over rest polys"<<std::endl;
     }
     
@@ -2313,7 +2313,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step1->ncols==remaining_cols);
     // std::cout<<"step1 matrix"<<std::endl;
     // printPackedMatrixMB(mat_step1);
-    if (optDrawMatrices)
+    if UNLIKELY(optDrawMatrices)
     {
     
     char matname[255];
@@ -2322,20 +2322,20 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     snprintf(matname,255, "%s%d_mult_B.png", matrixPrefix, round);
     drawmatrix(mat_step1,matname);
     }
-    if (log){
+    if UNLIKELY(log){
         std::cout<<"start mult"<<std::endl;
     }
     
     
     
     mzd_t* eliminated;
-    if ((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
+    if LIKELY((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
         eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);
     else
         eliminated=mzd_init(mat_step2_factor->nrows,mat_step1->ncols);
      //,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
     mzd_free(mat_step2_factor);
-    if (log){
+    if UNLIKELY(log){
         std::cout<<"end mult"<<std::endl;
     }
     mzd_free(mat_step1);
@@ -2345,10 +2345,10 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         int j;
         assert(remaining_cols==eliminated->ncols);
         for(j=0;j<remaining_cols;j++){
-            if (mzd_read_bit(eliminated,i,j)==1){
+            if UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
                 assert(terms_as_exp_step2[remaining_col2new_col[j]]==terms_as_exp_step1[compactified_columns2old_columns[j]]);
                 //mzd_write_bit(mat_step2,i,remaining_col2new_col[j],mzd_read_bit(mat_step2,i,remaining_col2new_col[j])^1);
-                if (mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
+                if UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
                     mzd_write_bit(mat_step2,i,remaining_col2new_col[j],0);
                         } else mzd_write_bit(mat_step2,i,remaining_col2new_col[j],1);
             }
@@ -2358,10 +2358,10 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     // printPackedMatrixMB(eliminated);
     mzd_free(eliminated);
     
-     if (log){
+     if UNLIKELY(log){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    if (optDrawMatrices)
+    if UNLIKELY(optDrawMatrices)
     {
         char matname[255];
         snprintf(matname,255, "%s%d_step2.png", matrixPrefix, round);
@@ -2371,7 +2371,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
     int rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0);//simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
         
-        if (log){
+        if UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
     // std::cout<<"step2matrix"<<std::endl;
@@ -2425,7 +2425,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 
 
 Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
-    if (p.isZero()) return p;
+    if UNLIKELY(p.isZero()) return p;
     
     Polynomial res;
     if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
@@ -2435,7 +2435,7 @@ Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
     return res;
 }
 Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
-    if (p.isZero()) return p;
+    if UNLIKELY(p.isZero()) return p;
     
     Polynomial res;
     if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
