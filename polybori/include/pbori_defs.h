@@ -19,6 +19,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.48  2009/07/22 09:23:04  bricken
+ * updated macros
+ *
  * Revision 1.47  2009/05/15 12:27:22  dreyer
  * Fix: exception for matrix size exceeded
  *
@@ -174,11 +177,19 @@
 
 /// For optimizing if-branches
 #ifdef __GNUC__
+#ifndef LIKELY
 #define LIKELY(expression) (__builtin_expect(!!(expression), 1))
+#endif
+#ifndef UNLIKELY
 #define UNLIKELY(expression) (__builtin_expect(!!(expression), 0))
+#endif
 #else
+#ifndef LIKELY
 #define LIKELY(expression) (expression)
+#endif
+#ifndef UNLIKELY
 #define UNLIKELY(expression) (expression)
+#endif
 #endif 
 
 /// Name the project
