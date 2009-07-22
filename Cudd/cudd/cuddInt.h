@@ -1165,7 +1165,7 @@ extern DdNode * cuddUniqueConst (DdManager *unique, CUDD_VALUE_TYPE value);
 
 extern DdNode * cuddZddGetNode (DdManager *zdd, int id, DdNode *T, DdNode *E);
 #else
-inline DdNode *
+static inline DdNode *
 cuddZddGetNode(
   DdManager * zdd,
   int  id,
