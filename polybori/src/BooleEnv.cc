@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2009/07/23 19:41:06  dreyer
+ * ADD: BooleRing::hash
+ *
  * Revision 1.3  2008/04/29 09:01:52  bricken
  * + active_ring moved to BooleEnv.cc
  *
@@ -103,13 +106,13 @@ BooleEnv::size_type BooleEnv::nVariables() {
   /// Set name of variable with index idx
 void 
 BooleEnv::setVariableName(idx_type idx, vartext_type varname) {
-  manager().setVariableName(idx, varname);
+  ring().setVariableName(idx, varname);
 }
 
   /// Get name of variable with index idx
 BooleEnv::vartext_type 
 BooleEnv::getVariableName(idx_type idx){
-  return manager().getVariableName(idx);
+  return ring().getVariableName(idx);
 }
 
 

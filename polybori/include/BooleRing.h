@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.4  2009/07/23 19:41:06  dreyer
+ * ADD: BooleRing::hash
+ *
  * Revision 1.3  2009/06/22 07:58:42  dreyer
  * ADD: cloning of rings
  *
@@ -111,16 +114,32 @@ class BooleRing:
   /// Get number of ring variables
   size_type nVariables() const { return m_mgr.nVariables(); }
 
+  /// Get name of variable with index idx
+  vartext_type getVariableName(idx_type idx){
+    return m_mgr.getVariableName(idx);
+  }
+
+  /// Set name of variable with index idx
+  void setVariableName(idx_type idx, vartext_type varname) {
+    m_mgr.setVariableName(idx, varname);
+  }
+
   /// Clears the function cache
   void clearCache() { cuddCacheFlush(m_mgr.manager().getManager()); }
 
   /// Print out statistics and settings for current ring
   void printInfo() {  return m_mgr.printInfo(); }
 
-
+  /// Generate ring based on the same manager
   self clone() const {
     return self( (manager_type)CCuddCore::mgrcore_ptr(new
       CCuddCore(*m_mgr.manager().managerCore()))  );
+  }
+
+  /// Get unique identifier for *this
+  hash_type hash() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t
+                                  >(m_mgr.manager().getManager())); 
   }
 protected: 
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
