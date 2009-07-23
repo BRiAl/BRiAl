@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2009/07/23 19:58:47  dreyer
+ * FIX: BoolePolyRing() without sideeffects
+ *
  * Revision 1.45  2009/06/22 07:58:42  dreyer
  * ADD: cloning of rings
  *
@@ -231,10 +234,13 @@ class BoolePolyRing:
   /// Explicitely mention ordercodes' enumeration
   using base::ordercodes;
 
+  /// Defaukt constructor
+  BoolePolyRing();
+
   /// Constructor for @em nvars variables
-  BoolePolyRing(size_type nvars=100, 
-                ordercode_type order = lp,
-                bool_type make_active = true);
+  explicit BoolePolyRing(size_type nvars, 
+                         ordercode_type order = lp,
+                         bool_type make_active = true);
 
   /// destructor
   ~BoolePolyRing() {}

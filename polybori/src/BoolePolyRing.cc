@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.46  2009/07/23 19:58:47  dreyer
+ * FIX: BoolePolyRing() without sideeffects
+ *
  * Revision 1.45  2008/03/02 23:24:37  dreyer
  * CHANGE: ring elements like polynomials, monomials, and variables have ring()
  *
@@ -177,6 +180,13 @@
 #include "cuddInt.h"
 
 BEGIN_NAMESPACE_PBORI
+
+// interface with cudd's variable management
+BoolePolyRing::BoolePolyRing() : 
+  base(1), pOrder(get_ordering(lp)) {
+
+  PBORI_TRACE_FUNC( "BoolePolyRing()" );
+}
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
