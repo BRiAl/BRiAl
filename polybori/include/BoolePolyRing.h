@@ -17,6 +17,9 @@
  * @par History:
  * @verbatim
  * $Log$
+ * Revision 1.47  2009/07/24 08:21:17  dreyer
+ * CHA: Changelog completed
+ *
  * Revision 1.46  2009/07/23 19:58:47  dreyer
  * FIX: BoolePolyRing() without sideeffects
  *
@@ -234,7 +237,7 @@ class BoolePolyRing:
   /// Explicitely mention ordercodes' enumeration
   using base::ordercodes;
 
-  /// Defaukt constructor
+  /// Default constructor
   BoolePolyRing();
 
   /// Constructor for @em nvars variables
