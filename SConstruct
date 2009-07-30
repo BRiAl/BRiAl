@@ -22,8 +22,10 @@ import sys
 from os import sep, path
 from glob import glob
 
-m4ri=["grayflex.c", "permutation.c", "packedmatrix.c","strassen.c","misc.c",
-"brilliantrussian.c"]
+m4ri=["grayflex.c", "permutation.c", 
+    "packedmatrix.c","strassen.c","misc.c",
+    "brilliantrussian.c",
+    "lqup.c", "trsm.c", "pluq_mmpf.c"]
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
 m4ri_inc = 'M4RI/m4ri'
