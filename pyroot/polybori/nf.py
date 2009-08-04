@@ -183,76 +183,78 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
     if prot:
         print "added delayed"
     i=0
-    while strat.npairs()>0:
-        if max_generators and len(strat)>max_generators:
-            raise GeneratorLimitExceeded(strat)
-        i=i+1
-        if prot:
-            print "Current Degree:", strat.top_sugar()
-        if (strat.top_sugar()>deg_bound) and (over_deg_bound<=0):
-            return strat
-        if (strat.top_sugar()>deg_bound):
-            ps=strat.some_spolys_in_next_degree(over_deg_bound)
-            over_deg_bound-=len(ps)
-        else:
-            ps=strat.some_spolys_in_next_degree(selection_size)
-            
-        if prot:
-            print "(", strat.npairs(), ")"
-        if prot:
-            print "start reducing"
-            print "Chain Crit. : ",strat.chain_criterions, "VC:",strat.variable_chain_criterions,\
-            "EASYP",strat.easy_product_criterions,"EXTP",strat.extended_product_criterions
-            print len(ps), "spolys added"
-            
-        if use_noro or use_faugere:
-             v=BoolePolynomialVector()
-
-             for p in ps:
-                    if not p.is_zero():
-                        v.append(p)
-             if use_noro:
-                 res=strat.noro_step(v)
-             else:
-                 res=strat.faugere_step_dense(v)
-            
-        else:
-            v=BoolePolynomialVector()
-            for p in ps:
-                p=Polynomial(
-                    mod_mon_set(
-                    BooleSet(p.set()),strat.reduction_strategy.monomials))
-                if not p.is_zero():
-                    v.append(p)
-            if len(v)>100:
-               res=parallel_reduce(v,strat,int(step_factor*10),max_growth)
-            else:
-               if len(v)>10:
-                  res=parallel_reduce(v,strat,int(step_factor*30),max_growth)
-               else:
-                  res=parallel_reduce(v,strat,int(step_factor*100), max_growth)
-        if prot:
-            print "end reducing"
-        def sort_key(p):
-            return p.lead()
-        res_cp=sorted(res, key=sort_key)
-
-        for p in  res_cp:
-            old_len=len(strat)
-            add_to_basis(strat,p)
-            if implications and old_len==len(strat)-1:
-                strat.implications(len(strat)-1)
-            if p.is_one():
-                if prot:
-                    print "GB is 1"
+    try:
+        while strat.npairs()>0:
+            if max_generators and len(strat)>max_generators:
+                raise GeneratorLimitExceeded(strat)
+            i=i+1
+            if prot:
+                print "Current Degree:", strat.top_sugar()
+            if (strat.top_sugar()>deg_bound) and (over_deg_bound<=0):
                 return strat
+            if (strat.top_sugar()>deg_bound):
+                ps=strat.some_spolys_in_next_degree(over_deg_bound)
+                over_deg_bound-=len(ps)
+            else:
+                ps=strat.some_spolys_in_next_degree(selection_size)
+            
             if prot:
                 print "(", strat.npairs(), ")"
+            if prot:
+                print "start reducing"
+                print "Chain Crit. : ",strat.chain_criterions, "VC:",strat.variable_chain_criterions,\
+                "EASYP",strat.easy_product_criterions,"EXTP",strat.extended_product_criterions
+                print len(ps), "spolys added"
+            
+            if use_noro or use_faugere:
+                 v=BoolePolynomialVector()
+
+                 for p in ps:
+                        if not p.is_zero():
+                            v.append(p)
+                 if use_noro:
+                     res=strat.noro_step(v)
+                 else:
+                     res=strat.faugere_step_dense(v)
+            
+            else:
+                v=BoolePolynomialVector()
+                for p in ps:
+                    p=Polynomial(
+                        mod_mon_set(
+                        BooleSet(p.set()),strat.reduction_strategy.monomials))
+                    if not p.is_zero():
+                        v.append(p)
+                if len(v)>100:
+                   res=parallel_reduce(v,strat,int(step_factor*10),max_growth)
+                else:
+                   if len(v)>10:
+                      res=parallel_reduce(v,strat,int(step_factor*30),max_growth)
+                   else:
+                      res=parallel_reduce(v,strat,int(step_factor*100), max_growth)
+            if prot:
+                print "end reducing"
+            def sort_key(p):
+                return p.lead()
+            res_cp=sorted(res, key=sort_key)
+
+            for p in  res_cp:
+                old_len=len(strat)
+                add_to_basis(strat,p)
+                if implications and old_len==len(strat)-1:
+                    strat.implications(len(strat)-1)
+                if p.is_one():
+                    if prot:
+                        print "GB is 1"
+                    return strat
+                if prot:
+                    print "(", strat.npairs(), ")"
 
 
-        strat.clean_top_by_chain_criterion()
-    #strat.toStdOut()
-    return strat
+            strat.clean_top_by_chain_criterion()
+        return strat
+    except KeyboardInterrupt:
+        return strat
 
 def GPS(G,vars_start, vars_end):
     def step(strat,trace,var,val):
