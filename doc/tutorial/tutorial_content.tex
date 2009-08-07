@@ -121,16 +121,18 @@ Even, if there is a natural block structure, like in this example, we have to ex
 
 This can be simplified using the variable \lstinline|block_start_hints| created by our ring declaration.
 
-\begin{lstlisting}
-In [1]: declare_ring([Block("x",2),Block("y",3),Block("z",2)],globals())
+\begin{lstlisting} 
+In [1]: declare_ring([
+   ...:    Block("x",2),
+   ...:    Block("y",3),
+   ...:    Block("z",2)],
+   ...:    globals())
 Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
 
 In [2]: change_ordering(block_dp_asc)
 
 In [3]: for b in block_start_hints:
    ...:     append_ring_block(b)
-   ...:     
-   ...:     
 
 In [4]: block_start_hints
 Out[4]: [2, 5]
@@ -225,7 +227,8 @@ In [1]:f=x(1)*x(2)+x(2)*x(3)*x(4)+x(2)*x(4)+x(3)+x(4)+1
 In [2]:s=f.set()
 
 In [3]:s
-Out[3]:{{x(1),x(2)}, {x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+Out[3]:{{x(1),x(2)}, {x(2),x(3),x(4)},
+    {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
 In [4]:x(1).index()
 Out[4]:1
@@ -239,7 +242,8 @@ Out[6]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 In [7]:nav=s.navigation()
 
 In [8]:BooleSet(nav,s.ring())
-Out[8]:{{x(1),x(2)}, {x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+Out[8]:{{x(1),x(2)}, {x(2),x(3),x(4)},
+    {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
 In [9]:nav.value()
 Out[9]:1
@@ -247,7 +251,8 @@ Out[9]:1
 In [10]:nav_else=nav.else_branch()
 
 In [11]:nav_else
-Out[11]:<polybori.dynamic.PyPolyBoRi.CCuddNavigator object at 0xb6e1e7d4>
+Out[11]:<polybori.dynamic.PyPolyBoRi.CCuddNavigator
+    object at 0xb6e1e7d4>
 
 In [12]:BooleSet(nav_else,s.ring())
 Out[12]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
@@ -334,7 +339,7 @@ Important options are the following:
 \subsubsection{Parallelization}
 With a view towards parallel computing \PolyBoRi also has a preliminary support
 for concurrent processing of  different strategies.
-For this purpose the function
+For this purpose the function\\
 \functionname{groebner_basis_first_finished} had been established.
 Very much like the command \functionname{groebner_basis}
 the first argument is assumed to be the system of equations,
@@ -344,7 +349,8 @@ Further arguments are the options for the different strategies (in form of dicti
 It returns the result of the variant, which  terminates first.
 
 \begin{lstlisting}
-In [1]: from polybori.parallel import groebner_basis_first_finished
+In [1]: from polybori.parallel import\
+    groebner_basis_first_finished
 
 In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
    {'heuristic':False}, {'heuristic': True}) 
@@ -372,11 +378,14 @@ Another important set of alternative option sets consists of computing with and
 without (dense) linear algebra.
 
 \begin{lstlisting}
-In [1]: from polybori.parallel import groebner_basis_first_finished
+In [1]: from polybori.parallel\
+    import groebner_basis_first_finished
 
 In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
-   ...:   {'faugere':False, 'linear_algebra_in_last_block': False}, 
-   ...:   {'faugere':True, 'linear_algebra_in_last_block': True})
+   ...:   {'faugere':False,
+   ...:   'linear_algebra_in_last_block': False}, 
+   ...:   {'faugere':True,
+   ...:   'linear_algebra_in_last_block': True})
 Out[2]: [x(2), x(1) + 1]
 
 \end{lstlisting}
@@ -438,7 +447,8 @@ Out[6]:
  x(2)*y(1) + x(0)*y(1) + y(1),
  y(1)*y(2) + y(1)]
 
-In [7]: [p for p in H if p.set().navigation().value()>=y(0).index()]
+In [7]: [p for p in H 
+    if p.set().navigation().value()>=y(0).index()]
 Out[7]: [y(1)*y(2) + y(1)]
 \end{lstlisting}
 
@@ -471,7 +481,11 @@ then-branch $t$, else-branch $e$. It is necessary that the branches have root va
 It creates either exactly one node, or retrieves the correct node from the cache.
 Function calls which come essentially down to a single $\ite$ call are very cheap.
 
-For example taking the product $x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))$ is much cheaper than $((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)$.
+For example taking the product \[
+    x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))
+\] is much cheaper than \[
+    ((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)
+\].
 In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
 The same argument would apply for the addition of these variables.
 This example shows, that having a little bit background about the data structure, it is often possible to write code, that looks as well algebraic as provides good performance.
@@ -483,7 +497,10 @@ Often there is an alternative description in terms of set operations for algebra
 An example for this behaviour is the calculation of power sets (sets of monomials/polynomials containing each term in the specified variables).
 The following code constructs such a power set very inefficiently for the first three variables:
 \begin{lstlisting}
-sum([x(1)**i1*x(2)**i2*x(3)**i3 for i1 in (0,1) for i2 in (0,1) for i3 in (0,1)])
+sum([x(1)**i1*x(2)**i2*x(3)**i3 
+    for i1 in (0,1) 
+    for i2 in (0,1) 
+    for i3 in (0,1)])
 \end{lstlisting}
 The algorithm has of course exponential complexity in the number of variables.
 The resulting ZDD however has only as many nodes as variables.
@@ -629,7 +646,8 @@ The C++ implementation of the functionality in \PolyBoRi is given in this sectio
 \lstset{language=C++}
 \begin{lstlisting}
 // determine the part of a polynomials of a given degree
-template <class CacheType, class NaviType, class DegType, class SetType>
+template <class CacheType, class NaviType, 
+class DegType, class SetType>
 SetType
 dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,  
                SetType init) {
@@ -652,8 +670,10 @@ dd_graded_part(const CacheType& cache, NaviType navi, DegType deg,
 
   SetType result = 
     SetType(*navi,  
-            dd_graded_part(cache, navi.then_branch(), deg - 1, init),
-            dd_graded_part(cache, navi.else_branch(), deg, init)
+            dd_graded_part(cache, 
+                navi.then_branch(), deg - 1, init),
+            dd_graded_part(cache, 
+                navi.else_branch(), deg, init)
             );
 
   // store result for later reuse
@@ -678,11 +698,14 @@ The method \functionname{reducible_by} gives a test for divisibility.
 \begin{lstlisting}
 def subst(f,x,c):
     if c==1:
-        return sum([t/x for t in f.terms() if t.reducible_by(x)])+\
-            sum([t for t in f.terms() if not t.reducible_by(x)])
+        return sum([t/x for t in f.terms() 
+            if t.reducible_by(x)])+\
+            sum([t for t in f.terms() 
+                if not t.reducible_by(x)])
     else:
         #c==0
-        return sum([t for t in f.terms() if not t.reducible_by(x)])
+        return sum([t for t in f.terms() 
+            if not t.reducible_by(x)])
 
 \end{lstlisting}
 
@@ -742,7 +765,9 @@ ll_red_nf_noredsb(f,x+c)
 ll_red_nf_redsb(f,x+c)
 \end{lstlisting}
     %
-    As $\{x+c\}$ is a reduced Boolean \Groebner basis (equivalently $\{x+c,\explfieldequations\}\backslash \{x^2+x\}$ is a reduced 
+    Note, that $\{x+c\}$ is a reduced Boolean \Groebner basis: Equivalently \[
+        \{x+c,\explfieldequations\}\backslash \{x^2+x\}
+    \] is a reduced 
 \Groebner 
 basis).
 \end{enumerate}
@@ -786,7 +811,8 @@ def evaluate(f,m):
            f=Polynomial(nav.then_branch())
        else:
            #c==1
-           f=Polynomial(nav.then_branch())+Polynomial(nav.else_branch())
+           f=Polynomial(nav.then_branch())+
+              Polynomial(nav.else_branch())
        return f   
 \end{lstlisting}
 For example, the call
@@ -1051,8 +1077,9 @@ In [3]: Z=BooleSet([x(2),x(0)*x(2)])
 In [4]: f=PartialFunction(zeros=Z,ones=O)
 
 In [5]: f
-Out[5]: PartialFunction(zeros={{x(0),x(2)}, {x(2)}}, ones={{x(0),x(1)}, {}})
-
+Out[5]: PartialFunction(
+    zeros={{x(0),x(2)}, {x(2)}},
+    ones={{x(0),x(1)}, {}})
 In [6]: O2=BooleSet([x(1),x(2)])
 
 In [7]: Z2=BooleSet([x(0)*x(1),x(1)*x(2),x(0)*x(2)])
@@ -1070,13 +1097,15 @@ Out[10]: PartialFunction(
             ones={{x(0),x(1)}, {x(1)}, {x(2)}, {}})
 
 In [11]: f^g
-Out[11]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
+Out[11]: PartialFunction(zeros={{x(0),x(2)}},
+    ones={{x(0),x(1)}, {x(2)}})
 \end{lstlisting}
 
 Since addition of in $\Ztwo$ is equivalent to xor (using this identification with Boolean logic), the operators \lstinline|&| and \lstinline|+| coincide.
 \begin{lstlisting}
 In [12]: f+g
-Out[12]: PartialFunction(zeros={{x(0),x(2)}}, ones={{x(0),x(1)}, {x(2)}})
+Out[12]: PartialFunction(zeros={{x(0),x(2)}}, 
+    ones={{x(0),x(1)}, {x(2)}})
 \end{lstlisting}
 
 We have also build our interpolation functions as method for our \functionname{PartialFunction} class, which is a more convenient way to use it.
@@ -1089,7 +1118,7 @@ Out[14]: x(0) + x(1) + x(2)
 \end{lstlisting}
 \subsection{Building your own \Groebner basis algorithm}
 
-The central class for writing your own \Groebner bases algorithm is called \functionname{GroebnerStrategy}
+The central class for writing your own \Groebner bases algorithm is called\\ \functionname{GroebnerStrategy}
 %
 It represents a system of generators (Boolean polynomials) and contains information about critical pairs as well as some extra information like
 the set of leading terms belonging to these generators.
@@ -1124,12 +1153,13 @@ In [3]: g[x(1)]
 Out[3]: x(1)
 
 In [4]: g.add_generator(x(1)+1)
----------------------------------------------------------------------------
-ValueError                                Traceback (most recent call last)
+------------------------------------------------
+ValueError     Traceback (most recent call last)
 
 /Users/michael/sing/PolyBoRi/<ipython console> in <module>()
 
-ValueError: strategy contains already a polynomial with same lead
+ValueError: strategy contains already 
+    a polynomial with same lead
 \end{lstlisting}
 
 An alternative is to push the generator to the (generalized) set of critical pairs instead of adding it directly
@@ -1188,7 +1218,8 @@ routines this procedure was developed for educational purposes only:
 def buchberger(l):
     "calculates a (non minimal) Groebner basis"
     l=interred(l)
-    #for making sure, that every polynomial has a different leading term
+    #for making sure, that every polynomial has a 
+        different leading term
     #needed for add_generator
     g=GroebnerStrategy()
     for p in l:
@@ -1228,7 +1259,8 @@ def less_than_n_solutions(ideal,n):
     for p in l:
         g.add_generator(p)
     while g.npairs()>0:
-        monomials_not_in_leading_ideal=monomials_not_in_leading_ideal\
+        monomials_not_in_leading_ideal =\
+            monomials_not_in_leading_ideal\
             % g.reduction_strategy.minimal_leading_terms
         if len(monomials_not_in_leading_ideal)<n:
             return True
@@ -1237,7 +1269,8 @@ def less_than_n_solutions(ideal,n):
         p=g.nf(p)
         if not p.is_zero():
             g.add_generator(p)
-    monomials_not_in_leading_ideal=monomials_not_in_leading_ideal\
+    monomials_not_in_leading_ideal =\
+        monomials_not_in_leading_ideal\
         % g.reduction_strategy.minimal_leading_terms
     if len(monomials_not_in_leading_ideal)<n:
         return True
