@@ -279,8 +279,8 @@ In [4]:if_then_else(x(1).index(),f0,f1)
 Out[4]:{{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
 
 In [5]:if_then_else(x(5),f0,f1)
------------------------------------------------------------------
-<type 'exceptions.ValueError'>  Traceback (most recent call last)
+------------------------------------------------
+<type 'exceptions.ValueError'>  Traceback (...) 
 
 /home/user/PolyBoRi/<ipython console> in <module>()
 
@@ -459,6 +459,7 @@ For special cases elimination (depending on the formulation of the equations) el
 % subsection  (end)$
 
 \section{How to program efficiently}
+\label{sec:program-efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
 This awareness can be seen on several levels
 \begin{itemize}
@@ -484,8 +485,8 @@ Function calls which come essentially down to a single $\ite$ call are very chea
 For example taking the product \[
     x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))
 \] is much cheaper than \[
-    ((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5)
-\].
+    ((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5).
+\]
 In the first case, in each step a single not is prepended to the diagram, while in the second case, a completely new diagram is created.
 The same argument would apply for the addition of these variables.
 This example shows, that having a little bit background about the data structure, it is often possible to write code, that looks as well algebraic as provides good performance.
@@ -779,7 +780,7 @@ basis).
     $f(x_1,\ldots, x_n)$
     by
     $x_i\mapsto c_i$, where
-    $c_1,\ldots, c_y$ are constants.
+    $c_1,\ldots, c_n$ are constants.
 
 \paragraph{Naive approach}
 First, we show it in a naive way, similar to the first solution above.
