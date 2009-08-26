@@ -637,7 +637,7 @@ void PairManager::cleanTopByChainCriterion(){
         if (queue.top().getType()==VARIABLE_PAIR)
         {
           const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
-          if (strat->generators[vp->i].length==1){
+          if UNLIKELY(strat->generators[vp->i].length==1){
             //has been shortened
             queue.pop();
             continue;
@@ -646,7 +646,7 @@ void PairManager::cleanTopByChainCriterion(){
           
           //Monomial lm=strat->generators[vp->i].lm;
           //Exponent lmExp=strat->generators[vp->i].lmExp;
-          if (strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
+          if UNLIKELY(strat->generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v)){
             strat->log("delayed variable linear factor criterion");
             queue.pop();
             continue;
@@ -682,7 +682,7 @@ PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
   this->leadExp=lead.exp();
   this->leadDeg=leadExp.deg();
   this->length=p.length();
-  if(leadDeg==deg)
+  if (leadDeg==deg)
     this->weightedLength=this->length;
   else
     this->weightedLength=p.eliminationLengthWithDegBound(deg);
@@ -832,139 +832,6 @@ Polynomial reduce_complete(const Polynomial& p, const Polynomial& reductor){
     
   }
   return res;
-}
-
-static Polynomial multiply_recursively(Polynomial a,Polynomial b){
-  if (a.isZero()) return a; // is 0
-  if (a.isOne()) return b;
-  if (b.isZero()) return b; // is 0
-  if (b.isOne()) return a;
-  int index=*(a.navigation());
-  Polynomial as0=a.diagram().subset0(index);
-  Polynomial as1=a.diagram().subset1(index);
-  if (as0==as1){
-    b=b.diagram().subset0(index);
-  }
-  if (b.isZero()) return b; // is 0
-  if (b.isOne()) return a;
-  as0=multiply_recursively(as0,b);
-  as1=multiply_recursively(as1,((Monomial) Variable(index, a.ring()))*b);
-  return as0+as1;
-}
-static Polynomial multiply_recursively2(Polynomial a,Polynomial b){
-
-  if (a.isZero()) return a; // is 0
-  if (a.isOne()) return b;
-  if (b.isZero()) return b; // is 0
-  if (b.isOne()) return a;
-  if (a==b) return a;
-
-  typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
-    cache_mgr_type;
-
-  cache_mgr_type cache_mgr(a.diagram().manager());
-
-  PBORI::BoolePolynomial::navigator cached =
-    cache_mgr.find(a.navigation(), b.navigation());
-
-  Polynomial result;
-
-  if (cached.isValid() ){
-    result = cache_mgr.generate(cached);
-  }
-  else {
-    int indexa=*(a.navigation());
-    int indexb=*(b.navigation());
-    int index=std::min(indexa,indexb);
-    Polynomial as0=a.diagram().subset0(index);
-    Polynomial as1=a.diagram().subset1(index);
-    Polynomial bs0=b.diagram().subset0(index);
-    Polynomial bs1=b.diagram().subset1(index);
-    if (as0==as1){
-      //Polynomial zero(0);
-      //bs1=zero.diagram();
-      result = (Polynomial)multiply_recursively2(as1,bs0).diagram().change(index)
-        +multiply_recursively2(as0,bs0);
-    } else {
-      if (bs0==bs1){
-        //Polynomial zero(0);
-        //as1=zero.diagram();
-        result = (Polynomial)(multiply_recursively2(as0,bs1).diagram().change(index))
-            +multiply_recursively2(as0,bs0);
-      } else {
-        result = (Polynomial)( (multiply_recursively2(as0,bs1) 
-                                + multiply_recursively2(as1,bs1)
-                                + multiply_recursively2(as1,bs0)).diagram().change(index) )
-          +multiply_recursively2(as0,bs0);
-      }
-    }
-
-   
- 
-    cache_mgr.insert(a.navigation(), b.navigation(), result.navigation());
-  }
-
-
-  return result;
-}
-
-static Polynomial multiply_recursively3(Polynomial a,Polynomial b){
-  if (a.isZero()) return a; // is 0
-  if (a.isOne()) return b;
-  if (b.isZero()) return b; // is 0;
-  if (b.isOne()) return a;
-  if (a==b) return a;
-
-  typedef PBORI::CommutativeCacheManager<CCacheTypes::multiply_recursive>
-    cache_mgr_type;
-
-  cache_mgr_type cache_mgr(PBORI::BooleEnv::manager());
-
-  PBORI::BoolePolynomial::navigator cached =
-    cache_mgr.find(a.navigation(), b.navigation());
-
-  Polynomial result;
-
-  if (cached.isValid() ){
-    result = cache_mgr.generate(cached);
-  }
-  else {
-
-    int indexa=*(a.navigation());
-    int indexb=*(b.navigation());
-    int index=std::min(indexa,indexb);
-    Polynomial as0=a.diagram().subset0(index);
-    Polynomial as1=a.diagram().subset1(index);
-    Polynomial bs0=b.diagram().subset0(index);
-    Polynomial bs1=b.diagram().subset1(index);
-    if (indexa!=indexb){
-      
-      if (as0==as1){
-        Polynomial zero(0);
-        bs1=zero.diagram();
-      } else {
-        if (bs0==bs1){
-          Polynomial zero(0);
-          as1=zero.diagram();
-        }
-      }
-      result = ((Polynomial) (multiply_recursively3(as0,bs1)
-                     + multiply_recursively3(as1,bs1)
-                     + multiply_recursively3(as1,bs0)).diagram().change(index))
-        + multiply_recursively3(as0,bs0);
-    } else {
-      
-      Polynomial res00=multiply_recursively3(as0,bs0);
-      Polynomial res11=multiply_recursively3(as1+as0,bs0+bs1)+res00;
-      result = res11.diagram().change(index).unite(res00.diagram());
-    }
-  }
-
-  return result;
-}
-static Polynomial multiply(Polynomial a, size_t len_a, Polynomial b, size_t len_b){
-  if (len_a>len_b) std::swap(a,b);
-  return multiply_recursively(a,b);
 }
 
 

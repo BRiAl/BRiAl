@@ -1844,7 +1844,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     }
     int rank;
     if ((mat->nrows>0) && (mat->ncols>0))
-            rank=mzd_echelonize_pluq(mat,TRUE);
+            rank=mzd_echelonize_m4ri(mat,TRUE,0);//mzd_echelonize_pluq(mat,TRUE);
     else
             rank=0;
     #endif
@@ -2375,7 +2375,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
     int rank_step2;
     if ((mat_step2->ncols>0) &&( mat_step2->nrows>0)){
-        rank_step2=mzd_echelonize_pluq(mat_step2,TRUE);
+        rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0);//mzd_echelonize_pluq(mat_step2,TRUE);
     } else
         rank_step2=0;
     //simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
