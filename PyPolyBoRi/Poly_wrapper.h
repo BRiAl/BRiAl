@@ -23,5 +23,8 @@ static inline BoolePolynomial::deg_type lead_deg_wrap(const BoolePolynomial& p){
 static inline BoolePolynomial::deg_type lex_lead_deg_wrap(const BoolePolynomial& p){
     return p.lexLeadDeg();
 }
+static inline bool has_constant_part_wrap(const BoolePolynomial& p){
+    return p.hasConstantPart();
+}
 #endif
 

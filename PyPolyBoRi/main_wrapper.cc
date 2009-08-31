@@ -181,7 +181,7 @@ with inverted variable order\n\
   .def("lex_lead", lex_lead_wrap)
   .def("lex_lead_deg", lex_lead_deg_wrap)
   .def("lead_deg", lead_deg_wrap)
-  
+  .def("has_constant_part", has_constant_part_wrap)
   .def("navigation", nav)
   .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")

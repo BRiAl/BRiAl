@@ -103,7 +103,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(BooleVariable()+self)
   .def(BooleVariable()-self) 
   //.def("isOne", &BooleMonomial::isOne)
-  
+  .def("has_constant_part", has_constant_part_wrap)
     .def("deg", &BooleMonomial::deg, "Degree of the monomial")
   .def("__len__", one, "Constant one function")
   .def("divisors", &BooleMonomial::divisors, 
