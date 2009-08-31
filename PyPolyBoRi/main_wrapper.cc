@@ -177,6 +177,11 @@ with inverted variable order\n\
   .def(self<self)
   .def(self<=self)
   .def(self==self)
+  .def("lead", lead_wrap)
+  .def("lex_lead", lex_lead_wrap)
+  .def("lex_lead_deg", lex_lead_deg_wrap)
+  .def("lead_deg", lead_deg_wrap)
+  
   .def("navigation", nav)
   .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")

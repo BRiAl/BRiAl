@@ -10,7 +10,7 @@
 #include <boost/python.hpp>
 
 #include "monomial_wrapper.h"
-
+//
 
 #include <boost/python/tuple.hpp>
 #include <boost/python/iterator.hpp>
@@ -23,6 +23,8 @@ using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI
 #include "Poly_wrapper.h"
+
+//#include "Poly_wrapper.h"
 static BooleMonomial mon_power(const BooleMonomial& p, int n){
   if (n==0) return BooleMonomial(p.ring());
   return p;
@@ -113,7 +115,10 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("__repr__", streamable_as_str<BooleMonomial>)
   .def("__pow__",mon_power)
     //  .def("divisors", &BooleMonomial::divisors)
-
+  .def("lead", lead_wrap)
+  .def("lex_lead", lex_lead_wrap)
+  .def("lex_lead_deg", lex_lead_deg_wrap)
+  .def("lead_deg", lead_deg_wrap)
   //.def("totalDegree", &BooleMonomial::totalDeg)
   //.def("diagram", diagram,return_internal_reference<1>());
     .def("set", set, "Convert to BooleSet")
