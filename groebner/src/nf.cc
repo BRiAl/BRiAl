@@ -1033,6 +1033,10 @@ class LexHelper{
     }
 };
 
+
+
+
+
 class DegOrderHelper{
     public:
     static bool irreducible_lead(const Monomial& m, const ReductionStrategy& strat){
@@ -1780,14 +1784,13 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
         if LIKELY(!(p.isZero())){
             p=ll_red_nf(p,generators.llReductor);
             if LIKELY(!(p.isZero())){
-                p=nf(p);
+                p=generators.reducedNormalForm(p);
                 if LIKELY(!(p.isZero())){
                     if (UNLIKELY(p.isOne())){
                         polys.clear();
                         polys.push_back(p);
                         return polys;
                     }
-                    p=red_tail(this->generators,p);
                     terms=terms.unite(p.diagram());
                     polys.push_back(p);
                 }
@@ -2449,7 +2452,7 @@ Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
     Polynomial res;
     if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
     else res=nf3(*this,p,p.lead());
-    return p;
+    return res;
 }
 Polynomial ReductionStrategy::nf(Polynomial p) const{
     if (optRedTail) return reducedNormalForm(p);
