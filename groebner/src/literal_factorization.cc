@@ -396,4 +396,30 @@ bool LiteralFactorization::is00Factorization(){
     }
     return false;
 }
+LiteralFactorization::const_iterator LiteralFactorization::begin(){
+    return LiteralFactorizationIterator(this, factors.begin(), var2var_map.begin());
+}
+LiteralFactorization::const_iterator LiteralFactorization::end(){
+    return LiteralFactorizationIterator(this, factors.end(), var2var_map.end());
+}
+LiteralFactorizationIterator::self& LiteralFactorizationIterator::operator++(){
+    if (var2const_iter!=literal_factorization->factors.end()){
+        ++var2const_iter;
+        return *this;
+          }
+          if (var2var_iter!=literal_factorization->var2var_map.end()){
+              ++var2var_iter;
+              return *this;
+          }
+}
+Polynomial LiteralFactorizationIterator::operator*() const{
+    if (var2const_iter!=literal_factorization->factors.end()){
+           return Variable(var2const_iter->first)
+               + var2const_iter->second;
+       }
+       if (var2var_iter!=literal_factorization->var2var_map.end()){
+           return Variable(var2var_iter->first)
+               + Variable(var2var_iter->second);
+       }
+};
 END_NAMESPACE_PBORIGB
