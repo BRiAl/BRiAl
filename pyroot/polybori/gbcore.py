@@ -286,7 +286,6 @@ def easy_linear_polynomials_pre(I):
         if p.deg()>=2:
             opp=p+1
             for q in easy_linear_factors(opp):
-                print q
                 res.append(q+1)
     return (list(set(res)), None)
 
