@@ -279,6 +279,17 @@ def llfirstonthefly_pre(I,prot):
 def gauss_on_linear_pre(I, prot):
     return (gauss_on_linear(I), None)
 
+def easy_linear_polynomials_pre(I):
+    res=[]
+    for p in I:
+        res.append(p)
+        if p.deg()>=2:
+            opp=p+1
+            for q in easy_linear_factors(opp):
+                print q
+                res.append(q+1)
+    return (list(set(res)), None)
+
 def llfirst_post(I,state,prot):
     eliminated=state
     for p in I:
@@ -362,6 +373,7 @@ def eliminate_identical_variables_pre(I, prot):
     return (I, ll_system)
 
 @gb_with_pre_post_option("clean_arguments",pre=clean_polys_pre,default=True)
+@gb_with_pre_post_option("easy_linear_polynomials", pre=easy_linear_polynomials_pre, default=True)
 @with_heuristic(ll_heuristic)
 @gb_with_pre_post_option("result_to_list",post=result_to_list_post,default=True)
 @with_heuristic(interpolation_gb_heuristic)
