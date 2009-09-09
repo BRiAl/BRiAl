@@ -2,7 +2,7 @@ from polybori.PyPolyBoRi import Monomial, Variable, global_ring, random_set, Pol
 from polybori.ll import ll_encode
 from random import Random
 from pprint import pprint, pformat
-
+from polybori.blocks import declare_ring
 def gen_random_poly(l,deg,vars_set,seed=123):
     myrange=vars_set
     r=Random(seed)
@@ -34,7 +34,7 @@ def sparse_random_system(number_of_polynomials, variables_per_polynomial, degree
     >>> [p.deg() for p in s]
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> groebner_basis(s)
-    [x(0), x(1), x(2), x(3), x(4) + 1, x(5), x(6) + 1, x(7), x(8) + 1, x(9)]
+    [x(0), x(3), x(4) + 1, x(5), x(7), x(9), x(6) + 1, x(2), x(1), x(8) + 1]
     """
     ring = global_ring()
     if random_seed is not None:
@@ -63,13 +63,13 @@ def sparse_random_system_data_file_content(
     number_of_variables, **kwds):
     r"""
     >>> sparse_random_system_data_file_content(10, number_of_polynomials = 5, variables_per_polynomial = 3, degree=2, random_seed=123)
-    'declare_ring(10)\nideal=[\n[x(0)*x(3) + x(0) + x(3)*x(9) + x(3),\n x(0)*x(2) + x(2) + x(5),\n x(0)*x(4) + x(4)*x(8) + x(4),\n x(0)*x(1) + x(0)*x(7),\n x(2)*x(5) + x(2) + x(5) + x(9)]\n]\n'
+    "declare_ring(['x'+str(i) for in xrange(10)])\nideal=\\\n[x0*x3 + x0 + x3*x9 + x3,\n x0*x2 + x2 + x5,\n x0*x4 + x4*x8 + x4,\n x0*x1 + x0*x7,\n x2*x5 + x2 + x5 + x9]\n\n"
     """
-
-    r=Ring(number_of_variables)
+    dummy_dict=dict()
+    r=declare_ring(['x'+str(i) for i in xrange(number_of_variables)], dummy_dict)
     polynomials = sparse_random_system(**kwds)
     polynomials = pformat(polynomials)
-    res="declare_ring(%s)\nideal=[\n%s\n]\n" %(number_of_variables, polynomials)
+    res="declare_ring(['x'+str(i) for in xrange(%s)])\nideal=\\\n%s\n\n" %(number_of_variables, polynomials)
     return res
 
 def _test():
