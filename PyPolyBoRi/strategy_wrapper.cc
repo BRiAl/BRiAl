@@ -12,6 +12,7 @@
 #include <vector>
 #include "nf.h"
 #include <groebner_alg.h>
+#include <literal_factorization.h>
 #include <BoolePolyRing.h>
 #include "slimgb_wrapper.h"
 #include "interpolate.h"
@@ -24,7 +25,17 @@ using namespace std;
 #include "variable_block.h"
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
-
+std::vector<Polynomial> easy_linear_factors(const Polynomial &p){
+    LiteralFactorization factorization(p);
+    std::vector<Polynomial> res;
+    LiteralFactorizationIterator it1=factorization.begin();
+    LiteralFactorizationIterator end1=factorization.end();
+    while(it1!=end1){
+        res.push_back(*it1);
+        ++it1;
+    }
+    return res;
+}
 class StrategyIndexException{
     
 };
@@ -196,6 +207,7 @@ static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
 
 void export_strategy(){
   export_slimgb();
+  def("easy_linear_factors", easy_linear_factors);
   boost::python::class_<PolyEntry>("PolyEntry", "Entry with polynomial and statistical information")
   .def(init<const Polynomial&>())
   .def_readwrite("p",&PolyEntry::p)
