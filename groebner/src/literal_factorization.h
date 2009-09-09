@@ -61,9 +61,20 @@ public:
     LiteralFactorization::map_type::const_iterator var2const_iter;
     self & operator++();
     Polynomial operator*() const;
+    bool operator==(const self& other){
+           return ((literal_factorization==other.literal_factorization)
+           && (var2const_iter==other.var2const_iter) &&
+           (var2var_iter==other.var2var_iter)
+           );
+
+       }
+       bool operator!=(const self& other){
+           return !(*this==other);
+
+       }
 private: 
     const LiteralFactorization* literal_factorization;
-    
+   
       
 };
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b);
