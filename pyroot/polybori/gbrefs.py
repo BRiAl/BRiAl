@@ -142,10 +142,11 @@ def load_data(file_name, base_dir="./"):
     #return my_import(in_file)
     return dyn_generate(in_file, "pb_data")
 
-def load_file(file_name, base_dir="./"):
+def load_file(file_name):
 
     in_file=file_name
+    
 
-    in_file=open(base_dir + in_file).read()
+    in_file=open( in_file).read()
 
     return dyn_generate(in_file, "pb_data")
