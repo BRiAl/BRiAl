@@ -421,6 +421,6 @@ Polynomial LiteralFactorizationIterator::operator*() const{
            return Variable(var2var_iter->first)
                + Variable(var2var_iter->second);
        }
-};
+}
 
 END_NAMESPACE_PBORIGB
