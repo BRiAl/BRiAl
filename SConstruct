@@ -605,9 +605,7 @@ documentable_python_modules = [PyRootPath('polybori', f)
 installable_python_modules = []
 
 
-def add_cnf_dir(env,directory):
-  for f in glob(path.join(directory, "*.cnf")):
-      env.CNF(f[:-4])
+
 
 pydocu = []
 dynamic_modules = []
@@ -658,44 +656,8 @@ if HAVE_PYTHON_EXTENSION:
             LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
-    from StringIO import StringIO
 
-
-    # Converting cnf files to PolyBoRi python format
-    def cnf2py_build_function(target,source,env):
-        sys.path.append(TestsPath("py"))
-        from cnf2ideal import gen_clauses, process_input,convert_file_PB
-
-        target=target[0]
-        source=source[0]
-        inp=process_input(open(source.path))
-        
-        clauses=gen_clauses(inp)
-        out=open(target.path,"w")
-        convert_file_PB(clauses,source.name,False, out)
-
-        return None
-    
-    cnfbld = Builder(action = cnf2py_build_function,
-                     suffix = '.py',
-                     src_suffix = '.cnf')
-    env.Append(BUILDERS={'CNF' : cnfbld})
-
-    cnffiles =  ["uf20/uf20_" + str(i)         for i in xrange(1,1001)]
-    cnffiles += ["flat30_60/flat30_" + str(i)  for i in xrange(1,101)]
-    cnffiles += ["uuf50/uuf50_" + str(i)       for i in xrange(1,101)]
-    cnffiles += ["uuf75/uuf75_" + str(i)       for i in xrange(1,11)]
-    cnffiles += ["phole/hole" + str(i)         for i in xrange(6,13)]
-    cnffiles += ["hanoi/hanoi" + str(i)        for i in xrange(4,6)]
-    cnffiles += ['uuf100/uuf100_01', 'uuf125/uuf125_1']
-
-    for fname in cnffiles:
-        files = glob(DataPath(fname + ".cnf"))
-        if len(files) > 0:
-            env.CNF(files)
-
-    for fdir in Split("blocksworld"):
-        add_cnf_dir(env, DataPath(fdir))
+  
 
 else:
     print "no python extension"
