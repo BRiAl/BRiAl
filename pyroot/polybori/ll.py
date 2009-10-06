@@ -135,7 +135,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
       #that the routines will quickly eliminate them
       #and they won't give any overhead
   def sort_key(v):
-      return ll_ranks[v]
+      return (ll_ranks[v], v.index())
   sorted_vars=sorted(ll_ranks.keys(), key=sort_key)
   def var_index(v):
       return Monomial(v).variables().next().index()

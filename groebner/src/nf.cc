@@ -1847,7 +1847,9 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     }
     int rank;
     if ((mat->nrows>0) && (mat->ncols>0))
-            rank=mzd_echelonize_m4ri(mat,TRUE,0);//mzd_echelonize_pluq(mat,TRUE);
+            rank=
+            mzd_echelonize_m4ri(mat,TRUE,0);
+            //mzd_echelonize_pluq(mat,TRUE);
     else
             rank=0;
     #endif
@@ -2086,10 +2088,7 @@ linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSe
     vector < Monomial > terms_unique_vec;
     MonomialSet     terms_step1;
     int             i;
-
-
     vector < pair < Polynomial, Monomial > >polys_lm;
-    //polys_lm.resize(polys.size());
     for (i = 0; i < polys.size(); i++) {
         if LIKELY(!(polys[i].isZero()))
             polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
@@ -2101,9 +2100,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess())
     Monomial        last;
     if UNLIKELY(polys_lm[0].second.deg() == 0) {
         assert(polys_lm[0].first.isOne());
-        //vector < Polynomial > res_one;
         polys.resize(1);
-        //std::cout<<"have 1"<<std::endl;
         polys[0] = 1;
 
         return;
@@ -2149,8 +2146,6 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
 
         mat_step1=mzd_init(rows,cols);
-
-        
         vector<Exponent> terms_as_exp_lex_step1;
         vector<int> ring_order2lex_step1;
         vector<int> lex_order2ring_step1;
@@ -2169,15 +2164,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri
             (mat_step1,0);
-//          optimal_k_for_gauss(mat_step1->nrows,mat_step1->ncols,strat));//gaussianPacked(mat_step1,TRUE);
+
         if UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
         int rank=mat_step1->nrows;
-        //assert(rank==rows);
-        ///(mat_step1, TRUE, 16);
-        
-        
+
         //sort rows
         int pivot_row=0;
         row_start.resize(rows);
@@ -2208,23 +2200,20 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             std::cout<<"finished sort"<<std::endl;
         }
         assert(pivot_row==rows);
-        // std::cout<<"before translate"<<std::endl;
-        // printPackedMatrixMB(mat_step1);
+
         translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
         
         if UNLIKELY(log){
             std::cout<<"finished translate"<<std::endl;
         }
-        // std::cout<<"after translate"<<std::endl;
-        //     printPackedMatrixMB(mat_step1);
+
         //delete columns
         mzd_t* transposed_step1=mzd_transpose(NULL,mat_step1);
         if UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(mat_step1);
-        // std::cout<<"before swap"<<std::endl;
-        //  printPackedMatrixMB(transposed_step1);
+
         for(i=0;i<remaining_cols;i++){
             int source=compactified_columns2old_columns[i];
             assert(i<=source);
@@ -2235,10 +2224,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         if UNLIKELY(log){
             std::cout<<"finished permute"<<std::endl;
         }
-        // std::cout<<"before submat"<<std::endl;
-        // printPackedMatrixMB(transposed_step1);
-        
-        
+
         //cols, rows arguments are swapped, as matrix is transposed
 
         mzd_t* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
@@ -2252,8 +2238,6 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(sub_step1);
-        
-
     }
     MonomialSet terms_step2=terms.diff(terms_unique);
     const int rows_step2=polys_rest.size();
@@ -2273,10 +2257,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         Polynomial p_r=polys_rest[i];
         Polynomial p_t=p_r.diagram().intersect(terms_step2);
         Polynomial p_u=p_r.diagram().diff(p_t.diagram());
-        
-        Polynomial::exp_iterator it;
-        Polynomial::exp_iterator end;
-        
+        Polynomial::exp_iterator it, end;
         it=p_u.expBegin();
         end=p_u.expEnd();
         
@@ -2287,9 +2268,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                 assert(from_it!=eliminated2row_number.end());
                 int index=from_it->second;//...translate e->line number;
                 mzd_write_bit(mat_step2_factor,i,index,1);
-
             it++;
-
         }
         it=p_t.expBegin();
         end=p_t.expEnd();
@@ -2299,12 +2278,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                 assert(from_it!=from_term_map_step2.end());
                 int index=from_it->second;
                 mzd_write_bit(mat_step2,i,index,1);
-
-            
-            it++;
-            
+            it++;       
         }
-        //std::cout<<"len:1"<<std::endl;
     }
     
     if UNLIKELY(log){
@@ -2318,8 +2293,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     assert(mat_step2_factor->ncols==mat_step1->nrows);
     assert(mat_step1->nrows==terms_unique.size());
     assert(mat_step1->ncols==remaining_cols);
-    // std::cout<<"step1 matrix"<<std::endl;
-    // printPackedMatrixMB(mat_step1);
+
     if UNLIKELY(optDrawMatrices)
     {
     
@@ -2333,14 +2307,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         std::cout<<"start mult"<<std::endl;
     }
     
-    
-    
     mzd_t* eliminated;
     if LIKELY((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
         eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);
     else
         eliminated=mzd_init(mat_step2_factor->nrows,mat_step1->ncols);
-     //,NULL,NULL);//optimal_k_for_multiplication(mat_step2_factor->nrows,mat_step2_factor->ncols,mat_step1->ncols,strat));
+
     mzd_free(mat_step2_factor);
     if UNLIKELY(log){
         std::cout<<"end mult"<<std::endl;
@@ -2354,15 +2326,14 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         for(j=0;j<remaining_cols;j++){
             if UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
                 assert(terms_as_exp_step2[remaining_col2new_col[j]]==terms_as_exp_step1[compactified_columns2old_columns[j]]);
-                //mzd_write_bit(mat_step2,i,remaining_col2new_col[j],mzd_read_bit(mat_step2,i,remaining_col2new_col[j])^1);
+                
                 if UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
                     mzd_write_bit(mat_step2,i,remaining_col2new_col[j],0);
                         } else mzd_write_bit(mat_step2,i,remaining_col2new_col[j],1);
             }
         }
     }
-    // std::cout<<"eliminated matrix"<<std::endl;
-    // printPackedMatrixMB(eliminated);
+
     mzd_free(eliminated);
     
      if UNLIKELY(log){
@@ -2378,19 +2349,17 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
     int rank_step2;
     if ((mat_step2->ncols>0) &&( mat_step2->nrows>0)){
-        rank_step2=mzd_echelonize_m4ri(mat_step2,TRUE,0);//mzd_echelonize_pluq(mat_step2,TRUE);
+        rank_step2=
+        mzd_echelonize_m4ri(mat_step2,TRUE,0);
+        //mzd_echelonize_pluq(mat_step2,TRUE);
     } else
         rank_step2=0;
-    //simpleFourRussiansPackedFlex(mat_step2, TRUE, optimal_k_for_gauss(mat_step2->nrows,mat_step2->ncols,strat));
-        
+
         if UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
-    // std::cout<<"step2matrix"<<std::endl;
-    // printPackedMatrixMB(mat_step2);
-    // std::cout<<"res before:"<<polys.size()<<std::endl;
+
     translate_back(polys, leads_from_strat, mat_step2,ring_order2lex_step2, terms_as_exp_step2,terms_as_exp_lex_step2,rank_step2);
-    //std::cout<<"res after:"<<polys.size()<<std::endl;
     mzd_free(mat_step2);
     
 
