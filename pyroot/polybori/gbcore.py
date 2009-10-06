@@ -249,11 +249,42 @@ def ll_constants_pre(I):
 
 
 def variety_size_from_gb(I):
-    sm=Monomial(used_vars_set(I)).divisors()
-    for p in I:
-        m=p.lead()
-        sm=sm.diff(sm.multiples_of(m))
-    return sm.size_double()
+    """
+    >>> r=Ring(100)
+    >>> x=Variable
+    >>> variety_size_from_gb([])
+    1
+    >>> variety_size_from_gb([0])
+    1
+    >>> variety_size_from_gb([1])
+    0.0
+    >>> variety_size_from_gb([x(1)])
+    1.0
+    >>> variety_size_from_gb([x(1), x(2)])
+    1.0
+    >>> variety_size_from_gb([x(1), x(2)*x(3)])
+    3.0
+    >>> variety_size_from_gb([x(1), x(1)*x(4), x(2)*x(3)])
+    6.0
+    >>> mons = [Monomial([Variable(i) for i in xrange(100) if i!=j])\
+        for j in xrange(100)]
+    >>> variety_size_from_gb(mons)
+    1.2676506002282294e+30
+    """
+    I=[Polynomial(p) for p in I]
+    I=[p for p in I if not p.is_zero()]
+    if len(I)==0:
+        return 1
+    number_of_used_vars = used_vars_set(I).deg()
+    leads = set([p.lead() for p in I])
+    minimal_leads = BooleSet(leads).minimal_elements()
+    number_of_used_vars_minimal_leads =\
+        minimal_leads.vars().deg()
+    standard_monomials =\
+        minimal_leads.include_divisors().diff(minimal_leads)
+    return standard_monomials.size_double()*\
+        2**(number_of_used_vars-number_of_used_vars_minimal_leads)
+
 def other_ordering_pre(I,option_set,kwds):
     main_kwds=kwds
     options=option_set
@@ -472,3 +503,10 @@ def groebner_basis(I, faugere=False,
         return call_algorithm(I)
 
 groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))+"\nTurn off heuristic by setting heuristic=False"
+
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__ == "__main__":
+    _test()

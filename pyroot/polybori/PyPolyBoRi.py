@@ -119,3 +119,12 @@ def _strategy_setattr(self, a, v):
 if compatibility_mode:
     GroebnerStrategy.__getattr__=_strategy_getattr
     GroebnerStrategy.__setattr__=_strategy_setattr
+
+_add_up_polynomials=add_up_polynomials
+def add_up_polynomials(polys):
+    if not isinstance(polys, BoolePolynomialVector):
+        vec = BoolePolynomialVector
+        for p in polys:
+            vec.append(p)
+        polys=vec
+    return _add_up_polynomials(polys)
