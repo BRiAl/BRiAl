@@ -1,5 +1,4 @@
 # Emacs edit mode for this file is -*- python -*-
-#$Id$
 
 # Backward compatibility
 if not 'Variables' in globals():
