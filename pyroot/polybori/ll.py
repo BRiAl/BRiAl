@@ -138,7 +138,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
       return (ll_ranks[v], v.index())
   sorted_vars=sorted(ll_ranks.keys(), key=sort_key)
   def var_index(v):
-      return Monomial(v).variables().next().index()
+      return iter(Monomial(v).variables()).next().index()
   #sorted_var_indices=[var_index(v) for v in sorted_vars]
   map_back_indices = dict([(i, var_index(v)) for (i, v) in enumerate(sorted_vars)])
   map_from_indices = dict([(var_index(v), i) for (i, v) in enumerate(sorted_vars)])

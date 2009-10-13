@@ -17,6 +17,7 @@ class CNFEncoder(object):
         >>> e.zero_blocks(Variable(0)*Variable(1)*Variable(2))
         [{y: 0}, {z: 0}, {x: 0}]
         """
+        f=Polynomial(f)
         variables = f.vars_as_monomial()
     
         space = variables.divisors()
