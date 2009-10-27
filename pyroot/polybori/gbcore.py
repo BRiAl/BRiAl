@@ -320,7 +320,7 @@ def easy_linear_polynomials_pre(I):
                 res.append(q+1)
     return (list(set(res)), None)
 
-def llfirst_post(I,state,prot):
+def llfirst_post(I,state,prot, kwds):
     eliminated=state
     for p in I:
         if p.is_one():
@@ -329,8 +329,19 @@ def llfirst_post(I,state,prot):
         if len(eliminated)>0:
             I=list(chain(I,eliminated))
             #redsb just for safety, as don't know how option is set
-            I=groebner_basis(I,llfirst=False,llfirstonthefly=False,ll_constants=False,other_ordering_first=False,eliminate_identical_variables=False, redsb=True,prot=prot)
+            kwds=copy(kwds)
+            kwds.update(
+                dict(llfirst = False,
+                llfirstonthefly = False,
+                ll_constants = False,
+                deg_bound = False,
+                other_ordering_first = False,
+                eliminate_identical_variables = False, redsb = True))
+            I=groebner_basis(
+                I, **kwds
+            )
     return I
+            
 
 
 def ll_constants_post(I,state):
