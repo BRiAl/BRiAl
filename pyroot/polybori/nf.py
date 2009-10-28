@@ -254,7 +254,8 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             strat.clean_top_by_chain_criterion()
         return strat
     except KeyboardInterrupt:
-        return strat
+        #return strat
+        raise
 
 def GPS(G,vars_start, vars_end):
     def step(strat,trace,var,val):
