@@ -17,6 +17,8 @@
 #define PBORI_GB_LF_H
 BEGIN_NAMESPACE_PBORIGB
 
+std::vector<Polynomial> easy_linear_factors(const Polynomial &p);
+
 class LiteralFactorizationIterator;
 class LiteralFactorization{
 public:

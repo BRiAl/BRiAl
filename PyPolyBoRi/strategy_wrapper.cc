@@ -25,17 +25,7 @@ using namespace std;
 #include "variable_block.h"
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
-std::vector<Polynomial> easy_linear_factors(const Polynomial &p){
-    LiteralFactorization factorization(p);
-    std::vector<Polynomial> res;
-    LiteralFactorizationIterator it1=factorization.begin();
-    LiteralFactorizationIterator end1=factorization.end();
-    while(it1!=end1){
-        res.push_back(*it1);
-        ++it1;
-    }
-    return res;
-}
+
 class StrategyIndexException{
     
 };

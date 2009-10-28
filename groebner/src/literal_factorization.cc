@@ -12,6 +12,18 @@
 #include <CCacheManagement.h>
 BEGIN_NAMESPACE_PBORIGB
 
+std::vector<Polynomial> easy_linear_factors(const Polynomial &p){
+    LiteralFactorization factorization(p);
+    std::vector<Polynomial> res;
+    LiteralFactorizationIterator it1=factorization.begin();
+    LiteralFactorizationIterator end1=factorization.end();
+    while(it1!=end1){
+        res.push_back(*it1);
+        ++it1;
+    }
+    return res;
+}
+
 static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
   if (m.emptiness()) return m.ring().one();
     MonomialSet::navigator nav=m.navigation();
