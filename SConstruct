@@ -149,13 +149,14 @@ opts.Add('CXXFLAGS', "C++ compiler flags",
          "-std=c++98 -ftemplate-depth-100",
          converter = Split)
 
-opts.Add('SHCCFLAGS', "C/C++ compiler shared flags", defaultenv['SHCCFLAGS'],
-         converter = Split)
-opts.Add('SHCFLAGS', "C compiler shared flags", defaultenv['SHCFLAGS'],
-         converter = Split)
-opts.Add('SHCXXFLAGS', "C++ compiler shared flags", defaultenv['SHCXXFLAGS'],
-         converter = Split)
+for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
+    opts.Add(var, "inherited from SCons", defaultenv[var])
 
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
+    opts.Add(flag, "flags inherited from SCons",
+             defaultenv[flag], converter = Split)
+    
 opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
