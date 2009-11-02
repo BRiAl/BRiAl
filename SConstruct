@@ -101,7 +101,9 @@ if distribute or rpm_generation or deb_generation:
         return arg
 
 defaultenv = Environment()
-
+if defaultenv['PLATFORM'] == "darwin":
+    defaultenv['SHCCFLAGS'] += ["-fvisibility=hidden"]
+    
 # See also:  http://trac.sagemath.org/sage_trac/ticket/6437
 def sun_linker_detected():
     if os.system('ld --version > /dev/null 2>&1 ') == 0:
@@ -467,13 +469,10 @@ cudd_headers = [ CuddPath(fname) for fname in ['obj/cuddObj.hh', 'util/util.h',
                                                'cudd/cuddInt.h'] ] 
 
 env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['obj', 'util'] ])
-visibility_hidden=(env['PLATFORM']=="darwin")
-def shared_object(o):
-    if not visibility_hidden:
-        return env.SharedObject(o)
-    else:
-        return env.SharedObject(o,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
 
+def shared_object(o):
+    return env.SharedObject(o)
+    
 for fdir in Split("cudd mtr st epd"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
     cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
@@ -635,15 +634,14 @@ if HAVE_PYTHON_EXTENSION:
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + python_absolute,
             LIBS = pyconf.libs + LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
+            CPPPATH=CPPPATH)
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS,
             CPPPATH=CPPPATH)
-            #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
-            #SHLIBPREFIX="")
+
     DefaultBuild(pypb)
 
     # Define the dynamic python modules in pyroot
@@ -737,7 +735,7 @@ if HAVE_SINGULAR_EXTENSION:
         singpb=env.LoadableModule('Singular/polybori_module', wrapper_files,
             LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
             LIBS=SINGULAR_LIBS,LDMODULESUFFIX=".so",
-            CPPPATH=SING_INCLUDES+CPPPATH,CCFLAGS=env["CCFLAGS"]+["-fvisibility=hidden"],CXXFLAGS=env["CXXFLAGS"]+["-fvisibility=hidden"])
+            CPPPATH = SING_INCLUDES + CPPPATH)
     else:
         #print "l:", l
         singpb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
