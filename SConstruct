@@ -10,7 +10,7 @@ opts = Variables('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.6"
-pborirelease = "3"
+pborirelease = "4"
 
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
@@ -122,8 +122,9 @@ def sonameprefix(env):
     else:
         return '-Wl,-soname,'
 
-    
-#print defaultenv.Dump()
+if 'dump_default' in COMMAND_LINE_TARGETS:
+  print defaultenv.Dump()
+
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler',  defaultenv['CXX'])
 opts.Add('CC', 'C Compiler', defaultenv['CC'])
@@ -147,6 +148,14 @@ opts.Add('CFLAGS', "C compiler flags", "-std=c99",
 opts.Add('CXXFLAGS', "C++ compiler flags",
          "-std=c++98 -ftemplate-depth-100",
          converter = Split)
+
+opts.Add('SHCCFLAGS', "C/C++ compiler shared flags", defaultenv['SHCCFLAGS'],
+         converter = Split)
+opts.Add('SHCFLAGS', "C compiler shared flags", defaultenv['SHCFLAGS'],
+         converter = Split)
+opts.Add('SHCXXFLAGS', "C++ compiler shared flags", defaultenv['SHCXXFLAGS'],
+         converter = Split)
+
 opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
@@ -237,6 +246,9 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
+if 'dump' in COMMAND_LINE_TARGETS:
+  print env.Dump()
+
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
@@ -252,7 +264,6 @@ if HAVE_DOXYGEN:
         print "Doxygen not found, skipping C++-documentation generation!"
 
     
-#print env.Dump()
 
 # soname related stuff
 def _sonamecmd(prefix, target, suffix, env = env):

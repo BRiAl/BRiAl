@@ -42,9 +42,12 @@ If might also be useful to add some custom setting to the file 'custom.py' in
 the build directory, see the following example.
 
 --- custom.py ---
+CFLAGS = ""
 CCFLAGS = "-g -O3  -ansi --pedantic -Wno-long-long -pg"
 CXXFLAGS = "$CCFLAGS -ftemplate-depth-100"
 LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg" 
+# See also SHCFLAGS, SHCCFLAGS, SHCXXFLAGS, and SHLINKFLAGS
+
 LIBS=["util"]
 # means that this line is not activated.
 #LIBPATH = ["/custom/lib/path1", "/custom/lib/path2"]
@@ -52,7 +55,6 @@ LIBS=["util"]
 #PYPREFIX = 
 #PBP = "python"
 -----------------
-
 
 Typing 
 
