@@ -147,17 +147,22 @@ opts.Add('CCFLAGS', "C/C++ compiler flags", "-O3", converter = Split)
 
 opts.Add('CFLAGS', "C compiler flags", "-std=c99",
          converter = Split)
-opts.Add('CXXFLAGS', "C++ compiler flags",
-         "-std=c++98 -ftemplate-depth-100",
+opts.Add('CXXFLAGS', "C++ compiler flags", "-std=c++98 -ftemplate-depth-100",
          converter = Split)
 
 for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
 SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
-    opts.Add(var, "inherited from SCons", defaultenv[var])
+    if defaultenv.has_key(var):
+        opts.Add(var, "inherited from SCons", defaultenv[var])
+    else:
+        print "Variable", var, "not in default environment!"
 
 for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
-    opts.Add(flag, "flags inherited from SCons",
+    if defaultenv.has_key(flag):
+        opts.Add(flag, "flags inherited from SCons",
              defaultenv[flag], converter = Split)
+    else:
+        print "Flags", flag, "not in default environment!"        
     
 opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
