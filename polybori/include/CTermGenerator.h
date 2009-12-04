@@ -80,51 +80,13 @@
 BEGIN_NAMESPACE_PBORI
 
 
-template <class TermType, class BehaviourTag = type_tag<TermType> >
-class CTermGeneratorBase;
+template <class TermType, class BehaviourTag>
+class CTermGeneratorBase__;
 
-#if 0
-template <class TermType>
-class CTermGeneratorBase<TermType, type_tag<BooleMonomial> >{
-
-public:
-  typedef TermType value_type;
-  typedef value_type result_type;
-
-  template <class SequenceType>
-  result_type operator()(const SequenceType& seq) const{
-
-    value_type result(!seq.isZero());
-
-    typename SequenceType::stack_reverse_iterator 
-      start(seq.stackRBegin()), finish(seq.stackREnd());
-
-#ifndef PBORI_NO_TERMS_BY_TAIL
-    typename BooleSet::navigator navi(result.diagram().navigation());
-
-    assert((start == finish) || !start->isConstant());
-    while((start != finish) && 
-          (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
-      navi = *start;
-      ++start;
-    }
-
-    result = value_type(BooleSet(navi));
-#endif
-
-    while (start != finish){
-      result.changeAssign(**start);
-      ++start;
-    }
-    
-    return result;
-  }
-};
-#endif //if0
 
 class BooleExponent;
 template <class TermType>
-class CTermGeneratorBase<TermType, type_tag<BooleExponent> > {
+class CTermGeneratorBase__<TermType, type_tag<BooleExponent> > {
 
 public:
   typedef TermType value_type;
@@ -147,7 +109,7 @@ public:
 };
 
 template <class TermType>
-class CTermGeneratorBase<TermType, type_tag<CTypes::size_type> > {
+class CTermGeneratorBase__<TermType, type_tag<CTypes::size_type> > {
 public:
   typedef TermType value_type;
   typedef value_type result_type;
@@ -160,7 +122,7 @@ public:
 
 
 template <class TermType>
-class CTermGeneratorBase<TermType, type_tag<CTypes::deg_type> > {
+class CTermGeneratorBase__<TermType, type_tag<CTypes::deg_type> > {
 public:
   typedef TermType value_type;
   typedef value_type result_type;
@@ -171,30 +133,12 @@ public:
   }
 };
 
-template <class TermType>
-class CTermGenerator:
-  public CTermGeneratorBase<TermType> {
-public:
-  typedef CTermGeneratorBase<TermType> base;
-
-  typedef  CTypes::dd_type dd_type;
-  typedef  dd_type::core_type data_type;
-
-  CTermGenerator(const data_type&): base() {}
-  CTermGenerator(const CTermGenerator& rhs): base(rhs) {}
-  CTermGenerator(): base() {}
-
-};
 
 /////////
-class NoData {};
 
-
-template <class TermType, class BehaviourTag = type_tag<TermType> >
-class MyCTermGeneratorBase;
 
 template <class TermType>
-class CTermGeneratorBase<TermType, type_tag<BooleMonomial> >{
+class CTermGeneratorBase__<TermType, type_tag<BooleMonomial> >{
 
 public:
   typedef TermType value_type;
@@ -209,9 +153,9 @@ public:
   data_type m_data;
   ///CCuddCore * m_data; // non-save variant
 
-  CTermGeneratorBase(const data_type& data): m_data(data) {}
+  CTermGeneratorBase__(const data_type& data): m_data(data) {}
 
-  CTermGeneratorBase(): m_data() {}
+  CTermGeneratorBase__(): m_data() {}
 
   template <class SequenceType>
   result_type operator()(const SequenceType& seq) const {
@@ -251,12 +195,36 @@ public:
 };
 
 
+template <class TermType>
+class CTermGeneratorBase:
+  public CTermGeneratorBase__<TermType, type_tag<TermType> > {
+
+};
+
+
+template <class TermType>
+class CTermGenerator:
+  public CTermGeneratorBase<TermType> {
+public:
+  typedef CTermGeneratorBase<TermType> base;
+
+  typedef  CTypes::dd_type dd_type;
+  typedef  dd_type::core_type data_type;
+
+  CTermGenerator(const data_type&): base() {}
+  CTermGenerator(const CTermGenerator& rhs): base(rhs) {}
+  CTermGenerator(): base() {}
+
+};
+
+
 template <>
 class CTermGenerator<BooleMonomial>:
-  public CTermGeneratorBase<BooleMonomial> {
+  public CTermGeneratorBase__<BooleMonomial, type_tag<BooleMonomial> > {
 public:
   typedef BooleMonomial term_type;
-  typedef CTermGeneratorBase<term_type> base;
+  typedef CTermGeneratorBase__<BooleMonomial, type_tag<BooleMonomial> > base;
+  //typedef CTermGeneratorBase<term_type> base;
   typedef base::data_type data_type;
 
   CTermGenerator(const data_type& data): base(data) {}

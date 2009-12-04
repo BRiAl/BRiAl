@@ -122,6 +122,7 @@ public:
   CGenericIter(): base() {}
 };
 
+#if 0
 template <class OrderType, class NaviType>
 class CGenericIter<OrderType, NaviType, BooleMonomial>: 
   public pbori_base<CGenericIter<OrderType, NaviType, BooleMonomial> >::type {
@@ -135,6 +136,7 @@ public:
 
   CGenericIter(): base() {}
 };
+#endif
 
 ///////////////
 template <class OrderType, class NaviType, class RefType>

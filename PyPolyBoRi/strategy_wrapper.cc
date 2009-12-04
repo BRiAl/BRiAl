@@ -23,6 +23,8 @@
 using namespace boost::python;
 using namespace std;
 #include "variable_block.h"
+
+#include <iterator>
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
 
@@ -58,7 +60,7 @@ public:
     }
     typedef std::input_iterator_tag iterator_category;
     typedef Polynomial value_type;
-    typedef PolyEntryVector::const_iterator::difference_type difference_type;
+    typedef std::iterator_traits<PolyEntryVector::const_iterator>::difference_type difference_type;
     typedef const Polynomial* pointer;
     typedef const Polynomial reference;
 };

@@ -27,6 +27,7 @@
 **/
 //*****************************************************************************
 
+
 // load PolyBoRi settings
 # include "pbori_defs.h"
 #include <vector>
@@ -112,9 +113,10 @@ class BooleEnv:
   typedef BoolePolyRing ring_type;
 
   typedef CDynamicOrderBase order_type;
-  static ring_type& ring(){
-      return active_ring;
-  }
+  static ring_type& ring();
+//{
+//      return active_ring;
+//  }
 
   static manager_type& manager();
   static order_type& ordering();

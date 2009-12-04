@@ -159,5 +159,10 @@ BooleEnv::dd_type BooleEnv::persistentVariable(idx_type idx) {
 
 void BooleEnv::set(ring_type& theRing) { active_ring = theRing; }
 
+/// @todo needs inlining!!!
+BooleEnv::ring_type& BooleEnv::ring(){
+      return active_ring;
+  }
+
 
 END_NAMESPACE_PBORI
