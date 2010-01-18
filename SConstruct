@@ -191,6 +191,9 @@ opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
 opts.Add(BoolVariable('BOOST_WORKS',
                     'Skip check for Boost libraries', False))
 
+opts.Add('BOOST_LIBRARY',
+         'Name of Boost library to link with', 'boost_python')
+
 opts.Add(BoolVariable('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
 
@@ -600,7 +603,7 @@ for t in tests_gb:
         CPPPATH=CPPPATH)
 
 
-LIBS = env['LIBS']+['boost_python']+USERLIBS
+LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
 
 LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
@@ -746,8 +749,6 @@ if HAVE_SINGULAR_EXTENSION:
         singpb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=SINGULAR_LIBS,
             CPPPATH=SING_INCLUDES+CPPPATH)
-            #LIBS=env['LIBS']+['boost_python',l])#,LDMODULESUFFIX=".so",\
-            #SHLIBPREFIX="")
     DefaultBuild(singpb)
     
 
