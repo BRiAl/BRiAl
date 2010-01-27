@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "util.h"
 
-#ifdef BSD
+#if defined(BSD) || defined(hpux)
 #include <pwd.h>
 #endif
 
