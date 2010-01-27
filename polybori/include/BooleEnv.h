@@ -35,6 +35,11 @@
 #ifndef BooleEnv_h_
 #define BooleEnv_h_
 
+// Obey stricter dependence of Sun Studio compiler
+// todo: resolve dependency 
+#if defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+# define PBORI_ENV_RING_NOTINLINED
+#endif
 
 BEGIN_NAMESPACE_PBORI
 
@@ -113,11 +118,13 @@ class BooleEnv:
   typedef BoolePolyRing ring_type;
 
   typedef CDynamicOrderBase order_type;
+#ifdef PBORI_ENV_RING_NOTINLINED
   static ring_type& ring();
-//{
-//      return active_ring;
-//  }
-
+#else
+  static ring_type& ring() {
+    return active_ring;
+  }
+#endif
   static manager_type& manager();
   static order_type& ordering();
   /// Set name of variable with index idx
