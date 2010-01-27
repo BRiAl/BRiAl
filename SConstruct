@@ -571,7 +571,7 @@ gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebne
 gb_src = [GBPath('src', source) for source in gb_src]
 if not(external_m4ri):
    gb_src += m4ri
-gb=env.StaticLibrary(GBPath('groebner'), gb_src+[libpb])
+gb=env.StaticLibrary(GBPath('groebner'), gb_src)#+[libpb])
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list

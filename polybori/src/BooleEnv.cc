@@ -46,7 +46,10 @@ BooleEnv::ring_type active_ring;
 // Note, direct access via friends, to  active_ring.pOrder and pMgt, because
 // inline doesn't work up to now, because os the undefined type issue.
 
-//BooleEnv::ring_type& BooleEnv::ring() { return active_ring; }
+/// @todo needs inlining!!!
+#ifdef PBORI_ENV_RING_NOTINLINED
+BooleEnv::ring_type& BooleEnv::ring() { return active_ring; }
+#endif 
 
 BooleEnv::block_iterator 
 BooleEnv::blockBegin() {
@@ -158,6 +161,7 @@ BooleEnv::dd_type BooleEnv::persistentVariable(idx_type idx) {
 
 
 void BooleEnv::set(ring_type& theRing) { active_ring = theRing; }
+
 
 
 END_NAMESPACE_PBORI

@@ -116,3 +116,16 @@ Alternatively, one can append the following lines to custom.py:
 
 CXXFLAGS += " " + CCFLAGS
 CCFLAGS += " $CFLAGS"
+
+
+Sun Studio compiler
+===================
+We recommend to use gcc for compiling PolyBoRi, but compiling with Sun STudio's
+C++ in principle possible (albeit untested) with the following settings:
+CC="/opt/SUNWspro/bin/cc"
+CXX="/opt/SUNWspro/bin/CC"
+CXXFLAGS="-library=stlport4"
+CCFLAGS="-library=stlport4"
+
+Also CPPPATH, LIBPATH and PYTHON might adjusted to use library/binaries, with
+are compatible with the stlport4 option.

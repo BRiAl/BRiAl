@@ -1,6 +1,7 @@
 Release Name: 0.6.4:
 * Repository changed to hg
 * Added treatment SHCFLAGS, SHCCFLAGS, and SHCXXFLAGS
+* Improved Sun Studio compatibility
 
 Release Name: 0.6.3:
 * introduced parameter modified_linear_algebra for groebner_basis,

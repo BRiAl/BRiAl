@@ -193,8 +193,8 @@ class BooleMonomial {
  public:
   template <class, class> friend class CDDOperations;
   friend class COrderBase;
-  template <class, class> friend class CTermGeneratorBase;
-
+  template <class> friend class CTermGeneratorBase;
+  template <class, class> friend class CTermGeneratorBase__;
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
