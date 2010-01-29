@@ -127,5 +127,5 @@ CXX="/opt/SUNWspro/bin/CC"
 CXXFLAGS="-library=stlport4"
 CCFLAGS="-library=stlport4"
 
-Also CPPPATH, LIBPATH and PYTHON might adjusted to use library/binaries, with
+Also CPPPATH, LIBPATH and PYTHON might be adjusted to use library/binaries, which
 are compatible with the stlport4 option.
