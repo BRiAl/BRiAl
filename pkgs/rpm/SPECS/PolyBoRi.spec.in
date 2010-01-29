@@ -20,7 +20,7 @@ Version: $PBVERSION
 Release: $PBRELEASE
 License: GPL3
 Group: Productivity/Scientific/Math
-Group(de): Produktivit‰t/Wissenschaftlich/Math
+Group(de): Produktivit√§t/Wissenschaftlich/Math
 URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.gz
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -77,6 +77,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jan 29 2010 Alexander Dreyer <adreyer@gmx.de> - 
+- Updating sources (PolyBoRi 0.6-4).
 * Tue Mar 31 2009 Alexander Dreyer <adreyer@gmx.de> - 
 - Updating sources (PolyBoRi 0.6-0).
 * Mon Jul 08 2008 Alexander Dreyer <adreyer@gmx.de> - 
