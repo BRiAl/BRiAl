@@ -1,6 +1,13 @@
 Release Name: 0.6.4:
 * Repository changed to hg
-* Added treatment SHCFLAGS, SHCCFLAGS, and SHCXXFLAGS
+* Disabled keyboard interrupt handling (but re-raised)
+* Fixed critical bug in normal form
+* Naming convention: minimalElements -> minimal_elements
+* has_constant_part for variable/monomial
+* lead/lex_lead/lead_deg/lex_lead_deg also for Variable/Monomial
+* iterator for literal factorization
+* Added treatment of customizable settings for
+  BOOST_LIBRARY, SHCFLAGS, SHCCFLAGS, and SHCXXFLAGS
 * Improved Sun Studio compatibility
 * Fix for hpux (CUDD needs pwd.h)
 	
