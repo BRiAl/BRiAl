@@ -19,7 +19,7 @@ For building the PolyBoRi framework, the following tools and libraries are
 needed:
 * gcc 3.3.0 or newer
 * python 2.4 (deprecated) or python 2.5 (recommended)
-* scons (v0.96 or later, recommended v0.97 or later)
+* scons (v0.96 or later, recommended v0.98 or later)
 * the boost library, version 1.33.1 (for python 2.4; deprecated) or 
   version 1.34.1 (for python 2.5; recommended)
 
@@ -101,6 +101,9 @@ starts an IPython session with the PolyBoRi framework loaded.
 
 Workaround for scons 0.96.x
 ===========================
+
+Please note, that scons 0.96.x is not officially supported anymore, so the
+following may be out of date
 
 The currently used CFLAGS/CCFLAGS/CXXFLAGS mechanism was introduced in the 0.97
 branch of scons. Using a version from the 0.96 branch CCFLAGS must contain all
