@@ -1,5 +1,6 @@
 Release Name: 0.6.4:
 * Repository changed to hg
+* gat parser added
 * Disabled keyboard interrupt handling (but re-raised)
 * Fixed critical bug in normal form
 * Naming convention: minimalElements -> minimal_elements
