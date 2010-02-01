@@ -147,7 +147,7 @@ with inverted variable order\n\
 
   
   def("append_ring_block", &BooleEnv::appendBlock, 
-      "Append integer, which marks start of next block (for block orderings)");
+      "Append integer, which marks the index of the start of the next block (for block orderings)");
   def("have_degree_order", have_degree_order, 
       "Determines, whether ring ordering is a degree ordering");
   boost::python::class_<BooleConstant>("BooleConstant", 
