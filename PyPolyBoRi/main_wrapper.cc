@@ -124,7 +124,8 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
     .def("clone", &BooleRing::clone, "copies also variable name vector in a new one, so somewhat deeper copy function")
-    .def("n_variables", &BooleRing::nVariables, "Number of ring variables");
+    .def("n_variables", &BooleRing::nVariables, "Number of ring variables")
+    .def("__hash__", &BooleRing::hash);
 
   boost::python::class_<BoolePolyRing, 
     boost::python::bases<BooleRing> >("Ring", "Boolean polynomial ring") 
