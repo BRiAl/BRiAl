@@ -508,7 +508,7 @@ The resulting ZDD however has only as many nodes as variables.
 In fact it can be constructed directly using the following function (from specialsets.py).
 \begin{lstlisting}
 def power_set(variables):
-    variables=sorted(set(variables),reverse=True,key=key)
+    variables=sorted(set(variables),reverse=True,key=top_index)
     res=Polynomial(1).set()
     for v in variables:
         res=if_then_else(v,res,res)
