@@ -1,4 +1,6 @@
 Release Name: 0.6.5:
+* Added polybori.nf.simple_nf
+* Simplification of declare_ring in ipbori
 
 Release Name: 0.6.4:
 * Repository changed to hg
