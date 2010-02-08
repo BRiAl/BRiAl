@@ -88,9 +88,7 @@ execute from polybori.gbcore import groebner_basis
 # Import some high-level modelling functionality
 execute from polybori import *
 
-
-execute pb_copy =  "Copyright (c) 2007 by The PolyBoRi Team. "
-execute pb_copy +=  "All Rights Reserved.\n"
+execute pb_copy =  "Copyright (c) 2007-2010 by The PolyBoRi Team.\n"
 execute pb_copy +=  "  Michael Brickenstein (MFO)  brickenstein@mfo.de\n"
 execute pb_copy +=  "  Alexander Dreyer (ITWM)     "
 execute pb_copy +=  "alexander.dreyer@itwm.fraunhofer.de\n\n"
@@ -118,3 +116,9 @@ execute pb_copy += "Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org>"
 
 execute def polybori_copyright(): print pb_copy 
 execute def polybori_license(): print pb_lic
+
+# Get special stuff for this user interface
+execute from polybori.frontend import *
+
+# Simplify ring declaration
+execute def declare_ring(arg1, arg2 = None): return ternary_declare_ring(arg1, arg2, globals())
