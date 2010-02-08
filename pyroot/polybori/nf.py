@@ -514,3 +514,14 @@ def symmGB_F2_C(G,opt_exchange=True,
                 strat.add_generator_delayed(g)
     strat.symmGB_F2()
     return strat
+
+
+
+def simple_nf(poly, ideal):
+    """ Simple normal form computation of a polynomial  against an ideal."""
+    strat = GroebnerStrategy()
+    for gen in ideal:
+        strat.add_as_you_wish(gen)
+    return strat.nf(poly)
+    
+    

@@ -7,3 +7,4 @@ def ternary_declare_ring(blocks, context, global_context):
         context = global_context
         
     return orig_declare_ring(blocks, context)
+
