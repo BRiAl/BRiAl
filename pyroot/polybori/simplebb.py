@@ -40,3 +40,25 @@ def less_than_n_solutions(ideal,n):
         return True
     else:
         return False
+
+
+def gauss(matrix):
+    """Toy Gaussian elimination.
+    Example: gauss([[0,1],[1,1]]) """
+    from gbcore import groebner_basis
+    def get_num(idx, vars):
+        if idx in [var.index() for var in vars.variables()]:
+            return 1
+        return 0;
+        
+    nrows = len(matrix)
+    ncols = len(matrix[0]) 
+    eqs = [ sum([matrix[row][col]*Variable(col) for col in xrange(ncols)])
+            for row in xrange(nrows)]
+    result = groebner_basis(eqs)
+    result = result + [Polynomial(0)]* (nrows - len(result))
+    
+    return [[get_num(idx, elt.set().vars()) for idx in xrange(ncols)]
+            for elt in result]
+
+    return result
