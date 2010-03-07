@@ -225,7 +225,7 @@ opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
 
-opts.Add('RPATH', "rpath setting", [])
+opts.Add('RPATH', "rpath setting", [], converter = Split)
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
