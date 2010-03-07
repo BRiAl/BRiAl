@@ -164,7 +164,7 @@ for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
     else:
         print "Flags", flag, "not in default environment!"        
     
-opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
+opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
@@ -224,6 +224,8 @@ opts.Add('SHLIBVERSIONSUFFIX',
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
+
+opts.Add('RPATH', "rpath setting", [])
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
