@@ -31,8 +31,8 @@
 //*****************************************************************************
 
 // load PolyBoRi settings
-# include "pbori_defs.h"
-
+#include "pbori_defs.h"
+#include <exception>
 
 #ifndef PBoRiError_h_
 #define PBoRiError_h_
@@ -46,7 +46,8 @@ BEGIN_NAMESPACE_PBORI
  * It's mainly a class wrapper for CTypes::errorcode.
  * 
  **/
-class PBoRiError {
+class PBoRiError:
+  std::exception {
 
 public:
   /// adopt global error code enumeration
@@ -65,13 +66,16 @@ public:
   PBoRiError(const self&);
 
   /// destructor
-  ~PBoRiError();
+  ~PBoRiError() throw();
 
   /// get error code
   errornum_type code() const;
 
   /// get error text
   errortext_type text() const;
+
+  /// std::exception compatible interface
+  const char* what() const throw() { return text(); }
 
 protected:
   errornum_type error;

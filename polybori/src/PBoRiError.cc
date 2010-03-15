@@ -42,7 +42,7 @@ PBoRiError::PBoRiError(errornum_type err):
 }
 
 // destructor 
-PBoRiError::~PBoRiError() {
+PBoRiError::~PBoRiError() throw() {
   PBORI_TRACE_FUNC( "~PBoRiError()" );
 }
 
