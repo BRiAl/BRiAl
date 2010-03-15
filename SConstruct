@@ -747,6 +747,11 @@ if HAVE_SINGULAR_EXTENSION:
     SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
     SING_ARCH=SING_ARCH.replace("\n","")
     SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
+
+    sing_pb_if = env.SharedLibrary('Singular/polybori_interface',
+                                   "Singular/pb_if.cc", SHLIBPREFIX="", LDMODULESUFFIX=".so",
+                                   LIBS=SINGULAR_LIBS, CPPPATH = SING_INCLUDES + CPPPATH)
+    DefaultBuild(sing_pb_if)
     
     wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
     if env['PLATFORM']=="darwin":
