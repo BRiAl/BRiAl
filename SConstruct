@@ -749,7 +749,8 @@ if HAVE_SINGULAR_EXTENSION:
     SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
 
     sing_pb_if = env.SharedLibrary('Singular/polybori_interface',
-                                   "Singular/pb_if.cc", SHLIBPREFIX="", LDMODULESUFFIX=".so",
+                                   ["Singular/pb_if.cc"],
+                                   SHLIBPREFIX="", LDMODULESUFFIX=".so",
                                    LIBS=SINGULAR_LIBS, CPPPATH = SING_INCLUDES + CPPPATH)
     DefaultBuild(sing_pb_if)
     
