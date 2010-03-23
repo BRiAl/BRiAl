@@ -109,6 +109,48 @@ int pycommand() {
 
     //  PyRun_SimpleString("my_test_function(print)"); 
 
+
+
+
+  PyObject *pName, *pModule, *pDict, *pFunc, *pValue, *pClass, *pInstance, *pArgs;
+
+  // Build the name object
+
+  pName = PyString_FromString("__main__");
+
+  // Load the module object
+  
+  pModule = PyImport_Import(pName);
+
+  // pDict is a borrowed reference 
+  
+  pDict = PyModule_GetDict(pModule);
+
+  // pFunc is also a borrowed reference 
+  
+  pFunc = PyDict_GetItemString(pDict, "myprint");
+
+//     if (PyCallable_Check(pFunc)) 
+//     {
+//         PyObject_CallObject(pFunc, NULL);
+//     } else 
+//     {
+//         PyErr_Print();
+//     }
+  pArgs = PyTuple_New(1);
+  PyTuple_SetItem(pArgs, 0, pName);   
+
+
+  PyObject_CallObject(pFunc, pArgs);
+ 
+
+    // Clean up
+
+    Py_DECREF(pModule);
+    Py_DECREF(pName);
+    Py_DECREF(pArgs);
+
+
   Py_Finalize();
   return 0;
 }

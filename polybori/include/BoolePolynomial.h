@@ -452,6 +452,9 @@ public:
   /// Type for Boolean polynomial rings (without ordering)
   typedef BooleRing ring_type;
 
+  /// Type for result of polynomial comparisons
+  typedef CTypes::comp_type comp_type;
+
   /// Incrementation functional type
   typedef 
   binary_composition< std::plus<size_type>, 
@@ -796,6 +799,9 @@ public:
   /// Access ring, where this belongs to
   ring_type ring() const { return ring_type(m_dd.manager()); } 
 
+  /// Compare with right-hand side and return comparision code
+  comp_type compare(const self&) const;
+
 protected:
 
   /// Access to internal decision diagramm structure
@@ -806,7 +812,6 @@ protected:
 
   /// Get all divisors of the first term
   set_type firstDivisors() const;
-
 
 private:
   /// The actual decision diagramm

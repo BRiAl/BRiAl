@@ -1275,4 +1275,28 @@ BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
     return this->eliminationLength();
 }
 
+
+// Comparision
+// @todo more sophisticated procedure needed
+BoolePolynomial::comp_type
+BoolePolynomial::compare(const self& rhs) const {
+
+  PBORI_TRACE_FUNC( "BoolePolynomial::compare(const self& rhs) const" );
+
+  if (operator==(rhs))
+    return 0;
+
+  if (isZero())
+    return -1;
+
+  if (rhs.isZero())
+    return 1;
+
+  monom_type lhs_lead(lead()), rhs_lead(rhs.lead());
+  if (lhs_lead == rhs_lead)
+    return (*this - lhs_lead).compare(rhs - rhs_lead);
+
+  return (lhs_lead < rhs_lead? -1 : 1);
+}
+
 END_NAMESPACE_PBORI

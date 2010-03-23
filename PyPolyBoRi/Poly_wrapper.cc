@@ -179,7 +179,8 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("map_every_x_to_x_plus_one",map_every_x_to_x_plus_one, 
        "Replace every variable x by x + 1")
   .def("zeros_in",zeros, 
-  "Get BooleSet representing the zeros of the Polynomial");
+  "Get BooleSet representing the zeros of the Polynomial")
+    .def("__cmp__", &BoolePolynomial::compare, "Comparison of Boolean polynomials");
   //wrap usedVariables
   def("spoly",&spoly, "Compute s-Polynomial between two Polynomials");
   
