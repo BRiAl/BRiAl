@@ -38,7 +38,7 @@ navigate through ZDD-based data structures,"))
   .def("else_branch", else_branch, "Following else-edge of thr root node")
   .def(self==self)
   .def(self!=self)
-  .def("value",value)
+  .def("value",value, "Index of the current node")
   .def("constant", &CCuddNavigator::isConstant, "Terminal node test")
     .def("terminal_one", &CCuddNavigator::isTerminated, "Check for terminal 1")
   .def("__hash__", &CCuddNavigator::hash, "Fast hash code, based on the \
