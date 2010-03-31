@@ -226,26 +226,32 @@ def llfirst_pre(I,prot):
     return (I,eliminated)
 
 def ll_constants_pre(I):
-    I_new=[]
-    ll=[]
-    leads=set()
-    for p in I:
-        if p.lex_lead_deg()==1:
-            l=p.lead()
-            if not (l in leads) and len(p)<=2:
-                tail=p+l
-                if tail.deg()<=0:
-                    ll.append(p)
-                    leads.add(l)
-                    continue
-        I_new.append(p)
-    encoded=ll_encode(ll)
-    reduced=[]
-    for p in I_new:
-        p=ll_red_nf_redsb(p,encoded)
-        if not p.is_zero():
-            reduced.append(p)
-    return (reduced,ll)
+    ll_res=[]
+    
+    while len([p for p in I if p.lex_lead_deg()==1 and
+    (p+p.lex_lead()).constant()])>0:
+        I_new=[]
+        ll=[]
+        leads=set()
+        for p in I:
+            if p.lex_lead_deg()==1:
+                l=p.lead()
+                if not (l in leads) and len(p)<=2:
+                    tail=p+l
+                    if tail.deg()<=0:
+                        ll.append(p)
+                        leads.add(l)
+                        continue
+            I_new.append(p)
+        encoded=ll_encode(ll)
+        reduced=[]
+        for p in I_new:
+            p=ll_red_nf_redsb(p,encoded)
+            if not p.is_zero():
+                reduced.append(p)
+        I=reduced
+        ll_res.extend(ll)
+    return (I,ll_res)
 
 
 def variety_size_from_gb(I):

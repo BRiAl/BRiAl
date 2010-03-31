@@ -15,7 +15,8 @@ from subprocess import Popen, PIPE
 
 graph_template="""
 digraph polynomial{
-graph [ ordering="out"
+graph [ 
+ordering="out"
 #if highlight_monomial
 , label = "${display_monomial(highlight_monomial)}"
 #end
@@ -35,6 +36,9 @@ ${identifier(n)} -> ${identifier(n.then_branch())} [color="${color_then}", arrow
 
 graph_template_jinja="""
 digraph polynomial{
+{% if landscape %}
+rankdir=LR;
+{% endif %}
 graph [ ordering="out"
 {% if highlight_monomial %}
 , label = "{{display_monomial(highlight_monomial)}}"
@@ -89,7 +93,7 @@ def monomial_path_in_zdd(mon, graph):
     return dict(res)
 def plot(p, filename, colored=True,format="png", 
     highlight_monomial=None, fontsize=14,
-    template_engine='jinja'
+    template_engine='jinja', landscape=False
     ):
     """plots ZDD structure to <filename> in format <format>
 
