@@ -24,6 +24,13 @@ replace_init_proc(IntVector)
 
 monomial_old_init=Monomial.__init__
 def monomial_new_init(self,arg=None):
+    """
+    Constructor of the class Monomial
+    Constructs a Monomial from
+      - Monomial
+      - Variable
+      - sequence of variables
+    """
     if arg==None:
         monomial_old_init(self)
     else:
@@ -36,8 +43,14 @@ def monomial_new_init(self,arg=None):
                 prototype*=x
             monomial_old_init(self,prototype)
 Monomial.__init__=monomial_new_init
+
 booleset_old_init=BooleSet.__init__
 def booleset_new_init(self,arg=None, second=None):
+    """
+    Constructor of the class BooleSet (constructs a BooleSet from a CCuddNavigator
+       arg    : of type polybori.dynamic.PyPolyBoRi.CCuddNavigator
+       second : of type polybori.dynamic.PyPolyBoRi.BooleRing 
+    """
     if arg==None:
         booleset_old_init(self)
     elif second != None:
@@ -49,7 +62,7 @@ def booleset_new_init(self,arg=None, second=None):
             s=set()
             v=BoolePolynomialVector()
             for i in list(arg):
-                s.add(Monomial(i))
+		s.add(Monomial(i))
             for i in s:
                 v.append(i)
             p=add_up_polynomials(v)
@@ -122,6 +135,9 @@ if compatibility_mode:
 
 _add_up_polynomials=add_up_polynomials
 def add_up_polynomials(polys):
+    """
+    Adds up the polynomials in polys (which should be a BoolePolynomialVector or a sequence of ???
+    """
     if not isinstance(polys, BoolePolynomialVector):
         vec = BoolePolynomialVector
         for p in polys:

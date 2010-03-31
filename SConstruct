@@ -10,7 +10,7 @@ opts = Variables('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 pboriversion = "0.6"
-pborirelease = "4"
+pborirelease = "5"
 
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
@@ -164,7 +164,7 @@ for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
     else:
         print "Flags", flag, "not in default environment!"        
     
-opts.Add('LINKFLAGS', "Linker flags", ['-s'], converter = Split)
+opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
@@ -188,8 +188,6 @@ opts.Add(BoolVariable('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
 opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
                     'Build python extension, if possible', True))
-opts.Add(BoolVariable('BOOST_WORKS',
-                    'Skip check for Boost libraries', False))
 
 opts.Add('BOOST_LIBRARY',
          'Name of Boost library to link with', 'boost_python')
@@ -224,6 +222,8 @@ opts.Add('SHLIBVERSIONSUFFIX',
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
+
+opts.Add('RPATH', "rpath setting", [], converter = Split)
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
@@ -263,7 +263,6 @@ if 'dump' in COMMAND_LINE_TARGETS:
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
-BOOST_WORKS = env['BOOST_WORKS']
 
 SINGULAR_HOME = env['SINGULAR_HOME']
 USERLIBS = env['LIBS']
@@ -380,10 +379,21 @@ if not env.GetOption('clean'):
 
 
     if HAVE_PYTHON_EXTENSION:
-        if not (BOOST_WORKS or
-                conf.CheckCXXHeader(path.join('boost', 'python.hpp')) ):
+        if not (conf.CheckLib(pyconf.libname)):
+            print "Python library not available (needed for python extension)!"
+            Exit(1)
+
+        if not (conf.CheckCXXHeader(path.join('boost', 'python.hpp'))):
+            print "Developer's version of boost/python not available ",
+            print "(needed for python extension)!"
+            Exit(1)   
+
+        if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
+                 path.join('boost', 'python.hpp'), 'c++') ):
             HAVE_PYTHON_EXTENSION = False
-            print 'Warning Boost/python must be installed for python support'
+            print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
+            print ") not available (needed for python extension)!"
+            Exit(1)
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
@@ -737,6 +747,12 @@ if HAVE_SINGULAR_EXTENSION:
     SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
     SING_ARCH=SING_ARCH.replace("\n","")
     SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
+
+    sing_pb_if = env.SharedLibrary('Singular/polybori_interface',
+                                   ["Singular/pb_if.cc"],
+                                   SHLIBPREFIX="", LDMODULESUFFIX=".so",
+                                   LIBS=SINGULAR_LIBS, CPPPATH = SING_INCLUDES + CPPPATH)
+    DefaultBuild(sing_pb_if)
     
     wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
     if env['PLATFORM']=="darwin":

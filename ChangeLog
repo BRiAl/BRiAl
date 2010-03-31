@@ -1,6 +1,9 @@
 Release Name: 0.6.5:
 * Added polybori.nf.simple_nf
 * Simplification of declare_ring in ipbori
+* If boost/boost-python is not available we already stop at onfiguring
+  (does not affect EXTERNAL_PYTHON_EXTENSION=True)	
+* PBoRiError is now also std::exception
 
 Release Name: 0.6.4:
 * Repository changed to hg

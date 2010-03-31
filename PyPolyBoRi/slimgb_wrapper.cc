@@ -22,10 +22,10 @@ USING_NAMESPACE_PBORIGB
 
 void export_slimgb(){
 
-  class_ <std::vector<BoolePolynomial> >("BoolePolynomialVector")
+  class_ <std::vector<BoolePolynomial> >("BoolePolynomialVector", "Vector of BoolePolynomials")
     .def(vector_indexing_suite<std::vector<BoolePolynomial> >())
     .def(self==self);
-  class_ <std::vector<int> >("IntVector")
+  class_ <std::vector<int> >("IntVector", "Vector of Integers")
     .def(self==self)
     .def(vector_indexing_suite<std::vector<int> >());
   def("parallel_reduce", parallel_reduce);

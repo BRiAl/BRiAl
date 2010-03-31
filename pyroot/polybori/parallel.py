@@ -162,6 +162,8 @@ def groebner_basis_first_finished(I, *l):
     """
     
     from processing import Pool
+    # Maybe one needs multiprocessing instead of processing?
+    #from multiprocessing import Pool
     pool = Pool(processes=len(l))            
     I=to_fast_pickable(I)
     it = pool.imap_unordered(_calculate_gb_with_keywords, [(I,kwds) for kwds in l])  

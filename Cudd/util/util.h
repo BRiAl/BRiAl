@@ -173,7 +173,9 @@ extern int memcmp(), strcmp();
 
 
 /* These arguably do NOT belong in util.h */
+#ifndef ABS
 #define ABS(a)			((a) < 0 ? -(a) : (a))
+#endif
 #ifndef MAX
 #define MAX(a,b)		((a) > (b) ? (a) : (b))
 #endif
