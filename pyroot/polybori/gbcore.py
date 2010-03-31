@@ -9,10 +9,13 @@ from itertools import chain
 from inspect import getargspec
 from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
+from easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
 from polybori.fglm import fglm
+
+
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
@@ -320,11 +323,11 @@ def easy_linear_polynomials_pre(I):
     res=[]
     for p in I:
         res.append(p)
-        if p.deg()>=2:
-            opp=p+1
-            for q in easy_linear_factors(opp):
-                res.append(q+1)
+        res.extend(easy_linear_polynomials(p))
+
     return (list(set(res)), None)
+
+
 
 def llfirst_post(I,state,prot, kwds):
     eliminated=state
