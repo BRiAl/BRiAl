@@ -1,5 +1,6 @@
 from polybori.PyPolyBoRi import Polynomial, gauss_on_polys
-from nf import symmGB_F2_python
+from polybori.nf import symmGB_F2_python
+from polybori.interpolate import variety_lex_leading_terms, nf_lex_points
 def dense_system(I):
     I=(Polynomial(p) for p in I)
     I=(p for p in I if not p.is_zero())
@@ -11,6 +12,7 @@ def dense_system(I):
             if len(p)>2**d+5:
                 return True
     return False
+
 def gauss_on_linear(I):
     I=(Polynomial(p) for p in I)
     linear=[]
@@ -26,3 +28,4 @@ def gauss_on_linear(I):
         return non_linear
     linear=list(gauss_on_polys(linear))
     return linear+non_linear
+

@@ -9,10 +9,13 @@ from itertools import chain
 from inspect import getargspec
 from statistics import used_vars, used_vars_set
 from heuristics import dense_system,gauss_on_linear
+from easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
 from polybori.fglm import fglm
+
+
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
@@ -226,26 +229,32 @@ def llfirst_pre(I,prot):
     return (I,eliminated)
 
 def ll_constants_pre(I):
-    I_new=[]
-    ll=[]
-    leads=set()
-    for p in I:
-        if p.lex_lead_deg()==1:
-            l=p.lead()
-            if not (l in leads) and len(p)<=2:
-                tail=p+l
-                if tail.deg()<=0:
-                    ll.append(p)
-                    leads.add(l)
-                    continue
-        I_new.append(p)
-    encoded=ll_encode(ll)
-    reduced=[]
-    for p in I_new:
-        p=ll_red_nf_redsb(p,encoded)
-        if not p.is_zero():
-            reduced.append(p)
-    return (reduced,ll)
+    ll_res=[]
+    
+    while len([p for p in I if p.lex_lead_deg()==1 and
+    (p+p.lex_lead()).constant()])>0:
+        I_new=[]
+        ll=[]
+        leads=set()
+        for p in I:
+            if p.lex_lead_deg()==1:
+                l=p.lead()
+                if not (l in leads) and len(p)<=2:
+                    tail=p+l
+                    if tail.deg()<=0:
+                        ll.append(p)
+                        leads.add(l)
+                        continue
+            I_new.append(p)
+        encoded=ll_encode(ll)
+        reduced=[]
+        for p in I_new:
+            p=ll_red_nf_redsb(p,encoded)
+            if not p.is_zero():
+                reduced.append(p)
+        I=reduced
+        ll_res.extend(ll)
+    return (I,ll_res)
 
 
 def variety_size_from_gb(I):
@@ -314,11 +323,11 @@ def easy_linear_polynomials_pre(I):
     res=[]
     for p in I:
         res.append(p)
-        if p.deg()>=2:
-            opp=p+1
-            for q in easy_linear_factors(opp):
-                res.append(q+1)
+        res.extend(easy_linear_polynomials(p))
+
     return (list(set(res)), None)
+
+
 
 def llfirst_post(I,state,prot, kwds):
     eliminated=state

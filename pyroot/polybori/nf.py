@@ -1,4 +1,5 @@
 from polybori.PyPolyBoRi import *
+from polybori.easy_polynomials import easy_linear_polynomials as easy_linear_polynomials_func
 from polybori.statistics import used_vars_set
 from random import Random
 import copy
@@ -138,7 +139,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
     full_prot=False,selection_size=1000,
     opt_exchange=True,
     opt_allow_recursion=False,ll=False,
-    opt_linear_algebra_in_last_block=True, max_generators=None, red_tail_deg_growth=True, matrix_prefix='mat', modified_linear_algebra=True, draw_matrices=False):
+    opt_linear_algebra_in_last_block=True, max_generators=None, red_tail_deg_growth=True, matrix_prefix='mat', modified_linear_algebra=True, draw_matrices=False, easy_linear_polynomials=True):
     if use_noro and use_faugere:
         raise ValueError, 'both use_noro and use_faugere specified'
     def add_to_basis(strat,p):
@@ -150,6 +151,10 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 if full_prot:
                     print p
                 print "Result: ", "deg:", p.deg(), "lm: ", p.lead(), "el: ", p.elength()
+            if easy_linear_polynomials and p.lead_deg()>2:
+                lin=easy_linear_polynomials_func(p)
+                for q in lin:
+                    strat.add_generator_delayed(q)
             strat.add_as_you_wish(p)
             
             if prot:

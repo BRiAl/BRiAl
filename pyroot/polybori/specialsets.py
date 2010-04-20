@@ -57,7 +57,8 @@ def power_set(variables):
     res=Polynomial(1).set()
     for v in variables:
         res=if_then_else(v,res,res)
-    return res 
+    return res
+ 
 if __name__=='__main__':
     from blocks import declare_ring,Block
     r=declare_ring([Block("x",10000)],globals())
@@ -80,6 +81,7 @@ if __name__=='__main__':
             (x(1)*x(2)+x(1)+1).set(),
             all_monomials_of_degree_d(2,[Variable(i) for i in range(1000)])))
     print list(mod_mon_set(power_set([Variable(i) for i in range(50)]),all_monomials_of_degree_d(2,[Variable(i) for i in range(1000)])))
+
 def monomial_from_indices(indices):
     l=sorted(indices,reverse=True)
     res=Monomial()
