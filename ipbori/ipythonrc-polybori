@@ -75,7 +75,7 @@ execute from sys import path
 # The following string may be changed by install. If not installed, use default.
 execute pyroot = '$RELATIVEPYPREFIX'
 execute if pyroot[0] == '$': pyroot = os_path.join(pbdir, "pyroot")
-execute path.append(pyroot)
+execute path.insert(0, pyroot)
 
 # Get all basic stuff from PyPolyBoRi
 execute from polybori.PyPolyBoRi import *
