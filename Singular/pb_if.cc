@@ -68,6 +68,156 @@ void callgb(boost::python::object main_module) {
   main_module.attr("myprint")(result);
 }
 
+/// essentially boost::python::object
+class Psico {
+public:
+  // copy constructor without NULL checking, for efficiency. 
+  Psico(const  Psico& rhs): m_ptr(rhs.m_ptr)  { Py_INCREF(m_ptr); }
+  Psico(PyObject* ptr):  m_ptr(ptr) {}
+  
+  Psico& operator=(Psico const& rhs){
+    Py_INCREF(rhs.m_ptr);
+    Py_DECREF(this->m_ptr);
+    this->m_ptr = rhs.m_ptr;
+    return *this;
+  }
+
+  ~Psico() {  Py_DECREF(m_ptr); }
+
+
+  // Underlying object access -- returns a borrowed reference
+  PyObject* ptr() const {  return m_ptr; }
+
+private:
+  PyObject* m_ptr;
+};
+
+
+class PsicoString:
+  public Psico {
+public:
+  typedef Psico base;
+
+  PsicoString(const char* str): base(PyString_FromString(str)) {}
+};
+
+
+
+class PsicoObject:
+  public Psico {
+public:
+  typedef Psico base;
+  typedef PsicoObject self;
+  /// handle with care...
+  PsicoObject(const base& rhs): base(rhs) {}
+  PsicoObject(const self& rhs): base(rhs) {}
+
+  self attr(const char* name) const {
+    return attr(PsicoString(name));
+  }
+
+  self attr(const base& key) const {
+    return base(PyObject_GetAttr(ptr(), key.ptr()));
+  }
+
+
+  self operator()(const self& args) const {
+    return base(PyObject_CallObject(ptr(), args.ptr()));
+  }
+};
+
+
+class PsicoTuple:
+  public Psico {
+public:
+  typedef Psico base;
+  typedef PsicoTuple self;
+
+  /// Singleton
+  PsicoTuple(const base& rhs): base(get_tuple(rhs)) {}
+
+
+protected:
+
+  base get_tuple(const base& arg) const {
+    PyObject *pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, arg.ptr());
+    return pArgs;
+  }
+
+};
+
+class PsicoImport__:
+  public PsicoObject {
+
+protected:
+  PsicoImport__(const PsicoString& name): 
+    PsicoObject(PyImport_Import(name.ptr())), m_name(name) { }
+
+private:
+  PsicoString m_name;  
+};
+
+class PsicoImport:
+  public PsicoImport__ {
+public:
+  PsicoImport(const char* name): PsicoImport__(PsicoString(name)) { }
+
+};
+
+
+
+void test_psico() {
+  PyObject *pName, *pModule, *pFunc;
+  // Build the name object
+//   pName = PyString_FromString("__main__");
+
+//   // Load the module object
+
+
+//    PsicoString name("__main__");
+
+//    pModule = PyImport_Import(name.ptr());
+
+//    PsicoObject pobj0(pModule);
+//    PsicoObject pobj(pobj0);
+
+//   std::cout <<"test_psico 1!"<<std::endl;
+//   std::cout.flush();
+  // pModule = PyImport_ImportModule("__main__");
+  // Psico tmp(pModule);
+  //PsicoObject pobj(pModule);
+
+  //  PsicoString name("__main__");
+  PsicoImport pobj ("__main__");
+  std::cout <<"test_psico 1!"<<std::endl;
+  std::cout.flush();
+
+  pobj.attr("myprint")(PsicoTuple(PsicoString("text")));
+#if 0
+  PsicoObject thedict(pobj.getattr("__dict__"));
+  std::cout <<"test_psico 2!"<<std::endl;
+  std::cout.flush();
+
+  
+  pFunc = PyDict_GetItemString(thedict.ptr(), "myprint");
+  //  PsicoObject myprint(thedict.getattr("myprint"));
+
+  PsicoObject myprint(pobj.attr("myprint"));
+  std::cout <<"test_psico 3!"<<std::endl;
+  std::cout.flush();
+
+  myprint(PsicoTuple(PsicoString("text")));
+
+  std::cout <<"test_psico finished!"<<std::endl;
+  std::cout.flush();
+
+  //  Py_DECREF(pModule);
+#endif
+  //Py_DECREF(pName);
+  //  Py_DECREF(pFunc);
+}
+
 int pycommand() {
   Py_Initialize();
   // initPyPolyBoRi();
@@ -83,6 +233,9 @@ int pycommand() {
   PyRun_SimpleString("def myprint(args):\n  print(args)\n  return args"); 
   PyRun_SimpleString("def myhelp(args): help(args)"); 
 
+  test_psico();
+
+#if 0
   using namespace boost::python;
 
   object main_module = import("__main__");
@@ -150,6 +303,7 @@ int pycommand() {
     Py_DECREF(pName);
     Py_DECREF(pArgs);
 
+#endif
 
   Py_Finalize();
   return 0;
