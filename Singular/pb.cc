@@ -24,6 +24,7 @@
 #include "pb.h"
 #line 9 "pb.cc"
 
+typedef int idtyp;
 idhdl enter_id(char *name, char *value, idtyp t)
 {
   idhdl h;
