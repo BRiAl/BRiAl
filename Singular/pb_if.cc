@@ -108,6 +108,7 @@ public:
 
     PyRun_SimpleString("from polybori import *");
     PyRun_SimpleString("from polybori.gbcore import *");
+    PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
   }
 
 
@@ -125,22 +126,23 @@ public:
 /// essentially boost::python::object
 class Psico: 
   public PsicoBase {
+
+  typedef Psico self; 
 public:
   typedef PsicoBase base;
-  typedef Psico self; 
   typedef boost::shared_ptr<PsicoInterpreter> interpreter_ptr;
   // copy constructor without NULL checking, for efficiency. 
-  Psico(const  Psico& rhs): m_ptr(rhs.m_ptr)  {  Py_INCREF(m_ptr); }
+  Psico(const  Psico& rhs): m_ptr(rhs.m_ptr)  {  Py_XINCREF(m_ptr); }
   Psico(PyObject* ptr):  m_ptr(ptr) {}
   
   Psico& operator=(Psico const& rhs){
-    Py_INCREF(rhs.m_ptr);
-    Py_DECREF(this->m_ptr);
+    Py_XINCREF(rhs.m_ptr);
+    Py_XDECREF(this->m_ptr);
     this->m_ptr = rhs.m_ptr;
     return *this;
   }
 
-  virtual ~Psico() { Py_DECREF(m_ptr); }
+  virtual ~Psico() { Py_XDECREF(m_ptr); }
   virtual base* copy() const {
     base* result = new self(*this); 
 
@@ -149,6 +151,22 @@ public:
 
   // Underlying object access -- returns a borrowed reference
   PyObject* ptr() const {  return m_ptr; }
+
+
+  /// Virtual addition operation
+  virtual base* add(base* rhs) const { 
+    self pstr(PyString_FromString("__add__"));
+    return self(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
+                                           NULL)).copy(); 
+  }
+
+  /// Virtual multiplication operation
+  virtual base* times(base* rhs) const {
+    self pstr(PyString_FromString("__mul__"));
+    return self(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
+                                           NULL)).copy(); 
+  }
+
 
 private:
   PyObject* m_ptr;
@@ -165,6 +183,21 @@ public:
   typedef Psico base;
 
   PsicoString(const char* str): base(PyString_FromString(str)) {}
+};
+/// Factory for globals
+class PsicoGlobals:
+  public Psico {
+  typedef PsicoGlobals self;
+
+public:
+  typedef Psico base;
+
+  PsicoGlobals(): base(get()) { }
+protected:
+  PyObject* get() const {
+    PyObject* globals = PyEval_GetGlobals();
+    return (globals? globals: PyDict_New());
+  }
 };
 
 
@@ -190,26 +223,8 @@ public:
   self operator()(const self& args) const {
     return base(PyObject_CallObject(ptr(), args.ptr()));
   }
-};
 
 
-class PsicoTuple:
-  public Psico {
-public:
-  typedef Psico base;
-  typedef PsicoTuple self;
-
-  /// Singleton
-  PsicoTuple(const base& rhs): base(get_tuple(rhs)) {}
-
-
-protected:
-
-  base get_tuple(const base& arg) const {
-    PyObject *pArgs = PyTuple_New(1);
-    PyTuple_SetItem(pArgs, 0, arg.ptr());
-    return pArgs;
-  }
 
 };
 
@@ -230,6 +245,111 @@ public:
   PsicoImport(const char* name): PsicoImport__(PsicoString(name)) { }
 
 };
+
+/// Factory for python simple string
+class PsicoEval:
+  public Psico {
+  typedef PsicoEval self;
+
+public:
+  typedef Psico base;
+
+  PsicoEval(const char* rhs): base(get(rhs)) { }
+
+protected:
+  PyObject* get(const char* rhs) const {
+    //PsicoGlobals globals;
+    PsicoImport main ("__main__");
+    Psico  globals(main.attr("__dict__"));
+    PyObject* result= PyRun_String(rhs, Py_eval_input, globals.ptr(),
+                                   globals.ptr());
+    //    std::cerr<<rhs <<"-> " <<result <<std::endl;
+    return result;
+  }
+
+};
+
+class PsicoExec:
+  public Psico {
+  typedef PsicoExec self;
+
+public:
+  typedef Psico base;
+
+  PsicoExec(const char* rhs): base(get(rhs)) { }
+
+protected:
+  PyObject* get(const char* rhs) const {
+    //PsicoGlobals globals;
+    PsicoImport main ("__main__");
+    Psico  globals(main.attr("__dict__"));
+    PyObject* result= PyRun_String(rhs, Py_file_input, globals.ptr(),
+                                   globals.ptr());
+    //    std::cerr<<rhs <<"-> " <<result <<std::endl;
+    return result;
+  }
+
+};
+
+BOOLEAN psico_eval(leftv __res, leftv __v) {
+  if (__v == NULL) {
+    Werror("expected psico_eval('string')");
+    return TRUE;
+  }
+
+  int __tok =  __v->Typ();
+
+  if (__tok != STRING_CMD) {
+    Werror("expected psico_eval('string')");
+    return TRUE;
+  }
+  // std::string args((char *)__v->Data());
+  __res->data =(void*) new PsicoEval((char *)__v->Data());
+
+  __res->rtyp = PSICO_CMD;
+
+  return FALSE;
+}
+
+BOOLEAN psico_exec(leftv __res, leftv __v) {
+  if (__v == NULL) {
+    Werror("expected psico_exec('string')");
+    return TRUE;
+  }
+
+  int __tok =  __v->Typ();
+
+  if (__tok != STRING_CMD) {
+    Werror("expected psico_exec('string')");
+    return TRUE;
+  }
+  // std::string args((char *)__v->Data());
+  __res->data =(void*) new PsicoExec((char *)__v->Data());
+
+  __res->rtyp = PSICO_CMD;
+
+  return FALSE;
+}
+class PsicoTuple:
+  public Psico {
+public:
+  typedef Psico base;
+  typedef PsicoTuple self;
+
+  /// Singleton
+  PsicoTuple(const base& rhs): base(get_tuple(rhs)) {}
+
+
+protected:
+
+  base get_tuple(const base& arg) const {
+    PyObject *pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, arg.ptr());
+    return pArgs;
+  }
+
+};
+
 
 
 
@@ -420,7 +540,7 @@ BOOLEAN call_print(leftv __res, leftv __v) {
   //    PsicoObject arg(PsicoString("qQWERQWER"));//*((PsicoObject*)__v->Data()));
   //   std::cerr<< "pointer: " << (__v->Data())<<std::endl;
 
-   std::cerr<< "ptr(): " <<((Psico*)__v->Data())->ptr()<<std::endl;
+  //   std::cerr<< "ptr(): " <<((Psico*)__v->Data())->ptr()<<std::endl;
 
    PsicoObject arg(((Psico*)__v->Data())->ptr());
 
@@ -440,13 +560,15 @@ BOOLEAN call_print(leftv __res, leftv __v) {
   
   pFunc = PyDict_GetItemString(pDict, "myprint");
   pArgs = PyTuple_New(1);
+
   PyTuple_SetItem(pArgs, 0, arg.ptr());   
 
 
-  PyObject_CallObject(pFunc, pArgs);
+  if( arg.ptr() )
+    PyObject_CallObject(pFunc, pArgs);
  
 
-  PyRun_SimpleString("print 'fasdfasdfasdf'"); 
+  //  PyRun_SimpleString("print 'fasdfasdfasdf'"); 
 
   
 //   std::cerr<< "pointer: " << ((PsicoDummy*)__v->Data())<<std::endl;
@@ -522,16 +644,15 @@ BOOLEAN mod_lex_boolean_gb(leftv __res, leftv __h) {
 
 
 
-void p_init(){
-  //  p_psico_interpreter = new PsicoInterpreter();
-
-}
 
 extern "C" {
   int mod_init(SModulFunctions* psModulFunctions) {
-    p_init();
+
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"lex_boolean_gb",FALSE, mod_lex_boolean_gb);
 
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"psico_eval",FALSE, psico_eval);
+
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"psico_exec",FALSE, psico_exec);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"call_print",FALSE, call_print);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"set_psico",FALSE,
     set_psico);
