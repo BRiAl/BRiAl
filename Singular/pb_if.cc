@@ -167,6 +167,24 @@ public:
                                            NULL)).copy(); 
   }
 
+  /// Printing
+  virtual void print(void (*printer)(const char*) ) const { 
+    printer(c_str()); 
+  }
+  /// Get cstring
+  virtual void cstring(char*& output) const {
+
+    self tmp(PyObject_Str(ptr()));
+    char* str = PyString_AsString(tmp.ptr()); 
+    output = new char[strlen(str)];
+    strcpy(output, str); 
+  }
+
+protected:
+  virtual const char* c_str() const { 
+    self tmp(PyObject_Str(ptr()));
+    return PyString_AsString(tmp.ptr()); 
+  }
 
 private:
   PyObject* m_ptr;
@@ -324,9 +342,9 @@ BOOLEAN psico_exec(leftv __res, leftv __v) {
     return TRUE;
   }
   // std::string args((char *)__v->Data());
-  __res->data =(void*) new PsicoExec((char *)__v->Data());
+  __res->data =NULL;//(void*) new PsicoExec((char *)__v->Data());
 
-  __res->rtyp = PSICO_CMD;
+  __res->rtyp = NONE;//PSICO_CMD;
 
   return FALSE;
 }
