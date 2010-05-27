@@ -185,6 +185,7 @@ public:
 
     return new self(PyObject_CallObject(ptr(), ((self*)args)->ptr())); 
   }
+  virtual base* operator()(void* args) const; // inlined below
 
 protected:
   virtual const char* c_str() const { 
@@ -381,10 +382,125 @@ protected:
     PyTuple_SetItem(pArgs, 0, arg.ptr());
     return pArgs;
   }
+};
 
+class PsicoTupleN:
+  public Psico {
+public:
+  typedef Psico base;
+  typedef PsicoTuple self;
+
+  template <class Iterator>
+  PsicoTupleN(Iterator start, Iterator finish):
+    base(PyTuple_New(std::distance(start, finish))) {
+    long idx = 0;
+    while (start != finish) {
+      PyTuple_SetItem(ptr(), idx, (*start).ptr());
+      ++start; 
+      ++idx;
+    }
+
+  }
+};
+
+class PsicoInt:
+  public Psico {
+  typedef PsicoInt self;
+public:
+  typedef Psico base;
+  PsicoInt(long rhs): base(PyInt_FromLong(rhs)) {}
+
+
+protected:
+  base get_tuple(const base& arg) const {
+    PyObject *pArgs = PyTuple_New(1);
+    PyTuple_SetItem(pArgs, 0, arg.ptr());
+    return pArgs;
+  }
+};
+
+class PsicoFromSingular:
+  public Psico {
+  typedef PsicoFromSingular self;
+public:
+  typedef Psico base;
+  PsicoFromSingular(leftv pVal): base(get(pVal)) {}
+
+protected:
+  base get(leftv pVal) const {
+    void* data = pVal->Data();
+    switch (pVal->rtyp) {
+    case INT_CMD:
+      return PsicoInt((long)data);
+    case STRING_CMD:
+      return PsicoString((char*)data);    
+    case PSICO_CMD:
+      return *((Psico*)data);
+    default:
+      return base(NULL);
+    }
+
+  }
 };
 
 
+template <class InputType, class ValueType>
+class SingularLikeIterator:
+  public std::iterator_traits<InputType> {
+
+  typedef SingularLikeIterator self;
+public:
+  typedef ValueType value_type;
+  typedef InputType input_type;
+  typedef value_type reference;
+  typedef std::forward_iterator_tag iterator_category;
+
+  /// Constructor
+  SingularLikeIterator(const input_type& rhs):
+    m_iter(rhs) {}
+
+  /// Copy constructor
+  SingularLikeIterator(const self& rhs):
+    m_iter(rhs.m_iter) {}
+
+  /// Prefix incrementation operation
+  self& operator++() {
+    m_iter = m_iter->next;
+    return *this;
+  }
+  /// Postfix incrementation operation
+  self operator++(int) {
+    self copy(*this);
+    operator++();
+    return copy;
+  }
+
+  /// Dereference operation
+  reference operator*() const {
+    return PsicoFromSingular(m_iter);
+  }
+
+  /// Equality check
+  bool operator==(const self& rhs) const {
+    return m_iter == rhs.m_iter;
+  }
+
+  /// Nonequality check
+  bool operator!=(const self& rhs) const {
+    return !operator==(rhs);
+  }
+
+private:
+  input_type m_iter;
+};
+
+inline Psico::base* 
+Psico::operator()(void* rhs) const {
+  SingularLikeIterator<leftv, Psico> start((leftv)rhs), finish(NULL);
+
+  PsicoTupleN args(start, finish);
+  return operator()((PsicoBase*)&args);
+}
 
 
 void test_psico() {
