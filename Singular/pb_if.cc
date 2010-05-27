@@ -180,11 +180,27 @@ public:
     strcpy(output, str); 
   }
 
+  /// call operation
+  virtual base* operator()(const base* args) const { 
+
+    return new self(PyObject_CallObject(ptr(), ((self*)args)->ptr())); 
+  }
+
 protected:
   virtual const char* c_str() const { 
     self tmp(PyObject_Str(ptr()));
     return PyString_AsString(tmp.ptr()); 
   }
+
+  /// Get tuple with @i nelts elements
+  virtual base* clip(unsigned nelts) const { 
+    return new self(PyTuple_New(nelts)); 
+  }
+
+  /// set nth element
+  virtual void set_element(unsigned nth, const base* element) const {
+    PyTuple_SetItem(ptr(), nth, ((self*)element)->ptr());
+ }
 
 private:
   PyObject* m_ptr;
