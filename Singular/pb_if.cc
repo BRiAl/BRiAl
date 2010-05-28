@@ -20,6 +20,7 @@
 #include <tok.h>
 #include <structs.h>
 #include <ipid.h>
+#include <lists.h>
 
 #include <locals.h>
 #include <omalloc.h>
@@ -109,6 +110,8 @@ public:
     PyRun_SimpleString("from polybori import *");
     PyRun_SimpleString("from polybori.gbcore import *");
     PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
+
+    PyRun_SimpleString("def myprint(args):\n  print(args)\n   return args;");
   }
 
 
@@ -215,7 +218,7 @@ protected:
     PyTuple_SetItem(ptr(), nth, ((self*)element)->ptr());
  }
 
-private:
+  //private:
   PyObject* m_ptr;
 
   static interpreter_ptr m_interpreter;
@@ -308,6 +311,8 @@ protected:
     //PsicoGlobals globals;
     PsicoImport main ("__main__");
     Psico  globals(main.attr("__dict__"));
+
+
     PyObject* result= PyRun_String(rhs, Py_eval_input, globals.ptr(),
                                    globals.ptr());
     //    std::cerr<<rhs <<"-> " <<result <<std::endl;
@@ -400,7 +405,9 @@ class PsicoTupleN:
   public Psico {
 public:
   typedef Psico base;
-  typedef PsicoTuple self;
+  typedef PsicoTupleN self;
+
+  PsicoTupleN(long len): base(PyTuple_New(len)) {}
 
   template <class Iterator>
   PsicoTupleN(Iterator start, Iterator finish):
@@ -413,7 +420,43 @@ public:
     }
 
   }
+  int set_item(Py_ssize_t pos, const base& rhs) {
+    return PyTuple_SetItem(ptr(), pos, rhs.ptr());
+  }
+  Py_ssize_t size() const { return PyTuple_Size(ptr()); }
+
+  int resize(Py_ssize_t newsize) {
+    return _PyTuple_Resize(&m_ptr, newsize);
+  }
 };
+
+class PsicoFromSingular;
+
+class PsicoList:
+  public Psico {
+public:
+  typedef Psico base;
+  typedef PsicoList self;
+
+  PsicoList(long len = 0):
+    base(PyList_New(len)) {
+  }
+
+//   PsicoList(void* singlist):
+//     base(PyList_New(((lists)singlist)->nr)) {
+   
+//     for(long idx = 0; idx < ((lists)singlist)->nr; ++idx) {
+//       PsicoFromSingular tmp(((lists)singlist)->m[idx]);
+//       PyList_SetItem(ptr(), idx, tmp.ptr());
+//     }
+//   } 
+
+  void append(const base& elt) {
+    PyList_Append(base::ptr(), elt.ptr());
+  }
+
+};
+
 
 class PsicoInt:
   public Psico {
@@ -439,7 +482,8 @@ public:
   PsicoFromSingular(leftv pVal): base(get(pVal)) {}
 
 protected:
-  base get(leftv pVal) const {
+  static base get(leftv pVal)  {
+    PsicoList result;
     void* data = pVal->Data();
     switch (pVal->Typ()) {
     case INT_CMD:
@@ -448,7 +492,16 @@ protected:
       return PsicoString((char*)data);    
     case PSICO_CMD:
       return Psico(*((Psico*)data));
+     case LIST_CMD:
+       //   PsicoList result;
+       for(long idx = 0; idx <= ((lists)data)->nr; ++idx) {
+         Psico tmp(get(&((lists)data)->m[idx]));
+         PyList_Append(result.ptr(), tmp.ptr());
+       }
+
+       return result;
     default:
+      std::cerr <<"unknown "<<pVal->Typ() <<std::endl;
       return base(NULL);
     }
 
@@ -697,7 +750,7 @@ BOOLEAN call_print(leftv __res, leftv __v) {
     Werror("expected call_print('psico')");
     return TRUE;
   }
-  PyRun_SimpleString("def myprint(args):\n  print(args)\n  return args"); 
+  PyRun_SimpleString("def myprint(*args):\n  print(args)\n  return args"); 
 
   //    PsicoObject arg(PsicoString("qQWERQWER"));//*((PsicoObject*)__v->Data()));
   //   std::cerr<< "pointer: " << (__v->Data())<<std::endl;
@@ -783,6 +836,55 @@ BOOLEAN getattr(leftv __res, leftv __v) {
   return !__res->data;
 }
 
+BOOLEAN simple_string(leftv __res, leftv __v) {
+  if ((!__v) || (__v->Typ() != STRING_CMD)) {
+    Werror("expected simple_string('string')");
+    return TRUE;
+  }
+      
+  PyRun_SimpleString((char*)__v->Data());
+  __res->data =(void*) NULL;
+  __res->rtyp = NONE;
+  return FALSE;
+}
+
+BOOLEAN declare_ring(leftv __res, leftv __v) {
+
+  
+  SingularLikeIterator<leftv, Psico> start(__v), finish(NULL);
+  PsicoList args;
+
+  for(long idx=0; start != finish; ++idx, ++start) {
+    args.append(*start);
+  }
+
+  //  (*start).print(PrintS);
+
+ 
+
+  //args.resize(args.size()+1);
+  PsicoTupleN all(2);
+  all.set_item(0, args);
+  PsicoImport main ("__main__");
+  Psico  globals(main.attr("__dict__"));
+  all.set_item(1,globals);
+  // args.set_item(args.size()-1, globals);
+  //if (args.ptr())
+  //  args.print(PrintS);
+
+  PsicoEval command("declare_ring");
+  //  command(&args);
+  // globals.print(PrintS);
+  __res->data =(void*) command((PsicoBase*)&all);
+
+   __res->rtyp = PSICO_CMD;
+
+   // PsicoEval printer("myprint");
+   // printer(&glob);
+  return FALSE;
+}
+
+
 BOOLEAN mod_lex_boolean_gb(leftv __res, leftv __h) {
 
 
@@ -842,7 +944,10 @@ extern "C" {
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"empty_print",FALSE,
     empty_print);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"getattr",FALSE,getattr);
-
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"simple_string",FALSE,
+                                 simple_string);
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"declare_ring",FALSE,
+                                 declare_ring);
     return 0;
   }
 }
