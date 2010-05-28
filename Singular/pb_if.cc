@@ -148,6 +148,13 @@ public:
 
     return result;
   }
+//  self attr(const char* name) const {
+//    return attr(PsicoString(name));
+//  }
+
+  self attr(const self& key) const {
+    return PyObject_GetAttr(ptr(), key.ptr());
+  }
 
   // Underlying object access -- returns a borrowed reference
   PyObject* ptr() const {  return m_ptr; }
@@ -178,6 +185,11 @@ public:
     char* str = PyString_AsString(tmp.ptr()); 
     output = new char[strlen(str)];
     strcpy(output, str); 
+  }
+  /// call operation
+  virtual base* operator()() const { 
+
+    return new self(PyObject_CallObject(ptr(), NULL)); 
   }
 
   /// call operation
@@ -429,13 +441,13 @@ public:
 protected:
   base get(leftv pVal) const {
     void* data = pVal->Data();
-    switch (pVal->rtyp) {
+    switch (pVal->Typ()) {
     case INT_CMD:
       return PsicoInt((long)data);
     case STRING_CMD:
       return PsicoString((char*)data);    
     case PSICO_CMD:
-      return *((Psico*)data);
+      return Psico(*((Psico*)data));
     default:
       return base(NULL);
     }
@@ -750,6 +762,27 @@ BOOLEAN empty_print(leftv __res, leftv __v) {
 }
 
 
+BOOLEAN getattr(leftv __res, leftv __v) {
+
+  PsicoFromSingular lhs(__v);
+  PsicoFromSingular rhs(__v ? __v->next: NULL);
+
+//   char* mystr;
+//   lhs.cstring(mystr);
+//   std::cerr << mystr <<std::endl;
+//   delete[] mystr;
+//   lhs.attr(rhs).cstring(mystr);
+//   std::cerr << mystr <<std::endl;
+  
+//   delete[] mystr;
+
+  __res->data =(void*) lhs.attr(rhs).copy();
+
+  __res->rtyp = PSICO_CMD;
+
+  return !__res->data;
+}
+
 BOOLEAN mod_lex_boolean_gb(leftv __res, leftv __h) {
 
 
@@ -808,6 +841,7 @@ extern "C" {
     set_psico);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"empty_print",FALSE,
     empty_print);
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"getattr",FALSE,getattr);
 
     return 0;
   }
