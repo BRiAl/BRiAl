@@ -107,11 +107,13 @@ public:
     PyRun_SimpleString("path.append('.')");
     PyRun_SimpleString("path.append('../pyroot')");
 
+    PyRun_SimpleString("path.append('./Singular')");
+
     PyRun_SimpleString("from polybori import *");
     PyRun_SimpleString("from polybori.gbcore import *");
     PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
 
-    PyRun_SimpleString("def myprint(args):\n  print(args)\n   return args;");
+    //    PyRun_SimpleString("def myprint(args):\n  print(args)\n   return args;");
   }
 
 
@@ -452,7 +454,9 @@ public:
 //   } 
 
   void append(const base& elt) {
-    PyList_Append(base::ptr(), elt.ptr());
+        PyList_Append(base::ptr(), elt.ptr());
+
+    //    base::attr(PsicoString("append"))(&elt);
   }
 
 };
@@ -494,12 +498,24 @@ protected:
       return Psico(*((Psico*)data));
      case LIST_CMD:
        //   PsicoList result;
+       //     data = pVal->data;
+       std::cerr <<"getlist" << ((lists)data)->nr<<std::endl;
        for(long idx = 0; idx <= ((lists)data)->nr; ++idx) {
-         Psico tmp(get(&((lists)data)->m[idx]));
-         PyList_Append(result.ptr(), tmp.ptr());
-       }
 
-       return result;
+         //
+         //         Psico tmp(get(((lists)data)->m + idx));
+         PsicoTuple tmp(*( (Psico*)(( ((lists)data)->m[idx])).Data() ));
+         //         Py_XINCREF(tmp.ptr());
+
+         //      PyList_Append(result.ptr(), tmp.ptr());
+         tmp.print(PrintS);
+         result.append(*(Psico*)tmp.copy());
+         //         PyList_Append(result.ptr(), tmp.ptr());
+       }
+ std::cerr <<"after getlist" << ((lists)data)->nr<<std::endl;
+ result.print(PrintS);
+ PrintS("afterprint");
+ return base(result);
     default:
       std::cerr <<"unknown "<<pVal->Typ() <<std::endl;
       return base(NULL);
@@ -507,6 +523,33 @@ protected:
 
   }
 };
+
+inline Psico
+singular2psico(leftv pVal)  {
+ 
+    void* data = pVal->Data();
+    switch (pVal->Typ()) {
+    case INT_CMD:
+      return PsicoInt((long)data);
+    case STRING_CMD:
+      return PsicoString((char*)data);    
+    case PSICO_CMD:
+      return Psico(*((Psico*)data));
+    case LIST_CMD:
+      lists singlist = (lists)data;
+      PsicoList result;
+
+      for (std::size_t i = 0; i <= singlist->nr; ++i) {
+        leftv singelt = (singlist->m) + i;
+        Psico elt = singular2psico(singelt);
+        result.append(elt);
+      }
+      return result;
+
+
+    }
+
+}
 
 
 template <class InputType, class ValueType>
@@ -542,7 +585,7 @@ public:
 
   /// Dereference operation
   reference operator*() const {
-    return PsicoFromSingular(m_iter);
+    return singular2psico(m_iter);
   }
 
   /// Equality check
@@ -714,6 +757,141 @@ int pycommand() {
 }
 
 
+
+Psico
+call_func_tuple(const char* name, const Psico& rhs){
+
+
+
+  PyObject *pName, *pModule, *pDict, *pFunc, *pValue, *pClass, *pInstance, *pArgs;
+
+  // Build the name object
+
+  pName = PyString_FromString("__main__");
+
+  // Load the module object
+  
+  pModule = PyImport_Import(pName);
+
+  // pDict is a borrowed reference 
+  
+  pDict = PyModule_GetDict(pModule);
+
+  // pFunc is also a borrowed reference 
+  
+  pFunc = PyDict_GetItemString(pDict, name);
+
+//     if (PyCallable_Check(pFunc)) 
+//     {
+//         PyObject_CallObject(pFunc, NULL);
+//     } else 
+//     {
+//         PyErr_Print();
+//     }
+
+  pInstance = PyObject_CallObject(pFunc,  rhs.ptr());
+ 
+
+    // Clean up
+
+  Py_DECREF(pModule);
+  Py_DECREF(pName);
+  Py_DECREF(pFunc);
+  Py_DECREF(pDict);
+  return pInstance;
+}
+
+
+Psico
+call_func(const char* name, const Psico& rhs){
+
+
+
+  PyObject *pName, *pModule, *pDict, *pFunc, *pValue, *pClass, *pInstance, *pArgs;
+
+  // Build the name object
+
+  pName = PyString_FromString("__main__");
+
+  // Load the module object
+  
+  pModule = PyImport_Import(pName);
+
+  // pDict is a borrowed reference 
+  
+  pDict = PyModule_GetDict(pModule);
+
+  // pFunc is also a borrowed reference 
+  
+  pFunc = PyDict_GetItemString(pDict, name);
+
+//     if (PyCallable_Check(pFunc)) 
+//     {
+//         PyObject_CallObject(pFunc, NULL);
+//     } else 
+//     {
+//         PyErr_Print();
+//     }
+  pArgs = PyTuple_New(1);
+  PyTuple_SetItem(pArgs, 0, rhs.ptr());   
+
+
+  pInstance = PyObject_CallObject(pFunc, pArgs);
+ 
+
+    // Clean up
+
+  Py_DECREF(pModule);
+  Py_DECREF(pName);
+  return pInstance;
+}
+
+
+
+Psico
+call_print_iter(const Psico& rhs){
+
+
+
+  PyObject *pName, *pModule, *pDict, *pFunc, *pValue, *pClass, *pInstance, *pArgs;
+
+  // Build the name object
+
+  pName = PyString_FromString("__main__");
+
+  // Load the module object
+  
+  pModule = PyImport_Import(pName);
+
+  // pDict is a borrowed reference 
+  
+  pDict = PyModule_GetDict(pModule);
+
+  // pFunc is also a borrowed reference 
+  
+  pFunc = PyDict_GetItemString(pDict, "print_iteration_two");
+
+//     if (PyCallable_Check(pFunc)) 
+//     {
+//         PyObject_CallObject(pFunc, NULL);
+//     } else 
+//     {
+//         PyErr_Print();
+//     }
+  pArgs = PyTuple_New(1);
+  PyTuple_SetItem(pArgs, 0, rhs.ptr());   
+
+
+  pInstance = PyObject_CallObject(pFunc, pArgs);
+ 
+
+    // Clean up
+
+  Py_DECREF(pModule);
+  Py_DECREF(pName);
+  return pInstance;
+}
+
 ideal lex_bgb(ideal s){
   pycommand();
   return do_lex_gb(s);
@@ -817,17 +995,8 @@ BOOLEAN empty_print(leftv __res, leftv __v) {
 
 BOOLEAN getattr(leftv __res, leftv __v) {
 
-  PsicoFromSingular lhs(__v);
-  PsicoFromSingular rhs(__v ? __v->next: NULL);
-
-//   char* mystr;
-//   lhs.cstring(mystr);
-//   std::cerr << mystr <<std::endl;
-//   delete[] mystr;
-//   lhs.attr(rhs).cstring(mystr);
-//   std::cerr << mystr <<std::endl;
-  
-//   delete[] mystr;
+  Psico lhs(singular2psico(__v));
+  Psico rhs(__v? singular2psico(__v->next): NULL);
 
   __res->data =(void*) lhs.attr(rhs).copy();
 
@@ -841,47 +1010,133 @@ BOOLEAN simple_string(leftv __res, leftv __v) {
     Werror("expected simple_string('string')");
     return TRUE;
   }
-      
+
   PyRun_SimpleString((char*)__v->Data());
   __res->data =(void*) NULL;
   __res->rtyp = NONE;
   return FALSE;
 }
 
-BOOLEAN declare_ring(leftv __res, leftv __v) {
+
+
+BOOLEAN test_list(leftv __res, leftv __v) {
+
+  std::cout<<"list type? "<< (__v->Typ() == LIST_CMD) <<std::endl;
+
+  //  lists singlist = (lists)__v->Data();
+
+  Psico ll = singular2psico(__v);
+
+  /*
+  for (int i=0;i<=singlist->nr; ++i) {
+    leftv firstsingelt = (singlist->m)+i;
+
+    Psico firstelt = PsicoFromSingular(firstsingelt);
+
+    firstelt.print(PrintS);
+
+    ll.append(firstelt);
+  }
+  */
+  std::cout<<" print list "<< std::endl;
+
+  ll.print(PrintS);
+
+
 
   
-  SingularLikeIterator<leftv, Psico> start(__v), finish(NULL);
-  PsicoList args;
 
-  for(long idx=0; start != finish; ++idx, ++start) {
-    args.append(*start);
+  __res->data =(void*)ll.copy();;
+  __res->rtyp = PSICO_CMD;
+  return FALSE;
+}
+
+void set_singular(leftv __res, const Psico& rhs) {
+  __res->data =(void*)rhs.copy();
+  __res->rtyp = PSICO_CMD;
+}
+
+BOOLEAN declare_ring(leftv __res, leftv __v) {
+  __res->data =(void*)NULL;
+  __res->rtyp = NONE ;
+  //  PsicoTupleN all(2);
+
+  if ((__v->Typ() != LIST_CMD) && (__v->Typ() != PSICO_CMD) ) {
+    return TRUE;
   }
 
-  //  (*start).print(PrintS);
 
- 
+  Psico thelist(singular2psico(__v));
+  //  PrintS("hierEsle");
+  //  thelist.print(PrintS);PrintS("hierMitte");
 
-  //args.resize(args.size()+1);
-  PsicoTupleN all(2);
-  all.set_item(0, args);
-  PsicoImport main ("__main__");
-  Psico  globals(main.attr("__dict__"));
-  all.set_item(1,globals);
+
+  //  PyRun_SimpleString("from pb_if import *"); 
+
+  //  call_print_iter(thelist);
+    //    PsicoEval print_iteration_two("print_iteration_two");
+    //  print_iteration_two(&thelist);
+  //  PrintS("hierEsleend");
+
+  //  all.set_item(0, thelist);
+
+//   __res->data =(void*)NULL;                     ;
+
+//    __res->rtyp = NONE  ;
+//   return FALSE;
+
+  //  PsicoImport main ("__main__");
+  //  Psico  globals(main.attr("__dict__"));
+
+  PsicoEval  globals("globals()");
+//   PrintS("gloabls");
+//   globals.print(PrintS);
+
+//   PrintS("end globals");
+//  all.set_item(1,globals);
   // args.set_item(args.size()-1, globals);
   //if (args.ptr())
-  //  args.print(PrintS);
 
-  PsicoEval command("declare_ring");
+  //  PsicoEval command("declare_ring");
   //  command(&args);
   // globals.print(PrintS);
-  __res->data =(void*) command((PsicoBase*)&all);
+
+
+//   PyObject *pName, *pModule, *pDict, *pFunc, *pValue, *pClass, *pInstance, *pArgs;
+
+//   pArgs = PyTuple_New(2);
+//   PyTuple_SetItem(pArgs, 0, thelist.ptr());   
+//   PyTuple_SetItem(pArgs, 1, globals.ptr());   
+
+//  Psico all2(pArgs);
+
+  PsicoTupleN all2(2);
+  all2.set_item(0, thelist);
+  all2.set_item(1, globals);
+  PsicoEval None("None");
+  //all2.set_item(1, None);
+  //  all2.print(PrintS);
+
+  PsicoEval dec_ring("declare_ring");
+  //  Psico result = call_func_tuple("declare_ring", all2);
+  __res->data =(void*) dec_ring(&all2);
+  __res->rtyp = PSICO_CMD ;
+
+  //  set_singular(__res, result);
+  return FALSE;
+#if 0
+
+  PsicoBase* result = PsicoEval("just_print")(&all2);
+
+  PsicoBase* result  =NULL;
+  __res->data =(void*) result;
 
    __res->rtyp = PSICO_CMD;
 
    // PsicoEval printer("myprint");
    // printer(&glob);
   return FALSE;
+#endif
 }
 
 
@@ -948,6 +1203,8 @@ extern "C" {
                                  simple_string);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"declare_ring",FALSE,
                                  declare_ring);
-    return 0;
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"test_list",FALSE,
+                                 test_list);
+   return 0;
   }
 }

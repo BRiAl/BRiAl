@@ -39,3 +39,7 @@ from polybori.blocks import declare_ring
 from polybori.blocks import HigherOrderBlock, AlternatingBlock, Block
 from polybori.gbrefs import load_file
 from polybori.specialsets import *
+
+
+def plist(a,b):
+    return [a,b]
