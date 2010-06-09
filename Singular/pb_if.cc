@@ -37,6 +37,8 @@ BOOLEAN mod_lex_boolean_gb(leftv res, leftv h);
 
 ideal lex_bgb(ideal s);
 
+class Psico;
+
 
 void my_test_function( boost::python::object fun_obj){
   fun_obj(17);
@@ -414,9 +416,12 @@ public:
   template <class Iterator>
   PsicoTupleN(Iterator start, Iterator finish):
     base(PyTuple_New(std::distance(start, finish))) {
+
     long idx = 0;
     while (start != finish) {
-      PyTuple_SetItem(ptr(), idx, (*start).ptr());
+      Psico elt(*start);
+
+      PyTuple_SetItem(ptr(), idx, ((Psico*)elt.copy())->ptr());
       ++start; 
       ++idx;
     }
@@ -536,6 +541,7 @@ singular2psico(leftv pVal)  {
     case PSICO_CMD:
       return Psico(*((Psico*)data));
     case LIST_CMD:
+
       lists singlist = (lists)data;
       PsicoList result;
 
@@ -585,7 +591,9 @@ public:
 
   /// Dereference operation
   reference operator*() const {
-    return singular2psico(m_iter);
+    reference result(singular2psico(m_iter));
+
+    return result;
   }
 
   /// Equality check
@@ -607,7 +615,10 @@ Psico::operator()(void* rhs) const {
   SingularLikeIterator<leftv, Psico> start((leftv)rhs), finish(NULL);
 
   PsicoTupleN args(start, finish);
-  return operator()((PsicoBase*)&args);
+  //  print(PrintS);args.print(PrintS);
+  self result(PyObject_CallObject(ptr(), args.ptr()));
+  
+  return result.copy();
 }
 
 
@@ -1018,7 +1029,6 @@ BOOLEAN simple_string(leftv __res, leftv __v) {
 }
 
 
-
 BOOLEAN test_list(leftv __res, leftv __v) {
 
   std::cout<<"list type? "<< (__v->Typ() == LIST_CMD) <<std::endl;
@@ -1183,7 +1193,14 @@ BOOLEAN mod_lex_boolean_gb(leftv __res, leftv __h) {
 
 
 
+BOOLEAN get_list(leftv __res, leftv __v) {
 
+  Psico ll = singular2psico(__v);
+  __res->data =(void*)ll.copy();;
+  __res->rtyp = PSICO_CMD;
+ 
+ return FALSE;
+}
 
 extern "C" {
   int mod_init(SModulFunctions* psModulFunctions) {
@@ -1205,6 +1222,8 @@ extern "C" {
                                  declare_ring);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"test_list",FALSE,
                                  test_list);
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"get_list",FALSE,
+                                 get_list);
    return 0;
   }
 }
