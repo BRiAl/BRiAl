@@ -453,6 +453,7 @@ def groebner_basis(I, faugere=False,
        linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
        red_tail_deg_growth=True, modified_linear_algebra=True):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
+    
     if full_prot:
         prot=True
     if prot:

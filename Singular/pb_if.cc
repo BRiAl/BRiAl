@@ -168,16 +168,46 @@ public:
 
 
   /// Virtual addition operation
-  virtual base* add(base* rhs) const { 
+  base* radd(base* rhs) const {
+
+    self pstr(PyString_FromString("__radd__"));
+    self result(PyObject_CallMethodObjArgs(((self*)rhs)->ptr(),pstr.ptr(), ptr(), 
+                                           NULL));
+
+
+    assert (result.ptr() != Py_NotImplemented);
+    return result.copy();
+  }
+
+  /// Virtual addition operation
+  virtual base* add(base* rhs) const {
+
     self pstr(PyString_FromString("__add__"));
-    return self(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
-                                           NULL)).copy(); 
+    self result(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
+                                           NULL));
+
+    if (result.ptr() == Py_NotImplemented) {
+      return radd(rhs);
+    }
+    return result.copy();
   }
 
   /// Virtual multiplication operation
   virtual base* times(base* rhs) const {
     self pstr(PyString_FromString("__mul__"));
-    return self(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
+    self result(PyObject_CallMethodObjArgs(ptr(), pstr.ptr(), ((self*)rhs)->ptr(),
+                                           NULL)); 
+
+    if (result.ptr() == Py_NotImplemented) {
+      return rtimes(rhs);
+    }
+    return result.copy();
+  }
+
+  /// Virtual multiplication operation
+  virtual base* rtimes(base* rhs) const {
+    self pstr(PyString_FromString("__rmul__"));
+    return self(PyObject_CallMethodObjArgs(((self*)rhs)->ptr(), pstr.ptr(), ptr(),
                                            NULL)).copy(); 
   }
 
@@ -419,15 +449,14 @@ public:
 
     long idx = 0;
     while (start != finish) {
-      Psico elt(*start);
-
-      PyTuple_SetItem(ptr(), idx, ((Psico*)elt.copy())->ptr());
+      set_item(idx, *start);
       ++start; 
       ++idx;
     }
 
   }
   int set_item(Py_ssize_t pos, const base& rhs) {
+    Py_INCREF(rhs.ptr());       // set_item steals reference
     return PyTuple_SetItem(ptr(), pos, rhs.ptr());
   }
   Py_ssize_t size() const { return PyTuple_Size(ptr()); }
@@ -1202,6 +1231,30 @@ BOOLEAN get_list(leftv __res, leftv __v) {
  return FALSE;
 }
 
+BOOLEAN test_refcnt(leftv __res, leftv __v) {
+
+  __res->data =(void*)NULL;
+  __res->rtyp = NONE;
+  
+  PyObject* tpl = PyTuple_New(1);
+
+  PsicoString elt("HUHU");
+
+  std::cerr << "refcount before " << Py_REFCNT(elt.ptr()) <<std::endl;
+
+  PyTuple_SetItem(tpl, 0, elt.ptr());
+
+  Py_INCREF(elt.ptr());
+  std::cerr << "refcount after " << Py_REFCNT(elt.ptr()) <<std::endl;
+
+  Py_DECREF(tpl);
+
+  std::cerr << "refcount afterall " << Py_REFCNT(elt.ptr()) <<std::endl;
+ 
+  return FALSE;
+}
+
+
 extern "C" {
   int mod_init(SModulFunctions* psModulFunctions) {
 
@@ -1224,6 +1277,9 @@ extern "C" {
                                  test_list);
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"get_list",FALSE,
                                  get_list);
+
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"test_refcnt",FALSE,
+                                 test_refcnt);
    return 0;
   }
 }
