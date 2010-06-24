@@ -1162,6 +1162,15 @@ BOOLEAN declare_ring(leftv __res, leftv __v) {
   __res->rtyp = PSICO_CMD ;
 
   //  set_singular(__res, result);
+
+  const char* d = "int siebzehn = 17";
+  char * s = (char *)omAlloc(strlen(d) + 13);
+  strcpy( s, (char *)d);
+  strcat( s, "\n;RETURN();\n");
+  newBuffer((char*)s,BT_execute);
+  //  return 
+    yyparse();
+
   return FALSE;
 #if 0
 

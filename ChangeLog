@@ -4,6 +4,10 @@ Release Name: 0.6.5:
 * If boost/boost-python is not available we already stop at onfiguring
   (does not affect EXTERNAL_PYTHON_EXTENSION=True)	
 * PBoRiError is now also std::exception
+* scons-based configuring works better on recent SuSE
+* Addded BoolePolynomial.compare() (Polynomials.__cmp__ on python) and
+  Ring.__hash__(on python)
+* Experimental generalized Boolean rings:(Z2 x ... x Z2)[x1, ..., xn]
 
 Release Name: 0.6.4:
 * Repository changed to hg
