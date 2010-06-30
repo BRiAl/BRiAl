@@ -113,6 +113,7 @@ public:
 
     PyRun_SimpleString("from polybori import *");
     PyRun_SimpleString("from polybori.gbcore import *");
+    PyRun_SimpleString("from polybori.frontend import *");
     PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
 
     //    PyRun_SimpleString("def myprint(args):\n  print(args)\n   return args;");
@@ -236,12 +237,24 @@ public:
   }
   virtual base* operator()(void* args) const; // inlined below
 
-protected:
+  /// call operation
+  self call(const self& args) const { 
+
+    return self(PyObject_CallObject(ptr(), args.ptr())); 
+  }
+  self operator[](Py_ssize_t idx) const {
+
+    return self(PyList_GetItem(ptr(), idx));
+  }
+  Py_ssize_t size() const { return PyList_Size(ptr()); }
+
+  //protected:
   virtual const char* c_str() const { 
     self tmp(PyObject_Str(ptr()));
     return PyString_AsString(tmp.ptr()); 
   }
 
+protected:
   /// Get tuple with @i nelts elements
   virtual base* clip(unsigned nelts) const { 
     return new self(PyTuple_New(nelts)); 
@@ -1163,13 +1176,35 @@ BOOLEAN declare_ring(leftv __res, leftv __v) {
 
   //  set_singular(__res, result);
 
-  const char* d = "int siebzehn = 17";
-  char * s = (char *)omAlloc(strlen(d) + 13);
-  strcpy( s, (char *)d);
-  strcat( s, "\n;RETURN();\n");
-  newBuffer((char*)s,BT_execute);
-  //  return 
-    yyparse();
+//   const char* d = "int siebzehn = 17";
+//   char * s = (char *)omAlloc(strlen(d) + 13);
+//   strcpy( s, (char *)d);
+//   strcat( s, "\n;RETURN();\n");
+//   newBuffer((char*)s,BT_execute);
+//   //  return 
+//   yyparse();
+
+
+  idhdl currHandle =NULL;// = enterid(omStrDup("achtzehn"),0,PSICO_CMD,&IDROOT,FALSE);
+
+  //  IDDATA(currHandle) = (char*)  None.copy();
+
+  //  PyRun_SimpleString("print block_scheme_names(['qwqwe'])");
+  
+  PsicoEval block_scheme_names("block_scheme_names");
+  //  block_scheme_names.print(PrintS);
+  Psico newElts(block_scheme_names.call(PsicoTuple(thelist)));
+  //  newElts.print(PrintS);
+
+  long len = newElts.size();
+  
+  for (long idx = 0; idx < len; ++idx) {
+    //newElts[idx].print(PrintS);
+    const char* identifier = newElts[idx].c_str();
+    currHandle = enterid(omStrDup(identifier),0,PSICO_CMD,&IDROOT,FALSE);
+
+    IDDATA(currHandle) = (char*) PsicoEval(identifier).copy();
+  }
 
   return FALSE;
 #if 0

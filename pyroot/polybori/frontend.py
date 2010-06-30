@@ -8,3 +8,14 @@ def ternary_declare_ring(blocks, context, global_context):
         
     return orig_declare_ring(blocks, context)
 
+
+
+
+def block_scheme_names(blocks):
+    """Helper for Singular interface."""
+
+    context = dict()
+    from polybori.blocks import declare_block_scheme
+    declare_block_scheme(blocks, context)
+
+    return context.keys()
