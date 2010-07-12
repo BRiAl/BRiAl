@@ -14,6 +14,8 @@
 
 // include basic definitions
 #include <iostream>
+#include <algorithm>
+#include <iterator>
 #include "polybori.h"
 #include "groebner.h"
 #include "groebner_defs.h"
@@ -22,6 +24,7 @@
 
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
+using namespace std;
 
 int
 main() {		
@@ -33,23 +36,24 @@ main() {
   BooleMonomial v = BooleVariable(3);    
   BooleMonomial w = BooleVariable(4);
  		
-  std::vector<Polynomial> I(4);
-  I[0]=x*y*z*v+1;
-  I[1]=x*y+z*v+y*z+x;
-  I[2]=x*y*z+v*y*w+x*v+1;
-  I[3]=x+y+z+v;
+  std::vector<BoolePolynomial> ideal(4);
+  ideal[0] = x*y*z*v+1;
+  ideal[1] = x*y+z*v+y*z+x;
+  ideal[2] = x*y*z+v*y*w+x*v+1;
+  ideal[3] = x+y+z+v;
   
     	 
-  GroebnerStrategy strat;    
-  for(int iter = 0; iter < I.size(); ++iter){
-    if(!I[iter].isZero())
-      strat.addGeneratorDelayed(I[iter]);	 
+  GroebnerStrategy strat;
+  for(std::vector<BoolePolynomial>::const_iterator iter = ideal.begin(); 
+      iter != ideal.end(); ++iter) {
+    if(!(iter->isZero()))
+      strat.addGeneratorDelayed(*iter);	 
   }
+
   strat.symmGB_F2();    	  
   
-  std::vector<Polynomial> res = strat.minimalizeAndTailReduce();    
-  for(int i = 0; i < res.size(); ++i)
-    std::cout << res[i] << std::endl;				
+  std::vector<BoolePolynomial> res = strat.minimalizeAndTailReduce();    
+  std::copy(res.begin(), res.end(), ostream_iterator<BoolePolynomial>(cout, "\n"));
   
   return 0;
 }
