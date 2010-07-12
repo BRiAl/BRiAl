@@ -597,11 +597,13 @@ libgbShared = slib(GBPath('groebner'), list(shared_resources))
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
-  "booleset", "blocknavi", "termaccu" ]
-tests_gb=["strategy_initialization"]
+  "booleset", "blocknavi", "termaccu"]
+tests_gb=["strategy_initialization", "minimalCPP"]
 CPPPATH=env['CPPPATH']+[GBPath('src')]
 #print env['CCFLAGS']
 #print env['CXXFLAGS']
+
+
 for t in tests_pb:
     env.Program(TestsPath(t), 
         [TestsPath('src', t + ".cc"),  libpb] + libCudd, 
