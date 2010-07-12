@@ -114,7 +114,7 @@ public:
     PyRun_SimpleString("from polybori import *");
     PyRun_SimpleString("from polybori.gbcore import *");
     PyRun_SimpleString("from polybori.frontend import *");
-    PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
+    //    PyRun_SimpleString("declare_ring([Block('x',10)], globals())");
 
     //    PyRun_SimpleString("def myprint(args):\n  print(args)\n   return args;");
   }
@@ -341,6 +341,7 @@ class PsicoImport:
 public:
   PsicoImport(const char* name): PsicoImport__(PsicoString(name)) { }
 
+  Psico dict() const { return Psico(PyModule_GetDict(ptr()));}
 };
 
 /// Factory for python simple string
@@ -1206,6 +1207,9 @@ BOOLEAN declare_ring(leftv __res, leftv __v) {
     IDDATA(currHandle) = (char*) PsicoEval(identifier).copy();
   }
 
+  //    PyRun_SimpleString("from sys import modules"); 
+  //  PsicoEval("modules['polybori.frontend'].__dict__").print(PrintS);
+  
   return FALSE;
 #if 0
 
@@ -1299,6 +1303,54 @@ BOOLEAN test_refcnt(leftv __res, leftv __v) {
 }
 
 
+BOOLEAN psico_import(leftv __res, leftv __v) {
+
+  __res->data =(void*)NULL;
+  __res->rtyp = NONE;
+
+
+  if ((__v == NULL)) {
+    Werror("expected psico_import('string')");
+    return TRUE;
+  }
+
+  int __tok =  __v->Typ();
+
+  if ((__tok != STRING_CMD)) {
+    Werror("expected psico_import('string')");
+    return TRUE;
+  }
+
+  char* modules_name = ((char *)__v->Data());
+  const char*  cmd = "[str for str in dir(modules['%s']) if str[0] != '_']";
+
+  char buffer[strlen(cmd) + strlen(modules_name)];
+
+  sprintf (buffer, "from %s import *", modules_name);
+  PyRun_SimpleString(buffer);
+
+  sprintf (buffer, cmd, modules_name);
+
+  PsicoEval newElts(buffer);
+
+  //  newElts.print(PrintS);
+
+  long len = newElts.size();
+  
+  idhdl currHandle =NULL;
+  for (long idx = 0; idx < len; ++idx) {
+    //newElts[idx].print(PrintS);
+    const char* identifier = newElts[idx].c_str();
+    currHandle = enterid(omStrDup(identifier),0,PSICO_CMD,&IDROOT,FALSE);
+
+    IDDATA(currHandle) = (char*) PsicoEval(identifier).copy();
+  }
+
+
+  return FALSE;
+}
+
+
 extern "C" {
   int mod_init(SModulFunctions* psModulFunctions) {
 
@@ -1324,6 +1376,9 @@ extern "C" {
 
     psModulFunctions->iiAddCproc(currPack->libname,(char*)"test_refcnt",FALSE,
                                  test_refcnt);
-   return 0;
+    psModulFunctions->iiAddCproc(currPack->libname,(char*)"psico_import",FALSE,
+                                 psico_import);
+    
+    return 0;
   }
 }
