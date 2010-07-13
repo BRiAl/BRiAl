@@ -103,7 +103,7 @@ public:
 
   /// Standard constructor
   PsicoInterpreter() {
-    std::cerr<<"init"<<std::endl;
+    std::cout<<"Initialising PolyBoRi..."<<std::endl;
     Py_Initialize();
     PyRun_SimpleString("from sys import path");
     PyRun_SimpleString("path.append('.')");
@@ -122,7 +122,7 @@ public:
 
   /// Destructor
   ~PsicoInterpreter() {
-     std::cerr<<"exiting psico"<<std::endl;
+     std::cout<<"Thank you for using PolyBoRi."<<std::endl;
      Py_Finalize();
   }
 
