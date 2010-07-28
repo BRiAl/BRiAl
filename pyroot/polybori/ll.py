@@ -155,11 +155,11 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
   map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
   map_back_vec=construct_map_by_indices(from_ring, map_back_indices)
   def map_from(p):
-      res=substitute_variables(map_from_vec, p)
+      res=substitute_variables(to_ring, map_from_vec, p)
       #assert str(p)==str(res), (str(p), str(res), list(map_from_vec), list(map_back_vec))
       return res
   def map_back(p):
-      return substitute_variables(map_back_vec, p)
+      return substitute_variables(from_ring, map_back_vec, p)
   to_ring.set()
   try:
       ll_opt_encoded=ll_encode([map_from(p) for p in ll_system],
