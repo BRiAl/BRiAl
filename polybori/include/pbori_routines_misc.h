@@ -1062,26 +1062,28 @@ dd_first_multiples_of(const CacheType& cache_mgr,
 
 /// Internal variant: Maps a polynomial from one ring to another, using a given
 /// map old_index -> new_polynomial 
-template <class MapType, class NaviType, class PolyType>
+template <class PolyType, class RingType, class MapType, class NaviType>
 PolyType
-substitute_variables__(const MapType& idx2poly, NaviType navi, 
-                       const PolyType& zero) {
+substitute_variables__(const RingType& ring, const MapType& idx2poly, NaviType navi) {
 
   if (navi.isConstant())
-    return (zero + navi.terminalValue());
-  
+    return ring.constant(navi.terminalValue());
+
+  typename MapType::const_reference var(idx2poly[*navi]);
+  assert(var.ring() == ring);
   return (idx2poly[*navi] * 
-          substitute_variables__(idx2poly, navi.thenBranch(), zero)) + 
-    substitute_variables__(idx2poly, navi.elseBranch(), zero);
+          substitute_variables__<PolyType>(ring, idx2poly, navi.thenBranch())) + 
+    substitute_variables__<PolyType>(ring, idx2poly, navi.elseBranch());
 } 
 
 /// Maps a polynomial from one ring to another, using a given map
 /// old_index -> new_polynomial 
-template <class MapType, class PolyType>
+template <class RingType, class MapType, class PolyType>
 PolyType
-substitute_variables(const MapType& idx2poly, const PolyType& poly) {
+substitute_variables(const RingType& ring,
+                     const MapType& idx2poly, const PolyType& poly) {
 
-  return substitute_variables__(idx2poly, poly.navigation(), poly*0);
+  return substitute_variables__<PolyType>(ring, idx2poly, poly.navigation());
 } 
 
 

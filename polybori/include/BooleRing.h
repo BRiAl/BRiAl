@@ -111,6 +111,10 @@ class BooleRing:
   /// Get decision diagram with all variables negated
   dd_type one() const { return m_mgr.blank(); }
 
+
+  /// Get constant one or zero
+  dd_type constant(bool is_one) const { return (is_one? one(): zero()); }
+
   /// Get number of ring variables
   size_type nVariables() const { return m_mgr.nVariables(); }
 
