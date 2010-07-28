@@ -118,15 +118,16 @@ def eliminate(polys, on_the_fly=False,prot=False, reduction_function=None, optim
   return (linear_leads,llnf,reduced_list)
   
 def construct_map_by_indices(to_ring, idx_mapping):
-  v=BoolePolynomialVector(to_ring.n_variables()*[to_ring.zero()])
+  v=BoolePolynomialVector((max(idx_mapping.keys())+1)*[to_ring.zero()])
   for (from_idx, to_idx) in idx_mapping.iteritems():
-      v[from_idx]=to_ring.var(to_idx)
+      val = to_ring.var(to_idx)
+      v[from_idx]= val
   return v
 
 
 def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_noredsb, reduce_ll_system=False, prot=False):
   from_ring=global_ring()
-  to_ring=from_ring.clone()
+  
   ll_ranks=rank(ll_system)
   add_vars=set(used_vars_set(to_reduce).variables()).difference(ll_ranks.keys())
   for v in add_vars:
@@ -140,6 +141,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
   def var_index(v):
       return iter(Monomial(v).variables()).next().index()
   #sorted_var_indices=[var_index(v) for v in sorted_vars]
+  to_ring=Ring(len(sorted_vars))
   map_back_indices = dict([(i, var_index(v)) for (i, v) in enumerate(sorted_vars)])
   map_from_indices = dict([(var_index(v), i) for (i, v) in enumerate(sorted_vars)])
   #dict([(v,k) for (k,v) in enumerate(sorted_var_indices)])
@@ -151,8 +153,10 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
         set_variable_name(i, var_names[i])
   finally:
       from_ring.set()
-      
-  map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
+  try:
+      map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
+  finally:
+      from_ring.set()
   map_back_vec=construct_map_by_indices(from_ring, map_back_indices)
   def map_from(p):
       res=substitute_variables(to_ring, map_from_vec, p)
