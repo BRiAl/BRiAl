@@ -154,6 +154,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
   finally:
       from_ring.set()
   try:
+      to_ring.set()
       map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
   finally:
       from_ring.set()
