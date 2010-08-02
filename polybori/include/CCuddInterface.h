@@ -71,8 +71,9 @@
 
 
 // include basic definitions
-
+#include "CCuddCore.h"
 #include "CCuddZDD.h"
+
 
 #ifndef CCuddInterface_h_
 #define CCuddInterface_h_
@@ -118,6 +119,17 @@ public:
   typedef CCuddZDD dd_type;
   typedef self tmp_ref;
   //@}
+  /// Type for handling mterm orderings
+  typedef CDynamicOrderBase order_type;
+
+  /// Smart pointer for handling mterm orderings
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+
+  /// Reference for handling mterm orderings
+  typedef order_type& order_reference;
+
+  /// Enum for ordering codes
+  typedef core_type::ordercode_type ordercode_type;
 
   /// Define type for storing names of variables
   typedef CVariableNames variable_names_type;
@@ -130,8 +142,9 @@ public:
                  size_type numVarsZ = 0,
                  size_type numSlots = CUDD_UNIQUE_SLOTS,
                  size_type cacheSize = CUDD_CACHE_SLOTS,
-                 unsigned long maxMemory = 0):
-    pMgr (new core_type(numVars, numVarsZ, numSlots, cacheSize, maxMemory)) {
+                 unsigned long maxMemory = 0,
+                 const order_ptr& order =  order_ptr()):
+    pMgr (new core_type(numVars, numVarsZ, numSlots, cacheSize, maxMemory, order)) {
   }
 
   /// Copy constructor

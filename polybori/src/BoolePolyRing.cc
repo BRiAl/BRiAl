@@ -183,7 +183,7 @@ BEGIN_NAMESPACE_PBORI
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing() : 
-  base(1), pOrder(get_ordering(lp)) {
+  base(1, get_ordering(lp)) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing()" );
 }
@@ -191,7 +191,7 @@ BoolePolyRing::BoolePolyRing() :
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
-  base(nvars), pOrder(get_ordering(order)) {
+  base(nvars, get_ordering(order)) {
 
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
   if(make_active)
@@ -202,8 +202,8 @@ void
 BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
-
-  pOrder = get_ordering(order); 
+  //  pOrder = get_ordering(order); 
+  m_mgr.manager().managerCore()->change_ordering(get_ordering(order)); 
 }
 
 

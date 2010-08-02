@@ -74,13 +74,22 @@ class BooleRing:
   typedef CTypes::dd_type dd_type;
   typedef CTypes::vartext_type vartext_type;
   //@}
+  /// Type for handling mterm orderings
+  typedef manager_type::order_type order_type;
+
+  /// Smart pointer for handling mterm orderings
+  typedef manager_type::order_ptr order_ptr;
+
+  /// Reference for handling mterm orderings
+  typedef order_type& order_reference;
 
   /// Explicitely mention ordercodes' enumeration
   using base::ordercodes;
 
   /// Constructor for @em nvars variables
-  BooleRing(size_type nvars = 100):
-    m_mgr(nvars) {}
+  BooleRing(size_type nvars = 100,
+            const order_ptr& order =  order_ptr()):
+    m_mgr(nvars, order) {}
 
   BooleRing(const manager_type& mgr):
     m_mgr(mgr) {}
@@ -145,6 +154,11 @@ class BooleRing:
     return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t
                                   >(m_mgr.manager().getManager())); 
   }
+
+  /// Access ordering of *this
+  order_reference ordering() const { return *(m_mgr.manager().managerCore()->pOrder); }
+  /// Access ordering of *this
+  order_ptr pOrdering() const { return m_mgr.manager().managerCore()->pOrder; }
 protected: 
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
   manager_type m_mgr;

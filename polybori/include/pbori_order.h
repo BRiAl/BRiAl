@@ -62,15 +62,15 @@
 // include basic definitions
 #include "pbori_defs.h"
 
+#ifndef pbori_order_h_
+#define pbori_order_h_
+
 // get all available orderings
 #include "LexOrder.h"
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"
 #include "BlockDegLexOrder.h"
 #include "BlockDegRevLexAscOrder.h"
-
-#ifndef pbori_order_h_
-#define pbori_order_h_
 
 BEGIN_NAMESPACE_PBORI
 

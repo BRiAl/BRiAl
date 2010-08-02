@@ -251,13 +251,14 @@ class BoolePolyRing:
   /// Make this global ring
   void activate();
 
-  /// Support for deep copy constructor
-  BoolePolyRing(const base& rhs, order_ptr order):
-    base(rhs), pOrder(order) {}
-  
+//   /// Support for deep copy constructor
+//   BoolePolyRing(const base& rhs, order_ptr order):
+//     base(rhs, order), pOrder(order) {}
+
   /// Change order of current ring
   void changeOrdering(ordercode_type);
 
+  using base::ordering;
   idx_type lastBlockStart() {
     if (ordering().isBlockOrder()) {
       return *(ordering().blockEnd() - 2);
@@ -269,15 +270,17 @@ class BoolePolyRing:
   }
 
   /// Access ordering of *this
-  order_reference ordering() const { return *pOrder; }
+  //  order_reference ordering() const { return *pOrder; }
 
   /// Construct ring with similiar properties
   self clone() const {
-    return self(base::clone(), pOrder);
+    return self(base::clone());
   }
 protected:
   /// *Ordering of *this
-  order_ptr pOrder;
+
+  explicit BoolePolyRing(const base& rhs): base(rhs) {}
+  // order_ptr pOrder;
 };
 
 END_NAMESPACE_PBORI

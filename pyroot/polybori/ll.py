@@ -17,7 +17,10 @@ def combine(reductors,p, reduce=None):
 
 def llredsb_Cudd_style(polys):
 
-  reductors=Polynomial(1).set()
+  if polys:
+      reductors=Polynomial( polys[0].ring().one()).set()
+  else:
+      reductors=Polynomial(1).set()
   
   linear_lead=sorted(polys,key=lead_index,reverse=True)
   assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
@@ -48,8 +51,10 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
       reduce=None
 
   
-  reductors=Polynomial(1).set()
-  
+  if polys:
+      reductors=Polynomial( polys[0].ring().one()).set()
+  else:
+      reductors=Polynomial(1).set()
   
   
   last=None
@@ -150,7 +155,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
       to_ring.set()
       for (i, v) in enumerate(sorted_vars):
         assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
-        set_variable_name(i, var_names[i])
+        set_variable_name(i, var_names[i] + "TO")
   finally:
       from_ring.set()
   try:

@@ -174,6 +174,12 @@ class CDDManagerBase {
   /// Generic access to type of *this
   typedef CDDManagerBase<interfaced_type, interfaced_store> self;
 
+  /// Type for handling mterm orderings
+  typedef CDynamicOrderBase order_type;
+
+  /// Smart pointer for handling mterm orderings
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+
   /// Define size type
   typedef CTypes::size_type size_type;
 
@@ -197,10 +203,11 @@ class CDDManagerBase {
 
   /// Default constructor
   CDDManagerBase(size_type nvars = 0,
+                 const order_ptr& order =  order_ptr(),
                  size_type numSlots = PBORI_UNIQUE_SLOTS,
                  size_type cacheSize = PBORI_CACHE_SLOTS,
                  unsigned long maxMemory = PBORI_MAX_MEMORY): 
-    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory) {  }
+    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory, order) {  }
   
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
@@ -324,25 +331,25 @@ public:
  **/
 
 
-template<>
-class CDDManager<Cudd>:
-  public CDDManagerBase<Cudd, Cudd> { 
+// template<>
+// class CDDManager<Cudd>:
+//   public CDDManagerBase<Cudd, Cudd> { 
 
-public:
+// public:
 
-  typedef Cudd manager_type;
-  typedef Cudd storage_type;
-  typedef CDDManagerBase<manager_type, storage_type> base;
-  typedef CDDManager<storage_type> self;
+//   typedef Cudd manager_type;
+//   typedef Cudd storage_type;
+//   typedef CDDManagerBase<manager_type, storage_type> base;
+//   typedef CDDManager<storage_type> self;
 
-  /// Construct new decision diagramm manager
-  CDDManager(size_type nvars = 0): 
-    base(nvars) { }
+//   /// Construct new decision diagramm manager
+//   CDDManager(size_type nvars = 0): 
+//     base(nvars) { }
 
-  // Destructor
-  ~CDDManager() { }
+//   // Destructor
+//   ~CDDManager() { }
 
-};
+// };
 
 
 /** @class CDDManager
@@ -400,7 +407,7 @@ public:
   typedef CDDManager<storage_type> self;
 
   /// Construct new decision diagramm manager
-  CDDManager(size_type nvars = 0): 
+  CDDManager(size_type nvars = 0, const order_ptr& order =  order_ptr()): 
     base(nvars) { }
 
   CDDManager(const manager_type& rhs): 

@@ -70,6 +70,8 @@
 
 #include <vector>
 #include "cuddInt.h"
+
+
 /// Increment reference count
 inline void 
 intrusive_ptr_add_ref(DdManager* ptr){
@@ -90,6 +92,8 @@ intrusive_ptr_release(DdManager* ptr) {
 
 BEGIN_NAMESPACE_PBORI
 
+class COrderBase;
+class CDynamicOrderBase;
 
 /** @class CCuddCore
  * @brief This class prepares the CUDD's raw decision diagram manager structure
@@ -102,7 +106,8 @@ BEGIN_NAMESPACE_PBORI
  * @attention This class is intented for internal use only. See CCuddDD,
  * CCuddZDD, and CCuddInterface.
  **/
-class CCuddCore {
+class CCuddCore:
+  public CTypes::orderenums_type {
 
 public:
   ///@name Get CUDD-related type definitions
@@ -129,6 +134,18 @@ public:
   /// Control eloquence of CUDD functionality
   static bool verbose;
 
+  /// Type for handling mterm orderings
+  typedef CDynamicOrderBase order_type;
+  
+  /// Smart pointer for handling mterm orderings
+  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+
+  /// Reference for handling mterm orderings
+  typedef order_type& order_reference;
+
+  /// Enum for ordering codes
+  typedef CTypes::ordercode_type ordercode_type;
+
   /// Count instances pointing here
   refcount_type ref;
 
@@ -137,15 +154,19 @@ public:
 
   std::vector<node_type> m_vars;
 
+  /// *Ordering of *this
+  order_ptr pOrder;
+
 
   /// Initialize raw decision diagram management
   CCuddCore(size_type numVars = 0,
             size_type numVarsZ = 0,
             size_type numSlots = CUDD_UNIQUE_SLOTS,
             size_type cacheSize = CUDD_CACHE_SLOTS,
-            large_size_type maxMemory = 0):  
+            large_size_type maxMemory = 0,
+            const order_ptr& order =  order_ptr()):  
     ref(0), m_names(numVarsZ), m_vars(numVarsZ), 
-    pmanager(getMan(numVars,numVarsZ,numSlots,cacheSize,maxMemory)) {
+    pmanager(getMan(numVars,numVarsZ,numSlots,cacheSize,maxMemory)), pOrder(order) {
 
     for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
       m_vars[idx] = cuddUniqueInterZdd(manager(), idx, DD_ONE(manager()),
@@ -157,7 +178,7 @@ public:
 
   /// Copy Constructor (nearly deep copy, but shallow copy of manager)
   CCuddCore(const self& rhs):
-    ref(0), pmanager(rhs.pmanager), m_names(rhs.m_names), m_vars(rhs.m_vars) {
+    ref(0), pmanager(rhs.pmanager), m_names(rhs.m_names), m_vars(rhs.m_vars), pOrder(rhs.pOrder) {
 
     std::vector<node_type>::iterator start(m_vars.begin()), 
       finish(m_vars.end());
@@ -206,6 +227,10 @@ public:
   /// Release this by decrementing reference counting
   refcount_type release() {
     return (--ref);
+  }
+
+  void change_ordering(const order_ptr& newOrder) {
+    pOrder = newOrder;
   }
 };
 
