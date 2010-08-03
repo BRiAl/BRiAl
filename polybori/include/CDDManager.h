@@ -202,12 +202,9 @@ class CDDManagerBase {
   typedef variable_names_type::const_reference const_varname_reference;
 
   /// Default constructor
-  CDDManagerBase(size_type nvars = 0,
-                 const order_ptr& order =  order_ptr(),
-                 size_type numSlots = PBORI_UNIQUE_SLOTS,
-                 size_type cacheSize = PBORI_CACHE_SLOTS,
-                 unsigned long maxMemory = PBORI_MAX_MEMORY): 
-    m_interfaced(0, nvars, numSlots, cacheSize, maxMemory, order) {  }
+  CDDManagerBase(size_type nvars,
+                 const order_ptr& order): 
+    m_interfaced(0, nvars, /*numSlots*/PBORI_UNIQUE_SLOTS,  PBORI_CACHE_SLOTS/*cacheSize*/, PBORI_MAX_MEMORY/*maxMemory*/, order) {  }
   
   /// Copy constructor
   CDDManagerBase(const self& rhs): 
@@ -407,8 +404,8 @@ public:
   typedef CDDManager<storage_type> self;
 
   /// Construct new decision diagramm manager
-  CDDManager(size_type nvars = 0, const order_ptr& order =  order_ptr()): 
-    base(nvars) { }
+  CDDManager(size_type nvars, const order_ptr& order): 
+    base(nvars, order) { }
 
   CDDManager(const manager_type& rhs): 
     base(rhs) { }

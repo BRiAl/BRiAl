@@ -258,7 +258,7 @@ class BoolePolyRing:
   /// Change order of current ring
   void changeOrdering(ordercode_type);
 
-  using base::ordering;
+  //  using base::ordering;
   idx_type lastBlockStart() {
     if (ordering().isBlockOrder()) {
       return *(ordering().blockEnd() - 2);
@@ -269,18 +269,22 @@ class BoolePolyRing:
     return 0;
   }
 
-  /// Access ordering of *this
-  //  order_reference ordering() const { return *pOrder; }
-
   /// Construct ring with similiar properties
   self clone() const {
-    return self(base::clone());
+    return self(base::clone(),int(),int());
+     //return *this;
   }
-protected:
-  /// *Ordering of *this
 
-  explicit BoolePolyRing(const base& rhs): base(rhs) {}
-  // order_ptr pOrder;
+  BoolePolyRing(const self& rhs): base(rhs) { }
+
+
+  self& operator=(const self& rhs) {
+    base::operator=(rhs);
+  }
+
+protected:
+
+  explicit BoolePolyRing(const base& rhs,int,int): base(rhs) { }
 };
 
 END_NAMESPACE_PBORI

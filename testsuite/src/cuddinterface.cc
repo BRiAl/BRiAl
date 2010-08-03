@@ -65,6 +65,39 @@ main(){
 
   std::cout << "Testing cudd interface" <<std::endl;   
 
+
+  BoolePolyRing r(17, CTypes::lp);
+  BoolePolyRing r2=r;//ooleEnv::ring();
+
+
+  r2.changeOrdering(CTypes::dlex); 
+
+
+  
+  r.ordering();
+  
+  return 0;
+
+  BoolePolyRing backup_ring=BooleEnv::ring();
+
+  std::vector<BooleMonomial> vec(1);
+
+  BoolePolyRing q = r.clone();
+
+  BooleEnv::set(q);
+  //  q.activate();
+  q.changeOrdering(CTypes::lp);
+
+  vec.resize(17);
+
+  std::cerr << vec[0] <<std::endl;
+  std::cerr << vec[3] <<std::endl;
+
+
+
+  //  assert(false);// test deactivated
+#if 0
+
   try {
     CDDManager<CTypes::manager_base> man(3);
 
@@ -98,6 +131,6 @@ main(){
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
-
+#endif
   return 0;
 }

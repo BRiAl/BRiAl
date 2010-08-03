@@ -138,12 +138,12 @@ public:
   typedef variable_names_type::const_reference const_varname_reference;
 
   /// Initialize CUDD-like decision diagram manager
-  CCuddInterface(size_type numVars = 0,
-                 size_type numVarsZ = 0,
-                 size_type numSlots = CUDD_UNIQUE_SLOTS,
-                 size_type cacheSize = CUDD_CACHE_SLOTS,
-                 unsigned long maxMemory = 0,
-                 const order_ptr& order =  order_ptr()):
+  CCuddInterface(size_type numVars,
+                 size_type numVarsZ,
+                 size_type numSlots,
+                 size_type cacheSize,
+                 unsigned long maxMemory,
+                 const order_ptr& order ):
     pMgr (new core_type(numVars, numVarsZ, numSlots, cacheSize, maxMemory, order)) {
   }
 
@@ -151,7 +151,7 @@ public:
   CCuddInterface(const self& rhs): pMgr(rhs.pMgr) {}
 
   /// Construct interface for already initialized manager
-  CCuddInterface(mgrcore_ptr rhs): pMgr(rhs) {};
+  CCuddInterface(mgrcore_ptr rhs): pMgr(rhs) { };
 
   /// Destructor
   ~CCuddInterface() {}

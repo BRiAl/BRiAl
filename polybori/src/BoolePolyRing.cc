@@ -181,10 +181,19 @@
 
 BEGIN_NAMESPACE_PBORI
 
+BooleRing::BooleRing():
+  m_mgr(1, get_ordering(lp)) { }
+
+   /// Constructor for @em nvars variables
+BooleRing::BooleRing(size_type nvars):
+  m_mgr(nvars, get_ordering(lp))  {   }
+
+
+
+
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing() : 
   base(1, get_ordering(lp)) {
-
   PBORI_TRACE_FUNC( "BoolePolyRing()" );
 }
 
@@ -192,8 +201,8 @@ BoolePolyRing::BoolePolyRing() :
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
   base(nvars, get_ordering(order)) {
-
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
+
   if(make_active)
     activate();
 }
@@ -202,7 +211,6 @@ void
 BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
-  //  pOrder = get_ordering(order); 
   m_mgr.manager().managerCore()->change_ordering(get_ordering(order)); 
 }
 
@@ -212,9 +220,7 @@ void
 BoolePolyRing::activate() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::activate() const" );
-
   BooleEnv::set(*this);
-
 }
 
 bool CCuddCore::verbose = 0;		// initially terse

@@ -86,9 +86,12 @@ class BooleRing:
   /// Explicitely mention ordercodes' enumeration
   using base::ordercodes;
 
-  /// Constructor for @em nvars variables
-  BooleRing(size_type nvars = 100,
-            const order_ptr& order =  order_ptr()):
+   /// Constructor
+  BooleRing();
+  BooleRing(size_type nvars);
+   /// Constructor for @em nvars variables
+  BooleRing(size_type nvars,
+            const order_ptr& order):
     m_mgr(nvars, order) {}
 
   BooleRing(const manager_type& mgr):
@@ -145,8 +148,9 @@ class BooleRing:
 
   /// Generate ring based on the same manager
   self clone() const {
+
     return self( (manager_type)CCuddCore::mgrcore_ptr(new
-      CCuddCore(*m_mgr.manager().managerCore()))  );
+       CCuddCore(*m_mgr.manager().managerCore())));
   }
 
   /// Get unique identifier for *this
@@ -156,7 +160,11 @@ class BooleRing:
   }
 
   /// Access ordering of *this
-  order_reference ordering() const { return *(m_mgr.manager().managerCore()->pOrder); }
+  order_reference ordering() const { 
+
+    assert(m_mgr.manager().managerCore()->pOrder != order_ptr());
+
+    return *(m_mgr.manager().managerCore()->pOrder); }
   /// Access ordering of *this
   order_ptr pOrdering() const { return m_mgr.manager().managerCore()->pOrder; }
 protected: 

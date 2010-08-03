@@ -159,15 +159,15 @@ public:
 
 
   /// Initialize raw decision diagram management
-  CCuddCore(size_type numVars = 0,
-            size_type numVarsZ = 0,
-            size_type numSlots = CUDD_UNIQUE_SLOTS,
-            size_type cacheSize = CUDD_CACHE_SLOTS,
-            large_size_type maxMemory = 0,
-            const order_ptr& order =  order_ptr()):  
+  CCuddCore(size_type numVars,
+            size_type numVarsZ,
+            size_type numSlots,
+            size_type cacheSize,
+            large_size_type maxMemory,
+            const order_ptr& order):  
     ref(0), m_names(numVarsZ), m_vars(numVarsZ), 
     pmanager(getMan(numVars,numVarsZ,numSlots,cacheSize,maxMemory)), pOrder(order) {
-
+    assert(pOrder != order_ptr());
     for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
       m_vars[idx] = cuddUniqueInterZdd(manager(), idx, DD_ONE(manager()),
                                        DD_ZERO(manager())); 
