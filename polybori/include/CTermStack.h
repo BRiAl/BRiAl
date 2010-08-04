@@ -173,7 +173,7 @@ public:
 
   cached_block_deg(const manager_type& mgr):
     //  m_indices(BoolePolyRing::blockRingBegin()), 
-    m_current_block(BooleEnv::blockBegin()),
+    m_current_block(BooleEnv::blockBegin()), ///  todo!!!
     m_deg_cache(mgr) { }
 
   typename NavigatorType::size_type

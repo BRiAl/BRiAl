@@ -198,7 +198,7 @@ BooleMonomial::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::compare(const self& rhs) const" );
 
-  return BooleEnv::ordering().compare(*this, rhs);
+  return ring().ordering().compare(*this, rhs);
 }
 
 // Degree of the lcm
@@ -332,15 +332,16 @@ BooleMonomial::multiples(const self& monom) const {
 #endif
 }
 
-// function greater_variable
-BooleMonomial::bool_type
-greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
+// Does anyone need this?
+// // function greater_variable
+// BooleMonomial::bool_type
+// greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
 
-  PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
+//   PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
 
-  return
-    (BooleEnv::ordering().compare(lhs, rhs)==CTypes::greater_than);
-}
+//   return
+//     (BooleEnv::ordering().compare(lhs, rhs)==CTypes::greater_than);
+// }
 
 // Get exponent vector
 BooleMonomial::exp_type

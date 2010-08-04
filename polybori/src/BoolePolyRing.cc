@@ -227,6 +227,16 @@ bool CCuddCore::verbose = 0;		// initially terse
 CCuddCore::errorfunc_type CCuddCore::errorHandler  = defaultError; // CUDD's
                                                                    // default
                                                                    // error
+
+BooleRing::ordercode_type
+BooleRing::globalOrderCode() {
+  return BooleEnv::ring().pOrdering()->getOrderCode();
+}
+
+BooleRing::ordercode_type
+BooleRing::getOrderCode() const {
+  return (m_mgr.manager().managerCore()->pOrder)->getOrderCode();
+}
                                                                    // handle; 
 
 END_NAMESPACE_PBORI

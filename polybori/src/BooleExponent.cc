@@ -340,7 +340,7 @@ BooleExponent::compare(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::compare(const self& rhs) const" );
 
-  return BooleEnv::ordering().compare(*this, rhs);
+  return BooleEnv::ordering().compare(*this, rhs); // todo!!!!
 }
 
 // Degree of the lcm

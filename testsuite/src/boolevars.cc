@@ -88,12 +88,6 @@ main(){
     std::cout << zeroPoly <<std::endl;
 
 
-    std::cout << "var(1) > var(2)" <<std::endl;
-    std::cout << greater_variable(1, 2) <<std::endl;
-
-    std::cout << "var(2) > var(1)" <<std::endl;
-    std::cout << greater_variable(2, 1) <<std::endl;
-
     std::cout << "poly *= var" <<std::endl;
     std::cout <<  (poly *= BooleVariable(0)) << std::endl;
     std::cout << "poly % var" <<std::endl;

@@ -487,10 +487,11 @@ LCM(const BooleMonomial& lhs, const BooleMonomial& rhs ){
   return lhs.LCM(rhs);
 }
 
+// Anyone need this?
 /// @fn greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
 /// @brief Checks whether BooleVariable(lhs) > BooleVariable(rhs) 
-BooleMonomial::bool_type
-greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
+// BooleMonomial::bool_type
+// greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs);
 
 
 /// Multiplication of variables by a 0 or 1

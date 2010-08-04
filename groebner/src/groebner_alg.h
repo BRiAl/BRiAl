@@ -115,13 +115,17 @@ public:
     bool optRedTail;
     idx_type reducibleUntil;
     void setupSetsForLastElement();
-    ReductionStrategy(){
-        optLL=false;
-        reducibleUntil=-1;
-        optBrutalReductions=true;
-        optRedTail=true;
-        optRedTailDegGrowth=true;
+
+    ReductionStrategy(){ set_defaults(); }
+
+    ReductionStrategy(const BoolePolyRing& theRing):
+      leadingTerms(theRing.zero()), minimalLeadingTerms(theRing.zero()),
+      leadingTerms11(theRing.zero()), leadingTerms00(theRing.zero()), llReductor(theRing.zero()),
+      monomials(theRing.zero()), monomials_plus_one(theRing.zero()), lm2Index(),
+      exp2Index() {
+      set_defaults(); 
     }
+
     bool canRewrite(const Polynomial& p) const{
         return is_rewriteable(p,minimalLeadingTerms);
     }
@@ -137,6 +141,15 @@ public:
     Polynomial headNormalForm(Polynomial p) const;
     
     Polynomial reducedNormalForm(Polynomial p) const;
+
+ protected:
+    void set_defaults(){
+        optLL=false;
+        reducibleUntil=-1;
+        optBrutalReductions=true;
+        optRedTail=true;
+        optRedTailDegGrowth=true;
+    }
 };
 class GroebnerStrategy{
 public:

@@ -311,7 +311,11 @@ def other_ordering_pre(I,option_set,kwds):
             main_kwds["convert_with_fglm_from_ring"]=new_ring
     finally:
         old_ring.set()
+        assert (ocode in [OrderCode.lp, OrderCode.dlex, OrderCode.dp_asc]), ("Unsupported ordering in other_ordering_pre!")
+        change_ordering(ocode) 
+
     return (I,None)
+
 def llfirstonthefly_pre(I,prot):
     (eliminated,llnf, I)=eliminate(I,on_the_fly=True)
     return (I,eliminated)

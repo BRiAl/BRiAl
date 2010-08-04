@@ -388,6 +388,7 @@ void FGLMStrategy::transposeMultiplicationTables(){
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     ring_with_ordering_type backup_ring=BooleEnv::ring();
     BooleEnv::set(from);
+
     vars=gb.leadingTerms.usedVariables();
     int i;
     for (i=0;i<gb.size();i++){
@@ -428,7 +429,7 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
 
     leadingTermsFrom=gb.leadingTerms;
     varietySize=standardMonomialsFrom.size();
-
+            
     BooleEnv::set(backup_ring);
 }
 class FGLMNoLinearCombinationException: public std::exception
@@ -591,9 +592,14 @@ PolynomialVector FGLMStrategy::main(){
     w_start_indices.push_back(0);
     rowStartingWithIndex[0]=0;
     rowIsStandardMonomialToWithIndex[0]=0;
+
+    VariableVector varsVectorTo;
+    varsVectorTo.reserve(varsVector.size());
     for(i=0;i<varsVector.size();i++){
-        C.insert(varsVector[i]);
+      varsVectorTo.push_back(to.coerce(varsVector[i]));
+      C.insert(varsVectorTo.back());
     }
+
     mon2index[monomial_one]=0;
     exp2index[monomial_one.exp()]=0;
     mzd_t* v_d=mzd_init(1,varietySize);
@@ -694,10 +700,10 @@ PolynomialVector FGLMStrategy::main(){
                 mzd_copy_row(v,d,v_d,0);
                 
                 idx_type m_begin=*m.begin();
-                for(i=0;(i<varsVector.size())&&(index2Ring[i]<m_begin);i++){
-                    Variable var=varsVector[i];
+                for(i=0;(i<varsVectorTo.size())&&(index2Ring[i]<m_begin);i++){
+                  Variable var=varsVectorTo[i];
                     if (!(m.reducibleBy(var))){
-                        Monomial m_v=var*m;
+                      Monomial m_v= var*m;
                         C.insert(m_v);
                     }
                 }
@@ -729,7 +735,7 @@ void FGLMStrategy::testMultiplicationTables(){
     BooleEnv::set(from);
     int i;
     int j;
-    
+
     for(i=0;i<varsVector.size();i++){
         Variable v=varsVector[i];
         assert (v.index()>=i);
@@ -738,6 +744,7 @@ void FGLMStrategy::testMultiplicationTables(){
             mzd_t* table=multiplicationTableForVariable(v);
             int k;
             if (m==v){continue;}
+            
             Polynomial product=reducedNormalFormInFromRing(m*v);
 
             MonomialSet product_set=product.diagram();
@@ -781,7 +788,7 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     return false;
 }
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
-:to(to_ring), from(from_ring)
+  :to(to_ring), from(from_ring), gbFrom(from_ring)
 {
     prot=false;
     transposed=false;
@@ -791,7 +798,7 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
     PolynomialVector::const_iterator end=gb.end();
     
     while(it!=end){
-        Polynomial gen=*it;
+      Polynomial gen=from.coerce(*it);// AD: coercion added
         if (canAddThisElementLaterToGB(gen)){
             addTheseLater.push_back(gen);
         } else{

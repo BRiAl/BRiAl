@@ -634,7 +634,7 @@ BoolePolynomial::lead() const {
   if UNLIKELY(isZero())
     throw PBoRiGenericError<CTypes::illegal_on_zero>();
   
-  return BooleEnv::ordering().lead(*this);
+  return ring().ordering().lead(*this);
 }
 
 // Leading term w.r.t. lex
@@ -656,7 +656,7 @@ BoolePolynomial::boundedLead(size_type bound) const {
   if UNLIKELY(isZero()) 
     throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
-  return BooleEnv::ordering().lead(*this, bound);
+  return ring().ordering().lead(*this, bound);
 }
 
 // Leading exponent
@@ -667,7 +667,7 @@ BoolePolynomial::leadExp() const {
   if UNLIKELY(isZero())
     throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
-  return BooleEnv::ordering().leadExp(*this);
+  return ring().ordering().leadExp(*this);
 }
 
 // Leading exponent (bound)
@@ -678,7 +678,7 @@ BoolePolynomial::boundedLeadExp(size_type bound) const {
   if UNLIKELY(isZero())
     throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
-  return BooleEnv::ordering().leadExp(*this, bound);
+  return ring().ordering().leadExp(*this, bound);
 }
 
 
@@ -825,8 +825,11 @@ BoolePolynomial::monom_type
 BoolePolynomial::usedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariables() const" );
+  monom_type result (CDDOperations<dd_type,
+                     monom_type>().usedVariables(diagram()));
 
-  return CDDOperations<dd_type, monom_type>().usedVariables(diagram());
+  self result2 (result);
+  return  CDDOperations<BooleSet, monom_type>().getMonomial(self(result2.navigation(), ring()).set());
 
 }
 // Exponent vector of variables of the polynomial
@@ -940,7 +943,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedBegin() const" );
-  return BooleEnv::ordering().leadIteratorBegin(*this);
+  return ring().ordering().leadIteratorBegin(*this);
 }
 
 // Finish of leading term 
@@ -948,7 +951,7 @@ BoolePolynomial::ordered_iterator
 BoolePolynomial::orderedEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedEnd() const" );
-  return BooleEnv::ordering().leadIteratorEnd();
+  return ring().ordering().leadIteratorEnd();
 }
 
 // Start of degrees
@@ -956,7 +959,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpBegin() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpBegin() const" );
-  return BooleEnv::ordering().leadExpIteratorBegin(*this);//*this;
+  return ring().ordering().leadExpIteratorBegin(*this);//*this;
 }
 
 // Finish of leading term 
@@ -964,7 +967,7 @@ BoolePolynomial::ordered_exp_iterator
 BoolePolynomial::orderedExpEnd() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::orderedExpEnd() const" );
-  return BooleEnv::ordering().leadExpIteratorEnd();//ordered_exp_iterator();
+  return ring().ordering().leadExpIteratorEnd();//ordered_exp_iterator();
 }
 
 // Start of iteration over monomials
@@ -1185,7 +1188,7 @@ BoolePolynomial::leadFirst() const {
 
   PBORI_TRACE_FUNC("BoolePolynomial::leadFirst() const" ); 
 
-  return BooleEnv::ordering().leadFirst(*this);
+  return ring().ordering().leadFirst(*this);
 }
 
 // Stream output for Boolean polynomials
@@ -1238,7 +1241,7 @@ BoolePolynomial::eliminationLength() const{
 
   if (isZero()) 
     return 0;
-  if (BooleEnv::ordering().isTotalDegreeOrder())
+  if (ring().ordering().isTotalDegreeOrder())
     return this->length();
   size_type deg=this->deg();
   if (deg==this->leadDeg()){
@@ -1267,7 +1270,7 @@ BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
   const {
   assert(garantied_deg_bound>=this->deg());
-  if (BooleEnv::ordering().isTotalDegreeOrder())
+  if (ring().ordering().isTotalDegreeOrder())
     return this->length();
   if (this->leadDeg()==garantied_deg_bound)
     return this->length();

@@ -127,7 +127,6 @@ BooleEnv::changeOrdering(ordercode_type code) {
 
 
 
-
   /// Get numerical code for current ordering
 BooleEnv::ordercode_type BooleEnv::getOrderCode() { 
   return ordering().getOrderCode();

@@ -73,6 +73,12 @@ static BooleMonomial used_var(const BooleVariable& v){
 static BoolePolynomial::navigator nav(const BoolePolynomial& p){
     return p.navigation();
 }
+
+
+BoolePolynomial coerce(const BoolePolyRing& ring, const BoolePolynomial& poly){
+  return ring.coerce(poly);
+}
+
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -134,7 +140,9 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("set",&BooleEnv::set, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def(boost::python::init <const BoolePolyRing&>())
-    .def("clone", &BoolePolyRing::clone, "copies also variable name vector in a new one, so somewhat deeper copy function")
+    .def("clone", &BoolePolyRing::clone, "copies also variable name vector in a \
+    new one, so somewhat deeper copy function")
+    .def("coerce", coerce, "Map polynomial in this ring, if possible.")
     .def(boost::python::init <BoolePolyRing::size_type, int>(
          "Construct a Boolean polynomial ring with the following parameters:\n\
             n -- number of variables (integer)\n\

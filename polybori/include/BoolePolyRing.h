@@ -215,6 +215,12 @@ class BoolePolyRing:
   /// set monomial type
   typedef BooleMonomial monom_type;
 
+  /// set variables type
+  typedef BooleVariable var_type;
+
+  /// set polynomial type
+  typedef BoolePolynomial poly_type;
+
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
 
@@ -280,6 +286,24 @@ class BoolePolyRing:
 
   self& operator=(const self& rhs) {
     base::operator=(rhs);
+  }
+
+  /// Map polynomial to this ring, if possible
+  poly_type coerce(const poly_type& rhs) const {
+    if (manager().manager().getManager() ==
+        rhs.ring().manager().manager().getManager()) 
+      return poly_type(rhs.navigation(), *this);
+
+    throw PBoRiError(CTypes::invalid);
+  }
+
+  /// Map monomial to this ring, if possible
+  monom_type coerce(const monom_type& rhs) const {
+    return CDDOperations<BooleSet, monom_type>().getMonomial(coerce(poly_type(rhs)).set());
+  }
+  /// Map variable to this ring
+  var_type coerce(const var_type& rhs) const {
+    return var_type(rhs.index(), *this);
   }
 
 protected:

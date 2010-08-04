@@ -162,13 +162,15 @@ class BooleRing:
   /// Access ordering of *this
   order_reference ordering() const { 
 
-    assert(m_mgr.manager().managerCore()->pOrder != order_ptr());
+    assert(getOrderCode() == globalOrderCode() );
 
     return *(m_mgr.manager().managerCore()->pOrder); }
   /// Access ordering of *this
   order_ptr pOrdering() const { return m_mgr.manager().managerCore()->pOrder; }
 protected: 
   /// Interprete @c m_mgr as structure of Boolean polynomial ring
+  ordercode_type getOrderCode() const;
+  static ordercode_type globalOrderCode();
   manager_type m_mgr;
 };
 
