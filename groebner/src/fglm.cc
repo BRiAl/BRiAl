@@ -798,7 +798,7 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
     PolynomialVector::const_iterator end=gb.end();
     
     while(it!=end){
-      Polynomial gen=from.coerce(*it);// AD: coercion added
+        Polynomial gen=*it;
         if (canAddThisElementLaterToGB(gen)){
             addTheseLater.push_back(gen);
         } else{

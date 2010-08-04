@@ -162,7 +162,7 @@ class BooleRing:
   /// Access ordering of *this
   order_reference ordering() const { 
 
-    assert(getOrderCode() == globalOrderCode() );
+    //    assert(getOrderCode() == globalOrderCode() );
 
     return *(m_mgr.manager().managerCore()->pOrder); }
   /// Access ordering of *this
