@@ -95,7 +95,8 @@
 
 // get ring definitions
 #include "BooleEnv.h"
-# include "OrderedManager.h"
+
+#include "CDynamicOrderBase.h"
 
 BEGIN_NAMESPACE_PBORI
 

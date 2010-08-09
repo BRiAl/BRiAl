@@ -37,7 +37,6 @@
 // load header file
 # include "BooleEnv.h"
 # include "BoolePolyRing.h"
-#include "OrderedManager.h"
 
 BEGIN_NAMESPACE_PBORI
 

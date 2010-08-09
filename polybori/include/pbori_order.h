@@ -65,6 +65,10 @@
 #ifndef pbori_order_h_
 #define pbori_order_h_
 
+// Get infrastructure for dynamic orderings
+#include "CDynamicOrder.h"
+#include "CDynamicOrderBase.h"
+
 // get all available orderings
 #include "LexOrder.h"
 #include "DegLexOrder.h"
