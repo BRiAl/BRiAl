@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2006-05-23
  *
- * Adds ordering management to decision diagram variables managers.
+ * Defines generic classes for ordering management for polynomial rings.
  *
  * @par Copyright:
  *   (c) 2006-2010 by The PolyBoRi Team
@@ -35,28 +35,6 @@
 
 
 BEGIN_NAMESPACE_PBORI
-
-template <class IdxType, class OrderType>
-bool
-lie_in_same_block(IdxType, IdxType, const OrderType&,
-                  invalid_tag) { // not a block order 
-  return true;
-}
-
-
-template <class IdxType, class OrderType>
-bool
-lie_in_same_block(IdxType first, IdxType second, const OrderType& order,
-                  valid_tag) { // is block order 
-  if (second < first)
-    std::swap(first, second);
-  
-  typename OrderType::block_iterator upper(order.blockBegin());
-  while (first >= *upper)    // Note: convention, last element is max_idx
-     ++upper;
-  return (second < *upper);
-}
-
 
 
 /** @class CDynamicOrder
@@ -202,22 +180,20 @@ public:
   }
 
   /// Initialize iterator corresponding to leading term
-  //  iterator leadIterator(const poly_type& poly) const {
-  //    return ordering.leadIterator(poly);
-  //  }
-   /// Initialize iterator corresponding to leading term
   ordered_iterator leadIteratorBegin(const poly_type& poly) const {
     return ordering.leadIteratorBegin(poly);
   }
 
+  /// End marker for iterator corresponding to leading term
   ordered_iterator leadIteratorEnd() const {
     return ordering.leadIteratorEnd();
   }
-   /// Initialize iterator corresponding to leading term
+   /// Initialize exponent iterator corresponding to leading term
   ordered_exp_iterator leadExpIteratorBegin(const poly_type& poly) const {
     return ordering.leadExpIteratorBegin(poly);
   }
 
+  /// End marker for exponent iterator corresponding to leading term
   ordered_exp_iterator leadExpIteratorEnd() const {
     return ordering.leadExpIteratorEnd();
   }
@@ -243,11 +219,30 @@ public:
   /// Check, whether two indices are in the same block 
   /// (true for nonblock orderings)
   bool_type lieInSameBlock(idx_type first, idx_type second) const {
-    return lie_in_same_block(first, second, *this,
-                             typename properties_type::blockorder_property());
+    return inSameBlockInternal(first, second, 
+                               typename properties_type::blockorder_property());
   }
 
 protected:
+
+  /// trivial case for non-block orderings
+  bool_type inSameBlockInternal(idx_type, idx_type,
+                                invalid_tag) const { // not a block order 
+    return true;
+  }
+  
+  /// complicated case for block orderings  
+  bool_type inSameBlockInternal(idx_type first, idx_type second, 
+                                valid_tag) const { // is block order 
+    if (second < first)
+      std::swap(first, second);
+    
+    block_iterator upper(blockBegin());
+    while (first >= *upper)    // Note: convention, last element is max_idx
+      ++upper;
+    return (second < *upper);
+  }
+
   order_type ordering;
 };
 
