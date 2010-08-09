@@ -103,7 +103,7 @@
 
  
 #include "BoolePolynomial.h"
-#include "OrderedManager.h"
+  //#include "OrderedManager.h"
 #include "CDelayedTermIter.h"
 #include "CBidirectTermIter.h"
 #include <algorithm>

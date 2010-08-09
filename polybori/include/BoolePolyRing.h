@@ -170,10 +170,11 @@
 
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
-#include "OrderedManager.h"
+#include "CDynamicOrderBase.h"
 
 #include "BooleRing.h"
 
+#include "CDDOperations.h"
   // temporarily for work around
 #include <list>
 

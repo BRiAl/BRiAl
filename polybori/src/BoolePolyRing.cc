@@ -167,7 +167,7 @@
 // load header file
 # include "BoolePolyRing.h"
 #include "BooleEnv.h"
-#include "OrderedManager.h"
+
 
 // get error types
 # include "PBoRiError.h"

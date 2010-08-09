@@ -76,7 +76,6 @@
 
 // get ring definitions
 # include "BoolePolyRing.h"
-# include "OrderedManager.h"
 # include "PBoRiError.h"
 
 #include "pbori_routines.h"
