@@ -300,19 +300,21 @@ def other_ordering_pre(I,option_set,kwds):
     ocode=get_order_code()
     old_ring=global_ring()
     try:
+        new_ring = old_ring.clone()
+        new_ring.set()
         change_ordering(options["switch_to"])
-        new_ring=global_ring()
+        #        new_ring=global_ring()
         kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
         kwds["redsb"]=True
         I_orig=I
-        I=groebner_basis(I,**kwds)
+        I=groebner_basis([new_ring.coerce(poly) for poly in I],**kwds)
         variety_size=variety_size_from_gb(I)
         if variety_size<50000:
             main_kwds["convert_with_fglm_from_ring"]=new_ring
+        else:
+            I = [old_ring.coerce(poly) for poly in I]
     finally:
         old_ring.set()
-        assert (ocode in [OrderCode.lp, OrderCode.dlex, OrderCode.dp_asc]), ("Unsupported ordering in other_ordering_pre!")
-        change_ordering(ocode) 
 
     return (I,None)
 
