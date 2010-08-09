@@ -46,7 +46,7 @@ BEGIN_NAMESPACE_PBORI
 
 class BoolePolyRing;
 extern BoolePolyRing active_ring;
-class CDynamicOrderBase;
+class COrderingBase;
 
 /** @class BooleEnv
  * @brief This class is just a wrapper accessing global structures.
@@ -117,7 +117,7 @@ class BooleEnv:
 
   typedef BoolePolyRing ring_type;
 
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
 #ifdef PBORI_ENV_RING_NOTINLINED
   static ring_type& ring();
 #else

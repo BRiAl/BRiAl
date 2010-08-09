@@ -18,6 +18,7 @@
 
 // include base order definitions
 #include "COrderingFacade.h"
+#include "COrderingTags.h"
 
 #ifndef DegRevLexAscOrder_h_
 #define DegRevLexAscOrder_h_
@@ -30,7 +31,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegRevLexAscOrder:
-  public COrderingFacade<DegRevLexAscOrder> {
+  public COrderingFacade<DegRevLexAscOrder>, public COrderingTags<dp_asc_tag> {
 
   /// generic access to current type
   typedef DegRevLexAscOrder self;
@@ -44,7 +45,6 @@ class DegRevLexAscOrder:
   typedef valid_tag totaldegorder_property;
   typedef valid_tag ascending_property;
   typedef valid_tag degrevlexorder_property;
-  typedef dp_asc_tag order_tag;
   //@}
 
   /// Get order code

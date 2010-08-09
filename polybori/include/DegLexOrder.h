@@ -18,6 +18,7 @@
 
 // include base order definitions
 #include "COrderingFacade.h"
+#include "COrderingTags.h"
 
 #ifndef DegLexOrder_h_
 #define DegLexOrder_h_
@@ -30,7 +31,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegLexOrder:
-  public COrderingFacade<DegLexOrder> {
+  public COrderingFacade<DegLexOrder>, public COrderingTags<dlex_tag> {
 
   /// generic access to current type
   typedef DegLexOrder self;
@@ -43,7 +44,6 @@ public:
   typedef valid_tag degorder_property;
   typedef valid_tag totaldegorder_property;
   typedef valid_tag descending_property;
-  typedef dlex_tag order_tag;
   //@}
 
   /// Define binary predicate for index comparision

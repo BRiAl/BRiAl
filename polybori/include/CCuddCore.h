@@ -92,8 +92,7 @@ intrusive_ptr_release(DdManager* ptr) {
 
 BEGIN_NAMESPACE_PBORI
 
-class COrderBase;
-class CDynamicOrderBase;
+class COrderingBase;
 
 /** @class CCuddCore
  * @brief This class prepares the CUDD's raw decision diagram manager structure
@@ -135,7 +134,7 @@ public:
   static bool verbose;
 
   /// Type for handling mterm orderings
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
   typedef PBORI_SHARED_PTR(order_type) order_ptr;

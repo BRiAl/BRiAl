@@ -120,7 +120,7 @@ public:
   typedef self tmp_ref;
   //@}
   /// Type for handling mterm orderings
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
 
   /// Smart pointer for handling mterm orderings
   typedef PBORI_SHARED_PTR(order_type) order_ptr;

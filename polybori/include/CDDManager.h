@@ -100,6 +100,8 @@
 #include "cacheopts.h"
 // load basic definitions
 #include "pbori_defs.h"
+
+
 #include "pbori_traits.h"
 
 // get decision diagram definitions.
@@ -151,7 +153,7 @@ fetch_manager(const MgrType& mgr) {
   return mgr;
 }
 
-
+class COrderingBase;
 /** @class CDDManagerBase
  *
  * @brief this specialization of the template class CDDManager gives an
@@ -175,7 +177,7 @@ class CDDManagerBase {
   typedef CDDManagerBase<interfaced_type, interfaced_store> self;
 
   /// Type for handling mterm orderings
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
 
   /// Smart pointer for handling mterm orderings
   typedef PBORI_SHARED_PTR(order_type) order_ptr;

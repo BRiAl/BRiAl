@@ -18,6 +18,7 @@
 
 // include base order definitions
 #include "COrderingFacade.h"
+#include "COrderingTags.h"
 
 #ifndef LexOrder_h_
 #define LexOrder_h_
@@ -30,7 +31,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class LexOrder:
-  public COrderingFacade<LexOrder> {
+  public COrderingFacade<LexOrder>, public COrderingTags<lex_tag> {
 
   /// generic access to current type
   typedef LexOrder self;
@@ -43,7 +44,6 @@ class LexOrder:
   typedef valid_tag ordered_property;
   typedef valid_tag symmetry_property;
   typedef valid_tag descending_property;
-  typedef lex_tag order_tag;
   //@}
 
   /// Get order code

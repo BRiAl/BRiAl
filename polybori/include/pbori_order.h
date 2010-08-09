@@ -66,7 +66,7 @@
 #define pbori_order_h_
 
 // Get infrastructure for dynamic orderings
-#include "CDynamicOrderBase.h"
+#include "COrderingBase.h"
 
 // get all available orderings
 #include "LexOrder.h"
@@ -77,9 +77,9 @@
 
 BEGIN_NAMESPACE_PBORI
 
-inline PBORI_SHARED_PTR(CDynamicOrderBase)
+inline PBORI_SHARED_PTR(COrderingBase)
 get_ordering(CTypes::ordercode_type order) {
-  typedef PBORI_SHARED_PTR(CDynamicOrderBase) order_ptr;
+  typedef PBORI_SHARED_PTR(COrderingBase) order_ptr;
 
   if(order == CTypes::lp)
     return order_ptr(new LexOrder);

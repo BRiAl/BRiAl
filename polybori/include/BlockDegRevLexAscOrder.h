@@ -18,6 +18,7 @@
 
 // include base order definitions
 #include "COrderingFacade.h"
+#include "COrderingTags.h"
 
 #ifndef BlockDegRevLexAscOrder_h_
 #define BlockDegRevLexAscOrder_h_
@@ -30,7 +31,8 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegRevLexAscOrder:
-  public COrderingFacade<BlockDegRevLexAscOrder> {
+  public COrderingFacade<BlockDegRevLexAscOrder>, 
+   public COrderingTags<block_dp_asc_tag> {
 
   /// generic access to current type
   typedef BlockDegRevLexAscOrder self;
@@ -40,8 +42,7 @@ class BlockDegRevLexAscOrder:
   /// @name define generic property markers
   //@{
   typedef valid_tag blockorder_property;
-  typedef invalid_tag descending_property;
-  typedef block_dp_asc_tag order_tag;
+  typedef valid_tag ascending_property;
   //@}
 
   /// Define binary predicate for index comparision

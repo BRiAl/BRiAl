@@ -16,13 +16,12 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-#include "CDynamicOrderBase.h"
-#include "COrderedIter.h"
-
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
 
+#include "COrderingBase.h"
+#include "COrderedIter.h"
 // include ordering tags
 #include "pbori_tags.h"
 
@@ -35,28 +34,22 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
 /** @class COrderingFacade
  * @brief This class initialize the interface for orderings of
  * CDynamicOrderBase for a given OrderType. OrderType must inherit from
  * COrderingFacade<OrderType>.
- *
- **/
-
 template <class OrderType>
 class COrderingFacade:
-  public CDynamicOrderBase { 
-
-  /// Type of *this
+  public COrderingBase { 
   typedef COrderingFacade self;
 
   /// Actual base type
-  typedef CDynamicOrderBase base_type;
+  typedef COrderingBase base_type;
 
 public:
 
-  /// *this is to be used as base only
-  typedef COrderingFacade base;
+  /// *this is to be used as base for @c OrderType only
+  typedef self base;
 
   /// Variable ordering definiton functional type
   typedef OrderType order_type;
@@ -69,7 +62,7 @@ public:
   COrderingFacade(const self& rhs): 
     base_type(rhs) { }
 
-  // Destructor
+  /// Destructor
   ~COrderingFacade() { }
 
 
@@ -84,47 +77,47 @@ public:
 
   /// Check whether ring is lexicographical 
   bool_type isLexicographical() const {
-    return is_same_type<typename order_type::lex_property, valid_tag>::result;
+    return is_valid<typename order_type::lex_property>::result;
   }
 
   /// Test whether iterators respect order
   bool_type orderedStandardIteration() const {
-    return is_same_type<typename order_type::ordered_property, valid_tag>::result;
+    return is_valid<typename order_type::ordered_property>::result;
   }
 
   /// Test whether variable pertubation do not change the order
   bool_type isSymmetric() const {
-    return is_same_type<typename order_type::symmetry_property, valid_tag>::result;
+    return is_valid<typename order_type::symmetry_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isDegreeOrder() const {
-    return is_same_type<typename order_type::degorder_property, valid_tag>::result;
+    return is_valid<typename order_type::degorder_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isBlockOrder() const {
-    return is_same_type<typename order_type::blockorder_property, valid_tag>::result;
+    return is_valid<typename order_type::blockorder_property>::result;
   }
 
   /// Test whether we deal with a total degree-ordering
   bool_type isTotalDegreeOrder() const {
-    return is_same_type<typename order_type::totaldegorder_property, valid_tag>::result;
+    return is_valid<typename order_type::totaldegorder_property>::result;
   }
 
   /// Test whether ordering is deg-rev-lex ordering
   bool_type isDegreeReverseLexicograpical() const {
-    return is_same_type<typename order_type::degrevlexorder_property, valid_tag>::result;
+    return is_valid<typename order_type::degrevlexorder_property>::result;
   }
 
   /// Test whether variables are in ascending order
   bool_type ascendingVariables() const {
-    return is_same_type<typename order_type::ascending_property, valid_tag>::result;
+    return is_valid<typename order_type::ascending_property>::result;
   }
 
   /// Test whether variables are in descending order
   bool_type descendingVariables() const {
-    return is_same_type<typename order_type::descending_property, valid_tag>::result;
+    return is_valid<typename order_type::descending_property>::result;
   }
 
   /// Get numerical code for ordering
