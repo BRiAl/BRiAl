@@ -8,57 +8,8 @@
  * Defining Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.14  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.13  2007/11/06 15:03:35  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.12  2007/07/31 07:43:50  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.11  2007/04/30 15:20:31  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.10  2007/03/21 08:55:09  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.9  2007/03/19 16:49:39  dreyer
- * CHANGE: ordered iterators made more generic
- *
- * Revision 1.8  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.7  2006/10/05 12:51:31  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.6  2006/10/04 12:22:32  dreyer
- * ADD: getOrderCode()
- *
- * Revision 1.5  2006/09/13 15:07:04  dreyer
- * ADD: lead(sugar) and infrastructure
- *
- * Revision 1.4  2006/09/08 14:31:39  dreyer
- * ADD: COrderedIter and infrastructure for order-dependent iterator
- *
- * Revision 1.3  2006/09/05 11:10:44  dreyer
- * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
- *
- * Revision 1.2  2006/09/05 08:48:32  dreyer
- * ADD: BoolePolyRing::is(Total)DegreeOrder()
- *
- * Revision 1.1  2006/09/04 15:58:43  dreyer
- * ADD: DegLexOrder and preparations
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -66,7 +17,7 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderBase.h"
+#include "COrderingFacade.h"
 
 #ifndef DegLexOrder_h_
 #define DegLexOrder_h_
@@ -79,15 +30,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegLexOrder:
-  public COrderBase {
-
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
+  public COrderingFacade<DegLexOrder> {
 
   /// generic access to current type
   typedef DegLexOrder self;
+
+public:
 
   /// @name define generic property markers
   //@{
@@ -126,19 +74,19 @@ class DegLexOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  monom_type lead(const poly_type& poly, size_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
+  exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
-  indirect_iterator leadIteratorBegin(const poly_type&) const;
-  indirect_iterator leadIteratorEnd() const;
-  indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  indirect_exp_iterator leadExpIteratorEnd() const;
+  ordered_iterator leadIteratorBegin(const poly_type&) const;
+  ordered_iterator leadIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
+  ordered_exp_iterator leadExpIteratorEnd() const;
 };
 
 

@@ -409,7 +409,8 @@ template <class IntType, IntType INTCONST, class ResultType = IntType>
 struct integral_constant {
 
   typedef ResultType result_type;
-  result_type operator()(...) const { return INTCONST; }
+  enum { result = INTCONST };
+  result_type operator()(...) const { return result; }
 };
 
 /// @class binary_composition

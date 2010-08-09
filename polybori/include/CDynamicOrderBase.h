@@ -33,7 +33,8 @@ BEGIN_NAMESPACE_PBORI
  *
  * It can be used as an abstract base for runtime-selectable orderings.
  **/
-class CDynamicOrderBase { 
+class CDynamicOrderBase:
+  public CTypes::auxtypes_type { 
 
 public:
 
@@ -52,9 +53,21 @@ public:
   typedef poly_type::navigator navigator;
   typedef poly_type::exp_type exp_type;
 
-
   typedef COrderedIter<navigator, monom_type> ordered_iterator;
   typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
+  //@}
+
+  /// @name define generic property markers (default is invalid)
+  //@{
+  typedef invalid_tag lex_property; 
+  typedef invalid_tag ordered_property;
+  typedef invalid_tag symmetry_property;
+  typedef invalid_tag degorder_property;
+  typedef invalid_tag blockorder_property;
+  typedef invalid_tag degrevlexorder_property; 
+  typedef invalid_tag totaldegorder_property;
+  typedef invalid_tag ascending_property;
+  typedef invalid_tag descending_property;
   //@}
 
   /// Type for block indices
@@ -63,6 +76,8 @@ public:
   /// Type for block iterators
   typedef block_idx_type::const_iterator block_iterator;
 
+  /// Type of Boolean sets
+  typedef BooleSet set_type;
 
   /// Construct new
   CDynamicOrderBase() { }
@@ -139,16 +154,19 @@ public:
 
   /// @name interface for block orderings
   //@{
-  virtual block_iterator blockBegin() const = 0;
-  virtual block_iterator blockEnd() const = 0;
-  virtual void appendBlock(idx_type) = 0;
-  virtual void clearBlocks() = 0;
+  virtual block_iterator blockBegin() const { return block_iterator(); }
+  virtual block_iterator blockEnd() const { return block_iterator(); }
+  virtual void appendBlock(idx_type) {}
+  virtual void clearBlocks() {}
   //@}
 
   /// Check, whether two indices are in the same block 
   /// (true for nonblock orderings)
   virtual bool_type lieInSameBlock(idx_type, idx_type) const = 0;
 
+protected:
+  /// Get monomial from set of subsets of Boolean variables (internal use only)
+  monom_type monom(const set_type& rhs) const { return monom_type(rhs); }
 };
 
 

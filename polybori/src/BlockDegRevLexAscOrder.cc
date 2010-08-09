@@ -17,7 +17,7 @@
  * @verbatim
  * $Log$
  * Revision 1.7  2008/09/21 22:21:03  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
+ * Change: size_type replaces size_type for deg(), etc.
  *
  * Revision 1.6  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
@@ -132,9 +132,9 @@ BlockDegRevLexAscOrder::lead(const poly_type& poly) const {
 
 // Extraction of leading term
 BlockDegRevLexAscOrder::monom_type 
-BlockDegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
+BlockDegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
+  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
 
   return lead(poly);
 }
@@ -153,14 +153,14 @@ BlockDegRevLexAscOrder::leadExp(const poly_type& poly) const {
 // maybe common template here
 // Extraction of leading exponent
 BlockDegRevLexAscOrder::exp_type 
-BlockDegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
+BlockDegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)");
+  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadexp(const poly_type&, size_type) const)");
   return leadExp(poly);
 }
 
 // Initialize iterator corresponding to leading term
-BlockDegRevLexAscOrder::indirect_iterator
+BlockDegRevLexAscOrder::ordered_iterator
 BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const" );
@@ -170,12 +170,12 @@ BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_iterator(core_pointer(new iterator_core(poly)));
   return CGenericOrderedIter<self, navigator,
     monom_type>(poly.navigation(), poly.diagram().managerCore());
 }
 
-BlockDegRevLexAscOrder::indirect_iterator
+BlockDegRevLexAscOrder::ordered_iterator
 BlockDegRevLexAscOrder::leadIteratorEnd() const {
 
 //   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadIteratorEnd() const" );
@@ -184,12 +184,12 @@ BlockDegRevLexAscOrder::leadIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core()));
+//   return ordered_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, monom_type>();
 }
 
 // Initialize iterator corresponding to leading term
-BlockDegRevLexAscOrder::indirect_exp_iterator
+BlockDegRevLexAscOrder::ordered_exp_iterator
 BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const" );
@@ -198,12 +198,12 @@ BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
 
   return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore()); 
 }
 
-BlockDegRevLexAscOrder::indirect_exp_iterator
+BlockDegRevLexAscOrder::ordered_exp_iterator
 BlockDegRevLexAscOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadExpIteratorEnd() const" );
@@ -212,7 +212,7 @@ BlockDegRevLexAscOrder::leadExpIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core()));
+//   return ordered_exp_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, exp_type>();
 }
 

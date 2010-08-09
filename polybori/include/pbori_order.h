@@ -66,7 +66,6 @@
 #define pbori_order_h_
 
 // Get infrastructure for dynamic orderings
-#include "CDynamicOrder.h"
 #include "CDynamicOrderBase.h"
 
 // get all available orderings
@@ -83,18 +82,18 @@ get_ordering(CTypes::ordercode_type order) {
   typedef PBORI_SHARED_PTR(CDynamicOrderBase) order_ptr;
 
   if(order == CTypes::lp)
-    return order_ptr(new CDynamicOrder<LexOrder>);
+    return order_ptr(new LexOrder);
   else if(order == CTypes::dlex)
-    return order_ptr(new CDynamicOrder<DegLexOrder>);
+    return order_ptr(new DegLexOrder);
   else if(order == CTypes::dp_asc)
-    return order_ptr(new CDynamicOrder<DegRevLexAscOrder>);
+    return order_ptr(new DegRevLexAscOrder);
   else if(order == CTypes::block_dlex)
-    return order_ptr(new CDynamicOrder<BlockDegLexOrder>);
+    return order_ptr(new BlockDegLexOrder);
   else if(order == CTypes::block_dp_asc)
-     return order_ptr(new CDynamicOrder<BlockDegRevLexAscOrder>);
+     return order_ptr(new BlockDegRevLexAscOrder);
 
   // default is lex order
-  return order_ptr(new CDynamicOrder<LexOrder>);
+  return order_ptr(new LexOrder);
 }
 
 

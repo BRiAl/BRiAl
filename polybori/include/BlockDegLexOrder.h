@@ -20,7 +20,7 @@
  * Fix: Compatibility: gcc4.3, python 2.6, c++0x
  *
  * Revision 1.6  2008/09/21 22:21:01  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
+ * Change: size_type replaces size_type for deg(), etc.
  *
  * Revision 1.5  2007/11/06 15:03:32  dreyer
  * CHANGE: More generic copyright
@@ -45,7 +45,7 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderBase.h"
+#include "COrderingFacade.h"
 
 #ifndef BlockDegLexOrder_h_
 #define BlockDegLexOrder_h_
@@ -58,15 +58,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegLexOrder:
-  public COrderBase {
-
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
+  public COrderingFacade<BlockDegLexOrder> {
 
   /// generic access to current type
   typedef BlockDegLexOrder self;
+
+public:
 
   /// @name define generic property markers
   //@{
@@ -106,19 +103,19 @@ class BlockDegLexOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  monom_type lead(const poly_type& poly, size_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
+  exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
-  indirect_iterator leadIteratorBegin(const poly_type&) const;
-  indirect_iterator leadIteratorEnd() const;
-  indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  indirect_exp_iterator leadExpIteratorEnd() const;
+  ordered_iterator leadIteratorBegin(const poly_type&) const;
+  ordered_iterator leadIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
+  ordered_exp_iterator leadExpIteratorEnd() const;
 
   /// @name interface for block orderings
   //@{

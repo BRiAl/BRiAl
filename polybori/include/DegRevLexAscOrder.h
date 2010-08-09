@@ -8,14 +8,8 @@
  * Defining Degree-reverse lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -23,7 +17,7 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderBase.h"
+#include "COrderingFacade.h"
 
 #ifndef DegRevLexAscOrder_h_
 #define DegRevLexAscOrder_h_
@@ -36,15 +30,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegRevLexAscOrder:
-  public COrderBase {
-
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
+  public COrderingFacade<DegRevLexAscOrder> {
 
   /// generic access to current type
   typedef DegRevLexAscOrder self;
+
+ public:
 
   /// @name define generic property markers
   //@{
@@ -84,19 +75,19 @@ class DegRevLexAscOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  monom_type lead(const poly_type& poly, size_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
+  exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
-  indirect_iterator leadIteratorBegin(const poly_type&) const;
-  indirect_iterator leadIteratorEnd() const;
-  indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  indirect_exp_iterator leadExpIteratorEnd() const;
+  ordered_iterator leadIteratorBegin(const poly_type&) const;
+  ordered_iterator leadIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
+  ordered_exp_iterator leadExpIteratorEnd() const;
 };
 
 

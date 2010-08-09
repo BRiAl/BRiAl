@@ -17,7 +17,7 @@
  * @verbatim
  * $Log$
  * Revision 1.18  2008/09/21 22:21:03  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
+ * Change: size_type replaces size_type for deg(), etc.
  *
  * Revision 1.17  2008/01/16 17:10:19  dreyer
  * CHANGE: term-iterators use correct manager now
@@ -151,7 +151,7 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
 
   exp_type result;
-  deg_type deg(poly.deg());
+  size_type deg(poly.deg());
   result.reserve(deg);
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
@@ -164,16 +164,16 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
 // Extraction of leading exponent
 DegRevLexAscOrder::exp_type 
-DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
+DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
-  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)" );
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, size_type) const)" );
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
   poly_type::navigator navi(poly.navigation());
-  deg_type deg(dd_cached_degree(deg_mgr, navi, bound));
+  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
   exp_type result;
   result.reserve(deg);
@@ -184,16 +184,16 @@ DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
 // Extraction of leading term
 DegRevLexAscOrder::monom_type 
-DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
+DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
-  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
+  PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
 
   CCacheManagement<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.diagram().manager());
   CDegreeCache<> deg_mgr(poly.diagram().manager());
 
   poly_type::navigator navi(poly.navigation());
-  deg_type deg(dd_cached_degree(deg_mgr, navi, bound));
+  size_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
   return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, set_type(), deg,
                                          descending_property()) );
@@ -201,7 +201,7 @@ DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
 }
 
 // Initialize iterator corresponding to leading term
-DegRevLexAscOrder::indirect_iterator
+DegRevLexAscOrder::ordered_iterator
 DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const" );
@@ -210,13 +210,13 @@ DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_iterator(core_pointer(new iterator_core(poly)));
   return CGenericOrderedIter<self, navigator, 
     monom_type>(poly.navigation(), poly.diagram().managerCore());
 
 }
 
-DegRevLexAscOrder::indirect_iterator
+DegRevLexAscOrder::ordered_iterator
 DegRevLexAscOrder::leadIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadIteratorEnd() const" );
@@ -225,13 +225,13 @@ DegRevLexAscOrder::leadIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core()));
+//   return ordered_iterator(core_pointer(new iterator_core()));
 
   return CGenericOrderedIter<self, navigator, monom_type>();
 }
 
 // Initialize iterator corresponding to leading term
-DegRevLexAscOrder::indirect_exp_iterator
+DegRevLexAscOrder::ordered_exp_iterator
 DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const" );
@@ -240,12 +240,12 @@ DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
  
   return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore()); 
 }
 
-DegRevLexAscOrder::indirect_exp_iterator
+DegRevLexAscOrder::ordered_exp_iterator
 DegRevLexAscOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadExpIteratorEnd() const" );
@@ -253,7 +253,7 @@ DegRevLexAscOrder::leadExpIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core()));
+//   return ordered_exp_iterator(core_pointer(new iterator_core()));
 
   return CGenericOrderedIter<self, navigator, exp_type>();
 }
