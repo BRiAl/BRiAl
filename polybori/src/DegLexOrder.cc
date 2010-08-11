@@ -228,7 +228,7 @@ DegLexOrder::leadIteratorBegin(const poly_type& poly) const {
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
 
   return CGenericOrderedIter<self, navigator,
-    monom_type>(poly.navigation(), poly.diagram().managerCore()); 
+    monom_type>(poly.navigation(), poly.diagram().ring()); 
 }
 
 DegLexOrder::ordered_iterator
@@ -257,7 +257,7 @@ DegLexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore());
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().ring());
 }
 
 DegLexOrder::ordered_exp_iterator

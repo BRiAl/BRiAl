@@ -19,14 +19,16 @@
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
-
+#include "COrderedIter.h"
 #include <vector>
-
 #ifndef COrderingBase_h_
 #define COrderingBase_h_
 
-
 BEGIN_NAMESPACE_PBORI
+class BoolePolynomial;
+class BooleMonomial;
+class BooleExponent;
+class CCuddNavigator;
 
 /** @class COrderingBase
  * This class is the base of all PolyBoRi orderings.
@@ -43,9 +45,9 @@ public:
   /// @name Adopt polynomial type definitions
   //@{
   typedef BoolePolynomial poly_type;
-  typedef poly_type::monom_type monom_type;
-  typedef poly_type::navigator navigator;
-  typedef poly_type::exp_type exp_type;
+  typedef BooleMonomial monom_type;
+  typedef CCuddNavigator navigator;
+  typedef BooleExponent exp_type;
 
   typedef COrderedIter<navigator, monom_type> ordered_iterator;
   typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;

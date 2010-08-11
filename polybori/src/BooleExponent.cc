@@ -79,7 +79,7 @@
 # include "PBoRiError.h"
 
 #include "pbori_routines.h"
-
+#include "pbori_algo.h"
 #include <functional>
 
 BEGIN_NAMESPACE_PBORI
@@ -445,11 +445,11 @@ BooleExponent::multiples(const self& multipliers) const {
 
 
   poly_type theZero(false);
-  dd_type result = cudd_generate_multiples(theZero.diagram().manager(),
+  dd_type result = cudd_generate_multiples(BooleRing(theZero.diagram().ring()),
 
                                             m_data.rbegin(), m_data.rend(),
                                             multipliers.rbegin(),
-                                           multipliers.rend());
+                                           multipliers.rend(),type_tag<CCuddZDD>());
 
 
    return result;
@@ -462,8 +462,8 @@ BooleExponent::divisors() const {
   PBORI_TRACE_FUNC( "BooleExponent::divisors() const" );
 
   poly_type theZero(false);
-  dd_type result = cudd_generate_divisors(theZero.diagram().manager(),
-                                           m_data.rbegin(), m_data.rend() );
+  dd_type result = cudd_generate_divisors(BooleRing(theZero.diagram().ring()),
+                                           m_data.rbegin(), m_data.rend() ,type_tag<CCuddZDD>());
   return result;
 }
 

@@ -212,7 +212,7 @@ DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
   return CGenericOrderedIter<self, navigator, 
-    monom_type>(poly.navigation(), poly.diagram().managerCore());
+    monom_type>(poly.navigation(), poly.diagram().ring());
 
 }
 
@@ -242,7 +242,7 @@ DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
  
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore()); 
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().ring()); 
 }
 
 DegRevLexAscOrder::ordered_exp_iterator

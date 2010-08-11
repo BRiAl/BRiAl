@@ -95,6 +95,9 @@
 **/
 //*****************************************************************************
 
+  /// Deactivating!
+#define CDDManager_h_
+
 #ifndef CDDManager_h_
 #define CDDManager_h_
 #include "cacheopts.h"

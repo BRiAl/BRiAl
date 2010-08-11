@@ -54,10 +54,6 @@
 
 #include "cudd.h"
 #include "cuddInt.h"
-#include "pbori_algo.h"
-
-#include "CacheManager.h"
-#include "CCuddGetNode.h"
 
 BEGIN_NAMESPACE_PBORI
 

@@ -345,7 +345,7 @@ main(){
 
 
     std::cout <<std::endl<<  "Going on..."<<std::endl;
-
+#if 0
     CCacheManagement<CCacheTypes::dp_asc_lead> 
       test_marker(BooleEnv::manager().manager());
 
@@ -419,7 +419,7 @@ main(){
             <<poly.set().countIndex(x.firstIndex())      <<std::endl;
 
 
-
+#endif
  }
   catch (PBoRiError& err) {
     std::cout << "  Caught error # "<< err.code() <<std::endl;   

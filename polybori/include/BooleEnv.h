@@ -125,7 +125,7 @@ class BooleEnv:
     return active_ring;
   }
 #endif
-  static manager_type& manager();
+  //  static manager_type& manager();
   static order_type& ordering();
   /// Set name of variable with index idx
   static void setVariableName(idx_type idx, vartext_type varname);

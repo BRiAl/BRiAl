@@ -283,14 +283,11 @@ class BoolePolyRing:
   BoolePolyRing(const self& rhs): base(rhs) { }
 
 
-  self& operator=(const self& rhs) {
-    base::operator=(rhs);
-  }
 
   /// Map polynomial to this ring, if possible
   poly_type coerce(const poly_type& rhs) const {
-    if (manager().manager().getManager() ==
-        rhs.ring().manager().manager().getManager()) 
+    if (getManager() ==
+        rhs.ring().getManager()) 
       return poly_type(rhs.navigation(), *this);
 
     throw PBoRiError(CTypes::invalid);

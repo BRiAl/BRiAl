@@ -134,6 +134,7 @@
 #include "CBidirectTermIter.h"
   
 
+
 #ifndef CTermStack_h_
 #define CTermStack_h_
 
@@ -649,7 +650,7 @@ public:
   typedef NavigatorType navigator;
   typedef typename cached_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), getDeg(typename manager_type::mgrcore_ptr()) {}
+  CDegStackCore(): base(), getDeg(manager_type()) {}
 
   CDegStackCore(navigator navi, const manager_type& mgr):
     base(navi), getDeg(mgr) {}
@@ -677,7 +678,7 @@ public:
   typedef typename base::size_type size_type;
   typedef typename cached_block_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), block(typename manager_type::mgrcore_ptr()) {}
+  CDegStackCore(): base(), block(manager_type()) {}
   CDegStackCore(navigator navi, const manager_type& mgr): 
     base(navi), block(mgr) {}
 

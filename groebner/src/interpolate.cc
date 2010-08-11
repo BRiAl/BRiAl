@@ -59,7 +59,7 @@ MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial&
     MonomialSet vars_div=variables.divisors();
     MonomialSet standards;
     if (points!=vars_div){
-      standards = points.manager().zddOne();
+      standards = points.ring().one();
     }
     unsigned int len_standards=standards.size();
     unsigned int n_points=points.size();

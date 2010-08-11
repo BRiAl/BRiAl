@@ -82,8 +82,8 @@ BooleEnv::lastBlockStart() {
 
 
 
-BooleEnv::manager_type& BooleEnv::manager() {
-  return ring().manager(); }
+// BooleEnv::manager_type& BooleEnv::manager() {
+//   return ring().manager(); }
 BooleEnv::order_type& BooleEnv::ordering() { 
   return  ring().ordering(); }
 
@@ -98,7 +98,7 @@ BooleEnv::dd_type BooleEnv::one() { return ring().one(); }
 
   /// Get number of ring variables the of active ring
 BooleEnv::size_type BooleEnv::nVariables() { 
-  return manager().nVariables(); 
+  return ring().nVariables(); 
 }
 
 
@@ -148,13 +148,13 @@ BooleEnv::printInfo() {
 
   /// Access idx-th variable of the active ring
 BooleEnv::dd_type BooleEnv::variable(idx_type idx) { 
-  return manager().variable(idx); 
+  return ring().variable(idx); 
 } 
 
 
   /// Access idx-th variable
 BooleEnv::dd_type BooleEnv::persistentVariable(idx_type idx) {
-    return manager().persistentVariable(idx); 
+    return ring().persistentVariable(idx); 
   }
 
 

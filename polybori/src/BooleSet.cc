@@ -299,7 +299,7 @@ BooleSet::const_iterator
 BooleSet::begin() const {
 
   PBORI_TRACE_FUNC( "BooleSet::begin() const" );
-  return const_iterator(navigation(), managerCore());
+  return const_iterator(navigation(), ring().core());
 }
 
 // Finish of iteration over monomials
@@ -314,7 +314,7 @@ BooleSet::const_reverse_iterator
 BooleSet::rbegin() const {
 
   PBORI_TRACE_FUNC( "BooleSet::rbegin() const" );
-  return const_reverse_iterator(navigation(), managerCore());
+  return const_reverse_iterator(navigation(), ring().core());
 }
 
 // Finish of iteration over monomials
@@ -330,7 +330,7 @@ BooleSet::exp_iterator
 BooleSet::expBegin() const {
 
   PBORI_TRACE_FUNC( "BooleSet::exp_begin() const" );
-  return exp_iterator(base::navigation(), base::managerCore());
+  return exp_iterator(base::navigation(), base::ring());
 }
 
 // Finish of iteration over monomials
@@ -499,7 +499,7 @@ BooleSet::print(ostream_type& os) const {
   else {
     os << "{{";
     dd_print_terms(begin(), end(), 
-                   variable_name<mgr_type>(managerCore()), 
+                   variable_name<ring_type>(ring()), 
                    sep_literal_type(), comma_as_separator(), 
                    empty_type(), os);
     os << "}}";

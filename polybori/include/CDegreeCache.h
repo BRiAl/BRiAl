@@ -134,7 +134,7 @@ protected:
       return invalid;
 
     if UNLIKELY(navi.isConstant())
-      return mgr.nVariables();
+      return mgr->m_mgr.nVariables();
     else 
       return *navi;
   }
@@ -161,7 +161,7 @@ public:
   /// Type for representing indices
   typedef typename navigator::value_type idx_type;
 
-   /// Type for representing size
+  /// Type for representing size
   typedef typename navigator::size_type size_type;
 
   /// Type of decision diagram manager
@@ -181,10 +181,10 @@ protected:
   /// Convert plain number to navigation type
   navigator toNode(idx_type idx, const manager_type& mgr) const {
 
-    if LIKELY((size_type)idx < mgr.nVariables())
-      return  navigator(mgr.getVar(idx));
+    if LIKELY((size_type)idx < mgr->m_mgr.nVariables())
+      return  navigator(mgr->m_mgr.getVar(idx));
 
-    return  navigator(mgr.zddZero());
+    return  navigator(mgr->m_mgr.zddZero());
   }
 
   /// Actual navigator, which is stored

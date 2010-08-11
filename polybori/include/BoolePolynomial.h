@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "BooleRing.h"
+  //#include "BoolePolyRing.h"
 // include basic definitions and decision diagram interface
 #include "CDDInterface.h"
 
@@ -238,7 +239,7 @@ public:
 
   /// Construct polynomial from navigator
   BoolePolynomial(const navigator& rhs, const ring_type& ring):
-    m_dd(ring.manager().manager(), rhs)  {
+    m_dd(ring.core(), rhs)  {
     assert(rhs.isValid());
   }
 
@@ -486,7 +487,7 @@ public:
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
   /// Access ring, where this belongs to
-  ring_type ring() const { return ring_type(m_dd.manager()); } 
+  ring_type ring() const {  return ring_type(m_dd.manager()); } 
 
   /// Compare with right-hand side and return comparision code
   comp_type compare(const self&) const;
