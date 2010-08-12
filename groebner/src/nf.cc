@@ -1890,6 +1890,15 @@ public:
         
     }
 };
+
+class PolyMonomialPairComparerLess{
+public:
+    bool operator() (const pair<Polynomial,Monomial>& a,const pair<Polynomial, Monomial>& b){
+        return a.second < b.second;
+        
+    }
+};
+
 //typedef std::map<int,Monomial> to_term_map_type;
 typedef Exponent::idx_map_type from_term_map_type;
 void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_as_exp_lex,std::vector<int>& ring_order2lex,vector<int>& lex_order2ring,from_term_map_type& from_term_map, const MonomialSet& terms){
@@ -2093,8 +2102,10 @@ linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSe
         if LIKELY(!(polys[i].isZero()))
             polys_lm.push_back(pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
-std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLexLess());
+std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     polys.clear();
+    
+    //special cases
     if UNLIKELY(polys_lm.size() == 0)
         return;
     Monomial        last;
