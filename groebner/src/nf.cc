@@ -2137,6 +2137,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
     }
     polys.clear();
+    std::reverse(polys_triangular.begin(), polys_triangular.end());
     terms_unique = add_up_generic(terms_unique_vec, terms.ring().zero());
     assert(terms_step1.diff(terms).emptiness());
     assert(polys_triangular.size()!=0);
