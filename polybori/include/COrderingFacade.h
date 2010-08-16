@@ -38,6 +38,7 @@ BEGIN_NAMESPACE_PBORI
  * @brief This class initialize the interface for orderings of
  * CDynamicOrderBase for a given OrderType. OrderType must inherit from
  * COrderingFacade<OrderType>.
+ */
 template <class OrderType>
 class COrderingFacade:
   public COrderingBase { 
