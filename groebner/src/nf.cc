@@ -1901,6 +1901,8 @@ public:
 
 //typedef std::map<int,Monomial> to_term_map_type;
 typedef Exponent::idx_map_type from_term_map_type;
+
+
 void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_as_exp_lex,std::vector<int>& ring_order2lex,vector<int>& lex_order2ring,from_term_map_type& from_term_map, const MonomialSet& terms){
     int n=terms.size();
     terms_as_exp.resize(n);
@@ -1922,6 +1924,29 @@ void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_a
         //to_term_map[i]=Monomial(terms_as_exp[i]);
     }
 }
+
+
+class MatrixMonomialOrderTables{
+        
+public:
+        MatrixMonomialOrderTables(MonomialSet terms){
+                this->terms=terms;
+                setup_order_tables(
+                    terms_as_exp,
+                    terms_as_exp_lex,
+                    ring_order2lex,
+                    lex_order2ring,
+                    from_term_map,
+                    this->terms);
+        }
+        vector<Exponent> terms_as_exp;
+        vector<Exponent> terms_as_exp_lex;
+        vector<int> ring_order2lex;
+        vector<int> lex_order2ring;
+        from_term_map_type from_term_map;
+        MonomialSet terms;
+};
+
 static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> extendable_system, vector<Polynomial>& res1,MonomialSet& res_terms,MonomialSet& leads_from_strat){
     leads_from_strat=MonomialSet();
     res_terms=MonomialSet();
@@ -2148,7 +2173,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     int rows_step1;
     vector<int> row_start;
     //vector<Polynomial> result;
-    vector<Exponent> terms_as_exp_step1;
+    MatrixMonomialOrderTables step1(terms_step1);
+    //vector<Exponent> terms_as_exp_step1;
     {
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
@@ -2158,12 +2184,12 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
 
         mat_step1=mzd_init(rows,cols);
-        vector<Exponent> terms_as_exp_lex_step1;
-        vector<int> ring_order2lex_step1;
-        vector<int> lex_order2ring_step1;
-        from_term_map_type from_term_map_step1;
-        setup_order_tables(terms_as_exp_step1,terms_as_exp_lex_step1,ring_order2lex_step1,lex_order2ring_step1,from_term_map_step1, terms_step1);
-        fill_matrix(mat_step1,polys_triangular,from_term_map_step1);
+        //vector<Exponent> terms_as_exp_lex_step1;
+        //vector<int> ring_order2lex_step1;
+        //vector<int> lex_order2ring_step1;
+  //      from_term_map_type from_term_map_step1;
+//setup_order_tables(terms_as_exp_step1,terms_as_exp_lex_step1,ring_order2lex_step1,lex_order2ring_step1,from_term_map_step1, terms_step1);
+        fill_matrix(mat_step1,polys_triangular,step1.from_term_map);
 
         polys_triangular.clear();
         
@@ -2195,7 +2221,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
                     if (j!=pivot_row)
                         mzd_row_swap(mat_step1,j,pivot_row);
                     
-                    eliminated2row_number[terms_as_exp_step1[i]]=pivot_row;
+                    eliminated2row_number[step1.terms_as_exp[i]]=pivot_row;
                     row_start[pivot_row]=i;
                     pivot_row++;
                     
@@ -2213,7 +2239,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         }
         assert(pivot_row==rows);
 
-        translate_back(polys, leads_from_strat, mat_step1,ring_order2lex_step1, terms_as_exp_step1,terms_as_exp_lex_step1,rank);
+        translate_back(polys, leads_from_strat, mat_step1,step1.ring_order2lex, step1.terms_as_exp,step1.terms_as_exp_lex,rank);
         
         if UNLIKELY(log){
             std::cout<<"finished translate"<<std::endl;
@@ -2256,13 +2282,13 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     const int cols_step2=terms_step2.size();
     mzd_t* mat_step2=mzd_init(rows_step2,cols_step2);
     mzd_t* mat_step2_factor=mzd_init(rows_step2,mat_step1->nrows);
-    
-    vector<Exponent> terms_as_exp_step2;
-    vector<Exponent> terms_as_exp_lex_step2;
-    vector<int> ring_order2lex_step2;
-    vector<int> lex_order2ring_step2;
-    from_term_map_type from_term_map_step2;
-    setup_order_tables(terms_as_exp_step2,terms_as_exp_lex_step2,ring_order2lex_step2,lex_order2ring_step2,from_term_map_step2, terms_step2);
+    MatrixMonomialOrderTables step2(terms_step2);
+    // vector<Exponent> step2.terms_as_exp;
+    //    vector<Exponent> step2.terms_as_exp_lex;
+    //    vector<int> step2.ring_order2lex;
+    //    vector<int> step2.lex_order2ring;
+    //    from_term_map_type step2.from_term_map;
+    // setup_order_tables(step2.terms_as_exp,step2.terms_as_exp_lex,step2.ring_order2lex,step2.lex_order2ring,step2.from_term_map, terms_step2);
     
     
     for(i=0;i<polys_rest.size();i++){
@@ -2276,7 +2302,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         while(it!=end){
             Exponent e=*it; 
                 from_term_map_type::const_iterator from_it=eliminated2row_number.find(e);
-                assert(terms_as_exp_step1[row_start[from_it->second]]==e);
+                assert(step1.terms_as_exp[row_start[from_it->second]]==e);
                 assert(from_it!=eliminated2row_number.end());
                 int index=from_it->second;//...translate e->line number;
                 mzd_write_bit(mat_step2_factor,i,index,1);
@@ -2286,8 +2312,8 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         end=p_t.expEnd();
         while(it!=end){
             Exponent e=*it;
-                from_term_map_type::const_iterator from_it=from_term_map_step2.find(e);
-                assert(from_it!=from_term_map_step2.end());
+                from_term_map_type::const_iterator from_it=step2.from_term_map.find(e);
+                assert(from_it!=step2.from_term_map.end());
                 int index=from_it->second;
                 mzd_write_bit(mat_step2,i,index,1);
             it++;       
@@ -2300,7 +2326,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     
     vector<int> remaining_col2new_col(remaining_cols);
     for(i=0;i<remaining_cols;i++){
-        remaining_col2new_col[i]=from_term_map_step2[terms_as_exp_step1[compactified_columns2old_columns[i]]];
+        remaining_col2new_col[i]=step2.from_term_map[step1.terms_as_exp[compactified_columns2old_columns[i]]];
     }
     assert(mat_step2_factor->ncols==mat_step1->nrows);
     assert(mat_step1->nrows==terms_unique.size());
@@ -2337,7 +2363,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         assert(remaining_cols==eliminated->ncols);
         for(j=0;j<remaining_cols;j++){
             if UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
-                assert(terms_as_exp_step2[remaining_col2new_col[j]]==terms_as_exp_step1[compactified_columns2old_columns[j]]);
+                assert(step2.terms_as_exp[remaining_col2new_col[j]]==step1.terms_as_exp[compactified_columns2old_columns[j]]);
                 
                 if UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
                     mzd_write_bit(mat_step2,i,remaining_col2new_col[j],0);
@@ -2371,7 +2397,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             std::cout<<"finished gauss"<<std::endl;
         }
 
-    translate_back(polys, leads_from_strat, mat_step2,ring_order2lex_step2, terms_as_exp_step2,terms_as_exp_lex_step2,rank_step2);
+    translate_back(polys, leads_from_strat, mat_step2,step2.ring_order2lex, step2.terms_as_exp,step2.terms_as_exp_lex,rank_step2);
     mzd_free(mat_step2);
     
 
