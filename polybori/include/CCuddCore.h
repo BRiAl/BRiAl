@@ -59,41 +59,22 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// intrisive (shared) pointer functionality
-#include <boost/intrusive_ptr.hpp>
+#include "CCuddInterface.h"
+#include "CVariableNames.h"
 
 // get PolyBoRi routines and functionals
 #include "pbori_func.h"
 #include "pbori_traits.h"
 
-#include "CVariableNames.h"
+// intrisive (shared) pointer functionality
+#include <boost/intrusive_ptr.hpp>
 
 #include <vector>
-#include "cuddInt.h"
 
-
-/// Increment reference count
-inline void 
-intrusive_ptr_add_ref(DdManager* ptr){
-  ++(ptr->hooks);
-}
-
-/// Release current pointer by decrementing reference counting
-inline void 
-intrusive_ptr_release(DdManager* ptr) {
-  if (!(--(ptr->hooks))) {
-    int retval = Cudd_CheckZeroRef(ptr);
-    // Check for unexpected non-zero reference counts
-    assert(retval == 0);
-
-    Cudd_Quit(ptr);
-  }
-}
 
 BEGIN_NAMESPACE_PBORI
 
-class COrderBase;
-class CDynamicOrderBase;
+class COrderingBase;
 
 /** @class CCuddCore
  * @brief This class prepares the CUDD's raw decision diagram manager structure
@@ -116,26 +97,17 @@ public:
   /// Fix type of *this
   typedef CCuddCore self;
 
-  /// Fix type for supported smart pointer
-  typedef boost::intrusive_ptr<self> mgrcore_ptr;
-
   /// Define type for storing names of variables
   typedef CVariableNames variable_names_type;
 
   /// Define type for getting names of variables
   typedef variable_names_type::const_reference const_varname_reference;
 
-  /// Current raw decision diagram management
-  boost::intrusive_ptr<DdManager> pmanager;
-
-  /// Functions for handling errors from CUDD functions
-  static errorfunc_type errorHandler;
-
-  /// Control eloquence of CUDD functionality
-  static bool verbose;
+  /// Current decision diagram management
+  CCuddInterface m_mgr;
 
   /// Type for handling mterm orderings
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
   typedef PBORI_SHARED_PTR(order_type) order_ptr;
@@ -152,75 +124,26 @@ public:
   /// Stores names of variables
   variable_names_type m_names;
 
-  std::vector<node_type> m_vars;
-
+ 
   /// *Ordering of *this
   order_ptr pOrder;
 
 
   /// Initialize raw decision diagram management
-  CCuddCore(size_type numVars,
-            size_type numVarsZ,
-            size_type numSlots,
-            size_type cacheSize,
-            large_size_type maxMemory,
-            const order_ptr& order):  
-    ref(0), m_names(numVarsZ), m_vars(numVarsZ), 
-    pmanager(getMan(numVars,numVarsZ,numSlots,cacheSize,maxMemory)), pOrder(order) {
-    assert(pOrder != order_ptr());
-    for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
-      m_vars[idx] = cuddUniqueInterZdd(manager(), idx, DD_ONE(manager()),
-                                       DD_ZERO(manager())); 
-      Cudd_Ref(m_vars[idx]);
-    }
+  CCuddCore(size_type numVarsZ, const order_ptr& order):  
+    ref(0), m_names(numVarsZ), 
+    m_mgr(0, numVarsZ), pOrder(order) {
 
   }
 
-  /// Copy Constructor (nearly deep copy, but shallow copy of manager)
+  /// Copy Constructor (nearly deep copy, but shallow copy of manager, names and
+  /// ordering)
   CCuddCore(const self& rhs):
-    ref(0), pmanager(rhs.pmanager), m_names(rhs.m_names), m_vars(rhs.m_vars), pOrder(rhs.pOrder) {
-
-    std::vector<node_type>::iterator start(m_vars.begin()), 
-      finish(m_vars.end());
-    while (start != finish) {
-      Cudd_Ref(*start);
-      ++start;
-    }
-  }
-
-
-  DdManager* manager() {
-    return pmanager.get();
-  }
-  DdManager* 
-  getMan(size_type numVars = 0,
-         size_type numVarsZ = 0,
-         size_type numSlots = CUDD_UNIQUE_SLOTS,
-         size_type cacheSize = CUDD_CACHE_SLOTS,
-         large_size_type maxMemory = 0) {
-
-    DdManager* ptr
-      = Cudd_Init(numVars,numVarsZ,numSlots,cacheSize,maxMemory);
-    ptr->hooks = NULL;
-    return ptr;
-  }
+    ref(0), m_mgr(rhs.m_mgr), m_names(rhs.m_names), pOrder(rhs.pOrder) { }
 
   /// Destructor
-  ~CCuddCore(){ 
+  ~CCuddCore(){ }
     
-    for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
-           m_vars.end(); ++iter) {
-      
-      Cudd_RecursiveDerefZdd(manager(), *iter);
-    }
-    
-///    int retval = Cudd_CheckZeroRef(manager);
-//     // Check for unexpected non-zero reference counts
-//     assert(retval == 0);
-
-//     Cudd_Quit(manager);
-  }
-
   /// Increment reference count
   void addRef(){ ++ref; }
 
@@ -232,6 +155,7 @@ public:
   void change_ordering(const order_ptr& newOrder) {
     pOrder = newOrder;
   }
+
 };
 
 /// @name Prepare for the application of intrinsive pointers

@@ -218,7 +218,7 @@ LexOrder::leadExp(const poly_type& poly) const {
 }
 
 // Initialize iterator corresponding to leading term
-LexOrder::indirect_iterator
+LexOrder::ordered_iterator
 LexOrder::leadIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorBegin(const poly_type& poly) const" );
@@ -232,16 +232,16 @@ LexOrder::leadIteratorBegin(const poly_type& poly) const {
 //   typedef CTermStackBase<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_iterator(core_pointer(new iterator_core(poly)));
 
 
   return CGenericOrderedIter<self, navigator,
-    monom_type>(poly.navigation(), poly.diagram().managerCore());  
+    monom_type>(poly.navigation(), poly.diagram().ring());  
 
 }
 
 // Initialize iterator corresponding to leading term
-LexOrder::indirect_exp_iterator
+LexOrder::ordered_exp_iterator
 LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorBegin(const poly_type& poly) const" );
@@ -251,12 +251,12 @@ LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core(poly)));
+//   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
 
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().managerCore());
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().ring());
 }
 
-LexOrder::indirect_exp_iterator
+LexOrder::ordered_exp_iterator
 LexOrder::leadExpIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExpIteratorEnd() const" );
@@ -266,12 +266,12 @@ LexOrder::leadExpIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_exp_iterator(core_pointer(new iterator_core()));
+//   return ordered_exp_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, exp_type>();
 
 }
 
-LexOrder::indirect_iterator
+LexOrder::ordered_iterator
 LexOrder::leadIteratorEnd() const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadIteratorEnd() const" );
@@ -280,7 +280,7 @@ LexOrder::leadIteratorEnd() const {
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
-//   return indirect_iterator(core_pointer(new iterator_core()));
+//   return ordered_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, monom_type>();
 }
 

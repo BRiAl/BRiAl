@@ -182,18 +182,18 @@
 BEGIN_NAMESPACE_PBORI
 
 BooleRing::BooleRing():
-  m_mgr(1, get_ordering(lp)) { }
+  p_core(new core_type(10, get_ordering(lp))){ }
 
    /// Constructor for @em nvars variables
 BooleRing::BooleRing(size_type nvars):
-  m_mgr(nvars, get_ordering(lp))  {   }
+  p_core(new core_type(nvars, get_ordering(lp)) ) {   }
 
 
 
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing() : 
-  base(1, get_ordering(lp)) {
+  base(10, get_ordering(lp)) {
   PBORI_TRACE_FUNC( "BoolePolyRing()" );
 }
 
@@ -211,7 +211,7 @@ void
 BoolePolyRing::changeOrdering(ordercode_type order) {
 
   PBORI_TRACE_FUNC( "changeOrdering(ordercode_type)" );
-  m_mgr.manager().managerCore()->change_ordering(get_ordering(order)); 
+  p_core->change_ordering(get_ordering(order)); 
 }
 
 
@@ -223,20 +223,11 @@ BoolePolyRing::activate() {
   BooleEnv::set(*this);
 }
 
-bool CCuddCore::verbose = 0;		// initially terse
-CCuddCore::errorfunc_type CCuddCore::errorHandler  = defaultError; // CUDD's
-                                                                   // default
-                                                                   // error
+bool CCuddInterface::verbose = 0;		// initially terse
 
-BooleRing::ordercode_type
-BooleRing::globalOrderCode() {
-  return BooleEnv::ring().pOrdering()->getOrderCode();
-}
+// CUDD's default error
+CCuddInterface::errorfunc_type CCuddInterface::errorHandler  = defaultError;
 
-BooleRing::ordercode_type
-BooleRing::getOrderCode() const {
-  return (m_mgr.manager().managerCore()->pOrder)->getOrderCode();
-}
-                                                                   // handle; 
+                                                                 // handle; 
 
 END_NAMESPACE_PBORI

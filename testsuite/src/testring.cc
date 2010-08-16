@@ -357,6 +357,20 @@ struct DdNode2 {
 };
 int
 main(){
+   BoolePolyRing leer(100);
+  // CCuddCore test(100, CCuddCore::order_ptr());
+  BoolePolynomial poly = BooleVariable(1)+BooleVariable(2);
+  // leer.one();
+  leer;
+  leer.ordering();
+  poly.ring();//.operator->();//.printInfo();
+  //  BooleMonomial leadterm(poly.ring());
+  //  leer.ordering().lead(poly);
+  //  std::cerr <<poly.lead()<<std::endl;
+  //  std::cerr <<poly.usedVariables()<<std::endl;
+  return 0;
+
+#if 0
   std::cout << "sizeof(DdNode2)"<<sizeof(DdNode2) << std::endl;
   std::cout << "sizeof(DdNode)"<<sizeof(DdNode) << std::endl;
   std::cout << "sizeof(void*)"<<sizeof(void*) << std::endl;
@@ -653,5 +667,7 @@ main(){
   std::cout << polynew <<std::endl;
 
   return 0;
+
+#endif
 }
 

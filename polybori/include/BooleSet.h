@@ -162,17 +162,20 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// include definitions of decision diagram interfaces
-#include "CDDInterface.h"
+
 
 // include polybori functionals
 #include "pbori_func.h"
 #include "BooleRing.h"
 
+// include definitions of decision diagram interfaces
+#include "CDDInterface.h"
+#include "CCuddZDD.h"
 
 #ifndef BooleSet_h_
 #define BooleSet_h_
 
+  //#include "BoolePolyRing.h"
 BEGIN_NAMESPACE_PBORI
 
 /// Forward declaration of monomial type
@@ -255,11 +258,11 @@ public:
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator first, navigator second, 
            const ring_type& ring): 
-    base(ring.manager(), idx, first, second) { }
+    base(ring.core(), idx, first, second) { }
   
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
-    base(rhs.ring().manager(), idx, rhs.navigation()) { }
+    base(rhs.ring().core(), idx, rhs.navigation()) { }
 
   /// Construct one or zero set from constant
   //  BooleSet(bool_type);
@@ -268,7 +271,7 @@ public:
 
   /// Construct from navigator node
   BooleSet(navigator navi, const ring_type& ring):
-    base(ring.manager().manager(), navi) { }
+    base(ring.core(), navi) { }
 
   /// Destructor
   ~BooleSet() {}
@@ -437,6 +440,7 @@ public:
 
   /// Access ring, where this belongs to
   ring_type ring() const { return ring_type(base::manager()); } 
+  //  using base::ring;
 
   /// Test whether, all divisors of degree -1 of term rhs are contained in this
   bool_type containsDivisorsOfDecDeg(const term_type& rhs) const;
@@ -450,6 +454,40 @@ inline BooleSet::ostream_type&
 operator<<( BooleSet::ostream_type& os, const BooleSet& bset ) {
   return bset.print(os);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// temporarily here!
+
+  /// Access nvar-th ring variable
+inline  BooleRing::dd_type BooleRing::persistentVariable(idx_type nvar) const { 
+    return dd_base(this->core(), p_core->m_mgr.getVar(nvar)); 
+  }
+
+  /// Get empty decision diagram 
+inline BooleRing::dd_type BooleRing::zero() const { return dd_base(this->core(), p_core->m_mgr.zddZero()); }
+
+  /// Get decision diagram with all variables negated
+inline  BooleRing::dd_type BooleRing::one() const { return dd_base(this->core(), p_core->m_mgr.zddOne()); }
+
+
+  /// Get constant one or zero
+inline  BooleRing::dd_type BooleRing::constant(bool is_one) const { return (is_one? one(): zero()); }
+
+inline BooleRing::dd_type BooleRing::variable(idx_type nvar) const  { return
+ persistentVariable(nvar); }
+
 END_NAMESPACE_PBORI
 
 #endif

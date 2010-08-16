@@ -170,7 +170,7 @@
 
 // include basic decision diagram manager interface 
 #include "CDDManager.h"
-#include "CDynamicOrderBase.h"
+#include "COrderingBase.h"
 
 #include "BooleRing.h"
 
@@ -184,8 +184,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-class COrderBase;
-class CDynamicOrderBase;
 
 class BooleExponent;
 class BooleMonomial;
@@ -229,7 +227,7 @@ class BoolePolyRing:
   typedef block_idx_type::const_iterator block_iterator;
 
   /// Type for handling mterm orderings
-  typedef CDynamicOrderBase order_type;
+  typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
   typedef PBORI_SHARED_PTR(order_type) order_ptr;
@@ -285,14 +283,11 @@ class BoolePolyRing:
   BoolePolyRing(const self& rhs): base(rhs) { }
 
 
-  self& operator=(const self& rhs) {
-    base::operator=(rhs);
-  }
 
   /// Map polynomial to this ring, if possible
   poly_type coerce(const poly_type& rhs) const {
-    if (manager().manager().getManager() ==
-        rhs.ring().manager().manager().getManager()) 
+    if (getManager() ==
+        rhs.ring().getManager()) 
       return poly_type(rhs.navigation(), *this);
 
     throw PBoRiError(CTypes::invalid);

@@ -172,8 +172,25 @@
 // load cudd's c++ interface
 # include <cuddObj.hh>
 
+#include "cacheopts.h"
+
 #ifndef pbori_defs_h_
 #define pbori_defs_h_
+
+#ifndef PBORI_UNIQUE_SLOTS
+#  define PBORI_UNIQUE_SLOTS CUDD_UNIQUE_SLOTS // initial size of subtables
+#endif
+
+#ifndef PBORI_CACHE_SLOTS
+#  define PBORI_CACHE_SLOTS CUDD_CACHE_SLOTS   // default size of the cache
+#endif
+
+#ifndef PBORI_MAX_MEMORY
+#  define PBORI_MAX_MEMORY 0    // target maximum memory occupation
+                                // if PBORI_MAX_MEMORY == 0 then
+                                // guess based on the available memory  
+#endif
+
 
 /// For optimizing if-branches
 #ifdef __GNUC__
@@ -474,9 +491,10 @@ struct CAuxTypes {
   typedef const char* vartext_type;
 };
 
+class CCuddCore;
 class CCuddZDD;
 class CCuddInterface;
-
+class BoolePolyRing;
 
 /** @class CTypes
  * @brief This struct contains type definitions to be used in library classes
@@ -512,7 +530,7 @@ struct CTypes:
   typedef ZDDvector ddvector_type;
 
   /// Variables manager base type
-  typedef CCuddInterface manager_base;
+  typedef boost::intrusive_ptr<CCuddCore>  manager_base;
 
   /// Manage variables to be used by polynomials over Boolean ring
   typedef CDDManager<manager_base> manager_type;

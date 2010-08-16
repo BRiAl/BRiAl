@@ -8,45 +8,8 @@
  * Defining Block Degree-lexicographical ordering.
  *
  * @par Copyright:
- *   (c) 2007 by The PolyBoRi Team
+ *   (c) 2007-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.10  2009/04/09 13:55:14  dreyer
- * Fix: Compatibility: gcc4.3, python 2.6, c++0x
- *
- * Revision 1.9  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.8  2007/11/06 15:03:32  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.7  2007/10/11 09:48:39  dreyer
- * Fix: codes and tags of block_dp_asc corrected
- *
- * Revision 1.6  2007/10/11 09:17:21  bricken
- * + corrected baseorder code
- *
- * Revision 1.5  2007/07/31 07:43:49  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.4  2007/04/30 15:20:30  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.3  2007/04/23 15:32:17  dreyer
- * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
- *
- * Revision 1.2  2007/04/19 09:52:07  dreyer
- * FIX: block dp_asc index comparison
- *
- * Revision 1.1  2007/04/18 15:37:28  dreyer
- * ADD: dp_asc now active
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -54,7 +17,8 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderBase.h"
+#include "COrderingFacade.h"
+#include "COrderingTags.h"
 
 #ifndef BlockDegRevLexAscOrder_h_
 #define BlockDegRevLexAscOrder_h_
@@ -67,21 +31,18 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegRevLexAscOrder:
-  public COrderBase {
-
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
+  public COrderingFacade<BlockDegRevLexAscOrder>, 
+   public COrderingTags<block_dp_asc_tag> {
 
   /// generic access to current type
   typedef BlockDegRevLexAscOrder self;
 
+ public:
+
   /// @name define generic property markers
   //@{
   typedef valid_tag blockorder_property;
-  typedef invalid_tag descending_property;
-  typedef block_dp_asc_tag order_tag;
+  typedef valid_tag ascending_property;
   //@}
 
   /// Define binary predicate for index comparision
@@ -115,19 +76,19 @@ class BlockDegRevLexAscOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  monom_type lead(const poly_type& poly, size_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
+  exp_type leadExp(const poly_type&, size_type) const;
 
   /// Initialize iterator corresponding to leading term
-  indirect_iterator leadIteratorBegin(const poly_type&) const;
-  indirect_iterator leadIteratorEnd() const;
-  indirect_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  indirect_exp_iterator leadExpIteratorEnd() const;
+  ordered_iterator leadIteratorBegin(const poly_type&) const;
+  ordered_iterator leadIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
+  ordered_exp_iterator leadExpIteratorEnd() const;
 
   /// @name interface for block orderings
   //@{

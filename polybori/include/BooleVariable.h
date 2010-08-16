@@ -97,6 +97,7 @@
 // get BoolePolynomial's definition
 #include "BooleEnv.h"
 #include "BoolePolynomial.h"
+#include "BooleSet.h"
 
 BEGIN_NAMESPACE_PBORI
 

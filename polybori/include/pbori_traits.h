@@ -203,9 +203,9 @@ struct manager_traits<DdManager*> :
 
 template <class CuddLike>
 struct manager_traits {
-  typedef typename CuddLike::dd_type dd_base;
-  typedef typename CuddLike::mgrcore_ptr core_type;
-  typedef typename CuddLike::tmp_ref tmp_ref;
+  // typedef typename CuddLike::dd_type dd_base;
+  // typedef typename CuddLike::mgrcore_ptr core_type;
+  // typedef typename CuddLike::tmp_ref tmp_ref;
 
   typedef unsigned long large_size_type;
   typedef long int refcount_type;

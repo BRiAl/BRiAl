@@ -648,18 +648,19 @@ get_mgr_core(const Cudd& rhs) {
 }
 
 ///@todo merge with extract_manager
-inline CCuddInterface::mgrcore_ptr
-get_mgr_core(const CCuddInterface& mgr) {
-  return mgr.managerCore();
-}
+// inline CCuddInterface::mgrcore_ptr
+// get_mgr_core(const CCuddInterface& mgr) {
+//   return mgr.managerCore();
+// }
 
 /// temporarily (needs to be more generic)
-template<class ManagerType, class ReverseIterator, class MultReverseIterator>
-typename manager_traits<ManagerType>::dd_base
+template<class ManagerType, class ReverseIterator, class MultReverseIterator,
+class DDBase>
+inline DDBase
 cudd_generate_multiples(const ManagerType& mgr, 
                         ReverseIterator start, ReverseIterator finish,
                         MultReverseIterator multStart, 
-                        MultReverseIterator multFinish) {
+                        MultReverseIterator multFinish, type_tag<DDBase> ) {
 
     DdNode* prev( (mgr.getManager())->one );
 
@@ -712,19 +713,19 @@ cudd_generate_multiples(const ManagerType& mgr,
 
     Cudd_Deref(prev);
 
-    typedef typename manager_traits<ManagerType>::dd_base dd_base;
+    typedef DDBase dd_base;
     return dd_base(get_mgr_core(mgr), prev);
   }
 
 
 
 /// temporarily (needs to be more generic)
-template<class ManagerType, class ReverseIterator>
-typename manager_traits<ManagerType>::dd_base
+template<class ManagerType, class ReverseIterator, class DDBase>
+DDBase
 cudd_generate_divisors(const ManagerType& mgr, 
-                       ReverseIterator start, ReverseIterator finish) {
+                       ReverseIterator start, ReverseIterator finish, type_tag<DDBase>) {
 
-  typedef typename manager_traits<ManagerType>::dd_base dd_base;
+
     DdNode* prev= (mgr.getManager())->one;
 
     Cudd_Ref(prev);
@@ -742,7 +743,7 @@ cudd_generate_divisors(const ManagerType& mgr,
 
     Cudd_Deref(prev);
     ///@todo Next line needs generalization 
-      return dd_base(get_mgr_core(mgr), prev);
+      return DDBase(get_mgr_core(mgr), prev);
 
 }
 

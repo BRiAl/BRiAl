@@ -103,7 +103,6 @@
 
 #include "CCuddInterface.h"
 
-
 #ifndef CCuddNavigator_h_
 #define CCuddNavigator_h_
 
@@ -165,7 +164,7 @@ public:
   }
 
   /// Construct from decision diagram
-  explicit CCuddNavigator(const dd_base& rhs): pNode(rhs.getNode()) {}
+                         //  explicit CCuddNavigator(const dd_base& rhs): pNode(rhs.getNode()) {}
 
   /// Copy Constructor
   CCuddNavigator(const self& rhs): pNode(rhs.pNode) {}

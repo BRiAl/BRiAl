@@ -164,7 +164,7 @@ for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
     else:
         print "Flags", flag, "not in default environment!"        
     
-opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
+opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'])# + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')

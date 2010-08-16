@@ -166,6 +166,9 @@
 #include "CCuddNavigator.h"
 #include "CDDInterface.h"
 #include "BooleRing.h"
+
+#include "CCuddCore.h"
+#include <boost/intrusive_ptr.hpp>
 // get standard functionality
 #include <functional>
 
@@ -296,49 +299,49 @@ public:
   typedef CCuddNavigator navigator;
 
   /// Get high-level decision diagram type
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::dd_base dd_base;
-  typedef typename manager_type::mgrcore_ptr mgrcore_ptr;
+  typedef typename CTypes::dd_type dd_type;
+  //  typedef CTypes::dd_base dd_base;
+  //  typedef typename manager_type::mgrcore_ptr mgrcore_ptr;
 
   /// Type of Boolean rings
   typedef BooleRing ring_type;
 
   /// Constructor
   CCuddLikeMgrStorage(const manager_type& mgr): 
-    m_mgr(mgr.managerCore()) {}
-
-  CCuddLikeMgrStorage(const mgrcore_ptr& mgr): 
     m_mgr(mgr) {}
+
+//   CCuddLikeMgrStorage(const mgrcore_ptr& mgr): 
+//     m_mgr(mgr) {}
 
   /// Accessing manager
   manager_type manager() const { return m_mgr; }
 
   /// Re-generate valid decision diagram from navigator
   dd_type generate(navigator navi) const {
-    return dd_base(m_mgr, navi.getNode());
+    return dd_type(m_mgr, navi);
   }
 
   /// Get constant one
   dd_type one() const {
-    return dd_base(m_mgr, DD_ONE(m_mgr->manager()));//manager().zddOne();
+    return ring_type(m_mgr).one();//dd_type(m_mgr, DD_ONE(m_mgr->manager()));//manager().zddOne();
   }
   /// Get constant zero
   dd_type zero() const {
-    return dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager()));//manager().zddZero();
+    return ring_type(m_mgr).zero();//dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager()));//manager().zddZero();
   }
 
   ring_type ring() const { return ring_type(manager()); }
 protected:
   /// Accessing Cudd-internal decision diagram manager
   internal_manager_type internalManager() const { 
-    return m_mgr->manager(); 
+    return m_mgr->m_mgr.getManager(); 
     //  return manager().getManager(); 
   }
 
 private:
   /// Store (pointer) to internal manager
-  //  const manager_type& m_mgr;
-  typename manager_type::mgrcore_ptr  m_mgr;
+  manager_type m_mgr;
+  //  typename manager_type::mgrcore_ptr  m_mgr;
 };
 
 /** @class CCacheManBase
@@ -368,7 +371,12 @@ struct pbori_base<CCacheManBase<CCuddInterface, CacheType, ArgumentLength> > {
 
   typedef CCuddLikeMgrStorage<CCuddInterface> type;
 };
+// Fixing base type for Cudd-Like type CCuddInterface
+template <class CacheType, unsigned ArgumentLength>
+struct pbori_base<CCacheManBase<boost::intrusive_ptr<CCuddCore>, CacheType, ArgumentLength> > {
 
+  typedef CCuddLikeMgrStorage<boost::intrusive_ptr<CCuddCore> > type;
+};
 // Dummy variant for generating empty cache managers, e.g. for using generate()
 template <class ManagerType, class CacheType>
 class CCacheManBase<ManagerType, CacheType, 0> :

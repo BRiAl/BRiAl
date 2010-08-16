@@ -261,8 +261,9 @@
 #include <vector>
 #include <numeric>
 
-#include "CCuddInterface.h"
+  //#include "CCuddInterface.h"
 #include "pbori_traits.h"
+
 
 BEGIN_NAMESPACE_PBORI
 
@@ -272,10 +273,10 @@ extract_manager(const Cudd& mgr) {
   return &const_cast<Cudd&>(mgr);
 }
 
-inline CCuddInterface::mgrcore_ptr
-extract_manager(const CCuddInterface& mgr) {
-  return mgr.managerCore();
-}
+// inline CCuddInterface::mgrcore_ptr
+// extract_manager(const CCuddInterface& mgr) {
+//   return mgr.managerCore();
+// }
 
 template <class MgrType>
 inline const MgrType&
@@ -344,16 +345,19 @@ class CDDInterface:
   typedef CuddLikeZDD interfaced_type;
   
   /// Cudd's decision diagram manager type
-  typedef typename zdd_traits<interfaced_type>::manager_base manager_base;
+  // typedef typename zdd_traits<interfaced_type>::manager_base manager_base;
+  typedef typename CuddLikeZDD::core_ptr  manager_base;
+//   /// Reference to decision diagram manager type
+//   typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
 
-  /// Reference to decision diagram manager type
-  typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
+//   /// Decision diagram manager core type
+//   typedef typename manager_traits<manager_base>::core_type 
 
-  /// Decision diagram manager core type
-  typedef typename manager_traits<manager_base>::core_type core_type;
+
+  typedef typename interfaced_type::core_ptr core_type;
 
   /// Interface to Cudd's decision diagram manager type
-  typedef CDDManager<CCuddInterface> manager_type;
+  //  typedef CDDManager<CCuddInterface> manager_type;
 
   /// Generic access to base type
   typedef CDDInterfaceBase<interfaced_type> base_type;
@@ -399,6 +403,7 @@ class CDDInterface:
   /// This type has an easy equality check
   typedef valid_tag easy_equality_property;
 
+  typedef typename CuddLikeZDD::core_ptr ring_type;
   /// Default constructor
   CDDInterface(): base_type() {}
 
@@ -409,25 +414,25 @@ class CDDInterface:
   CDDInterface(const interfaced_type& rhs): base_type(rhs) {}
 
   /// Construct from Manager and navigator
-  CDDInterface(const manager_base& mgr, const navigator& navi): 
-    base_type(self::newDiagram(mgr, navi)) {}
+  CDDInterface(const ring_type& ring, const navigator& navi): 
+    base_type(self::newDiagram(ring, navi)) {}
 
   /// Construct new node from manager, index, and navigators
-  CDDInterface(const manager_base& mgr, 
+  CDDInterface(const ring_type& ring, 
                idx_type idx, navigator thenNavi, navigator elseNavi): 
-    base_type( self::newNodeDiagram(mgr, idx, thenNavi, elseNavi) ) {
+    base_type( self::newNodeDiagram(ring, idx, thenNavi, elseNavi) ) {
   }
 
   /// Construct new node from manager, index, and common navigator for then and
   /// else-branches
-  CDDInterface(const manager_base& mgr, 
+  CDDInterface(const ring_type& ring, 
                idx_type idx, navigator navi): 
-    base_type( self::newNodeDiagram(mgr, idx, navi, navi) ) {
+    base_type( self::newNodeDiagram(ring, idx, navi, navi) ) {
   }
 
   /// Construct new node
   CDDInterface(idx_type idx, const self& thenDD, const self& elseDD): 
-    base_type( self::newNodeDiagram(thenDD.manager(), idx, 
+    base_type( self::newNodeDiagram(thenDD.ring(), idx, 
                                     thenDD.navigation(), 
                                     elseDD.navigation()) ) {
   }
@@ -520,17 +525,17 @@ class CDDInterface:
 
    /// Returns dot Product
   self dotProduct(const self& rhs) const {
-        return interfaced_type(m_interfaced.manager(),
+        return interfaced_type(m_interfaced.ring(),
             Extra_zddDotProduct(
-                manager().getManager(),
+                getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
   }
   
   self& dotProductAssign(const self& rhs){
-        m_interfaced=interfaced_type(m_interfaced.manager(),
+        m_interfaced=interfaced_type(m_interfaced.ring(),
             Extra_zddDotProduct(
-                manager().getManager(),
+                getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
         return *this;
@@ -540,15 +545,15 @@ class CDDInterface:
     if (rhs.emptiness())
       return *this;
 #ifdef PBORI_LOWLEVEL_XOR
-    return interfaced_type(m_interfaced.manager(),
+    return interfaced_type(m_interfaced.ring(),
             pboriCudd_zddUnionXor(
-                manager().getManager(),
+                getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
 #else
         return interfaced_type(m_interfaced.manager(),
             Extra_zddUnionExor(
-                manager().getManager(),
+                getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
 #endif
@@ -643,18 +648,19 @@ class CDDInterface:
   /// Get number of nodes in decision diagram
   ostream_type& print(ostream_type& os) const {
 
-    FILE* oldstdout = manager().ReadStdout();
+    //TODO!
+//     FILE* oldstdout = manager().ReadStdout();
 
-    /// Enable ostream cout and cerr (at least)
-    if (os == std::cout)
-      manager().SetStdout(stdout);
-    else if (os == std::cerr)
-      manager().SetStdout(stderr);
+//     /// Enable ostream cout and cerr (at least)
+//     if (os == std::cout)
+//       manager().SetStdout(stdout);
+//     else if (os == std::cerr)
+//       manager().SetStdout(stderr);
 
-    m_interfaced.print( Cudd_ReadZddSize(manager().getManager()) );
+    m_interfaced.print( Cudd_ReadZddSize(getManager()) );
     m_interfaced.PrintMinterm();
 
-    manager().SetStdout(oldstdout);
+    ///    manager().SetStdout(oldstdout);
     return os;
   }
 
@@ -687,17 +693,24 @@ class CDDInterface:
   bool_type operator!=(const self& rhs) const {
     return (m_interfaced != rhs.m_interfaced);
   }
-
+  /// Get reference to ring
+  const ring_type& ring() const {
+    return m_interfaced.ring();
+  }
   /// Get reference to actual decision diagram manager 
-  mgr_ref manager() const {
-    return get_manager(m_interfaced.manager());
+  const ring_type& manager() const {
+    return ring();
   }
-  core_type managerCore() const{
-    return m_interfaced.manager();
+  /// Get reference to actual decision diagram manager 
+  DdManager* getManager() const {
+    return ring()->m_mgr.getManager();
   }
+//   core_type managerCore() const{
+//     return m_interfaced.manager();
+//   }
   /// Get numbers of used variables
   size_type nSupport() const {
-    return Cudd_SupportSize(manager().getManager(), m_interfaced.getNode());
+    return Cudd_SupportSize(getManager(), m_interfaced.getNode());
   }
 
 #if 1
@@ -705,12 +718,12 @@ class CDDInterface:
   self support() const {
 
 //    BDD supp( &manager(), 
-    DdNode* tmp = Cudd_Support(manager().getManager(), m_interfaced.getNode());
+    DdNode* tmp = Cudd_Support(getManager(), m_interfaced.getNode());
     Cudd_Ref(tmp);
  
-    self result = interfaced_type(m_interfaced.manager(),  
-      Cudd_zddPortFromBdd(manager().getManager(), tmp));
-    Cudd_RecursiveDeref(manager().getManager(), tmp);        
+    self result = interfaced_type(m_interfaced.ring(),  
+      Cudd_zddPortFromBdd(getManager(), tmp));
+    Cudd_RecursiveDeref(getManager(), tmp);        
 //    return supp.PortToZdd();
 
 //    assert(false);
@@ -722,7 +735,7 @@ class CDDInterface:
   template<class VectorLikeType>
   void usedIndices(VectorLikeType& indices) const {
 
-    int* pIdx = Cudd_SupportIndex( manager().getManager(), 
+    int* pIdx = Cudd_SupportIndex( getManager(), 
                                    m_interfaced.getNode() );
 
 
@@ -741,7 +754,7 @@ class CDDInterface:
   /// Get used variables (assuming indices of length nSupport())
   int* usedIndices() const {
 
-    return Cudd_SupportIndex( manager().getManager(), 
+    return Cudd_SupportIndex( getManager(), 
                                    m_interfaced.getNode() );
 
 
@@ -767,6 +780,68 @@ class CDDInterface:
   last_iterator lastEnd() const { 
     return last_iterator();
   }
+/// temporarily (needs to be more generic)
+template<class ManagerType, class ReverseIterator, class MultReverseIterator>
+interfaced_type
+cudd_generate_multiples(const ManagerType& mgr, 
+                        ReverseIterator start, ReverseIterator finish,
+                        MultReverseIterator multStart, 
+                        MultReverseIterator multFinish) const {
+
+    DdNode* prev( (getManager())->one );
+
+    DdNode* zeroNode( (getManager())->zero ); 
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+
+      while((multStart != multFinish) && (*start < *multStart)) {
+
+        DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+                                             prev, prev );
+
+        Cudd_Ref(result);
+        Cudd_RecursiveDerefZdd(getManager(), prev);
+
+        prev = result;
+        ++multStart;
+
+      };
+
+      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
+                                           prev, zeroNode );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+
+
+      if((multStart != multFinish) && (*start == *multStart))
+        ++multStart;
+
+
+      ++start;
+    }
+
+    while(multStart != multFinish) {
+
+      DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+                                           prev, prev );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+      ++multStart;
+
+    };
+
+    Cudd_Deref(prev);
+
+
+    return interfaced_type(get_mgr_core(mgr), prev);
+  }
 
   /// Get decison diagram representing the multiples of the first term
   self firstMultiples(const std::vector<idx_type>& multipliers) const {
@@ -786,7 +861,7 @@ class CDDInterface:
   self subSet(const self& rhs) const {
 
     return interfaced_type(m_interfaced.manager(),
-            Extra_zddSubSet(manager().getManager(), 
+            Extra_zddSubSet(getManager(), 
                                    m_interfaced.getNode(), 
                                    rhs.m_interfaced.getNode()) );
   }
@@ -794,10 +869,39 @@ class CDDInterface:
   self supSet(const self& rhs) const {
 
     return interfaced_type(m_interfaced.manager(),
-            Extra_zddSupSet(manager().getManager(), 
+            Extra_zddSupSet(getManager(), 
                                    m_interfaced.getNode(), 
                                    rhs.m_interfaced.getNode()) );
   }
+
+/// temporarily (needs to be more generic)
+template<class ManagerType, class ReverseIterator>
+interfaced_type
+cudd_generate_divisors(const ManagerType& mgr, 
+                       ReverseIterator start, ReverseIterator finish) const {
+
+
+    DdNode* prev= (getManager())->one;
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+ 
+      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
+                                           prev, prev);
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+ 
+      prev = result;
+      ++start;
+    }
+
+    Cudd_Deref(prev);
+    ///@todo Next line needs generalization 
+      return interfaced_type(mgr, prev);
+
+}
+
   /// Get decison diagram representing the divisors of the first term
   self firstDivisors() const {
 
@@ -815,14 +919,14 @@ class CDDInterface:
 
   /// Checks whether the decision diagram is empty
   bool_type emptiness() const {
-    return ( m_interfaced.getNode() == manager().zddZero().getNode() );
+    return ( m_interfaced.getNode() == ring()->m_mgr.zddZero());
   }
 
   /// Checks whether the decision diagram has every variable negated
   bool_type blankness() const {
 
     return ( m_interfaced.getNode() == 
-             manager().zddOne( nVariables() ).getNode() );
+             ring()->m_mgr.zddOne() );
 
   }
 
@@ -842,13 +946,13 @@ class CDDInterface:
 
   /// Returns number of variables in manager
   size_type nVariables() const {
-   return Cudd_ReadZddSize(manager().getManager() );
+   return Cudd_ReadZddSize(getManager() );
   }
 
   self cofactor0(const self& rhs) const {
 
     return interfaced_type(m_interfaced.manager(),
-            Extra_zddCofactor0(manager().getManager(), 
+            Extra_zddCofactor0(getManager(), 
                                m_interfaced.getNode(), 
                                rhs.m_interfaced.getNode()) );
   }
@@ -856,7 +960,7 @@ class CDDInterface:
   self cofactor1(const self& rhs, idx_type includeVars) const {
 
     return interfaced_type(m_interfaced.manager(),
-            Extra_zddCofactor1(manager().getManager(), 
+            Extra_zddCofactor1(getManager(), 
                                m_interfaced.getNode(), 
                                rhs.m_interfaced.getNode(),
                                includeVars) );
@@ -870,12 +974,12 @@ class CDDInterface:
 
   /// Get corresponding zero element 
   self emptyElement() const {
-    return manager().zddZero();
+    return self(ring(), navigator(ring()->m_mgr.zddZero()));
   }
 
   /// Get corresponding one element
   self blankElement() const {
-    return manager().zddOne();
+    return self(ring(), navigator(ring()->m_mgr.zddOne()));
   }
 
 private:
@@ -883,7 +987,7 @@ private:
                     navigator thenNavi, navigator elseNavi) const {
     assert(idx < *thenNavi);
     assert(idx < *elseNavi); 
-    return navigator(cuddZddGetNode(mgr.getManager(), idx, 
+    return navigator(cuddZddGetNode(mgr->m_mgr.getManager(), idx, 
                                     thenNavi.getNode(), elseNavi.getNode()));
   }
 

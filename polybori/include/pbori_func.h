@@ -409,7 +409,8 @@ template <class IntType, IntType INTCONST, class ResultType = IntType>
 struct integral_constant {
 
   typedef ResultType result_type;
-  result_type operator()(...) const { return INTCONST; }
+  enum { result = INTCONST };
+  result_type operator()(...) const { return result; }
 };
 
 /// @class binary_composition
@@ -726,6 +727,9 @@ template <class Type1, class Type2>
 class is_same_type:
   public integral_constant<CTypes::bool_type, false> {};
 
+template <class Type>
+class is_valid:
+  public is_same_type<Type, valid_tag> {};
 
 /** @class on_same_type
  * @brief This class switches betweem two types, depending on equality of types

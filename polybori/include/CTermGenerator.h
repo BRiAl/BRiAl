@@ -72,7 +72,7 @@
 // include polybori functionals
 #include "pbori_func.h"
 
-#include "BooleSet.h"
+  //#include "BooleSet.h"
 
 #ifndef CTermGenerator_h_
 #define CTermGenerator_h_
@@ -166,8 +166,9 @@ public:
 
     // @todo: avoid using manager_base here
     typedef typename value_type::ring_type ring_type;
-    typedef typename ring_type::manager_type manager_type;
-    value_type result((ring_type)manager_type(m_data));
+    ///    typedef typename ring_type::manager_type manager_type;
+    //    value_type result((ring_type)manager_type(m_data));
+    value_type result((ring_type)(m_data));
 
     typename SequenceType::stack_reverse_iterator 
       start(seq.stackRBegin()), finish(seq.stackREnd());
