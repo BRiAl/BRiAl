@@ -119,12 +119,6 @@ public:
   /// Iterator-like type for navigating through diagram structure
   typedef dd_type::navigator navigator;
 
-  /// Type for output of pretty print
-  typedef dd_type::pretty_out_type pretty_out_type;
-
-  /// Type for naming file for pretty print
-  typedef dd_type::filename_type filename_type;
-
   /// @todo A more sophisticated treatment for monomials is needed.
 
   /// Fix type for treatment of monomials
@@ -377,12 +371,6 @@ public:
 
   /// Print current polynomial to output stream
   ostream_type& print(ostream_type&) const;
-
-  /// Pretty print to stdout
-  void prettyPrint() const;
-
-  /// Pretty print to filename
-  void prettyPrint(filename_type filename) const;
 
   /// Start of iteration over monomials
   const_iterator begin() const;

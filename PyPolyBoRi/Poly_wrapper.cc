@@ -47,9 +47,6 @@ static void print_polynomial(const BoolePolynomial & p){
   p.print(cout);
 }
 
-static void plot(const BoolePolynomial& p, const char* c){
-  p.prettyPrint(c);
-}
 
 static BooleSet poly_diagram_as_set(const Polynomial& p){
     return p.diagram();
@@ -172,7 +169,6 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("elength", &BoolePolynomial::eliminationLength, "Elimination length")
   .def("has_constant_part", &BoolePolynomial::hasConstantPart,
        "Check, whether Polynomials owns constant term")
-  .def("plot",plot)
     //  .def("__len__", &BoolePolynomial::length, "Number of terms")
   .def("__str__", streamable_as_str<BoolePolynomial>)
   .def("__repr__", streamable_as_str<BoolePolynomial>)

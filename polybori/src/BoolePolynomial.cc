@@ -878,23 +878,6 @@ BoolePolynomial::print(ostream_type& os) const {
   return os;
 }
 
-/// Pretty print to stdout
-void BoolePolynomial::prettyPrint() const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint() const" );
-  m_dd.prettyPrint();
-}
-
-/// Pretty print to filename
-void BoolePolynomial::prettyPrint(filename_type filename) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::prettyPrint(filename_type) const" );
-  bool_type error = m_dd.prettyPrint(filename);
-
-  if (error)
-    throw PBoRiError(CTypes::io_error);
-}
-
 
 // Start of leading term
 BoolePolynomial::first_iterator 

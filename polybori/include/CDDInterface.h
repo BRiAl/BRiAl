@@ -344,21 +344,6 @@ class CDDInterface:
   /// Interfacing Cudd's zero-suppressed decision diagram type
   typedef CuddLikeZDD interfaced_type;
   
-  /// Cudd's decision diagram manager type
-  // typedef typename zdd_traits<interfaced_type>::manager_base manager_base;
-  //  typedef typename CuddLikeZDD::ring_type  manager_base;
-//   /// Reference to decision diagram manager type
-//   typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
-
-//   /// Decision diagram manager core type
-//   typedef typename manager_traits<manager_base>::core_type 
-
-
-//  typedef typename interfaced_type::core_ptr core_type;
-
-  /// Interface to Cudd's decision diagram manager type
-  //  typedef CDDManager<CCuddInterface> manager_type;
-
   /// Generic access to base type
   typedef CDDInterfaceBase<interfaced_type> base_type;
   typedef base_type base;
@@ -523,41 +508,15 @@ class CDDInterface:
   };
 
 
-
-   /// Returns dot Product
-  self dotProduct(const self& rhs) const {
-        return interfaced_type(m_interfaced.ring(),
-            Extra_zddDotProduct(
-                getManager(),
-                m_interfaced.getNode(),
-                rhs.m_interfaced.getNode()));
-  }
-  
-  self& dotProductAssign(const self& rhs){
-        m_interfaced=interfaced_type(m_interfaced.ring(),
-            Extra_zddDotProduct(
-                getManager(),
-                m_interfaced.getNode(),
-                rhs.m_interfaced.getNode()));
-        return *this;
-  }
-
   self Xor(const self& rhs) const {
     if (rhs.emptiness())
       return *this;
-#ifdef PBORI_LOWLEVEL_XOR
+
     return interfaced_type(m_interfaced.ring(),
             pboriCudd_zddUnionXor(
                 getManager(),
                 m_interfaced.getNode(),
                 rhs.m_interfaced.getNode()));
-#else
-        return interfaced_type(m_interfaced.manager(),
-            Extra_zddUnionExor(
-                getManager(),
-                m_interfaced.getNode(),
-                rhs.m_interfaced.getNode()));
-#endif
   }
 
   
@@ -665,25 +624,6 @@ class CDDInterface:
     return os;
   }
 
-  /// Print Dot-output to file given by file handle
-  void prettyPrint(pretty_out_type filehandle = stdout) const {
-    DdNode* tmp = m_interfaced.getNode();
-    Cudd_zddDumpDot(m_interfaced.getManager(), 1, &tmp, 
-                    NULL, NULL, filehandle);
-  };
-
-  /// Print Dot-output to file given by file name
-  bool_type prettyPrint(filename_type filename) const {
-
-    FILE* theFile = fopen( filename, "w");
-    if (theFile == NULL)
-      return true;
-
-    prettyPrint(theFile);
-    fclose(theFile);
-
-    return false;
- };
 
   /// Equality check
   bool_type operator==(const self& rhs) const {
@@ -706,9 +646,7 @@ class CDDInterface:
   DdManager* getManager() const {
     return ring().getManager();
   }
-//   core_type managerCore() const{
-//     return m_interfaced.manager();
-//   }
+
   /// Get numbers of used variables
   size_type nSupport() const {
     return Cudd_SupportSize(getManager(), m_interfaced.getNode());
@@ -859,21 +797,6 @@ cudd_generate_multiples(const ManagerType& mgr,
 
 
 
-  self subSet(const self& rhs) const {
-
-    return interfaced_type(m_interfaced.manager(),
-            Extra_zddSubSet(getManager(), 
-                                   m_interfaced.getNode(), 
-                                   rhs.m_interfaced.getNode()) );
-  }
-  
-  self supSet(const self& rhs) const {
-
-    return interfaced_type(m_interfaced.manager(),
-            Extra_zddSupSet(getManager(), 
-                                   m_interfaced.getNode(), 
-                                   rhs.m_interfaced.getNode()) );
-  }
 
 /// temporarily (needs to be more generic)
 template<class ManagerType, class ReverseIterator>
@@ -945,22 +868,6 @@ cudd_generate_divisors(const ManagerType& mgr,
    return Cudd_ReadZddSize(getManager() );
   }
 
-  self cofactor0(const self& rhs) const {
-
-    return interfaced_type(m_interfaced.manager(),
-            Extra_zddCofactor0(getManager(), 
-                               m_interfaced.getNode(), 
-                               rhs.m_interfaced.getNode()) );
-  }
-
-  self cofactor1(const self& rhs, idx_type includeVars) const {
-
-    return interfaced_type(m_interfaced.manager(),
-            Extra_zddCofactor1(getManager(), 
-                               m_interfaced.getNode(), 
-                               rhs.m_interfaced.getNode(),
-                               includeVars) );
-  }
 
   /// Test whether the empty set is included
   bool_type ownsOne() const { return owns_one(navigation()); }
@@ -968,17 +875,6 @@ cudd_generate_divisors(const ManagerType& mgr,
     return m_interfaced.CountDouble();
   }
 
-  /*
-  /// Get corresponding zero element 
-  self emptyElement() const {
-    return self(ring(), navigator(ring()->m_mgr.zddZero()));
-  }
-
-  /// Get corresponding one element
-  self blankElement() const {
-    return self(ring(), navigator(ring()->m_mgr.zddOne()));
-  }
-  */
 private:
   navigator newNode(const ring_type& mgr, idx_type idx, 
                     navigator thenNavi, navigator elseNavi) const {
