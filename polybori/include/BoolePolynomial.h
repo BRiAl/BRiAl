@@ -28,7 +28,7 @@
 #include <algorithm>
 
 #include "BooleRing.h"
-  //#include "BoolePolyRing.h"
+#include "BoolePolyRing.h"
 // include basic definitions and decision diagram interface
 #include "CDDInterface.h"
 
@@ -140,7 +140,7 @@ public:
   typedef BooleConstant constant_type;
 
   /// Type for Boolean polynomial rings (without ordering)
-  typedef BooleRing ring_type;
+  typedef BoolePolyRing ring_type;
 
   /// Type for result of polynomial comparisons
   typedef CTypes::comp_type comp_type;
@@ -239,7 +239,7 @@ public:
 
   /// Construct polynomial from navigator
   BoolePolynomial(const navigator& rhs, const ring_type& ring):
-    m_dd(ring.core(), rhs)  {
+    m_dd(ring, rhs)  {
     assert(rhs.isValid());
   }
 
@@ -487,7 +487,7 @@ public:
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
   /// Access ring, where this belongs to
-  ring_type ring() const {  return ring_type(m_dd.manager()); } 
+  ring_type ring() const {  return ring_type(m_dd.ring()); } 
 
   /// Compare with right-hand side and return comparision code
   comp_type compare(const self&) const;

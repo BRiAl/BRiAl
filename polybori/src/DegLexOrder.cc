@@ -149,8 +149,8 @@ DegLexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegLexOrder::lead(const poly_type&) const)" );
 
-  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
-  CDegreeCache<> deg_mgr(poly.diagram().manager());
+  CacheManager<CCacheTypes::dlex_lead> cache_mgr(poly.ring());
+  CDegreeCache<> deg_mgr(poly.ring());
 
   return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, poly.navigation(), 
                                          set_type(), descending_property()) );
@@ -163,8 +163,8 @@ DegLexOrder::lead(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "DegLexOrder::lead(const poly_type&, size_type) const)" );
 
-  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
-  CDegreeCache<> deg_mgr(poly.diagram().manager());
+  CacheManager<CCacheTypes::dlex_lead> cache_mgr(poly.ring());
+  CDegreeCache<> deg_mgr(poly.ring());
 
   poly_type::navigator navi(poly.navigation());
   size_type deg(dd_cached_degree(deg_mgr, navi, bound));
@@ -185,8 +185,8 @@ DegLexOrder::leadExp(const poly_type& poly) const {
   size_type deg(poly.deg());
   result.reserve(deg);
 
-  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
-  CDegreeCache<> deg_mgr(poly.diagram().manager());
+  CacheManager<CCacheTypes::dlex_lead> cache_mgr(poly.ring());
+  CDegreeCache<> deg_mgr(poly.ring());
 
   return dd_recursive_degree_leadexp(cache_mgr, deg_mgr, poly.navigation(), result, deg,
                                      descending_property());
@@ -199,8 +199,8 @@ DegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "DegLexOrder::leadexp(const poly_type&, size_type) const)");
 
-  CCacheManagement<CCacheTypes::dlex_lead> cache_mgr(poly.diagram().manager());
-  CDegreeCache<> deg_mgr(poly.diagram().manager());
+  CacheManager<CCacheTypes::dlex_lead> cache_mgr(poly.ring());
+  CDegreeCache<> deg_mgr(poly.ring());
 
   poly_type::navigator navi(poly.navigation());
   size_type deg(dd_cached_degree(deg_mgr, navi, bound));
@@ -228,7 +228,7 @@ DegLexOrder::leadIteratorBegin(const poly_type& poly) const {
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
 
   return CGenericOrderedIter<self, navigator,
-    monom_type>(poly.navigation(), poly.diagram().ring()); 
+    monom_type>(poly.navigation(), poly.ring()); 
 }
 
 DegLexOrder::ordered_iterator
@@ -257,7 +257,7 @@ DegLexOrder::leadExpIteratorBegin(const poly_type& poly) const {
 //   typedef PBORI_SHARED_PTR(base_core) core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().ring());
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.ring());
 }
 
 DegLexOrder::ordered_exp_iterator

@@ -41,6 +41,7 @@
 // get internal cache management classes
 #include "CCacheManagement.h"
 
+#include "BoolePolyRing.h"
 
 #ifndef CacheManager_h_
 #define CacheManager_h_
@@ -50,11 +51,11 @@ BEGIN_NAMESPACE_PBORI
 class BooleEnv;
 template <class CacheType>
 class CacheManager:
-  public CCacheManagement<CacheType, CacheType::nargs> {
+  public CCacheManagement<BoolePolyRing, CacheType, CacheType::nargs> {
 
 public:
   /// Define base type
-  typedef CCacheManagement<CacheType, CacheType::nargs> base;
+  typedef CCacheManagement<BoolePolyRing, CacheType, CacheType::nargs> base;
   typedef typename base::manager_type manager_type;
 
   /// Constructor
@@ -67,11 +68,11 @@ public:
 
 template <class CacheType>
 class CommutativeCacheManager:
-  public CCommutativeCacheManagement<CacheType> {
+  public CCommutativeCacheManagement<BoolePolyRing, CacheType> {
 
 public:
   /// Define base type
-  typedef CCommutativeCacheManagement<CacheType> base;
+  typedef CCommutativeCacheManagement<BoolePolyRing, CacheType> base;
   typedef typename base::manager_type manager_type;
 
   /// Constructor

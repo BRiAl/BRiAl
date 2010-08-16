@@ -8,154 +8,8 @@
  * This file 
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.45  2009/06/21 22:46:28  dreyer
- * CHANGE: preparing ring-cloning (deep copy)
- *
- * Revision 1.44  2008/07/13 22:49:35  dreyer
- * Fix: Doxygen clean-up
- *
- * Revision 1.43  2008/04/25 15:44:47  bricken
- * + renamed zeros
- *
- * Revision 1.42  2008/04/16 09:53:47  bricken
- * + reducibility tests
- *
- * Revision 1.41  2008/03/03 12:44:32  dreyer
- * Change: More inlining, and safer constructors
- *
- * Revision 1.40  2008/01/16 17:10:17  dreyer
- * CHANGE: term-iterators use correct manager now
- *
- * Revision 1.39  2007/12/17 16:12:02  dreyer
- * CHANGE: reviewed and optimized merge frim sf.net
- *
- * Revision 1.38  2007/12/13 15:53:48  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.37  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.36  2007/10/25 14:38:00  dreyer
- * ADD: use of CCuddNavigator more secure
- *
- * Revision 1.35  2007/10/09 12:16:49  dreyer
- * ADD: apply_mapping
- *
- * Revision 1.34  2007/10/09 10:30:51  dreyer
- * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
- *
- * Revision 1.33  2007/09/03 13:43:09  bricken
- * + changed implementation for opposite_logic
- *
- * Revision 1.32  2007/08/27 12:44:02  bricken
- * + new factorization/disabled at the moment
- *
- * Revision 1.31  2007/08/27 11:26:24  bricken
- * + used counters
- *
- * Revision 1.30  2007/08/27 11:07:14  bricken
- * + more funs with cache
- *
- * Revision 1.29  2007/08/27 10:31:51  bricken
- * + more funs with cache
- *
- * Revision 1.28  2007/07/30 15:19:38  dreyer
- * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
- *
- * Revision 1.27  2007/07/06 14:04:21  dreyer
- * ADD: newly written C++_interface for Cudd
- *
- * Revision 1.26  2007/07/06 08:24:44  bricken
- * + include_divsors
- *
- * Revision 1.25  2007/07/03 09:58:06  bricken
- * + new tag
- *
- * Revision 1.24  2007/07/02 14:15:08  bricken
- * +smallest lex
- *
- * Revision 1.23  2007/07/02 11:36:30  bricken
- * + interpolate
- *
- * Revision 1.22  2007/06/05 05:43:54  bricken
- * + plug_1
- *
- * Revision 1.21  2007/05/24 14:01:30  dreyer
- * CHANGE: Recursive routine for usedVariables()
- *
- * Revision 1.20  2007/05/10 07:29:32  bricken
- * + new minimal elements
- *
- * Revision 1.19  2007/04/24 15:23:03  dreyer
- * FIX: minor changes fixing -Wall warnings
- *
- * Revision 1.18  2007/04/16 12:38:05  bricken
- * + ll_red_nf
- *
- * Revision 1.17  2007/03/21 08:55:08  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.16  2006/12/09 10:46:18  dreyer
- * CHANGE added and used recursively cache variant of /=
- *
- * Revision 1.15  2006/12/07 08:22:52  dreyer
- * ADD/CHANGE: Lowlevel variant of existAbstract
- *
- * Revision 1.14  2006/11/30 19:42:43  dreyer
- * CHANGE: lead(bound) now uses cached and recursive variant
- *
- * Revision 1.13  2006/11/27 16:25:13  dreyer
- * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
- *
- * Revision 1.12  2006/11/27 08:00:56  bricken
- * + mod_deg2
- *
- * Revision 1.11  2006/11/23 12:46:44  bricken
- * + new minimal elements
- *
- * Revision 1.10  2006/11/22 15:46:22  dreyer
- * ADD: CacheManager replacing CCacheManagement for external use
- * CHANGE: CacheManager used, where necessary
- * CHANGE: multiplesOf, uses cached recursion
- *
- * Revision 1.9  2006/11/21 12:33:34  dreyer
- * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
- *
- * Revision 1.8  2006/11/21 09:52:05  dreyer
- * CHANGE: some simple functions in BoolePolynomial inlined
- * ADD: caching of ternary operations
- * ADD: commandline switch PBORI_FAST_MULTIPLICATION (dense multiplication)
- *
- * Revision 1.7  2006/11/20 14:56:46  dreyer
- * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
- *
- * Revision 1.6  2006/11/20 12:40:57  bricken
- * + new minimal elements, fails tests
- *
- * Revision 1.5  2006/11/13 11:39:52  dreyer
- * ADD: changed order of template arguments
- *
- * Revision 1.4  2006/11/13 11:31:15  dreyer
- * ADD: Arity may be changed/given explicitely as template argument
- *
- * Revision 1.3  2006/11/10 16:19:49  dreyer
- * ADD: Commutative caching
- *
- * Revision 1.2  2006/11/09 12:48:33  dreyer
- * + added cachemanager to multiply_recursively2|3
- *
- * Revision 1.1  2006/10/25 14:17:40  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -165,7 +19,6 @@
 // get DD navigation
 #include "CCuddNavigator.h"
 #include "CDDInterface.h"
-#include "BooleRing.h"
 
 #include "CCuddCore.h"
 #include <boost/intrusive_ptr.hpp>
@@ -304,7 +157,7 @@ public:
   //  typedef typename manager_type::mgrcore_ptr mgrcore_ptr;
 
   /// Type of Boolean rings
-  typedef BooleRing ring_type;
+  typedef BoolePolyRing ring_type;
 
   /// Constructor
   CCuddLikeMgrStorage(const manager_type& mgr): 
@@ -334,7 +187,7 @@ public:
 protected:
   /// Accessing Cudd-internal decision diagram manager
   internal_manager_type internalManager() const { 
-    return m_mgr->m_mgr.getManager(); 
+    return m_mgr.getManager(); 
     //  return manager().getManager(); 
   }
 
@@ -371,6 +224,15 @@ struct pbori_base<CCacheManBase<CCuddInterface, CacheType, ArgumentLength> > {
 
   typedef CCuddLikeMgrStorage<CCuddInterface> type;
 };
+
+
+// Fixing base type for Cudd-Like type CCuddInterface
+template <class CacheType, unsigned ArgumentLength>
+struct pbori_base<CCacheManBase<BoolePolyRing, CacheType, ArgumentLength> > {
+
+  typedef CCuddLikeMgrStorage<BoolePolyRing> type;
+};
+
 // Fixing base type for Cudd-Like type CCuddInterface
 template <class CacheType, unsigned ArgumentLength>
 struct pbori_base<CCacheManBase<boost::intrusive_ptr<CCuddCore>, CacheType, ArgumentLength> > {
@@ -588,16 +450,16 @@ private:
  * It also fixes the ManagerType to CTypes::manager_base.
  *
  **/
-template <class CacheType, 
+template <class ManagerType, class CacheType, 
           unsigned ArgumentLength = CacheType::nargs>
 class CCacheManagement: 
-  public CCacheManBase<typename CTypes::manager_base, 
+  public CCacheManBase<ManagerType,
                        CacheType, ArgumentLength> {
 public:
 
   /// @name Get template parameters and global types
   //@{
-  typedef CTypes::manager_base manager_type;
+  typedef ManagerType manager_type;
   typedef CTypes::idx_type idx_type;
   typedef CacheType cache_type;
   enum { nargs = ArgumentLength };
@@ -620,18 +482,19 @@ public:
 /** @class CCommutativeCacheManagement
  * This is the variant for cache management of binary commutative functions.
  **/
-template <class CacheType>
+template <class ManagerType, class CacheType>
 class CCommutativeCacheManagement: 
-  public CCacheManagement<CacheType, 2> {
+  public CCacheManagement<ManagerType, CacheType, 2> {
 
 public:
   /// @name Get template parameters
   //@{
+  typedef ManagerType manager_type;
   typedef CacheType cache_type;
   //@}
 
   /// Name base type
-  typedef CCacheManagement<cache_type, 2> base;
+  typedef CCacheManagement<manager_type, cache_type, 2> base;
 
   /// Define node type
   typedef typename base::node_type node_type;

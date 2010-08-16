@@ -346,7 +346,7 @@ class CDDInterface:
   
   /// Cudd's decision diagram manager type
   // typedef typename zdd_traits<interfaced_type>::manager_base manager_base;
-  typedef typename CuddLikeZDD::core_ptr  manager_base;
+  //  typedef typename CuddLikeZDD::ring_type  manager_base;
 //   /// Reference to decision diagram manager type
 //   typedef typename manager_traits<manager_base>::tmp_ref mgr_ref;
 
@@ -354,7 +354,7 @@ class CDDInterface:
 //   typedef typename manager_traits<manager_base>::core_type 
 
 
-  typedef typename interfaced_type::core_ptr core_type;
+//  typedef typename interfaced_type::core_ptr core_type;
 
   /// Interface to Cudd's decision diagram manager type
   //  typedef CDDManager<CCuddInterface> manager_type;
@@ -403,7 +403,8 @@ class CDDInterface:
   /// This type has an easy equality check
   typedef valid_tag easy_equality_property;
 
-  typedef typename CuddLikeZDD::core_ptr ring_type;
+  //  typedef typename CuddLikeZDD::core_ptr ring_type;
+  typedef typename CuddLikeZDD::ring_type ring_type;
   /// Default constructor
   CDDInterface(): base_type() {}
 
@@ -703,7 +704,7 @@ class CDDInterface:
   }
   /// Get reference to actual decision diagram manager 
   DdManager* getManager() const {
-    return ring()->m_mgr.getManager();
+    return ring().getManager();
   }
 //   core_type managerCore() const{
 //     return m_interfaced.manager();
@@ -840,7 +841,7 @@ cudd_generate_multiples(const ManagerType& mgr,
     Cudd_Deref(prev);
 
 
-    return interfaced_type(get_mgr_core(mgr), prev);
+    return interfaced_type(mgr, prev);
   }
 
   /// Get decison diagram representing the multiples of the first term
@@ -919,16 +920,11 @@ cudd_generate_divisors(const ManagerType& mgr,
 
   /// Checks whether the decision diagram is empty
   bool_type emptiness() const {
-    return ( m_interfaced.getNode() == ring()->m_mgr.zddZero());
+    return ( m_interfaced.isZero());
   }
 
   /// Checks whether the decision diagram has every variable negated
-  bool_type blankness() const {
-
-    return ( m_interfaced.getNode() == 
-             ring()->m_mgr.zddOne() );
-
-  }
+  bool_type blankness() const { return m_interfaced.isOne(); }
 
   bool_type isConstant() const {
     return (m_interfaced.getNode()) && Cudd_IsConstant(m_interfaced.getNode());
@@ -972,6 +968,7 @@ cudd_generate_divisors(const ManagerType& mgr,
     return m_interfaced.CountDouble();
   }
 
+  /*
   /// Get corresponding zero element 
   self emptyElement() const {
     return self(ring(), navigator(ring()->m_mgr.zddZero()));
@@ -981,18 +978,18 @@ cudd_generate_divisors(const ManagerType& mgr,
   self blankElement() const {
     return self(ring(), navigator(ring()->m_mgr.zddOne()));
   }
-
+  */
 private:
-  navigator newNode(const manager_base& mgr, idx_type idx, 
+  navigator newNode(const ring_type& mgr, idx_type idx, 
                     navigator thenNavi, navigator elseNavi) const {
     assert(idx < *thenNavi);
     assert(idx < *elseNavi); 
-    return navigator(cuddZddGetNode(mgr->m_mgr.getManager(), idx, 
+    return navigator(cuddZddGetNode(mgr.getManager(), idx, 
                                     thenNavi.getNode(), elseNavi.getNode()));
   }
 
-  interfaced_type newDiagram(const manager_base& mgr, navigator navi) const { 
-    return interfaced_type(extract_manager(mgr), navi.getNode());
+  interfaced_type newDiagram(const ring_type& mgr, navigator navi) const { 
+    return interfaced_type(mgr, navi.getNode());
   }
 
   self fromTemporaryNode(const navigator& navi) const { 
@@ -1001,7 +998,7 @@ private:
   }
 
 
-  interfaced_type newNodeDiagram(const manager_base& mgr, idx_type idx, 
+  interfaced_type newNodeDiagram(const ring_type& mgr, idx_type idx, 
                                  navigator thenNavi, 
                                  navigator elseNavi) const {
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
@@ -1010,7 +1007,7 @@ private:
     return newDiagram(mgr, newNode(mgr, idx, thenNavi, elseNavi) );
   }
 
-  interfaced_type newNodeDiagram(const manager_base& mgr, 
+  interfaced_type newNodeDiagram(const ring_type& mgr, 
                                  idx_type idx, navigator navi) const {
     if (idx >= *navi)
       throw PBoRiGenericError<CTypes::invalid_ite>();

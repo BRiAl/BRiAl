@@ -782,7 +782,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     
     to_reduce.push(to_push);
   }
-  const idx_type last_block_start=BooleEnv::ring().lastBlockStart();
+  const idx_type last_block_start=BooleEnv::ordering().lastBlockStart();
   while (!(to_reduce.empty())){
 
     std::vector<PolynomialSugar> curr;
@@ -1634,7 +1634,7 @@ Polynomial
 ll_red_nf_generic(const Polynomial&  p, const BooleSet::navigator navi) {
 
   return ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(p,
-                                       (BooleSet)BooleSet::dd_type(p.diagram().manager(), 
+                                       (BooleSet)BooleSet::dd_type(p.ring(), 
                                                       navi));
 }
 
@@ -1642,7 +1642,7 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
 
-    return dd_multiply<fast>(cache_mgr_type(p.diagram().manager()), 
+    return dd_multiply<fast>(cache_mgr_type(p.ring()), 
                              p.navigation(), q.navigation(),
                              BoolePolynomial());
 }
@@ -1664,7 +1664,7 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
       return p;
   typedef PBORI::CacheManager<CCacheTypes::ll_red_nf>
     cache_mgr_type;
-  cache_mgr_type cache_mgr(p.diagram().manager());
+  cache_mgr_type cache_mgr(p.ring());
   MonomialSet::navigator cached =
     cache_mgr.find(p_nav,r_nav);
   if LIKELY(cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
@@ -1729,7 +1729,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     assert (p_index==*p_nav);
     typedef PBORI::CacheManager<CCacheTypes::plug_1>
       cache_mgr_type;
-    cache_mgr_type cache_mgr(p.diagram().manager());
+    cache_mgr_type cache_mgr(p.ring());
     MonomialSet::navigator cached =
       cache_mgr.find(p_nav,m_nav);
     if (cached.isValid()) return cache_mgr.generate(cached);
@@ -2437,7 +2437,7 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
   typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
      cache_mgr_type;
- cache_mgr_type cache_mgr(as.manager());
+ cache_mgr_type cache_mgr(as.ring());
  return dd_modulo_monomials(cache_mgr, as.navigation(), vs.navigation(),
                          MonomialSet());
 }

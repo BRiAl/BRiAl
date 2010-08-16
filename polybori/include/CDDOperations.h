@@ -54,6 +54,8 @@
 #include "pbori_routines.h"
 #include "CCacheManagement.h"
 
+#include "BoolePolyRing.h"
+
 #ifndef CDDOperations_h_
 #define CDDOperations_h_
 
@@ -78,7 +80,7 @@ public:
   typedef typename DDType::navigator navigator;
   typedef MonomType monom_type;
 
-  CCacheManagement<CCacheTypes::used_variables> cache_mgr(dd.manager());
+  CCacheManagement<BoolePolyRing, CCacheTypes::used_variables> cache_mgr((BoolePolyRing)dd.ring());
   return cached_used_vars(cache_mgr, dd.navigation(),  
                           MonomType(cache_mgr.one()));
 }

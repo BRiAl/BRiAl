@@ -117,9 +117,9 @@ BlockDegRevLexAscOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::lead(const poly_type&) const)" );
 
-  CBlockDegreeCache<> blockDegCache(poly.diagram().manager());
+  CBlockDegreeCache<> blockDegCache(poly.ring());
 
-  CCacheManagement<CCacheTypes::block_dlex_lead> cache_mgr(poly.diagram().manager());
+  CacheManager<CCacheTypes::block_dlex_lead> cache_mgr(poly.ring());
 
 
   return monom(  dd_block_degree_lead(cache_mgr, blockDegCache, 
@@ -172,7 +172,7 @@ BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
   return CGenericOrderedIter<self, navigator,
-    monom_type>(poly.navigation(), poly.diagram().ring());
+    monom_type>(poly.navigation(), poly.ring());
 }
 
 BlockDegRevLexAscOrder::ordered_iterator
@@ -200,7 +200,7 @@ BlockDegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
 
-  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.diagram().ring()); 
+  return CGenericOrderedIter<self, navigator, exp_type>(poly.navigation(), poly.ring()); 
 }
 
 BlockDegRevLexAscOrder::ordered_exp_iterator

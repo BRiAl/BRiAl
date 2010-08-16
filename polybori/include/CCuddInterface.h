@@ -30,8 +30,28 @@
 #include <boost/preprocessor/facilities/expand.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
+#include "PBoRiError.h"
+#include <stdexcept>
+
 #ifndef CCuddInterface_h_
 #define CCuddInterface_h_
+
+  // get cudd error texts
+inline const char* error_text(DdManager* mgr) {
+    switch (Cudd_ReadErrorCode(mgr)) {
+    CUDD_MEMORY_OUT:
+      return("Out of memory.");
+    CUDD_TOO_MANY_NODES:
+      return("To many nodes.");
+    CUDD_MAX_MEM_EXCEEDED:
+      return("Maximum memory exceeded.");
+    CUDD_INVALID_ARG:
+      return("Invalid argument.");
+    CUDD_INTERNAL_ERROR:
+      return("Internal error.");
+    }
+    return("Unexpected error.");
+  }
 
 /// Increment reference count
 inline void 
@@ -153,16 +173,6 @@ public:
       Cudd_RecursiveDerefZdd(getManager(), *iter);
     }
   }
-
-  /// Define function for error handling
-  errorfunc_type setHandler(errorfunc_type newHandler) {
-    errorfunc_type oldHandler = errorHandler;
-    errorHandler = newHandler;
-    return oldHandler;
-  }
-
-  /// Extract function for error handling
-  errorfunc_type getHandler() const {  return errorHandler; }
 
   /// Get pure CUDD structure
   mgr_type* getManager() const { return p_mgr.operator->(); }
@@ -355,8 +365,12 @@ protected:
   mgr_ptr init(size_type numVars,size_type numVarsZ, size_type numSlots,
                  size_type cacheSize, large_size_type maxMemory) {
 
-    mgr_ptr ptr = Cudd_Init(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
+    DdManager* ptr = Cudd_Init(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
+    if UNLIKELY(ptr==NULL)
+      throw PBoRiError(CTypes::failed);
+    
     ptr->hooks = NULL;          // abusing hooks pointer for reference counting
+
     return ptr;
   }
   /// Generate check result of previous node operation and convert 
@@ -368,8 +382,7 @@ protected:
   /// Generate check numerical result of previous operation
   idx_type checkedResult(idx_type result) const  {
     if UNLIKELY(result == 0) {
-      handle_error<CUDD_MEMORY_OUT> tmp(errorHandler);
-      tmp(Cudd_ReadErrorCode(getManager()));
+      throw std::runtime_error(error_text(getManager()));
     } 
     return result;
   }
@@ -392,7 +405,7 @@ private:
   std::vector<node_type> m_vars;
 
   /// Functions for handling errors from CUDD functions
-  static errorfunc_type errorHandler;
+  //  static errorfunc_type errorHandler;
 
   /// Control eloquence of CUDD functionality
   static bool_type verbose;

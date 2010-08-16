@@ -8,154 +8,8 @@
  * This file defines the class BooleSet, which is currently just a typedef.
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.47  2008/11/22 23:47:31  dreyer
- * ADD: BooleSet::rbegin(),end()
- *
- * Revision 1.46  2008/11/21 10:28:43  dreyer
- * ADD: BooleSet::containsDivisorsOfDecDeg and contains
- *
- * Revision 1.45  2008/03/11 10:04:11  dreyer
- * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
- *
- * Revision 1.44  2008/03/03 12:44:32  dreyer
- * Change: More inlining, and safer constructors
- *
- * Revision 1.43  2008/03/02 23:45:34  dreyer
- * CHANGED: added contructors for given ring
- *
- * Revision 1.42  2008/03/02 23:24:37  dreyer
- * CHANGE: ring elements like polynomials, monomials, and variables have ring()
- *
- * Revision 1.41  2008/02/27 16:35:13  dreyer
- * Fix: Polynomial(0|1) removed, where possible
- *
- * Revision 1.40  2008/01/29 16:05:02  dreyer
- * Fix: cast from navigator to BooleSet or BoolePolynomial made explicit
- *
- * Revision 1.39  2008/01/17 16:05:00  dreyer
- * Fix: reverted previous version (performance problem)
- *
- * Revision 1.37  2007/12/14 11:50:31  dreyer
- * Fix: merged from bugfix at sf.net
- *
- * Revision 1.36  2007/12/11 14:21:08  dreyer
- * ADD: count terms containing given index
- *
- * Revision 1.35  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.34  2007/11/29 16:28:32  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.33  2007/11/19 14:13:26  dreyer
- * Fix: consistend naming of cartesianProduct
- *
- * Revision 1.32  2007/11/15 14:43:06  dreyer
- * CHANGE: small things for better doxygen generation
- *
- * Revision 1.31  2007/11/15 13:08:00  dreyer
- * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
- *
- * Revision 1.30  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.29  2007/07/31 07:43:50  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.28  2007/05/25 12:35:32  dreyer
- * ADD: BooleSet::owns(const exp_type&) const
- *
- * Revision 1.27  2007/05/21 16:07:54  dreyer
- * CHANGE: temporarily deactivated some things with curious side-effects
- *
- * Revision 1.26  2007/05/20 09:44:40  dreyer
- * ADD: BooleSet(true/false)
- *
- * Revision 1.25  2007/05/19 08:43:03  dreyer
- * CHANGE: remove unnecessary casts
- *
- * Revision 1.24  2007/05/18 16:10:27  dreyer
- * CHANGE: term_accumulate optimized more
- *
- * Revision 1.23  2007/05/03 16:04:45  dreyer
- * CHANGE: new-style CTermIter integrated
- *
- * Revision 1.22  2006/12/07 08:22:52  dreyer
- * ADD/CHANGE: Lowlevel variant of existAbstract
- *
- * Revision 1.21  2006/11/24 14:49:00  dreyer
- * CHANGE: divisorsOf (less recursions/cache-lookups)
- *
- * Revision 1.20  2006/11/22 10:10:23  dreyer
- * ADD: dd_first_divisors_of
- *
- * Revision 1.19  2006/11/21 16:06:40  dreyer
- * CHANGE: inlining added
- *
- * Revision 1.18  2006/11/21 15:42:15  dreyer
- * ADD: Construct Booleset from navigator
- *
- * Revision 1.17  2006/11/21 12:33:33  dreyer
- * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
- *
- * Revision 1.16  2006/11/20 16:18:07  dreyer
- * ADD: BooleSet new node-constructor, also in dd_multiply_recursively
- *
- * Revision 1.15  2006/10/04 15:46:49  dreyer
- * ADD: divisorsOf(exp_type), orderedExpBegin/End;
- * CHANGE: Polynomials printing respects ordering
- *
- * Revision 1.14  2006/09/14 10:57:25  dreyer
- * ADD: usedVariablesExp()
- *
- * Revision 1.13  2006/09/05 14:21:01  bricken
- * +multiplesOf, tailVariables to Exponent
- *
- * Revision 1.12  2006/08/29 08:02:08  dreyer
- * ADD: BooleSet::expBegin() and expEnd()
- *
- * Revision 1.11  2006/08/23 14:24:53  dreyer
- * ADD: BooleSet::usedVariables and infrastructure
- *
- * Revision 1.10  2006/08/22 16:06:22  dreyer
- * + Added highlevel division
- *
- * Revision 1.9  2006/08/17 15:35:30  dreyer
- * ADD: extended and activated low-level version of dd_minimal_elements
- *
- * Revision 1.8  2006/08/15 14:17:29  dreyer
- * ADD minimalElements(), hasTermOfVariables()
- *
- * Revision 1.7  2006/08/03 15:20:20  dreyer
- * ADD: BooleSet::divisorsOf and BooleSet::hasCommonVariables
- *
- * Revision 1.6  2006/06/07 08:37:50  dreyer
- * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
- *
- * Revision 1.5  2006/04/25 09:30:42  dreyer
- * FIX end of CTermIterm for constants, CHANGE consistent functional names
- *
- * Revision 1.4  2006/04/21 09:31:44  dreyer
- * CHANGE reducing redundancy
- *
- * Revision 1.3  2006/04/21 07:11:49  dreyer
- * ADD operator=
- *
- * Revision 1.2  2006/04/20 16:59:47  dreyer
- * routine
- *
- * Revision 1.1  2006/04/20 08:31:21  dreyer
- * ADD BooleMonomial::mulples(...)
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -166,11 +20,12 @@
 
 // include polybori functionals
 #include "pbori_func.h"
-#include "BooleRing.h"
+#include "BoolePolyRing.h"
 
 // include definitions of decision diagram interfaces
 #include "CDDInterface.h"
 #include "CCuddZDD.h"
+
 
 #ifndef BooleSet_h_
 #define BooleSet_h_
@@ -228,7 +83,7 @@ public:
   typedef BooleExponent exp_type; 
 
   /// Type for Boolean polynomial rings (without ordering)
-  typedef BooleRing ring_type;
+  typedef BoolePolyRing ring_type;
 
   /// Iterator type for iterating all monomials
   typedef CGenericIter<LexOrder, navigator, term_type> const_iterator;
@@ -258,11 +113,11 @@ public:
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator first, navigator second, 
            const ring_type& ring): 
-    base(ring.core(), idx, first, second) { }
+    base(ring, idx, first, second) { }
   
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
-    base(rhs.ring().core(), idx, rhs.navigation()) { }
+    base(rhs.ring(), idx, rhs.navigation()) { }
 
   /// Construct one or zero set from constant
   //  BooleSet(bool_type);
@@ -271,7 +126,7 @@ public:
 
   /// Construct from navigator node
   BooleSet(navigator navi, const ring_type& ring):
-    base(ring.core(), navi) { }
+    base(ring, navi) { }
 
   /// Destructor
   ~BooleSet() {}
@@ -430,7 +285,7 @@ public:
   ostream_type& print(ostream_type&) const;
 
   /// Get corresponding zero element (may be removed in the future)
-  self emptyElement() const { return base::emptyElement(); }
+  self emptyElement() const { return ring().zero(); }
 
   /// Count terms containing BooleVariable(idx)
   size_type countIndex(idx_type idx) const;
@@ -439,7 +294,7 @@ public:
   double countIndexDouble(idx_type idx) const ;
 
   /// Access ring, where this belongs to
-  ring_type ring() const { return ring_type(base::manager()); } 
+  ring_type ring() const { return ring_type(base::ring()); } 
   //  using base::ring;
 
   /// Test whether, all divisors of degree -1 of term rhs are contained in this
@@ -455,38 +310,6 @@ operator<<( BooleSet::ostream_type& os, const BooleSet& bset ) {
   return bset.print(os);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-// temporarily here!
-
-  /// Access nvar-th ring variable
-inline  BooleRing::dd_type BooleRing::persistentVariable(idx_type nvar) const { 
-    return dd_base(this->core(), p_core->m_mgr.getVar(nvar)); 
-  }
-
-  /// Get empty decision diagram 
-inline BooleRing::dd_type BooleRing::zero() const { return dd_base(this->core(), p_core->m_mgr.zddZero()); }
-
-  /// Get decision diagram with all variables negated
-inline  BooleRing::dd_type BooleRing::one() const { return dd_base(this->core(), p_core->m_mgr.zddOne()); }
-
-
-  /// Get constant one or zero
-inline  BooleRing::dd_type BooleRing::constant(bool is_one) const { return (is_one? one(): zero()); }
-
-inline BooleRing::dd_type BooleRing::variable(idx_type nvar) const  { return
- persistentVariable(nvar); }
 
 END_NAMESPACE_PBORI
 

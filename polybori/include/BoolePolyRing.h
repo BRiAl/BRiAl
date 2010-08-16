@@ -11,157 +11,6 @@
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.47  2009/07/24 08:21:17  dreyer
- * CHA: Changelog completed
- *
- * Revision 1.46  2009/07/23 19:58:47  dreyer
- * FIX: BoolePolyRing() without sideeffects
- *
- * Revision 1.45  2009/06/22 07:58:42  dreyer
- * ADD: cloning of rings
- *
- * Revision 1.44  2008/03/02 23:24:37  dreyer
- * CHANGE: ring elements like polynomials, monomials, and variables have ring()
- *
- * Revision 1.43  2007/12/13 16:18:07  dreyer
- * CHANGE: removed unnecessary friend declaration
- *
- * Revision 1.42  2007/12/13 15:53:48  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.41  2007/12/11 15:37:34  dreyer
- * ADD: BooleOrdering started
- *
- * Revision 1.40  2007/12/07 17:06:19  dreyer
- * CHANGE: First try: ring and order separated
- *
- * Revision 1.39  2007/11/30 12:51:06  dreyer
- * Fix: protected corrected
- *
- * Revision 1.38  2007/11/06 15:03:32  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.37  2007/07/31 07:43:49  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.36  2007/07/17 15:56:59  dreyer
- * ADD: header file for CCuddZDD; clean-up
- *
- * Revision 1.35  2007/06/21 11:35:57  dreyer
- * ADD: lastBlockBegin
- *
- * Revision 1.34  2007/03/21 08:55:08  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.33  2007/03/16 16:59:20  dreyer
- * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
- *
- * Revision 1.32  2007/02/03 17:31:14  dreyer
- * FIX: deactivated workaround for old rings
- *
- * Revision 1.31  2007/01/23 12:37:21  dreyer
- * + Workaround for segfault after order change
- *
- * Revision 1.30  2006/12/19 12:36:46  dreyer
- * ADD: BoolePolyRing::clear{Ring}Cache()
- *
- * Revision 1.29  2006/11/27 16:25:13  dreyer
- * CHANGE: CDegreeCache, now inherited from standard cache; dlex-lead cached
- *
- * Revision 1.28  2006/11/20 15:07:47  dreyer
- * FIX: headed included
- *
- * Revision 1.27  2006/10/24 06:39:38  dreyer
- * CHANGE: changed interface type
- *
- * Revision 1.26  2006/10/23 16:05:54  dreyer
- * ADD: BoolePolyRing::set/get(Ring)VariableName()
- *
- * Revision 1.25  2006/10/04 12:22:32  dreyer
- * ADD: getOrderCode()
- *
- * Revision 1.24  2006/10/04 11:48:28  dreyer
- * ADD: isDegreeReverseLexicograpical()
- *
- * Revision 1.23  2006/10/02 09:28:37  dreyer
- * ADD BoolePolyRing::changeOrdering and infrastructure
- *
- * Revision 1.22  2006/09/05 11:10:44  dreyer
- * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
- *
- * Revision 1.21  2006/09/05 08:48:32  dreyer
- * ADD: BoolePolyRing::is(Total)DegreeOrder()
- *
- * Revision 1.20  2006/08/24 14:47:49  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.19  2006/07/20 08:55:49  dreyer
- * ADD isOrdered() and  isLexicographical()
- *
- * Revision 1.18  2006/05/23 15:55:24  dreyer
- * CHANGE order of arguments in constructor
- *
- * Revision 1.17  2006/05/23 15:26:25  dreyer
- * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
- *
- * Revision 1.16  2006/04/11 09:26:57  dreyer
- * ADD  BoolePolyRing::printInfo();
- *
- * Revision 1.15  2006/03/30 11:57:11  dreyer
- * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
- *
- * Revision 1.14  2006/03/27 13:47:58  dreyer
- * ADD operator + and *, CHANGE BoolePolyRing::variable(i) generation
- *
- * Revision 1.13  2006/03/24 15:02:44  dreyer
- * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
- * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
- *
- * Revision 1.12  2006/03/23 17:15:04  dreyer
- * ADD: lead() and lmdeg() functionality to BoolePolynomial,
- * BoolePolyRing(const manager_type &); leading term exampl.
- *
- * Revision 1.11  2006/03/22 16:48:13  dreyer
- * ADD alternative to shared_ptr (if not available)
- *
- * Revision 1.10  2006/03/22 08:06:59  dreyer
- * ADD: Template specializations CDDInterface<ZDD>, CDDManager<Cudd>; 
- * ring uses shared_ptr now
- *
- * Revision 1.9  2006/03/20 14:51:00  dreyer
- * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
- *
- * Revision 1.8  2006/03/20 09:52:57  dreyer
- * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
- *
- * Revision 1.7  2006/03/17 16:53:37  dreyer
- * ADD added nNodes(), operator*= to BoolePolynomial
- *
- * Revision 1.6  2006/03/16 17:09:12  dreyer
- * ADD BoolePolynial functionality started
- *
- * Revision 1.5  2006/03/13 12:27:24  dreyer
- * CHANGE: consistent function names
- *
- * Revision 1.4  2006/03/11 08:41:07  bricken
- * *bricken: standard/copy constructor
- *
- * Revision 1.3  2006/03/10 15:13:06  dreyer
- * ADD: Added static access to current ring
- *
- * Revision 1.2  2006/03/10 08:25:54  dreyer
- * + refined header style
- *
- * Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
- * + Project started
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -169,13 +18,16 @@
 # include "pbori_defs.h"
 
 // include basic decision diagram manager interface 
-#include "CDDManager.h"
-#include "COrderingBase.h"
+  //#include "COrderingBase.h"
 
 #include "BooleRing.h"
 
-#include "CDDOperations.h"
+  //#include "CDDOperations.h"
   // temporarily for work around
+
+#include "CDDInterface.h"
+#include "CCuddZDD.h"
+
 #include <list>
 
 #ifndef BoolePolyRing_h_
@@ -186,6 +38,8 @@ BEGIN_NAMESPACE_PBORI
 
 
 class BooleExponent;
+class BooleVariable;
+class BoolePolynomial;
 class BooleMonomial;
 
 
@@ -250,63 +104,69 @@ class BoolePolyRing:
                          ordercode_type order = lp,
                          bool_type make_active = true);
 
-  /// destructor
+  /// Destructor
   ~BoolePolyRing() {}
 
-  /// Make this global ring
+  /// Make @c *this global
   void activate();
-
-//   /// Support for deep copy constructor
-//   BoolePolyRing(const base& rhs, order_ptr order):
-//     base(rhs, order), pOrder(order) {}
 
   /// Change order of current ring
   void changeOrdering(ordercode_type);
 
-  //  using base::ordering;
-  idx_type lastBlockStart() {
-    if (ordering().isBlockOrder()) {
-      return *(ordering().blockEnd() - 2);
-    }
-    else if (ordering().isLexicographical()) {
-      return CTypes::max_idx;
-    }
-    return 0;
-  }
+  /// Construct ring with similiar properties (deep copy)
+  self clone() const { return self(base::clone()); }
 
-  /// Construct ring with similiar properties
-  self clone() const {
-    return self(base::clone(),int(),int());
-     //return *this;
-  }
-
+  /// Copy constructor (cheap reference-counted copy)
   BoolePolyRing(const self& rhs): base(rhs) { }
 
-
-
   /// Map polynomial to this ring, if possible
-  poly_type coerce(const poly_type& rhs) const {
-    if (getManager() ==
-        rhs.ring().getManager()) 
-      return poly_type(rhs.navigation(), *this);
-
-    throw PBoRiError(CTypes::invalid);
-  }
+  poly_type coerce(const poly_type& rhs) const;
 
   /// Map monomial to this ring, if possible
-  monom_type coerce(const monom_type& rhs) const {
-    return CDDOperations<BooleSet, monom_type>().getMonomial(coerce(poly_type(rhs)).set());
-  }
+  monom_type coerce(const monom_type& rhs) const;
+
   /// Map variable to this ring
-  var_type coerce(const var_type& rhs) const {
-    return var_type(rhs.index(), *this);
-  }
+  var_type coerce(const var_type& rhs) const;
 
-protected:
+  /// Access nvar-th ring variable
+  dd_type variable(idx_type nvar) const;// inlined below
 
-  explicit BoolePolyRing(const base& rhs,int,int): base(rhs) { }
+  /// Access nvar-th ring variable
+  dd_type persistentVariable(idx_type nvar) const; // inlined below
+
+  /// Get empty decision diagram 
+  dd_type zero() const; // inlined below
+
+  /// Get decision diagram with all variables negated
+  dd_type one() const; // inlined below
+
+  /// Get constant one or zero
+  dd_type constant(bool is_one) const; // inlined below
+
+
+  explicit BoolePolyRing(const base& rhs): base(rhs) { }
 };
 
+
+// temporarily here!
+
+  /// Access nvar-th ring variable
+inline  BoolePolyRing::dd_type BoolePolyRing::persistentVariable(idx_type nvar) const { 
+    return dd_base(*this, p_core->m_mgr.getVar(nvar)); 
+  }
+
+  /// Get empty decision diagram 
+inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_base(*this, p_core->m_mgr.zddZero()); }
+
+  /// Get decision diagram with all variables negated
+  inline  BoolePolyRing::dd_type BoolePolyRing::one() const { return dd_base(*this, p_core->m_mgr.zddOne()); }
+
+
+  /// Get constant one or zero
+inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
+
+inline BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const  { return
+ persistentVariable(nvar); }
 END_NAMESPACE_PBORI
 
 #endif // of #ifndef BoolePolyRing_h_

@@ -45,7 +45,7 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr(m.manager());
+            cache_mgr_type cache_mgr(m.ring());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
               return cache_mgr.generate(cached);
@@ -89,7 +89,7 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
             if (*nav_r!=*nav_l) return left.ring().zero();
             
             
-            cache_mgr_type cache_mgr(left.manager());
+            cache_mgr_type cache_mgr(left.ring());
             MonomialSet::navigator cached=cache_mgr.find(nav_l,nav_r, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
               return cache_mgr.generate(cached);
@@ -135,7 +135,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_y>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr(m.manager());
+            cache_mgr_type cache_mgr(m.ring());
             MonomialSet::navigator x_nav=((Polynomial) x).diagram().navigation();
             MonomialSet::navigator y_nav=((Polynomial) y).diagram().navigation();
             MonomialSet::navigator cached=cache_mgr.find(nav, x_nav,y_nav);
@@ -178,7 +178,7 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_one>
                  cache_mgr_type;
             
-            cache_mgr_type cache_mgr(m.manager());
+            cache_mgr_type cache_mgr(m.ring());
             MonomialSet::navigator cached=cache_mgr.find(nav, ((Polynomial) x).diagram().navigation());
             if (cached.isValid() ){
               return cache_mgr.generate(cached);

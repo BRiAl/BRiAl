@@ -11,61 +11,6 @@
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.16  2007/12/13 15:53:49  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.15  2007/12/07 17:06:19  dreyer
- * CHANGE: First try: ring and order separated
- *
- * Revision 1.14  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.13  2007/11/29 16:28:32  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.12  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.11  2007/07/06 14:04:22  dreyer
- * ADD: newly written C++_interface for Cudd
- *
- * Revision 1.10  2007/04/13 13:55:53  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.9  2006/11/29 13:40:03  dreyer
- * CHANGE: leadexp() made recursive and cached
- *
- * Revision 1.8  2006/10/02 15:39:36  dreyer
- * FIX: BooleExponent::push_back() (empty exponent)
- *
- * Revision 1.7  2006/09/20 07:06:39  dreyer
- * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
- *
- * Revision 1.6  2006/09/15 16:21:04  dreyer
- * CHANGE: testing more sophisticated hash fucntion for BooleExponent
- *
- * Revision 1.5  2006/09/14 10:57:26  dreyer
- * ADD: usedVariablesExp()
- *
- * Revision 1.4  2006/08/28 14:31:06  dreyer
- * FIX: using now correct const/nonconst iterators
- *
- * Revision 1.3  2006/08/28 07:25:08  dreyer
- * CHANGE: BooleExponent nomenclatur
- *
- * Revision 1.2  2006/08/24 14:47:50  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.1  2006/08/23 17:00:02  dreyer
- * ADD: initial version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -76,6 +21,7 @@
 
 // get ring definitions
 # include "BoolePolyRing.h"
+#include "COrderingBase.h"
 # include "PBoRiError.h"
 
 #include "pbori_routines.h"

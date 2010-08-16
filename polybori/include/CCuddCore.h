@@ -8,48 +8,8 @@
  * This files defines a 
  *
  * @par Copyright:
- *   (c) 2007 by The PolyBoRi Team
+ *   (c) 2007-2010by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.11  2009/06/21 22:57:28  dreyer
- * CHANGE: preparing ring-cloning (deep copy) even more
- *
- * Revision 1.10  2009/06/21 22:46:28  dreyer
- * CHANGE: preparing ring-cloning (deep copy)
- *
- * Revision 1.9  2008/04/12 22:22:36  dreyer
- * + CCuddCore even cleaner
- *
- * Revision 1.8  2008/04/10 12:45:01  dreyer
- * Fix: memory leak
- *
- * Revision 1.7  2007/12/19 10:40:34  dreyer
- * CHANGE: make Cudd-related globals initialization static
- *
- * Revision 1.6  2007/12/19 09:03:16  dreyer
- * CHANGE: make Cudd-related globals static
- *
- * Revision 1.5  2007/12/18 22:05:40  dreyer
- * CHANGE: persistent variables computed on manaer initialization
- *
- * Revision 1.4  2007/12/18 10:20:16  dreyer
- * CHANGE CNamedManager removed, names are in core now
- *
- * Revision 1.3  2007/12/18 08:28:03  dreyer
- * CHANGE: minor changes
- *
- * Revision 1.2  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.1  2007/07/19 11:41:47  dreyer
- * CHANGE: clean-up
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

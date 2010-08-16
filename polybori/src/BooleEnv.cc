@@ -35,15 +35,14 @@
 
 
 // load header file
-# include "BooleEnv.h"
-# include "BoolePolyRing.h"
+#include "BooleEnv.h"
+#include "BoolePolyRing.h"
+#include "COrderingBase.h"
 
 BEGIN_NAMESPACE_PBORI
 
 
-BooleEnv::ring_type active_ring;
-// Note, direct access via friends, to  active_ring.pOrder and pMgt, because
-// inline doesn't work up to now, because os the undefined type issue.
+BooleEnv::ring_type active_ring(10);
 
 /// @todo needs inlining!!!
 #ifdef PBORI_ENV_RING_NOTINLINED
@@ -76,7 +75,7 @@ void BooleEnv::clearBlocks() {
 
 BooleEnv::idx_type
 BooleEnv::lastBlockStart() {
-  return active_ring.lastBlockStart();
+  return active_ring.ordering().lastBlockStart();
 }
 
 

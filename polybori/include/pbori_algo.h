@@ -714,7 +714,7 @@ cudd_generate_multiples(const ManagerType& mgr,
     Cudd_Deref(prev);
 
     typedef DDBase dd_base;
-    return dd_base(get_mgr_core(mgr), prev);
+    return dd_base(mgr, prev);
   }
 
 
@@ -743,7 +743,7 @@ cudd_generate_divisors(const ManagerType& mgr,
 
     Cudd_Deref(prev);
     ///@todo Next line needs generalization 
-      return DDBase(get_mgr_core(mgr), prev);
+      return DDBase(mgr, prev);
 
 }
 

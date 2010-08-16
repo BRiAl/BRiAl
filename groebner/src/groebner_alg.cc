@@ -188,7 +188,7 @@ static MonomialSet do_fixed_path_divisors(MonomialSet a,
   MonomialSet::navigator a_nav=a.navigation();
 
   typedef fixed_divisors_cache_type cache_mgr_type;
-  cache_mgr_type cache_mgr(a.manager());
+  cache_mgr_type cache_mgr(a.ring());
 
   return do_fixed_path_divisors(cache_mgr, a_nav, m_nav, n_nav);
 }
@@ -249,7 +249,7 @@ MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs) {
   typedef PBORI::CacheManager<CCacheTypes::mod_varset>
     cache_mgr_type;
 
-  cache_mgr_type cache_mgr(as.manager());
+  cache_mgr_type cache_mgr(as.ring());
   return mod_var_set(cache_mgr, a, v);
 }
 
@@ -298,7 +298,7 @@ MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs){
   MonomialSet::navigator v=vs.navigation();
   typedef PBORI::CacheManager<CCacheTypes::mod_deg2_set>
     cache_mgr_type;
-  cache_mgr_type cache_mgr(as.manager());
+  cache_mgr_type cache_mgr(as.ring());
 
   return mod_deg2_set(cache_mgr, a, v);
 }
@@ -311,7 +311,7 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m){
     typedef PBORI::CacheManager<CCacheTypes::contained_variables>
       cache_mgr_type;
 
-    cache_mgr_type cache_mgr(m.manager());
+    cache_mgr_type cache_mgr(m.ring());
 
 
     while (!(nav.isConstant())){
@@ -348,7 +348,7 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
     typedef PBORI::CacheManager<CCacheTypes::contained_deg2>
       cache_mgr_type;
 
-    cache_mgr_type cache_mgr(m.manager());
+    cache_mgr_type cache_mgr(m.ring());
 
 
     if (!(nav.isConstant())){
@@ -1702,7 +1702,7 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
 
 
-  cache_mgr_type cache_mgr(m.manager());
+  cache_mgr_type cache_mgr(m.ring());
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(m_nav);
 
@@ -1770,7 +1770,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
 
 
 
-  cache_mgr_type cache_mgr(m.manager());
+  cache_mgr_type cache_mgr(m.ring());
   PBORI::BoolePolynomial::navigator cached =
     cache_mgr.find(m_nav, mod_nav);
 
@@ -2183,7 +2183,7 @@ Polynomial map_every_x_to_x_plus_one(Polynomial p){
   typedef PBORI::CacheManager<CCacheTypes::map_every_x_to_x_plus_one>
     cache_mgr_type;
   
-  cache_mgr_type cache_mgr(p.diagram().manager());
+  cache_mgr_type cache_mgr(p.ring());
   return map_every_x_to_x_plus_one(cache_mgr, nav);
 }
 
@@ -2442,7 +2442,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 }
 Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
     Polynomial::navigator nav=p.navigation();
-    idx_type last=BooleEnv::ring().lastBlockStart();
+    idx_type last=BooleEnv::ordering().lastBlockStart();
     if ((*nav)>=last) //includes constant polynomials
         return p;
     while ((*nav)<last){

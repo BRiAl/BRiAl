@@ -11,25 +11,6 @@
  * @par Copyright:
  *   (c) 2008 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.4  2009/07/23 19:41:06  dreyer
- * ADD: BooleRing::hash
- *
- * Revision 1.3  2009/06/22 07:58:42  dreyer
- * ADD: cloning of rings
- *
- * Revision 1.2  2008/03/03 18:07:19  dreyer
- * Fix: missing things in Python-interface
- *
- * Revision 1.1  2008/03/02 23:45:34  dreyer
- * CHANGED: added contructors for given ring
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -39,7 +20,7 @@
 // include basic decision diagram manager interface 
   //#include "CDDManager.h"
 #include "CCuddCore.h"
-
+#include "PBoRiError.h"
 #include <boost/intrusive_ptr.hpp>
 
 #ifndef BooleRing_h_
@@ -52,6 +33,9 @@ BEGIN_NAMESPACE_PBORI
  * managers as Boolean polynomial rings.
  *
  **/
+template <class DiagramType, class RingType>
+class CCuddDDBase;
+
 class BooleRing: 
   public CTypes::orderenums_type, public CTypes::compenums_type, 
   public CTypes::auxtypes_type {
@@ -90,10 +74,18 @@ class BooleRing:
   /// Explicitely mention ordercodes' enumeration
   using CTypes::orderenums_type::ordercodes;
 
-   /// Constructor
-  BooleRing();
+protected:
+
+  template <class, class> class CCuddDDBase;
+  /// Support for shallow copy (clone)
+  /// @note May generate invalid ring, hence @c protected 
+  BooleRing(const core_ptr& rhs):  p_core(rhs) {}
+
+public:
+   /// Constructor for @em nvars variables (and lp ordering)
   BooleRing(size_type nvars);
-   /// Constructor for @em nvars variables
+
+  /// Constructor for @em nvars variables (and given pointer to ordering)
   BooleRing(size_type nvars,
             const order_ptr& order):
     p_core(new core_type(nvars, order)) {}
@@ -101,39 +93,9 @@ class BooleRing:
   /// Copy constructor (cheap)
   BooleRing(const self& rhs):  p_core(rhs.p_core) {}
 
-protected:
-public:
-  /// Support for shallow copy (clone)
-  BooleRing(const core_ptr& rhs):  p_core(rhs) {}
-
-public:
-  /// destructor
+  /// Destructor
   ~BooleRing() {}
 
-//   /// Access to decision diagram manager
-//   manager_type& manager() {  return m_mgr; }
-
-//   /// Constant access to decision diagram manager
-//   const manager_type& manager() const {  return m_mgr; }
-
-  /// Access nvar-th variable of decision diagram manager
-  //  dd_type ddVariable(idx_type nvar) const { return m_mgr.ddVariable(nvar); }
-
-  /// Access nvar-th ring variable
-  dd_type variable(idx_type nvar) const;// inlined in BooleSet.h
-
-  /// Access nvar-th ring variable
-  dd_type persistentVariable(idx_type nvar) const; // inlined in BooleSet.h
-
-  /// Get empty decision diagram 
-  dd_type zero() const; // inlined in BooleSet.h
-
-  /// Get decision diagram with all variables negated
-  dd_type one() const; // inlined in BooleSet.h
-
-
-  /// Get constant one or zero
-  dd_type constant(bool is_one) const; // inlined in BooleSet.h
 
   /// Get number of ring variables
   size_type nVariables() const { return p_core->m_mgr.nVariables(); }
@@ -158,15 +120,10 @@ public:
   /// Print out statistics and settings for current ring
   void printInfo() {  return p_core->m_mgr.info(); }
 
-  /// Generate ring based on the same manager
-  self clone() const {
-    return self(new core_type(*p_core));
-  }
-
   /// Get unique identifier for manager of *this
   hash_type hash() const { 
     return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t
-                                  >(p_core->m_mgr.getManager())); 
+                                  >(getManager())); 
   }
 
   /// Access ordering of *this
@@ -174,24 +131,22 @@ public:
     return *(p_core->pOrder); 
   }
 
-  /// Access ordering of *this
-  //  order_ptr pOrdering() const { return m_mgr.manager().managerCore()->pOrder; }
-
-
-  core_ptr core() const {return p_core;};
+  /// Get plain decision diagram manager
   DdManager* getManager() const {
     return p_core->m_mgr.getManager();
   }
 
-protected: 
+  /// Deep copy of @c *this
+  self clone() const {  return self(new core_type(*p_core)); }
+protected:
 
+  /// Access to actual data (via ->)
+  core_ptr core() const {return p_core;};
+
+  /// Smart pointer to actual data
   core_ptr p_core;
 };
 
 
-inline boost::intrusive_ptr<CCuddCore>
-get_mgr_core(const BooleRing& rhs) { 
-  return rhs.core();
-}
 END_NAMESPACE_PBORI
 #endif

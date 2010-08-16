@@ -47,10 +47,10 @@ Polynomial do_is_rewriteable(const Polynomial& p, const MonomialSet& leading_ter
     
     typedef PBORI::CacheManager<CCacheTypes::mod_mon_set>
       cache_mgr_type_mod_mon_set;
-    cache_mgr_type_mod_mon_set cache_mgr_mod_mon_set(p.diagram().manager());
+    cache_mgr_type_mod_mon_set cache_mgr_mod_mon_set(p.ring());
     typedef PBORI::CacheManager<CCacheTypes::is_rewriteable>
       cache_mgr_type;
-    cache_mgr_type cache_mgr(p.diagram().manager());
+    cache_mgr_type cache_mgr(p.ring());
     assert(!(p.isZero()));
     assert(!(p_nav.isEmpty()));
     if (cache_mgr.generate(l_nav).ownsOne()){

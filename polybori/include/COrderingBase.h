@@ -147,6 +147,9 @@ public:
   /// (true for nonblock orderings)
   virtual bool_type lieInSameBlock(idx_type, idx_type) const = 0;
 
+  /// Generic procedure to get index, where last block starts
+  virtual idx_type lastBlockStart() const = 0;
+
 protected:
   /// Get monomial from set of subsets of Boolean variables (internal use only)
   monom_type monom(const set_type& rhs) const { return monom_type(rhs); }

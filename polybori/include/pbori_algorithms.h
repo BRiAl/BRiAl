@@ -342,8 +342,8 @@ template <class PolyType, class MapType>
 PolyType
 apply_mapping(const PolyType& poly, const MapType& map) {
 
-  CCacheManagement<typename CCacheTypes::mapping> 
-    cache(poly.diagram().manager());
+  CCacheManagement<typename PolyType::ring_type, typename CCacheTypes::mapping> 
+    cache(poly.ring());
 
   return dd_mapping(cache, poly.navigation(), map.navigation(), 
                     typename PolyType::set_type()); 

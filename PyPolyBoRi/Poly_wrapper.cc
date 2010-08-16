@@ -25,7 +25,7 @@ static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolyno
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
 
-    return dd_multiply<true>(cache_mgr_type(p.diagram().ring()), 
+    return dd_multiply<true>(cache_mgr_type(p.ring()), 
                              p.navigation(), q.navigation(),
                              BoolePolynomial()); 
     
@@ -34,7 +34,7 @@ static BoolePolynomial multiply_traditionally(const BoolePolynomial& p, const Bo
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
 
-    return dd_multiply<false>(cache_mgr_type(p.diagram().ring()), 
+    return dd_multiply<false>(cache_mgr_type(p.ring()), 
                               p.navigation(), q.navigation(),
                               BoolePolynomial() ); 
     
@@ -70,7 +70,7 @@ void export_poly(){
   .def(init<const BoolePolynomial &>())
   .def(init<const BoolePolynomial::navigator &, 
        const BoolePolynomial::ring_type &>())
-  .def(boost::python::init <int, BooleRing>())
+  .def(boost::python::init <int, BoolePolyRing>())
   .def(init<const CTypes::dd_type &>())
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())

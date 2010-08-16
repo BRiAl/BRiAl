@@ -9,39 +9,8 @@
  * C++ interface. 
  *
  * @par Copyright:
- *   (c) 2007 by The PolyBoRi Team
+ *   (c) 2007-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.8  2009/06/21 22:46:28  dreyer
- * CHANGE: preparing ring-cloning (deep copy)
- *
- * Revision 1.7  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.6  2007/07/19 11:41:47  dreyer
- * CHANGE: clean-up
- *
- * Revision 1.5  2007/07/18 18:57:00  dreyer
- * Fix: Another mysterious performance issue
- *
- * Revision 1.4  2007/07/18 15:46:14  dreyer
- * CHANGE: added documentation
- *
- * Revision 1.3  2007/07/18 15:11:00  dreyer
- * CHANGE: simplified handle_error
- *
- * Revision 1.2  2007/07/18 07:17:26  dreyer
- * CHANGE: some clean-ups
- *
- * Revision 1.1  2007/07/17 15:56:59  dreyer
- * ADD: header file for CCuddZDD; clean-up
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -69,8 +38,12 @@
 #include "pbori_traits.h"
 #include "CCuddCore.h"
 
-  //#include "BoolePolyRing.h"
-  //#include "CCuddInterface.h"
+#include "BooleRing.h"
+
+#include "PBoRiError.h"
+#include <stdexcept>
+
+
 
 BEGIN_NAMESPACE_PBORI
 
@@ -102,11 +75,6 @@ public:
   typedef RingType ring_type;
   PB_DECLARE_CUDD_TYPES(CCuddCore)
 
-  /// Define shared pointer type for handling the decision diagram manager
-  //  typedef typename CCuddCore::mgrcore_ptr mgrcore_ptr;
-
-
-
   /// Construct diagram from raw CUDD elements
   CCuddDDBase(const ring_type& ring, node_type ddNode): 
     m_ring(ring), node(ddNode) {
@@ -119,21 +87,14 @@ public:
     m_ring(from.m_ring), node(from.node) {
     if (node) {
       Cudd_Ref(node);
-      //PB_DD_VERBOSE("Copy DD constructor");
     }
   } 
 
   /// Default constructor
-  CCuddDDBase(): m_ring(), node(NULL) {}
-
-  /// Get (shared) pointer to decision diagram manager
-  const ring_type& manager() const { return m_ring; }
+  CCuddDDBase(): m_ring(NULL), node(NULL) {}
 
   /// Get (shared) pointer to decision diagram manager
   const ring_type& ring() const { return m_ring; }
-
-  /// Get raw decision diagram manager
-             //  DdManager* getManager() const { return m_ringddMgr->manager(); }
 
   /// Get raw node structure
   node_type getNode() const{  return node; }
@@ -153,18 +114,20 @@ public:
   /// Test whether diagram represents the empty set
   bool isZero() const { return node == Cudd_ReadZero(getManager()); }
 
+  /// Test whether diagram represents the empty set
+  bool isOne() const { return node == DD_ONE(getManager()); }
+
 protected:
 public:
   /// Get raw decision diagram manager
-  DdManager* getManager() const { return m_ring->m_mgr.getManager(); }
+  DdManager* getManager() const { return m_ring.getManager(); }
 protected:
   /// Test, whether both operands 
   void checkSameManager(const diagram_type& other) const {
-    if (getManager() != other.getManager()) 
-      assert(false);//todo
-//       (CCuddInterface::getHandler())("Operands come from different manager.");
+    if UNLIKELY(getManager() != other.getManager()) {
+      throw std::runtime_error("Operands come from different manager.");
+    }
   }
-
   /// Check whether decision diagram operation in computing result was valid
   void checkReturnValue(const node_type result) const {
     checkReturnValue(result != NULL);
@@ -173,9 +136,10 @@ protected:
   /// Check whether previous decision diagram operation for validity
   void checkReturnValue(const int result, const int expected = 1) const {
     if UNLIKELY(result != expected)
-      assert(false);//todo
-//       handle_error<>(CCuddInterface::getHandler())(Cudd_ReadErrorCode( getManager() ));
-  } 
+      throw std::runtime_error(error_text(getManager()));
+  }
+
+
 
    /// @name Apply CUDD procedures to nodes
   //@{
@@ -258,25 +222,22 @@ protected:
  **/
 
 class CCuddZDD : 
-  public CCuddDDBase<CCuddZDD, boost::intrusive_ptr<CCuddCore> > {
+  public CCuddDDBase<CCuddZDD, BooleRing> {
     friend class CCuddInterface;
-
-public:
-  /// Type of actual data
-  typedef CCuddCore core_type;
-
-  /// Smart pointer to core
-  typedef boost::intrusive_ptr<core_type> core_ptr;
 
   /// Name type of *this
   typedef CCuddZDD self;
 
+public:
+  /// Fix ring type
+  typedef BooleRing ring_type;
+
   /// Name the type, which self is inherited from
-  typedef CCuddDDBase<self,  core_ptr> base;
+  typedef CCuddDDBase<self,  ring_type> base;
   typedef  base::node_type node_type;
   /// Construct ZDD from manager core and node
 
-  CCuddZDD(const core_ptr& core, node_type bddNode): base(core, bddNode) {}
+  CCuddZDD(const ring_type& ring, node_type bddNode): base(ring, bddNode) {}
 
   /// Default constructor
   CCuddZDD(): base() {}
@@ -293,7 +254,7 @@ public:
   /// @name Logical operations
   //@{
   bool operator==(const self& other) const {
-    checkSameManager(other);
+    ///  checkSameManager(other);
     return base::node == other.node;
   }
   bool operator!=(const self& other) const { return !(*this == other); }
@@ -336,7 +297,7 @@ public:
   //@{
   void print(int nvars, int verbosity = 1) const { std::cout.flush(); 
     if UNLIKELY(!Cudd_zddPrintDebug(getManager(), node, nvars, verbosity))
-      assert(false); //todo//CCuddInterface::getHandler()("print failed");
+      throw std::runtime_error("ZDD print failed!");
   }
   void PrintMinterm() const  { apply(Cudd_zddPrintMinterm); }
   void PrintCover() const    { apply(Cudd_zddPrintCover); }

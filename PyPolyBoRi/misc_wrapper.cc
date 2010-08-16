@@ -37,7 +37,7 @@ idx_type top_index(const BooleSet& s){
 void export_misc(){
   def("mapping", mapping<BoolePolynomial, BooleMonomial>);
   def("substitute_variables",
-      substitute_variables<BooleRing, 
+      substitute_variables<BoolePolynomial::ring_type, 
                            std::vector<BoolePolynomial>, BoolePolynomial> );
   def("testvalidstrat",testvalidstrat);
   def("count_double",count_double);

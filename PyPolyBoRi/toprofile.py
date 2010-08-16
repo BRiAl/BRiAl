@@ -22,15 +22,17 @@ try:
 except:
     print 'No ordering in custom_profile.py file! Using ' + ordername + '.'
 
-data=load_data(datafilename, base_dir="../testsuite/py/")
+data=load_data(datafilename, base_dir="../../polybori-testsuite/")
 change_ordering(getattr(OrderCode,ordername))
 I=groebner_basis(data.ideal)
-from_ring=global_ring()
-change_ordering(lp)
-to_ring=global_ring()
-vec=BoolePolynomialVector()
-for p in I:
-    vec.append(p)
-from time import sleep
-sleep(30)
-res=FGLMStrategy(from_ring,to_ring, vec).main()
+
+
+## from_ring=global_ring()
+## change_ordering(lp)
+## to_ring=global_ring()
+## vec=BoolePolynomialVector()
+## for p in I:
+##     vec.append(p)
+## from time import sleep
+## sleep(30)
+## res=FGLMStrategy(from_ring,to_ring, vec).main()

@@ -131,7 +131,7 @@ class BooleVariable {
   typedef BooleSet set_type;
 
   /// Type for Boolean polynomial rings (without ordering)
-  typedef BooleRing ring_type;
+  typedef BoolePolyRing ring_type;
 
   /// Constructor idx-th variable of active ring
   explicit BooleVariable(idx_type idx = 0):

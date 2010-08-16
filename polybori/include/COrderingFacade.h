@@ -138,6 +138,17 @@ public:
                                typename order_type::blockorder_property());
   }
 
+
+  /// Generic procedure to get index, where last block starts
+  idx_type lastBlockStart() const {
+    if (isBlockOrder()) {
+      return *(blockEnd() - 2);
+    }
+    else if (isLexicographical()) {
+      return CTypes::max_idx;
+    }
+    return 0;
+  }
 protected:
 
   /// trivial case for non-block orderings

@@ -264,12 +264,12 @@ main(){
       // x1+ x2*x3+ x1*x2 +  x1*x2*x6  + x1*x2*x7+ x3*x4*x5;
     std::cout << "Polynom: "<< poly <<std::endl;
 
-    CBlockDegreeCache<> blockDegCache(poly.diagram().manager());
+    CBlockDegreeCache<> blockDegCache(poly.ring());
 
     std::cout <<"Block degree wrt. 2: " << 
       dd_cached_block_degree(blockDegCache, poly.navigation(), 2) << std::endl;
 
-    CCacheManagement<block_dlex_lead> cache_mgr(poly.diagram().manager());
+    CacheManager<block_dlex_lead> cache_mgr(poly.ring());
 
     BoolePolynomial::navigator navi(poly.navigation());
 
@@ -511,7 +511,7 @@ main(){
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
     std::cout.flush();
     
-    std::cout << "last begin: "<<BooleEnv::ring().lastBlockStart()<<std::endl; 
+    std::cout << "last begin: "<<BooleEnv::ordering().lastBlockStart()<<std::endl; 
 
 
 
@@ -564,7 +564,7 @@ main(){
     std::cout << "Testing== " <<std::endl;  
     std::cout <<    ( p.orderedBegin()==p.orderedEnd())<<std::endl ;
 
-    std::cout << "last begin: "<<BooleEnv::ring().lastBlockStart()<<std::endl;
+    std::cout << "last begin: "<<BooleEnv::ordering().lastBlockStart()<<std::endl;
 
     std::cout << "base order code: "<<BooleEnv::ordering().getBaseOrderCode()
               << std::endl;
