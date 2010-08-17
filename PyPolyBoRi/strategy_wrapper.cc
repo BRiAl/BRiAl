@@ -227,7 +227,7 @@ void export_strategy(){
         .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
         .def_readonly("minimal_leading_terms",&ReductionStrategy::minimalLeadingTerms)
         .def_readwrite("opt_ll",&ReductionStrategy::optLL)
-
+        .def("cheap_reductions", cheap_reductions)
         .def_readwrite("opt_red_tail",&ReductionStrategy::optRedTail)
         .def_readwrite("opt_red_tail_deg_growth",&ReductionStrategy::optRedTailDegGrowth)
         .def("can_rewrite",&ReductionStrategy::canRewrite)

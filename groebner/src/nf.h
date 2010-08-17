@@ -80,5 +80,6 @@ Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones);
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
 std::vector<Polynomial> gauss_on_polys(const std::vector<Polynomial>& orig_system);
 Polynomial ll_red_nf_noredsb_single_recursive_call(const Polynomial& p,const BooleSet& reductors);
+Polynomial cheap_reductions(const ReductionStrategy& strat, Polynomial p);
 END_NAMESPACE_PBORIGB
 #endif

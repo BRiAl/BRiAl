@@ -1464,6 +1464,29 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
   return res;
 }
 
+Polynomial cheap_reductions(const ReductionStrategy& strat, Polynomial p){
+    Polynomial p_bak;
+    while(!(p.isZero())){
+        p_bak=p;
+      //res+=lm;
+         p=mod_mon_set(p.diagram(),strat.monomials);
+
+         p=plug_1(p,strat.monomials_plus_one);
+         if (strat.optLL){
+           
+           p=ll_red_nf(p,strat.llReductor);
+           if (p_bak!=p){
+               p=mod_mon_set(p.diagram(),strat.monomials);
+           }
+         }
+         
+       if (p.isZero()) break;
+       if (p_bak==p) return p;
+       
+   }
+   return p;
+}
+
 template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& strat, Polynomial p){
   Polynomial res;
   int deg_bound=p.deg();
@@ -1476,24 +1499,14 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     p=Polynomial(p.diagram().diff(lm.diagram()));
   }
   while(!(p.isZero())){
-    
-    //res+=lm;
-     {
-       Polynomial p_bak=p;
-       p=mod_mon_set(p.diagram(),strat.monomials);
-       
-       //p=plug_1(p,strat.monomials_plus_one);
-       if (strat.optLL){
-         Polynomial p_bak2=p;
-         p=ll_red_nf(p,strat.llReductor);
-         if (p_bak2!=p){
-             p=mod_mon_set(p.diagram(),strat.monomials);
-             //p=plug_1(p,strat.monomials_plus_one);
-         }
-       }
-       if (p_bak!=p) changed=true;
-     if (p.isZero()) break;
-     }
+  {
+      Polynomial p_bak=p;
+      p = cheap_reductions(strat, p);    
+      if (p!=p_bak){
+          changed=true;
+      }
+  }
+  
     //p-=lm;
     std::vector<Monomial> irr;
     typename Helper::iterator_type it=Helper::begin(p);

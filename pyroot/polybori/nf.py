@@ -203,6 +203,19 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             else:
                 ps=strat.some_spolys_in_next_degree(selection_size)
             
+            if have_degree_order() and len(ps)>0:
+                ps=[strat.reduction_strategy.cheap_reductions(p) for p in ps]
+                ps=[p for p in ps if not p.is_zero()]
+                if len(ps)>0:
+                    min_deg=min((p.deg() for p in ps))
+                new_ps=[]
+                for p in ps:
+                    if p.deg()<=min_deg:
+                        new_ps.append(p)
+                    else:
+                        strat.add_generator_delayed(p)
+                ps=new_ps
+            
             if prot:
                 print "(", strat.npairs(), ")"
             if prot:
