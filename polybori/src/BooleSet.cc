@@ -491,9 +491,6 @@ BooleSet::print(ostream_type& os) const {
 
   typedef CStringLiteral<CLiteralCodes::empty>  empty_type;
 
-  //  typedef CTypes::manager_type mgr_type;
-  typedef CTypes::manager_base mgr_type;
-
   if( base::emptiness() )
     os << "{}";
   else {

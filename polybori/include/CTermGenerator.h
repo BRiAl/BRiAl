@@ -92,7 +92,7 @@ public:
   typedef TermType value_type;
   typedef value_type result_type;
 
-  typedef  CTypes::manager_base manager_base;
+  //  typedef  CTypes::manager_base manager_base;
 
   typedef  CTypes::dd_type dd_type;
   typedef  BoolePolyRing data_type;

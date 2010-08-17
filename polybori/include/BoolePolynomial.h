@@ -101,9 +101,6 @@ public:
 
   /// @name Adopt global type definitions
   //@{
-  typedef CTypes::manager_type manager_type;
-  typedef CTypes::manager_reference manager_reference;
-  typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::size_type size_type;
   typedef CTypes::deg_type deg_type;

@@ -73,9 +73,6 @@ class BooleEnv:
   /// @name adopt global type definitions
   //@{
   typedef CTypes::ordercode_type ordercode_type;
-  typedef CTypes::manager_type manager_type;
-  typedef CTypes::manager_reference manager_reference;
-  typedef CTypes::manager_ptr manager_ptr;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::vartext_type vartext_type;
   //@}

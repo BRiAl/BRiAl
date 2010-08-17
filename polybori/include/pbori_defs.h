@@ -529,18 +529,6 @@ struct CTypes:
   /// Vector of dd_type
   typedef ZDDvector ddvector_type;
 
-  /// Variables manager base type
-  typedef boost::intrusive_ptr<CCuddCore>  manager_base;
-
-  /// Manage variables to be used by polynomials over Boolean ring
-  typedef CDDManager<manager_base> manager_type;
-
-  /// Reference to decision diagramm manager
-  typedef CDDManager<manager_base&>  manager_reference;
-  
-  /// Define shared pointer to decision diagram manager
-  typedef PBORI_SHARED_PTR(manager_type) manager_ptr;
-
   /// Fix type and value of maximal index
   static idx_type max_index() { return max_idx; }
 };
