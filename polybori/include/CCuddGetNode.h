@@ -38,7 +38,7 @@
 
 // get navigator type for cudd zdds
 #include "CCuddNavigator.h"
-
+#define CCuddGetNode_h_
 #ifndef CCuddGetNode_h_
 #define CCuddGetNode_h_
 

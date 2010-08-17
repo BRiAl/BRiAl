@@ -8,48 +8,8 @@
  * This file defines properties of built-in an polybori types.
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.11  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.10  2007/07/19 11:41:48  dreyer
- * CHANGE: clean-up
- *
- * Revision 1.9  2007/07/18 07:36:34  dreyer
- * CHANGE: some clean-ups
- *
- * Revision 1.8  2007/07/18 07:17:27  dreyer
- * CHANGE: some clean-ups
- *
- * Revision 1.7  2007/07/17 15:57:00  dreyer
- * ADD: header file for CCuddZDD; clean-up
- *
- * Revision 1.6  2007/07/06 14:04:22  dreyer
- * ADD: newly written C++_interface for Cudd
- *
- * Revision 1.5  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.4  2006/07/20 08:55:49  dreyer
- * ADD isOrdered() and  isLexicographical()
- *
- * Revision 1.3  2006/06/06 10:56:59  dreyer
- * CHANGE usedVariables() more efficient now.
- *
- * Revision 1.2  2006/04/24 11:41:56  dreyer
- * FIX only necessary types are traits
- *
- * Revision 1.1  2006/04/24 11:34:05  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -87,15 +47,6 @@ public:
 
   /// Type of interface to binary decicion diagrams 
   typedef typename value_type::dd_type dd_type;
-
-//   /// Manage variables to be used by polynomials over Boolean ring
-//   typedef typename value_type::manager_type manager_type;
-
-//   /// Reference to decision diagramm manager
-//    typedef typename value_type::manager_reference manager_reference;
-
-//   /// Define shared pointer to decision diagram manager
-//    typedef typename value_type::manager_ptr manager_ptr;
 
   //-------------------------------------------------------------------------
   // types for several purposes
@@ -184,28 +135,8 @@ class pbori_binary_traits:
 template <class MgrType>
 struct manager_traits;
 
-template <>
-struct manager_traits<Cudd> {
-  typedef ZDD dd_base;
-  typedef Cudd* core_type;
-  typedef Cudd& tmp_ref;
-};
-
-template <>
-struct manager_traits<Cudd*> :
-  public manager_traits<Cudd> {
-};
-
-template <>
-struct manager_traits<DdManager*> :
-  public manager_traits<Cudd> {
-};
-
 template <class CuddLike>
 struct manager_traits {
-  // typedef typename CuddLike::dd_type dd_base;
-  // typedef typename CuddLike::mgrcore_ptr core_type;
-  // typedef typename CuddLike::tmp_ref tmp_ref;
 
   typedef unsigned long large_size_type;
   typedef long int refcount_type;
@@ -216,7 +147,6 @@ struct manager_traits {
   typedef DdNode* node_type;
   typedef DdManager* mgrcore_type;
 
-  typedef PFC errorfunc_type;
   typedef node_type (*unary_int_function)(mgrcore_type, int);
   typedef node_type (*void_function)(mgrcore_type);
 
@@ -228,32 +158,6 @@ struct manager_traits {
   typedef int (*int_unary_function)(mgrcore_type, node_type);
 };
 
-template <class CuddLike>
-struct mgrcore_traits;
-
-template<>
-struct mgrcore_traits<Cudd> {
-
-  typedef unsigned long large_size_type;
-  typedef long int refcount_type;
-
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::size_type size_type;
-
-  typedef DdNode* node_type;
-  typedef DdManager* mgrcore_type;
-
-  typedef PFC errorfunc_type;
-  typedef node_type (*unary_int_function)(mgrcore_type, int);
-  typedef node_type (*void_function)(mgrcore_type);
-
-  typedef DD_CTFP binary_function;
-  typedef node_type (*binary_int_function)(mgrcore_type, node_type, int);
-  typedef 
-  node_type (*ternary_function)(mgrcore_type, node_type, node_type, node_type);
-
-  typedef int (*int_unary_function)(mgrcore_type, node_type);
-};
 
 #define PB_DECLARE_CUDD_TYPES(fromspace) \
   typedef fromspace::errorfunc_type errorfunc_type;           \
@@ -269,25 +173,6 @@ struct mgrcore_traits<Cudd> {
   typedef fromspace::int_unary_function int_unary_function;   \
   typedef fromspace::size_type size_type;\
   typedef fromspace::idx_type idx_type;
-
-// template <>
-// struct manager_traits<CCuddInterface::mgrcore_ptr> :
-//   public manager_traits<CCuddInterface> {
-// };
-
-
-template <class ZDDType>
-struct zdd_traits;
- 
-template <>
-struct zdd_traits<ZDD>  {
-  typedef Cudd manager_base;
-};
-
-template <>
-struct zdd_traits<CCuddZDD>  {
-  typedef CCuddInterface manager_base;
-};
 
 
 #define PB_BINARY_FUNC_CALL(count, funcname, arg_pair)                        \

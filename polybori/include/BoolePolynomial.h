@@ -85,7 +85,8 @@ class BoolePolynomial;
 BoolePolynomial 
 operator+(const BoolePolynomial& lhs, const BoolePolynomial& rhs);
 
-class BoolePolynomial {
+class BoolePolynomial:
+  public CAuxTypes{
 
 public:
 
@@ -102,12 +103,7 @@ public:
   /// @name Adopt global type definitions
   //@{
   typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::deg_type deg_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::bool_type bool_type;
   typedef CTypes::ostream_type ostream_type;
-  typedef CTypes::hash_type hash_type;
   //@}
 
   /// Iterator type for iterating over indices of the leading term

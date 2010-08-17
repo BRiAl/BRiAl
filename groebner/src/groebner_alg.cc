@@ -11,6 +11,7 @@
 #include "nf.h"
 #include <algorithm>
 #include <set>
+
 #define DANGEROUS_FIXED_PATH 1
 #define HAVE_DLEX4_DATA 1
 
@@ -1378,7 +1379,7 @@ static int get_table_entry4(int p_code, int pos){
             return dp_asc4var_data[p_code][pos];
         #endif
         default:
-            cerr<<"using tables with forbidden order"<<endl;
+          std::cerr<<"using tables with forbidden order"<<std::endl;
     }
     return 0;
 }
@@ -1400,7 +1401,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     //Monomial used_variables_m=p.usedVariables();
     Exponent used_variables=p.usedVariablesExp();
     Exponent e=p.leadExp();
-    if (e.size()>4) cerr<<"too many variables for table"<<endl;
+    if (e.size()>4) std::cerr<<"too many variables for table"<<std::endl;
     
     std::vector<char> ring_2_0123(BooleEnv::ring().nVariables());
     std::vector<idx_type> back_2_ring(4);

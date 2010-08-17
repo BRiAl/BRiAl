@@ -65,15 +65,27 @@ BEGIN_NAMESPACE_PBORI
  **/
 
 template <class DiagramType, class RingType>
-class CCuddDDBase: public CTypes {
+class CCuddDDBase: 
+  public CTypes {
 
+  typedef CCuddDDBase self;
 public:
   /// Name type of *this
   typedef DiagramType diagram_type;
-  typedef CCuddDDBase self;
 
   typedef RingType ring_type;
-  PB_DECLARE_CUDD_TYPES(CCuddCore)
+
+  typedef DdNode* node_type; 
+  typedef DdManager mgr_type;
+  typedef node_type (*unary_int_function)(mgr_type*, int);
+  typedef node_type (*void_function)(mgr_type*);
+
+  typedef DD_CTFP binary_function;
+  typedef node_type (*binary_int_function)(mgr_type*, node_type, int);
+  typedef 
+  node_type (*ternary_function)(mgr_type*, node_type, node_type, node_type);
+
+  typedef int (*int_unary_function)(mgr_type*, node_type);
 
   /// Construct diagram from raw CUDD elements
   CCuddDDBase(const ring_type& ring, node_type ddNode): 

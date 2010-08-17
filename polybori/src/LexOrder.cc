@@ -230,7 +230,7 @@ LexOrder::leadIteratorBegin(const poly_type& poly) const {
 
 
 //   typedef CTermStackBase<navigator, monom_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
 
@@ -249,7 +249,7 @@ LexOrder::leadExpIteratorBegin(const poly_type& poly) const {
   //  return generic_iteration<self, iterator>().leadIterator(poly);
 //   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
 
@@ -264,7 +264,7 @@ LexOrder::leadExpIteratorEnd() const {
 //   typedef CGenericCore<self, navigator, exp_type>
 //     iterator_core; 
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, exp_type>();
@@ -278,7 +278,7 @@ LexOrder::leadIteratorEnd() const {
 
 //   typedef CGenericCore<self, navigator, monom_type> iterator_core; 
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, monom_type>();

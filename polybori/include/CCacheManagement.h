@@ -211,13 +211,6 @@ private:
 template <class ManagerType, class CacheType, unsigned ArgumentLength>
 class CCacheManBase;
 
-// Fixing base type for Cudd-Like type Cudd
-template <class CacheType, unsigned ArgumentLength>
-struct pbori_base<CCacheManBase<Cudd, CacheType, ArgumentLength> > {
-
-  typedef CCuddLikeMgrStorage<Cudd>  type;
-};
-
 // Fixing base type for Cudd-Like type CCuddInterface
 template <class CacheType, unsigned ArgumentLength>
 struct pbori_base<CCacheManBase<CCuddInterface, CacheType, ArgumentLength> > {

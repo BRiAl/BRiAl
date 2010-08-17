@@ -46,7 +46,7 @@ public:
   typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
-  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+  typedef boost::shared_ptr<order_type> order_ptr;
 
 };
 

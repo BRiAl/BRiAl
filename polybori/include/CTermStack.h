@@ -8,105 +8,8 @@
  * 
  *
  * @par Copyright:
- *   (c) 2007 by The PolyBoRi Team
+ *   (c) 2007-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.30  2008/11/25 11:10:46  dreyer
- * CHANGE: UNLIKELY constructs in CTermStack
- *
- * Revision 1.29  2008/11/24 23:40:22  dreyer
- * Fix: reversed iterator at begin issue
- *
- * Revision 1.28  2008/11/22 23:47:31  dreyer
- * ADD: BooleSet::rbegin(),end()
- *
- * Revision 1.27  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.26  2008/07/18 22:37:50  dreyer
- * Fix: doxygen clean-up (removed inclusion loop)
- *
- * Revision 1.25  2008/01/17 15:18:40  dreyer
- * CHANGE: removed several calls of BooleEnv::*
- *
- * Revision 1.24  2008/01/16 17:10:18  dreyer
- * CHANGE: term-iterators use correct manager now
- *
- * Revision 1.23  2007/12/17 16:12:02  dreyer
- * CHANGE: reviewed and optimized merge frim sf.net
- *
- * Revision 1.22  2007/12/13 15:53:49  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.21  2007/11/06 15:03:35  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.20  2007/10/09 10:30:52  dreyer
- * ADD: poly.gradedPart(deg); FIX: term_accumulate (constant term)
- *
- * Revision 1.19  2007/05/18 11:48:39  dreyer
- * ADD: sophisticated term_accumulate
- *
- * Revision 1.18  2007/05/15 15:08:26  dreyer
- * Fix: broken equal()
- *
- * Revision 1.17  2007/05/14 08:44:07  dreyer
- * ADD: isOne()/isZero() to term iterators
- *
- * Revision 1.16  2007/05/10 13:12:56  dreyer
- * CHANGE: using optimized term generation in term-iterator's dereferencing
- *
- * Revision 1.15  2007/05/04 15:26:27  dreyer
- * CHANGE: Optimized version for monomial term generation
- *
- * Revision 1.14  2007/05/03 16:04:45  dreyer
- * CHANGE: new-style CTermIter integrated
- *
- * Revision 1.13  2007/04/30 15:20:31  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.12  2007/04/27 21:20:04  dreyer
- * CHANGE: testing exponent iterator
- *
- * Revision 1.11  2007/04/24 15:23:03  dreyer
- * FIX: minor changes fixing -Wall warnings
- *
- * Revision 1.10  2007/04/24 11:45:39  dreyer
- * CHANGE: code clean up
- *
- * Revision 1.9  2007/04/23 15:47:54  dreyer
- * FIX: compilation error due to protection (again)
- *
- * Revision 1.8  2007/04/23 15:40:59  dreyer
- * FIX: compilation error due to protection
- *
- * Revision 1.7  2007/04/23 15:32:17  dreyer
- * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
- *
- * Revision 1.6  2007/04/22 19:47:21  dreyer
- * CHANGE: Code cleaned-up
- *
- * Revision 1.5  2007/04/19 16:33:08  dreyer
- * CHANGE: code cleaned-up
- *
- * Revision 1.4  2007/04/18 15:37:28  dreyer
- * ADD: dp_asc now active
- *
- * Revision 1.3  2007/04/13 15:18:10  dreyer
- * CHANGE: fine tuning
- *
- * Revision 1.2  2007/04/13 13:55:53  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.1  2007/04/11 16:09:03  dreyer
- * ADD: initial version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -401,7 +304,7 @@ public:
 
   void print() const{
     std::cout <<"(";
-    std::copy(begin(), end(), std::ostream_iterator<int>(cout, ", ")); 
+    std::copy(begin(), end(), std::ostream_iterator<int>(std::cout, ", ")); 
     std::cout <<")";
   }
 

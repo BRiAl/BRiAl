@@ -208,7 +208,7 @@ DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
 
 //   typedef CGenericCore<self, navigator, monom_type> iterator_core; 
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_iterator(core_pointer(new iterator_core(poly)));
   return CGenericOrderedIter<self, navigator, 
@@ -223,7 +223,7 @@ DegRevLexAscOrder::leadIteratorEnd() const {
 
 //   typedef CGenericCore<self, navigator, monom_type> iterator_core; 
 //   typedef CAbstractIterCore<navigator, monom_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_iterator(core_pointer(new iterator_core()));
 
@@ -238,7 +238,7 @@ DegRevLexAscOrder::leadExpIteratorBegin(const poly_type& poly) const {
 
 //   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core(poly)));
  
@@ -251,7 +251,7 @@ DegRevLexAscOrder::leadExpIteratorEnd() const {
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadExpIteratorEnd() const" );
 //   typedef CGenericCore<self, navigator, exp_type>  iterator_core; 
 //   typedef CAbstractIterCore<navigator, exp_type> base_core;
-//   typedef PBORI_SHARED_PTR(base_core) core_pointer;
+//   typedef boost::shared_ptr<base_core> core_pointer;
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core()));
 

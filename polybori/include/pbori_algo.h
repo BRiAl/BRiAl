@@ -642,10 +642,7 @@ inline const MgrType&
 get_mgr_core(const MgrType& rhs) { 
   return rhs;
 }
-inline Cudd*
-get_mgr_core(const Cudd& rhs) { 
-  return &const_cast<Cudd&>(rhs);
-}
+
 
 ///@todo merge with extract_manager
 // inline CCuddInterface::mgrcore_ptr

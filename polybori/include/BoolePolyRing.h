@@ -44,7 +44,7 @@ class BooleMonomial;
 
 
 /** @class BoolePolyRing
- * @brief This class adds order-related functionality to BooleRing.
+ * @brief This class adds functionality to BooleRing.
  *
  *
  **/
@@ -84,7 +84,7 @@ class BoolePolyRing:
   typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
-  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+  typedef boost::shared_ptr<order_type> order_ptr;
 
   /// Reference for handling mterm orderings
   typedef order_type& order_reference;
@@ -131,9 +131,6 @@ class BoolePolyRing:
   /// Access nvar-th ring variable
   dd_type variable(idx_type nvar) const;// inlined below
 
-  /// Access nvar-th ring variable
-  dd_type persistentVariable(idx_type nvar) const; // inlined below
-
   /// Get empty decision diagram 
   dd_type zero() const; // inlined below
 
@@ -151,7 +148,7 @@ class BoolePolyRing:
 // temporarily here!
 
   /// Access nvar-th ring variable
-inline  BoolePolyRing::dd_type BoolePolyRing::persistentVariable(idx_type nvar) const { 
+inline  BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const { 
     return dd_base(*this, p_core->m_mgr.getVar(nvar)); 
   }
 
@@ -165,8 +162,7 @@ inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_base(*this
   /// Get constant one or zero
 inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
 
-inline BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const  { return
- persistentVariable(nvar); }
+
 END_NAMESPACE_PBORI
 
 #endif // of #ifndef BoolePolyRing_h_

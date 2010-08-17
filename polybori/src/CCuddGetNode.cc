@@ -35,6 +35,7 @@
 **/
 //*****************************************************************************
 
+#if 0
 // include basic definitions
 #include "CCuddGetNode.h"
 
@@ -135,3 +136,5 @@ CCuddGetNode::operator()(const node_type& oldnode) const {
 
 
 END_NAMESPACE_PBORI
+
+#endif
