@@ -1925,7 +1925,7 @@ MonomialSet recursively_insert(const MgrType& mgr,
 
 // Wrapper for external use
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset){
-  return recursively_insert(mset.manager(), p, idx, mset.navigation());
+  return recursively_insert(mset.ring(), p, idx, mset.navigation());
 }
 
 void addPolynomialToReductor(Polynomial& p, MonomialSet& m){

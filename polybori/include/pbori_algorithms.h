@@ -287,7 +287,7 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
   /// @note: This line always uses the active manager!
   /// @todo: check correct manager
   if(first.isZero())
-    return typename ValueType::dd_type(init.diagram().manager(),
+    return typename ValueType::dd_type(init.ring(),
                                        first.navigation());
 
   ValueType result = upper_term_accumulate(first.begin(), first.end(), 

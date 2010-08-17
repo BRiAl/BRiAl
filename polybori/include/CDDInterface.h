@@ -379,12 +379,6 @@ class CDDInterface:
   /// Iterator type for navigation throught Cudd's ZDDs structure
   typedef CCuddNavigator navigator;
 
-  /// Type for output of pretty print
-  typedef FILE* pretty_out_type;
-
-  /// Type for file name of pretty print output
-  typedef const char* filename_type;
-
   /// This type has an easy equality check
   typedef valid_tag easy_equality_property;
 
@@ -638,10 +632,7 @@ class CDDInterface:
   const ring_type& ring() const {
     return m_interfaced.ring();
   }
-  /// Get reference to actual decision diagram manager 
-  const ring_type& manager() const {
-    return ring();
-  }
+
   /// Get reference to actual decision diagram manager 
   DdManager* getManager() const {
     return ring().getManager();
@@ -789,7 +780,7 @@ cudd_generate_multiples(const ManagerType& mgr,
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );
 
-    return cudd_generate_multiples( manager(),
+    return cudd_generate_multiples( ring(),
                                     indices.rbegin(), indices.rend(),
                                     multipliers.rbegin(),
                                     multipliers.rend() );
@@ -833,7 +824,7 @@ cudd_generate_divisors(const ManagerType& mgr,
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );
 
-    return cudd_generate_divisors(manager(), indices.rbegin(), indices.rend());
+    return cudd_generate_divisors(ring(), indices.rbegin(), indices.rend());
   }
 
   /// Navigate through ZDD by incrementThen(), incrementElse(), and terminated()
@@ -890,7 +881,7 @@ private:
 
   self fromTemporaryNode(const navigator& navi) const { 
     navi.decRef();
-    return self(manager(), navi.getNode());
+    return self(ring(), navi.getNode());
   }
 
 

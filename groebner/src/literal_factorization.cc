@@ -123,8 +123,8 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
         if (min_idx!=x.index()) other=x; else other=y;
         return
           Polynomial(do_left_equals_right_x_branch_and_r_has_fac_x(
-              MonomialSet::dd_type(m.manager(), nav.thenBranch()), 
-              MonomialSet::dd_type(m.manager(), nav.elseBranch()), 
+              MonomialSet::dd_type(m.ring(), nav.thenBranch()), 
+              MonomialSet::dd_type(m.ring(), nav.elseBranch()), 
               other).isOne(), m.ring());
     } else {
         assert(!(nav.isEmpty()));
