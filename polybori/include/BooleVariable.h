@@ -61,7 +61,6 @@ class BooleVariable:
   BooleVariable(idx_type idx, const ring_type& ring):
     m_poly( ring.variable(idx) ) {}
 
-  
   /// Copy constructor
   BooleVariable(const self& rhs):  
     m_poly(rhs.m_poly) {}
@@ -95,17 +94,23 @@ class BooleVariable:
   ring_type ring() const { return m_poly.ring(); } 
 
 private:
+  friend class BoolePolyRing;
+  BooleVariable(const BoolePolynomial& poly):m_poly(poly){}
+
   BoolePolynomial m_poly;
 };
 
 
-
+/// Division 
 inline BoolePolynomial
 operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
   return BoolePolynomial(BooleConstant(lhs == rhs), lhs.ring());
 }
 
-
+// /// Access nvar-th ring variable
+// inline BooleVariable BoolePolyRing::variable(idx_type nvar) const {
+//   return var_type(nvar, *this);
+// }
 
 END_NAMESPACE_PBORI
 

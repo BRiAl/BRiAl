@@ -34,9 +34,6 @@
 // Getting iterator type for retrieving last term from Cudd's ZDDs
 #include "CCuddLastIter.h"
 
-// Getting functional for generating new Cudd's ZDD nodes
-#include "CCuddGetNode.h"
-
 // Getting output iterator functionality
 #include "PBoRiOutIter.h"
 

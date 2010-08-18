@@ -129,7 +129,12 @@ class BoolePolyRing:
   var_type coerce(const var_type& rhs) const;
 
   /// Access nvar-th ring variable
-  dd_type variable(idx_type nvar) const;// inlined below
+  // var_type variable(idx_type nvar) const;  // inlined in BooleVariable.h
+
+  /// Access nvar-th ring variable as diagram
+  dd_type variable(idx_type nvar) const {
+    return dd_base(*this, p_core->m_mgr.getVar(nvar)); 
+  }
 
   /// Get empty decision diagram 
   dd_type zero() const; // inlined below
@@ -147,10 +152,6 @@ class BoolePolyRing:
 
 // temporarily here!
 
-  /// Access nvar-th ring variable
-inline  BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const { 
-    return dd_base(*this, p_core->m_mgr.getVar(nvar)); 
-  }
 
   /// Get empty decision diagram 
 inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_base(*this, p_core->m_mgr.zddZero()); }
