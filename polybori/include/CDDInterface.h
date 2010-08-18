@@ -11,214 +11,8 @@
  * @note Currently only interface to Cudd's ZDDs are available.
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.65  2008/11/14 15:06:49  dreyer
- * Fix: optimized routine for BooleSet.minimalElements
- *
- * Revision 1.64  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.63  2008/05/26 12:06:39  dreyer
- * ADD: isEnd() as end of iteration check, sing iterator_facade
- *
- * Revision 1.62  2008/03/14 13:14:43  dreyer
- * Fix: Some doxygen syntax errors
- *
- * Revision 1.61  2008/03/11 10:04:11  dreyer
- * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
- *
- * Revision 1.60  2008/02/27 16:35:13  dreyer
- * Fix: Polynomial(0|1) removed, where possible
- *
- * Revision 1.59  2008/01/11 16:58:56  dreyer
- * CHANGE: Experimenting with iterators and correct rings
- *
- * Revision 1.58  2007/12/14 11:50:31  dreyer
- * Fix: merged from bugfix at sf.net
- *
- * Revision 1.57  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.56  2007/11/29 16:28:32  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.55  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.54  2007/10/25 14:38:00  dreyer
- * ADD: use of CCuddNavigator more secure
- *
- * Revision 1.53  2007/07/30 15:19:39  dreyer
- * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
- *
- * Revision 1.52  2007/07/27 14:38:40  dreyer
- * CHANGE: Addition internally inlined
- *
- * Revision 1.51  2007/07/18 07:17:26  dreyer
- * CHANGE: some clean-ups
- *
- * Revision 1.50  2007/07/17 15:57:00  dreyer
- * ADD: header file for CCuddZDD; clean-up
- *
- * Revision 1.49  2007/07/06 18:45:52  dreyer
- * Fix: disabled support()
- *
- * Revision 1.48  2007/07/06 14:04:21  dreyer
- * ADD: newly written C++_interface for Cudd
- *
- * Revision 1.47  2007/07/03 11:46:51  bricken
- * + countDouble
- *
- * Revision 1.46  2007/04/24 07:44:14  dreyer
- * FIX: Warning for ambigious overload on gcc 3.2
- *
- * Revision 1.45  2006/12/07 08:22:52  dreyer
- * ADD/CHANGE: Lowlevel variant of existAbstract
- *
- * Revision 1.44  2006/11/24 14:49:00  dreyer
- * CHANGE: divisorsOf (less recursions/cache-lookups)
- *
- * Revision 1.43  2006/11/22 16:19:57  dreyer
- * CHANGE: actually did the prepared inlining
- *
- * Revision 1.42  2006/11/22 10:10:23  dreyer
- * ADD: dd_first_divisors_of
- *
- * Revision 1.41  2006/11/21 12:33:34  dreyer
- * ADD: BooleSet::ownsOne, BooleSet(idx, navi, navi); divisorsof
- *
- * Revision 1.40  2006/11/20 14:56:46  dreyer
- * CHANGE CCacheType names, operator*=, CDDInterface node Constructor
- *
- * Revision 1.39  2006/10/30 13:30:32  dreyer
- * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
- *
- * Revision 1.38  2006/10/26 12:58:24  dreyer
- * ADD: lowlevel routine for union-xor (easy cudd-style variant)
- *
- * Revision 1.37  2006/10/23 16:05:54  dreyer
- * ADD: BoolePolyRing::set/get(Ring)VariableName()
- *
- * Revision 1.36  2006/10/06 12:52:00  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.35  2006/10/04 15:46:49  dreyer
- * ADD: divisorsOf(exp_type), orderedExpBegin/End;
- * CHANGE: Polynomials printing respects ordering
- *
- * Revision 1.34  2006/09/20 07:06:39  dreyer
- * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
- *
- * Revision 1.33  2006/09/15 07:04:35  dreyer
- * CHANGE: reserve memory for usedIndices
- *
- * Revision 1.32  2006/09/14 10:57:25  dreyer
- * ADD: usedVariablesExp()
- *
- * Revision 1.31  2006/08/31 08:42:54  bricken
- * + subSet, supSet from extra
- *
- * Revision 1.30  2006/08/29 14:23:19  dreyer
- * ADD: Functions from cudd/extra
- *
- * Revision 1.29  2006/08/28 09:21:12  bricken
- * + extra xor for addition
- *
- * Revision 1.28  2006/08/28 09:00:46  bricken
- * *bricken: integrated extra functions
- *
- * Revision 1.27  2006/08/24 15:45:31  dreyer
- * CHANGE: deactivated code really deleted
- *
- * Revision 1.26  2006/08/24 14:47:49  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.25  2006/08/23 14:24:53  dreyer
- * ADD: BooleSet::usedVariables and infrastructure
- *
- * Revision 1.24  2006/08/22 16:06:22  dreyer
- * + Added highlevel division
- *
- * Revision 1.23  2006/08/15 14:17:29  dreyer
- * ADD minimalElements(), hasTermOfVariables()
- *
- * Revision 1.22  2006/08/09 12:52:31  dreyer
- * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
- *
- * Revision 1.21  2006/08/01 11:14:17  dreyer
- * CHANGE: Bug fixed, now Cudd's external ref/deref command (crashed on 64 bit)
- *
- * Revision 1.20  2006/07/31 11:48:53  dreyer
- * ADD: lowlevel implementation for multiples and lmDivisors
- *
- * Revision 1.19  2006/06/08 08:54:33  dreyer
- * FIX FREEs memory
- *
- * Revision 1.18  2006/06/07 11:54:26  dreyer
- * ADD variantes for usedVariables
- *
- * Revision 1.17  2006/06/07 08:37:50  dreyer
- * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
- *
- * Revision 1.16  2006/05/05 09:03:44  dreyer
- * ADD different implementation of the addition
- *
- * Revision 1.15  2006/04/20 08:31:21  dreyer
- * ADD BooleMonomial::mulples(...)
- *
- * Revision 1.14  2006/04/19 15:55:53  dreyer
- * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
- *
- * Revision 1.13  2006/04/06 13:54:58  dreyer
- * ADD BoolePolynomial::length()
- *
- * Revision 1.12  2006/04/05 15:26:04  dreyer
- * CHANGE: File access of BoolePolynomial::prettyPrint moved to CDDInterface
- *
- * Revision 1.11  2006/04/05 14:56:38  dreyer
- * ADD prettyPrint functions for dot-output to stdout or file
- *
- * Revision 1.10  2006/04/04 15:31:06  dreyer
- * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
- *
- * Revision 1.9  2006/04/04 07:36:35  dreyer
- * ADD: tests isZero(), isOne() and poly == bool, bool == poly
- *
- * Revision 1.8  2006/03/30 12:21:20  dreyer
- * CHANGE: more consistency
- *
- * Revision 1.7  2006/03/30 08:59:42  dreyer
- * FIX: CCuddFirstIter works for empty and zero polynomials now
- *
- * Revision 1.6  2006/03/29 16:26:46  dreyer
- * ADD: Class CCuddFirstIter used for BoolePolynomial::lead()
- *
- * Revision 1.5  2006/03/27 15:02:43  dreyer
- * ADD: BoolePolynomial::operator/=(const self&) and spoly
- *
- * Revision 1.4  2006/03/24 16:15:15  dreyer
- * CHANGE: (n)usedVariables() now uses Cudd-internal commands
- * ADD: CDDInterface<> support() and nSupport() (for above)
- *
- * Revision 1.3  2006/03/24 15:02:44  dreyer
- * ADD: Reference to manager_type can also be used for CDDManager<> -nterface
- * ADD: lead(), (n)usedVariables(), lmDeg() implemented in BoolePolynomial
- *
- * Revision 1.2  2006/03/23 17:15:04  dreyer
- * ADD: lead() and lmdeg() functionality to BoolePolynomial,
- * BoolePolyRing(const manager_type &); leading term exampl.
- *
- * Revision 1.1  2006/03/20 14:51:00  dreyer
- * CHANGE: Use CDDInterface temple specializations instead of raw dd_type
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -239,9 +33,6 @@
 
 // Getting iterator type for retrieving last term from Cudd's ZDDs
 #include "CCuddLastIter.h"
-
-// Getting functional for generating new Cudd's ZDD nodes
-#include "CCuddGetNode.h"
 
 // Getting output iterator functionality
 #include "PBoRiOutIter.h"
@@ -264,14 +55,11 @@
   //#include "CCuddInterface.h"
 #include "pbori_traits.h"
 
+#include "util.h"//FREE
 
 BEGIN_NAMESPACE_PBORI
 
 
-inline Cudd*
-extract_manager(const Cudd& mgr) {
-  return &const_cast<Cudd&>(mgr);
-}
 
 // inline CCuddInterface::mgrcore_ptr
 // extract_manager(const CCuddInterface& mgr) {
@@ -284,10 +72,6 @@ extract_manager(const MgrType& mgr) {
   return mgr;
 }
 
-inline Cudd&
-get_manager(Cudd* mgr) {
-  return *mgr;
-}
 
 template <class MgrType>
 inline const MgrType&

@@ -134,9 +134,6 @@ public:
   typedef boost::intrusive_ptr<mgr_type> mgr_ptr;
 
 
-  /// type for Cudd's error message function
-  typedef PFC errorfunc_type;
-
   typedef CTypes::dd_type dd_type;
   /// Initialize CUDD-like decision diagram manager
   CCuddInterface(size_type numVars, size_type numVarsZ, size_type numSlots = PBORI_UNIQUE_SLOTS,
@@ -259,13 +256,13 @@ public:
 
   size_type Prime(size_type pr) const { return Cudd_Prime(pr); }
 
-  void PrintVersion(FILE * fp) const { cout.flush(); Cudd_PrintVersion(fp); }
+  void PrintVersion(FILE * fp) const { std::cout.flush(); Cudd_PrintVersion(fp); }
 
   MtrNode* MakeZddTreeNode(size_type low, size_type size, size_type type) {
     return Cudd_MakeZddTreeNode(getManager(), low, size, type);
   }
   void zddPrintSubtable() const{ 
-    cout.flush();
+    std::cout.flush();
     Cudd_zddPrintSubtable(getManager());
   }
 

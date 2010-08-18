@@ -77,9 +77,9 @@
 
 BEGIN_NAMESPACE_PBORI
 
-inline PBORI_SHARED_PTR(COrderingBase)
+inline boost::shared_ptr<COrderingBase>
 get_ordering(CTypes::ordercode_type order) {
-  typedef PBORI_SHARED_PTR(COrderingBase) order_ptr;
+  typedef boost::shared_ptr<COrderingBase> order_ptr;
 
   if(order == CTypes::lp)
     return order_ptr(new LexOrder);

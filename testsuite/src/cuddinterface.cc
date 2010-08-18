@@ -56,7 +56,7 @@
 #include "polybori.h"
 
 // cudd interface
-#include "CDDManager.h"
+
 
 USING_NAMESPACE_PBORI
 

@@ -93,9 +93,6 @@ class BooleEnv:
   /// Access idx-th variable of the active ring
   static dd_type variable(idx_type idx);
 
-  /// Access idx-th variable
-  static dd_type persistentVariable(idx_type idx);
-
   /// Get numerical code for current ordering
   static ordercode_type getOrderCode();
 

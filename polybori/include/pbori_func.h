@@ -1040,45 +1040,45 @@ public:
   }
 };
 
-template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
-struct handle_error {
-  typedef mgrcore_traits<Cudd>::errorfunc_type errorfunc_type;
+// template<unsigned ErrorNumber = CUDD_INTERNAL_ERROR>
+// struct handle_error {
+//   typedef mgrcore_traits<Cudd>::errorfunc_type errorfunc_type;
 
-  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
+//   handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
 
-  bool found(unsigned err) const {
-    if UNLIKELY(err == ErrorNumber) {
-      m_errfunc(cudd_error_traits<ErrorNumber>()());
-      return true;
-    }
-    return false;        
-  }
+//   bool found(unsigned err) const {
+//     if UNLIKELY(err == ErrorNumber) {
+//       m_errfunc(cudd_error_traits<ErrorNumber>()());
+//       return true;
+//     }
+//     return false;        
+//   }
 
-  void operator()(unsigned err) const {
-    if UNLIKELY(err == ErrorNumber) 
-      m_errfunc(cudd_error_traits<ErrorNumber>()());
-    else
-      reinterpret_cast<const handle_error<ErrorNumber - 1>&>(*this)(err);
-  }
+//   void operator()(unsigned err) const {
+//     if UNLIKELY(err == ErrorNumber) 
+//       m_errfunc(cudd_error_traits<ErrorNumber>()());
+//     else
+//       reinterpret_cast<const handle_error<ErrorNumber - 1>&>(*this)(err);
+//   }
 
-protected: 
-  const errorfunc_type m_errfunc;
-};
+// protected: 
+//   const errorfunc_type m_errfunc;
+// };
 
 
-template<>
-struct handle_error<0> {
-  typedef mgrcore_traits<Cudd>::errorfunc_type errorfunc_type;
+// template<>
+// struct handle_error<0> {
+//   typedef mgrcore_traits<Cudd>::errorfunc_type errorfunc_type;
 
-  handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
+//   handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
 
-  void operator()(unsigned err) const {
-    if LIKELY(err == 0)
-      m_errfunc(cudd_error_traits<0>()());
-  }
-protected: 
-  errorfunc_type m_errfunc;
-};
+//   void operator()(unsigned err) const {
+//     if LIKELY(err == 0)
+//       m_errfunc(cudd_error_traits<0>()());
+//   }
+// protected: 
+//   errorfunc_type m_errfunc;
+// };
 
 
 END_NAMESPACE_PBORI

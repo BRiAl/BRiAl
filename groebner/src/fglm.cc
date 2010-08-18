@@ -12,6 +12,8 @@
 extern "C" {
 #include <m4ri/packedmatrix.h>
 }
+
+using namespace std;
 BEGIN_NAMESPACE_PBORIGB
 
 

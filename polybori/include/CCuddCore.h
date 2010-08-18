@@ -30,7 +30,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <vector>
-
+#include <boost/shared_ptr.hpp>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -48,11 +48,9 @@ class COrderingBase;
  * CCuddZDD, and CCuddInterface.
  **/
 class CCuddCore:
-  public CTypes::orderenums_type {
+  public CTypes::orderenums_type, public CAuxTypes {
 
 public:
-  ///@name Get CUDD-related type definitions
-  PB_DECLARE_CUDD_TYPES(mgrcore_traits<Cudd>)
 
   /// Fix type of *this
   typedef CCuddCore self;
@@ -70,7 +68,7 @@ public:
   typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
-  typedef PBORI_SHARED_PTR(order_type) order_ptr;
+  typedef boost::shared_ptr<order_type> order_ptr;
 
   /// Reference for handling mterm orderings
   typedef order_type& order_reference;

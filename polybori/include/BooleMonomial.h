@@ -10,149 +10,8 @@
  * ring. 
  * 
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.44  2009/03/31 08:30:49  dreyer
- * CHANGE: started consistent use of lead* instea of lm*
- *
- * Revision 1.43  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.42  2008/07/13 22:49:35  dreyer
- * Fix: Doxygen clean-up
- *
- * Revision 1.41  2008/03/11 10:04:11  dreyer
- * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
- *
- * Revision 1.40  2008/03/10 16:48:06  dreyer
- * Fix: exception for division by 0 and invalid monomial-zero
- *
- * Revision 1.39  2008/03/05 16:23:37  dreyer
- * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
- *
- * Revision 1.38  2008/03/03 18:07:19  dreyer
- * Fix: missing things in Python-interface
- *
- * Revision 1.37  2008/03/03 12:44:31  dreyer
- * Change: More inlining, and safer constructors
- *
- * Revision 1.36  2008/03/02 23:45:33  dreyer
- * CHANGED: added contructors for given ring
- *
- * Revision 1.35  2008/03/02 23:24:36  dreyer
- * CHANGE: ring elements like polynomials, monomials, and variables have ring()
- *
- * Revision 1.34  2008/03/01 01:11:24  dreyer
- * Fix: working around bug in addition
- *
- * Revision 1.33  2008/02/28 17:05:46  dreyer
- * Fix: treating constants (0, 1) accordingly
- *
- * Revision 1.32  2008/02/27 16:35:12  dreyer
- * Fix: Polynomial(0|1) removed, where possible
- *
- * Revision 1.31  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.30  2007/11/29 16:28:31  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.29  2007/11/15 13:08:00  dreyer
- * CHANGE: removed dd_type from PyPolyBoRi => .diagram()->.set()
- *
- * Revision 1.28  2007/11/06 15:03:32  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.27  2007/10/09 15:07:27  dreyer
- * ADD: mapping;   CHANGE: shared python modules to pyroot
- *
- * Revision 1.26  2007/07/30 15:19:38  dreyer
- * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
- *
- * Revision 1.25  2007/05/29 10:33:47  dreyer
- * ADD: BooleMonomial::popFirst()
- *
- * Revision 1.24  2007/05/22 11:05:28  dreyer
- * FIX: ambigous overload
- *
- * Revision 1.23  2007/05/04 15:26:27  dreyer
- * CHANGE: Optimized version for monomial term generation
- *
- * Revision 1.22  2006/12/04 12:48:16  dreyer
- * CHANGE: cached and recursive lead() and leadexp() refined, generalized
- *
- * Revision 1.21  2006/11/21 16:06:40  dreyer
- * CHANGE: inlining added
- *
- * Revision 1.20  2006/10/10 16:12:28  bricken
- * + try this deg function
- *
- * Revision 1.19  2006/10/06 12:52:00  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.18  2006/09/22 06:19:12  dreyer
- * CHANGE: deactivated the use of pointer in hash()
- *
- * Revision 1.17  2006/09/19 09:46:05  dreyer
- * CHANGE: binary_compose to binary_composition
- * CHANGE: BooleMonomial::idx_map_type
- * ADD: symmetric_composition<>, navigates<>
- *
- * Revision 1.16  2006/09/13 16:00:55  dreyer
- * CHANGE: Experimenting with hash()
- *
- * Revision 1.15  2006/09/04 11:33:57  dreyer
- * CHANGE: lm*() use leadFirst()
- *
- * Revision 1.14  2006/09/04 09:55:05  bricken
- * + avoid bad templates
- *
- * Revision 1.13  2006/08/29 12:09:26  dreyer
- * using CDDOperations for generic dd functions
- *
- * Revision 1.12  2006/08/29 10:37:55  dreyer
- * CHANGE: non-const version of diagram() now internalDiagram()
- *
- * Revision 1.11  2006/08/29 10:19:43  bricken
- * + removed implicit casts exp to mon
- *
- * Revision 1.10  2006/08/24 14:47:49  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.9  2006/08/01 11:12:22  dreyer
- * CHANGE: removed ';' at end of functions (pedantic)
- *
- * Revision 1.8  2006/07/17 15:32:08  dreyer
- * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
- *
- * Revision 1.7  2006/07/14 09:02:49  dreyer
- * ADD: greater_variable()
- *
- * Revision 1.6  2006/05/27 11:04:25  bricken
- * + optimization remark
- *
- * Revision 1.5  2006/04/24 11:41:56  dreyer
- * FIX only necessary types are traits
- *
- * Revision 1.4  2006/04/20 17:31:05  dreyer
- * FIX removed casting operator, which caused ambigeous overloads
- *
- * Revision 1.3  2006/04/20 16:59:47  dreyer
- * routine
- *
- * Revision 1.2  2006/04/20 08:31:21  dreyer
- * ADD BooleMonomial::mulples(...)
- *
- * Revision 1.1  2006/04/19 15:55:53  dreyer
- * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -188,7 +47,8 @@ template <class DDType, class MonomType> class CDDOperations;
  * with a special constructor.
  *
  **/
-class BooleMonomial {
+class BooleMonomial:
+  public CAuxTypes {
 
  public:
   template <class, class> friend class CDDOperations;
@@ -202,12 +62,6 @@ class BooleMonomial {
   /// @name Adopt global type definitions
   //@{
   typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::deg_type deg_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::hash_type hash_type;
-  typedef CTypes::bool_type bool_type;
-  typedef CTypes::comp_type comp_type;
   typedef CTypes::integer_type integer_type;
   typedef CTypes::ostream_type ostream_type;
   //@}

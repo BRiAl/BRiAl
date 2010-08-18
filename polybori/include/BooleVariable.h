@@ -10,81 +10,8 @@
  * ring. 
  * 
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.22  2009/05/25 10:40:39  dreyer
- * Fix: hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
- *
- * Revision 1.21  2008/03/05 16:23:37  dreyer
- * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
- *
- * Revision 1.20  2008/03/03 12:44:32  dreyer
- * Change: More inlining, and safer constructors
- *
- * Revision 1.19  2008/03/02 23:45:34  dreyer
- * CHANGED: added contructors for given ring
- *
- * Revision 1.18  2008/03/02 23:24:37  dreyer
- * CHANGE: ring elements like polynomials, monomials, and variables have ring()
- *
- * Revision 1.17  2008/02/28 17:05:47  dreyer
- * Fix: treating constants (0, 1) accordingly
- *
- * Revision 1.16  2008/01/08 12:27:22  dreyer
- * CHANGE: erreous cast int to Variable removed, info about scons -h added
- *
- * Revision 1.15  2007/12/13 15:53:48  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.14  2007/12/11 10:50:44  dreyer
- * Fix: BooleVariable()*BooleMonomial() now monomial
- *
- * Revision 1.13  2007/11/19 12:49:59  bricken
- * + set
- *
- * Revision 1.12  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.11  2007/08/27 09:57:43  bricken
- * + equality test const
- *
- * Revision 1.10  2007/07/31 14:26:29  dreyer
- * CHANCE: BooleVariable, now uses persistent variables
- *
- * Revision 1.9  2007/07/03 07:21:07  dreyer
- * Fix: ambigious overload var*monom
- *
- * Revision 1.8  2007/06/11 14:23:30  bricken
- * + var==var
- *
- * Revision 1.7  2007/05/22 11:05:28  dreyer
- * FIX: ambigous overload
- *
- * Revision 1.6  2007/05/14 08:10:59  dreyer
- * ADD: added poly / poly and poly % poly
- *
- * Revision 1.5  2007/04/17 09:12:18  dreyer
- * FIX: ambigious overload in var * poly
- *
- * Revision 1.4  2006/07/14 09:02:49  dreyer
- * ADD: greater_variable()
- *
- * Revision 1.3  2006/04/19 15:55:53  dreyer
- * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
- *
- * Revision 1.2  2006/03/20 09:52:57  dreyer
- * CHANGE: BooleVariable uses composition; variable generated in BoolePolyRing
- *
- * Revision 1.1  2006/03/16 17:09:13  dreyer
- * ADD BoolePolynial functionality started
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -109,20 +36,13 @@ BEGIN_NAMESPACE_PBORI
  * with a special constructor.
  *
  **/
-class BooleVariable {
+class BooleVariable:
+  public CAuxTypes {
 
  public:
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
-
-  /// @name Adopt global type definitions
-  //@{
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::hash_type hash_type;
-  //@}
 
   /// Generic access to current type
   typedef BooleVariable self;
@@ -135,13 +55,12 @@ class BooleVariable {
 
   /// Constructor idx-th variable of active ring
   explicit BooleVariable(idx_type idx = 0):
-    m_poly( BooleEnv::persistentVariable(idx) ) {}
+    m_poly( BooleEnv::variable(idx) ) {}
 
   /// Constructor idx-th variable of a given ring
   BooleVariable(idx_type idx, const ring_type& ring):
-    m_poly( ring.persistentVariable(idx) ) {}
+    m_poly( ring.variable(idx) ) {}
 
-  
   /// Copy constructor
   BooleVariable(const self& rhs):  
     m_poly(rhs.m_poly) {}
@@ -175,17 +94,23 @@ class BooleVariable {
   ring_type ring() const { return m_poly.ring(); } 
 
 private:
+  friend class BoolePolyRing;
+  BooleVariable(const BoolePolynomial& poly):m_poly(poly){}
+
   BoolePolynomial m_poly;
 };
 
 
-
+/// Division 
 inline BoolePolynomial
 operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
   return BoolePolynomial(BooleConstant(lhs == rhs), lhs.ring());
 }
 
-
+// /// Access nvar-th ring variable
+// inline BooleVariable BoolePolyRing::variable(idx_type nvar) const {
+//   return var_type(nvar, *this);
+// }
 
 END_NAMESPACE_PBORI
 

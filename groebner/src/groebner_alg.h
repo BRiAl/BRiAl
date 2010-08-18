@@ -241,7 +241,7 @@ public:
   void propagate_step(const PolyEntry& e, std::set<int> others);
   void log(const char* c){
       if (this->enabledLog)
-          std::cout<<c<<endl;
+        std::cout<<c<<std::endl;
   }
 
   Polynomial redTail(const Polynomial& p);

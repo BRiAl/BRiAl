@@ -151,11 +151,6 @@ BooleEnv::dd_type BooleEnv::variable(idx_type idx) {
 } 
 
 
-  /// Access idx-th variable
-BooleEnv::dd_type BooleEnv::persistentVariable(idx_type idx) {
-    return ring().persistentVariable(idx); 
-  }
-
 
 void BooleEnv::set(ring_type& theRing) { active_ring = theRing; }
 

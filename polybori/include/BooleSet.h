@@ -105,10 +105,7 @@ public:
 
   /// Construct new node
   BooleSet(idx_type idx, const self& first, const self& second):
-    base(idx, first, second) {
-
-
-  }
+    base(idx, first, second) { }
 
   /// Construct new node (using navigator nodes)
   BooleSet(idx_type idx, navigator first, navigator second, 

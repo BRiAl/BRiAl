@@ -1125,7 +1125,7 @@ int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m){
         
         it++;
     }
-    if ((selected<0)&&(!(LexHelper::irreducible_lead(m,strat)))) cerr<<"select_no_Deg_growth buggy";
+    if ((selected<0)&&(!(LexHelper::irreducible_lead(m,strat)))) std::cerr<<"select_no_Deg_growth buggy";
   return selected; 
   }
   
