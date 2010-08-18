@@ -30,6 +30,8 @@
 
 // load PolyBoRi settings
 # include "pbori_defs.h"
+
+#include "BoolePolyRing.h"
 #include <vector>
 
 #ifndef BooleEnv_h_
@@ -41,11 +43,12 @@
 # define PBORI_ENV_RING_NOTINLINED
 #endif
 
+
 BEGIN_NAMESPACE_PBORI
 
 
 class BoolePolyRing;
-extern BoolePolyRing active_ring;
+//extern BoolePolyRing active_ring;
 class COrderingBase;
 
 /** @class BooleEnv
@@ -112,10 +115,13 @@ class BooleEnv:
   typedef BoolePolyRing ring_type;
 
   typedef COrderingBase order_type;
+
 #ifdef PBORI_ENV_RING_NOTINLINED
   static ring_type& ring();
 #else
   static ring_type& ring() {
+    static BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
+
     return active_ring;
   }
 #endif

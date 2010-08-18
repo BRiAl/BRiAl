@@ -42,11 +42,14 @@
 BEGIN_NAMESPACE_PBORI
 
 
-BooleEnv::ring_type active_ring(10);
+//BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
 
 /// @todo needs inlining!!!
 #ifdef PBORI_ENV_RING_NOTINLINED
-BooleEnv::ring_type& BooleEnv::ring() { return active_ring; }
+BooleEnv::ring_type& BooleEnv::ring() {
+  static BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
+  return active_ring; 
+}
 #endif 
 
 BooleEnv::block_iterator 
@@ -75,7 +78,7 @@ void BooleEnv::clearBlocks() {
 
 BooleEnv::idx_type
 BooleEnv::lastBlockStart() {
-  return active_ring.ordering().lastBlockStart();
+  return ring().ordering().lastBlockStart();
 }
 
 
@@ -152,7 +155,7 @@ BooleEnv::dd_type BooleEnv::variable(idx_type idx) {
 
 
 
-void BooleEnv::set(ring_type& theRing) { active_ring = theRing; }
+void BooleEnv::set(ring_type& theRing) { ring() = theRing; }
 
 
 
