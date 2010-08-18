@@ -974,6 +974,17 @@ int ReductionStrategy::select1(const Monomial& m) const {
     return exp2Index.find(min)->second;
   }
 }
+
+int select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
+    MonomialSet ms=strat.leadingTerms.divisorsOf(m);
+    if (ms.emptiness())
+      return -1;
+    else {
+      //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+      Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), LargerDegreeComparer()));
+      return strat.exp2Index.find(min)->second;
+    }
+}
 class IsEcart0Predicate{
 public:
 IsEcart0Predicate(const ReductionStrategy& strat){
@@ -1965,23 +1976,26 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
     res_terms=MonomialSet();
     int i;
         for(i=0;i<extendable_system.size();i++){
-            Polynomial p_orig=extendable_system[i];
+            Polynomial p=extendable_system[i];
 
 
-            if UNLIKELY(p_orig.isZero()) continue;
-            Polynomial p=mod_mon_set(p_orig.diagram(),strat.generators.monomials);
-            if (strat.generators.optLL){
-                Polynomial p_bak2=p;
-                p=ll_red_nf(p,strat.generators.llReductor);
-                if (p!=p_bak2) p=mod_mon_set(p.diagram(),strat.generators.monomials);
-            }
+            if UNLIKELY(p.isZero()) continue;
+            
+            p=cheap_reductions(strat.generators, p);
+            
+            // Polynomial p=mod_mon_set(p_orig.diagram(),strat.generators.monomials);
+            // if (strat.generators.optLL){
+            //     Polynomial p_bak2=p;
+            //     p=ll_red_nf(p,strat.generators.llReductor);
+            //     if (p!=p_bak2) p=mod_mon_set(p.diagram(),strat.generators.monomials);
+            // }
             MonomialSet new_terms=p.diagram().diff(res_terms);
             MonomialSet::const_iterator it=new_terms.begin();
             MonomialSet::const_iterator end=new_terms.end();
             while(it!=end){
                 Monomial m=*it;
 
-                int index=strat.generators.select1(m);
+                int index=select_largest_degree(strat.generators, m);
                 if LIKELY(index>=0){
 
                         Monomial m2=m/strat.generators[index].lead;

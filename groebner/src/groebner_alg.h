@@ -282,6 +282,19 @@ public:
   }
 };
 
+
+class LargerDegreeComparer{
+public:
+  bool operator() (const Monomial& a , const Monomial& b){
+      return a.deg() > b.deg(); 
+    
+  }
+  bool operator() (const Exponent& a , const Exponent& b){
+      return a.deg()>b.deg();
+    
+  }
+};
+
 inline wlen_type wlen_literal_exceptioned(const PolyEntry& e){
     wlen_type res=e.weightedLength;
     if ((e.deg==1) && (e.length<=4)){

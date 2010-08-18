@@ -250,11 +250,24 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                       res=parallel_reduce(v,strat,int(step_factor*30),max_growth)
                    else:
                       res=parallel_reduce(v,strat,int(step_factor*100), max_growth)
+            
             if prot:
                 print "end reducing"
+            
+
+            if len(res)>0 and have_degree_order():
+                res_min_deg=min([p.deg() for p in res])
+                new_res = []
+                for p in res:
+                    if p.deg()==res_min_deg:
+                        new_res.append(p)
+                    else:
+                        strat.add_generator_delayed(p)
+                res = new_res
             def sort_key(p):
                 return p.lead()
             res_cp=sorted(res, key=sort_key)
+
 
             for p in  res_cp:
                 old_len=len(strat)
