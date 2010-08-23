@@ -176,9 +176,6 @@ class BooleMonomial:
   /// Get unique hash value (valid only per runtime)
   hash_type hash() const {  return m_poly.hash(); }
 
-  /// Substitute variable with index idx by its complement and assign
-  self& changeAssign(idx_type);
-
   /// Substitute variable with index idx by its complement
   self change(idx_type) const;
 

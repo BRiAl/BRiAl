@@ -486,7 +486,7 @@ BoolePolynomial::BoolePolynomial(const exp_type& rhs, const ring_type& ring):
   exp_type::const_reverse_iterator start(rhs.rbegin()), finish(rhs.rend());
 
   while(start != finish) {
-    m_dd.changeAssign(*start);
+    m_dd = m_dd.change(*start);
     ++start;
   }
 }
@@ -619,7 +619,7 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const monom_type&)" );
 
-  m_dd.diffAssign(  rhs.diagram().support() );
+  m_dd = m_dd.diff(  rhs.diagram().support() );
 
   return *this;
 }

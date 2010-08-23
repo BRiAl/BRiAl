@@ -159,10 +159,10 @@ public:
   exp_type usedVariablesExp() const;
 
   /// Add given monomial to sets and assign
-  self& addAssign(const term_type&);
+  // self& addAssign(const term_type&);
 
   /// Add given monomial to sets 
-  self add(const term_type&) const;
+  self add(const term_type& rhs) const;
 
   /// Check whether rhs is included in *this
   bool_type owns(const term_type&) const;
@@ -187,9 +187,6 @@ public:
   
   /// Division by given term
   self divide(const term_type& rhs) const;
-
-  /// Division with assignment by given term
-  self& divideAssign(const term_type& rhs);
 
   /// Check for empty intersection with divisors of rhs
   bool_type hasTermOfVariables(const term_type& rhs) const;
@@ -222,12 +219,6 @@ public:
     return self(base::ite(then_dd.diagram(), else_dd.diagram()));
   };
 
-  /// If-Then-Else operation with assignment
-  self& iteAssign(const self& then_dd, const self& else_dd) {
-    base::iteAssign(then_dd.diagram(), else_dd.diagram());
-    return *this;
-  };
-
   /// Cartesean product
   self cartesianProduct(const self& rhs) const {
     return base::unateProduct(rhs.diagram());
@@ -248,21 +239,6 @@ public:
   PBORI_CONST_DDFUNCS(Xor)
   PBORI_CONST_DDFUNCS(ddDivide)
   PBORI_CONST_DDFUNCS(weakDivide)
-  PBORI_CONST_DDFUNCS(divideFirst)
-
-  /// @todo Do we really nee the assign variante here at high level?
-  PBORI_DDFUNCS_IDX(subset0Assign)
-  PBORI_DDFUNCS_IDX(subset1Assign)
-  PBORI_DDFUNCS_IDX(changeAssign)
-
-  PBORI_DDFUNCS(uniteAssign)
-  PBORI_DDFUNCS(diffAssign)
-  PBORI_DDFUNCS(diffConstAssign)
-  PBORI_DDFUNCS(intersectAssign)
-  PBORI_DDFUNCS(productAssign)
-  PBORI_DDFUNCS(ddDivideAssign)
-  PBORI_DDFUNCS(weakDivideAssign)
-  PBORI_DDFUNCS(divideFirstAssign)
   //@}
 
   /// Test containment

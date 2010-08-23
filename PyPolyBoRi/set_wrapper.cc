@@ -22,9 +22,6 @@ USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
 
-void changeAssign(BooleSet& c, BooleSet::idx_type idx){
-  c.changeAssign(idx);
-}
 
 static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
   return BooleSet(i,a,b);

@@ -123,15 +123,6 @@ BooleMonomial::reducibleBy(const var_type& rhs) const {
   return m_poly.reducibleBy(rhs);
 }
 
-//  Substitute variable with index idx by its complement and assign
-BooleMonomial&
-BooleMonomial::changeAssign(idx_type idx) {
-
-  PBORI_TRACE_FUNC( "BooleMonomial::changeAssign(idx_type)" );
-  m_poly.internalDiagram().changeAssign(idx);
-
-  return *this;
-}
 
 //  Substitute variable with index idx by its complement
 BooleMonomial
@@ -139,7 +130,7 @@ BooleMonomial::change(idx_type idx) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::change(idx_type) const " );
 
-  return self(*this).changeAssign(idx);
+  return set_type(diagram().change(idx));
 }
 
 //  Multiplication with assignment
@@ -148,7 +139,7 @@ BooleMonomial::operator*=(const self& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator*=(const self&)" );
 
-  m_poly.internalDiagram().unateProductAssign(rhs.m_poly.diagram());
+  m_poly = m_poly.internalDiagram().unateProduct(rhs.m_poly.diagram());
 
   return *this;
 }
@@ -174,7 +165,7 @@ BooleMonomial::operator*=(const var_type& rhs) {
   PBORI_TRACE_FUNC( "BooleMonomial::operator*=(const var_type&)" );
 
   if (!reducibleBy(rhs))
-    changeAssign(rhs.index());
+    m_poly = internalDiagram().change(rhs.index());
 
   return *this;
 }
@@ -186,7 +177,7 @@ BooleMonomial::operator/=(const var_type& rhs) {
 
   PBORI_TRACE_FUNC( "BooleMonomial::operator/=(const var_type&)" );
 
-  m_poly.internalDiagram().subset1Assign(rhs.index());
+  m_poly = internalDiagram().subset1(rhs.index());
   if UNLIKELY(m_poly.isZero())
     throw PBoRiError(CTypes::monomial_zero);
 
@@ -275,7 +266,7 @@ BooleMonomial::GCDAssign(const self& rhs) {
 
     // delete variable not on rhs
     if (*start < *rhs_start) {
-      changeAssign(*start);
+      *this = change(*start);
       ++start;
     }
     else {
@@ -290,7 +281,7 @@ BooleMonomial::GCDAssign(const self& rhs) {
 
   // delete remaining variables in *this
   while (start != finish) {
-    changeAssign(*start);
+    *this = change(*start);
     ++start;
   }
 
@@ -333,16 +324,6 @@ BooleMonomial::multiples(const self& monom) const {
 #endif
 }
 
-// Does anyone need this?
-// // function greater_variable
-// BooleMonomial::bool_type
-// greater_variable(BooleMonomial::idx_type lhs, BooleMonomial::idx_type rhs){
-
-//   PBORI_TRACE_FUNC( "greater_variable(idx_type, idx_type)" );
-
-//   return
-//     (BooleEnv::ordering().compare(lhs, rhs)==CTypes::greater_than);
-// }
 
 // Get exponent vector
 BooleMonomial::exp_type

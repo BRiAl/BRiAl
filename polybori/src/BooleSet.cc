@@ -258,23 +258,12 @@ BooleSet::operator=(const self& rhs) {
   return *this;
 }
 
-// Add given monomial to sets and assign
-BooleSet&
-BooleSet::addAssign(const term_type& rhs) {
-
-  PBORI_TRACE_FUNC( "BooleSet::addAssign(const term_type&) const" );
-
-  uniteAssign(rhs.diagram());
-  return *this;
-}
-
 // Add given monomial to sets
 BooleSet
 BooleSet::add(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::addAssign(const term_type&) const" );
-
-  return self(*this).addAssign(rhs);
+  return unite(rhs.diagram());
 }
 
 // Check whether rhs is included in *this
@@ -430,13 +419,6 @@ BooleSet::minimalElements() const {
 BooleSet
 BooleSet::divide(const term_type& rhs) const {
   return self(base::divideFirst(rhs.diagram()));
-}
-
-// Division with assignment by given term
-BooleSet& 
-BooleSet::divideAssign(const term_type& rhs)  {
-  base::divideFirstAssign(rhs.diagram());
-  return *this;
 }
 
 // Set of variables of the set

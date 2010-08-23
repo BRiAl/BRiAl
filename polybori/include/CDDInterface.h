@@ -220,20 +220,9 @@ class CDDInterface:
     return self(base_type(m_interfaced.Union(rhs.m_interfaced)));
   };
 
-  /// Set union with assignment
-  self& uniteAssign(const self& rhs) {
-    m_interfaced = m_interfaced.Union(rhs.m_interfaced);
-    return *this;
-  };
   /// If-Then-Else operation
   self ite(const self& then_dd, const self& else_dd) const {
     return self(m_interfaced.Ite(then_dd, else_dd));
-  };
-
-  /// If-Then-Else operation with assignment
-  self& iteAssign(const self& then_dd, const self& else_dd) {
-    m_interfaced = m_interfaced.Ite(then_dd, else_dd);
-    return *this;
   };
 
   /// Set difference
@@ -241,21 +230,9 @@ class CDDInterface:
     return m_interfaced.Diff(rhs.m_interfaced);
   };
 
-  /// Set difference with assignment
-  self& diffAssign(const self& rhs) {
-    m_interfaced = m_interfaced.Diff(rhs.m_interfaced);
-    return *this;
-  };
-
   /// Set difference
   self diffConst(const self& rhs) const {
     return m_interfaced.DiffConst(rhs.m_interfaced);
-  };
-
-  /// Set difference with assignment
-  self& diffConstAssign(const self& rhs) {
-    m_interfaced = m_interfaced.DiffConst(rhs.m_interfaced);
-    return *this;
   };
 
   /// Set intersection
@@ -263,21 +240,9 @@ class CDDInterface:
     return m_interfaced.Intersect(rhs.m_interfaced);
   };
 
-  /// Set intersection with assignment
-  self& intersectAssign(const self& rhs) {
-    m_interfaced = m_interfaced.Intersect(rhs.m_interfaced);
-    return *this;
-  };
-
   /// Product
   self product(const self& rhs) const {
     return m_interfaced.Product(rhs.m_interfaced);
-  };
-
-  /// Product with assignment
-  self& productAssign(const self& rhs) {
-    m_interfaced = m_interfaced.Product(rhs.m_interfaced);
-    return *this;
   };
 
   /// Unate product
@@ -297,33 +262,14 @@ class CDDInterface:
                 rhs.m_interfaced.getNode()));
   }
 
-  
-  /// Unate product with assignment
-  self& unateProductAssign(const self& rhs) {
-    m_interfaced = m_interfaced.UnateProduct(rhs.m_interfaced);
-    return *this;
-  };
-
   /// Generate subset, where decision diagram manager variable idx is false
   self subset0(idx_type idx) const {
     return m_interfaced.Subset0(idx);
   };
 
-  /// subset0 with assignment
-  self& subset0Assign(idx_type idx) {
-    m_interfaced = m_interfaced.Subset0(idx);
-    return *this;
-  };
-
   /// Generate subset, where decision diagram manager variable idx is asserted
   self subset1(idx_type idx) const {
     return m_interfaced.Subset1(idx);
-  };
-
-  /// subset1 with assignment
-  self& subset1Assign(idx_type idx) {
-    m_interfaced = m_interfaced.Subset1(idx);
-    return *this;
   };
 
   /// Substitute variable with index idx by its complement
@@ -332,47 +278,22 @@ class CDDInterface:
     return m_interfaced.Change(idx);
   };
 
-  /// Change with assignment
-  self& changeAssign(idx_type idx) {
-    m_interfaced = m_interfaced.Change(idx);
-    return *this;
-  };
-
   /// Division
   self ddDivide(const self& rhs) const {
     return m_interfaced.Divide(rhs);
   };
 
-  /// Division with assignment
-  self& ddDivideAssign(const self& rhs) {
-    m_interfaced = m_interfaced.Divide(rhs);
-    return *this;
-  };
   /// Weak division
   self weakDivide(const self& rhs) const {
     return m_interfaced.WeakDiv(rhs);
   };
 
-  /// Weak division with assignment
-  self& weakDivideAssign(const self& rhs) {
-    m_interfaced = m_interfaced.WeakDiv(rhs);
-    return *this;
-  };
-
-  /// Division with first term of right-hand side and assignment
-  self& divideFirstAssign(const self& rhs) {
-
-    PBoRiOutIter<self, idx_type, subset1_assign<self> >  outiter(*this);
-    std::copy(rhs.firstBegin(), rhs.firstEnd(), outiter);
-
-    return *this;
-  }
-
   /// Division with first term of right-hand side
   self divideFirst(const self& rhs) const {
 
     self result(*this);
-    result.divideFirstAssign(rhs);
+    PBoRiOutIter<self, idx_type, subset1_assign<self> >  outiter(result);
+    std::copy(rhs.firstBegin(), rhs.firstEnd(), outiter);
 
     return result;
   }
@@ -427,23 +348,18 @@ class CDDInterface:
     return Cudd_SupportSize(getManager(), m_interfaced.getNode());
   }
 
-#if 1
   /// Get multiples of used variables
   self support() const {
 
-//    BDD supp( &manager(), 
     DdNode* tmp = Cudd_Support(getManager(), m_interfaced.getNode());
     Cudd_Ref(tmp);
  
     self result = interfaced_type(m_interfaced.ring(),  
       Cudd_zddPortFromBdd(getManager(), tmp));
     Cudd_RecursiveDeref(getManager(), tmp);        
-//    return supp.PortToZdd();
 
-//    assert(false);
     return result;
   }
-#endif
 
   /// Get used variables (assuming indices of zero length)
   template<class VectorLikeType>
@@ -474,7 +390,6 @@ class CDDInterface:
 
   }
 
-
   /// Start of first term
   first_iterator firstBegin() const {
     return first_iterator(navigation());
@@ -494,21 +409,22 @@ class CDDInterface:
   last_iterator lastEnd() const { 
     return last_iterator();
   }
-/// temporarily (needs to be more generic)
-template<class ManagerType, class ReverseIterator, class MultReverseIterator>
-interfaced_type
-cudd_generate_multiples(const ManagerType& mgr, 
-                        ReverseIterator start, ReverseIterator finish,
-                        MultReverseIterator multStart, 
-                        MultReverseIterator multFinish) const {
+
+  /// temporarily (needs to be more generic)
+  template<class ManagerType, class ReverseIterator, class MultReverseIterator>
+  interfaced_type
+  cudd_generate_multiples(const ManagerType& mgr, 
+                          ReverseIterator start, ReverseIterator finish,
+                          MultReverseIterator multStart, 
+                          MultReverseIterator multFinish) const {
 
     DdNode* prev( (getManager())->one );
-
+    
     DdNode* zeroNode( (getManager())->zero ); 
-
+    
     Cudd_Ref(prev);
     while(start != finish) {
-
+      
       while((multStart != multFinish) && (*start < *multStart)) {
 
         DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
@@ -556,7 +472,7 @@ cudd_generate_multiples(const ManagerType& mgr,
 
     return interfaced_type(mgr, prev);
   }
-
+  
   /// Get decison diagram representing the multiples of the first term
   self firstMultiples(const std::vector<idx_type>& multipliers) const {
 
@@ -573,11 +489,11 @@ cudd_generate_multiples(const ManagerType& mgr,
 
 
 
-/// temporarily (needs to be more generic)
-template<class ManagerType, class ReverseIterator>
-interfaced_type
-cudd_generate_divisors(const ManagerType& mgr, 
-                       ReverseIterator start, ReverseIterator finish) const {
+  /// temporarily (needs to be more generic)
+  template<class ManagerType, class ReverseIterator>
+  interfaced_type
+  cudd_generate_divisors(const ManagerType& mgr, 
+                         ReverseIterator start, ReverseIterator finish) const {
 
 
     DdNode* prev= (getManager())->one;

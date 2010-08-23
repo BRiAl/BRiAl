@@ -136,7 +136,7 @@ public:
 #endif
 
     while (start != finish){
-      result.changeAssign(**start);
+      result = result.change(**start);
       ++start;
     }
     

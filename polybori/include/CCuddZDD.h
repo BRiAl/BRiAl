@@ -44,7 +44,6 @@
 #include <stdexcept>
 
 
-
 BEGIN_NAMESPACE_PBORI
 
 /// Define code for verbosity 
