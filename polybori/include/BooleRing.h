@@ -71,6 +71,7 @@ class BooleRing:
   /// Reference for handling mterm orderings
   typedef order_type& order_reference;
 
+  typedef DdManager mgr_type;
   /// Explicitely mention ordercodes' enumeration
   using CTypes::orderenums_type::ordercodes;
 
@@ -132,7 +133,7 @@ public:
   }
 
   /// Get plain decision diagram manager
-  DdManager* getManager() const {
+  mgr_type* getManager() const {
     return p_core->m_mgr.getManager();
   }
 

@@ -158,5 +158,4 @@ BooleEnv::dd_type BooleEnv::variable(idx_type idx) {
 void BooleEnv::set(ring_type& theRing) { ring() = theRing; }
 
 
-
 END_NAMESPACE_PBORI

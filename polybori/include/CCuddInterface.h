@@ -350,7 +350,7 @@ public:
 
   /// Get number of managed variables
   size_type nVariables() const { 
-    return Cudd_ReadZddSize(getManager()); 
+    return ReadZddSize(); 
   }
 
   /// clear all temporarily stored data

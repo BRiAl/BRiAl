@@ -20,19 +20,7 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-#include <algorithm>
 
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_array.hpp>
-
-#include <boost/weak_ptr.hpp>
-
-#include <boost/intrusive_ptr.hpp>
-
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/facilities/expand.hpp>
-#include <boost/preprocessor/stringize.hpp>
 
 #include "pbori_func.h"
 #include "pbori_traits.h"
@@ -41,7 +29,23 @@
 #include "BooleRing.h"
 
 #include "PBoRiError.h"
+
 #include <stdexcept>
+#include <algorithm>
+#include <iostream>
+#include <boost/shared_ptr.hpp>
+#include <boost/scoped_array.hpp>
+
+#include <boost/weak_ptr.hpp>
+
+
+#include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/seq/for_each.hpp>
+#include <boost/preprocessor/facilities/expand.hpp>
+#include <boost/preprocessor/stringize.hpp>
+
+
+#include <algorithm>            // std::swap
 
 
 BEGIN_NAMESPACE_PBORI
@@ -50,6 +54,133 @@ BEGIN_NAMESPACE_PBORI
 #define PB_DD_VERBOSE(text) if (ddMgr->verbose) \
   std::cout << text << " for node " << node <<  \
   " ref = " << refCount() << std::endl;
+
+
+
+
+template <class DataType, class ValueType>
+class CExtrusivePtr {
+
+  /// Name type of *this
+  typedef CExtrusivePtr self;
+public:
+
+  typedef DataType data_type;
+  typedef ValueType value_type;
+
+
+  /// Construct diagram from raw CUDD elements
+  CExtrusivePtr(const data_type& data, value_type* ptr): 
+    m_data(data), p_ptr(ptr) { lock(); }
+
+  /// Copy constructor
+  CExtrusivePtr(const self& rhs): 
+    m_data(rhs.m_data), p_ptr(rhs.p_ptr) { lock(); } 
+
+  /// Destructor
+  ~CExtrusivePtr() { release(); }
+
+  /// Assignment
+  self& operator=(const self& rhs) {
+    self(rhs).swap(*this);
+    return *this;
+  }
+
+  /// Accessing helpter data
+  const data_type& data() const { return m_data; }
+
+  value_type* get() const {
+    return p_ptr;
+  }
+
+  const value_type & operator*() const {
+    assert(p_ptr != NULL);
+    return *p_ptr;
+  }
+
+  value_type & operator*() {
+    assert(p_ptr != NULL);
+    return *p_ptr;
+  }
+  
+  value_type* operator->() const {
+    assert(p_ptr != NULL);
+    return p_ptr;
+  }
+
+  void swap(self & rhs) {
+    std::swap(p_ptr, rhs.p_ptr);
+  }
+
+protected:
+
+  void lock() {
+    extrusive_ptr_add_ref(data(), get());
+  }
+  void release() {
+    extrusive_ptr_release(data(), get());
+  }
+
+  /// Store helper data
+  data_type m_data;
+
+  /// Store actual pointer
+  value_type* p_ptr;
+};
+
+template <class Data1, class Type1, class Data2, class Type2> 
+inline bool
+operator==(const CExtrusivePtr<Data1, Type1> & lhs, 
+           const CExtrusivePtr<Data2, Type2> & rhs) {
+  return lhs.get() == rhs.get();
+}
+
+template <class Data1, class Type1, class Data2, class Type2>
+inline bool
+operator!=(const CExtrusivePtr<Data1, Type1> & lhs,
+           const CExtrusivePtr<Data2, Type2> & rhs) {
+  return lhs.get() != rhs.get();
+}
+
+template <class Data1, class Type1, class Type2>
+inline bool
+operator==(const CExtrusivePtr<Data1, Type1> & lhs, Type2 * rhs) {
+  return lhs.get() == rhs;
+}
+
+template <class Data1, class Type1, class Type2>
+inline bool 
+operator!=(const CExtrusivePtr<Data1, Type1> & lhs, Type2* rhs) {
+  return lhs.get() != rhs;
+}
+
+template <class Type1, class Data2, class Type2>
+inline bool
+operator==(Type1* lhs, const CExtrusivePtr<Data2, Type2> & rhs) {
+  return lhs == rhs.get();
+}
+
+template <class Type1, class Data2, class Type2>
+inline bool
+operator!=(Type1* lhs, const CExtrusivePtr<Data2, Type2> & rhs) {
+  return lhs != rhs.get();
+}
+
+/// Releasing here
+template <class DataType>
+inline void
+extrusive_ptr_release(const DataType& data, DdNode* ptr) {
+   if (ptr != NULL) {
+     Cudd_RecursiveDerefZdd(data.getManager(), ptr);
+   }
+}
+
+/// Incrememt reference count
+template <class DataType>
+inline void 
+extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
+  if (ptr) Cudd_Ref(ptr);
+}
 
 /** @class CCuddDDBase
  * @brief This template class defines a C++ interface to @c CUDD's decision
@@ -67,71 +198,50 @@ template <class DiagramType, class RingType>
 class CCuddDDBase: 
   public CTypes {
 
+  /// Name type of *this
   typedef CCuddDDBase self;
 public:
-  /// Name type of *this
+
   typedef DiagramType diagram_type;
 
   typedef RingType ring_type;
 
-  typedef DdNode* node_type; 
-  typedef DdManager mgr_type;
-  typedef node_type (*unary_int_function)(mgr_type*, int);
-  typedef node_type (*void_function)(mgr_type*);
+  typedef DdNode node_type; 
+  typedef DdNode* node_ptr; 
+  typedef typename ring_type::mgr_type mgr_type;
+  typedef node_ptr (*unary_int_function)(mgr_type*, int);
+  typedef node_ptr (*void_function)(mgr_type*);
 
-  typedef DD_CTFP binary_function;
-  typedef node_type (*binary_int_function)(mgr_type*, node_type, int);
-  typedef 
-  node_type (*ternary_function)(mgr_type*, node_type, node_type, node_type);
+  typedef node_ptr (*binary_function)(mgr_type*, node_ptr, node_ptr);
+  typedef node_ptr (*binary_int_function)(mgr_type*, node_ptr, int);
+  typedef node_ptr (*ternary_function)(mgr_type*, node_ptr, node_ptr, node_ptr);
+ 
 
-  typedef int (*int_unary_function)(mgr_type*, node_type);
+  typedef int (*int_unary_function)(mgr_type*, node_ptr);
 
   /// Construct diagram from raw CUDD elements
-  CCuddDDBase(const ring_type& ring, node_type ddNode): 
-    m_ring(ring), node(ddNode) {
-    if (node) Cudd_Ref(node);
-    //PB_DD_VERBOSE("Standard DD constructor");
-  }
+  CCuddDDBase(const ring_type& ring, node_ptr ddNode): 
+    p_node(ring, ddNode) { }
 
   /// Copy constructor
   CCuddDDBase(const self& from): 
-    m_ring(from.m_ring), node(from.node) {
-    if (node) {
-      Cudd_Ref(node);
-    }
-  } 
+    p_node(from.p_node) { } 
 
   /// Default constructor
-  CCuddDDBase(): m_ring(NULL), node(NULL) {}
+  CCuddDDBase(): p_node(NULL, NULL) {}
+
+  /// Destructor
+  ~CCuddDDBase() { }
 
   /// Get (shared) pointer to decision diagram manager
-  const ring_type& ring() const { return m_ring; }
+  const ring_type& ring() const { return p_node.data(); }
 
   /// Get raw node structure
-  node_type getNode() const{  return node; }
+  node_ptr getNode() const { return p_node.get(); }
 
-  /// Get index of curent node
-  size_type NodeReadIndex() const { return Cudd_NodeReadIndex(node); }
-
-  /// Number of nodes in the current decision diagram
-  size_type nodeCount() const { return (size_type)(Cudd_DagSize(node)); }
-
-  /// Number of references pointing here
-  size_type refCount() const { 
-    assert(node != NULL);
-    return Cudd_Regular(node)->ref;
-  }
-
-  /// Test whether diagram represents the empty set
-  bool isZero() const { return node == Cudd_ReadZero(getManager()); }
-
-  /// Test whether diagram represents the empty set
-  bool isOne() const { return node == DD_ONE(getManager()); }
-
-protected:
-public:
   /// Get raw decision diagram manager
-  DdManager* getManager() const { return m_ring.getManager(); }
+  mgr_type* getManager() const { return ring().getManager(); }
+
 protected:
   /// Test, whether both operands 
   void checkSameManager(const diagram_type& other) const {
@@ -139,72 +249,51 @@ protected:
       throw std::runtime_error("Operands come from different manager.");
     }
   }
-  /// Check whether decision diagram operation in computing result was valid
-  void checkReturnValue(const node_type result) const {
-    checkReturnValue(result != NULL);
-  }
 
   /// Check whether previous decision diagram operation for validity
-  void checkReturnValue(const int result, const int expected = 1) const {
-    if UNLIKELY(result != expected)
+  void checkAssumption(bool isValid) const {
+    if UNLIKELY(!isValid)
       throw std::runtime_error(error_text(getManager()));
   }
-
-
 
    /// @name Apply CUDD procedures to nodes
   //@{
   diagram_type apply(binary_function func, const diagram_type& rhs) const {
     checkSameManager(rhs);
-    return checkedResult(func(getManager(), getNode(), rhs.getNode()));
+    return  diagram_type(ring(), func(getManager(), getNode(), rhs.getNode()));
   }
 
   diagram_type apply(binary_int_function func, idx_type idx) const {
-    return checkedResult(func(getManager(), getNode(), idx) );
+    return  diagram_type(ring(), func(getManager(), getNode(), idx) );
   }
 
   diagram_type apply(ternary_function func, 
-             const diagram_type& first, const diagram_type& second) const {
+                     const diagram_type& first, const diagram_type& second) const {
     checkSameManager(first);
     checkSameManager(second);
-    return checkedResult(func(getManager(), getNode(), 
-                              first.getNode(), second.getNode()) );
+    return diagram_type(ring(), func(getManager(), getNode(), 
+                                     first.getNode(), second.getNode()) );
   }
 
   idx_type apply(int_unary_function func) const {
-    return checkedResult(func(getManager(), getNode()) );
+    idx_type result = func(getManager(), getNode());
+    checkAssumption(result == 1);
+    return result;
   }
   //@}
 
-  /// @name Test results from CUDD procedures for validity
-  //@{
-  diagram_type checkedResult(node_type result) const {
-    checkReturnValue(result);
-    return diagram_type(m_ring, result);
-  }
-
-  idx_type checkedResult(idx_type result) const {
-    checkReturnValue(result);
-    return result;
-  }
 
   template <class ResultType>
-  ResultType memApply(ResultType (*func)(DdManager *, node_type)) const {
-    return memChecked(func(getManager(), getNode()) );
-  }
-
-  template <class ResultType>
-  ResultType memChecked(ResultType result) const {
-    checkReturnValue(result != (ResultType) CUDD_OUT_OF_MEM);
+  ResultType memApply(ResultType (*func)(mgr_type *, node_ptr)) const {
+    ResultType result = func(getManager(), getNode());
+    checkAssumption(result != (ResultType) CUDD_OUT_OF_MEM);
     return result;
   }
   // @}
 
-  /// (Smart) pointer to decsion diagram management
-  ring_type m_ring;
+protected:
 
-  /// Raw pointer to decision diagram node
-  node_type node;
+  CExtrusivePtr<ring_type, node_type> p_node;
 }; // CCuddDD
 
 
@@ -245,10 +334,12 @@ public:
 
   /// Name the type, which self is inherited from
   typedef CCuddDDBase<self,  ring_type> base;
-  typedef  base::node_type node_type;
+  typedef  base::node_ptr node_ptr;
   /// Construct ZDD from manager core and node
 
-  CCuddZDD(const ring_type& ring, node_type bddNode): base(ring, bddNode) {}
+  CCuddZDD(const ring_type& ring, node_ptr node): base(ring, node) {
+    checkAssumption(node != NULL);
+  }
 
   /// Default constructor
   CCuddZDD(): base() {}
@@ -257,7 +348,7 @@ public:
   CCuddZDD(const self &from): base(from) {}
 
   /// Destructor
-  ~CCuddZDD() { deref(); }
+  ~CCuddZDD() { }
 
   /// Assignment operator
   self& operator=(const self& right); // inlined below
@@ -266,32 +357,13 @@ public:
   //@{
   bool operator==(const self& other) const {
     ///  checkSameManager(other);
-    return base::node == other.node;
+    return base::getNode() == other.getNode();
   }
   bool operator!=(const self& other) const { return !(*this == other); }
-
-  bool operator<=(const self& other) const {
-    return apply(Cudd_zddDiffConst, other).isZero(); 
-  }
-  bool operator>=(const self& other) const {
-    return (other <= *this); 
-  }
-  bool operator<(const self& rhs) const { 
-    return (*this != rhs) && (*this <= rhs);  
-  }
-  bool operator>(const self& other) const { 
-    return (*this != other) && (*this >= other); 
-  }
   //@}
 
   /// @note Preprocessor generated members
   /// @code
-  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Intersect, (*)(&))
-  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Union, (+)(|))
-  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP, Diff, (-))
-
-  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_OP_ASSIGN, BOOST_PP_NIL, (*)(&)(+)(|)(-))
-
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const self&, 
     (Product)(UnateProduct)(WeakDiv)(Divide)(WeakDivF)(DivideF)
     (Union)(Intersect)(Diff)(DiffConst))
@@ -306,36 +378,47 @@ public:
 
   /// @name Functions for print useful information
   //@{
-  void print(int nvars, int verbosity = 1) const { std::cout.flush(); 
-    if UNLIKELY(!Cudd_zddPrintDebug(getManager(), node, nvars, verbosity))
-      throw std::runtime_error("ZDD print failed!");
+  std::ostream& print(std::ostream& os) const {
+    os << getNode() <<": ";
+
+    if (isZero())
+      os << "empty";
+    else
+      os << nNodes() << " nodes " <<  count() << "terms";
+
+    return os;
+
   }
   void PrintMinterm() const  { apply(Cudd_zddPrintMinterm); }
-  void PrintCover() const    { apply(Cudd_zddPrintCover); }
   //@}
 
-  /// Determine the number of minterms
-  int Count() const          { return memApply(Cudd_zddCount); }
+  /// Determine the number of terms
+  int count() const          { return memApply(Cudd_zddCount); }
 
-  /// Determine the number of minterms
-  double CountDouble() const { return memApply(Cudd_zddCountDouble); }
+  /// Appriximate the number of terms
+  double countDouble() const { return memApply(Cudd_zddCountDouble); }
+  /// Get index of curent node
+  size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
 
-  /// Counts minterms; takes a path specifing variables number in the support
-  double CountMinterm(int path) const { 
-    return memChecked(Cudd_zddCountMinterm(getManager(), getNode(), path));
+  /// Number of nodes in the current decision diagram
+  size_type nNodes() const { return (size_type)(Cudd_DagSize(getNode())); }
+
+  /// Number of references pointing here
+  size_type refCount() const { 
+    assert(getNode() != NULL);
+    return Cudd_Regular(getNode())->ref;
   }
+
+  /// Test whether diagram represents the empty set
+  bool isZero() const { return getNode() == Cudd_ReadZero(getManager()); }
+
+  /// Test whether diagram represents the empty set
+  bool isOne() const { return getNode() == DD_ONE(getManager()); }
 
 protected:
 
 
-  /// Derefering current diagram node, if unused
-  void deref() {
 
-    if (node != 0) {
-      Cudd_RecursiveDerefZdd(getManager(), node);
-      //    PB_DD_VERBOSE("CCuddZDD dereferencing");
-    }
-  }
 }; //CCuddZDD
 
 #undef PB_ZDD_APPLY
@@ -347,16 +430,11 @@ protected:
 // ---------------------------------------------------------------------------
 
 inline CCuddZDD& 
-CCuddZDD::operator=(const CCuddZDD& right) {
+CCuddZDD::operator=(const CCuddZDD& rhs) {
 
-  if UNLIKELY(this == &right) return *this;
-  if LIKELY(right.node) Cudd_Ref(right.node);
-  deref();
-  
-  node = right.node;
-  m_ring = right.m_ring;
-//   if (node)
-//     PB_DD_VERBOSE("CCuddZDD assignment");
+  if UNLIKELY(this == &rhs) return *this;
+
+  p_node = rhs.p_node;
   
   return *this;
 }

@@ -300,26 +300,14 @@ class CDDInterface:
 
 
   /// Get number of nodes in decision diagram
-  size_type nNodes() const {
-    return Cudd_zddDagSize(m_interfaced.getNode());
-  }
+  size_type nNodes() const { return m_interfaced.nNodes(); }
 
   /// Get number of nodes in decision diagram
   ostream_type& print(ostream_type& os) const {
 
-    //TODO!
-//     FILE* oldstdout = manager().ReadStdout();
-
-//     /// Enable ostream cout and cerr (at least)
-//     if (os == std::cout)
-//       manager().SetStdout(stdout);
-//     else if (os == std::cerr)
-//       manager().SetStdout(stderr);
-
-    m_interfaced.print( Cudd_ReadZddSize(getManager()) );
+    m_interfaced.print(os) << std::endl;;
     m_interfaced.PrintMinterm();
 
-    ///    manager().SetStdout(oldstdout);
     return os;
   }
 
@@ -546,7 +534,7 @@ class CDDInterface:
 
   /// Returns number of terms
   size_type size() const {
-    return m_interfaced.Count();
+    return m_interfaced.count();
   }
 
   /// Returns number of terms (deprecated)
@@ -562,8 +550,10 @@ class CDDInterface:
 
   /// Test whether the empty set is included
   bool_type ownsOne() const { return owns_one(navigation()); }
+
+  /// Approximation of number of terms
   double sizeDouble() const {
-    return m_interfaced.CountDouble();
+    return m_interfaced.countDouble();
   }
 
 private:
