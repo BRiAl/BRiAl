@@ -27,8 +27,8 @@
 #include "CCuddCore.h"
 
 #include "BooleRing.h"
-
 #include "PBoRiError.h"
+#include "CExtrusivePtr.h"
 
 #include <stdexcept>
 #include <algorithm>
@@ -45,7 +45,6 @@
 #include <boost/preprocessor/stringize.hpp>
 
 
-#include <algorithm>            // std::swap
 
 
 BEGIN_NAMESPACE_PBORI
@@ -55,116 +54,6 @@ BEGIN_NAMESPACE_PBORI
   std::cout << text << " for node " << node <<  \
   " ref = " << refCount() << std::endl;
 
-
-
-
-template <class DataType, class ValueType>
-class CExtrusivePtr {
-
-  /// Name type of *this
-  typedef CExtrusivePtr self;
-public:
-
-  typedef DataType data_type;
-  typedef ValueType value_type;
-
-
-  /// Construct diagram from raw CUDD elements
-  CExtrusivePtr(const data_type& data, value_type* ptr): 
-    m_data(data), p_ptr(ptr) { lock(); }
-
-  /// Copy constructor
-  CExtrusivePtr(const self& rhs): 
-    m_data(rhs.m_data), p_ptr(rhs.p_ptr) { lock(); } 
-
-  /// Destructor
-  ~CExtrusivePtr() { release(); }
-
-  /// Assignment
-  self& operator=(const self& rhs) {
-    self(rhs).swap(*this);
-    return *this;
-  }
-
-  /// Accessing helpter data
-  const data_type& data() const { return m_data; }
-
-  value_type* get() const {
-    return p_ptr;
-  }
-
-  const value_type & operator*() const {
-    assert(p_ptr != NULL);
-    return *p_ptr;
-  }
-
-  value_type & operator*() {
-    assert(p_ptr != NULL);
-    return *p_ptr;
-  }
-  
-  value_type* operator->() const {
-    assert(p_ptr != NULL);
-    return p_ptr;
-  }
-
-  void swap(self & rhs) {
-    std::swap(p_ptr, rhs.p_ptr);
-  }
-
-protected:
-
-  void lock() {
-    extrusive_ptr_add_ref(data(), get());
-  }
-  void release() {
-    extrusive_ptr_release(data(), get());
-  }
-
-  /// Store helper data
-  data_type m_data;
-
-  /// Store actual pointer
-  value_type* p_ptr;
-};
-
-template <class Data1, class Type1, class Data2, class Type2> 
-inline bool
-operator==(const CExtrusivePtr<Data1, Type1> & lhs, 
-           const CExtrusivePtr<Data2, Type2> & rhs) {
-  return lhs.get() == rhs.get();
-}
-
-template <class Data1, class Type1, class Data2, class Type2>
-inline bool
-operator!=(const CExtrusivePtr<Data1, Type1> & lhs,
-           const CExtrusivePtr<Data2, Type2> & rhs) {
-  return lhs.get() != rhs.get();
-}
-
-template <class Data1, class Type1, class Type2>
-inline bool
-operator==(const CExtrusivePtr<Data1, Type1> & lhs, Type2 * rhs) {
-  return lhs.get() == rhs;
-}
-
-template <class Data1, class Type1, class Type2>
-inline bool 
-operator!=(const CExtrusivePtr<Data1, Type1> & lhs, Type2* rhs) {
-  return lhs.get() != rhs;
-}
-
-template <class Type1, class Data2, class Type2>
-inline bool
-operator==(Type1* lhs, const CExtrusivePtr<Data2, Type2> & rhs) {
-  return lhs == rhs.get();
-}
-
-template <class Type1, class Data2, class Type2>
-inline bool
-operator!=(Type1* lhs, const CExtrusivePtr<Data2, Type2> & rhs) {
-  return lhs != rhs.get();
-}
 
 /// Releasing here
 template <class DataType>
