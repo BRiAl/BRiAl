@@ -57,10 +57,25 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 
+#define PBORI_NAME_Product product
+#define PBORI_NAME_UnateProduct unateProduct
+#define PBORI_NAME_WeakDiv weakDivide
+#define PBORI_NAME_Divide divide
+#define PBORI_NAME_WeakDivF weakDivF
+#define PBORI_NAME_DivideF divideF
+#define PBORI_NAME_Union unite
+#define PBORI_NAME_Intersect intersect
+#define PBORI_NAME_Diff diff
+#define PBORI_NAME_DiffConst diffConst
+#define PBORI_NAME_Subset1 subset1
+#define PBORI_NAME_Subset0 subset0
+#define PBORI_NAME_Change change
+
 
 #define PB_ZDD_APPLY(count, data, funcname) \
-  self funcname(data rhs) const {    \
-    return apply(BOOST_PP_CAT(Cudd_zdd, funcname), rhs); }
+  diagram_type BOOST_PP_CAT(PBORI_NAME_, funcname)(data rhs) const {    \
+      return apply(BOOST_PP_CAT(Cudd_zdd, funcname),           \
+                              rhs); }
 
 template <class RingType, class DiagramType>
 class CDDFacade: 
@@ -171,7 +186,7 @@ public:
 
   /// @note Preprocessor generated members
   /// @code
-  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const self&, 
+  BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const diagram_type&, 
     (Product)(UnateProduct)(WeakDiv)(Divide)(WeakDivF)(DivideF)
     (Union)(Intersect)(Diff)(DiffConst))
 
@@ -179,7 +194,7 @@ public:
   /** @endcode */
 
   /// If-Then-Else operation using current diagram as head
-  self Ite(const self& g, const self& h) const { 
+  self ite(const self& g, const self& h) const { 
     return apply(Cudd_zddIte, g, h); 
   }
 
@@ -206,6 +221,7 @@ public:
 
   /// Appriximate the number of terms
   double countDouble() const { return memApply(Cudd_zddCountDouble); }
+
   /// Get index of curent node
   size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
 
@@ -253,74 +269,13 @@ public:
     return stable_hash_range(navigation());
   }
 
-  /// Set union
-  diagram_type unite(const diagram_type& rhs) const {
-    return Union(rhs);
-  };
-
-  /// If-Then-Else operation
-  diagram_type ite(const diagram_type& then_dd, const diagram_type& else_dd) const {
-    return Ite(then_dd, else_dd);
-  };
-
-  /// Set difference
-  diagram_type diff(const diagram_type& rhs) const {
-    return Diff(rhs);
-  };
-
-  /// Set difference
-  diagram_type diffConst(const diagram_type& rhs) const {
-    return DiffConst(rhs);
-  };
-
-  /// Set intersection
-  diagram_type intersect(const diagram_type& rhs) const {
-    return Intersect(rhs);
-  };
-
-  /// Product
-  diagram_type product(const diagram_type& rhs) const {
-    return Product(rhs);
-  };
-
-  /// Unate product
-  diagram_type unateProduct(const diagram_type& rhs) const {
-    return UnateProduct(rhs);
-  };
-
-
+  /// Union Xor
   diagram_type Xor(const diagram_type& rhs) const {
     if (rhs.isZero())
       return *this;
 
-    return base::apply(pboriCudd_zddUnionXor, rhs);
+    return apply(pboriCudd_zddUnionXor, rhs);
   }
-
-  /// Generate subset, where decision diagram manager variable idx is false
-  diagram_type subset0(idx_type idx) const {
-    return Subset0(idx);
-  };
-
-  /// Generate subset, where decision diagram manager variable idx is asserted
-  diagram_type subset1(idx_type idx) const {
-    return Subset1(idx);
-  };
-
-  /// Substitute variable with index idx by its complement
-  diagram_type change(idx_type idx) const {    
-
-    return Change(idx);
-  };
-
-  /// Division
-  diagram_type ddDivide(const diagram_type& rhs) const {
-    return Divide(rhs);
-  };
-
-  /// Weak division
-  diagram_type weakDivide(const diagram_type& rhs) const {
-    return WeakDiv(rhs);
-  };
 
   /// Division with first term of right-hand side
   diagram_type divideFirst(const diagram_type& rhs) const {
@@ -344,20 +299,12 @@ public:
 
 
   /// Get numbers of used variables
-  size_type nSupport() const {
-    return base::apply(Cudd_SupportSize);
-  }
+  size_type nSupport() const { return apply(Cudd_SupportSize); }
 
   /// Get multiples of used variables
   diagram_type support() const {
-
-    DdNode* tmp = Cudd_Support(getManager(), getNode());
-    Cudd_Ref(tmp);
- 
-    diagram_type result(ring(), Cudd_zddPortFromBdd(getManager(), tmp));
-    Cudd_RecursiveDeref(getManager(), tmp);        
-
-    return result;
+    diagram_type tmp(apply(Cudd_Support));
+    return tmp.apply(Cudd_zddPortFromBdd);
   }
 
   /// Get used variables (assuming indices of zero length)
@@ -545,7 +492,7 @@ public:
 
   /// Returns number of variables in manager
   size_type nVariables() const {
-   return Cudd_ReadZddSize(getManager() );
+    return ring().nVariables();
   }
 
 
