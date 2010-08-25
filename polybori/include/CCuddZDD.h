@@ -127,8 +127,6 @@ public:
     p_node = static_cast<const self&>(rhs).p_node;
     return static_cast<diagram_type&>(*this);
   }
-  /// Get reference to ring
-  const ring_type& ring() const { return p_node.data(); }
 
   /// Get raw node structure
   node_ptr getNode() const { return p_node.get(); }
@@ -147,23 +145,23 @@ protected:
    /// @name Apply C-style procedures to nodes
   //@{
   diagram_type apply(unary_function func) const {
-    return diagram_type(ring(), func(getManager(), getNode()));
+    return diagram_type(p_node.data(), func(getManager(), getNode()));
   }
 
   diagram_type apply(binary_function func, const diagram_type& rhs) const {
     checkSameManager(rhs);
-    return  diagram_type(ring(), func(getManager(), getNode(), rhs.getNode()));
+    return  diagram_type(p_node.data(), func(getManager(), getNode(), rhs.getNode()));
   }
 
   diagram_type apply(binary_int_function func, idx_type idx) const {
-    return  diagram_type(ring(), func(getManager(), getNode(), idx) );
+    return  diagram_type(p_node.data(), func(getManager(), getNode(), idx) );
   }
 
   diagram_type apply(ternary_function func, 
                      const diagram_type& first, const diagram_type& second) const {
     checkSameManager(first);
     checkSameManager(second);
-    return diagram_type(ring(), func(getManager(), getNode(), 
+    return diagram_type(p_node.data(), func(getManager(), getNode(), 
                                      first.getNode(), second.getNode()) );
   }
 
@@ -299,6 +297,9 @@ public:
 
   /// Test whether diagram represents the empty set
   bool isOne() const { return getNode() == DD_ONE(getManager()); }
+
+  /// Get reference to ring
+  const ring_type& ring() const { return p_node.data(); }
 
 protected:
 
