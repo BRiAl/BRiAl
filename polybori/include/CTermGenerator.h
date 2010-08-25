@@ -94,9 +94,9 @@ public:
 
   //  typedef  CTypes::manager_base manager_base;
 
-  typedef  CTypes::dd_type dd_type;
-  typedef  BoolePolyRing data_type;
 
+  typedef  BoolePolyRing data_type;
+  typedef  data_type::dd_type dd_type;
 
   // typedef  CTypes::manager_base data_type;
   data_type m_data;
@@ -158,8 +158,7 @@ class CTermGenerator:
 public:
   typedef CTermGeneratorBase<TermType> base;
 
-  typedef  CTypes::dd_type dd_type;
-  typedef  dd_type::ring_type data_type;
+  typedef BoolePolyRing data_type;
 
   CTermGenerator(const data_type&): base() {}
   CTermGenerator(const CTermGenerator& rhs): base(rhs) {}

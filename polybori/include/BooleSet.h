@@ -63,14 +63,14 @@ class CReverseIter;
 
 
 class BooleSet:
-  public CTypes::dd_type {
+  public CDDFacade<BoolePolyRing, BooleSet> {
 
 public:
   /// Generic access to type of *this
   typedef BooleSet self;
 
   /// Generic access to base type
-  typedef CTypes::dd_type base;
+  typedef CDDFacade<BoolePolyRing, BooleSet> base;
 
   /// Generic access to underlying diagram type
   typedef base dd_type;
@@ -114,7 +114,14 @@ public:
   BooleSet(idx_type idx, navigator first, navigator second, 
            const ring_type& ring): 
     base(ring, idx, first, second) { }
-  
+ 
+  /// Construct new node (using navigator nodes)
+  BooleSet(const ring_type& ring, node_ptr node): 
+    base(ring, node) { }
+
+  BooleSet(const ring_type& ring, navigator navi): 
+    base(ring, navi.getNode()) { }
+
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
     base(rhs.ring(), idx, rhs.navigation()) { }
@@ -229,19 +236,19 @@ public:
 
   /// @name Members from base
   //@{
-  PBORI_CONST_DDFUNCS_IDX(subset0)
-  PBORI_CONST_DDFUNCS_IDX(subset1)
-  PBORI_CONST_DDFUNCS_IDX(change)
+//   PBORI_CONST_DDFUNCS_IDX(subset0)
+//   PBORI_CONST_DDFUNCS_IDX(subset1)
+//   PBORI_CONST_DDFUNCS_IDX(change)
 
 
-  PBORI_CONST_DDFUNCS(unite)
-  PBORI_CONST_DDFUNCS(diff)
-  PBORI_CONST_DDFUNCS(diffConst)
-  PBORI_CONST_DDFUNCS(intersect)
-  PBORI_CONST_DDFUNCS(product)
-  PBORI_CONST_DDFUNCS(Xor)
-  PBORI_CONST_DDFUNCS(ddDivide)
-  PBORI_CONST_DDFUNCS(weakDivide)
+//   PBORI_CONST_DDFUNCS(unite)
+//   PBORI_CONST_DDFUNCS(diff)
+//   PBORI_CONST_DDFUNCS(diffConst)
+//   PBORI_CONST_DDFUNCS(intersect)
+//   PBORI_CONST_DDFUNCS(product)
+//   PBORI_CONST_DDFUNCS(Xor)
+//   PBORI_CONST_DDFUNCS(ddDivide)
+//   PBORI_CONST_DDFUNCS(weakDivide)
   //@}
 
   /// Test containment

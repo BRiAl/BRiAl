@@ -102,7 +102,7 @@ public:
 
   /// @name Adopt global type definitions
   //@{
-  typedef CTypes::dd_type dd_type;
+  typedef BooleSet dd_type;
   typedef CTypes::ostream_type ostream_type;
   //@}
 
@@ -219,7 +219,7 @@ public:
   BoolePolynomial(const dd_type& rhs): m_dd(rhs) {}
 
   /// Construct polynomial from a subset of the powerset over all variables
-  BoolePolynomial(const set_type& rhs): m_dd(rhs.diagram()) {}
+                 //  BoolePolynomial(const set_type& rhs): m_dd(rhs.diagram()) {}
 
   /// Construct polynomial from exponent vector
   BoolePolynomial(const exp_type&, const ring_type&); 

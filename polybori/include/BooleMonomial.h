@@ -50,27 +50,24 @@ template <class DDType, class MonomType> class CDDOperations;
 class BooleMonomial:
   public CAuxTypes {
 
- public:
+  /// Generic access to current type
+  typedef BooleMonomial self;
+
+public:
   template <class, class> friend class CDDOperations;
   friend class COrderingBase;
   template <class> friend class CTermGeneratorBase;
   template <class, class> friend class CTermGeneratorBase__;
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
-
-  /// @name Adopt global type definitions
-  //@{
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::integer_type integer_type;
-  typedef CTypes::ostream_type ostream_type;
-  //@}
-
-  /// Generic access to current type
-  typedef BooleMonomial self;
 
   /// Type of Boolean polynomials
   typedef BoolePolynomial poly_type;
+
+  /// @name Adopt global type definitions
+  //@{
+  typedef poly_type::dd_type dd_type;
+  typedef poly_type::integer_type integer_type;
+  typedef poly_type::ostream_type ostream_type;
+  //@}
 
   /// Type of Boolean variables
   typedef poly_type::var_type var_type;

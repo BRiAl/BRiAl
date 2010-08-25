@@ -391,11 +391,11 @@ BooleExponent::multiples(const self& multipliers) const {
 
 
   poly_type theZero(false);
-  dd_type result = cudd_generate_multiples(BooleRing(theZero.diagram().ring()),
+  set_type result = cudd_generate_multiples(theZero.ring(),
 
                                             m_data.rbegin(), m_data.rend(),
                                             multipliers.rbegin(),
-                                           multipliers.rend(),type_tag<CCuddZDD>());
+                                           multipliers.rend(),type_tag<set_type>());
 
 
    return result;
@@ -408,8 +408,8 @@ BooleExponent::divisors() const {
   PBORI_TRACE_FUNC( "BooleExponent::divisors() const" );
 
   poly_type theZero(false);
-  dd_type result = cudd_generate_divisors(BooleRing(theZero.diagram().ring()),
-                                           m_data.rbegin(), m_data.rend() ,type_tag<CCuddZDD>());
+  set_type result = cudd_generate_divisors(theZero.ring(),
+                                           m_data.rbegin(), m_data.rend() ,type_tag<set_type>());
   return result;
 }
 

@@ -298,12 +298,12 @@ public:
 
   /// Generate subset, where decision diagram manager variable idx is false
   diagram_type subset0(idx_type idx) const {
-    return subset0(idx);
+    return Subset0(idx);
   };
 
   /// Generate subset, where decision diagram manager variable idx is asserted
   diagram_type subset1(idx_type idx) const {
-    return subset1(idx);
+    return Subset1(idx);
   };
 
   /// Substitute variable with index idx by its complement
