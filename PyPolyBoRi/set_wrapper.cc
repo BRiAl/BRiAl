@@ -73,7 +73,9 @@ corresponding to Variables of given index is replaced by its else-branch")
     .def("vars",&BooleSet::usedVariables, "Variables occurring in BooleSet")
     .def("navigation", &BooleSet::navigation,
          "Navigate through underlying ZDD structure")
-    .def("ring", &BooleSet::ring, "Get corresponding ring")
+    .def("ring", &BooleSet::ring,
+         return_value_policy<reference_existing_object>(),
+         "Get corresponding ring")
     .def("include_divisors",include_divisors)
     .def("minimal_elements", &BooleSet::minimalElements, 
          "Get minimal elements with respect to inclusion")

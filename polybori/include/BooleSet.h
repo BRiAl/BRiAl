@@ -21,7 +21,7 @@
 // include polybori functionals
 #include "pbori_func.h"
 
-#include "CDDFacade.h"
+#include "CCuddDDFacade.h"
 
 #include "BoolePolyRing.h"
 
@@ -63,14 +63,14 @@ class CReverseIter;
 
 
 class BooleSet:
-  public CDDFacade<BoolePolyRing, BooleSet> {
+  public CCuddDDFacade<BoolePolyRing, BooleSet> {
 
 public:
   /// Generic access to type of *this
   typedef BooleSet self;
 
   /// Generic access to base type
-  typedef CDDFacade<BoolePolyRing, BooleSet> base;
+  typedef CCuddDDFacade<BoolePolyRing, BooleSet> base;
 
   /// Generic access to underlying diagram type
   typedef base dd_type;
@@ -231,29 +231,12 @@ public:
 
   /// Cartesean product
   self cartesianProduct(const self& rhs) const {
-    return base::unateProduct(rhs.diagram());
+    return unateProduct(rhs);
   };
-
-  /// @name Members from base
-  //@{
-//   PBORI_CONST_DDFUNCS_IDX(subset0)
-//   PBORI_CONST_DDFUNCS_IDX(subset1)
-//   PBORI_CONST_DDFUNCS_IDX(change)
-
-
-//   PBORI_CONST_DDFUNCS(unite)
-//   PBORI_CONST_DDFUNCS(diff)
-//   PBORI_CONST_DDFUNCS(diffConst)
-//   PBORI_CONST_DDFUNCS(intersect)
-//   PBORI_CONST_DDFUNCS(product)
-//   PBORI_CONST_DDFUNCS(Xor)
-//   PBORI_CONST_DDFUNCS(ddDivide)
-//   PBORI_CONST_DDFUNCS(weakDivide)
-  //@}
 
   /// Test containment
   bool_type contains(const self& rhs) const { 
-    return base::diffConst(rhs).emptiness();  
+    return diffConst(rhs).isZero();  
   }
 
   /// Get unique hash value (may change from run to run)
@@ -273,10 +256,6 @@ public:
 
   /// Count many terms containing BooleVariable(idx)
   double countIndexDouble(idx_type idx) const ;
-
-  /// Access ring, where this belongs to
-  ring_type ring() const { return ring_type(base::ring()); } 
-  //  using base::ring;
 
   /// Test whether, all divisors of degree -1 of term rhs are contained in this
   bool_type containsDivisorsOfDecDeg(const term_type& rhs) const;

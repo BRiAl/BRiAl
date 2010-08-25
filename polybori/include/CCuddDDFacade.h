@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CDDFacade.h 
+/** @file CCuddDDFacade.h 
  *
  * @author Alexander Dreyer
  * @date 2010-08-25
@@ -16,8 +16,8 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-#ifndef CDDFacade_h
-#define CDDFacade_h
+#ifndef CCuddDDFacade_h
+#define CCuddDDFacade_h
 
 #include "cuddInt.h"
 #include "CCuddZDD.h"
@@ -52,7 +52,7 @@
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class CDDFacade
+/** @class CCuddDDFacade
  * @brief This template class defines a facade for decision diagrams.
  *
  **/
@@ -78,11 +78,11 @@ BEGIN_NAMESPACE_PBORI
                               rhs); }
 
 template <class RingType, class DiagramType>
-class CDDFacade: 
+class CCuddDDFacade: 
   public CCuddDDBase<RingType, DiagramType, DdNode> {
 
   /// Type of *this
-  typedef CDDFacade self;
+  typedef CCuddDDFacade self;
 public:
 
   /// Define size type
@@ -138,40 +138,40 @@ public:
   typedef typename  base::mgr_type mgr_type;
 
   /// Construct diagram from ring and node
-  CDDFacade(const ring_type& ring, node_ptr node): base(ring, node) {
+  CCuddDDFacade(const ring_type& ring, node_ptr node): base(ring, node) {
     checkAssumption(node != NULL);
   }
   /// Construct from Manager and navigator
-  CDDFacade(const ring_type& ring, const navigator& navi): 
+  CCuddDDFacade(const ring_type& ring, const navigator& navi): 
     base(self::newDiagram(ring, navi)) {}
 
   /// Construct new node from manager, index, and navigators
-  CDDFacade(const ring_type& ring, 
+  CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator thenNavi, navigator elseNavi): 
     base( self::newNodeDiagram(ring, idx, thenNavi, elseNavi) ) {
   }
 
   /// Construct new node from manager, index, and common navigator for then and
   /// else-branches
-  CDDFacade(const ring_type& ring, 
+  CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator navi): 
     base( self::newNodeDiagram(ring, idx, navi, navi) ) {
   }
 
   /// Construct new node
-  CDDFacade(idx_type idx, const self& thenDD, const self& elseDD): 
+  CCuddDDFacade(idx_type idx, const self& thenDD, const self& elseDD): 
     base( self::newNodeDiagram(thenDD.ring(), idx, 
                                     thenDD.navigation(), 
                                     elseDD.navigation()) ) {
   }
   /// Default constructor
-  CDDFacade(): base() {}
+  CCuddDDFacade(): base() {}
 
   /// Copy constructor
-  CDDFacade(const self &from): base(from) {}
+  CCuddDDFacade(const self &from): base(from) {}
 
   /// Destructor
-  ~CDDFacade() {}
+  ~CCuddDDFacade() {}
 
   /// Assignment operator
   // self& operator=(const self& right); // inlined below
@@ -183,6 +183,11 @@ public:
   }
   bool operator!=(const self& other) const { return !(*this == other); }
   //@}
+
+  /// Test containment
+  bool_type contains(const self& rhs) const { 
+    return diffConst(rhs).isZero();  
+  }
 
   /// @note Preprocessor generated members
   /// @code
