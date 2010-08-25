@@ -34,7 +34,9 @@ BEGIN_NAMESPACE_PBORI
  void extrusive_ptr_release(const DataType&, ValueType*);
  void extrusive_ptr_add_ref(const DataType&, ValueType*)
  * @endcode
- *
+ * If @c DataType is ignored, this is essentially
+ * @c boost::intrusive_ptr, while something like DataType = int* could be used
+ * to implement something like @c boost::shared_ptr.
  **/
 template <class DataType, class ValueType>
 class CExtrusivePtr {

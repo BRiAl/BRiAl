@@ -33,8 +33,6 @@ BEGIN_NAMESPACE_PBORI
  * managers as Boolean polynomial rings.
  *
  **/
-template <class DiagramType, class RingType>
-class CCuddDDBase;
 
 class BooleRing: 
   public CTypes::orderenums_type, public CTypes::compenums_type, 
@@ -77,7 +75,6 @@ class BooleRing:
 
 protected:
 
-  template <class, class> class CCuddDDBase;
   /// Support for shallow copy (clone)
   /// @note May generate invalid ring, hence @c protected 
   BooleRing(const core_ptr& rhs):  p_core(rhs) {}

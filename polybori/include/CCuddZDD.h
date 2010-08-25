@@ -20,8 +20,6 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-
-
 #include "pbori_func.h"
 #include "pbori_traits.h"
 #include "CCuddCore.h"
@@ -83,9 +81,9 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
  * base class for CCuddZDD.
  **/
 
-template <class DiagramType, class RingType>
+template <class RingType, class DiagramType, class NodeType>
 class CCuddDDBase: 
-  public CTypes {
+  public CAuxTypes {
 
   /// Name type of *this
   typedef CCuddDDBase self;
@@ -95,12 +93,13 @@ public:
 
   typedef RingType ring_type;
 
-  typedef DdNode node_type; 
-  typedef DdNode* node_ptr; 
+  typedef NodeType node_type; 
+  typedef node_type* node_ptr; 
   typedef typename ring_type::mgr_type mgr_type;
   typedef node_ptr (*unary_int_function)(mgr_type*, int);
   typedef node_ptr (*void_function)(mgr_type*);
 
+  typedef node_ptr (*unary_function)(mgr_type*, node_ptr);
   typedef node_ptr (*binary_function)(mgr_type*, node_ptr, node_ptr);
   typedef node_ptr (*binary_int_function)(mgr_type*, node_ptr, int);
   typedef node_ptr (*ternary_function)(mgr_type*, node_ptr, node_ptr, node_ptr);
@@ -122,14 +121,20 @@ public:
   /// Destructor
   ~CCuddDDBase() { }
 
-  /// Get (shared) pointer to decision diagram manager
+  /// Assignment operator
+  self& operator=(const self& rhs) {
+    if UNLIKELY(this == &rhs) return *this;
+    p_node = rhs.p_node;
+    return *this;
+  }
+  /// Get reference to ring
   const ring_type& ring() const { return p_node.data(); }
 
   /// Get raw node structure
   node_ptr getNode() const { return p_node.get(); }
 
   /// Get raw decision diagram manager
-  mgr_type* getManager() const { return ring().getManager(); }
+  mgr_type* getManager() const { return p_node.data().getManager(); }
 
 protected:
   /// Test, whether both operands 
@@ -139,14 +144,12 @@ protected:
     }
   }
 
-  /// Check whether previous decision diagram operation for validity
-  void checkAssumption(bool isValid) const {
-    if UNLIKELY(!isValid)
-      throw std::runtime_error(error_text(getManager()));
+   /// @name Apply C-style procedures to nodes
+  //@{
+  diagram_type apply(unary_function func) const {
+    return diagram_type(ring(), func(getManager(), getNode()));
   }
 
-   /// @name Apply CUDD procedures to nodes
-  //@{
   diagram_type apply(binary_function func, const diagram_type& rhs) const {
     checkSameManager(rhs);
     return  diagram_type(ring(), func(getManager(), getNode(), rhs.getNode()));
@@ -164,19 +167,10 @@ protected:
                                      first.getNode(), second.getNode()) );
   }
 
-  idx_type apply(int_unary_function func) const {
-    idx_type result = func(getManager(), getNode());
-    checkAssumption(result == 1);
-    return result;
-  }
-  //@}
-
-
+  /// Unary functions return other types
   template <class ResultType>
-  ResultType memApply(ResultType (*func)(mgr_type *, node_ptr)) const {
-    ResultType result = func(getManager(), getNode());
-    checkAssumption(result != (ResultType) CUDD_OUT_OF_MEM);
-    return result;
+  ResultType apply(ResultType (*func)(mgr_type *, node_ptr)) const {
+    return func(getManager(), getNode());
   }
   // @}
 
@@ -211,7 +205,7 @@ protected:
  **/
 
 class CCuddZDD : 
-  public CCuddDDBase<CCuddZDD, BooleRing> {
+  public CCuddDDBase<BooleRing, CCuddZDD, DdNode> {
     friend class CCuddInterface;
 
   /// Name type of *this
@@ -222,7 +216,7 @@ public:
   typedef BooleRing ring_type;
 
   /// Name the type, which self is inherited from
-  typedef CCuddDDBase<self,  ring_type> base;
+  typedef CCuddDDBase<BooleRing, CCuddZDD, DdNode> base;
   typedef  base::node_ptr node_ptr;
   /// Construct ZDD from manager core and node
 
@@ -240,7 +234,7 @@ public:
   ~CCuddZDD() { }
 
   /// Assignment operator
-  self& operator=(const self& right); // inlined below
+  // self& operator=(const self& right); // inlined below
 
   /// @name Logical operations
   //@{
@@ -278,7 +272,9 @@ public:
     return os;
 
   }
-  void PrintMinterm() const  { apply(Cudd_zddPrintMinterm); }
+  void PrintMinterm() const  {
+    checkAssumption(apply(Cudd_zddPrintMinterm) == 1);
+  }
   //@}
 
   /// Determine the number of terms
@@ -306,9 +302,30 @@ public:
 
 protected:
 
+  template <class ResultType>
+  ResultType memApply(ResultType (*func)(mgr_type *, node_ptr)) const {
+    ResultType result = apply(func);
+    checkAssumption(result != (ResultType) CUDD_OUT_OF_MEM);
+    return result;
+  }
 
+  /// Check whether previous decision diagram operation for validity
+  void checkAssumption(bool isValid) const {
+    if UNLIKELY(!isValid)
+      throw std::runtime_error(error_text(getManager()));
+  }
 
 }; //CCuddZDD
+
+// inline CCuddZDD&
+// CCuddZDD::operator=(const CCuddZDD& rhs) {
+
+//   //if UNLIKELY(this == &rhs) return *this;
+
+//   p_node = rhs.p_node;
+
+//   return *this;
+// }
 
 #undef PB_ZDD_APPLY
 #undef PB_ZDD_OP_ASSIGN
@@ -318,15 +335,6 @@ protected:
 // Members of class CCuddZDD
 // ---------------------------------------------------------------------------
 
-inline CCuddZDD& 
-CCuddZDD::operator=(const CCuddZDD& rhs) {
-
-  if UNLIKELY(this == &rhs) return *this;
-
-  p_node = rhs.p_node;
-  
-  return *this;
-}
 
 #undef PB_DD_VERBOSE
 
