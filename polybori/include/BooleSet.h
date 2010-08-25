@@ -20,6 +20,9 @@
 
 // include polybori functionals
 #include "pbori_func.h"
+
+#include "CDDFacade.h"
+
 #include "BoolePolyRing.h"
 
 // include definitions of decision diagram interfaces
