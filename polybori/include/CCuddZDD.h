@@ -122,10 +122,10 @@ public:
   ~CCuddDDBase() { }
 
   /// Assignment operator
-  self& operator=(const self& rhs) {
+  diagram_type& operator=(const diagram_type& rhs) {
     if UNLIKELY(this == &rhs) return *this;
-    p_node = rhs.p_node;
-    return *this;
+    p_node = static_cast<const self&>(rhs).p_node;
+    return static_cast<diagram_type&>(*this);
   }
   /// Get reference to ring
   const ring_type& ring() const { return p_node.data(); }

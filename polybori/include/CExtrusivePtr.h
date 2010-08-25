@@ -97,6 +97,7 @@ public:
 
   /// Swap
   void swap(self & rhs) {
+    std::swap(m_data, rhs.m_data);
     std::swap(p_ptr, rhs.p_ptr);
   }
 
