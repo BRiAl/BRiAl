@@ -25,8 +25,6 @@
   //#include "CDDOperations.h"
   // temporarily for work around
 
-#include "CDDInterface.h"
-#include "CCuddZDD.h"
 
 #include <list>
 

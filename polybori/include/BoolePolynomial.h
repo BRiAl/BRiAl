@@ -29,8 +29,6 @@
 
 #include "BooleRing.h"
 #include "BoolePolyRing.h"
-// include basic definitions and decision diagram interface
-#include "CDDInterface.h"
 
 // include definition of sets of Boolean variables
 

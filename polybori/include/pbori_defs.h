@@ -135,13 +135,6 @@ END_NAMESPACE_PBORI
 
 BEGIN_NAMESPACE_PBORI
 
-/// Forward declaration of decision diagram interface
-template <class DDType>
-class CDDInterface;
-
-/// Forward declaration of decision diagram manager interface
-template <class ManType>
-class CDDManager;
 
 /** @class COrderEnums
  * @brief This struct contains type definitions and enumerations to be used for
@@ -254,7 +247,7 @@ struct CAuxTypes {
   typedef long int refcount_type;
 };
 
-class CCuddZDD;
+class BooleSet;
 class BoolePolyRing;
 
 /** @class CTypes
@@ -280,11 +273,9 @@ struct CTypes:
   typedef CAuxTypes auxtypes_type;
   //@}
 
-  /// Type of underlying binary decicion diagrams 
-  typedef CCuddZDD dd_base;
 
   /// Type of interface to binary decicion diagrams 
-  typedef CDDInterface<dd_base> dd_type;
+  typedef BooleSet dd_type;
 
 
   /// Fix type and value of maximal index

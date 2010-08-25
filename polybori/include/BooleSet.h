@@ -25,10 +25,6 @@
 
 #include "BoolePolyRing.h"
 
-// include definitions of decision diagram interfaces
-#include "CDDInterface.h"
-#include "CCuddZDD.h"
-
 
 #ifndef BooleSet_h_
 #define BooleSet_h_

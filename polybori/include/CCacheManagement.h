@@ -18,7 +18,6 @@
 
 // get DD navigation
 #include "CCuddNavigator.h"
-#include "CDDInterface.h"
 
 #include "CCuddCore.h"
 #include <boost/intrusive_ptr.hpp>

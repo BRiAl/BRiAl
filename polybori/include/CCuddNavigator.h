@@ -120,9 +120,6 @@ public:
   /// Cudd's node pointer
   typedef DdNode* pointer_type;
 
-  /// Cudd's node pointer
-  typedef CTypes::dd_base dd_base;
-
   /// Type for constantly accessing node pointer
   typedef const pointer_type const_access_type;
 
@@ -162,9 +159,6 @@ public:
   explicit CCuddNavigator(pointer_type ptr): pNode(ptr) {
     assert(isValid());
   }
-
-  /// Construct from decision diagram
-                         //  explicit CCuddNavigator(const dd_base& rhs): pNode(rhs.getNode()) {}
 
   /// Copy Constructor
   CCuddNavigator(const self& rhs): pNode(rhs.pNode) {}

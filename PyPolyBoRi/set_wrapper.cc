@@ -8,7 +8,7 @@
  */
 #include <boost/python.hpp>
 #include <iostream>
-#include "CDDInterface.h"
+
 #include "polybori.h"
 #include "interpolate.h"
 #include "groebner_alg.h"

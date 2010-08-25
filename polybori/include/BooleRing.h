@@ -49,7 +49,6 @@ class BooleRing:
   /// @name adopt global type definitions
   //@{
   typedef CTypes::ordercode_type ordercode_type;
-  typedef CTypes::dd_base dd_base;
   typedef CTypes::dd_type dd_type;
   typedef CTypes::vartext_type vartext_type;
   //@}
