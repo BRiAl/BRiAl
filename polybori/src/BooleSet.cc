@@ -52,37 +52,6 @@ BooleSet::BooleSet():
 
 }
 
-// // Construct new node (using navigator nodes)
-// BooleSet::BooleSet(idx_type idx, navigator first, navigator second):
-//   base(BooleEnv::manager().manager(), idx, first, second) {
-  
-//   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator, navigator)" );
-// }
-
-// // Construct new node (using navigator nodes)
-// BooleSet::BooleSet(idx_type idx, navigator navi):
-//   base(BooleEnv::manager().manager(), idx, navi) {
-  
-//   PBORI_TRACE_FUNC( "BooleSet(idx_type, navigator)" );
-// }
-
-// // Construct new node (using navigator nodes)
-// BooleSet::BooleSet(navigator navi, const ring_type& ring) :
-//   base(ring.manager().manager(), navi) {
-  
-//   PBORI_TRACE_FUNC( "BooleSet(navigator)" );
-// }
-
-// Assignment
-BooleSet&
-BooleSet::operator=(const self& rhs) {
-
-  PBORI_TRACE_FUNC( "BooleSet::operator=(const self&) const" );
-
-  base::operator=(rhs);
-  return *this;
-}
-
 // Add given monomial to sets
 BooleSet
 BooleSet::add(const term_type& rhs) const {

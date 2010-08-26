@@ -20,63 +20,24 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-#include "pbori_func.h"
-#include "pbori_traits.h"
-#include "CCuddCore.h"
-
-#include "BooleRing.h"
-#include "PBoRiError.h"
-#include "CExtrusivePtr.h"
-
 #include <stdexcept>
-#include <algorithm>
-#include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_array.hpp>
-
-#include <boost/weak_ptr.hpp>
-
-
-#include <boost/preprocessor/cat.hpp>
-#include <boost/preprocessor/seq/for_each.hpp>
-#include <boost/preprocessor/facilities/expand.hpp>
-#include <boost/preprocessor/stringize.hpp>
-
-
 
 
 BEGIN_NAMESPACE_PBORI
 
-
-/// Releasing here
-template <class DataType>
-inline void
-extrusive_ptr_release(const DataType& data, DdNode* ptr) {
-   if (ptr != NULL) {
-     Cudd_RecursiveDerefZdd(data.getManager(), ptr);
-   }
-}
-
-/// Incrememt reference count
-template <class DataType>
-inline void 
-extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
-  if (ptr) Cudd_Ref(ptr);
-}
-
 /** @class CCuddDDBase
- * @brief This template class defines a C++ interface to @c CUDD's decision
- * diagram structure.
+ * @brief This template class defines a facade as a C++ interface for applying
+ * C-style functions to C-style structs, where represent decision diagrams
+ * (given by raw pointers of the nodes and the context).
  *
- * The purpose of this wrapper is just to provide an efficient and save way of
- * handling the decision diagrams. It corrects some short-comings of
- * CUDD's built-in interface.
+ * @attention We assume that the @c DiagramType owns member functions @c ring(), @c
+ * getNode() and @c getManager().
  *
- * @attention This template class is intented for internal use only, e.g. as
- * base class for CCuddZDD.
+ * @note This template class is a facade and hence it is intented for
+ * internal use only, e.g. as a base class for BooleSet.
  **/
 
-template <class DataType, class DiagramType, class NodeType>
+template <class DiagramType, class NodeType>
 class CCuddDDBase {
 
   /// Name type of *this
@@ -86,96 +47,92 @@ public:
   /// @name Template arguments
   //@{
   typedef DiagramType diagram_type;
-  typedef DataType data_type;
   typedef NodeType node_type; 
   //@}
 
   /// Raw diagram type
   typedef node_type* node_ptr; 
 
-  /// Global data (like Boolean rings)
-  typedef typename data_type::mgr_type mgr_type;
-
-  /// @name Applicable function types
-  //@{
-  typedef node_ptr (*unary_function)(mgr_type*, node_ptr);
-  typedef node_ptr (*binary_function)(mgr_type*, node_ptr, node_ptr);
-  typedef node_ptr (*ternary_function)(mgr_type*, node_ptr, node_ptr, node_ptr);
-  //@}
-
-  /// Construct diagram from raw CUDD elements
-  CCuddDDBase(const data_type& data, node_ptr node): 
-    p_node(data, node) { }
-
-  /// Copy constructor
-  CCuddDDBase(const self& from): 
-    p_node(from.p_node) { } 
-
   /// Default constructor
-  CCuddDDBase(): p_node(NULL, NULL) {}
+  CCuddDDBase() {}
 
   /// Destructor
   ~CCuddDDBase() { }
 
-  /// Assignment operator
-  diagram_type& operator=(const diagram_type& rhs) {
-    if UNLIKELY(this == &rhs) return *this;
-    p_node = static_cast<const self&>(rhs).p_node;
-    return static_cast<diagram_type&>(*this);
+  /// @name Logical operations
+  //@{
+  /// Equality
+  bool operator==(const diagram_type& rhs) const {
+    return operator node_ptr() == rhs.getNode();
   }
-
-  /// Get raw node structure
-  node_ptr getNode() const { return p_node.get(); }
-
-  /// Get raw decision diagram manager
-  mgr_type* getManager() const { return p_node.data().getManager(); }
+  /// Nonequality
+  bool operator!=(const diagram_type& rhs) const { return !(*this == rhs); }
+  //@}
 
 protected:
   /// Test, whether both operands 
   void checkSameManager(const diagram_type& other) const {
-    if UNLIKELY(getManager() != other.getManager()) {
+    if UNLIKELY(my().getManager() != other.getManager()) {
       throw std::runtime_error("Operands come from different manager.");
     }
   }
 
   /// @name Apply C-style procedures to nodes
   //@{
-  diagram_type apply(unary_function func) const {
-    return diagram_type(p_node.data(), func(getManager(), getNode()));
+  /// Unary function
+  template <class MgrType>
+  diagram_type apply(node_ptr (*func)(MgrType, node_ptr)) const {
+    return diagram(func(get<MgrType>(), *this));
   }
 
-  diagram_type apply(binary_function func, const diagram_type& rhs) const {
+  /// Binary function (two diagrams)
+  template <class MgrType>
+  diagram_type apply(node_ptr (*func)(MgrType, node_ptr, node_ptr),
+                     const diagram_type& rhs) const {
     checkSameManager(rhs);
-    return  diagram_type(p_node.data(), func(getManager(), getNode(), rhs.getNode()));
+    return diagram(func(get<MgrType>(), *this, rhs));
   }
 
-
-  diagram_type apply(ternary_function func, 
+  /// Ternary function (three diagrams)
+  template <class MgrType>
+  diagram_type apply(node_ptr (*func)(MgrType, node_ptr, node_ptr, node_ptr),
                      const diagram_type& first, const diagram_type& second) const {
     checkSameManager(first);
     checkSameManager(second);
-    return diagram_type(p_node.data(), 
-                        func(getManager(),
-                             getNode(), first.getNode(), second.getNode()) );
+    return diagram(func(get<MgrType>(), *this, first, second));
   }
 
   /// Binary functions with non-diagram right-hand side
-  template <class Type>
-  diagram_type apply(node_ptr (*func)(mgr_type*, node_ptr, Type),
-                     Type value) const {
-    return  diagram_type(p_node.data(), func(getManager(), getNode(), value) );
+  template <class MgrType, class Type>
+  diagram_type apply(node_ptr(*func)(MgrType, node_ptr, Type), Type value) const {
+    return diagram(func(get<MgrType>(), *this, value));
   }
 
-  /// Unary functions with non-diagram right-hand side
-  template <class ResultType>
-  ResultType apply(ResultType (*func)(mgr_type *, node_ptr)) const {
-    return func(getManager(), getNode());
+  /// Unary functions with non-diagram result value
+  template <class MgrType, class ResultType>
+  ResultType apply(ResultType(*func)(MgrType, node_ptr)) const {
+    return func(get<MgrType>(), *this);
   }
   // @}
 
-protected:
+  /// Get diagram of the same context
+  diagram_type diagram(node_ptr node) const {
+    return diagram_type(my().ring(), node);
+  }
 
-  CExtrusivePtr<data_type, node_type> p_node;
+private:
+
+  /// Get diagram of the same context
+  const diagram_type& my() const {
+    return static_cast<const diagram_type&>(*this);
+  }
+
+  /// Accessing the actuall type, fir which this facade is inteded to be used for
+  template<class MgrType>
+  MgrType get() const { return my().getManager(); }
+
+  /// This (and only this) class may automatically convert *this to raw pointer
+  operator node_ptr() const { return my().getNode(); }
 }; // CCuddDD
 
 

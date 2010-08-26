@@ -120,12 +120,7 @@ public:
 
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
-    base(rhs.ring(), idx, rhs.navigation()) { }
-
-  /// Construct one or zero set from constant
-  //  BooleSet(bool_type);
-  /// @todo  temporarily deactivated, as it slow downs procedures like
-  /// term_accumulate, needs check, what happens to inlinings etc. in this case
+    base(idx, rhs, rhs) { }
 
   /// Construct from navigator node
   BooleSet(navigator navi, const ring_type& ring):
@@ -151,12 +146,6 @@ public:
 
   /// Finish of iteration over exponent vectors
   exp_iterator expEnd() const;
-
-  /// Assignment operator
-  self& operator=(const self&);
-
-  /// Use assignment operator of base element
-  using base::operator=;
 
   /// Get unique hash value (valid only per runtime)
   hash_type hash() const { 
@@ -245,7 +234,6 @@ public:
 
   /// Returns number of variables in manager
   size_type nVariables() const { return ring().nVariables(); }
-
 
   /// Approximation of number of terms
   double sizeDouble() const { return countDouble(); }

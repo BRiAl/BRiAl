@@ -22,6 +22,7 @@
 #include "cuddInt.h"
 #include "CCuddZDD.h"
 
+#include "CExtrusivePtr.h"
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
 #include "CCuddNavigator.h"
@@ -52,6 +53,23 @@
 
 BEGIN_NAMESPACE_PBORI
 
+
+/// Releasing raw pointers to decision diagrams here
+template <class DataType>
+inline void
+extrusive_ptr_release(const DataType& data, DdNode* ptr) {
+   if (ptr != NULL) {
+     Cudd_RecursiveDerefZdd(data.getManager(), ptr);
+   }
+}
+
+/// Incrememting reference counts to raw pointers to decision diagrams 
+template <class DataType>
+inline void 
+extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
+  if (ptr) Cudd_Ref(ptr);
+}
+
 /** @class CCuddDDFacade
  * @brief This template class defines a facade for decision diagrams.
  *
@@ -79,30 +97,16 @@ BEGIN_NAMESPACE_PBORI
 
 template <class RingType, class DiagramType>
 class CCuddDDFacade: 
-  public CCuddDDBase<RingType, DiagramType, DdNode>,
+  public CCuddDDBase<DiagramType, DdNode>,
   public CAuxTypes {
 
   /// Type of *this
   typedef CCuddDDFacade self;
 public:
 
-  /// Define size type
-  typedef CTypes::size_type size_type;
-
-  /// Define degree type
-  typedef CTypes::deg_type deg_type;
-
-  /// Define index type
-  typedef CTypes::idx_type idx_type;
-
   /// Type for output streams
   typedef CTypes::ostream_type ostream_type;
 
-  /// Type for comparisons
-  typedef CTypes::bool_type bool_type;
-
-  /// Type for hashed
-  typedef CTypes::hash_type hash_type;
   /// Type for diagrams
   typedef RingType ring_type;
 
@@ -126,64 +130,60 @@ public:
 
 
   /// Type this is inherited from
-  typedef CCuddDDBase<RingType, DiagramType, DdNode> base;
+  typedef CCuddDDBase<DiagramType, DdNode> base;
 
   /// Pointer type for ndoes
   typedef typename  base::node_ptr node_ptr;
 
-  using base::getNode;
   using base::apply;
-  using base::getManager;
 
 
-  typedef typename  base::mgr_type mgr_type;
+  typedef typename ring_type::mgr_type mgr_type;
 
   /// Construct diagram from ring and node
-  CCuddDDFacade(const ring_type& ring, node_ptr node): base(ring, node) {
+  CCuddDDFacade(const ring_type& ring, node_ptr node): 
+    base(), p_node(ring, node) {
     checkAssumption(node != NULL);
   }
+
   /// Construct from Manager and navigator
   CCuddDDFacade(const ring_type& ring, const navigator& navi): 
-    base(self::newDiagram(ring, navi)) {}
-
+    base(), p_node(ring, navi.getNode()) {
+    checkAssumption(navi.isValid());
+  }
   /// Construct new node from manager, index, and navigators
   CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator thenNavi, navigator elseNavi): 
-    base( self::newNodeDiagram(ring, idx, thenNavi, elseNavi) ) {
+    base(), p_node(ring, getNewNode(ring, idx, thenNavi, elseNavi)) {
   }
 
   /// Construct new node from manager, index, and common navigator for then and
   /// else-branches
   CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator navi): 
-    base( self::newNodeDiagram(ring, idx, navi, navi) ) {
+    base(), p_node(ring, getNewNode(ring, idx, navi, navi)) {
   }
 
   /// Construct new node
-  CCuddDDFacade(idx_type idx, const self& thenDD, const self& elseDD): 
-    base( self::newNodeDiagram(thenDD.ring(), idx, 
-                                    thenDD.navigation(), 
-                                    elseDD.navigation()) ) {
-  }
+  CCuddDDFacade(idx_type idx, const self& thenDD, const self& elseDD):
+    base(), p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
+
   /// Default constructor
-  CCuddDDFacade(): base() {}
+  CCuddDDFacade(): base(), p_node(NULL, NULL)  {}
 
   /// Copy constructor
-  CCuddDDFacade(const self &from): base(from) {}
+  CCuddDDFacade(const self &from): base(), p_node(from.p_node) {}
 
   /// Destructor
   ~CCuddDDFacade() {}
 
   /// Assignment operator
-  // self& operator=(const self& right); // inlined below
-
-  /// @name Logical operations
-  //@{
-  bool operator==(const self& other) const {
-    return base::getNode() == other.getNode();
+  diagram_type& operator=(const diagram_type& rhs) {
+    p_node = rhs.p_node;
+    return static_cast<diagram_type&>(*this);
   }
-  bool operator!=(const self& other) const { return !(*this == other); }
-  //@}
+
+
 
   /// @note Preprocessor generated members
   /// @code
@@ -242,7 +242,13 @@ public:
   bool isOne() const { return getNode() == DD_ONE(getManager()); }
 
   /// Get reference to ring
-  const ring_type& ring() const { return base::p_node.data(); }
+  const ring_type& ring() const { return p_node.data(); }
+
+  /// Get raw node structure
+  node_ptr getNode() const { return p_node.get(); }
+
+  /// Get raw decision diagram manager
+  mgr_type* getManager() const { return p_node.data().getManager(); }
 
 protected:
 
@@ -266,7 +272,9 @@ public:
     if (rhs.isZero())
       return *this;
 
-    return apply(pboriCudd_zddUnionXor, rhs);
+    //    return apply(pboriCudd_zddUnionXor, rhs);
+    base::checkSameManager(rhs);
+    return diagram_type(ring(), pboriCudd_zddUnionXor(getManager(), getNode(), rhs.getNode()) );
   }
 
   /// Division with first term of right-hand side
@@ -476,45 +484,30 @@ public:
 
 
 private:
-  navigator newNode(const ring_type& mgr, idx_type idx, 
-                    navigator thenNavi, navigator elseNavi) const {
-    assert(idx < *thenNavi);
-    assert(idx < *elseNavi); 
-    return navigator(cuddZddGetNode(mgr.getManager(), idx, 
-                                    thenNavi.getNode(), elseNavi.getNode()));
-  }
 
-  diagram_type newDiagram(const ring_type& mgr, navigator navi) const { 
-    return diagram_type(mgr, navi.getNode());
-  }
+  /// Save variant for generating fast ite operation (when idx < root index)
+  static node_ptr
+  getNewNode(const ring_type& ring, idx_type idx, 
+             navigator thenNavi, navigator elseNavi) {
 
-  diagram_type fromTemporaryNode(const navigator& navi) const { 
-    navi.decRef();
-    return diagram_type(ring(), navi.getNode());
-  }
-
-
-  diagram_type newNodeDiagram(const ring_type& mgr, idx_type idx, 
-                                 navigator thenNavi, 
-                                 navigator elseNavi) const {
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
       throw PBoRiGenericError<CTypes::invalid_ite>();
-
-    return newDiagram(mgr, newNode(mgr, idx, thenNavi, elseNavi) );
+    
+    return cuddZddGetNode(ring.getManager(), idx, 
+                          thenNavi.getNode(), elseNavi.getNode());
   }
 
-  diagram_type newNodeDiagram(const ring_type& mgr, 
-                                 idx_type idx, navigator navi) const {
-    if (idx >= *navi)
-      throw PBoRiGenericError<CTypes::invalid_ite>();
-
-    navi.incRef();
-    diagram_type result =
-      newDiagram(mgr, newNode(mgr, idx, navi, navi) );
-    navi.decRef();
-    return result;
+  /// Convenience version for diagrams
+  static node_ptr 
+  getNewNode(idx_type idx, const self& thenDD, const self& elseDD) {
+    thenDD.checkSameManager(elseDD);
+    return getNewNode(thenDD.ring(), 
+                      idx, thenDD.navigation(), elseDD.navigation());
   }
 
+private:
+  /// Smart pointer, which uses the ring for deallocating the node
+  CExtrusivePtr<ring_type, node_type> p_node;
 };
 
 
