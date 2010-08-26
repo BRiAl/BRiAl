@@ -137,7 +137,7 @@ DegRevLexAscOrder::lead(const poly_type& poly) const {
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
-  CDegreeCache<> deg_mgr(poly.ring());
+  CDegreeCache<set_type> deg_mgr(poly.ring());
 
   return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, poly.navigation(), 
                                          set_type(), descending_property() ) );
@@ -156,7 +156,7 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
-  CDegreeCache<> deg_mgr(poly.ring());
+  CDegreeCache<set_type> deg_mgr(poly.ring());
 
   return dd_recursive_degree_leadexp (cache_mgr, deg_mgr, poly.navigation(), result, deg,
                                       descending_property());
@@ -170,7 +170,7 @@ DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
-  CDegreeCache<> deg_mgr(poly.ring());
+  CDegreeCache<set_type> deg_mgr(poly.ring());
 
   poly_type::navigator navi(poly.navigation());
   size_type deg(dd_cached_degree(deg_mgr, navi, bound));
@@ -190,7 +190,7 @@ DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
-  CDegreeCache<> deg_mgr(poly.ring());
+  CDegreeCache<set_type> deg_mgr(poly.ring());
 
   poly_type::navigator navi(poly.navigation());
   size_type deg(dd_cached_degree(deg_mgr, navi, bound));

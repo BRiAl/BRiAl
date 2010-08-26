@@ -532,13 +532,12 @@ template <class  DDType>
 class dd_operations;
 
 template<>
-class dd_operations<CTypes::dd_type::navigator> {
+class dd_operations<CCuddNavigator>:
+  public CAuxTypes {
 public:
   typedef DdManager* manager_type;
-  typedef CTypes::dd_type dd_type;
-  typedef dd_type::navigator navigator;
-  typedef dd_type::idx_type idx_type;
-  typedef dd_type::size_type size_type;
+  typedef CCuddNavigator navigator;
+
 
   dd_operations(manager_type man): mgr(man) {}
   void replacingUnite(navigator& newNode,

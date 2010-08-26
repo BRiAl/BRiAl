@@ -133,8 +133,6 @@ public:
   /// Smart pointer to Cudd manager
   typedef boost::intrusive_ptr<mgr_type> mgr_ptr;
 
-
-  typedef CTypes::dd_type dd_type;
   /// Initialize CUDD-like decision diagram manager
   CCuddInterface(size_type numVars, size_type numVarsZ, size_type numSlots = PBORI_UNIQUE_SLOTS,
                  size_type cacheSize = PBORI_CACHE_SLOTS, 
@@ -275,14 +273,6 @@ public:
   void zddSymmProfile(int lower, int upper) const {
     Cudd_zddSymmProfile(getManager(), lower, upper);
   }
-
-//   int SharingSize(dd_type* nodes, int nlen) const {
-//     typedef boost::scoped_array<node_type> node_array;
-//     node_array nodeArray(new node_type[nlen]);
-//     std::transform(nodes, nodes + nlen, nodeArray.get(), get_node<dd_type>());
-
-//     return checkedResult(Cudd_SharingSize(nodeArray.get(), nlen));
-//   }
 
   /// @note Preprocessor generated members
   /// @code

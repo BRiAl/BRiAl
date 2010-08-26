@@ -448,7 +448,8 @@ template <class ManagerType, class CacheType,
           unsigned ArgumentLength = CacheType::nargs>
 class CCacheManagement: 
   public CCacheManBase<ManagerType,
-                       CacheType, ArgumentLength> {
+                       CacheType, ArgumentLength>,
+  public CAuxTypes {
 public:
 
   /// @name Get template parameters and global types

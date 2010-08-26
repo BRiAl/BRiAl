@@ -36,7 +36,7 @@
 #include "CDegreeCache.h"
 #include "CBidirectTermIter.h"
   
-
+#include "BooleSet.h"
 
 #ifndef CTermStack_h_
 #define CTermStack_h_
@@ -46,7 +46,7 @@ BEGIN_NAMESPACE_PBORI
 //////////////////////////////////////////////////////////
 template<class NavigatorType>
 struct cached_deg {
-  typedef CDegreeCache<> cache_type;
+  typedef CDegreeCache<BooleSet> cache_type;
   typedef typename cache_type::manager_type manager_type;
   cached_deg(const manager_type & mgr): m_deg_cache(mgr) {}
 
@@ -71,7 +71,7 @@ public:
 
   /// Type for block iterators
   typedef typename block_idx_type::const_iterator block_iterator;
-  typedef CBlockDegreeCache<CCacheTypes::block_degree, CTypes::dd_type>
+  typedef CBlockDegreeCache<BooleEnv::dd_type>
   cache_type;
   typedef typename cache_type::manager_type manager_type;
 

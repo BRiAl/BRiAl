@@ -264,7 +264,7 @@ main(){
       // x1+ x2*x3+ x1*x2 +  x1*x2*x6  + x1*x2*x7+ x3*x4*x5;
     std::cout << "Polynom: "<< poly <<std::endl;
 
-    CBlockDegreeCache<> blockDegCache(poly.ring());
+    CBlockDegreeCache<BooleSet> blockDegCache(poly.ring());
 
     std::cout <<"Block degree wrt. 2: " << 
       dd_cached_block_degree(blockDegCache, poly.navigation(), 2) << std::endl;

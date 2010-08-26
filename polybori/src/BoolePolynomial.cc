@@ -735,7 +735,7 @@ BoolePolynomial::deg() const {
   /// more efficient search may be needed.
 
 #ifndef PBORI_NO_DEGCACHE
-  return dd_cached_degree(CDegreeCache<>(ring()), navigation());
+  return dd_cached_degree(CDegreeCache<set_type>(ring()), navigation());
 #else
   return ( isConstant() ? 
            (deg_type) 0 :
@@ -795,7 +795,7 @@ BoolePolynomial
 BoolePolynomial::gradedPart(deg_type deg) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(deg_type) const" );
-  typedef CDegreeArgumentCache<CCacheTypes::graded_part> cache_type;
+  typedef CDegreeArgumentCache<CCacheTypes::graded_part, set_type> cache_type;
   return dd_graded_part(cache_type(ring()), 
                         navigation(), deg, set_type());
 }

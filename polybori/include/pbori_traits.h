@@ -45,9 +45,6 @@ public:
   //-------------------------------------------------------------------------
   typedef ValueType value_type;
 
-  /// Type of interface to binary decicion diagrams 
-  typedef typename value_type::dd_type dd_type;
-
   //-------------------------------------------------------------------------
   // types for several purposes
   //-------------------------------------------------------------------------

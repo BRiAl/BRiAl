@@ -275,7 +275,7 @@ struct CTypes:
 
 
   /// Type of interface to binary decicion diagrams 
-  typedef BooleSet dd_type;
+  //  typedef BooleSet dd_type;
 
 
   /// Fix type and value of maximal index
