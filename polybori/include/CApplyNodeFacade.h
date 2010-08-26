@@ -1,12 +1,12 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CCuddZDD.h
+/** @file CApplyNodeFacade.h
  *
  * @author Alexander Dreyer
  * @date 2007-07-16
  *
- * This files defines a replacement for the decision diagrams of CUDD's
- * C++ interface. 
+ * This files  defines a facade as a C++ interface for applying
+ * C-style functions to C-style pointers, wher represent decision diagrams.
  *
  * @par Copyright:
  *   (c) 2007-2010 by The PolyBoRi Team
@@ -19,16 +19,16 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-
 #include <stdexcept>
 
 
 BEGIN_NAMESPACE_PBORI
 
-/** @class CCuddDDBase
+/** @class CApplyNodeFacade
  * @brief This template class defines a facade as a C++ interface for applying
- * C-style functions to C-style structs, where represent decision diagrams
- * (given by raw pointers of the nodes and the context).
+ * C-style functions to C-style structs, which represent decision diagrams.
+ * It is used to wrapp functions calls to raw pointers of the nodes and the
+ * context to an C++-style object.
  *
  * @attention We assume that the @c DiagramType owns member functions @c ring(), @c
  * getNode() and @c getManager().
@@ -37,34 +37,26 @@ BEGIN_NAMESPACE_PBORI
  * internal use only, e.g. as a base class for BooleSet.
  **/
 
-template <class DiagramType, class NodeType>
-class CCuddDDBase {
+template <class DiagramType, class NodePtr>
+class CApplyNodeFacade {
 
   /// Name type of *this
-  typedef CCuddDDBase self;
+  typedef CApplyNodeFacade self;
 public:
 
   /// @name Template arguments
   //@{
   typedef DiagramType diagram_type;
-  typedef NodeType node_type; 
+  typedef NodePtr node_ptr;
   //@}
-
-  /// Raw diagram type
-  typedef node_type* node_ptr; 
-
-  /// Default constructor
-  CCuddDDBase() {}
-
-  /// Destructor
-  ~CCuddDDBase() { }
 
   /// @name Logical operations
   //@{
   /// Equality
-  bool operator==(const diagram_type& rhs) const {
-    return operator node_ptr() == rhs.getNode();
+  bool operator==(const diagram_type& rhs) const { 
+    return rhs.getNode() == *this; 
   }
+
   /// Nonequality
   bool operator!=(const diagram_type& rhs) const { return !(*this == rhs); }
   //@}
@@ -121,19 +113,18 @@ protected:
   }
 
 private:
-
-  /// Get diagram of the same context
+  /// Accessing the actual type, for which this facade is inteded to be used for
   const diagram_type& my() const {
     return static_cast<const diagram_type&>(*this);
   }
 
-  /// Accessing the actuall type, fir which this facade is inteded to be used for
+  /// Accessing raw manager
   template<class MgrType>
   MgrType get() const { return my().getManager(); }
 
   /// This (and only this) class may automatically convert *this to raw pointer
   operator node_ptr() const { return my().getNode(); }
-}; // CCuddDD
+};
 
 
 END_NAMESPACE_PBORI

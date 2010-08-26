@@ -20,7 +20,7 @@
 #define CCuddDDFacade_h
 
 #include "cuddInt.h"
-#include "CCuddZDD.h"
+#include "CApplyNodeFacade.h"
 
 #include "CExtrusivePtr.h"
 
@@ -97,7 +97,7 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 
 template <class RingType, class DiagramType>
 class CCuddDDFacade: 
-  public CCuddDDBase<DiagramType, DdNode>,
+  public CApplyNodeFacade<DiagramType, DdNode*>,
   public CAuxTypes {
 
   /// Type of *this
@@ -116,6 +116,12 @@ public:
   /// Type for C-style struct
   typedef DdNode node_type;
 
+  /// Pointer type for nodes
+  typedef node_type* node_ptr;
+
+  /// Type this is inherited from the following
+  typedef CApplyNodeFacade<diagram_type, node_ptr> base;
+
   /// Iterator type for retrieving first term from Cudd's ZDDs
   typedef CCuddFirstIter first_iterator;
 
@@ -128,51 +134,40 @@ public:
   /// This type has an easy equality check
   typedef valid_tag easy_equality_property;
 
-
-  /// Type this is inherited from
-  typedef CCuddDDBase<DiagramType, DdNode> base;
-
-  /// Pointer type for ndoes
-  typedef typename  base::node_ptr node_ptr;
-
-  using base::apply;
-
-
+  /// Raw context
   typedef typename ring_type::mgr_type mgr_type;
 
   /// Construct diagram from ring and node
   CCuddDDFacade(const ring_type& ring, node_ptr node): 
-    base(), p_node(ring, node) {
+    p_node(ring, node) {
     checkAssumption(node != NULL);
   }
 
   /// Construct from Manager and navigator
   CCuddDDFacade(const ring_type& ring, const navigator& navi): 
-    base(), p_node(ring, navi.getNode()) {
+    p_node(ring, navi.getNode()) {
     checkAssumption(navi.isValid());
   }
   /// Construct new node from manager, index, and navigators
   CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator thenNavi, navigator elseNavi): 
-    base(), p_node(ring, getNewNode(ring, idx, thenNavi, elseNavi)) {
-  }
+    p_node(ring, getNewNode(ring, idx, thenNavi, elseNavi)) { }
 
   /// Construct new node from manager, index, and common navigator for then and
   /// else-branches
   CCuddDDFacade(const ring_type& ring, 
                idx_type idx, navigator navi): 
-    base(), p_node(ring, getNewNode(ring, idx, navi, navi)) {
-  }
+    p_node(ring, getNewNode(ring, idx, navi, navi)) { }
 
   /// Construct new node
   CCuddDDFacade(idx_type idx, const self& thenDD, const self& elseDD):
-    base(), p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
+    p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
 
   /// Default constructor
-  CCuddDDFacade(): base(), p_node(NULL, NULL)  {}
+  CCuddDDFacade(): p_node(NULL, NULL)  {}  ///  @todo NULL?
 
   /// Copy constructor
-  CCuddDDFacade(const self &from): base(), p_node(from.p_node) {}
+  CCuddDDFacade(const self &from): p_node(from.p_node) {}
 
   /// Destructor
   ~CCuddDDFacade() {}
@@ -182,8 +177,6 @@ public:
     p_node = rhs.p_node;
     return static_cast<diagram_type&>(*this);
   }
-
-
 
   /// @note Preprocessor generated members
   /// @code
@@ -251,6 +244,10 @@ public:
   mgr_type* getManager() const { return p_node.data().getManager(); }
 
 protected:
+
+  /// Apply C-style function to diagram
+  using base::apply;
+
 
   template <class ResultType>
   ResultType memApply(ResultType (*func)(mgr_type *, node_ptr)) const {
