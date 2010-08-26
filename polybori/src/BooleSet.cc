@@ -87,8 +87,8 @@ BooleSet::operator=(const self& rhs) {
 BooleSet
 BooleSet::add(const term_type& rhs) const {
 
-  PBORI_TRACE_FUNC( "BooleSet::addAssign(const term_type&) const" );
-  return unite(rhs.diagram());
+  PBORI_TRACE_FUNC( "BooleSet::add(const term_type&) const" );
+  return unite(rhs.set());
 }
 
 // Check whether rhs is included in *this
@@ -96,8 +96,7 @@ BooleSet::bool_type
 BooleSet::owns(const term_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleSet::owns(const term_type&) const" );
-
-  return !(intersect(rhs.diagram()).emptiness());
+  return !(intersect(rhs.set()).isZero());
 }
 
 // Check whether rhs is included in *this

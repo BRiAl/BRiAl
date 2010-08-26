@@ -79,7 +79,8 @@ BEGIN_NAMESPACE_PBORI
 
 template <class RingType, class DiagramType>
 class CCuddDDFacade: 
-  public CCuddDDBase<RingType, DiagramType, DdNode> {
+  public CCuddDDBase<RingType, DiagramType, DdNode>,
+  public CAuxTypes {
 
   /// Type of *this
   typedef CCuddDDFacade self;
@@ -184,11 +185,6 @@ public:
   bool operator!=(const self& other) const { return !(*this == other); }
   //@}
 
-  /// Test containment
-  bool_type contains(const self& rhs) const { 
-    return diffConst(rhs).isZero();  
-  }
-
   /// @note Preprocessor generated members
   /// @code
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const diagram_type&, 
@@ -264,15 +260,6 @@ protected:
   }
 
 public:
-  /// Get unique hash value (valid only per runtime)
-  hash_type hash() const { 
-    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(getNode()));
-  }
-
-  /// Get stable hash value, which is reproducible
-  hash_type stableHash() const { 
-    return stable_hash_range(navigation());
-  }
 
   /// Union Xor
   diagram_type Xor(const diagram_type& rhs) const {
@@ -317,7 +304,7 @@ public:
   void usedIndices(VectorLikeType& indices) const {
 
     int* pIdx =  usedIndices();
-    size_type nlen(nVariables());
+    size_type nlen(ring().nVariables());
 
     indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
 
@@ -481,33 +468,12 @@ public:
   /// Checks whether the decision diagram has every variable negated
   bool_type blankness() const { return isOne(); }  // to be removed
 
+  /// Checks whether the the diagram corresponds to {} or {{}} (polynomial 0 or 1)
   bool_type isConstant() const {
     return (getNode()) && Cudd_IsConstant(getNode());
   }
 
-  /// Returns number of terms
-  size_type size() const {
-    return count();
-  }
 
-  /// Returns number of terms (deprecated)
-  size_type length() const {
-    return size();
-  }
-
-  /// Returns number of variables in manager
-  size_type nVariables() const {
-    return ring().nVariables();
-  }
-
-
-  /// Test whether the empty set is included
-  bool_type ownsOne() const { return owns_one(navigation()); }
-
-  /// Approximation of number of terms
-  double sizeDouble() const {
-    return countDouble();
-  }
 
 private:
   navigator newNode(const ring_type& mgr, idx_type idx, 

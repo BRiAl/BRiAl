@@ -158,20 +158,27 @@ public:
   /// Use assignment operator of base element
   using base::operator=;
 
+  /// Get unique hash value (valid only per runtime)
+  hash_type hash() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(getNode()));
+  }
+
+  /// Get stable hash value, which is reproducible
+  hash_type stableHash() const { 
+    return stable_hash_range(navigation());
+  }
+
   /// Set of variables of the whole set
   term_type usedVariables() const;
 
   /// Exponent vector of variables of the whole set
   exp_type usedVariablesExp() const;
 
-  /// Add given monomial to sets and assign
-  // self& addAssign(const term_type&);
-
-  /// Add given monomial to sets 
+  /// Add given monomial to sets
   self add(const term_type& rhs) const;
 
-  /// Check whether rhs is included in *this
-  bool_type owns(const term_type&) const;
+  // Check whether rhs is included in *this
+  bool_type owns(const term_type& rhs) const;
 
   /// Check whether rhs is included in *this
   bool_type owns(const exp_type&) const;
@@ -198,10 +205,10 @@ public:
   bool_type hasTermOfVariables(const term_type& rhs) const;
 
   /// Get minimal elements wrt. inclusion
-  self minimalElements() const;// { return base::minimalElements(); };
+  self minimalElements() const;
 
   /// Test whether the empty set is included
-  using base::ownsOne;
+  bool_type ownsOne() const { return owns_one(navigation()); }
 
   /// Test, whether we have one term only
   bool_type isSingleton() const { return dd_is_singleton(navigation()); }
@@ -218,12 +225,7 @@ public:
   self existAbstract(const term_type& rhs) const;
 
   /// Access internal decision diagram
-  const dd_type& diagram() const { return dynamic_cast<const dd_type&>(*this); }
-
-  /// If-Then-Else operation
-  self ite(const self& then_dd, const self& else_dd) {
-    return self(base::ite(then_dd.diagram(), else_dd.diagram()));
-  };
+  const self& diagram() const { return *this; }  //  to be removed
 
   /// Cartesean product
   self cartesianProduct(const self& rhs) const {
@@ -235,11 +237,18 @@ public:
     return diffConst(rhs).isZero();  
   }
 
-  /// Get unique hash value (may change from run to run)
-  using base::hash;
+  /// Returns number of terms
+  size_type size() const { return count(); }
 
-  /// Get hash value, which is reproducible
-  using base::stableHash;
+  /// Returns number of terms (deprecated)
+  size_type length() const { return size(); }
+
+  /// Returns number of variables in manager
+  size_type nVariables() const { return ring().nVariables(); }
+
+
+  /// Approximation of number of terms
+  double sizeDouble() const { return countDouble(); }
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;
