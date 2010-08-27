@@ -27,7 +27,6 @@
 // get standard algorithmic functionalites
 #include <algorithm>
 
-#include "BooleRing.h"
 #include "BoolePolyRing.h"
 
 // include definition of sets of Boolean variables

@@ -125,7 +125,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring") 
     //.def(boost::python::init <>())
-    .def("n_variables", &BooleRing::nVariables, "Number of ring variables")
+    .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables")
     .def("__hash__", &BoolePolyRing::hash)
     .def("var", ring_var, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")

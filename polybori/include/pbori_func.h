@@ -992,7 +992,7 @@ public:
 
   /// Funtional operator
   varname_type operator()(idx_type idx) const{
-    return m_mgr.getName(idx);
+    return m_mgr.getVariableName(idx);
   }
 
 protected:

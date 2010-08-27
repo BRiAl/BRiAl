@@ -120,10 +120,6 @@ public:
   vartext_type getVariableName(idx_type idx) const {
     return p_core->m_names[idx];
   }
-  /// Get name of variable with index idx
-  vartext_type getName(idx_type idx) const{
-    return getVariableName(idx);
-  }
 
   /// Set name of variable with index idx
   void setVariableName(idx_type idx, vartext_type varname) {
@@ -143,14 +139,10 @@ public:
   }
 
   /// Access ordering of *this
-  order_reference ordering() const { 
-    return *(p_core->pOrder); 
-  }
+  order_reference ordering() const { return *(p_core->pOrder); }
 
   /// Get plain decision diagram manager
-  mgr_type* getManager() const {
-    return p_core->m_mgr.getManager();
-  }
+  mgr_type* getManager() const {  return p_core->m_mgr.getManager(); }
 
   /// Construct ring with similiar properties (deep copy)
   self clone() const {  return self(new core_type(*p_core)); }
@@ -169,9 +161,6 @@ public:
 
   /// Map variable to this ring
   var_type coerce(const var_type& rhs) const;
-
-  /// Access nvar-th ring variable
-  // var_type variable(idx_type nvar) const;  // inlined in BooleVariable.h
 
   /// Access nvar-th ring variable as diagram
   dd_type variable(idx_type nvar) const;
