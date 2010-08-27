@@ -18,13 +18,9 @@
 # include "pbori_defs.h"
 
 // include basic decision diagram manager interface 
-  //#include "COrderingBase.h"
-
-#include "BooleRing.h"
-
-  //#include "CDDOperations.h"
-  // temporarily for work around
-
+#include "CCuddCore.h"
+#include "PBoRiError.h"
+#include <boost/intrusive_ptr.hpp>
 
 #include <list>
 
@@ -34,46 +30,57 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
-class BooleExponent;
-class BooleVariable;
-class BoolePolynomial;
-class BooleMonomial;
-class BooleSet;
-
 /** @class BoolePolyRing
- * @brief This class adds functionality to BooleRing.
- *
+ * @brief This class reinterprets decicion diagram managers as Boolean
+ * polynomial rings, adds an ordering and variable names.
  *
  **/
 class BoolePolyRing: 
-  public BooleRing {
-
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
+  public CTypes::orderenums_type, public CTypes::compenums_type, 
+  public CTypes::auxtypes_type  {
 
   /// generic access to current type
   typedef BoolePolyRing self;
 
-  /// generic access to base type
-  typedef BooleRing base;
-
+ public:
   /// define exponent type
-  typedef BooleExponent exp_type;
+  typedef class BooleExponent exp_type;
 
   /// set monomial type
-  typedef BooleMonomial monom_type;
+  typedef class BooleMonomial monom_type;
 
   /// set variables type
-  typedef BooleVariable var_type;
+  typedef class BooleVariable var_type;
 
   /// set decision diagram type
-  typedef BooleSet dd_type;
+  typedef class BooleSet dd_type;
 
   /// set polynomial type
-  typedef BoolePolynomial poly_type;
+  typedef class BoolePolynomial poly_type;
+  /// @name adopt global type definitions
+  //@{
+  typedef CTypes::ordercode_type ordercode_type;
+  typedef CTypes::vartext_type vartext_type;
+  //@}
+
+  /// Type of actual data
+  typedef CCuddCore core_type;
+  typedef core_type::const_varname_reference const_varname_reference;
+  /// Smart pointer to core
+  typedef boost::intrusive_ptr<core_type> core_ptr;
+
+  /// Type for handling mterm orderings
+  typedef core_type::order_type order_type;
+
+  /// Smart pointer for handling mterm orderings
+  typedef core_type::order_ptr order_ptr;
+
+  /// Reference for handling mterm orderings
+  typedef order_type& order_reference;
+
+  typedef DdManager mgr_type;
+  /// Explicitely mention ordercodes' enumeration
+  using CTypes::orderenums_type::ordercodes;
 
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
@@ -81,44 +88,78 @@ class BoolePolyRing:
   /// Type for block iterators
   typedef block_idx_type::const_iterator block_iterator;
 
-  /// Type for handling mterm orderings
-  typedef COrderingBase order_type;
-  
-  /// Smart pointer for handling mterm orderings
-  typedef boost::shared_ptr<order_type> order_ptr;
+protected:
 
-  /// Reference for handling mterm orderings
-  typedef order_type& order_reference;
+  /// Support for shallow copy (clone)
+  /// @note May generate invalid ring, hence @c protected 
+  BoolePolyRing(const core_ptr& rhs):  p_core(rhs) {}
 
-  //-------------------------------------------------------------------------
-  // constructors and destructor
-  //-------------------------------------------------------------------------
-
-  /// Explicitely mention ordercodes' enumeration
-  using base::ordercodes;
-
+public:
   /// Default constructor
-  BoolePolyRing();//: base(core_ptr()) { }
+  BoolePolyRing();
 
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 
                          ordercode_type order = lp,
                          bool_type make_active = true);
 
+   /// Constructor for @em nvars variables (and given pointer to ordering)
+  BoolePolyRing(size_type nvars, const order_ptr& order):
+    p_core(new core_type(nvars, order)) {}
+
+  /// Copy constructor (cheap)
+  BoolePolyRing(const self& rhs):  p_core(rhs.p_core) {}
+
   /// Destructor
   ~BoolePolyRing() {}
+
+  /// Get number of ring variables
+  size_type nVariables() const { return p_core->m_mgr.nVariables(); }
+
+  /// Get name of variable with index idx
+  vartext_type getVariableName(idx_type idx) const {
+    return p_core->m_names[idx];
+  }
+  /// Get name of variable with index idx
+  vartext_type getName(idx_type idx) const{
+    return getVariableName(idx);
+  }
+
+  /// Set name of variable with index idx
+  void setVariableName(idx_type idx, vartext_type varname) {
+    p_core->m_names.set(idx, varname);
+  }
+
+  /// Clears the function cache
+  void clearCache() { p_core->m_mgr.cacheFlush(); }
+
+  /// Print out statistics and settings for current ring
+  void printInfo() {  return p_core->m_mgr.info(); }
+
+  /// Get unique identifier for manager of *this
+  hash_type hash() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t
+                                  >(getManager())); 
+  }
+
+  /// Access ordering of *this
+  order_reference ordering() const { 
+    return *(p_core->pOrder); 
+  }
+
+  /// Get plain decision diagram manager
+  mgr_type* getManager() const {
+    return p_core->m_mgr.getManager();
+  }
+
+  /// Construct ring with similiar properties (deep copy)
+  self clone() const {  return self(new core_type(*p_core)); }
 
   /// Make @c *this global
   void activate();
 
   /// Change order of current ring
   void changeOrdering(ordercode_type);
-
-  /// Construct ring with similiar properties (deep copy)
-  self clone() const { return self(base::clone()); }
-
-  /// Copy constructor (cheap reference-counted copy)
-  BoolePolyRing(const self& rhs): base(rhs) { }
 
   /// Map polynomial to this ring, if possible
   poly_type coerce(const poly_type& rhs) const;
@@ -144,12 +185,14 @@ class BoolePolyRing:
   /// Get constant one or zero
   dd_type constant(bool is_one) const; // inlined below
 
+protected:
+  /// Access to actual data (via ->)
+  core_ptr core() const {return p_core;};
 
-  explicit BoolePolyRing(const base& rhs): base(rhs) { }
+  /// Smart pointer to actual data
+  core_ptr p_core;
 };
 
-
-// temporarily here!
 END_NAMESPACE_PBORI
 
 #include "BooleSet.h"

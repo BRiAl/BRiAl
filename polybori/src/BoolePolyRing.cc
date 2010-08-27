@@ -34,21 +34,21 @@ BEGIN_NAMESPACE_PBORI
 
 
 /// Constructor for @em nvars variables
-BooleRing::BooleRing(size_type nvars):
-  p_core(new core_type(nvars, get_ordering(lp)) ) {   }
+  //BooleRing::BooleRing(size_type nvars):
+  // p_core(new core_type(nvars, get_ordering(lp)) ) {   }
 
 
 
 /// Active Ring
 BoolePolyRing::BoolePolyRing() : 
-  base(BooleEnv::ring()) {
+  p_core(BooleEnv::ring().core()) {
   PBORI_TRACE_FUNC( "BoolePolyRing()" );
 }
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 
-  base(nvars, get_ordering(order)) {
+  p_core(new core_type(nvars, get_ordering(order))) {
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
 
   if(make_active)
