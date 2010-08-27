@@ -43,7 +43,6 @@ class BooleVariable:
   typedef BooleVariable self;
 
  public:
-  friend class BoolePolyRing;
 
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;

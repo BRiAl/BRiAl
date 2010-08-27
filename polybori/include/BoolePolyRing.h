@@ -183,7 +183,7 @@ protected:
 };
 
 END_NAMESPACE_PBORI
-#include "BooleVariable.h"
+
 #include "BooleSet.h"
 
 BEGIN_NAMESPACE_PBORI
@@ -198,7 +198,7 @@ inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_type(*this
   /// Get constant one or zero
 inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
 
-inline  BoolePolyRing::var_type BoolePolyRing::variable(idx_type nvar) const {
+inline  BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const {
     return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
   }
 
