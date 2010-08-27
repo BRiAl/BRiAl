@@ -98,7 +98,7 @@ class BoolePolyRing:
   using base::ordercodes;
 
   /// Default constructor
-  BoolePolyRing();
+  BoolePolyRing(): base(core_ptr()) { }
 
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 

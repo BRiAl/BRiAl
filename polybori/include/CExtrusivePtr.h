@@ -60,6 +60,9 @@ public:
   CExtrusivePtr(const self& rhs): 
     m_data(rhs.m_data), p_ptr(rhs.p_ptr) { lock(); } 
 
+  CExtrusivePtr(): 
+    m_data(), p_ptr(NULL) { } 
+
   /// Destructor
   ~CExtrusivePtr() { release(); }
 

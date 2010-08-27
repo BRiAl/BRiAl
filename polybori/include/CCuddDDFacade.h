@@ -164,7 +164,7 @@ public:
     p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
 
   /// Default constructor
-  CCuddDDFacade(): p_node(NULL, NULL)  {}  ///  @todo NULL?
+  CCuddDDFacade(): p_node()  {}  ///  @todo NULL?
 
   /// Copy constructor
   CCuddDDFacade(const self &from): p_node(from.p_node) {}

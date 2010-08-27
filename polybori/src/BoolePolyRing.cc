@@ -40,11 +40,11 @@ BooleRing::BooleRing(size_type nvars):
 
 
 
-// interface with cudd's variable management
-BoolePolyRing::BoolePolyRing() : 
-  base(BooleEnv::ring()) {
-  PBORI_TRACE_FUNC( "BoolePolyRing()" );
-}
+// // interface with cudd's variable management
+// BoolePolyRing::BoolePolyRing() : 
+//   base(BooleEnv::ring()) {
+//   PBORI_TRACE_FUNC( "BoolePolyRing()" );
+// }
 
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
