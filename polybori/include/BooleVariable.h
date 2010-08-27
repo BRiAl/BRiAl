@@ -39,14 +39,12 @@ BEGIN_NAMESPACE_PBORI
 class BooleVariable:
   public CAuxTypes {
 
- public:
-  //-------------------------------------------------------------------------
-  // types definitions
-  //-------------------------------------------------------------------------
-
   /// Generic access to current type
   typedef BooleVariable self;
-  
+
+ public:
+  friend class BoolePolyRing;
+
   /// Type of sets of Boolean variables
   typedef BooleSet set_type;
 
