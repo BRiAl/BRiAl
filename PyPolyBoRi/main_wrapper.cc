@@ -194,7 +194,9 @@ with inverted variable order\n\
   .def("__pow__", var_power)
   .def("index", &BooleVariable::index, "Variable position in the ring")
   .def("set",&BooleVariable::set, "Convert to BooleSet")
-  .def("ring", &BooleVariable::ring, "Get corresponding ring");
+  .def("ring", &BooleVariable::ring,
+       return_internal_reference<>(),
+       "Get corresponding ring");
   boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
   typedef PBoRiGenericError<CTypes::division_by_zero> pbori_div_by_zero;
   boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);

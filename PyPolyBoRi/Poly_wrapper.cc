@@ -161,7 +161,9 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("diagram", diagram, return_internal_reference<1>())
   //.def("diagram",poly_diagram_as_set)
   .def("set", set, "Convert to BooleSet")
-  .def("ring", &BoolePolynomial::ring, "Get corresponding ring")
+  .def("ring", &BoolePolynomial::ring,
+       return_internal_reference<>(),
+       "Get corresponding ring")
   .def("multiply_fast", multiply_fast)
   .def("multiply_traditionally", multiply_traditionally)
   .def("navigation", &BoolePolynomial::navigation, 

@@ -91,7 +91,7 @@ class BooleVariable:
   set_type set() const { return m_poly.set(); }
 
   /// Access ring, where this belongs to
-  ring_type ring() const { return m_poly.ring(); } 
+  const ring_type& ring() const { return m_poly.ring(); } 
 
 private:
   friend class BoolePolyRing;

@@ -241,7 +241,7 @@ public:
   }
 
   /// Access ring, where this belongs to
-  ring_type ring() const { return m_poly.ring(); } 
+  const ring_type& ring() const { return m_poly.ring(); } 
 
 protected:
   /// Access to internal decision diagramm structure

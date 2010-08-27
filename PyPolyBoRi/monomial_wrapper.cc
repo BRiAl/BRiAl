@@ -123,7 +123,9 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //.def("diagram", diagram,return_internal_reference<1>());
     .def("set", set, "Convert to BooleSet")
     .def("reducible_by", reducibleBy, "Test for reducibility")
-    .def("ring", &BooleMonomial::ring, "Get corresponding ring");
+    .def("ring", &BooleMonomial::ring, 
+        return_internal_reference<>(),
+       "Get corresponding ring");
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);
 

@@ -60,20 +60,15 @@ class CReverseIter;
 
 class BooleSet:
   public CCuddDDFacade<BoolePolyRing, BooleSet> {
-
-public:
   /// Generic access to type of *this
   typedef BooleSet self;
 
+public:
+  /// Generic access to type of *this
+  typedef self dd_type;
+
   /// Generic access to base type
   typedef CCuddDDFacade<BoolePolyRing, BooleSet> base;
-
-  /// Generic access to underlying diagram type
-  typedef base dd_type;
-
-  typedef base::navigator navigator;
-  typedef base::size_type size_type;
-  typedef base::idx_type idx_type;
 
   /// Type of terms
   typedef BooleMonomial term_type;
