@@ -77,13 +77,13 @@ BEGIN_NAMESPACE_PBORI
 /// @name Define templates for generating member functions from CUDD procedures
 //@{
 #define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
-  return BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
+  return BOOST_PP_CAT(Cudd_, funcname)(*this); }
 
 #define PB_CUDDMGR_SWITCH(count, data, funcname) void funcname() { \
-    BOOST_PP_CAT(Cudd_, funcname)(getManager()); }
+    BOOST_PP_CAT(Cudd_, funcname)(*this); }
 
 #define PB_CUDDMGR_SET(count, data, funcname)  void funcname(data arg) { \
-    BOOST_PP_CAT(Cudd_, funcname)(getManager(), arg); }
+    BOOST_PP_CAT(Cudd_, funcname)(*this, arg); }
 //@}
 
 /** @class CCuddInterface
@@ -134,7 +134,8 @@ public:
   typedef boost::intrusive_ptr<mgr_type> mgr_ptr;
 
   /// Initialize CUDD-like decision diagram manager
-  CCuddInterface(size_type numVars, size_type numVarsZ, size_type numSlots = PBORI_UNIQUE_SLOTS,
+  CCuddInterface(size_type numVars, size_type numVarsZ, 
+                 size_type numSlots = PBORI_UNIQUE_SLOTS,
                  size_type cacheSize = PBORI_CACHE_SLOTS, 
                  unsigned long maxMemory = PBORI_MAX_MEMORY):
     p_mgr(init(numVars, numVarsZ, numSlots, cacheSize, maxMemory)),
@@ -142,8 +143,7 @@ public:
 
    
     for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
-      m_vars[idx] = cuddUniqueInterZdd(getManager(), idx, DD_ONE(getManager()),
-                                       DD_ZERO(getManager())); 
+      m_vars[idx] = cuddUniqueInterZdd(*this, idx, zddOne(), zddZero());
       Cudd_Ref(m_vars[idx]);
     }
    
@@ -165,7 +165,7 @@ public:
     for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
            m_vars.end(); ++iter) {
       
-      Cudd_RecursiveDerefZdd(getManager(), *iter);
+      Cudd_RecursiveDerefZdd(*this, *iter);
     }
   }
 
@@ -183,7 +183,7 @@ public:
   //@}
 
   /// Print statistical information
-  void info() const { checkedResult(Cudd_PrintInfo(getManager(),stdout)); }
+  void info() const { checkedResult(Cudd_PrintInfo(*this,stdout)); }
 
 //   void checkReturnValue(const node_type result) const {
 //     checkReturnValue(result != NULL);
@@ -191,7 +191,7 @@ public:
 //   void checkReturnValue(const int result) const {
 //     if UNLIKELY(result == 0) {
 //       handle_error<CUDD_MEMORY_OUT> tmp(errorHandler);
-//       tmp(Cudd_ReadErrorCode(getManager()));
+//       tmp(Cudd_ReadErrorCode(*this));
 //     }
 //   } 
 
@@ -219,59 +219,59 @@ public:
   /// @note See preprocessor generated members below
   //@{
   int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
-    return Cudd_ReorderingStatusZdd(getManager(), method);
+    return Cudd_ReorderingStatusZdd(*this, method);
   }
 
   idx_type ReadPermZdd(idx_type i) const { 
-    return Cudd_ReadPermZdd(getManager(), i); 
+    return Cudd_ReadPermZdd(*this, i); 
   }
 
   idx_type ReadInvPermZdd(idx_type i) const { 
-    return Cudd_ReadInvPermZdd(getManager(), i); 
+    return Cudd_ReadInvPermZdd(*this, i); 
   }
 
   void AddHook(DD_HFP f, Cudd_HookType where) { 
-    checkedResult(Cudd_AddHook(getManager(), f, where));
+    checkedResult(Cudd_AddHook(*this, f, where));
   }
   void RemoveHook(DD_HFP f, Cudd_HookType where) { 
-    checkedResult(Cudd_RemoveHook(getManager(), f, where)); 
+    checkedResult(Cudd_RemoveHook(*this, f, where)); 
   }
   int IsInHook(DD_HFP f, Cudd_HookType where) const { 
-    return Cudd_IsInHook(getManager(), f, where); 
+    return Cudd_IsInHook(*this, f, where); 
   }
   void EnableReorderingReporting() { 
-    checkedResult(Cudd_EnableReorderingReporting(getManager())); 
+    checkedResult(Cudd_EnableReorderingReporting(*this)); 
   }
   void DisableReorderingReporting() { 
-    checkedResult(Cudd_DisableReorderingReporting(getManager())); 
+    checkedResult(Cudd_DisableReorderingReporting(*this)); 
   }
 
-  void DebugCheck(){ checkedResult(Cudd_DebugCheck(getManager())); }
-  void CheckKeys(){ checkedResult(Cudd_CheckKeys(getManager())); }
-  void PrintLinear() { checkedResult(Cudd_PrintLinear(getManager())); }
+  void DebugCheck(){ checkedResult(Cudd_DebugCheck(*this)); }
+  void CheckKeys(){ checkedResult(Cudd_CheckKeys(*this)); }
+  void PrintLinear() { checkedResult(Cudd_PrintLinear(*this)); }
 
-  int ReadLinear(int x, int y) { return Cudd_ReadLinear(getManager(), x, y); }
+  int ReadLinear(int x, int y) { return Cudd_ReadLinear(*this, x, y); }
 
   size_type Prime(size_type pr) const { return Cudd_Prime(pr); }
 
   void PrintVersion(FILE * fp) const { std::cout.flush(); Cudd_PrintVersion(fp); }
 
   MtrNode* MakeZddTreeNode(size_type low, size_type size, size_type type) {
-    return Cudd_MakeZddTreeNode(getManager(), low, size, type);
+    return Cudd_MakeZddTreeNode(*this, low, size, type);
   }
   void zddPrintSubtable() const{ 
     std::cout.flush();
-    Cudd_zddPrintSubtable(getManager());
+    Cudd_zddPrintSubtable(*this);
   }
 
   void zddReduceHeap(Cudd_ReorderingType heuristic, int minsize) {
-    checkedResult(Cudd_zddReduceHeap(getManager(), heuristic, minsize));
+    checkedResult(Cudd_zddReduceHeap(*this, heuristic, minsize));
   }
   void zddShuffleHeap(int * permutation) { 
-    checkedResult(Cudd_zddShuffleHeap(getManager(), permutation));
+    checkedResult(Cudd_zddShuffleHeap(*this, permutation));
   }
   void zddSymmProfile(int lower, int upper) const {
-    Cudd_zddSymmProfile(getManager(), lower, upper);
+    Cudd_zddSymmProfile(*this, lower, upper);
   }
 
   /// @note Preprocessor generated members
@@ -345,7 +345,7 @@ public:
 
   /// clear all temporarily stored data
   void cacheFlush() {
-    cuddCacheFlush(getManager()); 
+    cuddCacheFlush(*this); 
   }
 
 protected:
@@ -369,22 +369,25 @@ protected:
   /// Generate check numerical result of previous operation
   idx_type checkedResult(idx_type result) const  {
     if UNLIKELY(result == 0) {
-      throw std::runtime_error(error_text(getManager()));
+      throw std::runtime_error(error_text(*this));
     } 
     return result;
   }
 
   /// Apply function to given index
   node_type apply(unary_int_function func, idx_type idx) const  { 
-    return checkedResult(func(getManager(), idx) );
+    return checkedResult(func(*this, idx) );
   }
 
   /// Call function 
   node_type apply(void_function func) const { 
-    return checkedResult(func(getManager()) );
+    return checkedResult(func(*this) );
   }
 
 private:
+  /// Implicit cast to pure CUDD structure (only accesible here)
+  operator mgr_type*() const { return getManager(); }
+
   /// Smart pointer to Cudd maanger
   mgr_ptr p_mgr;  
 

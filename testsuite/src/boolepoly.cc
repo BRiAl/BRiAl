@@ -67,8 +67,7 @@
  * Revision 1.16  2006/07/17 15:32:09  dreyer
  * ADD: BoolePolynomial::hasConstantPart, BooleMonomial::isOne, isZero
  *
- * Revision 1.15  2006/04/25 09:30:42  dreyer
- * FIX end of CTermIterm for constants, CHANGE consistent functional names
+ * Revision 1.15  2006/04/25 09:30:42  dreyer * FIX end of CTermIterm for constants, CHANGE consistent functional names
  *
  * Revision 1.14  2006/04/19 15:55:53  dreyer
  * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
@@ -136,6 +135,72 @@ test_union_xor(NaviType first, NaviType second) {
 
 
 }
+
+template <class Type>
+int testit(const char[sizeof(&Type::print)]) {
+  return 1;
+}
+
+template <class Type>
+int testit(int) {
+  return 0;
+}
+
+template <class T>
+class any: public T{
+public:
+template<class T2>
+any(const T2&) {}
+  typedef any self;
+public:
+  //  using T::print;
+  bool print(const any&) const { return false; }
+  any(){}
+
+  self* operator->() const {return this;}
+};
+
+template <class T>
+class some {
+public:
+
+public:
+  enum {thesize = sizeof( (any<T>())->print(std::cout))} ;
+};
+
+
+// template<int Size>
+// class func_traits_{};
+
+
+
+
+
+// template<>
+// class func_traits_<16>  {
+// public:
+//   typedef int result_type;
+// };
+
+
+
+// template<class Type>
+// class func_traits:
+//   public func_traits_<sizeof(&Type::print)> {
+// };
+
+
+// template <class Type1, class Type2>
+// void print_it(const Type1&, const Type2) {
+//   std::cout <<"general"<<std::endl;
+// }
+
+
+
+// template <class Type1, class Type2>
+// void print_it(const Type1&, Type2(Type1:: func*)(Type2) = Type1::print) {
+//   std::cout <<"special"<<std::endl;
+// }
 
 
 int
@@ -444,5 +509,28 @@ main(){
 
     std::cout <<std::endl<<  "Finished."<<std::endl;
 
+
+    std::cout <<std::endl<<  "sizeof poly"
+              <<sizeof(&BoolePolynomial::print)<<std::endl;
+
+
+    std::cout <<std::endl<<  "printable?"
+              <<testit<BoolePolynomial>("a")<<std::endl;
+
+   std::cout <<std::endl<<  "printable?"
+              <<testit<BoolePolyRing>("a")<<std::endl;
+
+   //std::cout <<sizeof(&BoolePolynomial::print)<<std::endl;
+
+   //   std::cout <<sizeof(&BoolePolyRing::print)<<std::endl;
+   //   print_it(BoolePolynomial());
+   // print_it(BoolePolyRing(2)); 
+
+   //   ((any)BoolePolyRing(2)).print(std::cout);
+
+   std::cout << "size BoolePolynomial: " <<some<BoolePolynomial>::thesize
+   <<std::endl;
+
+   std::cout << "size BoolePolyRing " <<some<BoolePolyRing>::thesize   <<std::endl;
   return 0;
 }
