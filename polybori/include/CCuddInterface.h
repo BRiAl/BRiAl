@@ -21,6 +21,8 @@
 #include "cuddInt.h"
 
 #include "pbori_func.h"         // handle_error
+#include "CCallbackWrapper.h"
+
 #include <vector>
 #include <boost/intrusive_ptr.hpp>
 #include <boost/scoped_array.hpp>
@@ -31,7 +33,9 @@
 #include <boost/preprocessor/stringize.hpp>
 
 #include "PBoRiError.h"
+
 #include <stdexcept>
+#include <algorithm>
 
 #ifndef CCuddInterface_h_
 #define CCuddInterface_h_
@@ -74,6 +78,8 @@ intrusive_ptr_release(DdManager* ptr) {
 
 BEGIN_NAMESPACE_PBORI
 
+
+
 /// @name Define templates for generating member functions from CUDD procedures
 //@{
 #define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
@@ -106,29 +112,15 @@ class CCuddInterface:
   typedef CCuddInterface self;
 
 public:
-
-
-  typedef unsigned long large_size_type;
-  typedef long int refcount_type;
-
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::size_type size_type;
-
   /// Type of Cudd's decision diagrams
-  typedef DdNode* node_type;
+  typedef DdNode* node_ptr;
 
   /// Type of Cudd decision diagram manager
   typedef DdManager mgr_type;
 
-  typedef node_type (*unary_int_function)(mgr_type*, int);
-  typedef node_type (*void_function)(mgr_type*);
+  typedef node_ptr (*unary_int_function)(mgr_type*, int);
+  typedef node_ptr (*void_function)(mgr_type*);
 
-  typedef DD_CTFP binary_function;
-  typedef node_type (*binary_int_function)(mgr_type*, node_type, int);
-  typedef 
-  node_type (*ternary_function)(mgr_type*, node_type, node_type, node_type);
-
-  typedef int (*int_unary_function)(mgr_type*, node_type);
 
   /// Smart pointer to Cudd manager
   typedef boost::intrusive_ptr<mgr_type> mgr_ptr;
@@ -140,33 +132,18 @@ public:
                  unsigned long maxMemory = PBORI_MAX_MEMORY):
     p_mgr(init(numVars, numVarsZ, numSlots, cacheSize, maxMemory)),
     m_vars(numVarsZ) {
-
-   
-    for (unsigned idx = 0 ; idx < numVarsZ; ++idx) {
-      m_vars[idx] = cuddUniqueInterZdd(*this, idx, zddOne(), zddZero());
-      Cudd_Ref(m_vars[idx]);
-    }
-   
+    for (idx_type idx = 0; idx < numVarsZ; ++idx) initVar(m_vars[idx], idx);
   }
 
   /// Copy constructor
   CCuddInterface(const self& rhs): p_mgr(rhs.p_mgr), m_vars(rhs.m_vars) {
-    std::vector<node_type>::iterator start(m_vars.begin()), 
-      finish(m_vars.end());
-    while (start != finish) {
-      Cudd_Ref(*start);
-      ++start;
-    }
+    std::for_each(m_vars.begin(), m_vars.end(), Cudd_Ref);
   }
-
 
   /// Destructor
   ~CCuddInterface() {
-    for (std::vector<node_type>::iterator iter = m_vars.begin();  iter !=
-           m_vars.end(); ++iter) {
-      
-      Cudd_RecursiveDerefZdd(*this, *iter);
-    }
+    std::for_each(m_vars.begin(), m_vars.end(),
+                  callBack(&self::recursiveDeref));
   }
 
   /// Get pure CUDD structure
@@ -175,25 +152,8 @@ public:
   /// Get (shared) pointer to initialized manager
   mgr_ptr pManager() const { return p_mgr; }
 
-  /// @name Manage eloquence
-  //@{
-  void makeVerbose() { verbose = true; }
-  void makeTerse() { verbose = false; }
-  bool isVerbose() const { return verbose; }
-  //@}
-
   /// Print statistical information
   void info() const { checkedResult(Cudd_PrintInfo(*this,stdout)); }
-
-//   void checkReturnValue(const node_type result) const {
-//     checkReturnValue(result != NULL);
-//   }
-//   void checkReturnValue(const int result) const {
-//     if UNLIKELY(result == 0) {
-//       handle_error<CUDD_MEMORY_OUT> tmp(errorHandler);
-//       tmp(Cudd_ReadErrorCode(*this));
-//     }
-//   } 
 
   /// Assignment operation 
   self& operator=(const self & right) {
@@ -202,16 +162,16 @@ public:
   }
 
   /// Get ZDD variable 
-  node_type zddVar(idx_type idx) const { return apply(Cudd_zddIthVar, idx); }
+  node_ptr zddVar(idx_type idx) const { return apply(Cudd_zddIthVar, idx); }
 
   /// Get 1-terminal for ZDDs
-  node_type zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
+  node_ptr zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
 
   /// Get 0-terminal for ZDDs
-  node_type zddZero() const { return apply(Cudd_ReadZero); }
+  node_ptr zddZero() const { return apply(Cudd_ReadZero); }
 
   /// Get 1-terminal for ZDDs
-  node_type zddOne() const {  
+  node_ptr zddOne() const {  
     return checkedResult(DD_ONE(getManager()));
   }
 
@@ -333,22 +293,20 @@ public:
   //@}
 
 
-  node_type getVar(idx_type idx) const {
+  node_ptr getVar(idx_type idx) const {
     assert(idx < m_vars.size());
     return  m_vars[idx];
   }
 
   /// Get number of managed variables
-  size_type nVariables() const { 
-    return ReadZddSize(); 
-  }
+  size_type nVariables() const { return ReadZddSize(); }
 
   /// clear all temporarily stored data
-  void cacheFlush() {
-    cuddCacheFlush(*this); 
-  }
+  void cacheFlush() {  cuddCacheFlush(*this); }
 
 protected:
+
+  /// initialized CUDD decision diagrma manager, check it and start reference counting
   mgr_ptr init(size_type numVars,size_type numVarsZ, size_type numSlots,
                  size_type cacheSize, large_size_type maxMemory) {
 
@@ -361,7 +319,7 @@ protected:
     return ptr;
   }
   /// Generate check result of previous node operation and convert 
-  node_type checkedResult(node_type result) const  { 
+  node_ptr checkedResult(node_ptr result) const  { 
     checkedResult(idx_type(result != NULL));
     return result;
   }
@@ -375,13 +333,31 @@ protected:
   }
 
   /// Apply function to given index
-  node_type apply(unary_int_function func, idx_type idx) const  { 
+  node_ptr apply(unary_int_function func, idx_type idx) const  { 
     return checkedResult(func(*this, idx) );
   }
 
   /// Call function 
-  node_type apply(void_function func) const { 
+  node_ptr apply(void_function func) const { 
     return checkedResult(func(*this) );
+  }
+
+protected:
+  /// Dereferencing of diagram node
+  void recursiveDeref(node_ptr node) const { 
+    Cudd_RecursiveDerefZdd(*this, node);
+  }
+
+  /// Generate raw variable
+  void initVar(node_ptr& node, idx_type idx) const {
+    Cudd_Ref(node = cuddUniqueInterZdd(*this, idx, zddOne(), zddZero()));
+  }
+
+  /// Wrapping memeber function as functional
+  template <class MemberFuncPtr>
+  CCallbackWrapper<MemberFuncPtr>
+  callBack(MemberFuncPtr ptr) {
+    return CCallbackWrapper<MemberFuncPtr>(*this, ptr);
   }
 
 private:
@@ -392,13 +368,7 @@ private:
   mgr_ptr p_mgr;  
 
   /// Variable cache
-  std::vector<node_type> m_vars;
-
-  /// Functions for handling errors from CUDD functions
-  //  static errorfunc_type errorHandler;
-
-  /// Control eloquence of CUDD functionality
-  static bool_type verbose;
+  std::vector<node_ptr> m_vars;
 }; // CCuddInterface
 
 

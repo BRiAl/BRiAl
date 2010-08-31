@@ -71,14 +71,6 @@ BoolePolyRing::activate() {
   BooleEnv::set(*this);
 }
 
-bool CCuddInterface::verbose = 0;		// initially terse
-
-// CUDD's default error
-//CCuddInterface::errorfunc_type CCuddInterface::errorHandler  = defaultError;
-
-                                                                 // handle; 
-
-
 /// Map polynomial to this ring, if possible
 BoolePolyRing::poly_type BoolePolyRing::coerce(const poly_type& rhs) const {
   if (getManager() ==
