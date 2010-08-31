@@ -208,7 +208,7 @@ struct CAuxTypes {
   typedef bool bool_type;
 
   /// Type for lengths, dimensions, etc.
-  typedef unsigned int size_type;
+  typedef std::size_t size_type;
 
   /// Type for polynomial degrees
   typedef int deg_type;

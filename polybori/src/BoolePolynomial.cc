@@ -619,7 +619,11 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const monom_type&)" );
 
-  m_dd = m_dd.diff(  rhs.diagram().support() );
+  monom_type allvars;
+  for(idx_type nvar = ring().nVariables() - 1; nvar != 0; --nvar)
+    allvars = allvars.change(nvar);
+
+  m_dd = m_dd.diff(  rhs.multiples(allvars) );
 
   return *this;
 }

@@ -9,39 +9,50 @@
  * decision diagrams. It should be loaded from pbori_routines.h only
  *
  * @par Copyright:
- *   (c) 2006 by The PolyBoRi Team
+ *   (c) 2006-2010 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.5  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2007/07/27 14:38:40  dreyer
- * CHANGE: Addition internally inlined
- *
- * Revision 1.3  2006/10/30 13:30:33  dreyer
- * FIX: library compiles for PBORI_ADD_BY_* switches, not using *XOR
- *
- * Revision 1.2  2006/10/26 12:58:25  dreyer
- * ADD: lowlevel routine for union-xor (easy cudd-style variant)
- *
- * Revision 1.1  2006/08/23 14:24:54  dreyer
- * ADD: BooleSet::usedVariables and infrastructure
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
 // include basic definitions
 #include "pbori_defs.h"
+#include <map>
 
+#ifndef PBORI_pbori_routines_cuddext_h_
+#define PBORI_pbori_routines_cuddext_h_
 
 BEGIN_NAMESPACE_PBORI
 
-  // currently at external header file pbori_algo.h
+/// Other routines currently at external public header file pbori_algo.h
+
+/// Function template
+template<class MapType, class NaviType>
+inline typename MapType::mapped_type
+dd_long_count_step(MapType& cache, NaviType navi) {
+
+  if(navi.isConstant())
+    return navi.terminalValue();
+
+  {
+    typename MapType::iterator iter = cache.find(navi);
+    if (iter != cache.end())
+      return iter->second;
+  }
+
+  return cache[navi] = 
+    dd_long_count_step(cache, navi.thenBranch()) +
+    dd_long_count_step(cache, navi.elseBranch());
+}
+
+/// Function template for generically computing number of terms
+template <class IntType, class NaviType>
+inline IntType
+dd_long_count(NaviType navi) {
+
+  std::map<NaviType, IntType> local_cache;
+  return dd_long_count_step(local_cache, navi);
+}
 
 END_NAMESPACE_PBORI
+
+#endif

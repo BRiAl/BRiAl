@@ -21,6 +21,7 @@
 
 #include "cuddInt.h"
 #include "CApplyNodeFacade.h"
+#include "pbori_routines_cuddext.h"
 
 #include "CExtrusivePtr.h"
 
@@ -211,10 +212,10 @@ public:
   //@}
 
   /// Determine the number of terms
-  int count() const          { return memApply(Cudd_zddCount); }
+  size_type count() const { return dd_long_count<size_type>(navigation());  }
 
   /// Appriximate the number of terms
-  double countDouble() const { return memApply(Cudd_zddCountDouble); }
+  double countDouble() const { return dd_long_count<double>(navigation()); }
 
   /// Get index of curent node
   size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
@@ -297,12 +298,6 @@ public:
 
   /// Get numbers of used variables
   size_type nSupport() const { return apply(Cudd_SupportSize); }
-
-  /// Get multiples of used variables
-  diagram_type support() const {
-    diagram_type tmp(apply(Cudd_Support));
-    return tmp.apply(Cudd_zddPortFromBdd);
-  }
 
   /// Get used variables (assuming indices of zero length)
   template<class VectorLikeType>

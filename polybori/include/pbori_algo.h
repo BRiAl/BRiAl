@@ -983,6 +983,7 @@ count_index(SizeType& size, IdxType idx, const SetType& bset) {
   return count_index(size, idx, bset.navigation(), SetType());
 }
 
+
 END_NAMESPACE_PBORI
 
 #endif

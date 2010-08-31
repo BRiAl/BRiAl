@@ -767,8 +767,8 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   int steps=0;
   std::priority_queue<PolynomialSugar, std::vector<PolynomialSugar>, LMLessComparePS> to_reduce;
   deg_type max_sugar=0;
-  unsigned int max_length=0;
-  unsigned int max_nodes=0;
+  Polynomial::size_type max_length=0;
+  Polynomial::size_type max_nodes=0;
   for(i=0;i<s;i++){
     if (inp[i].isOne()){
       result.push_back(inp[i]);
