@@ -16,51 +16,12 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-
-#include <utility>              // std::pair
-#include <boost/type_traits/function_traits.hpp>
+#include "CMemberFunctionTraits.h"
 
 #ifndef PBORI_CCallback_Wrapper_h_
 #define PBORI_CCallback_Wrapper_h_
 
 BEGIN_NAMESPACE_PBORI
-
-/** @class CMemberFunctionTraits
- * @brief This template class defines related types for member function pointer.
- * 
- * @note Currently, the class supports functions with up to one argument only.
- **/
-template<class MemberFuncPtr>
-class CMemberFunctionTraits;
-
-/// Axuiliary class
-template <class Type, class ResultType, class ArgType, class ObjRef>
-class CMemberFunctionTraitsBase {
-public:
-  typedef ResultType result_type;
-  typedef ArgType argument_type;
-  typedef Type object_type;
-  typedef ObjRef object_reference;
-};
-
-
-template <class Type, class ResultType>
-class CMemberFunctionTraits<ResultType (Type::*)()>:
-  public CMemberFunctionTraitsBase<Type, ResultType, void, Type&> { };
-
-template <class Type, class ResultType>
-class CMemberFunctionTraits<ResultType (Type::*)() const>:
-  public CMemberFunctionTraitsBase<Type, ResultType, void, const Type&> { };
-
-template <class Type, class ResultType, class ArgType>
-class CMemberFunctionTraits<ResultType (Type::*)(ArgType)>:
-  public CMemberFunctionTraitsBase<Type, ResultType, ArgType, Type&> { };
-
-
-template <class Type, class ResultType, class ArgType>
-class CMemberFunctionTraits<ResultType (Type::*)(ArgType) const>:
-  public CMemberFunctionTraitsBase<Type, ResultType, ArgType, const Type&> { };
-
 
 /** @class CCallbackFacade
  * @brief This template class defines a facade for applying operator @c .* in
@@ -71,7 +32,7 @@ class CMemberFunctionTraits<ResultType (Type::*)(ArgType) const>:
  *
  * It is to be used as a face of @Type, e. g. for @c CCallbackWrapper below.
  *
- * @note Specialized variant to void member fucntions
+ * @note Specialized variant to void member functions
  * @attention Currently, the class supports unary functions only.
  **/
 
@@ -92,7 +53,7 @@ template <class Type, class ArgType>
 class CCallbackFacade<Type, void, ArgType> {
 public:
  
-  /// Apply member function pointer to argument
+  /// Apply member function pointer to argument (avoid returning @c void())
   void operator()(ArgType arg) const {
     (static_cast<const Type&>(*this).object .* 
      static_cast<const Type&>(*this).function)(arg);
@@ -119,11 +80,11 @@ public:
   /// Related types
   typedef CMemberFunctionTraits<MemberFuncPtr> traits;
 
-  /// Reference to object
-  typedef typename traits::object_reference reference;
-
+  /// Facade which defines @c operator() needs to access private members
   friend class CCallbackFacade<self, typename traits::result_type,
                                typename traits::argument_type>;
+  /// Reference to object
+  typedef typename traits::object_reference reference;
 
   /// Constructor
   CCallbackWrapper(reference value, MemberFuncPtr ptr):
@@ -133,6 +94,7 @@ private:
   reference object;
   MemberFuncPtr function;
 };
+
 END_NAMESPACE_PBORI
 
 #endif
