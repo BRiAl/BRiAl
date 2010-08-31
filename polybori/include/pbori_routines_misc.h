@@ -876,7 +876,7 @@ cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
   MonomType result = cached_used_vars(cache, navi.thenBranch(), init);
   result *= cached_used_vars(cache, navi.elseBranch(), init);
 
-  result.changeAssign(*navi);
+  result = result.change(*navi);
 
   // Write result to cache
   cache.insert(navi, result.diagram().navigation());

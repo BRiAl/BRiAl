@@ -20,11 +20,10 @@
 
 // include polybori functionals
 #include "pbori_func.h"
-#include "BoolePolyRing.h"
 
-// include definitions of decision diagram interfaces
-#include "CDDInterface.h"
-#include "CCuddZDD.h"
+#include "CCuddDDFacade.h"
+
+#include "BoolePolyRing.h"
 
 
 #ifndef BooleSet_h_
@@ -60,14 +59,14 @@ class CReverseIter;
 
 
 class BooleSet:
-  public CTypes::dd_type {
+  public CCuddDDFacade<BoolePolyRing, BooleSet> {
 
 public:
   /// Generic access to type of *this
   typedef BooleSet self;
 
   /// Generic access to base type
-  typedef CTypes::dd_type base;
+  typedef CCuddDDFacade<BoolePolyRing, BooleSet> base;
 
   /// Generic access to underlying diagram type
   typedef base dd_type;
@@ -111,15 +110,17 @@ public:
   BooleSet(idx_type idx, navigator first, navigator second, 
            const ring_type& ring): 
     base(ring, idx, first, second) { }
-  
+ 
+  /// Construct new node (using navigator nodes)
+  BooleSet(const ring_type& ring, node_ptr node): 
+    base(ring, node) { }
+
+  BooleSet(const ring_type& ring, navigator navi): 
+    base(ring, navi.getNode()) { }
+
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
-    base(rhs.ring(), idx, rhs.navigation()) { }
-
-  /// Construct one or zero set from constant
-  //  BooleSet(bool_type);
-  /// @todo  temporarily deactivated, as it slow downs procedures like
-  /// term_accumulate, needs check, what happens to inlinings etc. in this case
+    base(idx, rhs, rhs) { }
 
   /// Construct from navigator node
   BooleSet(navigator navi, const ring_type& ring):
@@ -146,11 +147,15 @@ public:
   /// Finish of iteration over exponent vectors
   exp_iterator expEnd() const;
 
-  /// Assignment operator
-  self& operator=(const self&);
+  /// Get unique hash value (valid only per runtime)
+  hash_type hash() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(getNode()));
+  }
 
-  /// Use assignment operator of base element
-  using base::operator=;
+  /// Get stable hash value, which is reproducible
+  hash_type stableHash() const { 
+    return stable_hash_range(navigation());
+  }
 
   /// Set of variables of the whole set
   term_type usedVariables() const;
@@ -158,14 +163,11 @@ public:
   /// Exponent vector of variables of the whole set
   exp_type usedVariablesExp() const;
 
-  /// Add given monomial to sets and assign
-  self& addAssign(const term_type&);
+  /// Add given monomial to sets
+  self add(const term_type& rhs) const;
 
-  /// Add given monomial to sets 
-  self add(const term_type&) const;
-
-  /// Check whether rhs is included in *this
-  bool_type owns(const term_type&) const;
+  // Check whether rhs is included in *this
+  bool_type owns(const term_type& rhs) const;
 
   /// Check whether rhs is included in *this
   bool_type owns(const exp_type&) const;
@@ -188,17 +190,14 @@ public:
   /// Division by given term
   self divide(const term_type& rhs) const;
 
-  /// Division with assignment by given term
-  self& divideAssign(const term_type& rhs);
-
   /// Check for empty intersection with divisors of rhs
   bool_type hasTermOfVariables(const term_type& rhs) const;
 
   /// Get minimal elements wrt. inclusion
-  self minimalElements() const;// { return base::minimalElements(); };
+  self minimalElements() const;
 
   /// Test whether the empty set is included
-  using base::ownsOne;
+  bool_type ownsOne() const { return owns_one(navigation()); }
 
   /// Test, whether we have one term only
   bool_type isSingleton() const { return dd_is_singleton(navigation()); }
@@ -215,66 +214,29 @@ public:
   self existAbstract(const term_type& rhs) const;
 
   /// Access internal decision diagram
-  const dd_type& diagram() const { return dynamic_cast<const dd_type&>(*this); }
-
-  /// If-Then-Else operation
-  self ite(const self& then_dd, const self& else_dd) {
-    return self(base::ite(then_dd.diagram(), else_dd.diagram()));
-  };
-
-  /// If-Then-Else operation with assignment
-  self& iteAssign(const self& then_dd, const self& else_dd) {
-    base::iteAssign(then_dd.diagram(), else_dd.diagram());
-    return *this;
-  };
+  const self& diagram() const { return *this; }  //  to be removed
 
   /// Cartesean product
   self cartesianProduct(const self& rhs) const {
-    return base::unateProduct(rhs.diagram());
+    return unateProduct(rhs);
   };
-
-  /// @name Members from base
-  //@{
-  PBORI_CONST_DDFUNCS_IDX(subset0)
-  PBORI_CONST_DDFUNCS_IDX(subset1)
-  PBORI_CONST_DDFUNCS_IDX(change)
-
-
-  PBORI_CONST_DDFUNCS(unite)
-  PBORI_CONST_DDFUNCS(diff)
-  PBORI_CONST_DDFUNCS(diffConst)
-  PBORI_CONST_DDFUNCS(intersect)
-  PBORI_CONST_DDFUNCS(product)
-  PBORI_CONST_DDFUNCS(Xor)
-  PBORI_CONST_DDFUNCS(ddDivide)
-  PBORI_CONST_DDFUNCS(weakDivide)
-  PBORI_CONST_DDFUNCS(divideFirst)
-
-  /// @todo Do we really nee the assign variante here at high level?
-  PBORI_DDFUNCS_IDX(subset0Assign)
-  PBORI_DDFUNCS_IDX(subset1Assign)
-  PBORI_DDFUNCS_IDX(changeAssign)
-
-  PBORI_DDFUNCS(uniteAssign)
-  PBORI_DDFUNCS(diffAssign)
-  PBORI_DDFUNCS(diffConstAssign)
-  PBORI_DDFUNCS(intersectAssign)
-  PBORI_DDFUNCS(productAssign)
-  PBORI_DDFUNCS(ddDivideAssign)
-  PBORI_DDFUNCS(weakDivideAssign)
-  PBORI_DDFUNCS(divideFirstAssign)
-  //@}
 
   /// Test containment
   bool_type contains(const self& rhs) const { 
-    return base::diffConst(rhs).emptiness();  
+    return diffConst(rhs).isZero();  
   }
 
-  /// Get unique hash value (may change from run to run)
-  using base::hash;
+  /// Returns number of terms
+  size_type size() const { return count(); }
 
-  /// Get hash value, which is reproducible
-  using base::stableHash;
+  /// Returns number of terms (deprecated)
+  size_type length() const { return size(); }
+
+  /// Returns number of variables in manager
+  size_type nVariables() const { return ring().nVariables(); }
+
+  /// Approximation of number of terms
+  double sizeDouble() const { return countDouble(); }
 
   /// Print current set to output stream
   ostream_type& print(ostream_type&) const;
@@ -287,10 +249,6 @@ public:
 
   /// Count many terms containing BooleVariable(idx)
   double countIndexDouble(idx_type idx) const ;
-
-  /// Access ring, where this belongs to
-  ring_type ring() const { return ring_type(base::ring()); } 
-  //  using base::ring;
 
   /// Test whether, all divisors of degree -1 of term rhs are contained in this
   bool_type containsDivisorsOfDecDeg(const term_type& rhs) const;

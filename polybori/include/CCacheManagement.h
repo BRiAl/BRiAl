@@ -18,7 +18,6 @@
 
 // get DD navigation
 #include "CCuddNavigator.h"
-#include "CDDInterface.h"
 
 #include "CCuddCore.h"
 #include <boost/intrusive_ptr.hpp>
@@ -151,13 +150,15 @@ public:
   /// Type of navigators
   typedef CCuddNavigator navigator;
 
-  /// Get high-level decision diagram type
-  typedef typename CTypes::dd_type dd_type;
+
   //  typedef CTypes::dd_base dd_base;
   //  typedef typename manager_type::mgrcore_ptr mgrcore_ptr;
 
   /// Type of Boolean rings
   typedef BoolePolyRing ring_type;
+
+  /// Get high-level decision diagram type
+  typedef typename ring_type::dd_type dd_type;
 
   /// Constructor
   CCuddLikeMgrStorage(const manager_type& mgr): 
@@ -447,7 +448,8 @@ template <class ManagerType, class CacheType,
           unsigned ArgumentLength = CacheType::nargs>
 class CCacheManagement: 
   public CCacheManBase<ManagerType,
-                       CacheType, ArgumentLength> {
+                       CacheType, ArgumentLength>,
+  public CAuxTypes {
 public:
 
   /// @name Get template parameters and global types

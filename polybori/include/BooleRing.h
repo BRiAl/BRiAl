@@ -33,8 +33,6 @@ BEGIN_NAMESPACE_PBORI
  * managers as Boolean polynomial rings.
  *
  **/
-template <class DiagramType, class RingType>
-class CCuddDDBase;
 
 class BooleRing: 
   public CTypes::orderenums_type, public CTypes::compenums_type, 
@@ -51,8 +49,6 @@ class BooleRing:
   /// @name adopt global type definitions
   //@{
   typedef CTypes::ordercode_type ordercode_type;
-  typedef CTypes::dd_base dd_base;
-  typedef CTypes::dd_type dd_type;
   typedef CTypes::vartext_type vartext_type;
   //@}
 
@@ -71,12 +67,12 @@ class BooleRing:
   /// Reference for handling mterm orderings
   typedef order_type& order_reference;
 
+  typedef DdManager mgr_type;
   /// Explicitely mention ordercodes' enumeration
   using CTypes::orderenums_type::ordercodes;
 
 protected:
 
-  template <class, class> class CCuddDDBase;
   /// Support for shallow copy (clone)
   /// @note May generate invalid ring, hence @c protected 
   BooleRing(const core_ptr& rhs):  p_core(rhs) {}
@@ -132,7 +128,7 @@ public:
   }
 
   /// Get plain decision diagram manager
-  DdManager* getManager() const {
+  mgr_type* getManager() const {
     return p_core->m_mgr.getManager();
   }
 

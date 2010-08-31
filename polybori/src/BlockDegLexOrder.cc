@@ -116,7 +116,7 @@ BlockDegLexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::lead(const poly_type&) const)" );
 
-  CBlockDegreeCache<> blockDegCache(poly.ring());
+  CBlockDegreeCache<set_type> blockDegCache(poly.ring());
 
   CacheManager<CCacheTypes::block_dlex_lead> cache_mgr(poly.ring());
 

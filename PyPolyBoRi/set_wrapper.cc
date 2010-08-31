@@ -8,7 +8,7 @@
  */
 #include <boost/python.hpp>
 #include <iostream>
-#include "CDDInterface.h"
+
 #include "polybori.h"
 #include "interpolate.h"
 #include "groebner_alg.h"
@@ -22,9 +22,6 @@ USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
 
-void changeAssign(BooleSet& c, BooleSet::idx_type idx){
-  c.changeAssign(idx);
-}
 
 static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
   return BooleSet(i,a,b);
@@ -76,7 +73,9 @@ corresponding to Variables of given index is replaced by its else-branch")
     .def("vars",&BooleSet::usedVariables, "Variables occurring in BooleSet")
     .def("navigation", &BooleSet::navigation,
          "Navigate through underlying ZDD structure")
-    .def("ring", &BooleSet::ring, "Get corresponding ring")
+    .def("ring", &BooleSet::ring,
+         return_value_policy<reference_existing_object>(),
+         "Get corresponding ring")
     .def("include_divisors",include_divisors)
     .def("minimal_elements", &BooleSet::minimalElements, 
          "Get minimal elements with respect to inclusion")

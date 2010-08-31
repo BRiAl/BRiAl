@@ -25,8 +25,6 @@
   //#include "CDDOperations.h"
   // temporarily for work around
 
-#include "CDDInterface.h"
-#include "CCuddZDD.h"
 
 #include <list>
 
@@ -41,7 +39,7 @@ class BooleExponent;
 class BooleVariable;
 class BoolePolynomial;
 class BooleMonomial;
-
+class BooleSet;
 
 /** @class BoolePolyRing
  * @brief This class adds functionality to BooleRing.
@@ -71,6 +69,9 @@ class BoolePolyRing:
   /// set variables type
   typedef BooleVariable var_type;
 
+  /// set decision diagram type
+  typedef BooleSet dd_type;
+
   /// set polynomial type
   typedef BoolePolynomial poly_type;
 
@@ -97,7 +98,7 @@ class BoolePolyRing:
   using base::ordercodes;
 
   /// Default constructor
-  BoolePolyRing();
+  BoolePolyRing();//: base(core_ptr()) { }
 
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 
@@ -132,9 +133,7 @@ class BoolePolyRing:
   // var_type variable(idx_type nvar) const;  // inlined in BooleVariable.h
 
   /// Access nvar-th ring variable as diagram
-  dd_type variable(idx_type nvar) const {
-    return dd_base(*this, p_core->m_mgr.getVar(nvar)); 
-  }
+  dd_type variable(idx_type nvar) const;
 
   /// Get empty decision diagram 
   dd_type zero() const; // inlined below
@@ -151,18 +150,25 @@ class BoolePolyRing:
 
 
 // temporarily here!
+END_NAMESPACE_PBORI
 
+#include "BooleSet.h"
 
-  /// Get empty decision diagram 
-inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_base(*this, p_core->m_mgr.zddZero()); }
+BEGIN_NAMESPACE_PBORI
+
+ /// Get empty decision diagram 
+inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_type(*this, p_core->m_mgr.zddZero()); }
 
   /// Get decision diagram with all variables negated
-  inline  BoolePolyRing::dd_type BoolePolyRing::one() const { return dd_base(*this, p_core->m_mgr.zddOne()); }
+  inline  BoolePolyRing::dd_type BoolePolyRing::one() const { return dd_type(*this, p_core->m_mgr.zddOne()); }
 
 
   /// Get constant one or zero
 inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
 
+inline  BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const {
+    return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
+  }
 
 END_NAMESPACE_PBORI
 

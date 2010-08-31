@@ -226,7 +226,7 @@ class change_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
-    return (rhs.changeAssign(lhs));
+    return (rhs = rhs.change(lhs));
   } 
 
 };
@@ -238,7 +238,7 @@ public:
 
   template <class RhsType, class LhsType>
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
-    return (rhs.changeAssign(lhs));
+    return (rhs = rhs.change(lhs));
   } 
 
 };
@@ -250,7 +250,7 @@ class subset1_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
-    (rhs.subset1Assign(lhs));
+    rhs = rhs.subset1(lhs);
     return rhs;
   } 
 };
@@ -262,7 +262,7 @@ class subset0_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
-    return (rhs.subset0Assign(lhs));
+    return (rhs = rhs.subset0(lhs));
   } 
 };
 /// @class unite_assign
@@ -274,7 +274,7 @@ class unite_assign:
 
 public:
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
-    return (rhs.uniteAssign(lhs));
+    return (rhs = rhs.unite(lhs));
   } 
 };
 
@@ -512,7 +512,7 @@ public:
     // several possible implementations
     return 
 #ifdef PBORI_ADD_BY_ITE
-      lhs.iteAssign(lhs.diff(rhs), rhs);
+      lhs = lhs.ite(lhs.diff(rhs), rhs);
 
 # elif defined(PBORI_ADD_BY_OR)
       (lhs = (lhs.diff(rhs)).unite(rhs.diff(lhs)));
@@ -537,7 +537,7 @@ public:
     DDType tmp( lhs.subset0(idx) );
 
     // get the complementary terms
-    lhs.diffAssign(tmp);
+    lhs = lhs.diff(tmp);
 
     // construct polynomial terms
     dd_add_assign<DDType>()(lhs, tmp.change(idx));
@@ -555,7 +555,7 @@ public:
 
   DDType& operator()(DDType& lhs, IdxType idx) const {
 
-    lhs.uniteAssign( lhs.change(idx) );
+    lhs = lhs.unite( lhs.change(idx) );
     return lhs;
   }
 

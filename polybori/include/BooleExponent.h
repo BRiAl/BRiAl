@@ -86,26 +86,14 @@ BEGIN_NAMESPACE_PBORI
  * as interim data structure for BooleMonomial
  *
  **/
-class BooleExponent {
+class BooleExponent:
+  public CAuxTypes {
 
  public:
 
   //-------------------------------------------------------------------------
   // types definitions
   //-------------------------------------------------------------------------
-
-  /// @name Adopt global type definitions
-  //@{
-  typedef CTypes::dd_type dd_type;
-  typedef CTypes::size_type size_type;
-  typedef CTypes::deg_type deg_type;
-  typedef CTypes::idx_type idx_type;
-  typedef CTypes::hash_type hash_type;
-  typedef CTypes::bool_type bool_type;
-  typedef CTypes::comp_type comp_type;
-  typedef CTypes::integer_type integer_type;
-  typedef CTypes::ostream_type ostream_type;
-  //@}
 
   /// Define the underlying data structure
   typedef std::vector<idx_type> data_type;

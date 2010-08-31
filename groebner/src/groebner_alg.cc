@@ -752,7 +752,7 @@ Polynomial reduce_by_monom(const Polynomial& p, const Monomial& m){
   //cout<<"branch2\n";
   //cout.flush();
   
-  dividing_terms.unateProductAssign(m.diagram());
+  dividing_terms = dividing_terms.unateProduct(m.diagram());
   return Polynomial(BooleSet(p).diff(dividing_terms));
   //return Polynomial(BooleSet(p).diff(BooleSet(m*Polynomial(dividing_terms))));
 }
@@ -1976,9 +1976,7 @@ void ReductionStrategy::setupSetsForLastElement(){
                 mfm_start++;
             }
         }
-        minimalLeadingTerms=minimalLeadingTerms.diff(lm_multiples_min);
-        
-        minimalLeadingTerms.uniteAssign(Polynomial(lm).diagram());   
+        minimalLeadingTerms = minimalLeadingTerms.diff(lm_multiples_min).unite(lm.diagram());
         
 
         
@@ -1989,12 +1987,12 @@ void ReductionStrategy::setupSetsForLastElement(){
         if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
             (*this)[s].minimal=false;
     }
-    leadingTerms.uniteAssign(Polynomial(lm).diagram());
+    leadingTerms = leadingTerms.unite(Polynomial(lm).diagram());
     if ((*this)[s].literal_factors.is11Factorization())
-        leadingTerms11.uniteAssign(Polynomial(lm).diagram());
+        leadingTerms11 = leadingTerms11.unite(Polynomial(lm).diagram());
     //doesn't need to be undone on simplification
     if ((*this)[s].literal_factors.is00Factorization())
-        leadingTerms00.uniteAssign(Polynomial(lm).diagram());
+        leadingTerms00 = leadingTerms00.unite(Polynomial(lm).diagram());
     lm2Index[(*this)[s].lead]=s;
     exp2Index[(*this)[s].leadExp]=s;
 

@@ -191,26 +191,22 @@ protected:
   navigator m_navi;
 };
 
-template <class TagType = typename CCacheTypes::degree,
-          class DDType = typename CTypes::dd_type>
+template <class DDType>
 class CDegreeCache:
-  public CCacheManagement<BoolePolyRing, TagType, 1> {
-
+  public CCacheManagement<BoolePolyRing, typename CCacheTypes::degree, 1> {
+  typedef CDegreeCache self;
 public:
   /// @name Define generic access to data types
   //@{
   typedef DDType dd_type;
-  typedef TagType tag_type;
+  typedef typename CCacheTypes::degree tag_type;
   typedef CCacheManagement<BoolePolyRing, tag_type, 1> base;
-  typedef CDegreeCache<tag_type, dd_type> self;
   //@}
 
   /// @name Adopt type definitions
   //@{
   typedef typename base::node_type input_node_type;
   typedef typename base::manager_type manager_type;
-  typedef typename dd_type::size_type size_type;
-  typedef typename dd_type::deg_type deg_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
   typedef CIndexCacheHandle<navi_type> node_cache_type;
@@ -247,26 +243,24 @@ public:
 
 
 
-template <class TagType =  typename CCacheTypes::block_degree,
-          class DDType = typename CTypes::dd_type>
+template <class DDType>
 class CBlockDegreeCache:
-  public CCacheManagement<BoolePolyRing, TagType, 2> {
+  public CCacheManagement<BoolePolyRing, 
+                          typename CCacheTypes::block_degree, 2> {
 
 public:
   /// @name Define generic access to data types
   //@{
   typedef DDType dd_type;
-  typedef TagType tag_type;
+  typedef typename CCacheTypes::block_degree tag_type;
   typedef CCacheManagement<BoolePolyRing, tag_type, 2> base;
-  typedef CBlockDegreeCache<tag_type, dd_type> self;
+  typedef CBlockDegreeCache<dd_type> self;
   //@}
 
   /// @name Adopt type definitions
   //@{
   typedef typename base::node_type input_node_type;
   typedef typename base::manager_type manager_type;
-  typedef typename dd_type::idx_type idx_type;
-  typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexHandle<navi_type> node_type;
   typedef CIndexCacheHandle<navi_type> node_cache_type;
@@ -304,9 +298,10 @@ public:
 };
 
 template <class TagType, 
-          class DDType = typename CTypes::dd_type>
+          class DDType>
 class CDegreeArgumentCache:
-  public CCacheManagement<BoolePolyRing, TagType, 2> {
+  public CCacheManagement<BoolePolyRing, TagType, 2>,
+  public CAuxTypes {
 
 public:
   /// @name Define generic access to data types
@@ -321,7 +316,6 @@ public:
   //@{
   typedef typename base::node_type node_type;
   typedef typename base::manager_type manager_type;
-  typedef typename dd_type::size_type size_type;
   typedef typename dd_type::navigator navi_type;
   typedef CIndexCacheHandle<navi_type> degree_node_type;
   //@}

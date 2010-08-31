@@ -39,12 +39,9 @@ BooleRing::BooleRing(size_type nvars):
 
 
 
-
-// interface with cudd's variable management
+/// Active Ring
 BoolePolyRing::BoolePolyRing() : 
   base(BooleEnv::ring()) {
-  assert (this != &active_ring); // Constructor must not be called for defining
-                                 // active ring for the first time
   PBORI_TRACE_FUNC( "BoolePolyRing()" );
 }
 

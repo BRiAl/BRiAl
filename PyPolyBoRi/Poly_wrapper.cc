@@ -68,7 +68,7 @@ void export_poly(){
   .def(init<const BoolePolynomial::navigator &, 
        const BoolePolynomial::ring_type &>())
   .def(boost::python::init <int, BoolePolyRing>())
-  .def(init<const CTypes::dd_type &>())
+  .def(init<const BooleSet &>())
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())
   .def(boost::python::init<bool>())

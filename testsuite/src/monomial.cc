@@ -129,7 +129,7 @@ main(){
     std::cout << monom <<std::endl;
 
     std::cout <<std::endl<<  "Monomial x*y*z: ";
-    std::cout << monom.changeAssign(2);
+    std::cout << (monom = monom.change(2));
     std::cout << " degree: "<< monom.deg() <<std::endl;
     std::cout << "(Sum of) Divisors: "<<std::endl<<monom.divisors()<<std::endl;
 

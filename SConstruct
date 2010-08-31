@@ -614,7 +614,11 @@ for t in tests_gb:
         [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
         CPPPATH=CPPPATH)
 
-
+for t in ['booleenv_test']:
+    env.Program(TestsPath(t), 
+                [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
+                CPPPATH=CPPPATH)
+    
 LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
 
 LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
