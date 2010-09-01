@@ -27,6 +27,9 @@ using boost::test_tools::output_test_stream;
 #include "BooleVariable.h"
 #include "BooleMonomial.h"
 #include "PBoRiError.h"
+#include "LexOrder.h"
+#include "CExpIter.h"
+
 USING_NAMESPACE_PBORI
 
 struct F {
@@ -34,12 +37,12 @@ struct F {
   F():
     ring(100, BoolePolyRing::lp, true), 
     bset(), 
-    bexp(BooleExponent().change(1)),
-    x(BooleVariable(0)),
-    y(BooleVariable(1)),
-    z(BooleVariable(2)),
-    v(BooleVariable(3)),
-    w(BooleVariable(4)) { 
+    bexp(BooleExponent().change(1)) {
+    x = (BooleVariable(0));
+    y = (BooleVariable(1));
+    z = (BooleVariable(2));
+    v = (BooleVariable(3));
+    w = (BooleVariable(4));
 
     BOOST_TEST_MESSAGE( "setup fixture" ); 
     bset = BooleSet(1, ring.one(), ring.zero()); // something non-trivial
@@ -60,7 +63,9 @@ struct F {
   output_test_stream output;
 };
 
-BOOST_FIXTURE_TEST_CASE( test_constructors, F ) {
+BOOST_FIXTURE_TEST_SUITE(BoolePolynomialTestSuite, F )
+
+BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Constant polynomials..." ); 
   BOOST_CHECK_EQUAL(BoolePolynomial(), BooleEnv::ring().zero());
@@ -76,7 +81,7 @@ BOOST_FIXTURE_TEST_CASE( test_constructors, F ) {
   BOOST_CHECK_EQUAL(BoolePolynomial(bexp, ring), bset);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_assigning_operators, F ) {
+BOOST_AUTO_TEST_CASE(test_assigning_operators) {
 
   poly_type poly;
   BOOST_TEST_MESSAGE( "Assignments..." ); 
@@ -85,7 +90,7 @@ BOOST_FIXTURE_TEST_CASE( test_assigning_operators, F ) {
   BOOST_CHECK_EQUAL(poly = false, BooleEnv::ring().zero());
   BOOST_CHECK_EQUAL(poly = bset, bset);
   
-  BOOST_TEST_MESSAGE( "+= and *=" );
+  BOOST_TEST_MESSAGE( "+=, -= and *=" );
   
   BOOST_CHECK_EQUAL(BoolePolynomial(x) += x, 0);
   BOOST_CHECK_EQUAL( (BoolePolynomial(x) += y ) += x, y);
@@ -97,7 +102,17 @@ BOOST_FIXTURE_TEST_CASE( test_assigning_operators, F ) {
    
   output << (poly =  (((poly_type(x) *= v) += (poly_type(y) *= v) ) += z));
   BOOST_CHECK(output.is_equal("x*v + y*v + z"));
+
+  BOOST_CHECK_EQUAL(BoolePolynomial(x) -= x, 0);
+  BOOST_CHECK_EQUAL( (BoolePolynomial(x) -= y ) -= x, y);
   
+  output << ((poly_type(x) *= y) -= z);
+  BOOST_CHECK(output.is_equal("x*y + z"));
+  
+   
+  output << (poly =  (((poly_type(x) *= v) -= (poly_type(y) *= v) ) -= z));
+  BOOST_CHECK(output.is_equal("x*v + y*v + z"));
+ 
   output << ( poly *=(poly_type(v)*=y));
   BOOST_CHECK(output.is_equal("x*y*v + y*z*v + y*v"));
   
@@ -126,12 +141,15 @@ BOOST_FIXTURE_TEST_CASE( test_assigning_operators, F ) {
   output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleMonomial(y*z)));
   BOOST_CHECK_EQUAL(poly, x+v);
   BOOST_CHECK(output.is_equal("x + v"));
+
+
+  BOOST_CHECK_EQUAL(-(x*y*z + x*z*w +v), (x*y*z + x*z*w +v));
 }
 
 
 
 
-BOOST_FIXTURE_TEST_CASE( test_logical_operators, F ) {
+BOOST_AUTO_TEST_CASE(test_logical_operators) {
 
   BOOST_CHECK_EQUAL(BoolePolynomial(bset) == BoolePolynomial(bset), true);
   BOOST_CHECK_EQUAL(BoolePolynomial(bset) != BoolePolynomial(bset), false);
@@ -156,7 +174,7 @@ BOOST_FIXTURE_TEST_CASE( test_logical_operators, F ) {
 }
 
 
-BOOST_FIXTURE_TEST_CASE( test_properties, F ) {
+BOOST_AUTO_TEST_CASE(test_properties) {
 
   BOOST_TEST_MESSAGE( "isZero, isOne, isConstant, hasConstantPart" ); 
   BOOST_CHECK_EQUAL(poly_type().isZero(), true);
@@ -221,7 +239,9 @@ BOOST_FIXTURE_TEST_CASE( test_properties, F ) {
   BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).isPair(), false);
 }
 
-BOOST_FIXTURE_TEST_CASE( test_ordering_independent, F ) {
+BOOST_AUTO_TEST_CASE(test_ordering_independent) {
+
+  BOOST_TEST_MESSAGE( "lexLead");
 
   BOOST_CHECK_THROW(poly_type().lexLead(), PBoRiError);
   BOOST_CHECK_THROW(poly_type(0).lexLead(), PBoRiError);
@@ -234,6 +254,7 @@ BOOST_FIXTURE_TEST_CASE( test_ordering_independent, F ) {
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z).lexLead(), x*y);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).lexLead(), x*y);
 
+  BOOST_TEST_MESSAGE( "stableHash");
   BOOST_CHECK_EQUAL(poly_type(1).stableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 11091674931773);
@@ -242,6 +263,7 @@ BOOST_FIXTURE_TEST_CASE( test_ordering_independent, F ) {
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 3006002441743652495);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 5907816585472828820);
 
+  BOOST_TEST_MESSAGE( "deg, TotalDeg, length, nNodes, nUsedVariables, usedVariables");
   BOOST_CHECK_EQUAL(poly_type().deg(), -1);
   BOOST_CHECK_EQUAL(poly_type(0).deg(), -1);
   BOOST_CHECK_EQUAL(poly_type(1).deg(), 0);
@@ -255,50 +277,212 @@ BOOST_FIXTURE_TEST_CASE( test_ordering_independent, F ) {
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z).deg(), 2);
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z*v*w ).deg(), 3);
 
+  // Should be the same up to now
+  BOOST_CHECK_EQUAL(poly_type().totalDeg(), -1);
+  BOOST_CHECK_EQUAL(poly_type(0).totalDeg(), -1);
+  BOOST_CHECK_EQUAL(poly_type(1).totalDeg(), 0);
+  BOOST_CHECK_EQUAL(poly_type(x).totalDeg(), 1);
+  BOOST_CHECK_EQUAL(poly_type(x*y).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + 1).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + z).totalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + z*v*w ).totalDeg(), 3);
+
   poly_type poly1(1), poly2(1);
   std::size_t len(1);
-    for (std::size_t idx = 0; idx < ring.nVariables(); ++idx, (len <<= 1)) {
+  BooleMonomial monom;
+  for (std::size_t idx = 0; idx < ring.nVariables(); ++idx, (len <<= 1)) {
+    monom = monom.change(idx);
     BOOST_CHECK_EQUAL(poly1.length(), len);
     poly1 *= (poly_type(ring.variable(idx)) + 1);
     BOOST_CHECK_EQUAL(poly1.deg(), idx + 1);
+    BOOST_CHECK_EQUAL(poly1.totalDeg(), idx + 1);
+    BOOST_CHECK_EQUAL(poly1.nNodes(), idx + 2);
+    BOOST_CHECK_EQUAL(poly1.nUsedVariables(), idx + 1);
+    BOOST_CHECK_EQUAL(poly1.usedVariables(), monom);
+    BOOST_CHECK_EQUAL(poly1.usedVariablesExp(), monom.exp());
+
     if (idx > 0) {
       poly2 *= (ring.variable(idx) + ring.variable(0));
       BOOST_CHECK_EQUAL(poly2.deg(), idx);
+      BOOST_CHECK_EQUAL(poly2.totalDeg(), idx);
       BOOST_CHECK_EQUAL(poly2.length(), len);
-     
+      BOOST_CHECK_EQUAL(poly2.nNodes(), 3*idx+1);
+      BOOST_CHECK_EQUAL(poly2.nUsedVariables(), idx + 1); 
+      BOOST_CHECK_EQUAL(poly2.usedVariables(), monom);
+      BOOST_CHECK_EQUAL(poly2.usedVariablesExp(), monom.exp());
     }
   }
 
+  BOOST_TEST_MESSAGE( "hash, terms, begin*, end*, navigation");
+  BOOST_CHECK_NE(poly1.hash(), poly2.hash());
+  BOOST_CHECK_EQUAL((x + y*z + z*v*w).hash(),(x + y*z + x + z*v*w + x).hash());
+
+  poly_type::termlist_type terms;
+  (x + y*z + z*v*w).fetchTerms(terms);
+
+  BooleMonomial termsref[] = {x, y*z, z*v*w};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(terms.begin(), terms.end(), 
+                                termsref, termsref + 3);
+  terms = (x + y*z + z*v*w).terms();
+  BOOST_CHECK_EQUAL_COLLECTIONS(terms.begin(), terms.end(), 
+                                termsref, termsref + 3);
+  poly_type poly = (x + y*z + z*v*w);
+  poly_type::deg_type degs[] = {1, 2, 3};
+  poly_type::exp_type 
+    exps[] = {BooleExponent().change(0), 
+              BooleExponent().change(1).change(2),
+              BooleExponent().change(2).change(3).change(4)};
+  
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.begin(), poly.end(), 
+                                termsref, termsref + 3);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.degBegin(), poly.degEnd(), 
+                                degs, degs + 3);
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.expBegin(), poly.expEnd(), 
+                                exps, exps + 3);
+
+  BOOST_CHECK_EQUAL(poly_type(x*y + z*v + v*w).firstTerm(), x*y);
+
+  poly = (x*y + z*v + v*w);
+  poly_type::idx_type idxs[] = {0, 1};
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.firstBegin(), poly.firstEnd(), 
+                                idxs, idxs + 2);
+
+  
+  BOOST_CHECK_EQUAL(*poly.navigation(), 0);
+  BOOST_CHECK_EQUAL(*(poly.navigation().thenBranch()), 1);
+  BOOST_CHECK_EQUAL(*(poly.navigation().elseBranch()), 2);
+  BOOST_CHECK_EQUAL(*(poly.navigation().elseBranch().thenBranch()), 3);
+  BOOST_CHECK_EQUAL(*(poly.navigation().elseBranch().elseBranch()), 3);
+  BOOST_CHECK_EQUAL(*(poly.navigation().elseBranch().elseBranch().thenBranch()),
+                    4);
+
+
+  BOOST_TEST_MESSAGE( "gradedPArt, set, print" );
+  BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(0), 1);
+  BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(1), x);
+  BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(2), z*v);
+  BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(3), z*v*w);
+
+  output << poly_type(x + z*v + z*v*w + 1).set();
+  BOOST_CHECK(output.is_equal("{{x}, {z,v,w}, {z,v}, {}}"));
+
+  output << poly_type(x + z*v + z*v*w + 1);
+  BOOST_CHECK(output.is_equal("x + z*v*w + z*v + 1"));
+}
+
+template <int order>
+struct OrderGenFix {
+  typedef BoolePolynomial poly_type;
+  OrderGenFix():
+    ring(100, order, true) {
+
+    ring.setVariableName(0, "a");
+    ring.setVariableName(1, "b");
+    ring.setVariableName(2, "c");
+    ring.setVariableName(3, "d");
+    ring.setVariableName(4, "e");
+    ring.setVariableName(5, "f");
+    ring.setVariableName(6, "g");
+    ring.setVariableName(7, "h");
+ 
+    a = BooleVariable(0, ring);
+    b = BooleVariable(1, ring);
+    c = BooleVariable(2, ring);
+    d = BooleVariable(3, ring);
+    e = BooleVariable(4, ring);
+    f = BooleVariable(5, ring);
+    g = BooleVariable(6, ring);
+    h = BooleVariable(7, ring);
+
+
+    poly1 = a + b + c*d*e + c*e*f + g*h;
+    poly2 = a + b + c*d + e*f + g*h;
+
+
+
+  }
+  ~OrderGenFix()  { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+
+  BoolePolyRing ring;
+  BooleMonomial a, b, c, d, e, f, g, h;
+  output_test_stream output;
+  poly_type poly1, poly2;
+};
+
+
+BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
+
+  BOOST_CHECK_THROW(poly_type().lead(), PBoRiError);
+  BOOST_CHECK_THROW(poly_type(0).lead(), PBoRiError);
+
+  BOOST_CHECK_EQUAL(poly1.lead(), a);
+  BOOST_CHECK_EQUAL(poly2.lead(), a);
+
+  BOOST_CHECK_EQUAL(poly1.leadExp(), BooleExponent().change(0));
+  BOOST_CHECK_EQUAL(poly2.leadExp(), BooleExponent().change(0));
+
+  BOOST_CHECK_EQUAL(poly1.boundedLead(1), a);
+  BOOST_CHECK_EQUAL(poly2.boundedLead(1), a);
+
+  BOOST_CHECK_EQUAL(poly1.boundedLeadExp(1), BooleExponent().change(0));
+  BOOST_CHECK_EQUAL(poly2.boundedLeadExp(1), BooleExponent().change(0));
+
+  BOOST_CHECK_EQUAL(poly1.leadDeg(), 1);
+  BOOST_CHECK_EQUAL(poly2.leadDeg(), 1);
+
+  BOOST_CHECK(poly1.reducibleBy(poly_type(a+b)));
+
 #if 0
+  set_type leadDivisors() const { return leadFirst().firstDivisors(); };
+  hash_type leadStableHash() const;
+
+  /// Start of ordering respecting iterator
+  ordered_iterator orderedBegin() const; 
+
+  /// Finish of ordering respecting iterator
+  ordered_iterator orderedEnd() const;
+
+   /// Start of ordering respecting exponent iterator
+  ordered_exp_iterator orderedExpBegin() const; 
+
+  /// Finish of ordering respecting exponent iterator
+  ordered_exp_iterator orderedExpEnd() const;
+
+  /// @name Compile-time access to generic iterators
+  //@{
+  lex_iterator genericBegin(lex_tag) const;
+  lex_iterator genericEnd(lex_tag) const;
+  dlex_iterator genericBegin(dlex_tag) const;
+  dlex_iterator genericEnd(dlex_tag) const;
+  dp_asc_iterator genericBegin(dp_asc_tag) const;
+  dp_asc_iterator genericEnd(dp_asc_tag) const;
+  block_dlex_iterator genericBegin(block_dlex_tag) const;
+  block_dlex_iterator genericEnd(block_dlex_tag) const;
+  block_dp_asc_iterator genericBegin(block_dp_asc_tag) const;
+  block_dp_asc_iterator genericEnd(block_dp_asc_tag) const;
 
 
-/// Maximal degree of the polynomial
-  deg_type deg() const;
-
-  /// Total maximal degree of the polynomial
- /// Number of nodes in the decision diagram
-  size_type nNodes() const;
-
-  /// Number of variables of the polynomial
-  size_type nUsedVariables() const;
-
-  /// Set of variables of the polynomial
-  monom_type usedVariables() const;
-
-  /// Exponent vector of all of variables of the polynomial
-  exp_type usedVariablesExp() const;
-
-  /// Returns number of terms
-  size_type length() const;
-
-   deg_type totalDeg() const;
- /// Get list of all terms
-  void fetchTerms(termlist_type&) const;
-
-  /// Return of all terms
-  termlist_type terms() const;
-
-  hash_type hash() const { return m_dd.hash(); }
-  /// Read-only access to int
+  lex_exp_iterator genericExpBegin(lex_tag) const;
+  lex_exp_iterator genericExpEnd(lex_tag) const;
+  dlex_exp_iterator genericExpBegin(dlex_tag) const;
+  dlex_exp_iterator genericExpEnd(dlex_tag) const;
+  dp_asc_exp_iterator genericExpBegin(dp_asc_tag) const;
+  dp_asc_exp_iterator genericExpEnd(dp_asc_tag) const;
+  block_dlex_exp_iterator genericExpBegin(block_dlex_tag) const;
+  block_dlex_exp_iterator genericExpEnd(block_dlex_tag) const;
+  block_dp_asc_exp_iterator genericExpBegin(block_dp_asc_tag) const;
+  block_dp_asc_exp_iterator genericExpEnd(block_dp_asc_tag) const; 
+ size_type eliminationLength() const;
+  size_type eliminationLengthWithDegBound(deg_type garantied_deg_bound) const;
+  //@}
 #endif
 }
+
+
+BOOST_AUTO_TEST_SUITE_END()
