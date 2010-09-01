@@ -122,6 +122,10 @@ BOOST_FIXTURE_TEST_CASE( test_assigning_operators, F ) {
   output << (poly = (poly_type(x*y*z + x*z*w +v) %= BooleMonomial(x*z)));
   BOOST_CHECK_EQUAL(poly, v);
   BOOST_CHECK(output.is_equal("v"));
+
+  output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleMonomial(y*z)));
+  BOOST_CHECK_EQUAL(poly, x+v);
+  BOOST_CHECK(output.is_equal("x + v"));
 }
 
 
