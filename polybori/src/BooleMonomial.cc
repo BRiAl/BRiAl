@@ -120,7 +120,7 @@ BooleMonomial::reducibleBy(const var_type& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::reducibleBy(const var_type&) const" );
 
-  return m_poly.reducibleBy(rhs);
+  return m_poly.firstReducibleBy(rhs);
 }
 
 

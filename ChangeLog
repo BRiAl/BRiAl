@@ -4,7 +4,8 @@ Release Name: 0.7.0:
 * Simplified interface: remove *Assign() variants from diagrams
 * Added polybori.nf.simple_nf
 * Simplification of declare_ring in ipbori
-
+* Rename BoolePolynomials::reducibleBy -> BoolePolynomials::firstReducibleBy
+	
 Release Name: 0.6.5:
 * If boost/boost-python is not available we already stop at onfiguring
   (does not affect EXTERNAL_PYTHON_EXTENSION=True)	

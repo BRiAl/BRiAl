@@ -297,7 +297,7 @@ public:
   bool_type hasConstantPart() const { return m_dd.ownsOne(); }
 
   /// Tests whether polynomial can be reduced by right-hand side
-  bool_type reducibleBy(const self&) const;
+  bool_type firstReducibleBy(const self&) const;
 
   /// Get leading term
   monom_type lead() const;
@@ -582,9 +582,7 @@ operator<<(BoolePolynomial::ostream_type&, const BoolePolynomial&);
 
 // tests whether polynomial can be reduced by rhs
 inline BoolePolynomial::bool_type
-BoolePolynomial::reducibleBy(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial::reducibleBy(const self&) const" );
+BoolePolynomial::firstReducibleBy(const self& rhs) const {
 
   if( rhs.isOne() )
     return true;

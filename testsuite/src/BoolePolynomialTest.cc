@@ -28,6 +28,11 @@ using boost::test_tools::output_test_stream;
 #include "BooleMonomial.h"
 #include "PBoRiError.h"
 #include "LexOrder.h"
+#include "DegLexOrder.h"
+#include "DegRevLexAscOrder.h"
+#include "BlockDegLexOrder.h"
+#include "BlockDegRevLexAscOrder.h"
+
 #include "CExpIter.h"
 
 USING_NAMESPACE_PBORI
@@ -291,6 +296,12 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z).totalDeg(), 2);
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z*v*w ).totalDeg(), 3);
 
+  BOOST_CHECK(poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(x+y)));
+
+
+  BOOST_CHECK(!poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(v+w)));
+ 
+
   poly_type poly1(1), poly2(1);
   std::size_t len(1);
   BooleMonomial monom;
@@ -436,52 +447,386 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
   BOOST_CHECK_EQUAL(poly1.leadDeg(), 1);
   BOOST_CHECK_EQUAL(poly2.leadDeg(), 1);
 
-  BOOST_CHECK(poly1.reducibleBy(poly_type(a+b)));
+  output << poly_type(a*b*d*f + a*b + a + g).leadDivisors();
+  BOOST_CHECK(output.is_equal("{{a,b,d,f}, {a,b,d}, {a,b,f}, {a,b}, {a,d,f}, "
+                              "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
+                              "{d,f}, {d}, {f}, {}}"));
 
-#if 0
-  set_type leadDivisors() const { return leadFirst().firstDivisors(); };
-  hash_type leadStableHash() const;
+  BOOST_CHECK_EQUAL(poly_type(1).leadStableHash(), 4801919416);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
+  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
+                    11091674972829);
 
-  /// Start of ordering respecting iterator
-  ordered_iterator orderedBegin() const; 
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 173100285919);
+  // naturally lexicographicsl
 
-  /// Finish of ordering respecting iterator
-  ordered_iterator orderedEnd() const;
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.begin(), poly1.end(), 
+                                poly1.orderedBegin(), poly1.orderedEnd());
 
-   /// Start of ordering respecting exponent iterator
-  ordered_exp_iterator orderedExpBegin() const; 
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.begin(), poly2.end(), 
+                                poly2.orderedBegin(), poly2.orderedEnd());
 
-  /// Finish of ordering respecting exponent iterator
-  ordered_exp_iterator orderedExpEnd() const;
+  BooleMonomial terms1[] = {a, b, c*d*e, c*e*f, g*h};
+  BooleMonomial terms2[] = {a, b, c*d, e*f, g*h};
 
-  /// @name Compile-time access to generic iterators
-  //@{
-  lex_iterator genericBegin(lex_tag) const;
-  lex_iterator genericEnd(lex_tag) const;
-  dlex_iterator genericBegin(dlex_tag) const;
-  dlex_iterator genericEnd(dlex_tag) const;
-  dp_asc_iterator genericBegin(dp_asc_tag) const;
-  dp_asc_iterator genericEnd(dp_asc_tag) const;
-  block_dlex_iterator genericBegin(block_dlex_tag) const;
-  block_dlex_iterator genericEnd(block_dlex_tag) const;
-  block_dp_asc_iterator genericBegin(block_dp_asc_tag) const;
-  block_dp_asc_iterator genericEnd(block_dp_asc_tag) const;
+  BooleExponent exps1[] = {terms1[0].exp(), terms1[1].exp(), terms1[2].exp(),
+                           terms1[3].exp(), terms1[4].exp()};
+  BooleExponent exps2[] = {terms2[0].exp(), terms2[1].exp(), terms2[2].exp(),
+                           terms2[3].exp(), terms2[4].exp()};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedBegin(), poly1.orderedEnd(),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedBegin(), poly2.orderedEnd(),
+                                terms2, terms2 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedExpBegin(), poly1.orderedExpEnd(),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedExpBegin(), poly2.orderedExpEnd(),
+                                exps2, exps2 + 5);
 
 
-  lex_exp_iterator genericExpBegin(lex_tag) const;
-  lex_exp_iterator genericExpEnd(lex_tag) const;
-  dlex_exp_iterator genericExpBegin(dlex_tag) const;
-  dlex_exp_iterator genericExpEnd(dlex_tag) const;
-  dp_asc_exp_iterator genericExpBegin(dp_asc_tag) const;
-  dp_asc_exp_iterator genericExpEnd(dp_asc_tag) const;
-  block_dlex_exp_iterator genericExpBegin(block_dlex_tag) const;
-  block_dlex_exp_iterator genericExpEnd(block_dlex_tag) const;
-  block_dp_asc_exp_iterator genericExpBegin(block_dp_asc_tag) const;
-  block_dp_asc_exp_iterator genericExpEnd(block_dp_asc_tag) const; 
- size_type eliminationLength() const;
-  size_type eliminationLengthWithDegBound(deg_type garantied_deg_bound) const;
-  //@}
-#endif
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericBegin(lex_tag()), poly1.genericEnd(lex_tag()),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericBegin(lex_tag()), poly2.genericEnd(lex_tag()),
+                                terms2, terms2 + 5);
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericExpBegin(lex_tag()), poly1.genericExpEnd(lex_tag()),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(lex_tag()), poly2.genericExpEnd(lex_tag()),
+                                exps2, exps2 + 5);
+
+  BOOST_CHECK_EQUAL(poly1.eliminationLength(), 10);
+  BOOST_CHECK_EQUAL(poly2.eliminationLength(), 8);
+  BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 10);
+  BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 8);
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
+
+  BOOST_CHECK_THROW(poly_type().lead(), PBoRiError);
+  BOOST_CHECK_THROW(poly_type(0).lead(), PBoRiError);
+
+  BOOST_CHECK_EQUAL(poly1.lead(), c*d*e);
+  BOOST_CHECK_EQUAL(poly2.lead(), c*d);
+
+  BOOST_CHECK_EQUAL(poly1.leadExp(), (c*d*e).exp());
+  BOOST_CHECK_EQUAL(poly2.leadExp(), (c*d).exp());
+
+  BOOST_CHECK_EQUAL(poly1.boundedLead(3), c*d*e);
+  BOOST_CHECK_EQUAL(poly2.boundedLead(3), c*d);
+
+  BOOST_CHECK_EQUAL(poly1.boundedLeadExp(3), (c*d*e).exp());
+  BOOST_CHECK_EQUAL(poly2.boundedLeadExp(3), (c*d).exp());
+
+
+  BOOST_CHECK_EQUAL(poly1.leadDeg(), 3);
+  BOOST_CHECK_EQUAL(poly2.leadDeg(), 2);
+
+  output << poly_type(a*b*d*f + a*b + a + g).leadDivisors();
+  BOOST_CHECK(output.is_equal("{{a,b,d,f}, {a,b,d}, {a,b,f}, {a,b}, {a,d,f}, "
+                              "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
+                              "{d,f}, {d}, {f}, {}}"));
+
+  BOOST_CHECK_EQUAL(poly_type(1).leadStableHash(), 4801919416);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
+  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
+                    11091674972829);
+
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244161997016);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(),11091674972829); 
+
+
+  BooleMonomial terms1[] = {c*d*e, c*e*f, g*h, a, b};
+  BooleMonomial terms2[] = {c*d, e*f, g*h, a, b};
+
+  BooleExponent exps1[] = {terms1[0].exp(), terms1[1].exp(), terms1[2].exp(),
+                           terms1[3].exp(), terms1[4].exp()};
+  BooleExponent exps2[] = {terms2[0].exp(), terms2[1].exp(), terms2[2].exp(),
+                           terms2[3].exp(), terms2[4].exp()};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedBegin(), poly1.orderedEnd(),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedBegin(), poly2.orderedEnd(),
+                                terms2, terms2 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedExpBegin(), poly1.orderedExpEnd(),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedExpBegin(), poly2.orderedExpEnd(),
+                                exps2, exps2 + 5);
+
+
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericBegin(dlex_tag()), poly1.genericEnd(dlex_tag()),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericBegin(dlex_tag()), poly2.genericEnd(dlex_tag()),
+                                terms2, terms2 + 5);
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericExpBegin(dlex_tag()), poly1.genericExpEnd(dlex_tag()),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(dlex_tag()), poly2.genericExpEnd(dlex_tag()),
+                                exps2, exps2 + 5);
+
+  BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>) {
+
+  BOOST_CHECK_THROW(poly_type().lead(), PBoRiError);
+  BOOST_CHECK_THROW(poly_type(0).lead(), PBoRiError);
+
+  BOOST_CHECK_EQUAL(poly1.lead(), c*e*f);
+  BOOST_CHECK_EQUAL(poly2.lead(), g*h);
+
+  BOOST_CHECK_EQUAL(poly1.leadExp(), poly1.lead().exp());
+  BOOST_CHECK_EQUAL(poly2.leadExp(), poly2.lead().exp());
+
+  BOOST_CHECK_EQUAL(poly1.boundedLead(3), poly1.lead());
+  BOOST_CHECK_EQUAL(poly2.boundedLead(2), poly2.lead());
+
+  BOOST_CHECK_EQUAL(poly1.boundedLeadExp(3), poly1.boundedLead(3).exp());
+  BOOST_CHECK_EQUAL(poly2.boundedLeadExp(2), poly2.boundedLead(2).exp());
+
+  BOOST_CHECK_EQUAL(poly1.leadDeg(), 3);
+  BOOST_CHECK_EQUAL(poly2.leadDeg(), 2);
+
+
+  output << poly_type(a*b*d*f + a*b + a + g).leadDivisors();
+  BOOST_CHECK(output.is_equal("{{a,b,d,f}, {a,b,d}, {a,b,f}, {a,b}, {a,d,f}, "
+                              "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
+                              "{d,f}, {d}, {f}, {}}"));
+
+  BOOST_CHECK_EQUAL(poly_type(1).leadStableHash(), 4801919416);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
+  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
+                    11091674972829);
+
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244162000938);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 11091674956572);
+
+
+  BooleMonomial terms1[] = {c*e*f, c*d*e, g*h, b, a};
+  BooleMonomial terms2[] = {g*h, e*f, c*d, b, a};
+
+  BooleExponent exps1[] = {terms1[0].exp(), terms1[1].exp(), terms1[2].exp(),
+                           terms1[3].exp(), terms1[4].exp()};
+  BooleExponent exps2[] = {terms2[0].exp(), terms2[1].exp(), terms2[2].exp(),
+                           terms2[3].exp(), terms2[4].exp()};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedBegin(), poly1.orderedEnd(),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedBegin(), poly2.orderedEnd(),
+                                terms2, terms2 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedExpBegin(), poly1.orderedExpEnd(),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedExpBegin(), poly2.orderedExpEnd(),
+                                exps2, exps2 + 5);
+
+
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericBegin(dp_asc_tag()), poly1.genericEnd(dp_asc_tag()),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericBegin(dp_asc_tag()), poly2.genericEnd(dp_asc_tag()),
+                                terms2, terms2 + 5);
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericExpBegin(dp_asc_tag()), poly1.genericExpEnd(dp_asc_tag()),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(dp_asc_tag()), poly2.genericExpEnd(dp_asc_tag()),
+                                exps2, exps2 + 5);
+
+  BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::block_dlex>) {
+
+
+  ring.ordering().appendBlock(3);
+  BOOST_CHECK_THROW(poly_type().lead(), PBoRiError);
+  BOOST_CHECK_THROW(poly_type(0).lead(), PBoRiError);
+
+  BOOST_CHECK_EQUAL(poly1.lead(), a);
+  BOOST_CHECK_EQUAL(poly2.lead(), a);
+
+  BOOST_CHECK_EQUAL(poly1.leadExp(), BooleExponent().change(0));
+  BOOST_CHECK_EQUAL(poly2.leadExp(), BooleExponent().change(0));
+
+  BOOST_CHECK_EQUAL(poly1.boundedLead(3), a);
+  BOOST_CHECK_EQUAL(poly2.boundedLead(3), a);
+
+  BOOST_CHECK_EQUAL(poly1.boundedLeadExp(3), BooleExponent().change(0));
+  BOOST_CHECK_EQUAL(poly2.boundedLeadExp(3), BooleExponent().change(0));
+
+
+  BOOST_CHECK_EQUAL(poly1.leadDeg(), 1);
+  BOOST_CHECK_EQUAL(poly2.leadDeg(), 1);
+
+  output << poly_type(a*b*d*f + a*b + a + g).leadDivisors();
+  BOOST_CHECK(output.is_equal("{{a,b,d,f}, {a,b,d}, {a,b,f}, {a,b}, {a,d,f}, "
+                              "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
+                              "{d,f}, {d}, {f}, {}}"));
+
+  BOOST_CHECK_EQUAL(poly_type(1).leadStableHash(), 4801919416);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
+  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
+                    11091674972829);
+
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 173100285919); 
+
+
+  BooleMonomial terms1[] = {a, b, c*d*e, c*e*f, g*h};
+  BooleMonomial terms2[] = {a, b, c*d, e*f, g*h};
+
+  BooleExponent exps1[] = {terms1[0].exp(), terms1[1].exp(), terms1[2].exp(),
+                           terms1[3].exp(), terms1[4].exp()};
+  BooleExponent exps2[] = {terms2[0].exp(), terms2[1].exp(), terms2[2].exp(),
+                           terms2[3].exp(), terms2[4].exp()};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedBegin(), poly1.orderedEnd(),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedBegin(), poly2.orderedEnd(),
+                                terms2, terms2 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedExpBegin(), poly1.orderedExpEnd(),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedExpBegin(), poly2.orderedExpEnd(),
+                                exps2, exps2 + 5);
+
+
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericBegin(block_dlex_tag()), poly1.genericEnd(block_dlex_tag()),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericBegin(block_dlex_tag()), poly2.genericEnd(block_dlex_tag()),
+                                terms2, terms2 + 5);
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericExpBegin(block_dlex_tag()), poly1.genericExpEnd(block_dlex_tag()),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(block_dlex_tag()), poly2.genericExpEnd(block_dlex_tag()),
+                                exps2, exps2 + 5);
+
+  BOOST_CHECK_EQUAL(poly1.eliminationLength(), 10);
+  BOOST_CHECK_EQUAL(poly2.eliminationLength(), 8);
+  BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 10);
+  BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 8);
+
+}
+
+BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::block_dp_asc>) {
+
+  ring.ordering().appendBlock(3);
+
+  BOOST_CHECK_THROW(poly_type().lead(), PBoRiError);
+  BOOST_CHECK_THROW(poly_type(0).lead(), PBoRiError);
+
+  BOOST_CHECK_EQUAL(poly1.lead(), c*e*f);
+  BOOST_CHECK_EQUAL(poly2.lead(), c*d);
+
+  BOOST_CHECK_EQUAL(poly1.leadExp(), poly1.lead().exp());
+  BOOST_CHECK_EQUAL(poly2.leadExp(), poly2.lead().exp());
+
+  BOOST_CHECK_EQUAL(poly1.boundedLead(3), poly1.lead());
+  BOOST_CHECK_EQUAL(poly2.boundedLead(2), poly2.lead());
+
+  BOOST_CHECK_EQUAL(poly1.boundedLeadExp(3), poly1.boundedLead(3).exp());
+  BOOST_CHECK_EQUAL(poly2.boundedLeadExp(2), poly2.boundedLead(2).exp());
+
+  BOOST_CHECK_EQUAL(poly1.leadDeg(), 3);
+  BOOST_CHECK_EQUAL(poly2.leadDeg(), 2);
+
+  output << poly_type(a*b*d*f + a*b + a + g).leadDivisors();
+  BOOST_CHECK(output.is_equal("{{a,b,d,f}, {a,b,d}, {a,b,f}, {a,b}, {a,d,f}, "
+                              "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
+                              "{d,f}, {d}, {f}, {}}"));
+
+  BOOST_CHECK_EQUAL(poly_type(1).leadStableHash(), 4801919416);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
+  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
+  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
+                    11091674972829);
+
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244162000938);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 11091674972829);
+
+
+  BooleMonomial terms1[] = {c*e*f, c*d*e, b, a, g*h};
+  BooleMonomial terms2[] = {c*d, b, a, g*h, e*f};
+
+  BooleExponent exps1[] = {terms1[0].exp(), terms1[1].exp(), terms1[2].exp(),
+                           terms1[3].exp(), terms1[4].exp()};
+  BooleExponent exps2[] = {terms2[0].exp(), terms2[1].exp(), terms2[2].exp(),
+                           terms2[3].exp(), terms2[4].exp()};
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedBegin(), poly1.orderedEnd(),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedBegin(), poly2.orderedEnd(),
+                                terms2, terms2 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.orderedExpBegin(), poly1.orderedExpEnd(),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.orderedExpBegin(), poly2.orderedExpEnd(),
+                                exps2, exps2 + 5);
+
+
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericBegin(block_dp_asc_tag()), poly1.genericEnd(block_dp_asc_tag()),
+                                terms1, terms1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericBegin(block_dp_asc_tag()), poly2.genericEnd(block_dp_asc_tag()),
+                                terms2, terms2 + 5);
+
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly1.genericExpBegin(block_dp_asc_tag()), poly1.genericExpEnd(block_dp_asc_tag()),
+                                exps1, exps1 + 5);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(block_dp_asc_tag()), poly2.genericExpEnd(block_dp_asc_tag()),
+                                exps2, exps2 + 5);
+
+  BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
+  BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
+  BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
+
 }
 
 

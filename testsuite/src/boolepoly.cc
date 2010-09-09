@@ -326,17 +326,17 @@ main(){
     std::cout <<"Divisors of the leading monomial of  (x*z + y): "<<std::endl;
     std::cout <<   (x*z + y).leadDivisors()  <<std::endl;
 
-    std::cout <<  "(x*z + y).reducibleBy(z): ";
-    std::cout <<  (x*z + y).reducibleBy(z)  <<std::endl;
+    std::cout <<  "(x*z + y).firstReducibleBy(z): ";
+    std::cout <<  (x*z + y).firstReducibleBy(z)  <<std::endl;
 
-    std::cout <<  "(x*z*y + y).reducibleBy(y*z): ";
-    std::cout <<   (x*z*y + y).reducibleBy(y*z)  <<std::endl;
+    std::cout <<  "(x*z*y + y).firstReducibleBy(y*z): ";
+    std::cout <<   (x*z*y + y).firstReducibleBy(y*z)  <<std::endl;
 
-    std::cout <<  "(x*z*y + y).reducibleBy(w): ";
-    std::cout <<   (x*z*y + y).reducibleBy(w)  <<std::endl;
+    std::cout <<  "(x*z*y + y).firstReducibleBy(w): ";
+    std::cout <<   (x*z*y + y).firstReducibleBy(w)  <<std::endl;
 
-    std::cout <<  "(x*y + y).reducibleBy(z+w): ";
-    std::cout <<   (x*y + y).reducibleBy(z+w)  <<std::endl;
+    std::cout <<  "(x*y + y).firstReducibleBy(z+w): ";
+    std::cout <<   (x*y + y).firstReducibleBy(z+w)  <<std::endl;
 
     std::cout <<  "Multiplication tests: "<<std::endl;
     std::cout << ( ((x*y + x)*y) == 0) <<std::endl;

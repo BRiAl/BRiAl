@@ -143,7 +143,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("lead", &BoolePolynomial::lead, "Leading term with respect to current ordering")
   .def("lex_lead", &BoolePolynomial::lexLead, "Lexicographical leading term")
 
-  .def("reducible_by", &BoolePolynomial::reducibleBy)
+  .def("first_reducible_by", &BoolePolynomial::firstReducibleBy)
 
   .def("lead_deg", &BoolePolynomial::leadDeg, "Degree of the leading term")
   .def("lex_lead_deg", &BoolePolynomial::lexLeadDeg, 

@@ -197,7 +197,7 @@ public:
 
   /// Test for reducibility
   bool_type reducibleBy(const self& rhs) const { 
-    return m_poly.reducibleBy(rhs); }
+    return m_poly.firstReducibleBy(rhs); }
   bool_type reducibleBy(const var_type& rhs) const;
 
   /// Compare with rhs monomial and return comparision code

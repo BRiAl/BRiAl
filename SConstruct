@@ -121,7 +121,6 @@ def sonameprefix(env):
         return "-Wl,-dylib_install_name -Wl,"
 
     elif (env['PLATFORM'] == "sunos") and (linker == 'sunos'):
-        print "Sun linker detected!"
         return '-Wl,-h'
 
     else:
