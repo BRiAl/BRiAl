@@ -623,10 +623,12 @@ for t in ['booleenv_test']:
 
 
 
-for file in Split("BoolePolynomial"):
-    env.Program(TestsPath("unittests"),
-                [TestsPath('src', file + "Test.cc"),  libpb, gb] + libCudd, 
-                CPPPATH=CPPPATH, LIBS = env['LIBS'])
+unittestfiles = [TestsPath('src', file + "Test.cc") for file in
+                 Split("BoolePolynomial ")]
+
+env.Program(TestsPath("unittests"),
+            [unittestfiles,  libpb, gb] + libCudd, 
+            CPPPATH=CPPPATH, LIBS = env['LIBS'])
 
 
 LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
