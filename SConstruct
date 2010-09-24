@@ -622,12 +622,14 @@ for t in ['booleenv_test']:
                 CPPPATH=CPPPATH)
 
 
+testfiles = [TestsPath('src', file + "Test.cc") for file in
+             Split("BoolePolynomial  ")] + [TestsPath('src', "unittests.cc")]
 
-for file in Split("BoolePolynomial "):
-    env.Program(TestsPath(file + 'Test'),
-                [TestsPath('src', file + "Test.cc"),  libpb, gb] + libCudd, 
-                CPPPATH=CPPPATH, LIBS = env['LIBS'])
-
+env.Program(TestsPath("unittests"),
+            testfiles + [libpb, gb] + libCudd, 
+            CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
+            CPPDEFINES = env['CPPDEFINES'] +
+            ["BOOST_TEST_DYN_LINK"] )
 
 LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
 

@@ -13,8 +13,7 @@
 **/
 //*****************************************************************************
 
-#define BOOST_TEST_MODULE BoolePolynomialTest
-#include <boost/test/included/unit_test.hpp>
+#include <boost/test/unit_test.hpp>
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
@@ -37,9 +36,10 @@ using boost::test_tools::output_test_stream;
 
 USING_NAMESPACE_PBORI
 
-struct F {
+
+struct Fpoly {
   typedef BoolePolynomial poly_type;
-  F():
+  Fpoly():
     ring(100, BoolePolyRing::lp, true), 
     bset(), 
     bexp(BooleExponent().change(1)) {
@@ -59,7 +59,7 @@ struct F {
 
   }
 
-  ~F()  { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+  ~Fpoly()  { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 
   BoolePolyRing ring;
   BooleSet bset;
@@ -68,7 +68,8 @@ struct F {
   output_test_stream output;
 };
 
-BOOST_FIXTURE_TEST_SUITE(BoolePolynomialTestSuite, F )
+
+BOOST_FIXTURE_TEST_SUITE(BoolePolynomialTestSuite, Fpoly )
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
 
