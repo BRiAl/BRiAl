@@ -107,16 +107,288 @@ BOOST_AUTO_TEST_CASE(test_logical_operators) {
 BOOST_AUTO_TEST_CASE(test_LCM) {
 
   output_test_stream output;
+  monom_type monom1;
+  monom_type monom2;
 
-  output << LCM(monom_type(x*x*y),monom_type(z*v*w));
+  BOOST_TEST_MESSAGE( "LCM of two monomials" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << LCM(monom1, monom2);
   BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << LCM(monom1, monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << LCM(monom1, monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << LCM(monom1, monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << LCM(monom1, monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  BOOST_TEST_MESSAGE( "LCM as method of one monomial" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << monom1.LCM(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCM(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << monom1.LCM(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCM(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << monom1.LCM(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  BOOST_TEST_MESSAGE( "LCM as method of one monomial with assignment" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << monom1.LCMAssign(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCMAssign(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << monom1.LCMAssign(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCMAssign(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << monom1.LCMAssign(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  BOOST_TEST_MESSAGE( "LCM degree as method of one monomial" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("5"));
+  BOOST_CHECK(monom1 == monom_type(x*y));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("5"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("5"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("5"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("0"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type(x);
+  monom2 = monom_type(x);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type(x));
+  BOOST_CHECK(monom2 == monom_type(x));
+
+  monom1 = monom_type(x);
+  monom2 = monom_type(y);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("2"));
+  BOOST_CHECK(monom1 == monom_type(x));
+  BOOST_CHECK(monom2 == monom_type(y));
 }
 
 BOOST_AUTO_TEST_CASE(test_GCD) {
   output_test_stream output;
+  monom_type monom1;
+  monom_type monom2;
 
-  output << GCD(monom_type(x*x*y),monom_type(z*v*w));
+  BOOST_TEST_MESSAGE( "GCD of two monomials" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << GCD(monom1, monom2);
   BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type(x*y));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << GCD(monom1, monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << GCD(monom1, monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << GCD(monom1, monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << GCD(monom1, monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  BOOST_TEST_MESSAGE( "GCD as method of one monomial" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << monom1.GCD(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type(x*y));
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.GCD(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << monom1.GCD(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.GCD(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << monom1.GCD(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  BOOST_TEST_MESSAGE( "GCD as method of one monomial with assignment" );
+
+  monom1 = monom_type(x*x*y);
+  monom2 = monom_type(z*v*w);
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  BOOST_CHECK(monom1 == monom_type(x*y*z*v*w));
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type(x*y*z*v*w);
+  monom2 = monom_type();
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
+  monom1 = monom_type();
+  monom2 = monom_type(x*y*z*v*w);
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type(x*y*z*v*w));
+
+  monom1 = monom_type();
+  monom2 = monom_type();
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("1"));
+  BOOST_CHECK(monom1 == monom_type());
+  BOOST_CHECK(monom2 == monom_type());
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

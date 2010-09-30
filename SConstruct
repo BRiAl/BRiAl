@@ -623,7 +623,7 @@ for t in ['booleenv_test']:
 
 
 testfiles = [TestsPath('src', file + "Test.cc") for file in
-             Split("BoolePolynomial  ")] + [TestsPath('src', "unittests.cc")]
+             Split("BooleMonomial ")] + [TestsPath('src', "unittests.cc")]
 
 env.Program(TestsPath("unittests"),
             testfiles + [libpb, gb] + libCudd, 

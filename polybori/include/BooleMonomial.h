@@ -206,10 +206,10 @@ public:
   /// Degree of the least common multiple
   deg_type LCMDeg(const self&) const;
 
-  /// Compute theleast common multiple and assign
+  /// Compute the least common multiple and assign
   self& LCMAssign(const self&);
 
-  /// Compute the greatest common divisor
+  /// Compute the least common multiple
   self LCM(const self&) const;
 
   /// Compute the greatest common divisor and assign
