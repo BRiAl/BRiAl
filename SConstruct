@@ -621,9 +621,9 @@ for t in ['booleenv_test']:
                 [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
                 CPPPATH=CPPPATH)
 
-
+testclasses = Split("BoolePolynomial BooleMonomial")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
-             Split("BooleMonomial ")] + [TestsPath('src', "unittests.cc")]
+             testclasses] + [TestsPath('src', "unittests.cc")]
 
 env.Program(TestsPath("unittests"),
             testfiles + [libpb, gb] + libCudd, 
