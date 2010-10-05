@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK_EQUAL(var_type(1).index(), 1);
   BOOST_CHECK_EQUAL(var_type(z).index(), 2);
   BOOST_CHECK_EQUAL(z.index(), 2);
-  //BOOST_CHECK_EQUAL(var_type(3).index(), 3);
+  //BOOST_CHECK_EQUAL(var_type(3).index(), 3); // GIVES pointer
   BOOST_TEST_MESSAGE( "ring" );
   BOOST_CHECK_EQUAL(x.ring().nVariables(), ring.nVariables());
   BOOST_CHECK_EQUAL(x.ring().getVariableName(0), ring.getVariableName(0));
