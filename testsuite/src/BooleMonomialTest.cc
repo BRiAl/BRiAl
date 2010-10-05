@@ -21,6 +21,7 @@ using boost::test_tools::output_test_stream;
 #include "pbori_defs.h"
 #include "BooleExponent.h"
 #include "BooleMonomial.h"
+#include "BoolePolynomial.h"
 #include "BoolePolyRing.h"
 #include "BooleEnv.h"
 
