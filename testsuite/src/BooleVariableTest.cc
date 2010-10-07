@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK_EQUAL(var_type(1).index(), 1);
   BOOST_CHECK_EQUAL(var_type(z).index(), 2);
   BOOST_CHECK_EQUAL(z.index(), 2);
-  //BOOST_CHECK_EQUAL(var_type(3).index(), 3); // GIVES pointer
+  //BOOST_CHECK_EQUAL(var_type(3).index(), 3); // GIVES value in unassigned memory
   BOOST_TEST_MESSAGE( "ring" );
   BOOST_CHECK_EQUAL(x.ring().nVariables(), ring.nVariables());
   BOOST_CHECK_EQUAL(x.ring().getVariableName(0), ring.getVariableName(0));
@@ -100,9 +100,9 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BoolePolynomial(x*y) / x, BoolePolynomial(y));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / y, BoolePolynomial(0));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / x, BoolePolynomial(1));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1));
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1)); // Does not FIND correct operator
   BOOST_CHECK_EQUAL(BooleMonomial(x*y)/y, BooleMonomial(x));
   BOOST_CHECK_EQUAL(BooleMonomial(x)/x, BooleMonomial());
   BOOST_CHECK_THROW(BooleMonomial(x)/y, PBoRiError);
@@ -131,18 +131,18 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BoolePolynomial(0)*x, BoolePolynomial(0));
   BOOST_CHECK_EQUAL(BoolePolynomial(1)*x, BoolePolynomial(x));
   BOOST_CHECK_EQUAL(BoolePolynomial(x)*y, BoolePolynomial(x*y));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x)*=x), BoolePolynomial(x*x));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(0)*=x), BoolePolynomial(0));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(1)*=x), BoolePolynomial(x));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x)*=y), BoolePolynomial(x*y));
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x)*=x), BoolePolynomial(x*x)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(0)*=x), BoolePolynomial(0)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(1)*=x), BoolePolynomial(x)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x)*=y), BoolePolynomial(x*y)); // Does not FIND correct operator
 
   BOOST_TEST_MESSAGE( "%" );
   BOOST_CHECK_EQUAL(BoolePolynomial(x)%y, BoolePolynomial(x));
   BOOST_CHECK_EQUAL(BoolePolynomial(x*y)%y, BoolePolynomial());
   BOOST_CHECK_EQUAL(BoolePolynomial()%y, BoolePolynomial());
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x)%=y), BoolePolynomial(x));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y)%=y), BoolePolynomial());
-  //BOOST_CHECK_EQUAL((BoolePolynomial()%=y), BoolePolynomial());
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x)%=y), BoolePolynomial(x)); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y)%=y), BoolePolynomial()); // Does not FIND correct operator
+  //BOOST_CHECK_EQUAL((BoolePolynomial()%=y), BoolePolynomial()); // Does not FIND correct operator
   BOOST_CHECK_EQUAL(BooleMonomial(x)%y, BooleMonomial(x));
   BOOST_CHECK_EQUAL(BooleMonomial(x*y)%y, BoolePolynomial());
   BOOST_CHECK_EQUAL(BooleMonomial()%y, BooleMonomial());
