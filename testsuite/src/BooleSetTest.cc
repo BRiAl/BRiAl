@@ -21,6 +21,7 @@ using boost::test_tools::output_test_stream;
 #include "BooleVariable.h"
 #include "BooleMonomial.h"
 #include "BoolePolynomial.h"
+#include "BooleExponent.h"
 #include "BoolePolyRing.h"
 
 USING_NAMESPACE_PBORI
@@ -40,12 +41,14 @@ struct Fset {
       ring.setVariableName(2, "z");
       ring.setVariableName(3, "v");
       ring.setVariableName(4, "w");
+      poly = x*y*z + v*z - x*v + y;
     }
 
     ~Fset() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 
     BoolePolyRing ring;
     BooleVariable x, y, z, v, w;
+    BoolePolynomial poly;
 };
 
 BOOST_FIXTURE_TEST_SUITE(BooleSetTestSuite, Fset )
@@ -60,20 +63,66 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   set_type set3 = set_type(0,set,set2);
   output << set3;
   BOOST_CHECK(output.is_equal("{}"));
-  BoolePolynomial poly = x*y*z + v*z*w + x;
   set = poly.set();
   output << set;
-  BOOST_CHECK(output.is_equal("{{x,y,z}, {x}, {z,v,w}}"));
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
 }
 
 BOOST_AUTO_TEST_CASE(test_accessors) {
 
-  
+  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" );
+  output_test_stream output;
+  set_type set = poly.set();
+  BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
+  set_type empty;
+  BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());
+  BooleExponent exp = set.usedVariablesExp();
+  output << exp;
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
+  exp = empty.usedVariablesExp();
+  output << exp;
+  BOOST_CHECK(output.is_equal("()"));
+
+  BOOST_TEST_MESSAGE( "lastLexicographicalTerm" );
+  BOOST_CHECK_EQUAL(set.lastLexicographicalTerm(), BooleMonomial(v*z));
+  //BOOST_CHECK_EQUAL(empty.lastLexicographicalTerm(), BooleMonomial());//memory access violation at address 0x00000000
+
+  BOOST_TEST_MESSAGE( "minimalElements" );
+  set_type set2 = set.minimalElements();
+  output << set2;
+  BOOST_CHECK(output.is_equal("{{x,v}, {y}, {z,v}}"));
+  set2 = empty.minimalElements();
+  output << set2;
+  BOOST_CHECK(output.is_equal("{}"));
+
+  BOOST_TEST_MESSAGE( "hasTermOfVariables" );
+  BOOST_CHECK(set.hasTermOfVariables(x*v));
+  BOOST_CHECK(set.hasTermOfVariables(x*y*z));
+  BOOST_CHECK(set.hasTermOfVariables(x*z*y));
+  BOOST_CHECK(set.hasTermOfVariables(y));
+  BOOST_CHECK(set.hasTermOfVariables(z*v));
+  BOOST_CHECK(!set.hasTermOfVariables(x));
+  BOOST_CHECK(!set.hasTermOfVariables(z));
+  BOOST_CHECK(!set.hasTermOfVariables(v));
+  BOOST_CHECK(!set.hasTermOfVariables(w));
+  BOOST_CHECK(set.hasTermOfVariables(x*y));
+  BOOST_CHECK(set.hasTermOfVariables(y*x));
+  BOOST_CHECK(set.hasTermOfVariables(y*z));
+  BOOST_CHECK(set.hasTermOfVariables(z*y));
+}
+
+BOOST_AUTO_TEST_CASE(test_properties) {
+
+  BOOST_TEST_MESSAGE( "isSingleton, isSingletonOrPair, isPair" );
+
+  set_type set = poly.set();
+  BOOST_CHECK(!set.isSingleton());
+  BOOST_CHECK(!set.isSingletonOrPair());
+  BOOST_CHECK(!set.isPair());
 }
 
 BOOST_AUTO_TEST_CASE(test_add_own) {
 
-  BoolePolynomial poly = x*y*z + v*z - x*v + y;
   set_type set = poly.set();
   BOOST_CHECK(set.owns(x*y*z));
   BOOST_CHECK(set.owns(v*z));
@@ -97,6 +146,14 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!addedset.owns(v));
   BOOST_CHECK(!addedset.owns(w));
   BOOST_CHECK(addedset.owns(x*v*z));
+
+  BOOST_CHECK(!set.ownsOne());
+  addedset = set.add(BooleMonomial());
+  BOOST_CHECK(addedset.ownsOne());
+  set_type empty;
+  BOOST_CHECK(!empty.ownsOne());
+  addedset = empty.add(BooleMonomial());
+  BOOST_CHECK(addedset.ownsOne());
 }
 
 BOOST_AUTO_TEST_CASE(test_division) {
@@ -104,7 +161,6 @@ BOOST_AUTO_TEST_CASE(test_division) {
   BOOST_TEST_MESSAGE( "divisors" );
 
   output_test_stream output;
-  BoolePolynomial poly = x*y*z + v*z - x*v + y;
   set_type set = poly.set();
   set_type result = set.divisorsOf(x);
   output << result;
