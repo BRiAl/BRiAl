@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("{}"));
   set = set.add(x);
   set_type set2;
-  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiError);
+  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiError);// Should be specifically PBoRiGenericError, somehow not found here
   set_type set1;
   set1 = set1.add(y);
   set_type set3 = set_type(0,set1,set2);
@@ -161,7 +161,43 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(empty.countIndexDouble(5),0);
 
   BOOST_TEST_MESSAGE( "containsDivisorsOfDecDeg" );
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(x*v));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(x*y*z));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(x*z*y));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(y));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(z*v));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(x));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(z));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(v));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(w));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(x*y));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*x));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*z));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(z*y));
+  BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleMonomial()));
+
+  set_type set1;
+  set1 = set1.add(x*y*z);
+  set1 = set1.add(x*y);
+  set1 = set1.add(x*z);
+  set1 = set1.add(y*z);
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(x*y*z));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x*y));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(y*z));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x*z));
+  set1 = set1.add(x);
+  set1 = set1.add(y);
+  set1 = set1.add(z);
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(x*y));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(y*z));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(x*z));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(y));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(z));
+  set1 = set1.add(BooleMonomial());
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(x));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(y));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(z));
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
