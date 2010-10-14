@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("{}"));
   set = set.add(x);
   set_type set2;
-  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiError);// Should be specifically PBoRiGenericError, somehow not found here
+  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiGenericError<CTypes::invalid_ite>);
   set_type set1;
   set1 = set1.add(y);
   set_type set3 = set_type(0,set1,set2);
@@ -73,11 +73,12 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
 BOOST_AUTO_TEST_CASE(test_variables) {
 
-  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" );
   output_test_stream output;
   set_type set = poly.set();
-  BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
   set_type empty;
+
+  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" );
+  BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
   BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());
   BooleExponent exp = set.usedVariablesExp();
   output << exp;
@@ -89,6 +90,10 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_TEST_MESSAGE( "lastLexicographicalTerm" );
   BOOST_CHECK_EQUAL(set.lastLexicographicalTerm(), BooleMonomial(v*z));
   //BOOST_CHECK_EQUAL(empty.lastLexicographicalTerm(), BooleMonomial());//memory access violation at address 0x00000000
+  set_type simple = empty.add(BooleMonomial());
+  //BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial());//still same error as above
+  simple = empty.add(x);
+  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), x);
 
   BOOST_TEST_MESSAGE( "minimalElements" );
   set_type set2 = set.minimalElements();
@@ -97,6 +102,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   set2 = empty.minimalElements();
   output << set2;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(set2,empty);
 
   BOOST_TEST_MESSAGE( "hasTermOfVariables" );
   BOOST_CHECK(set.hasTermOfVariables(x*v));
@@ -112,6 +118,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set.hasTermOfVariables(y*x));
   BOOST_CHECK(set.hasTermOfVariables(y*z));
   BOOST_CHECK(set.hasTermOfVariables(z*y));
+  BOOST_CHECK(!set.hasTermOfVariables(BooleMonomial()));
+  BOOST_CHECK(!empty.hasTermOfVariables(y));
+  BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial()));
 
   BOOST_TEST_MESSAGE( "contains" );
   BOOST_CHECK(!set.contains(empty));
@@ -119,8 +128,8 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(empty.contains(empty));
   set2 = empty.add(x*y*z);
   
-  std::cout << set<<" "<<set.ring().hash() <<std::endl;
-  std::cout << set2<<" "<<set2.ring().hash() <<std::endl;
+  //std::cout << set<<" "<<set.ring().hash() <<std::endl;
+  //std::cout << set2<<" "<<set2.ring().hash() <<std::endl;
   
   //BOOST_CHECK(set.contains(set2)); // memory access violation at address: 0x00000004: no mapping at fault address
 
@@ -128,9 +137,11 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   set_type emptyEl = empty.emptyElement();
   output << emptyEl;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(emptyEl, empty);
   emptyEl = set.emptyElement();
   output << emptyEl;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(emptyEl, empty);
 
   BOOST_TEST_MESSAGE( "countIndex" );
   BOOST_CHECK_EQUAL(set.countIndex(0),2);
@@ -175,6 +186,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*z));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(z*y));
   BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x*y*z));
+  BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleMonomial()));
 
   set_type set1;
   set1 = set1.add(x*y*z);
@@ -198,6 +212,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(y));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(z));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleMonomial()));
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
@@ -382,6 +397,36 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
   BOOST_TEST_MESSAGE( "sizeDouble" );
   BOOST_CHECK_EQUAL(set.sizeDouble(),6);
   BOOST_CHECK_EQUAL(empty.sizeDouble(),0);
+}
+
+BOOST_AUTO_TEST_CASE(test_compute) {
+
+  set_type set = poly.set();
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "multiplesOf" );
+  output << set.multiplesOf(x);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}}"));
+  output << set.multiplesOf(y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {y}}"));
+  output << set.multiplesOf(z);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {z,v}}"));
+  output << set.multiplesOf(v);
+  BOOST_CHECK(output.is_equal("{{x,v}, {z,v}}"));
+  output << set.multiplesOf(x*y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(x*y*z);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(x*y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(z*v);
+  BOOST_CHECK(output.is_equal("{{z,v}}"));
+  output << set.multiplesOf(y*v);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << set.multiplesOf(w);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << set.multiplesOf(BooleMonomial());
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
