@@ -77,9 +77,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   set_type set = poly.set();
   set_type empty;
 
-  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" );
+  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" ); // BooleMonomial is used as a BooleVariable set here
   BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
-  BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());// Inconsistency of returning empty BooleMonomial()?
+  BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());
   set_type added_set = set.add(BooleMonomial());
   BOOST_CHECK_EQUAL(added_set.usedVariables(),x*y*z*v);
   BooleExponent exp = set.usedVariablesExp();
@@ -106,10 +106,11 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(output.is_equal("{}"));
   BOOST_CHECK_EQUAL(set2,empty);
 
-  BOOST_TEST_MESSAGE( "hasTermOfVariables" );
+  BOOST_TEST_MESSAGE( "hasTermOfVariables" );// Strange? Does this do what it is supposed to?
   BOOST_CHECK(set.hasTermOfVariables(x*v));
   BOOST_CHECK(set.hasTermOfVariables(x*y*z));
   BOOST_CHECK(set.hasTermOfVariables(x*z*y));
+  BOOST_CHECK(set.hasTermOfVariables(x*z*v));
   BOOST_CHECK(set.hasTermOfVariables(y));
   BOOST_CHECK(set.hasTermOfVariables(z*v));
   BOOST_CHECK(!set.hasTermOfVariables(x));
@@ -444,7 +445,7 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   output << empty.multiplesOf(BooleMonomial());
   BOOST_CHECK(output.is_equal("{}"));
 
-  BOOST_TEST_MESSAGE( "existAbstract" );
+  BOOST_TEST_MESSAGE( "existAbstract" ); // It is not clear what this function is supposed to do
   output << set.existAbstract(x);
   BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z,v}, {v}}"));
   output << set.existAbstract(y);
