@@ -159,6 +159,52 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("{{x}, {}}"));
   output << empty.multiples(exp_type());
   BOOST_CHECK(output.is_equal("{{}}"));
+
+  BOOST_TEST_MESSAGE( "multiply" );
+  output << exponent.multiply(exp_type().get(y*z*v*w));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  output << exponent.multiply(exp_type());
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  output << exponent.multiply(0);
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  output << exponent.multiply(4);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 4)"));
+  output << exponent.multiply(5);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 5)"));
+  output << exponent.multiply(BooleVariable(v));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
+  output << exponent.multiply(BooleVariable(4));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 4)"));
+  output << exponent.multiply(BooleVariable());
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  //output << exponent.multiply(BooleVariable(5));// memory access violation at address: 0x00000034
+  //BOOST_CHECK(output.is_equal("()"));
+  output << exponent.multiply(v*w);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  output << exponent.multiply(BooleMonomial());
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  output << empty.multiply(exp_type().get(y*z*v*w));
+  BOOST_CHECK(output.is_equal("(1, 2, 3, 4)"));
+  output << empty.multiply(exp_type());
+  BOOST_CHECK(output.is_equal("()"));
+  output << empty.multiply(0);
+  BOOST_CHECK(output.is_equal("(0)"));
+  output << empty.multiply(4);
+  BOOST_CHECK(output.is_equal("(4)"));
+  output << empty.multiply(5);
+  BOOST_CHECK(output.is_equal("(5)"));
+  output << empty.multiply(BooleVariable(v));
+  BOOST_CHECK(output.is_equal("(3)"));
+  output << empty.multiply(BooleVariable(4));
+  BOOST_CHECK(output.is_equal("(4)"));
+  output << empty.multiply(BooleVariable());
+  BOOST_CHECK(output.is_equal("(0)"));
+  //output << exponent.multiply(BooleVariable(5));// memory access violation at address: 0x00000034
+  //BOOST_CHECK(output.is_equal("()"));
+  output << empty.multiply(v*w);
+  BOOST_CHECK(output.is_equal("(3, 4)"));
+  output << empty.multiply(BooleMonomial());
+  BOOST_CHECK(output.is_equal("()"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
