@@ -479,4 +479,46 @@ BOOST_AUTO_TEST_CASE(test_GCD) {
   BOOST_CHECK(exp2 == exp_type());
 }
 
+BOOST_AUTO_TEST_CASE(test_add_remove) {
+  exp_type exponent = exp_type().get(x*y*z*z);
+  exp_type empty = exp_type();
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "insert, push_back, insertConst" );
+  exp_type exponent2 = exponent;
+  exponent2.insert(0);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
+  exponent2.insert(4);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*w));
+  exponent2.insert(3);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*v*w));
+  exponent2.insert(5);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK_NE(exponent2, exponent);
+  exponent2 = exponent;
+  exponent2.push_back(0);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
+  exponent2.push_back(4);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*w));
+  exponent2.push_back(3);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*v*w));
+  exponent2.push_back(5);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK_NE(exponent2, exponent);
+  exponent2 = exponent.insertConst(0);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
+  exponent2 = exponent2.insertConst(4);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*w));
+  exponent2 = exponent2.insertConst(3);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*v*w));
+  exponent2 = exponent2.insertConst(5);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK_NE(exponent2, exponent);
+
+  BOOST_TEST_MESSAGE( "remove, removeConst" );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
