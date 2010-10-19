@@ -205,6 +205,44 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(3, 4)"));
   output << empty.multiply(BooleMonomial());
   BOOST_CHECK(output.is_equal("()"));
+
+  BOOST_TEST_MESSAGE( "multiplyFirst" );
+  BooleSet set;
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  set = set.add(BooleMonomial());
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  set = set.add(v);
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
+  set = set.add(v*w);
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  set = set.add(w);
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  set = set.add(x);
+  output << exponent.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0, 1, 2)"));
+  set = BooleSet();
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("()"));
+  set = set.add(BooleMonomial());
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("()"));
+  set = set.add(v);
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(3)"));
+  set = set.add(v*w);
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(3, 4)"));
+  set = set.add(w);
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(3, 4)"));
+  set = set.add(x);
+  output << empty.multiplyFirst(set);
+  BOOST_CHECK(output.is_equal("(0)"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
