@@ -55,6 +55,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK_EQUAL(var_type(0),x);
   BOOST_CHECK_EQUAL(var_type(1,ring),y);
   BOOST_CHECK_EQUAL(var_type(z),z);
+  //BOOST_CHECK_EQUAL(var_type(3),var_type());// memory access violation at address: 0x2933007a
 }
 
 BOOST_AUTO_TEST_CASE(test_methods) {
