@@ -558,6 +558,7 @@ def normal_form(poly, ideal, reduced=True):
     0
     """
     strat = ReductionStrategy()
+    strat.opt_red_tail=reduced
     ideal=[Polynomial(p) for p in ideal if p!=0]
     ideal= sorted(ideal, key=Polynomial.lead)
     last=None
