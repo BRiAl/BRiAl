@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Exponents from monomials" );
   output_test_stream output;
-  output << exp_type().get(x*y*z*z);
+  output << exp_type().get(x*y*z*z);// Why get() not a constructor?
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << exp_type().get(x);
   BOOST_CHECK(output.is_equal("(0)"));
@@ -818,7 +818,78 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(exp_type().get(z*y)-exp_type().get(x), exp_type());// Inconsistent
 
   BOOST_TEST_MESSAGE( "=" );
-  //exp_type exponent = x*y*z;
+  exp_type exponent;
+  exponent = x*y*z;
+  BOOST_CHECK_EQUAL(exponent, exp_type().get(x*y*z));
+  exponent = x;
+  BOOST_CHECK_EQUAL(exponent, exp_type().get(x));
+  exponent = BooleMonomial();
+  BOOST_CHECK_EQUAL(exponent, exp_type());
+  BooleExponent exponent2;
+  exponent2.insert(5);
+  exponent2.insert(11);
+  exponent2.insert(0);
+  BooleMonomial monom(exponent2, ring);
+  exponent = monom;
+  output << exponent;
+  BOOST_CHECK(output.is_equal("(0, 5, 11)"));
+}
+
+BOOST_AUTO_TEST_CASE(test_popFirst) {
+  output_test_stream output;
+  exp_type exponent = exp_type().get(x*y*z*z);
+  exp_type empty = exp_type();
+
+  BOOST_TEST_MESSAGE( "popFirst" );
+  BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type().get(y*z));
+  BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type().get(z));
+  BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type());
+  //exponent.popFirst(); // Segmentation fault
+  //BOOST_CHECK_EQUAL(exponent, exp_type());
+}
+
+BOOST_AUTO_TEST_CASE(test_hash) {
+
+  exp_type exp = exp_type().get(x*y*v);
+  exp_type exp2;
+  exp2.insert(0);
+  exp2.insert(1);
+  exp2.insert(3);
+  exp_type exp2cpy = exp2;
+  exp_type empty;
+  exp_type empty2;
+  exp_type empty2cpy = empty2;
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "hash" );
+  BOOST_CHECK_EQUAL(exp, exp2);
+  BOOST_CHECK_EQUAL(exp.hash(), exp2.hash());
+  exp2.insert(2);
+  BOOST_CHECK_NE(exp.hash(), exp2.hash());
+  BOOST_CHECK_EQUAL(empty, empty2);
+  BOOST_CHECK_EQUAL(empty.hash(), empty2.hash());
+  empty2 = empty.insertConst(0);
+  BOOST_CHECK_NE(empty.hash(), empty2.hash());
+  empty2 = empty2cpy;
+  empty2.insert(1);
+  BOOST_CHECK_NE(empty, empty2);
+  BOOST_CHECK_NE(empty.hash(), empty2.hash());
+
+  exp2 = exp2cpy;
+  empty2 = empty2cpy;
+  BOOST_TEST_MESSAGE( "stableHash" );
+  BOOST_CHECK_EQUAL(exp, exp2);
+  BOOST_CHECK_EQUAL(exp.stableHash(), exp2.stableHash());
+  exp2.insert(2);
+  BOOST_CHECK_NE(exp.stableHash(), exp2.stableHash());
+  BOOST_CHECK_EQUAL(empty, empty2);
+  BOOST_CHECK_EQUAL(empty.stableHash(), empty2.stableHash());
+  empty2 = empty.insertConst(0);
+  BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
+  empty2 = empty2cpy;
+  empty2.insert(1);
+  BOOST_CHECK_NE(empty, empty2);
+  BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
