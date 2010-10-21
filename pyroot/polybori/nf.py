@@ -2,6 +2,7 @@ from polybori.PyPolyBoRi import *
 from polybori.easy_polynomials import easy_linear_polynomials as easy_linear_polynomials_func
 from polybori.statistics import used_vars_set
 from random import Random
+from warnings import warn
 import copy
 import sys
 from exceptions import NotImplementedError
@@ -547,12 +548,29 @@ def symmGB_F2_C(G,opt_exchange=True,
     return strat
 
 
-
-def simple_nf(poly, ideal):
-    """ Simple normal form computation of a polynomial  against an ideal."""
-    strat = GroebnerStrategy()
-    for gen in ideal:
-        strat.add_as_you_wish(gen)
+def normal_form(poly, ideal, reduced=True):
+    """ Simple normal form computation of a polynomial  against an ideal.
+    >>> from polybori import declare_ring, normal_form
+    >>> r=declare_ring(['x','y'], globals())
+    >>> normal_form(x+y, [y],reduced=True)
+    x
+    >>> normal_form(x+y,[x,y])
+    0
+    """
+    strat = ReductionStrategy()
+    ideal=[Polynomial(p) for p in ideal if p!=0]
+    ideal= sorted(ideal, key=Polynomial.lead)
+    last=None
+    for p in ideal:
+        if p!=last:
+            strat.add_generator(p)
+        else:
+            warn("%s will not used for reductions", p )
     return strat.nf(poly)
-    
-    
+
+def _test():
+    import doctest
+    doctest.testmod()
+
+if __name__ == "__main__":
+    _test()
