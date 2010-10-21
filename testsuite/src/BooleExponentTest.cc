@@ -101,6 +101,8 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
   output << exponent.divide(5);
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
+  output << exponent.divide(-5);
+  BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
   output << exponent.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("(0, 2)"));
   output << exponent.divide(BooleVariable(4));
@@ -122,6 +124,8 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   output << empty.divide(4);
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(5);
+  BOOST_CHECK(output.is_equal("()"));
+  output << empty.divide(-5);
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("()"));
@@ -171,6 +175,8 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(0, 1, 2, 4)"));
   output << exponent.multiply(5);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 5)"));
+  output << exponent.multiply(-5);
+  BOOST_CHECK(output.is_equal("(-5, 0, 1, 2)"));
   output << exponent.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
   output << exponent.multiply(BooleVariable(4));
@@ -193,6 +199,8 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(4)"));
   output << empty.multiply(5);
   BOOST_CHECK(output.is_equal("(5)"));
+  output << empty.multiply(-5);
+  BOOST_CHECK(output.is_equal("(-5)"));
   output << empty.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(3)"));
   output << empty.multiply(BooleVariable(4));
@@ -495,7 +503,22 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2.insert(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  exponent2.insert(-1);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
   BOOST_CHECK_NE(exponent2, exponent);
+  exp_type empty2;
+  empty2.insert(5);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(5)"));
+  empty2.insert(2);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(2, 5)"));
+  empty2.insert(-20);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK_NE(empty2, empty);
+
   exponent2 = exponent;
   exponent2.push_back(0);
   BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
@@ -506,7 +529,22 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2.push_back(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  exponent2.push_back(-1);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
   BOOST_CHECK_NE(exponent2, exponent);
+  empty2 = empty;
+  empty2.push_back(5);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(5)"));
+  empty2.push_back(2);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(2, 5)"));
+  empty2.push_back(-20);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK_NE(empty2, empty);
+
   exponent2 = exponent.insertConst(0);
   BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
   exponent2 = exponent2.insertConst(4);
@@ -516,9 +554,271 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2 = exponent2.insertConst(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
+  exponent2 = exponent2.insertConst(-1);
+  output << exponent2;
+  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
   BOOST_CHECK_NE(exponent2, exponent);
+  empty2 = empty;
+  empty2 = empty.insertConst(5);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(5)"));
+  empty2 = empty2.insertConst(2);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(2, 5)"));
+  empty2 = empty2.insertConst(-20);
+  output << empty2;
+  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK_NE(empty2, empty);
 
   BOOST_TEST_MESSAGE( "remove, removeConst" );
+  exp_type exponent3 = exponent2;
+  exponent3.remove(0);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 4, 5)"));
+  exponent3.remove(4);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 5)"));
+  exponent3.remove(3);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 5)"));
+  exponent3.remove(5);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2)"));
+  exponent3.remove(-1);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(1, 2)"));
+  BOOST_CHECK_NE(exponent3, exponent2);
+  exponent3.remove(-5);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(1, 2)"));
+  exp_type empty3 = empty2;
+  empty3.remove(5);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("(-20, 2)"));
+  empty3.remove(2);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("(-20)"));
+  empty3.remove(-20);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("()"));
+  empty3.remove(-5);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("()"));
+  BOOST_CHECK_NE(empty3, empty2);
+
+  exponent3 = exponent2;
+  exponent3 = exponent2.removeConst(0);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 4, 5)"));
+  exponent3 = exponent3.removeConst(4);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 5)"));
+  exponent3 = exponent3.removeConst(3);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2, 5)"));
+  exponent3 = exponent3.removeConst(5);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(-1, 1, 2)"));
+  exponent3 = exponent3.removeConst(-1);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(1, 2)"));
+  BOOST_CHECK_NE(exponent3, exponent2);
+  exponent3 = exponent3.removeConst(-5);
+  output << exponent3;
+  BOOST_CHECK(output.is_equal("(1, 2)"));
+  empty3 = empty2;
+  empty3 = empty2.removeConst(5);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("(-20, 2)"));
+  empty3 = empty3.removeConst(2);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("(-20)"));
+  empty3 = empty3.removeConst(-20);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("()"));
+  empty3 = empty3.removeConst(-5);
+  output << empty3;
+  BOOST_CHECK(output.is_equal("()"));
+  BOOST_CHECK_NE(empty3, empty2);
+}
+
+BOOST_AUTO_TEST_CASE(test_change) {
+  exp_type exponent = exp_type().get(x*y*z*z);
+  exp_type empty = exp_type();
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "change, changeAssign" ); // Not so clear what this is supposed to do
+  output << exponent.change(1);
+  BOOST_CHECK(output.is_equal("(0, 2)"));
+  output << exponent.change(0);
+  BOOST_CHECK(output.is_equal("(1, 2)"));
+  output << exponent.change(2);
+  BOOST_CHECK(output.is_equal("(0, 1)"));
+  output << exponent.change(3);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
+  output << exponent.change(-5);
+  BOOST_CHECK(output.is_equal("(-5, 0, 1, 2)"));
+  output << empty.change(1);
+  BOOST_CHECK(output.is_equal("(1)"));
+  output << empty.change(-1);
+  BOOST_CHECK(output.is_equal("(-1)"));
+  output << exponent.changeAssign(1);
+  BOOST_CHECK(output.is_equal("(0, 2)"));
+  output << exponent.changeAssign(0);
+  BOOST_CHECK(output.is_equal("(2)"));
+  output << exponent.changeAssign(2);
+  BOOST_CHECK(output.is_equal("()"));
+  output << exponent.changeAssign(3);
+  BOOST_CHECK(output.is_equal("(3)"));
+  output << exponent.changeAssign(-5);
+  BOOST_CHECK(output.is_equal("(-5, 3)"));
+  output << empty.changeAssign(1);
+  BOOST_CHECK(output.is_equal("(1)"));
+  output << empty.changeAssign(-1);
+  BOOST_CHECK(output.is_equal("(-1, 1)"));
+}
+
+BOOST_AUTO_TEST_CASE(test_logical_operators) {
+
+  BOOST_TEST_MESSAGE( "Logical operators..." );
+
+  output_test_stream output;
+  exp_type exp1;
+  exp_type exp2;
+
+  BOOST_TEST_MESSAGE( "== and !=" );
+  BOOST_CHECK_EQUAL(exp_type() == exp_type(), true);
+  BOOST_CHECK_EQUAL(exp_type() != exp_type(), false);
+
+  BOOST_TEST_MESSAGE( "compare as method of one monomial" );
+
+  exp1 = exp_type();
+  exp2 = exp_type().get(x*y*z*v*w);
+  output << exp1.compare(exp2);
+  BOOST_CHECK(output.is_equal("-1"));
+
+  exp1 = exp_type().get(x);
+  exp2 = exp_type().get(x*y);
+  output << exp1.compare(exp2);
+  BOOST_CHECK(output.is_equal("-1"));
+
+  exp1 = exp_type().get(x*y*z);
+  exp2 = exp_type().get(x*z);
+  output << exp1.compare(exp2);
+  BOOST_CHECK(output.is_equal("1"));
+
+  exp1 = exp_type().get(x*y*z);
+  exp2 = exp_type().get(x*y*z);
+  output << exp1.compare(exp2);
+  BOOST_CHECK(output.is_equal("0"));
+
+  BOOST_TEST_MESSAGE( ">, <, >= and <=" );
+
+  exp1 = exp_type();
+  exp2 = exp_type().get(x*y*z*v*w);
+  BOOST_CHECK_EQUAL(exp1 < exp2, true);
+  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
+  BOOST_CHECK_EQUAL(exp1 > exp2, false);
+  BOOST_CHECK_EQUAL(exp1 >= exp2, false);
+
+  exp1 = exp_type().get(x);
+  exp2 = exp_type().get(x*y);
+  BOOST_CHECK_EQUAL(exp1 < exp2, true);
+  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
+  BOOST_CHECK_EQUAL(exp1 > exp2, false);
+  BOOST_CHECK_EQUAL(exp1 >= exp2, false);
+
+  exp1 = exp_type().get(x*y*z);
+  exp2 = exp_type().get(x*z);
+  BOOST_CHECK_EQUAL(exp1 < exp2, false);
+  BOOST_CHECK_EQUAL(exp1 <= exp2, false);
+  BOOST_CHECK_EQUAL(exp1 > exp2, true);
+  BOOST_CHECK_EQUAL(exp1 >= exp2, true);
+
+  exp1 = exp_type().get(x*y*z);
+  exp2 = exp_type().get(x*y*z);
+  BOOST_CHECK_EQUAL(exp1 < exp2, false);
+  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
+  BOOST_CHECK_EQUAL(exp1 > exp2, false);
+  BOOST_CHECK_EQUAL(exp1 >= exp2, true);
+}
+
+BOOST_AUTO_TEST_CASE(test_reducible) {
+  exp_type exponent = exp_type().get(x*y*z*z);
+  exp_type empty = exp_type();
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "reducibleBy" );
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(x)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(y)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(z)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(x*y)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(x*z)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(y*z)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type().get(y*z*x)));
+  BOOST_CHECK(exponent.reducibleBy(exp_type()));
+  BOOST_CHECK(!exponent.reducibleBy(exp_type().get(v)));
+  BOOST_CHECK(!exponent.reducibleBy(exp_type().get(x*v)));
+  BOOST_CHECK(empty.reducibleBy(exp_type()));
+  BOOST_CHECK(!empty.reducibleBy(exp_type().get(x)));
+  BOOST_CHECK(!empty.reducibleBy(exp_type().get(x*y)));
+
+  BOOST_CHECK(exponent.reducibleBy(BooleMonomial(x)));
+  BOOST_CHECK(exponent.reducibleBy(BooleMonomial(y)));
+  BOOST_CHECK(exponent.reducibleBy(BooleMonomial(z)));
+  BOOST_CHECK(exponent.reducibleBy(x*y));
+  BOOST_CHECK(exponent.reducibleBy(x*z));
+  BOOST_CHECK(exponent.reducibleBy(y*z));
+  BOOST_CHECK(exponent.reducibleBy(y*z*x));
+  BOOST_CHECK(exponent.reducibleBy(BooleMonomial()));
+  BOOST_CHECK(!exponent.reducibleBy(BooleMonomial(v)));
+  BOOST_CHECK(!exponent.reducibleBy(x*v));
+  BOOST_CHECK(empty.reducibleBy(BooleMonomial()));
+  BOOST_CHECK(!empty.reducibleBy(BooleMonomial(x)));
+  BOOST_CHECK(!empty.reducibleBy(x*y));
+
+  BOOST_CHECK(exponent.reducibleBy(x));
+  BOOST_CHECK(exponent.reducibleBy(y));
+  BOOST_CHECK(exponent.reducibleBy(z));
+  BOOST_CHECK(exponent.reducibleBy(BooleVariable()));
+  BOOST_CHECK(!exponent.reducibleBy(v));
+  BOOST_CHECK(!empty.reducibleBy(BooleVariable())); // as BooleVariable() = x
+  BOOST_CHECK(!empty.reducibleBy(x));
+
+  BOOST_CHECK(exponent.reducibleBy(0));
+  BOOST_CHECK(exponent.reducibleBy(1));
+  BOOST_CHECK(exponent.reducibleBy(2));
+  BOOST_CHECK(!exponent.reducibleBy(3));
+  BOOST_CHECK(!exponent.reducibleBy(5));
+  BOOST_CHECK(!exponent.reducibleBy(-5));
+  BOOST_CHECK(!empty.reducibleBy(0));
+  BOOST_CHECK(!empty.reducibleBy(-5));
+}
+
+BOOST_AUTO_TEST_CASE(test_assigning_operators) {
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "Assignments..." );
+  BOOST_TEST_MESSAGE( "+" );
+  output << ((((exp_type().get(x) + y) + z) + v)+ w);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  output << ((((exp_type().get(x) + x) + x) + x)+ x);
+  BOOST_CHECK(output.is_equal("(0)"));
+  BOOST_CHECK_EQUAL(exp_type().get(x*y)+exp_type(),exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp_type()+exp_type().get(x*z),exp_type().get(x*z));
+  BOOST_CHECK_EQUAL(exp_type()+exp_type(),exp_type());
+
+  BOOST_TEST_MESSAGE( "-" );
+  output << ((exp_type().get(x*y*z*v*w)- x)- v);
+  BOOST_CHECK(output.is_equal("(1, 2, 4)"));
+  output << (exp_type().get(x*y*z*v*w)- exp_type());
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
+  BOOST_CHECK_EQUAL(exp_type()-exp_type().get(x), exp_type());// Inconsistent
+  BOOST_CHECK_EQUAL(exp_type().get(y)-exp_type().get(x), exp_type());// Inconsistent
+  BOOST_CHECK_EQUAL(exp_type().get(z*y)-exp_type().get(x), exp_type());// Inconsistent
+
+  BOOST_TEST_MESSAGE( "=" );
+  //exp_type exponent = x*y*z;
 }
 
 BOOST_AUTO_TEST_SUITE_END()
