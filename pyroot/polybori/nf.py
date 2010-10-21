@@ -563,10 +563,11 @@ def normal_form(poly, ideal, reduced=True):
     ideal= sorted(ideal, key=Polynomial.lead)
     last=None
     for p in ideal:
-        if p!=last:
+        if p.lead()!=last:
             strat.add_generator(p)
         else:
             warn("%s will not used for reductions", p )
+        last=p.lead()
     return strat.nf(poly)
 
 def _test():
