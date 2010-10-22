@@ -33,6 +33,7 @@ from polybori.PyPolyBoRi import *
 
 # Get all-inclusive groebner routine
 from polybori.gbcore import groebner_basis
+from polybori.nf import normal_form
 
 # Import some high-level modelling functionality
 from polybori.blocks import declare_ring
