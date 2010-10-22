@@ -130,6 +130,9 @@ BooleSet::lastLexicographicalTerm() const {
 
   PBORI_TRACE_FUNC( "BooleSet::lastTerm() const" );
 
+  if UNLIKELY(emptiness())
+    throw PBoRiError(CTypes::illegal_on_zero);
+
   return dd_last_lexicographical_term(*this, type_tag<term_type>());
 }
 

@@ -91,9 +91,11 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
   BOOST_TEST_MESSAGE( "lastLexicographicalTerm" );
   BOOST_CHECK_EQUAL(set.lastLexicographicalTerm(), BooleMonomial(v*z));
-  //BOOST_CHECK_EQUAL(empty.lastLexicographicalTerm(), BooleMonomial());//memory access violation at address 0x00000000
+  BOOST_CHECK_THROW(empty.lastLexicographicalTerm(),  PBoRiError);
+
   set_type simple = empty.add(BooleMonomial());
-  //BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial());//still same error as above
+  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial());
+
   simple = empty.add(x);
   BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), x);
 
@@ -126,15 +128,21 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial()));
 
   BOOST_TEST_MESSAGE( "contains" );
-  BOOST_CHECK(!set.contains(empty));
+
+  BOOST_CHECK(set.contains(empty));
+  BOOST_CHECK(set.contains(empty));
+
+
   BOOST_CHECK(set.contains(set));
-  BOOST_CHECK(empty.contains(empty));
+  BOOST_CHECK(!empty.contains(ring.one()));
+  BOOST_CHECK(!set.contains(ring.one()));
+
   set2 = empty.add(x*y*z);
-  
-  //std::cout << set<<" "<<set.ring().hash() <<std::endl;
-  //std::cout << set2<<" "<<set2.ring().hash() <<std::endl;
-  
-  //BOOST_CHECK(set.contains(set2)); // memory access violation at address: 0x00000004: no mapping at fault address
+ 
+  BOOST_CHECK(set2.contains(set) == false);
+  BOOST_CHECK(set.contains(set2));
+
+  BOOST_CHECK(set.contains(BoolePolynomial(y).set()));
 
   BOOST_TEST_MESSAGE( "emptyElement" );
   set_type emptyEl = empty.emptyElement();

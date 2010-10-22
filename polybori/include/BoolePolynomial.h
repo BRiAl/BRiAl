@@ -215,7 +215,7 @@ public:
   /// Construct polynomial from decision diagram
   BoolePolynomial(const dd_type& rhs): m_dd(rhs) {}
 
-  /// Construct polynomial from a subset of the powerset over all variables
+    /// Construct polynomial from a subset of the powerset over all variables
                  //  BoolePolynomial(const set_type& rhs): m_dd(rhs.diagram()) {}
 
   /// Construct polynomial from exponent vector

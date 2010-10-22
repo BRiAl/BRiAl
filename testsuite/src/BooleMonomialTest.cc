@@ -67,13 +67,18 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK_EQUAL(monom_type(bexp,ring), y);
   BOOST_CHECK_EQUAL(monom_type(BooleExponent(),ring), BooleMonomial());
   BOOST_CHECK_EQUAL(monom_type(ring), BooleConstant(true));
+
   BooleExponent exponent;
-  exponent.insert(5);
+  exponent.insert(4);
   exponent.insert(0);
   BooleMonomial monom(exponent, ring);
   output_test_stream output;
   output << monom;
-  BOOST_CHECK(output.is_equal("x*UNDEF"));
+  BOOST_CHECK(output.is_equal("x*w"));
+
+  exponent.insert(5);
+  BOOST_CHECK_THROW(BooleMonomial(exponent, ring), PBoRiError);
+
 }
 
 BOOST_AUTO_TEST_CASE(test_assigning_operators) {

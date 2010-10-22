@@ -43,12 +43,12 @@ BooleExponent::BooleExponent():
 }
 
 // Default constructor
-BooleExponent::BooleExponent(bool):
-  m_data()  {
+// BooleExponent::BooleExponent(bool):
+//   m_data()  {
 
-  PBORI_TRACE_FUNC( "BooleExponent(bool)" );
+//   PBORI_TRACE_FUNC( "BooleExponent(bool)" );
 
-}
+// }
 
 // Default constructor
 BooleExponent&

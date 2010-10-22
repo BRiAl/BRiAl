@@ -158,6 +158,13 @@ public:
   /// Exponent vector of variables of the whole set
   exp_type usedVariablesExp() const;
 
+  self change(idx_type idx) const {
+    if UNLIKELY(idx >= ring().nVariables())
+      throw PBoRiError(CTypes::out_of_bounds);
+    return base::change(idx);
+  }
+
+
   /// Add given monomial to sets
   self add(const term_type& rhs) const;
 
@@ -217,9 +224,7 @@ public:
   };
 
   /// Test containment
-  bool_type contains(const self& rhs) const { 
-    return diffConst(rhs).isZero();  
-  }
+  bool_type contains(const self& rhs) const { return rhs.implies(*this); }
 
   /// Returns number of terms
   size_type size() const { return count(); }

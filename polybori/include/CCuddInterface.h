@@ -294,7 +294,8 @@ public:
 
 
   node_ptr getVar(idx_type idx) const {
-    assert(idx < m_vars.size());
+    if UNLIKELY(idx >= m_vars.size())
+      throw PBoRiError(CTypes::out_of_bounds);
     return  m_vars[idx];
   }
 

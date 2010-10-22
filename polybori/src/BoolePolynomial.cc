@@ -463,6 +463,7 @@ BEGIN_NAMESPACE_PBORI
 // Constructors and destructor
 //------------------------------------------------------------------------
 
+
 // Default constructor
 BoolePolynomial::BoolePolynomial():
   m_dd( BooleEnv::ring().zero() ) {

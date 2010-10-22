@@ -51,8 +51,10 @@ BOOST_FIXTURE_TEST_SUITE(BooleExponentTestSuite, Fexp )
 BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Constant exponents..." );
-  BOOST_CHECK_EQUAL(exp_type(), exp_type(true));
-  BOOST_CHECK_EQUAL(exp_type(), exp_type(false));
+
+  // removed, becuase this constructor is useless and confusing
+  //    BOOST_CHECK_EQUAL(exp_type(), exp_type(true));
+  //   BOOST_CHECK_EQUAL(exp_type(), exp_type(false));
   BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial()));
 
   BOOST_TEST_MESSAGE( "Exponents from monomials" );

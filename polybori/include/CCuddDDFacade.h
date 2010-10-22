@@ -85,7 +85,6 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 #define PBORI_NAME_Union unite
 #define PBORI_NAME_Intersect intersect
 #define PBORI_NAME_Diff diff
-#define PBORI_NAME_DiffConst diffConst
 #define PBORI_NAME_Subset1 subset1
 #define PBORI_NAME_Subset0 subset0
 #define PBORI_NAME_Change change
@@ -183,10 +182,16 @@ public:
   /// @code
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const diagram_type&, 
     (Product)(UnateProduct)(WeakDiv)(Divide)(WeakDivF)(DivideF)
-    (Union)(Intersect)(Diff)(DiffConst))
+    (Union)(Intersect)(Diff))
 
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, int, (Subset1)(Subset0)(Change))
   /** @endcode */
+
+  /// Performs the inclusion test for ZDDs
+  bool implies(const self& rhs) const {
+    return Cudd_zddDiffConst(getManager(), getNode(), rhs.getNode()) ==
+      Cudd_ReadZero(getManager());
+  }
 
   /// If-Then-Else operation using current diagram as head
   self ite(const self& g, const self& h) const { 

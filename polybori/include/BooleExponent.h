@@ -136,7 +136,7 @@ class BooleExponent:
   /// Copy constructor
   BooleExponent(const self&);
 
-  explicit BooleExponent(bool);
+  //  explicit BooleExponent(bool);
 
   /// Construct from Boolean monomial
   self& get(const monom_type&);
