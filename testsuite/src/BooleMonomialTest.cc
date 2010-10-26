@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BooleExponent exponent;
   exponent.insert(4);
   exponent.insert(0);
-  BooleMonomial monom(exponent, ring); // Should this throw?
+  BooleMonomial monom(exponent, ring);
   output_test_stream output;
   output << monom;
   BOOST_CHECK(output.is_equal("x*w"));

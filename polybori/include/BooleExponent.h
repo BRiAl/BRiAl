@@ -275,9 +275,9 @@ class BooleExponent:
   self GCD(const self&) const;
 
   /// Removes the first index from exponent
-  self& popFirst() { 
-    assert(!m_data.empty());
-    m_data.erase(m_data.begin());
+  self& popFirst() {
+    if(!m_data.empty())
+      m_data.erase(m_data.begin());
     return *this; 
   }
 

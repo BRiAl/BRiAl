@@ -836,8 +836,7 @@ BOOST_AUTO_TEST_CASE(test_popFirst) {
   BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type().get(y*z));
   BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type().get(z));
   BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type());
-  //exponent.popFirst(); // Segmentation fault
-  //BOOST_CHECK_EQUAL(exponent, exp_type());
+  BOOST_CHECK_EQUAL(exponent.popFirst(), exp_type());
 }
 
 BOOST_AUTO_TEST_CASE(test_hash) {
