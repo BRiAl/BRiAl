@@ -71,7 +71,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BooleExponent exponent;
   exponent.insert(4);
   exponent.insert(0);
-  BooleMonomial monom(exponent, ring);
+  BooleMonomial monom(exponent, ring); // Should this throw?
   output_test_stream output;
   output << monom;
   BOOST_CHECK(output.is_equal("x*w"));
@@ -140,6 +140,8 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   output << monom.popFirst();
   BOOST_CHECK(output.is_equal("1"));
   BOOST_CHECK(monom == monom_type());
+  output << monom.popFirst();
+  BOOST_CHECK(output.is_equal("1"));
 
   BOOST_TEST_MESSAGE( "deg and size" );
   monom = monom_type(v*y*x*x*z);

@@ -56,6 +56,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK_EQUAL(var_type(1,ring),y);
   BOOST_CHECK_EQUAL(var_type(z),z);
   BOOST_CHECK_THROW(var_type(3), PBoRiError);
+  BOOST_CHECK_THROW(var_type(-1), PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_methods) {
