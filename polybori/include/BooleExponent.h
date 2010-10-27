@@ -140,6 +140,7 @@ class BooleExponent:
 
   /// Construct from Boolean monomial
   self& get(const monom_type&);
+  explicit BooleExponent(const monom_type& rhs);
 
 //   /// Construct from Boolean constant
 //   BooleExponent(bool_type);

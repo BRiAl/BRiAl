@@ -599,10 +599,10 @@ BOOST_AUTO_TEST_CASE(test_change) {
   set = set.change(4);
   output << set;
   BOOST_CHECK(output.is_equal("{{x,y,z,w}, {x,v,w}, {y,w}, {z,v,w}}"));
-  set = set.change(0);// why change z not x?
+  set = set.change(0);
   output << set;
   BOOST_CHECK(output.is_equal("{{x,y,w}, {x,z,v,w}, {y,z,w}, {v,w}}"));
-  set = set.change(1);// why change v not y?
+  set = set.change(1);
   output << set;
   BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,w}, {y,v,w}, {z,w}}"));
   set = set.change(2);

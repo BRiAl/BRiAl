@@ -66,6 +66,11 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   output << exp_type().get(BooleMonomial());
   BOOST_CHECK(output.is_equal("()"));
   BOOST_CHECK_EQUAL(exp_type().get(BooleMonomial(exp_type(), ring)), exp_type());
+  BOOST_CHECK_EQUAL(exp_type(x*y*z), exp_type().get(x*y*z));
+  BOOST_CHECK_EQUAL(exp_type(x), exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp_type(BooleMonomial()), exp_type().get(BooleMonomial()));
+  BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial()));
+  BOOST_CHECK_EQUAL(exp_type(x*y*z).get(v*w), exp_type().get(v*w));
 }
 
 BOOST_AUTO_TEST_CASE(test_size_values) {
