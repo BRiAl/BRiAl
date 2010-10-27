@@ -21,6 +21,7 @@ using boost::test_tools::output_test_stream;
 #include "pbori_defs.h"
 #include "BoolePolyRing.h"
 #include "BooleVariable.h"
+#include "pbori_order.h"
 
 USING_NAMESPACE_PBORI
 
@@ -61,6 +62,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(ring.getVariableName(1), "x(1)");
   BOOST_CHECK_EQUAL(ring.getVariableName(2), "x(2)");
   BOOST_CHECK_EQUAL(ring.getVariableName(3), "UNDEF");
+  BOOST_CHECK_EQUAL(ring.getVariableName(323223), "UNDEF");
   BOOST_CHECK_EQUAL(ring.nVariables(), 3);
   BOOST_CHECK_EQUAL(empty.getVariableName(-1), "UNDEF");
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "UNDEF");
@@ -120,6 +122,11 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "variable");
   BOOST_CHECK_EQUAL(empty.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(empty.nVariables(), 0);
+
+  ring.changeOrdering(COrderEnums::lp);
+  //BOOST_CHECK_EQUAL(ring.ordering(), get_ordering(COrderEnums::lp)); // How to compare orderings?
 }
+
+//BOOST_AUTO_TEST_CASE(test_ordering) {} // induces unknown error? previous rings not properly destroyed?
 
 BOOST_AUTO_TEST_SUITE_END()
