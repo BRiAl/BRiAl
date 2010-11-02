@@ -621,7 +621,7 @@ for t in ['booleenv_test']:
                 [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
                 CPPPATH=CPPPATH)
 
-testclasses = Split("BoolePolyRing BooleExponent BooleSet BooleVariable BooleMonomial BoolePolynomial")
+testclasses = Split("BooleConstant BoolePolyRing BooleExponent BooleSet BooleVariable BooleMonomial BoolePolynomial")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
 
