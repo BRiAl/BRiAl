@@ -36,7 +36,65 @@ BOOST_FIXTURE_TEST_SUITE(BoolePolyRingTestSuite, Fring )
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
 
-  BOOST_TEST_MESSAGE( "Constant rings..." );
+  BOOST_TEST_MESSAGE( "Constructors..." );
+  ring_type ring1(0,COrderEnums::lp,false);
+  BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
+  BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
+  ring_type defaultr;
+  BOOST_CHECK_NE(ring1.hash(),defaultr.hash());
+  ring_type ring2(1,COrderEnums::dlex,false);
+  BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
+  BOOST_CHECK_EQUAL(ring2.ordering().getOrderCode(), COrderEnums::dlex);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring2.hash(),defaultr.hash());
+  ring_type ring3(2,COrderEnums::dp_asc,true);
+  BOOST_CHECK_EQUAL(ring3.nVariables(), 2);
+  BOOST_CHECK_EQUAL(ring3.ordering().getOrderCode(), COrderEnums::dp_asc);
+  defaultr = ring_type();
+  BOOST_CHECK_EQUAL(ring3.hash(),defaultr.hash());
+  ring_type ring4(3,COrderEnums::block_dlex,false);
+  BOOST_CHECK_EQUAL(ring4.nVariables(), 3);
+  BOOST_CHECK_EQUAL(ring4.ordering().getOrderCode(), COrderEnums::block_dlex);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring4.hash(),defaultr.hash());
+  ring_type ring5(4,COrderEnums::block_dp_asc,false);
+  BOOST_CHECK_EQUAL(ring5.nVariables(), 4);
+  BOOST_CHECK_EQUAL(ring5.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring5.hash(),defaultr.hash());
+  ring5.activate();
+  defaultr = ring_type();
+  BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
+  /*
+  ring1(0,get_ordering(COrderEnums::lp)); // Why does this not work?
+  BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
+  BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring1.hash(),defaultr.hash());
+  ring2(1,get_ordering(COrderEnums::dlex));
+  BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
+  BOOST_CHECK_EQUAL(ring2.ordering().getOrderCode(), COrderEnums::dlex);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring2.hash(),defaultr.hash());
+  ring3(2,get_ordering(COrderEnums::dp_asc));
+  BOOST_CHECK_EQUAL(ring3.nVariables(), 2);
+  BOOST_CHECK_EQUAL(ring3.ordering().getOrderCode(), COrderEnums::dp_asc);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring3.hash(),defaultr.hash());
+  ring4(3,get_ordering(COrderEnums::block_dlex));
+  BOOST_CHECK_EQUAL(ring4.nVariables(), 3);
+  BOOST_CHECK_EQUAL(ring4.ordering().getOrderCode(), COrderEnums::block_dlex);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring4.hash(),defaultr.hash());
+  ring5(4,get_ordering(COrderEnums::block_dp_asc));
+  BOOST_CHECK_EQUAL(ring5.nVariables(), 4);
+  BOOST_CHECK_EQUAL(ring5.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  defaultr = ring_type();
+  BOOST_CHECK_NE(ring5.hash(),defaultr.hash());
+  ring5.activate();
+  defaultr = ring_type();
+  BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
+  */
 }
 
 BOOST_AUTO_TEST_CASE(test_variables) {
@@ -272,7 +330,6 @@ BOOST_AUTO_TEST_CASE(test_coerce) {
   ring.setVariableName(2, "-");
   ring.setVariableName(3, "v");
   ring.setVariableName(4, "a");
-
   output_test_stream output;
   BooleVariable x(0);
   BooleVariable y(1);
@@ -319,6 +376,22 @@ BOOST_AUTO_TEST_CASE(test_coerce) {
   output << defaultr.coerce(z);
   BOOST_CHECK(output.is_equal("-"));
   BOOST_CHECK_THROW(small.coerce(v), PBoRiError);
+}
+
+BOOST_AUTO_TEST_CASE(test_hash) {
+
+  BOOST_TEST_MESSAGE( "hash" );
+  ring_type ring1(3, 0, false);
+  ring_type ring2(3, 0, false);
+  BOOST_CHECK_NE(ring1.hash(), ring2.hash()); // Why is this not equal?
+  ring_type defaultr;
+  BOOST_CHECK_NE(ring1.hash(), defaultr.hash());
+  ring1.activate();
+  defaultr = ring_type();
+  BOOST_CHECK_EQUAL(ring1.hash(), defaultr.hash());
+  ring_type empty1(0, 0, false);
+  ring_type empty2(0, 0, false);
+  BOOST_CHECK_NE(empty1.hash(), empty2.hash()); // Why is this not equal?
 }
 
 BOOST_AUTO_TEST_SUITE_END()
