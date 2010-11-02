@@ -261,4 +261,64 @@ BOOST_AUTO_TEST_CASE(test_dd_type) {
   BOOST_CHECK_EQUAL(empty.constant(false), empty.zero());
 }
 
+BOOST_AUTO_TEST_CASE(test_coerce) {
+  ring_type empty(0);
+  ring_type small(2,0,false);
+  ring_type ring(4, 0, false);
+  ring.activate();
+  ring_type defaultr;
+  ring.setVariableName(0, "*");
+  ring.setVariableName(1, "ö");
+  ring.setVariableName(2, "-");
+  ring.setVariableName(3, "v");
+  ring.setVariableName(4, "a");
+
+  output_test_stream output;
+  BooleVariable x(0);
+  BooleVariable y(1);
+  BooleVariable z(2);
+  BooleVariable v(3);
+  BoolePolynomial poly = x*y*v + y*z*v + y*v;
+  BooleMonomial monom = x*y*z;
+
+  BOOST_TEST_MESSAGE( "coerce" );
+  output << ring.coerce(poly);
+  BOOST_CHECK(output.is_equal("**ö*v + ö*-*v + ö*v"));
+  output << ring.coerce(monom);
+  BOOST_CHECK(output.is_equal("**ö*-"));
+  output << ring.coerce(x);
+  BOOST_CHECK(output.is_equal("*"));
+  output << ring.coerce(y);
+  BOOST_CHECK(output.is_equal("ö"));
+  output << ring.coerce(z);
+  BOOST_CHECK(output.is_equal("-"));
+  output << ring.coerce(v);
+  BOOST_CHECK(output.is_equal("v"));
+  output << defaultr.coerce(poly);
+  BOOST_CHECK(output.is_equal("**ö*v + ö*-*v + ö*v"));
+  output << defaultr.coerce(monom);
+  BOOST_CHECK(output.is_equal("**ö*-"));
+  output << defaultr.coerce(x);
+  BOOST_CHECK(output.is_equal("*"));
+  output << defaultr.coerce(y);
+  BOOST_CHECK(output.is_equal("ö"));
+  output << defaultr.coerce(z);
+  BOOST_CHECK(output.is_equal("-"));
+  output << defaultr.coerce(v);
+  BOOST_CHECK(output.is_equal("v"));
+  BOOST_CHECK_THROW(empty.coerce(poly), PBoRiError);
+  BOOST_CHECK_THROW(empty.coerce(monom), PBoRiError);
+  BOOST_CHECK_THROW(empty.coerce(x), PBoRiError);
+  BOOST_CHECK_THROW(small.coerce(poly), PBoRiError);
+  output << defaultr.coerce(monom);
+  BOOST_CHECK(output.is_equal("**ö*-"));
+  output << defaultr.coerce(x);
+  BOOST_CHECK(output.is_equal("*"));
+  output << defaultr.coerce(y);
+  BOOST_CHECK(output.is_equal("ö"));
+  output << defaultr.coerce(z);
+  BOOST_CHECK(output.is_equal("-"));
+  BOOST_CHECK_THROW(small.coerce(v), PBoRiError);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
