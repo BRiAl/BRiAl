@@ -27,18 +27,9 @@ USING_NAMESPACE_PBORI
 
 struct Fring {
   typedef BoolePolyRing ring_type;
-  Fring() {
-    x = (BooleVariable(0));
-    y = (BooleVariable(1));
-    z = (BooleVariable(2));
-    v = (BooleVariable(3));
-    w = (BooleVariable(4));
-    BOOST_TEST_MESSAGE( "setup fixture" );
-  }
+  Fring() { BOOST_TEST_MESSAGE( "setup fixture" ); }
 
   ~Fring() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
-
-  BooleVariable x, y, z, v, w;
 };
 
 BOOST_FIXTURE_TEST_SUITE(BoolePolyRingTestSuite, Fring )
@@ -122,11 +113,152 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "variable");
   BOOST_CHECK_EQUAL(empty.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(empty.nVariables(), 0);
-
-  ring.changeOrdering(COrderEnums::lp);
-  //BOOST_CHECK_EQUAL(ring.ordering(), get_ordering(COrderEnums::lp)); // How to compare orderings?
 }
 
-//BOOST_AUTO_TEST_CASE(test_ordering) {} // induces unknown error? previous rings not properly destroyed?
+BOOST_AUTO_TEST_CASE(test_ordering) {
+
+  ring_type ring(3, 0, false);
+  ring_type empty(0);
+  ring.activate();
+  ring_type defaultr;
+
+  BOOST_TEST_MESSAGE( "ordering, changeOrdering" );
+
+  //change ring
+  ring.changeOrdering(COrderEnums::lp);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  ring.changeOrdering(COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::dlex);
+  ring.changeOrdering(COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::dp_asc);
+  ring.changeOrdering(COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::block_dlex);
+  ring.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  ring.changeOrdering(-1);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  ring.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  ring.changeOrdering(5);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  // change defaultr
+  defaultr.changeOrdering(COrderEnums::lp);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  defaultr.changeOrdering(COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::dlex);
+  defaultr.changeOrdering(COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::dp_asc);
+  defaultr.changeOrdering(COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::block_dlex);
+  defaultr.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  defaultr.changeOrdering(-1);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  defaultr.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  defaultr.changeOrdering(5);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
+  // change empty
+  empty.changeOrdering(COrderEnums::lp);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
+  empty.changeOrdering(COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  empty.changeOrdering(COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  empty.changeOrdering(COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  empty.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  empty.changeOrdering(-1);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  empty.changeOrdering(COrderEnums::block_dp_asc);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  empty.changeOrdering(5);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+}
+
+BOOST_AUTO_TEST_CASE(test_dd_type) {
+
+  ring_type ring(3, 0, false);
+  ring_type empty(0);
+  ring.activate();
+  ring_type defaultr;
+  ring.setVariableName(0, "x");
+  ring.setVariableName(1, "y");
+  ring.setVariableName(2, "z");
+  ring.setVariableName(3, "v");
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "variable" );
+  output << ring.variable(0);
+  BOOST_CHECK(output.is_equal("{{x}}"));
+  output << ring.variable(1);
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  output << ring.variable(2);
+  BOOST_CHECK(output.is_equal("{{z}}"));
+  BOOST_CHECK_THROW(ring.variable(3), PBoRiError);
+  BOOST_CHECK_THROW(ring.variable(-1), PBoRiError);
+  output << defaultr.variable(0);
+  BOOST_CHECK(output.is_equal("{{x}}"));
+  output << defaultr.variable(1);
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  output << defaultr.variable(2);
+  BOOST_CHECK(output.is_equal("{{z}}"));
+  BOOST_CHECK_THROW(defaultr.variable(3), PBoRiError);
+  BOOST_CHECK_THROW(defaultr.variable(-1), PBoRiError);
+  BOOST_CHECK_THROW(empty.variable(-1), PBoRiError);
+  BOOST_CHECK_THROW(empty.variable(0), PBoRiError);
+  BOOST_CHECK_THROW(empty.variable(-1), PBoRiError);
+
+  BOOST_TEST_MESSAGE( "zero" );
+  output << ring.zero();
+  BOOST_CHECK(output.is_equal("{}"));
+  output << defaultr.zero();
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.zero();
+  BOOST_CHECK(output.is_equal("{}"));
+
+  BOOST_TEST_MESSAGE( "one" );
+  output << ring.one();
+  BOOST_CHECK(output.is_equal("{{}}"));
+  output << defaultr.one();
+  BOOST_CHECK(output.is_equal("{{}}"));
+  output << empty.one();
+  BOOST_CHECK(output.is_equal("{{}}"));
+
+  BOOST_TEST_MESSAGE( "constant" );
+  output << ring.constant(true);
+  BOOST_CHECK(output.is_equal("{{}}"));
+  BOOST_CHECK_EQUAL(ring.constant(true), ring.one());
+  output << ring.constant(false);
+  BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(ring.constant(false), ring.zero());
+  output << defaultr.constant(true);
+  BOOST_CHECK(output.is_equal("{{}}"));
+  BOOST_CHECK_EQUAL(defaultr.constant(true), defaultr.one());
+  output << defaultr.constant(false);
+  BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(defaultr.constant(false), defaultr.zero());
+  output << empty.constant(true);
+  BOOST_CHECK(output.is_equal("{{}}"));
+  BOOST_CHECK_EQUAL(empty.constant(true), empty.one());
+  output << empty.constant(false);
+  BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(empty.constant(false), empty.zero());
+}
 
 BOOST_AUTO_TEST_SUITE_END()
