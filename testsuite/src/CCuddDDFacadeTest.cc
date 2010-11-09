@@ -58,4 +58,15 @@ BOOST_AUTO_TEST_CASE(test_facade) {
   facade.printIntern(std::cout);
 }
 
+BOOST_AUTO_TEST_CASE(test_size) {
+
+  dd_type facade(poly.set());
+
+  BOOST_TEST_MESSAGE( "count, countDouble, nNodes, rootIndex" );
+  BOOST_CHECK_EQUAL(facade.count(), 4);
+  BOOST_CHECK_EQUAL(facade.countDouble(), 4);
+  BOOST_CHECK_EQUAL(facade.nNodes(), 8);
+  BOOST_CHECK_EQUAL(facade.rootIndex(), 0);
+}
+
 BOOST_AUTO_TEST_SUITE_END()

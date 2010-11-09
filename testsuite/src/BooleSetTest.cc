@@ -627,10 +627,4 @@ BOOST_AUTO_TEST_CASE(test_change) {
   BOOST_CHECK(output.is_equal("{{x,y}, {y}}"));
 }
 
-BOOST_AUTO_TEST_CASE(test_facade) {
-  CCuddDDFacade<BoolePolyRing, BooleSet> facade(poly.set());
-  facade.printIntern(std::cout);
-}
-
-
 BOOST_AUTO_TEST_SUITE_END()

@@ -100,4 +100,31 @@ BOOST_AUTO_TEST_CASE(test_ordering) {
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
 }
 
+BOOST_AUTO_TEST_CASE(test_ring) {
+  // implement == for rings?
+  // comment what set does better
+  BoolePolyRing notempty(3, 1, false);
+  BoolePolyRing empty(0,2,false);
+
+  BOOST_TEST_MESSAGE( "ring, set" );
+  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
+  BooleEnv::set(notempty);
+  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), notempty.ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), notempty.nVariables());
+  BooleEnv::set(empty);
+  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), empty.ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), empty.nVariables());
+  BooleEnv::set(ring);
+  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
+}
+
+BOOST_AUTO_TEST_CASE(test_blocks) {
+  // better comments about what these do to BooleEnv
+  BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart" );
+  BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), std::numeric_limits<int>::max());
+  
+}
+
 BOOST_AUTO_TEST_SUITE_END()
