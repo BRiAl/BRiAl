@@ -121,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_ring) {
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {
-  // better comments about what these do to BooleEnv
+  // better comments about what these do
   BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart" );
   BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), std::numeric_limits<int>::max());
   
