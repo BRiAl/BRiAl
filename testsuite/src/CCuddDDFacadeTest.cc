@@ -56,14 +56,13 @@ struct Fdd {
 BOOST_FIXTURE_TEST_SUITE(CCuddDDFacadeTestSuite, Fdd )
 
 BOOST_AUTO_TEST_CASE(test_facade) {
-  dd_type facade(poly.set());
-  facade.printIntern(std::cout);
+  //dd_type facade(poly.set());
+  //facade.printIntern(std::cout);
 }
 
 BOOST_AUTO_TEST_CASE(test_size) {
 
   dd_type diagram(poly.set());
-  dd_type empty;
   set_type one_set;
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
@@ -71,25 +70,19 @@ BOOST_AUTO_TEST_CASE(test_size) {
   BOOST_TEST_MESSAGE( "count, countDouble, nNodes, rootIndex, nSupport" );
   BOOST_CHECK_EQUAL(diagram.count(), 5);
   BOOST_CHECK_EQUAL(one.count(), 1);
-  //BOOST_CHECK_EQUAL(empty.count(), 4); // memory access violation at address 0x00000000
   BOOST_CHECK_EQUAL(diagram.countDouble(), 5);
   BOOST_CHECK_EQUAL(one.countDouble(), 1);
-  //BOOST_CHECK_EQUAL(empty.countDouble(), 4); // memory access violation at address 0x00000000
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 8);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 8); // use simpler example to track correctness
   BOOST_CHECK_EQUAL(one.nNodes(), 1);
-  //BOOST_CHECK_EQUAL(empty.nNodes(), 8); // memory access violation at address 0x00000008
   BOOST_CHECK_EQUAL(diagram.rootIndex(), 0);
-  BOOST_CHECK_EQUAL(one.rootIndex(), std::numeric_limits<int>::max()); // Is this supposed to be like this?
-  //BOOST_CHECK_EQUAL(empty.rootIndex(), 0);  // memory access violation at address 0x00000000
+  BOOST_CHECK_EQUAL(one.rootIndex(), std::numeric_limits<int>::max());
   BOOST_CHECK_EQUAL(diagram.nSupport(), 4);
   BOOST_CHECK_EQUAL(one.nSupport(), 0);
-  //BOOST_CHECK_EQUAL(empty.nSupport(), 4); // memory access violation at address 0x00000000
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   dd_type diagram(poly.set());
-  dd_type empty;
   set_type one_set;
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
@@ -97,19 +90,15 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_TEST_MESSAGE( "isZero, isOne, isConstant" );
   BOOST_CHECK(!diagram.isZero());
   BOOST_CHECK(!one.isZero());
-  BOOST_CHECK(!empty.isZero()); // Why is empty not zero?
   BOOST_CHECK(!diagram.isOne());
   BOOST_CHECK(one.isOne());
-  BOOST_CHECK(!empty.isOne());
   BOOST_CHECK(!diagram.isConstant());
   BOOST_CHECK(one.isConstant());
-  BOOST_CHECK(!empty.isConstant()); //Why is empty not constant?
 }
 
 BOOST_AUTO_TEST_CASE(test_indices) {
 
   dd_type diagram(poly.set());
-  dd_type empty;
   set_type one_set;
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
@@ -121,23 +110,39 @@ BOOST_AUTO_TEST_CASE(test_indices) {
   for(unsigned i=0;i<indices.size();i++)
     output<< indices[i] << " ";
   BOOST_CHECK(output.is_equal("0 1 2 3 "));
+
   one.usedIndices(indices);
   for(unsigned i=0;i<indices.size();i++)
     output<< indices[i] << " ";
-  BOOST_CHECK(output.is_equal("0 1 2 3 "));
-  /*empty.usedIndices(indices); // memory access violation at address 0x00000000
-  for(unsigned i=0;i<indices.size();i++)
-    output<< indices[i] << " ";
-  BOOST_CHECK(output.is_equal("0 1 2 3"));*/
+  BOOST_CHECK(output.is_equal(""));
   BOOST_CHECK_EQUAL(*diagram.usedIndices(), 1);
   BOOST_CHECK_EQUAL(*one.usedIndices(), 0);
-  //BOOST_CHECK_EQUAL(*empty.usedIndices(), 1); // memory access violation at address 0x00000000
 
   BOOST_TEST_MESSAGE( "firstBegin, firstEnd, lastBegin, lastEnd" );
   BOOST_CHECK_EQUAL(*diagram.firstBegin(), 0);
-  //BOOST_CHECK_EQUAL(*diagram.firstEnd(), 2);
-  //BOOST_CHECK_EQUAL(*diagram.lastBegin(), 2);
-  //BOOST_CHECK_EQUAL(diagram.lastEnd(), 2);
+  dd_type::first_iterator start = diagram.firstBegin();
+  dd_type::first_iterator finish = diagram.firstEnd();
+  while (start != finish) {
+    std::cout << *start <<", ";
+    ++start;
+  }
+  dd_type::last_iterator last_start = diagram.lastBegin();
+  dd_type::last_iterator last_finish = diagram.lastEnd();
+  while (last_start != last_finish) {
+    std::cout << *last_start <<", ";
+    ++last_start;
+  }
+}
+
+BOOST_AUTO_TEST_CASE(test_divide) {
+  dd_type diagram(poly.set());
+  BoolePolynomial poly_small = x;
+  dd_type diagram_small(poly_small.set());
+  set_type one_set;
+  one_set = one_set.add(BooleMonomial());
+  dd_type one(one_set);
+  std::cout << diagram.divideFirst(diagram_small);
+  std::cout << diagram.divideFirst(one);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

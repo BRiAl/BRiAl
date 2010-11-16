@@ -123,8 +123,48 @@ BOOST_AUTO_TEST_CASE(test_ring) {
 BOOST_AUTO_TEST_CASE(test_blocks) {
   // better comments about what these do
   BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart" );
+  BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), ring.ordering().lastBlockStart());
   BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), std::numeric_limits<int>::max());
-  
+  output_test_stream output, output_ring;
+  BooleEnv::changeOrdering(COrderEnums::block_dlex);
+  BooleEnv::appendBlock(0);
+  BooleEnv::appendBlock(2);
+  BoolePolyRing::block_iterator start(BooleEnv::blockBegin()), 
+                                finish(BooleEnv::blockEnd());
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  start = ring.ordering().blockBegin();
+  finish = ring.ordering().blockEnd();
+  while (start != finish) {
+    output_ring << *start <<", ";
+    ++start;
+  }
+  BOOST_CHECK_EQUAL(output.str(),output_ring.str());
+  output_ring.str("");
+  output_ring << "0, 2, " << std::numeric_limits<int>::max() << ", ";
+  BOOST_CHECK_EQUAL(output.str(), output_ring.str());
+
+  BooleEnv::clearBlocks();
+  start = BooleEnv::blockBegin();
+  finish = BooleEnv::blockEnd();
+  output.str("");
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  start = ring.ordering().blockBegin();
+  finish = ring.ordering().blockEnd();
+  output_ring.str("");
+  while (start != finish) {
+    output_ring << *start <<", ";
+    ++start;
+  }
+  BOOST_CHECK_EQUAL(output.str(), output_ring.str());
+  output_ring.str("");
+  output_ring << std::numeric_limits<int>::max() << ", ";
+  BOOST_CHECK_EQUAL(output.str(), output_ring.str());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

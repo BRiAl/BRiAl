@@ -164,8 +164,8 @@ public:
     p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
 
   /// Default constructor
-  CCuddDDFacade(): p_node()  {}  ///  @todo NULL?
-
+  private: CCuddDDFacade(): p_node()  {}  ///  @todo NULL?
+    public:
   /// Copy constructor
   CCuddDDFacade(const self &from): p_node(from.p_node) {}
 
@@ -311,6 +311,7 @@ public:
     int* pIdx =  usedIndices();
     size_type nlen(ring().nVariables());
 
+    indices = VectorLikeType();
     indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
 
     for(size_type idx = 0; idx < nlen; ++idx)
