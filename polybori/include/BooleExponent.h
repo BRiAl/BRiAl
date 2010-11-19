@@ -161,7 +161,7 @@ class BooleExponent:
   const_reverse_iterator rend() const { return m_data.rend(); }
 
   /// Degree of the corresponding monomial
-  deg_type size() const { return (deg_type)m_data.size(); }
+  size_type size() const { return m_data.size(); }
 
   /// Prepare memory for exponents
   void reserve(size_type nsize) { m_data.reserve(nsize); }
@@ -209,10 +209,10 @@ class BooleExponent:
 
   /// Corresponds to division of monomials
   self divide(const self&) const;
-  self divide(const idx_type& rhs) const { 
+  self divideByIndex(const idx_type& rhs) const { 
     return (reducibleBy(rhs)? removeConst(rhs) : self() ); }
 
-  self divide(const var_type& rhs) const { return divide(rhs.index()); }
+  self divide(const var_type& rhs) const { return divideByIndex(rhs.index()); }
   self divide(const monom_type&) const;
 
   /// Corresponds to multiplication of monomials

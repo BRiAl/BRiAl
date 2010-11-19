@@ -2451,7 +2451,7 @@ Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
         //we don't check for strat containing one at this point
         return p;
     }
-    Polynomial l1(*nav);
+    Polynomial l1(nav, p.ring());
     Polynomial l2=strat.nf(l1);
     if (!(l2.isZero())) l2=red_tail(strat.generators,l2);
     return p+(l1+l2);
@@ -2560,7 +2560,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     
     int i;
     int s=vec.size();
-    int index=-1;
+    Polynomial::idx_type index=-1;
     for(i=0;i<s;i++){
       if (vec[i].isZero()) return vec[i]; // is 0
         if (!(vec[i].isOne())){

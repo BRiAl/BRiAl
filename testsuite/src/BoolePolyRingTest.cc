@@ -65,11 +65,16 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   ring5.activate();
   defaultr = ring_type();
   BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
+  
   /*
+  std::cerr<<"???????????"<< std::endl;
   ring1(0,get_ordering(COrderEnums::lp)); // Why does this not work?
   BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
   BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
+
+  std::cerr<<"HUHUHhuhu"<< ring1.ordering().getOrderCode()<<std::endl;
   defaultr = ring_type();
+
   BOOST_CHECK_NE(ring1.hash(),defaultr.hash());
   ring2(1,get_ordering(COrderEnums::dlex));
   BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
@@ -94,7 +99,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   ring5.activate();
   defaultr = ring_type();
   BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
-  */
+   */
 }
 
 BOOST_AUTO_TEST_CASE(test_variables) {

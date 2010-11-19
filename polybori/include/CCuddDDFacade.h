@@ -137,6 +137,9 @@ public:
   /// Raw context
   typedef typename ring_type::mgr_type mgr_type;
 
+  /// Cudd's index type
+  typedef int cudd_idx_type;
+
   /// Construct diagram from ring and node
   CCuddDDFacade(const ring_type& ring, node_ptr node): 
     p_node(ring, node) {
@@ -435,7 +438,8 @@ public:
     Cudd_Ref(prev);
     while(start != finish) {
  
-      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
+      DdNode* result = cuddUniqueInterZdd( getManager(),
+                                           sign_cast<cudd_idx_type>(*start),
                                            prev, prev);
 
       Cudd_Ref(result);
@@ -491,7 +495,7 @@ private:
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
       throw PBoRiGenericError<CTypes::invalid_ite>();
     
-    return cuddZddGetNode(ring.getManager(), idx, 
+    return cuddZddGetNode(ring.getManager(), sign_cast<cudd_idx_type>(idx), 
                           thenNavi.getNode(), elseNavi.getNode());
   }
 
@@ -500,7 +504,7 @@ private:
   getNewNode(idx_type idx, const self& thenDD, const self& elseDD) {
     thenDD.checkSameManager(elseDD);
     return getNewNode(thenDD.ring(), 
-                      idx, thenDD.navigation(), elseDD.navigation());
+                      sign_cast<cudd_idx_type>(idx), thenDD.navigation(), elseDD.navigation());
   }
 
 private:

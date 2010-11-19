@@ -239,7 +239,7 @@ main(){
     poly.diagram().firstDivisors();
 
     std::cout << "Testing lowlevel multiples"<<std::endl;
-    std::vector<int> multipliers(3);
+    std::vector<BoolePolynomial::idx_type> multipliers(3);
     multipliers[0]= 1;
     multipliers[1]= 2;
     multipliers[2]= 4;

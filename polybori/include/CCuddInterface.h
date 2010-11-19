@@ -117,8 +117,9 @@ public:
 
   /// Type of Cudd decision diagram manager
   typedef DdManager mgr_type;
+  typedef int cudd_idx_type;
 
-  typedef node_ptr (*unary_int_function)(mgr_type*, int);
+  typedef node_ptr (*unary_int_function)(mgr_type*, cudd_idx_type);
   typedef node_ptr (*void_function)(mgr_type*);
 
 
@@ -182,12 +183,16 @@ public:
     return Cudd_ReorderingStatusZdd(*this, method);
   }
 
-  idx_type ReadPermZdd(idx_type i) const { 
-    return Cudd_ReadPermZdd(*this, i); 
+  /// @note unused (do not use permutations if the variables)
+  idx_type ReadPermZdd(idx_type idx) const { 
+    return sign_cast<idx_type>(Cudd_ReadPermZdd(*this, 
+                                               sign_cast<cudd_idx_type>(idx))); 
   }
 
-  idx_type ReadInvPermZdd(idx_type i) const { 
-    return Cudd_ReadInvPermZdd(*this, i); 
+  /// @note unused (do not use permutations if the variables)
+  idx_type ReadInvPermZdd(idx_type idx) const { 
+    return sign_cast<idx_type>(Cudd_ReadInvPermZdd(*this, 
+                                               sign_cast<cudd_idx_type>(idx)));
   }
 
   void AddHook(DD_HFP f, Cudd_HookType where) { 
@@ -300,7 +305,7 @@ public:
   }
 
   /// Get number of managed variables
-  size_type nVariables() const { return ReadZddSize(); }
+  size_type nVariables() const { return (size_type)ReadZddSize(); }
 
   /// clear all temporarily stored data
   void cacheFlush() {  cuddCacheFlush(*this); }
@@ -321,21 +326,20 @@ protected:
   }
   /// Generate check result of previous node operation and convert 
   node_ptr checkedResult(node_ptr result) const  { 
-    checkedResult(idx_type(result != NULL));
+    checkedResult(int(result != NULL));
     return result;
   }
 
   /// Generate check numerical result of previous operation
-  idx_type checkedResult(idx_type result) const  {
+  void checkedResult(int result) const  {
     if UNLIKELY(result == 0) {
       throw std::runtime_error(error_text(*this));
     } 
-    return result;
   }
 
   /// Apply function to given index
   node_ptr apply(unary_int_function func, idx_type idx) const  { 
-    return checkedResult(func(*this, idx) );
+    return checkedResult(func(*this, sign_cast<cudd_idx_type>(idx)) );
   }
 
   /// Call function 
@@ -351,7 +355,9 @@ protected:
 
   /// Generate raw variable
   void initVar(node_ptr& node, idx_type idx) const {
-    Cudd_Ref(node = cuddUniqueInterZdd(*this, idx, zddOne(), zddZero()));
+    Cudd_Ref(node = cuddUniqueInterZdd(*this, 
+                                       sign_cast<cudd_idx_type>(idx), zddOne(),
+                                       zddZero()));
   }
 
   /// Wrapping memeber function as functional

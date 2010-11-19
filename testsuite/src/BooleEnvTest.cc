@@ -69,7 +69,10 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BooleEnv::setVariableName(5, "t");
   BOOST_CHECK_EQUAL(BooleEnv::getVariableName(5), ring.getVariableName(5));
   BOOST_CHECK_EQUAL(BooleEnv::getVariableName(5), "t");
-  //BooleEnv::setVariableName(-1, "r"); // memory access violation at address: 0x00000059
+
+
+  BOOST_CHECK_THROW( BooleEnv::setVariableName(-1, "r"), std::bad_alloc); 
+
   BOOST_CHECK_EQUAL(BooleEnv::getVariableName(-1), ring.getVariableName(-1));
   BOOST_CHECK_EQUAL(BooleEnv::getVariableName(-1), "UNDEF");
 }

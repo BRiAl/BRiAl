@@ -1256,7 +1256,9 @@ BoolePolynomial::eliminationLength() const{
 BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
   const {
+
   assert(garantied_deg_bound>=this->deg());
+
   if (ring().ordering().isTotalDegreeOrder())
     return this->length();
   if (this->leadDeg()==garantied_deg_bound)

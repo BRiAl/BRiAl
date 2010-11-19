@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Exponents from monomials" );
   output_test_stream output;
-  output << exp_type().get(x*y*z*z);// Why get() not a constructor?
+  output << exp_type(x*y*z*z);
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << exp_type().get(x);
   BOOST_CHECK(output.is_equal("(0)"));
@@ -99,16 +99,17 @@ BOOST_AUTO_TEST_CASE(test_divide) {
 
   BOOST_TEST_MESSAGE( "divide" );
   output << exponent.divide(exp_type().get(y*z));
+
   BOOST_CHECK(output.is_equal("(0)"));
   output << exponent.divide(exp_type());
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
-  output << exponent.divide(0);
+  output << exponent.divideByIndex(0);
   BOOST_CHECK(output.is_equal("(1, 2)"));
-  output << exponent.divide(4);
+  output << exponent.divideByIndex(4);
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
-  output << exponent.divide(5);
+  output << exponent.divideByIndex(5);
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
-  output << exponent.divide(-5);
+  output << exponent.divideByIndex(-5);
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
   output << exponent.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("(0, 2)"));
@@ -124,13 +125,13 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(exp_type());
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(0);
+  output << empty.divideByIndex(0);
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(4);
+  output << empty.divideByIndex(4);
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(5);
+  output << empty.divideByIndex(5);
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(-5);
+  output << empty.divideByIndex(-5);
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("()"));
@@ -178,8 +179,11 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(0, 1, 2, 4)"));
   output << exponent.multiply(5);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 5)"));
-  output << exponent.multiply(-5);
-  BOOST_CHECK(output.is_equal("(-5, 0, 1, 2)"));
+  output << exponent.multiply(100);
+
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 100)"));
+
+
   output << exponent.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
   output << exponent.multiply(BooleVariable(4));
@@ -200,8 +204,8 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(4)"));
   output << empty.multiply(5);
   BOOST_CHECK(output.is_equal("(5)"));
-  output << empty.multiply(-5);
-  BOOST_CHECK(output.is_equal("(-5)"));
+  output << empty.multiply(100);
+  BOOST_CHECK(output.is_equal("(100)"));
   output << empty.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(3)"));
   output << empty.multiply(BooleVariable(4));
@@ -502,9 +506,9 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2.insert(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
-  exponent2.insert(-1);
+  exponent2.insert(99);
   output << exponent2;
-  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5, 99)"));
   BOOST_CHECK_NE(exponent2, exponent);
   exp_type empty2;
   empty2.insert(5);
@@ -513,9 +517,9 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   empty2.insert(2);
   output << empty2;
   BOOST_CHECK(output.is_equal("(2, 5)"));
-  empty2.insert(-20);
+  empty2.insert(20);
   output << empty2;
-  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK(output.is_equal("(2, 5, 20)"));
   BOOST_CHECK_NE(empty2, empty);
 
   exponent2 = exponent;
@@ -528,9 +532,9 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2.push_back(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
-  exponent2.push_back(-1);
+  exponent2.push_back(99);
   output << exponent2;
-  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5, 99)"));
   BOOST_CHECK_NE(exponent2, exponent);
   empty2 = empty;
   empty2.push_back(5);
@@ -539,9 +543,9 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   empty2.push_back(2);
   output << empty2;
   BOOST_CHECK(output.is_equal("(2, 5)"));
-  empty2.push_back(-20);
+  empty2.push_back(20);
   output << empty2;
-  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK(output.is_equal("(2, 5, 20)"));
   BOOST_CHECK_NE(empty2, empty);
 
   exponent2 = exponent.insertConst(0);
@@ -553,9 +557,9 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent2 = exponent2.insertConst(5);
   output << exponent2;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5)"));
-  exponent2 = exponent2.insertConst(-1);
+  exponent2 = exponent2.insertConst(99);
   output << exponent2;
-  BOOST_CHECK(output.is_equal("(-1, 0, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4, 5, 99)"));
   BOOST_CHECK_NE(exponent2, exponent);
   empty2 = empty;
   empty2 = empty.insertConst(5);
@@ -564,43 +568,43 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   empty2 = empty2.insertConst(2);
   output << empty2;
   BOOST_CHECK(output.is_equal("(2, 5)"));
-  empty2 = empty2.insertConst(-20);
+  empty2 = empty2.insertConst(20);
   output << empty2;
-  BOOST_CHECK(output.is_equal("(-20, 2, 5)"));
+  BOOST_CHECK(output.is_equal("(2, 5, 20)"));
   BOOST_CHECK_NE(empty2, empty);
 
   BOOST_TEST_MESSAGE( "remove, removeConst" );
   exp_type exponent3 = exponent2;
   exponent3.remove(0);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 3, 4, 5, 99)"));
   exponent3.remove(4);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 3, 5, 99)"));
   exponent3.remove(3);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 5, 99)"));
   exponent3.remove(5);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2)"));
-  exponent3.remove(-1);
+  BOOST_CHECK(output.is_equal("(1, 2, 99)"));
+  exponent3.remove(99);
   output << exponent3;
   BOOST_CHECK(output.is_equal("(1, 2)"));
   BOOST_CHECK_NE(exponent3, exponent2);
-  exponent3.remove(-5);
+  exponent3.remove(100);
   output << exponent3;
   BOOST_CHECK(output.is_equal("(1, 2)"));
   exp_type empty3 = empty2;
   empty3.remove(5);
   output << empty3;
-  BOOST_CHECK(output.is_equal("(-20, 2)"));
+  BOOST_CHECK(output.is_equal("(2, 20)"));
   empty3.remove(2);
   output << empty3;
-  BOOST_CHECK(output.is_equal("(-20)"));
-  empty3.remove(-20);
+  BOOST_CHECK(output.is_equal("(20)"));
+  empty3.remove(20);
   output << empty3;
   BOOST_CHECK(output.is_equal("()"));
-  empty3.remove(-5);
+  empty3.remove(20);
   output << empty3;
   BOOST_CHECK(output.is_equal("()"));
   BOOST_CHECK_NE(empty3, empty2);
@@ -608,34 +612,34 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   exponent3 = exponent2;
   exponent3 = exponent2.removeConst(0);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 4, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 3, 4, 5, 99)"));
   exponent3 = exponent3.removeConst(4);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 3, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 3, 5, 99)"));
   exponent3 = exponent3.removeConst(3);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2, 5)"));
+  BOOST_CHECK(output.is_equal("(1, 2, 5, 99)"));
   exponent3 = exponent3.removeConst(5);
   output << exponent3;
-  BOOST_CHECK(output.is_equal("(-1, 1, 2)"));
-  exponent3 = exponent3.removeConst(-1);
+  BOOST_CHECK(output.is_equal("(1, 2, 99)"));
+  exponent3 = exponent3.removeConst(99);
   output << exponent3;
   BOOST_CHECK(output.is_equal("(1, 2)"));
   BOOST_CHECK_NE(exponent3, exponent2);
-  exponent3 = exponent3.removeConst(-5);
+  exponent3 = exponent3.removeConst(100);
   output << exponent3;
   BOOST_CHECK(output.is_equal("(1, 2)"));
   empty3 = empty2;
   empty3 = empty2.removeConst(5);
   output << empty3;
-  BOOST_CHECK(output.is_equal("(-20, 2)"));
+  BOOST_CHECK(output.is_equal("(2, 20)"));
   empty3 = empty3.removeConst(2);
   output << empty3;
-  BOOST_CHECK(output.is_equal("(-20)"));
-  empty3 = empty3.removeConst(-20);
+  BOOST_CHECK(output.is_equal("(20)"));
+  empty3 = empty3.removeConst(20);
   output << empty3;
   BOOST_CHECK(output.is_equal("()"));
-  empty3 = empty3.removeConst(-5);
+  empty3 = empty3.removeConst(100);
   output << empty3;
   BOOST_CHECK(output.is_equal("()"));
   BOOST_CHECK_NE(empty3, empty2);
@@ -655,12 +659,12 @@ BOOST_AUTO_TEST_CASE(test_change) {
   BOOST_CHECK(output.is_equal("(0, 1)"));
   output << exponent.change(3);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
-  output << exponent.change(-5);
-  BOOST_CHECK(output.is_equal("(-5, 0, 1, 2)"));
+  output << exponent.change(100);
+  BOOST_CHECK(output.is_equal("(0, 1, 2, 100)"));
   output << empty.change(1);
   BOOST_CHECK(output.is_equal("(1)"));
-  output << empty.change(-1);
-  BOOST_CHECK(output.is_equal("(-1)"));
+  output << empty.change(99);
+  BOOST_CHECK(output.is_equal("(99)"));
   output << exponent.changeAssign(1);
   BOOST_CHECK(output.is_equal("(0, 2)"));
   output << exponent.changeAssign(0);
@@ -669,12 +673,12 @@ BOOST_AUTO_TEST_CASE(test_change) {
   BOOST_CHECK(output.is_equal("()"));
   output << exponent.changeAssign(3);
   BOOST_CHECK(output.is_equal("(3)"));
-  output << exponent.changeAssign(-5);
-  BOOST_CHECK(output.is_equal("(-5, 3)"));
+  output << exponent.changeAssign(100);
+  BOOST_CHECK(output.is_equal("(3, 100)"));
   output << empty.changeAssign(1);
   BOOST_CHECK(output.is_equal("(1)"));
-  output << empty.changeAssign(-1);
-  BOOST_CHECK(output.is_equal("(-1, 1)"));
+  output << empty.changeAssign(99);
+  BOOST_CHECK(output.is_equal("(1, 99)"));
 }
 
 BOOST_AUTO_TEST_CASE(test_logical_operators) {
