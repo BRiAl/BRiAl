@@ -1,0 +1,6 @@
+For generation of the 'debian' directory, type
+  scons prepare-debian 
+in the package directory. 
+
+For removal, use
+  scons -c prepare-debian

@@ -1,0 +1,566 @@
+#!/usr/bin/python
+
+# boxlayout.py
+
+import pathadjuster
+from polybori.gbrefs import my_import, load_file, clean_data
+import resource
+from polybori.memusage import *
+from polybori.gbrefs import SINGLE,AUTO,parse_blocks
+from polybori.nf import *
+import polybori.aes as aes
+from polybori.gbcore import *
+
+from re import *
+from time import time,clock
+from polybori.PyPolyBoRi import *
+from polybori.statistics import used_vars
+
+
+import sys
+import os.path
+import tempfile
+from optparse import OptionParser
+from optparse import Values
+#from qt import *
+from PyQt4 import QtGui
+from PyQt4 import QtCore
+#from PyQt4 import QDialog
+
+pbdefaultoptionsdic={'faugere': False, 'interpolation_gb': False, 'show': True, 'showtime': False, 'linear_algebra_in_last_block': True, 'preprocess_only': False, 'incremental': False, 'selection_size': 1000, 'heuristic': True, 'clean_arguments': True, 'full_prot': False, 'recursion': False, 'invert': False, 'prot': True, 'fix_deg_bound': True, 'eliminate_identical_variables': True, 'convert_with_fglm_from_ring': None, 'cleanup': False, 'noro': False, 'easy_linear_polynomials': True, 'lazy': True, 'blocks': 'auto', 'step_factor': 1, 'max_growth': 2.0, 'exchange': True, 'red_tail_deg_growth': True, 'auto': False, 'matrix_prefix': 'matrix', 'red_tail': True, 'implementation': 'Python', 'gauss_on_linear': True, 'modified_linear_algebra': True, 'll_constants': True, 'result_to_list': True, 'aes': False, 'clean_and_restart_algorithm': False, 'llfirst': False, 'other_ordering_first': False, 'deg_bound': False, 'redsb': True, 'implications': False, 'draw_matrices': False, 'ordering': 'lp', 'minsb': True, 'll': False, 'llfirstonthefly': False, 'unique_ideal_generator': False}
+
+class OutLog(object):
+    def __init__(self, edit, out=None, color=None):
+        """(edit, out=None, color=None) -> can write stdout, stderr to a
+        QTextEdit.
+        edit = QTextEdit
+        out = alternate stream ( can be the original sys.stdout )
+        color = alternate color (i.e. color stderr a different color)
+        """
+        self.edit = edit
+        self.out = None
+        self.color = color
+
+    def write(self, m):
+        if self.color:
+            tct = self.edit.textColor()
+            self.edit.setTextColor(self.color)
+
+        self.edit.moveCursor(QtGui.QTextCursor.End)
+        self.edit.insertPlainText( m )
+
+        if self.color:
+            self.edit.setTextColor(tct)
+
+        if self.out:
+            self.out.write(m)
+
+#sys.stderr = OutLog( edit, sys.stderr, QtGui.QColor(255,0,0) )
+
+class BoxLayout(QtGui.QWidget):
+    def __init__(self, parent=None):
+
+        QtGui.QWidget.__init__(self, parent)
+        self.filename=''
+        self.blocksvalue=''
+        self.setWindowTitle('PolyBoRi')
+        #size =  self.geometry()
+        #self.setMaximumWidth(size.width())
+        self.center()
+                
+        vbox = QtGui.QVBoxLayout()
+        group = QtGui.QGroupBox("Ordering")
+        vboxGroup = QtGui.QVBoxLayout()
+        
+        self.timelabel = QtGui.QLabel(self)
+        self.timelabel2 = QtGui.QLabel(self)
+        self.timelabel3 = QtGui.QLabel(self)
+        self.timelabel4 = QtGui.QLabel(self)
+
+
+        self.Olp = QtGui.QRadioButton("lp")
+        self.Olp.setFocusPolicy(QtCore.Qt.NoFocus)
+        vboxGroup.addWidget(self.Olp)
+        
+        self.Odpasc = QtGui.QRadioButton("dp_asc")
+        self.Odpasc.setFocusPolicy(QtCore.Qt.NoFocus)
+        vboxGroup.addWidget(self.Odpasc)
+        
+        
+        self.Odlex = QtGui.QRadioButton("dlex")
+        self.Odlex.setFocusPolicy(QtCore.Qt.NoFocus)
+        vboxGroup.addWidget(self.Odlex)
+        
+        self.Oblocks = QtGui.QCheckBox("Use Block Ordering")
+        self.Oblocks.setFocusPolicy(QtCore.Qt.NoFocus)
+        vboxGroup.addWidget(self.Oblocks)
+        
+        self.Tblocks=QtGui.QLineEdit('')
+        self.Tblocks.setDisabled(True)
+        vboxGroup.addWidget(self.Tblocks)
+
+        group.setLayout(vboxGroup)
+        vbox.addWidget(group)
+        
+        if pbdefaultoptionsdic['ordering']=='lp':
+            self.Olp.setChecked(True)
+            self.Oblocks.setDisabled(True)
+        
+        if pbdefaultoptionsdic['ordering']=='dp_asc':
+            self.Odpasc.setChecked(True)
+            self.Oblocks.setDisabled(False)
+
+        if pbdefaultoptionsdic['ordering']=='dlex':
+            self.Odlex.setChecked(True)
+            self.Oblocks.setDisabled(False)
+
+        
+        
+        self.connect(self.Odlex, QtCore.SIGNAL('toggled(bool)'), self.FOdlex)
+        self.connect(self.Odpasc, QtCore.SIGNAL('toggled(bool)'), self.FOdlex)
+        self.connect(self.Olp, QtCore.SIGNAL('toggled(bool)'), self.FOdlex)
+        self.connect(self.Oblocks, QtCore.SIGNAL('stateChanged(int)'), self.FOblocks)
+        self.connect(self.Tblocks, QtCore.SIGNAL('editingFinished()'), self.FTblocks)
+
+        self.Cprot = QtGui.QCheckBox('Protocol on', self)
+        self.Cprot.setFocusPolicy(QtCore.Qt.NoFocus)
+        if pbdefaultoptionsdic['prot']==True:
+            self.Cprot.toggle()
+
+        self.Cnoro = QtGui.QCheckBox('Noro', self)
+        self.Cnoro.setFocusPolicy(QtCore.Qt.NoFocus)
+        if pbdefaultoptionsdic['noro']==True:
+            self.Cnoro.toggle()
+
+        self.Cfaug = QtGui.QCheckBox('Faugere', self)
+        self.Cfaug.setFocusPolicy(QtCore.Qt.NoFocus)
+        if pbdefaultoptionsdic['faugere']==True:
+            self.Cfaug.toggle()
+
+        self.Cll = QtGui.QCheckBox('linear lead', self)
+        self.Cll.setFocusPolicy(QtCore.Qt.NoFocus)
+        if pbdefaultoptionsdic['ll']==True:
+            self.Cll.toggle()
+   
+        self.Cheuristic = QtGui.QCheckBox('heuristic', self)
+        self.Cheuristic.setFocusPolicy(QtCore.Qt.NoFocus)
+        if pbdefaultoptionsdic['heuristic']==True:
+            self.Cheuristic.toggle()
+
+        grid = QtGui.QGridLayout()
+        grid.setSpacing(10)
+       
+        pos = [(4, 0), (5, 0), (6, 0),
+               (4, 1), (5, 1), (6, 1),
+               (4 ,2), (5, 2), (6, 2)]
+        pos = [(9, 4), (10, 4), (11, 4),
+               (12, 4), (13, 4)]
+        grid.addWidget(self.Cprot, pos[0][0], pos[0][1])
+        grid.addWidget(self.Cnoro, pos[1][0], pos[1][1])
+        grid.addWidget(self.Cfaug, pos[2][0], pos[2][1])
+        grid.addWidget(self.Cll,   pos[3][0], pos[3][1])
+        grid.addWidget(self.Cheuristic, pos[4][0], pos[4][1])
+        
+        grid.addWidget(self.timelabel,25,4)
+        grid.addWidget(self.timelabel2,26,4)
+        grid.addWidget(self.timelabel3,27,4)
+        grid.addWidget(self.timelabel4,28,4)
+        grid.addWidget(group,7,4)
+        #grid.addWidget(group2,11,11)
+
+        self.brun= QtGui.QPushButton('Run', self)
+        grid.addWidget(self.brun, 16, 4)
+        self.brun.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.connect(self.brun, QtCore.SIGNAL('clicked()'), self.runit)
+
+        self.boptions= QtGui.QPushButton('Further Options', self)
+        grid.addWidget(self.boptions, 14, 4)
+        self.boptions.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.connect(self.boptions, QtCore.SIGNAL('clicked()'), self.openoptions)
+        
+        self.connect(self.Cprot, QtCore.SIGNAL('stateChanged(int)'), self.Fprot)
+        self.connect(self.Cnoro, QtCore.SIGNAL('stateChanged(int)'), self.Fnoro)
+        self.connect(self.Cfaug, QtCore.SIGNAL('stateChanged(int)'), self.Ffaug)
+        self.connect(self.Cll, QtCore.SIGNAL('stateChanged(int)'), self.Fll)
+        self.connect(self.Cheuristic, QtCore.SIGNAL('stateChanged(int)'), self.Fheuristic)
+        
+ 
+        self.Output = QtGui.QTextEdit()#'HIER STEHT SPAETER DER OUTPUT')
+        grid.addWidget(self.Output, 7, 0,24,4)
+        self.Output.setFocusPolicy(QtCore.Qt.NoFocus)
+        #sys.stdout = OutLog( self.Output, sys.stdout )
+
+        self.displayFile=QtGui.QLineEdit('no file selected')
+        grid.addWidget(self.displayFile, 1, 4)
+        self.displayFile.setFocusPolicy(QtCore.Qt.NoFocus)
+
+       
+        pixmap = QtGui.QPixmap("polybori.png")
+        label = QtGui.QLabel(self)
+        label.setPixmap(pixmap)
+        grid.addWidget(label,0,0,3,3)
+        
+
+
+        self.bopfi = QtGui.QPushButton('Open File', self)
+        self.bopfi.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.connect(self.bopfi, QtCore.SIGNAL('clicked()'), self.showDialog)
+        #self.setFocus()
+        grid.addWidget(self.bopfi, 0, 4)
+
+        self.setLayout(grid)
+        
+        self.size =  self.geometry()
+    
+    
+        
+    def openoptions(self):
+        self.myOptionWindow = OptionWindow()
+        self.myOptionWindow.show()
+   
+    def FOdlex(self):
+        if self.Odlex.isChecked() or self.Odpasc.isChecked():
+            self.Oblocks.setDisabled(False)
+            if self.Oblocks.isChecked():
+                self.Tblocks.setDisabled(False)
+                pbdefaultoptionsdic['blocks']=self.blocksvalue
+        else:
+            self.Oblocks.setDisabled(True)
+            self.Tblocks.setDisabled(True)
+        
+        if self.Odlex.isChecked():
+            pbdefaultoptionsdic['ordering']='dlex'
+        if self.Odpasc.isChecked():
+            pbdefaultoptionsdic['ordering']='dp_asc'
+        if self.Olp.isChecked():
+            pbdefaultoptionsdic['ordering']='lp'
+            pbdefaultoptionsdic['blocks']='auto'
+            self.Oblocks.setChecked(False)
+
+       
+    def FOblocks(self):
+        if self.Oblocks.isChecked() and (self.Odpasc.isChecked() or self.Odlex.isChecked()):
+            self.Tblocks.setDisabled(False)
+            pbdefaultoptionsdic['blocks']=self.blocksvalue
+        else:
+            self.Tblocks.setDisabled(True)
+            pbdefaultoptionsdic['blocks']='auto'
+            
+
+    def FTblocks(self):
+        if re.match(r"^(\d+\,)*\d+$",str(self.Tblocks.text())):
+            self.blocksvalue=str(self.Tblocks.text())
+            pbdefaultoptionsdic['blocks']=str(self.Tblocks.text())
+        else:
+            reply=QtGui.QMessageBox.warning(self,'Message',"Please use the format 'int,...,int' ",QtGui.QMessageBox.Ok)
+            if reply == QtGui.QMessageBox.Ok:
+                self.Tblocks.selectAll()
+   
+    def Fprot(self, value):
+        if self.Cprot.isChecked():
+            pbdefaultoptionsdic['prot']=True
+        else:
+            pbdefaultoptionsdic['prot']=False
+    
+    def Fnoro(self, value):
+        if self.Cnoro.isChecked():
+            pbdefaultoptionsdic['noro']=True
+        else:
+            pbdefaultoptionsdic['noro']=False        
+
+    def Ffaug(self, value):
+        if self.Cfaug.isChecked():
+            pbdefaultoptionsdic['faugere']=True
+        else:
+            pbdefaultoptionsdic['faugere']=False     
+    
+    def Fll(self, value):
+        if self.Cll.isChecked():
+            pbdefaultoptionsdic['ll']=True
+        else:
+            pbdefaultoptionsdic['ll']=False    
+
+    def Fheuristic(self, value):
+        if self.Cheuristic.isChecked():
+            pbdefaultoptionsdic['heuristic']=True
+        else:
+            pbdefaultoptionsdic['heuristic']=False     
+    
+    def showDialog(self):
+        self.filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file','','Data(*.py *.cnf)')
+        self.pathplusname, self.extension=os.path.splitext(str(self.filename))
+        self.name = os.path.splitext(os.path.basename(str(self.filename)))[0]
+        self.displayFile.clear()
+        
+        if self.filename:
+            self.displayFile.insert(self.filename)
+        else:
+            self.displayFile.insert('no file selected \n')
+        if self.extension==".cnf":
+            
+            sys.path.append(".")
+            from cnf2ideal import gen_clauses, process_input,convert_file_PB
+            
+            #target=str(self.pathplusname) + ".py"
+            self.target=tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.py', prefix='tmp', dir=None, delete=True)
+            inp=process_input(open(str(self.filename)))
+
+            clauses=gen_clauses(inp)
+            out=open(self.target.name,"w")
+            convert_file_PB(clauses,self.name,False, out)
+            print self.target.name
+            self.filename=str(self.target.name)
+
+   
+    def center(self):
+        screen = QtGui.QDesktopWidget().screenGeometry()
+        size =  self.geometry()
+        self.move((screen.width()-size.width())/2, (screen.height()-size.height())/2)
+
+
+    def runit(self):
+       try:
+        self.Output.clear()
+        #(options, args) = parser.parse_args()
+           
+        options=Values(pbdefaultoptionsdic)
+        if self.Oblocks.isChecked():
+            options.ordering='block_' + options.ordering
+        #mydata=load_file('/p/sys/IndAlg/share/data/uf20_45.py')
+        mydata=load_file(self.filename)
+        I=mydata.ideal
+        t=time()
+        tc=clock()
+       
+        change_ordering(getattr(OrderCode, options.ordering))
+        if match("block",options.ordering):
+            block_starts=parse_blocks(options.blocks,mydata)
+            block_starts.sort()
+            for s in block_starts:
+                append_ring_block(s)
+        if not options.auto:
+            I = groebner_basis(I, **dict([(k,getattr(options,k)) for k in dir(options) if k in groebner_basis.options]))
+        else:
+            I= groebner_basis(I,prot=options.prot)
+
+        if options.show:
+            if options.redsb and options.deg_bound>10000:
+                for p in I:
+                    #self.Output.insertPlainText(str(p))
+                    #self.Output.insertPlainText('\n')
+                    print p
+            else:
+                if options.deg_bound>10000:
+                    for p in I:
+                        print p
+                        #self.Output.insertPlainText(str(p))
+                        #self.Output.insertPlainText('\n')
+                else:
+                    for i in xrange(len(I)):
+                        print I[i]
+                        #self.Output.insertPlainText(str(I[i]))
+                        #self.Output.insertPlainText('\n')
+     
+        tc2=clock()
+        t2=time()
+        from copy import copy
+        clean_data(mydata)
+       # if options.prot or options.showtime:
+       #     print "used time:", t2-t
+       #     print "used clock: (user time modulo)", tc2-tc
+       #     print "virtual memory peak:", memorypeak(), "KB"
+       #     print "resident memory peak:", residentpeak(), "KB"
+        self.timelabel.setText(('used time  ' + str(t2-t)))
+        self.timelabel2.setText(('used clock  ' + str(tc2-tc)))
+        self.timelabel3.setText(('virtual memory peak  ' + str(memorypeak())+'KB' ))
+        self.timelabel4.setText(('resident memory peak  ' + str(residentpeak())+'KB' ))
+
+        self.timelabel.adjustSize()
+        self.timelabel2.adjustSize()
+        self.timelabel3.adjustSize()
+        self.timelabel4.adjustSize()
+        #print options
+       except ValueError as detail:
+           reply=QtGui.QMessageBox.warning(self,'Message',str(detail),QtGui.QMessageBox.Ok)
+       except IOError as detail2:
+           reply2=QtGui.QMessageBox.warning(self,'Message',str(detail2),QtGui.QMessageBox.Ok)
+           #if reply == QtGui.QMessageBox.Ok:
+    def closeEvent(self, event):
+        #print "adasffawASDFASDF"
+        #self.myOptionWindow.close()
+        #event.accept()
+        reply = QtGui.QMessageBox.question(self, 'Message',"Are you sure to quit?", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
+        if reply == QtGui.QMessageBox.Yes:
+            self.myOptionWindow.close()
+            event.accept()
+        else:
+            event.ignore()
+
+
+
+
+class OptionWindow(QtGui.QWidget):
+    def __init__(self,parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.setWindowTitle('Options')
+        self.posi()
+        self.realnames=  ['show','invert', 'auto', 'preprocess_only','aes','full_prot','cleanup','redsb','lazy','exchange','recursion','llfirst','llfirstonthefly','linear_algebra_in_last_block','red_tail','implications','draw_matrices']
+        self.buttonnames=['show','invert', 'override all options ','only preprocess','hint that this is a AES system','full protocol on','clean up','red SB output','Lazy','exchange','recursion','lex eliminate first','lex eliminate on fly first','linear algebra in last block','tail reductions','implications','save matrices as png']
+        self.buttondict=dict()
+        o=0
+        pos = [(0, 0), (1, 0), (2, 0),(3, 0),
+               (0, 1), (1, 1), (2, 1),(3, 1),
+               (0, 2), (1, 2), (2, 2),(3, 2),
+               (0, 3), (1, 3), (2, 3),(3, 3),
+               (0, 4), (1, 4), (2, 4),(3, 4 ) ]
+        pos = [(0, 0), (0, 1), (5, 0),(5, 1),
+               (1, 0), (1, 1), (6, 0),(6, 1),
+               (2, 0), (2, 1), (7, 0),(7, 1),
+               (3, 0), (3, 1), (8, 0),(8, 1),
+               (4, 0), (4, 1), (9, 0),(9, 1) ]
+        pos = [(0, 0), (1, 0), (2, 0),(3, 0),
+               (4, 0), (5, 0), (6, 0),(7, 0),
+               (8, 0), (9, 0), (0, 1),(1, 1),
+               (2, 1), (3, 1), (4, 1),(5, 1),
+               (6, 1), (7, 1), (8, 1),(9, 1) ]
+        grid = QtGui.QGridLayout()
+        
+        for names in self.realnames:
+            abc=self.buttonnames[o]
+            self.buttondict[names]= QtGui.QCheckBox(abc, self)
+            if pbdefaultoptionsdic[names]==True:
+                self.buttondict[names].toggle()
+            grid.addWidget(self.buttondict[names], pos[o][0], pos[o][1])
+            self.connect(self.buttondict[names], QtCore.SIGNAL('stateChanged(int)'), self.tobebuilt)
+            o=o+1
+
+        Tmpref = QtGui.QLabel('prefix for saved matrices')
+        grid.addWidget(Tmpref, 10, 0)
+
+        self.mpref=QtGui.QLineEdit(str(pbdefaultoptionsdic['matrix_prefix']))
+        grid.addWidget(self.mpref, 10, 1)
+        self.connect(self.mpref, QtCore.SIGNAL('textChanged(QString)'), self.Fmpref)
+
+       
+        Tmgrowth = QtGui.QLabel('max growth')
+        grid.addWidget(Tmgrowth, 11, 0)
+
+        self.mgrowth=QtGui.QLineEdit(str(pbdefaultoptionsdic['max_growth']))
+        #self.mgrowth.undoAvailable(True)
+        grid.addWidget(self.mgrowth, 11, 1)
+        self.connect(self.mgrowth, QtCore.SIGNAL('editingFinished()'), self.Fmgrowth)
+
+        Tssize = QtGui.QLabel('Choose selection size')
+        grid.addWidget(Tssize, 12, 0)
+
+        self.ssize=QtGui.QLineEdit(str(pbdefaultoptionsdic['selection_size']))
+        grid.addWidget(self.ssize, 12, 1)
+        self.connect(self.ssize, QtCore.SIGNAL('editingFinished()'), self.Fssize)
+
+        Tsfac = QtGui.QLabel('step factor')
+        grid.addWidget(Tsfac, 13, 0)
+
+        self.sfac=QtGui.QLineEdit(str(pbdefaultoptionsdic['step_factor']))
+        grid.addWidget(self.sfac, 13, 1)
+        self.connect(self.sfac, QtCore.SIGNAL('editingFinished()'), self.Fsfac)
+ 
+        self.Cdbound = QtGui.QCheckBox("deg bound") 
+        grid.addWidget(self.Cdbound, 14, 0)
+        self.connect(self.Cdbound, QtCore.SIGNAL('stateChanged(int)'), self.FCdbound)
+       
+        self.dbound=QtGui.QLineEdit(str(pbdefaultoptionsdic['deg_bound']))
+        grid.addWidget(self.dbound, 14, 1)
+        self.connect(self.dbound, QtCore.SIGNAL('editingFinished()'), self.Fdbound)
+        
+        if pbdefaultoptionsdic['deg_bound']==False:
+            self.Cdbound.setChecked(False)
+            self.dbound.setDisabled(True)
+        else:
+            self.Cdbound.setChecked(True)
+            self.dbound.setDisabled(False)
+        self.setLayout(grid)
+
+    
+    def tobebuilt(self, value):
+        for names in self.realnames:
+            if self.buttondict[names].isChecked():
+                pbdefaultoptionsdic[names]=True
+            else:
+                pbdefaultoptionsdic[names]=False
+    
+   
+            
+    def posi(self):
+        screen = QtGui.QDesktopWidget().screenGeometry()
+        size =  self.geometry()
+        self.move(qb.size.x()+qb.size.width(),qb.size.y() )
+
+    def Fmpref(self, value):
+        pbdefaultoptionsdic['matrix_prefix']=str(value)
+        print  pbdefaultoptionsdic['matrix_prefix']
+
+    def Fmgrowth(self):
+        try : 
+            pbdefaultoptionsdic['max_growth']=float(self.mgrowth.text())
+        except ValueError:
+            reply=QtGui.QMessageBox.warning(self,'Message',"Please enter a floating point number",QtGui.QMessageBox.Ok)
+            if reply == QtGui.QMessageBox.Ok:
+                self.mgrowth.clear()
+                self.mgrowth.insert(str(pbdefaultoptionsdic['max_growth']))
+                self.mgrowth.selectAll()
+
+    def Fssize(self):
+        try : 
+            pbdefaultoptionsdic['selection_size']=int(self.ssize.text())
+        except ValueError:
+            reply=QtGui.QMessageBox.warning(self,'Message',"Please enter an integer",QtGui.QMessageBox.Ok)
+            if reply == QtGui.QMessageBox.Ok:
+                self.ssize.clear()
+                self.ssize.insert(str(pbdefaultoptionsdic['selection_size']))
+                self.ssize.selectAll()
+                
+        
+
+    def Fsfac(self):
+        try : 
+            pbdefaultoptionsdic['step_factor']=float(self.sfac.text())
+        except ValueError:
+            reply=QtGui.QMessageBox.warning(self,'Message',"Please enter a floating point number",QtGui.QMessageBox.Ok)
+            if reply == QtGui.QMessageBox.Ok:
+                self.sfac.clear()
+                self.sfac.insert(str(pbdefaultoptionsdic['step_factor']))
+                self.sfac.selectAll()
+                
+    def Fdbound(self):
+        if str(self.dbound.text())=='False' or str(self.dbound.text())=='false' or  str(self.dbound.text())=='FALSE':
+            pbdefaultoptionsdic['deg_bound']=False
+        else:
+            try : 
+                pbdefaultoptionsdic['deg_bound']=int(self.dbound.text())
+            except ValueError:
+                reply=QtGui.QMessageBox.warning(self,'Message',"Please enter an integer",QtGui.QMessageBox.Ok)
+                if reply == QtGui.QMessageBox.Ok:
+                    self.dbound.clear()
+                    self.dbound.insert(str(pbdefaultoptionsdic['deg_bound']))
+                    self.dbound.selectAll()
+        
+      
+    def FCdbound(self, value):
+        if self.Cdbound.isChecked():
+            self.dbound.setDisabled(False)
+        else:
+            self.dbound.setDisabled(True)
+            pbdefaultoptionsdic['deg_bound']=False
+
+
+app = QtGui.QApplication(sys.argv)
+qb = BoxLayout()
+
+
+#sys.stdout = OutLog( qb.Output, sys.stdout )
+#sys.stderr = OutLog( qb.Output, sys.stderr, QtGui.QColor(168,34,3) )
+#print qb.op1
+qb.show()
+sys.stdout = OutLog( qb.Output, sys.stdout )
+sys.stderr = OutLog( qb.Output, sys.stderr, QtGui.QColor(168,34,3) )
+sys.exit(app.exec_())

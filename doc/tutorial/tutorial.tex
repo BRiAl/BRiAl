@@ -1,0 +1,114 @@
+
+%
+%  untitled
+%
+%  Created by Michael Brickenstein on 2007-11-08.
+%  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
+%
+\documentclass[]{article}
+
+% Using postscript font for \ttfamily
+\usepackage{courier}
+
+% Use utf-8 encoding for foreign characters
+\usepackage[utf8]{inputenc}
+
+% Setup for fullpage use
+\usepackage{fullpage}
+\usepackage{amssymb}
+\usepackage{amsmath}
+% Uncomment some of the following if you use the features
+%
+% Running Headers and footers
+%\usepackage{fancyhdr}
+
+% Multipart figures
+%\usepackage{subfigure}
+
+% More symbols
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{latexsym}
+
+% Surround parts of graphics with box
+\usepackage{boxedminipage}
+
+% Package for including code in the document
+\usepackage{listings}
+
+% If you want to generate a toc for each chapter (use with book)
+%%\usepackage{minitoc}
+
+
+\usepackage{xspace}
+% This is now the recommended way for checking for PDFLaTeX:
+\usepackage{ifpdf}
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+\newenvironment{code}{\begin{lstlisting}}{\end{lstlisting}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\PolyBoRi}{{\sc PolyBoRi}\xspace}
+\newcommand{\Groebner}{Gr\"{o}bner\xspace}
+\newcommand{\ipython}{IPython\xspace}
+\newcommand{\CUDD}{{CUDD}\xspace}
+%\newcommand{\ite}{{ite}\xspace}
+\DeclareMathOperator{\ite}{ite}
+\DeclareMathOperator{\I}{I}
+\newcommand{\functionname}[1]{{\lstinline|#1|}}%{\textit{#1}\xspace}
+\newcommand{\pythonconstant}[1]{\textit{#1}\xspace}
+\newcommand{\explfieldequations}{{x_1^2+x_1,\ldots,x_n^2+x_n}}
+\newcommand{\Ztwo}{\mathbb{Z}_2}
+\providecommand{\boolemult}{\ensuremath{{\star\hspace{-.15em}_2\hspace{.05em}}}\xspace}
+\newcounter{thm}
+\newtheorem{definition}[thm]{Definition}
+
+
+%\newif\ifpdf
+%\ifx\pdfoutput\undefined
+%\pdffalse % we are not running PDFLaTeX
+%\else
+%\pdfoutput=1 % we are running PDFLaTeX
+%\pdftrue
+%\fi
+
+
+\title{\PolyBoRi Tutorial}
+\author{Michael Brickenstein}
+
+
+\lstdefinelanguage[IPython]{Python}[]{Python}{%
+  moredelim=[s][\bfseries]{In\ \[}{\]:},
+  moredelim=[s][\bfseries]{Out\[}{\]:}
+}
+\lstset{language=[IPython]{Python}} 
+
+
+\lstset{basicstyle=\ttfamily}
+\lstset{fontadjust=true}
+\lstset{showstringspaces=false}
+\lstset{stringstyle=\itshape}
+\lstset{commentstyle=\itshape}
+
+\date{\today}
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+
+\newcommand{\Singular}{{\sc Singular}}
+\begin{document}
+\maketitle
+\input{tutorial_content}
+\bibliographystyle{plain}
+
+% As long as there are noe citations...
+%\bibliography{}
+
+% Rem.: Some final words...
+
+\end{document}

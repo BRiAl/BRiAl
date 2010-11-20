@@ -774,4 +774,12 @@ extern int NextCube(DdGen * gen, int ** cube, CUDD_VALUE_TYPE * value);
 extern int GenFree(DdGen * gen);
 extern int IsGenEmpty(DdGen * gen);
 
+// get from cuddObj.cc
+inline DdNode *
+DD::getNode() const
+{
+    return node;
+
+} // DD::getNode
+
 #endif

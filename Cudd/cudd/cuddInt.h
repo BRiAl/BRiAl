@@ -51,6 +51,22 @@
 #ifndef _CUDDINT
 #define _CUDDINT
 
+/// For optimizing if-branches
+#ifdef __GNUC__
+#ifndef LIKELY
+#define LIKELY(expression) (__builtin_expect(!!(expression), 1))
+#endif
+#ifndef UNLIKELY
+#define UNLIKELY(expression) (__builtin_expect(!!(expression), 0))
+#endif
+#else
+#ifndef LIKELY
+#define LIKELY(expression) (expression)
+#endif
+#ifndef UNLIKELY
+#define UNLIKELY(expression) (expression)
+#endif
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* Nested includes                                                           */
@@ -1137,12 +1153,36 @@ extern DdNode * cuddAllocNode (DdManager *unique);
 extern DdManager * cuddInitTable (unsigned int numVars, unsigned int numVarsZ, unsigned int numSlots, unsigned int looseUpTo);
 extern void cuddFreeTable (DdManager *unique);
 extern int cuddGarbageCollect (DdManager *unique, int clearCache);
-extern DdNode * cuddZddGetNode (DdManager *zdd, int id, DdNode *T, DdNode *E);
-extern DdNode * cuddZddGetNodeIVO (DdManager *dd, int index, DdNode *g, DdNode *h);
+
+
 extern DdNode * cuddUniqueInter (DdManager *unique, int index, DdNode *T, DdNode *E);
 extern DdNode * cuddUniqueInterIVO (DdManager *unique, int index, DdNode *T, DdNode *E);
 extern DdNode * cuddUniqueInterZdd (DdManager *unique, int index, DdNode *T, DdNode *E);
 extern DdNode * cuddUniqueConst (DdManager *unique, CUDD_VALUE_TYPE value);
+
+
+#ifdef ORIG_CUDD
+
+extern DdNode * cuddZddGetNode (DdManager *zdd, int id, DdNode *T, DdNode *E);
+#else
+static inline DdNode *
+cuddZddGetNode(
+  DdManager * zdd,
+  int  id,
+  DdNode * T,
+  DdNode * E)
+{
+    DdNode	*node;
+
+    if (T == DD_ZERO(zdd))
+	return(E);
+    node = cuddUniqueInterZdd(zdd, id, T, E);
+    return(node);
+
+}
+#endif
+extern DdNode * cuddZddGetNodeIVO (DdManager *dd, int index, DdNode *g, DdNode *h);
+
 extern void cuddRehash (DdManager *unique, int i);
 extern void cuddShrinkSubtable (DdManager *unique, int i);
 extern int cuddInsertSubtables (DdManager *unique, int n, int level);

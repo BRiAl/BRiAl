@@ -1,0 +1,124 @@
+# -*- python -*- 
+#***************************************************************************
+# 
+# @author  Michael Brickenstein, Alexander Dreyer
+# @date 2007-07-06
+#
+# This file is a configuration file for ipython -- ipythonrc format
+#
+# @par Copyright:
+#   (c) 2007 by The PolyBoRi Team
+#
+# @version \$Id$
+#
+# $Log$
+# Revision 1.9  2008/02/19 14:07:19  dreyer
+# Fix: rpm-installation issues (paths)
+#
+# Revision 1.8  2007/12/13 14:01:06  bricken
+# + just import polybori
+#
+# Revision 1.7  2007/11/29 16:23:52  dreyer
+# ADD: preparation for installation of pythond modules in other directory
+#
+# Revision 1.6  2007/11/28 15:02:30  dreyer
+# CHANGE: python moduls may be installed somewhere alse
+#
+# Revision 1.5  2007/11/28 06:18:19  bricken
+# + load_file
+#
+# Revision 1.4  2007/11/23 07:48:25  dreyer
+# CHANGE: copyright message
+#
+# Revision 1.3  2007/11/21 12:51:04  dreyer
+# Fix: refined copyright and paths
+#
+# Revision 1.2  2007/11/06 15:03:32  dreyer
+# CHANGE: More generic copyright
+#
+# Revision 1.1  2007/10/19 12:48:48  dreyer
+# ADD: ipython functionality and wrapper
+#
+#
+# Configuration file for ipython -- ipythonrc format
+#
+# The format of this file is one of 'key value' lines.
+# Lines containing only whitespace at the beginning and then a # are ignored
+# as comments. But comments can NOT be put on lines with data.
+#***************************************************************************
+
+# Evaluate some environment variables, which may be set by wrapper scripts
+
+# PolyBoRi path (either set by wrapper or assumed to be the parent directory)
+# Note: change "execute pbdir = '..'", if you manually install this profile
+execute from os import environ as env
+execute from os import path as os_path
+execute pbdir = '..'
+execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
+
+# Get program name and prompt something
+execute ipbname = 'ipbori'
+execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
+execute print ipbname, "-- PolyBoRi's interactive command line tool"
+execute print 'Type "polybori_copyright" or "polybori_license"',
+execute print 'for more information.\n'
+
+# Uncomment, if we want to skip the banner 
+# banner 0
+
+# Include base config from current IPYTHONDIR and only add some extras
+include ipythonrc
+
+# Append the PolyBoRi application directory to current search path
+execute from sys import path
+
+# The following string may be changed by install. If not installed, use default.
+execute pyroot = '$RELATIVEPYPREFIX'
+execute if pyroot[0] == '$': pyroot = os_path.join(pbdir, "pyroot")
+execute path.insert(0, pyroot)
+
+# Get all basic stuff from PyPolyBoRi
+execute from polybori.PyPolyBoRi import *
+execute r = Ring(10000)
+execute x = Variable
+
+# Get all-inclusive groebner routine
+execute from polybori.gbcore import groebner_basis
+
+# Import some high-level modelling functionality
+execute from polybori import *
+
+execute pb_copy =  "Copyright (c) 2007-2010 by The PolyBoRi Team.\n"
+execute pb_copy +=  "  Michael Brickenstein (MFO)  brickenstein@mfo.de\n"
+execute pb_copy +=  "  Alexander Dreyer (ITWM)     "
+execute pb_copy +=  "alexander.dreyer@itwm.fraunhofer.de\n\n"
+
+execute pb_copy += "The PolyBoRi Team is a joint project of\n"
+execute pb_copy += "Mathematisches Forschungsinstitut Oberwolfach (MFO), "
+execute pb_copy += "Germany\n"
+execute pb_copy += "Department of Mathematics, University of Kaiserslautern, "
+execute pb_copy += "Germany, and\n"
+execute pb_copy += "Fraunhofer Institute for Industrial Mathematics (ITWM), "
+execute pb_copy += "Kaiserslautern, Germany."
+
+execute pb_lic  = "ipbori and the PolyBoRi framework are licensed under the "
+execute pb_lic += "terms\nof the GNU General Public License (GPL) version 3 "
+execute pb_lic += "or later. \n"
+execute pb_lic += "See http://www.gnu.org/licenses/ for details."
+
+execute pb_copy += "\n\nPolyBoRi incorporates the following works:\n"
+execute pb_copy += "The CU Decision Diagrams Package "
+execute pb_copy += "Release 2.4.1 (CUDD)\nby Fabio Somenzi, Copyright (c) "
+execute pb_copy += "1995-2004,\nRegents of the University of Colorado. "
+execute pb_copy += "All Rights Reserved.\n\n"
+execute pb_copy += "The Method of the Four Russians Inversion (M4RI)\n"
+execute pb_copy += "Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org>"
+
+execute def polybori_copyright(): print pb_copy 
+execute def polybori_license(): print pb_lic
+
+# Get special stuff for this user interface
+execute from polybori.frontend import *
+
+# Simplify ring declaration
+execute def declare_ring(arg1, arg2 = None): return ternary_declare_ring(arg1, arg2, globals())

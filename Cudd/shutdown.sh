@@ -1,2 +1,2 @@
 #! /bin/sh
-rm -rf include *.bak *~
+rm -rf include cuddutil *.bak *~

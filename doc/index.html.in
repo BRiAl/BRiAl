@@ -1,0 +1,90 @@
+<HTML>
+<HEAD>
+<TITLE>PolyBoRi Master Reference</TITLE>
+</HEAD>
+<BODY>
+<h1>PolyBoRi Master Reference</h1>
+
+<p> The core of <i>PolyBoRi</i> is a C++ library, which provides high-level data types
+for Boolean polynomials and monomials, exponent vectors, as well as for the
+underlying polynomial rings and subsets of the powerset of the Boolean
+variables. As a unique approach, binary decision diagrams are 
+used as internal storage type for polynomial structures.</p>	
+
+<p> On top of this C++-library we provide a Python interface. This allows
+parsing of complex polynomial systems, as well as sophisticated and extendable
+strategies for Gr&ouml;bner base computation. <i>PolyBoRi</i> features a powerful reference
+implementation for Gr&ouml;bner basis computation.</p>			
+
+The structure of the framework is illustrated as follows.
+<p><img src="images/overview.png" alt="Overview" align="middle" border="0">
+
+<H2>Documentation</H2>
+The documentation of the <i>PolyBoRi</i> framework and incorporated works can be
+accessed via the following documents.
+
+$PBDOCLINKS
+
+<h3>External documents</h3>
+<p><a href="http://www.diveintopython.org/">
+Dive into Python</a></p>
+<p><a href="http://ipython.scipy.org/moin/Documentation/">
+ipython Documentation</a></p>
+
+<h2>Further Reading</h2>
+See the following references for the mathematical background of the <i>PolyBoRi</i>
+framework. 
+ <ul>
+
+    <li>M. Brickenstein, A. Dreyer,
+      <i><i>PolyBoRi</i>: A Gr&ouml;bner Basis Framework for Boolean
+	Polynomials</i>,
+        <a 
+         href="http://www.itwm.fhg.de/zentral/download/berichte/bericht122.pdf">
+        Reports of Fraunhofer ITWM, No. 122,
+        </a>
+        Kaiserslautern, Germany, 2007.
+      </li>
+
+       <li>M. Brickenstein, A. Dreyer,
+       <i><i>PolyBoRi</i>: A framework for Gr&ouml;bner basis computations with
+	Boolean polynomials</i>,
+     
+        <a href="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   Electronic Proceedings of the MEGA 2007&nbsp;- Effective Methods in
+ 	Algebraic Geometry,
+                      </a>
+       Strobl, Austria, June 2007.
+       </li>
+       <li>M. Brickenstein,
+     
+        <a href="http://www.mathematik.uni-kl.de/~zca/Reports_on_ca/35/paper_35_full.ps.gz">  
+          <i>Slimgb: Gr&ouml;bner Bases with Slim Polynomials</i></a>, 
+        Reports On Computer Algebra, Centre for Computer Algebra, University of         
+        Kaiserslautern, Volume 25, September 2005
+       </li>
+       <li>Fabio Somenzi 
+     
+        <a href="http://vlsi.colorado.edu/~fabio/CUDD/">  
+          <i> CUDD: CU Decision Diagram Package Release 2.4.1</i>
+        </a>, 
+        Department of Electrical and Computer Engineering,
+        University of Colorado at Boulder     
+       </li>
+       <li>
+        Gregory V. Bard,
+        <a href="http://eprint.iacr.org/2006/251.pdf">  
+          <i>Accelerating Cryptanalysis with the Method of Four Russians</i>
+        </a>, Preprint July 22, 2006.
+       </li>
+</ul>
+
+<h2>Links</h2>
+<p><a href="http://polybori.sourceforge.net"> <i>PolyBoRi</i>'s home at
+SourceForge</a></p>
+<p> <a href="http://www.itwm.fhg.de/en/as__asprojects__PolyBoRi/PolyBoRi/"></p>	
+<i>PolyBoRi</i>'s project page at Fraunhofer ITWM</a>
+
+<P><img src="images/logo.png" alt="<i>PolyBoRi</i>" align="middle" border="0"></p>	
+<P> Copyright &copy; 2007-2008 The <i>PolyBoRi</i> Team</p>	
+</BODY>
+</HTML>

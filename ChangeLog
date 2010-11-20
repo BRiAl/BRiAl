@@ -1,0 +1,359 @@
+Release Name: 0.7.0:
+* Polynomials, monomials, variables, and BooleSets now own a reference to a
+  fully-functionally BoolePolyRing (including ordering)
+* Simplified interface: remove *Assign() variants from diagrams
+* Added polybori.nf.simple_nf
+* Simplification of declare_ring in ipbori
+* Rename BoolePolynomials::reducibleBy -> BoolePolynomials::firstReducibleBy
+* idx_type is unsigned now
+* unittests for libpolybori are available
+
+Release Name: 0.6.5:
+* If boost/boost-python is not available we already stop at onfiguring
+  (does not affect EXTERNAL_PYTHON_EXTENSION=True)	
+* PBoRiError is now also std::exception
+* scons-based configuring works better on recent SuSE
+* Addded BoolePolynomial.compare() (Polynomials.__cmp__ on python) and
+  Ring.__hash__(on python)
+* Experimental generalized Boolean rings:(Z2 x ... x Z2)[x1, ..., xn]
+
+Release Name: 0.6.4:
+* Repository changed to hg
+* gat parser added
+* Disabled keyboard interrupt handling (but re-raised)
+* Fixed critical bug in normal form
+* Naming convention: minimalElements -> minimal_elements
+* has_constant_part for variable/monomial
+* lead/lex_lead/lead_deg/lex_lead_deg also for Variable/Monomial
+* iterator for literal factorization
+* Added treatment of customizable settings for
+  BOOST_LIBRARY, SHCFLAGS, SHCCFLAGS, and SHCXXFLAGS
+* Improved Sun Studio compatibility
+* Fix for hpux (CUDD needs pwd.h)
+	
+	
+Release Name: 0.6.3:
+* introduced parameter modified_linear_algebra for groebner_basis,
+  modifies, if linear algebra is modified or not,
+  not, that this option doesn't influence, if linear algebra is used at all.
+* rings have setVariableName and getVariableName now
+* rings have hash() method for getting a unique identifier
+* Standard constructor of BoolePolyRing does not activate
+  (unwanted side-effect removed)
+
+Release Name: 0.6.2 
+* hashing BooleVariable consistent with BoolePolynomial and BooleMonomial
+* Python interface Polynomial.stableHash -> Polynomial.stable_hash
+* added substitute_variables function in python and c++
+* Cloning of rings added. This results in rings with similar properties.
+  They share the same decision diagram management, but ordering and
+  variable names may be changed independently.
+* FORCE_HASH_MAP can now to used to force scons to use deprecated hash_map
+* fixed bug in groebner basis heuristic
+* new linear lexicographical lead 
+  functions / also included in 
+  groebner_basis for some cases
+* fixed heuristics
+* Python enabledLog -> enabled_log
+* fixed bug in new ll routines
+* Solaris port supported
+* Compatibility with upcoming scons versions (removing deprecated stuff)
+	
+Release Name: 0.6.1
+* Fixed performance critical bug in normal form.
+
+Release Name: 0.6.0
+* FGLM implementation
+* new Python module polybori.parallel (uses and requires pyprocessing)
+* used genshi for generating dot files
+* new Class ReductionStrategy
+* many options and methods moved to ReductionStrategy
+    * optBrutalReductions
+    * add_generator
+    * leading_terms
+    * minimal_leading_terms
+    * optLL
+    * optRedTail
+    * optRedTailDegGrowth
+    * can_rewrite
+    * nf
+    * reducedNormalForm
+    * headNormalForm
+    * monomials
+* Consistent C++ class members in BoolePolynomial
+    * lmDivisors -> leadDivisors
+    * lexLmDeg lexLeadDeg
+    * lmDeg -> leadDeg
+* Python interface - PEP8 compliance:
+    * varsAsMonomial -> vars_as_monomial
+    * nVars -> n_variables
+    * totalDegree -> total_degree
+    * gradedPart -> graded_part
+    * nNodes ->n_nodes
+    * terminalOne -> terminal_one
+    * thenBranch -> then_branch
+    * elseBranch -> else_branch
+    * lmDivisors -> lead_divisors (!)
+    * lexLmDeg -> lex_lead_deg (!)
+    * lmDeg -> lead_deg (!)
+    * lexLead -> lex_lead
+    * isZero -> is_zero
+    * isOne -> is_one
+    * divisorsOf -> divisors_of
+    * multiplesOf -> multiples_of
+    * reducibleBy ->reducible_by
+    * hasConstantPart -> has_constant_part
+    * mapEveryXToXPlusOne -> map_every_x_to_x_plus_one
+    * zerosIn -> zeros_in
+    * suggestPluginVariable -> suggest_plugin_variable
+    * addGenerator -> add_generator
+    * addGeneratorDelayed -> add_generator_delayed
+    * addAsYouWish -> add_as_you_wish
+    * llReduceAll -> ll_reduce_all
+    * allGenerators -> all_generators
+    * strat:redTail -> red_tail
+    * nextSpoly ->next_spoly
+    * someSpolysInNextDegree -> some_spolys_in_next_degree
+    * variableHasValue -> variable_has_value
+    * chainCriterions -> chain_criterions
+    * variableChainCriterions -> variable_chain_criterions
+    * easyProductCriterions -> easy_product_criterions
+    * extendedProductCriterions -> extended_product_criterions
+    * cleanTopByChainCriterion -> clean_top_by_chain_criterion
+    * stableHash -> stable_hash
+    * opt*** -> snake_case(opt**)
+    * containsOne -> ...
+    * minimalizeAndTailReduce -> ...
+    * faugereStepDense -> ...
+    * noroStep -> ...
+    * topSugar ->...
+    * stable_hash
+    * includeDivisors
+    * cartesianProduct
+    * minimalElements
+    * existAbstract
+    * sizeDouble
+* Python interface, dropped functions
+  * nSupport
+  * firstTerm
+  * toStdOut
+  * smallSpolysInNextDegree
+  * allSpolysInNextDegree
+* Python interface
+  * made var, one, zero, n_variables available not only to Ring, but also
+    to BooleRing
+* optimized interred
+* better TeX4ht support for tutorial generation (latex2html, hevea deprecated)
+* M4RI updated (Revision date 090409)
+* using std::unordered_map or std::tr1::unordered_map instead of hash_map
+	
+
+Release Name: 0.5.0
+* degree of 0-polynomial is -1
+* lmDeg() of 0-polynomial is -1
+* deg_type (int) replaces size_type (unsigned) for degrees
+* protocol for ll pre- and postprocessing
+* Python interface: renamed ll_red_nf to ll_red_nf_redsb
+* Python interface: removed +=, *= operators
+* Python interface: Polynomial.vars ->Polynomial.varsAsMonomial
+* Python interface: Polynomial.__iter__ -> Polynomial.terms
+* Python interface: Monomial.__iter__ ->Monomial.variables
+* Python interface: len(Monomial)=1
+* cygwin support
+* added isEnd() to decision-diagram based iterators, as end of iteration check
+* Cudd/dddmp removed from distribution due to license issues (unused anyway)
+* removed extra library from distribution (no license issues, but unused)
+* updated M4RI to version 20080624
+* renamed in the Python interface ll_red_nf to ll_red_nf_redsb to indicate, 
+  that we really need a redsb here
+* Clean-up doxygen documentation
+* Licensing issues: Clearified, that PolyBoRi is GPL2+
+                    Removed incompatible (but unused) stuff from Cudd
+* More standard-conforming Debianization
+* Added man page for ipbori	
+* Using C++98/C99 features
+* Using CFLAGS/CCFLAGS/CXXFLAGS mechanisms of scons 0.97 (or later)
+	
+------------------------------------------------------------------------------
+Release Name: 0.4
+
+* extended tutorial
+* updated BooleEnv to handle active_ring in a cleaner way
+* fast check for in rewriteability GroebnerStrategy::canRewrite
+* replaced function red_tail by redTail method for GroebnerStrategy
+* GroebnerStrategy stores internally reference to BoolePolyRing
+* GroebnerStrategy allows now access to generators via leading terms: strat[x(1)*x(2)]
+* GroebnerStrategy::nf respect optRedTail
+* new python module interred
+* new python module partial (for handling partial boolean function definitions)
+* new python module simplebb (features a very simple Buchberger implementation)
+* fixed comparison of polynomials with constants
+* relicensed under GPL2 or higher
+* new version of M4RI
+* added dlltool-like shared library versioning and sonames
+* man page
+------------------------------------------------------------------------------
+Release Name: 0.3.1
+This release fixes minor issues. In particular, a monomial cannot be zero, and
+iterations over monomials may be a sequence of variables.
+
+	
+Changes:
+* Illegal monomial zero	forbidden and avoided.
+* Exceptions are thrown for division by zero, Polynomial(0).lead(), and
+  illegal ITE operation. The Python-interface handles these exceptions
+  accordingly.
+* Iteration over monomials as a sequence of variables is possible now. It
+  is the default iterator over monomials in the python interface.
+	
+
+------------------------------------------------------------------------------
+Release Name: 0.3
+
+Notes:
+This release contains several stability improvements:  premature
+conversion of constant values (bool or int) is avoided, and the correct ring
+of given polynomial, monomial, variable or BooleSet is accesible. The
+latter was used to improve low-level procedures, which do not depend on
+the active ring any more.
+
+In addition, python-related settings during build-process were simplified.
+Also, monom1/monom2 = 0 will not result in invalid "monomial" zero.
+Finally, more standard conforming rpm and deb packages are generated.
+	
+Changes:
+* New option for scons: PYTHON=<python executable> replaces PBP and
+  PYPREFIX. Python-specific paths and libraries are extracted from that
+  executable. 
+* Default of the PYINSTALLPREFIX option is now the site_packages directory
+  of the python installation given by PYTHON.
+* The tutorial can be generated using hevea or tex4ht, if latex2html is
+  not available.
+* PolyBoRi exceptions are now converted to python exceptions.
+* Added class BooleRing for handling polynomial expressions without
+  given ordering. Polynomials, monomials, Variables and BooleSet have a
+  member function ring() for accessing the corresponding BooleRing
+* Added class BooleConstant, which is used to avoid premature evaluation
+  of bools and int values to Boolean polynomials. (Necessary if the active
+  ring is changed befor using a constant value.)
+* monom1/monom2 = 0 throws exception (caught and processed in python interface)
+* BooleMonomial::variableBegin|End can be used to iterate over the
+  variables in a given monomial.
+* In python interface: iteration over monomials is a sequence of variables
+  now (instead of indices).
+* Also more standard conforming rpm and deb package generation.	
+
+------------------------------------------------------------------------------
+Release Name: 0.2
+
+Notes:
+Most important changes are refined Groebner algorithms and several
+stability improvements. 
+The main modifications for library users are,
+that the static parts of BoolePolyRing were moved to the new class BooleEnv.
+Also, new procedures for interpolation of Boolean polynomials have been
+implemented. 
+
+The pythondoc documentation was extended and several new sections of the tutorial were written.
+
+In addition, the experimental support of rpms and debs was added. 
+
+Changes:
+* support of rpm and source-rpm generation
+* support of debian packages
+* some inconsistent install paths fixed
+* target prepare-install for ipbori-only installations
+* comparision of variables fixed
+* options and attributes named more python-conform
+* much more extensive tutorial
+* More customizable options (see "scons -h"), which can be set using the
+  config file custom.py 
+  as well as via command-line settings
+* Better default option settings, e.g. compilation runs with -D NDEBUG,
+  linking with -s 
+* "scons distribute" never builds
+* The static elements from BoolePolyRing were moved to the new class BooleEnv
+* C++-based core procedures should now select the correct ring internally
+* Better hashes for Boolean polynomials
+* Algorithmic improvements in Groebner routines
+* Interpolation of Boolean polynomials added
+
+------------------------------------------------------------------------------
+Release Name: 0.2rc1
+
+Notes:
+The most important additions in this release are
+the support of rpms and several new sections of the tutorial.
+
+Changes:
+Since PolyBoRi 0.2 rc1:
+* support of rpm and source-rpm generation
+* some inconsistent install paths fixed
+* target prepare-install for ipbori-only installations
+* comparision of variables fixed
+* options and attributes named more python-conform
+* much more extensive tutorial
+
+------------------------------------------------------------------------------
+Release Name: 0.2rc0
+
+Notes:
+This is a release candidate  for upcoming PolyBoRi 0.2. 
+Most important changes are refined Groebner algorithms and several
+stability improvements. 
+The main modifications for library users are,
+that the static parts of BoolePolyRing were moved to the new class BooleEnv.
+Also new procedures for interpolation of Boolean polynomials have been added.
+
+Changes:
+* More customizable options (see "scons -h"), which can be set using the
+config file custom.py
+  as well as via command-line settings
+* Better default option settings, e.g. compilation runs with -D NDEBUG,
+ linking with -s 
+* "scons distribute" never builds
+* The static elements from BoolePolyRing were moved to the new class BooleEnv
+* C++-based core procedures should now select the correct ring internally
+* Better hashes for Boolean polynomials
+* Algorithmic improvements in Groebner routines
+* Interpolation of Boolean polynomials added
+
+-------------------------------------------------------------------------------
+Release Name: 0.1fix1
+
+Changes:
++ Fixed memory leak while calling M4RI
++ Removed some misunderstandable statements
+	
+-------------------------------------------------------------------------------
+Release Name: 0.1fix0
+
+Notes:
+This first bugfix release contains many fixes for bugs showing up during
+integration into  SAGE (http://www.sagemath.org).
+Also some customization of the build results from this.
+Many thanks to Burcin Erocal!
+
+Changes:
+New and refined build options RELATIVE_SYMLINK, HAVE_L2H, HAVE_PYDOC,
+EXTERNAL_PYTHON_EXTENSION.
+
+New target prepare-devel, which speeds up non-development building procedure.
+
+Fix: Binary Decision diagrams removed from PyPolyBoRi completely.
+
+Fix: lieInSameBlock now working
+Hash more unique (al least different for likewise polyomials)
+
+Fix: [1841097] Polynomial.lexLead 
+
+Fix: [1842334] crash in arithmetic after creating a second ring
+
+-------------------------------------------------------------------------------
+Release Name: 0.1
+
+Notes: We proudly announce the availability of PolyBoRi 0.1, the first
+publicly available beta of our framework for computations with
+polynomials in Boolean rings. PolyBoRi is open source. It is
+released to the public under the terms of the GNU Public License (GPL),
+version 3 or later.  

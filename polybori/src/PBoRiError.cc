@@ -1,8 +1,6 @@
 // -*- c++ -*-
-// $Id$
-//
 //*****************************************************************************
-/** @file pbori_defs.h
+/** @file: PBoRiError.cc 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06
@@ -10,20 +8,26 @@
  * This file defines the class PBoriError, which is used for polybori's
  * exception handling.
  *
- *  (c) 2006 by
- *   Dep. of Mathematics, Kaiserslautern University of Technology and
- *   Fraunhofer Institute for Industrial Mathematics (ITWM)
- *   D-67663 Kaiserslautern, Germany
+ * @par Copyright:
+ *   (c) 2006 by The PolyBoRi Team
  *
+ * @internal 
+ * @version \$Id$
+ *
+ * @par History:
+ * @verbatim
+ * $Log$
+ * Revision 1.3  2007/11/06 15:03:39  dreyer
+ * CHANGE: More generic copyright
+ *
+ * Revision 1.2  2006/03/10 08:25:54  dreyer
+ * + refined header style
+ *
+ * Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
+ * + Project started
+ *
+ * @endverbatim
 **/
-//*****************************************************************************
-//
-// Last edit by $Author$ on $Date$
-//
-// $Log$
-// Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
-// + Project started
-//
 
 // load header file
 #include "PBoRiError.h"
@@ -38,7 +42,7 @@ PBoRiError::PBoRiError(errornum_type err):
 }
 
 // destructor 
-PBoRiError::~PBoRiError() {
+PBoRiError::~PBoRiError() throw() {
   PBORI_TRACE_FUNC( "~PBoRiError()" );
 }
 

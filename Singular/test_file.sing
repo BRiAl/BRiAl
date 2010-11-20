@@ -1,0 +1,21 @@
+LIB("polybori_interface.so");
+ring r=2,x(1..10),lp;
+ideal i=x(1)*(x(2)+x(3)+x(2)*x(3)),x(1)^2+x(1),x(4);
+
+//ideal j=Polybori_module::lex_boolean_gb(i);
+//j;
+
+ideal i=x(1)*(1+x(2)*x(3)),x(4);
+
+ideal j=Polybori_module::lex_boolean_gb(i);
+j;
+
+ideal i=x(1)-1,x(1);
+
+//ideal j=Polybori_module::lex_boolean_gb(i);
+j;
+
+
+psico huhu = set_psico();
+
+call_print(huhu);

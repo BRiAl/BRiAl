@@ -960,6 +960,7 @@ cuddGarbageCollect(
   SeeAlso     [cuddUniqueInterZdd]
 
 ******************************************************************************/
+#ifdef ORIG_CUDD
 DdNode *
 cuddZddGetNode(
   DdManager * zdd,
@@ -975,7 +976,7 @@ cuddZddGetNode(
     return(node);
 
 } /* end of cuddZddGetNode */
-
+#endif
 
 /**Function********************************************************************
 
@@ -1068,10 +1069,13 @@ cuddUniqueInter(
 #endif
 
     if (index >= unique->size) {
-	if (!ddResizeTable(unique,index)) return(NULL);
+        if (!ddResizeTable(unique,index)) return(NULL);
     }
-
+#ifdef ORIG_CUDD
     level = unique->perm[index];
+#else
+    level=index;
+#endif
     subtable = &(unique->subtables[level]);
 
 #ifdef DD_DEBUG
@@ -1278,7 +1282,7 @@ cuddUniqueInterZdd(
     unique->uniqueLookUps++;
 #endif
 
-    if (index >= unique->sizeZ) {
+    if UNLIKELY(index >= unique->sizeZ) {
 	if (!cuddResizeTableZdd(unique,index)) return(NULL);
     }
 
@@ -1290,7 +1294,7 @@ cuddUniqueInterZdd(
     assert(level < (unsigned) cuddIZ(unique,Cudd_Regular(E)->index));
 #endif
 
-    if (subtable->keys > subtable->maxKeys) {
+    if UNLIKELY(subtable->keys > subtable->maxKeys) {
         if (unique->gcEnabled && ((unique->deadZ > unique->minDead) ||
 	(10 * subtable->dead > 9 * subtable->keys))) { 	/* too many dead */
 	    (void) cuddGarbageCollect(unique,1);
@@ -1304,8 +1308,8 @@ cuddUniqueInterZdd(
     looking = nodelist[pos];
 
     while (looking != NULL) {
-        if (cuddT(looking) == T && cuddE(looking) == E) {
-	    if (looking->ref == 0) {
+        if LIKELY(cuddT(looking) == T && cuddE(looking) == E) {
+	    if UNLIKELY(looking->ref == 0) {
 		cuddReclaimZdd(unique,looking);
 	    }
 	    return(looking);

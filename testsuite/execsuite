@@ -1,0 +1,123 @@
+#! /bin/sh
+# $Id$
+# 
+# usage: execsuite [-h][-b][-r][-t]
+#
+# Description: 
+# Executes and compares test suite
+#
+# Author: Alexander Dreyer, 2006
+# $Log$
+# Revision 1.7  2007/05/18 11:48:39  dreyer
+# ADD: sophisticated term_accumulate
+#
+# Revision 1.6  2006/03/30 08:52:32  dreyer
+# ADD: execsuite may be called from othere directories
+#
+# Revision 1.5  2006/03/29 16:19:52  dreyer
+# CHANGE: removed empty line in output
+#
+# Revision 1.4  2006/03/29 11:50:22  dreyer
+# CHANGE: Information about differing files will be displayed
+#
+# Revision 1.3  2006/03/22 16:39:54  dreyer
+# ADD Switch for using valgrind
+#
+# Revision 1.2  2006/03/22 09:21:47  dreyer
+# CHANGE: More meaningful usage text
+#
+# Revision 1.1  2006/03/22 09:02:04  dreyer
+# ADD execsuite for running testsuite
+#
+
+thisdir=`dirname $0`
+srcdir="$thisdir/src";
+exe=""
+reffile="$thisdir/ref/testsuite.ref"
+tmpfile="$thisdir/ref/testsuite$$.tmp"
+
+dobuild=false;
+dodiff=true;
+runonly=false;
+keeptemp=false;
+
+runit=""
+postproc=""
+docheck=false;
+
+doloop=true;
+while $doloop
+do
+  case $1 in
+    "-h" | "--help") 
+      echo "usage: $0 [-h][-b][-r][-t]"
+      echo "  Runs test suite executables and compares output with reference"
+      echo "  -h: Displays this message"
+      echo "  -b: Build reference file"
+      echo "  -r: Run only test suite without diffing"
+      echo "  -t: Keep temporary output file"
+      echo "  -c: Run only, but apply valgrind's memcheck tool"
+      exit
+  ;;
+    "-b") shift
+      dobuild=true
+  ;;
+    "-r") shift
+      runonly=true
+  ;;
+    "-t") shift
+      keeptemp=true
+  ;;
+    "-c") shift
+      runit="valgrind --tool=memcheck --leak-check=yes --show-reachable=yes "
+      postproc='grep ERROR.SUMMARY '
+      runonly=true    
+      docheck=true;
+    ;;
+     *) doloop=false
+  esac
+done
+
+if $runonly; then
+  echo "Starting Testsuite..." 
+  echo "---------------------" 
+
+  find $srcdir -type f -name '*.cc' -print | \
+    sed -e "s/[.]cc/$exe/" -e "s|$srcdir|$thisdir|"| while read i
+  do
+    echo "----------------------" 
+    echo "Executing $i"
+    echo "----------------------" 
+    if $docheck; then
+      $runit $i 2>&1 | $postproc
+    else
+      $runit $i
+    fi
+    done
+   echo "-------------------" 
+   echo "Testsuite finished." 
+
+else
+  echo "Running testsuite..."
+  $0 -r > $tmpfile
+  if $dobuild; then
+    echo "Building new reference file $reffile."
+    cp $tmpfile $reffile
+    echo "Finished."
+  else 
+    echo "Diffing..."
+    (sed -e 's/Executing/Checking/' $tmpfile | diff - $reffile; echo "END") |\
+    sed -e '/[0-9]c/ { N; /\n.*Checking/ D }
+            /^---$/{ N; /\n .*Executing/ D}; /Executing/ D' |sed -e '
+    /Checking/ {N; /\n.*Checking/D; /\nEND/D}; /END/ {D}' 
+
+
+    echo "Finished."
+  fi
+
+  if $keeptemp; then
+    echo "Execution log saved to $tmpfile."
+  else
+    rm $tmpfile
+  fi
+fi

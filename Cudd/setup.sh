@@ -16,3 +16,14 @@ if test -d include
     $CREATE ../util/util.h .
     $CREATE ../mnemosyne/mnemosyne.h .
 fi
+
+# renaming util to cuddutil
+if test -d cuddutil
+  then
+    :
+  else
+    mkdir cuddutil
+fi
+
+cd cuddutil
+$CREATE -f ../util/libutil.a libcuddutil.a

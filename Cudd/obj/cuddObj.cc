@@ -179,14 +179,15 @@ DD::manager() const
 
 } // DD::manager
 
-
+// moved to header file
+/*
 inline DdNode *
 DD::getNode() const
 {
     return node;
 
 } // DD::getNode
-
+*/
 
 int
 DD::nodeCount() const
