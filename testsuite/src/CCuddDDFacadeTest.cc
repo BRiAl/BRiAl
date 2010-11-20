@@ -135,14 +135,34 @@ BOOST_AUTO_TEST_CASE(test_indices) {
 }
 
 BOOST_AUTO_TEST_CASE(test_divide) {
-  dd_type diagram(poly.set());
+  BoolePolynomial poly_large = x*y*z + v*z - x*v + y + 1;
   BoolePolynomial poly_small = x;
+  dd_type diagram_large(poly_large.set());
   dd_type diagram_small(poly_small.set());
   set_type one_set;
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
-  std::cout << diagram.divideFirst(diagram_small);
-  std::cout << diagram.divideFirst(one);
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "divideFirst, cudd_generate_divisors, firstDivisors" );
+  output << diagram_large.divideFirst(diagram_small);
+  BOOST_CHECK(output.is_equal("{{y,z}, {v}}"));
+  poly_small = y;
+  diagram_small =dd_type(poly_small.set());
+  output << diagram_large.divideFirst(diagram_small);
+  BOOST_CHECK(output.is_equal("{{x,z}, {}}"));
+  poly_small = z;
+  diagram_small =dd_type(poly_small.set());
+  output << diagram_large.divideFirst(diagram_small);
+  BOOST_CHECK(output.is_equal("{{x,y}, {v}}"));
+  poly_small = v;
+  diagram_small =dd_type(poly_small.set());
+  output << diagram_large.divideFirst(diagram_small);
+  BOOST_CHECK(output.is_equal("{{x}, {z}}"));
+  poly_small = x*y;
+  diagram_small =dd_type(poly_small.set());
+  output << diagram_large.divideFirst(diagram_small);
+  BOOST_CHECK(output.is_equal("{{z}}"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
