@@ -22,6 +22,7 @@ using boost::test_tools::output_test_stream;
 #include "BoolePolyRing.h"
 #include "BooleVariable.h"
 #include "pbori_order.h"
+#include "COrderingBase.h"
 
 USING_NAMESPACE_PBORI
 
@@ -66,40 +67,38 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   defaultr = ring_type();
   BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
   
-  /*
-  std::cerr<<"???????????"<< std::endl;
-  ring1(0,get_ordering(COrderEnums::lp)); // Why does this not work?
-  BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
-  BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
+  ring_type ring11(0, get_ordering(COrderEnums::lp)); 
+  BOOST_CHECK_EQUAL(ring11.nVariables(), 0);
+  BOOST_CHECK_EQUAL(ring11.ordering().getOrderCode(), COrderEnums::lp);
 
-  std::cerr<<"HUHUHhuhu"<< ring1.ordering().getOrderCode()<<std::endl;
   defaultr = ring_type();
 
-  BOOST_CHECK_NE(ring1.hash(),defaultr.hash());
-  ring2(1,get_ordering(COrderEnums::dlex));
-  BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
-  BOOST_CHECK_EQUAL(ring2.ordering().getOrderCode(), COrderEnums::dlex);
+  BOOST_CHECK_NE(ring11.hash(),defaultr.hash());
+  ring_type ring12(1,get_ordering(COrderEnums::dlex));
+  BOOST_CHECK_EQUAL(ring12.nVariables(), 1);
+  BOOST_CHECK_EQUAL(ring12.ordering().getOrderCode(), COrderEnums::dlex);
   defaultr = ring_type();
-  BOOST_CHECK_NE(ring2.hash(),defaultr.hash());
-  ring3(2,get_ordering(COrderEnums::dp_asc));
-  BOOST_CHECK_EQUAL(ring3.nVariables(), 2);
-  BOOST_CHECK_EQUAL(ring3.ordering().getOrderCode(), COrderEnums::dp_asc);
+  BOOST_CHECK_NE(ring12.hash(),defaultr.hash());
+
+  ring_type ring13(2,get_ordering(COrderEnums::dp_asc));
+  BOOST_CHECK_EQUAL(ring13.nVariables(), 2);
+  BOOST_CHECK_EQUAL(ring13.ordering().getOrderCode(), COrderEnums::dp_asc);
   defaultr = ring_type();
-  BOOST_CHECK_NE(ring3.hash(),defaultr.hash());
-  ring4(3,get_ordering(COrderEnums::block_dlex));
-  BOOST_CHECK_EQUAL(ring4.nVariables(), 3);
-  BOOST_CHECK_EQUAL(ring4.ordering().getOrderCode(), COrderEnums::block_dlex);
+  BOOST_CHECK_NE(ring13.hash(),defaultr.hash());
+  ring_type ring14(3,get_ordering(COrderEnums::block_dlex));
+  BOOST_CHECK_EQUAL(ring14.nVariables(), 3);
+  BOOST_CHECK_EQUAL(ring14.ordering().getOrderCode(), COrderEnums::block_dlex);
   defaultr = ring_type();
-  BOOST_CHECK_NE(ring4.hash(),defaultr.hash());
-  ring5(4,get_ordering(COrderEnums::block_dp_asc));
-  BOOST_CHECK_EQUAL(ring5.nVariables(), 4);
-  BOOST_CHECK_EQUAL(ring5.ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  BOOST_CHECK_NE(ring14.hash(),defaultr.hash());
+  ring_type ring15(4,get_ordering(COrderEnums::block_dp_asc));
+  BOOST_CHECK_EQUAL(ring15.nVariables(), 4);
+  BOOST_CHECK_EQUAL(ring15.ordering().getOrderCode(), COrderEnums::block_dp_asc);
   defaultr = ring_type();
-  BOOST_CHECK_NE(ring5.hash(),defaultr.hash());
-  ring5.activate();
+  BOOST_CHECK_NE(ring15.hash(),defaultr.hash());
+  ring15.activate();
   defaultr = ring_type();
-  BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
-   */
+  BOOST_CHECK_EQUAL(ring15.hash(),defaultr.hash());
+ 
 }
 
 BOOST_AUTO_TEST_CASE(test_variables) {
@@ -129,13 +128,16 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(defaultr.getVariableName(3), ring.getVariableName(3));
   BOOST_CHECK_EQUAL(defaultr.nVariables(), ring.nVariables());
 
+  // note: setVariableName also sets names for unused variables
   ring.setVariableName(0, "x");
   defaultr.setVariableName(1, "y");
-  ring.setVariableName(3, "v"); // Unwanted behaviour?
-  //defaultr.setVariableName(-1, "w"); //memory access violation at address: 0x00000039
-  empty.setVariableName(0, "x"); // Unwanted behaviour?
-  empty.setVariableName(1, "y"); // Unwanted behaviour?
-  //empty.setVariableName(-1, "z");//memory access violation at address: 0x00000019
+  ring.setVariableName(3, "v");
+  BOOST_CHECK_THROW( defaultr.setVariableName(-1, "w"), std::bad_alloc);
+
+  empty.setVariableName(0, "x");
+  empty.setVariableName(1, "y");
+  BOOST_CHECK_THROW(empty.setVariableName(-1, "z"), std::bad_alloc);
+
   BOOST_CHECK_EQUAL(ring.getVariableName(-1), "UNDEF");
   BOOST_CHECK_EQUAL(ring.getVariableName(0), "x");
   BOOST_CHECK_EQUAL(ring.getVariableName(1), "y");
@@ -235,23 +237,34 @@ BOOST_AUTO_TEST_CASE(test_ordering) {
   defaultr.changeOrdering(5);
   BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
   BOOST_CHECK_EQUAL(defaultr.ordering().getOrderCode(), COrderEnums::lp);
-  // change empty
+
+  // change empty - other ring stays the same
   empty.changeOrdering(COrderEnums::lp);
   BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
   empty.changeOrdering(COrderEnums::dlex);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::dlex); 
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); 
   empty.changeOrdering(COrderEnums::dp_asc);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::dp_asc); 
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); 
   empty.changeOrdering(COrderEnums::block_dlex);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::block_dlex);
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
   empty.changeOrdering(COrderEnums::block_dp_asc);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::block_dp_asc); 
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
+
   empty.changeOrdering(-1);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
   empty.changeOrdering(COrderEnums::block_dp_asc);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp); // Is this supposed to be like this?
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::block_dp_asc); 
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
   empty.changeOrdering(5);
-  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  BOOST_CHECK_EQUAL(empty.ordering().getOrderCode(), COrderEnums::lp);//default
+                                                                     //is lp
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), COrderEnums::lp);
+
 }
 
 BOOST_AUTO_TEST_CASE(test_dd_type) {
@@ -388,7 +401,8 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   BOOST_TEST_MESSAGE( "hash" );
   ring_type ring1(3, 0, false);
   ring_type ring2(3, 0, false);
-  BOOST_CHECK_NE(ring1.hash(), ring2.hash()); // Why is this not equal?
+  BOOST_CHECK_NE(ring1.hash(), ring2.hash()); // Not equal because different
+                                              // instances (but of likewise rings)
   ring_type defaultr;
   BOOST_CHECK_NE(ring1.hash(), defaultr.hash());
   ring1.activate();
@@ -396,7 +410,8 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   BOOST_CHECK_EQUAL(ring1.hash(), defaultr.hash());
   ring_type empty1(0, 0, false);
   ring_type empty2(0, 0, false);
-  BOOST_CHECK_NE(empty1.hash(), empty2.hash()); // Why is this not equal?
+  BOOST_CHECK_NE(empty1.hash(), empty2.hash());// Not equal because different
+                                // instances (but of likewise rings)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
