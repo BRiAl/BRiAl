@@ -285,10 +285,10 @@ public:
   //@}
 
   /// Check whether polynomial is constant zero
-  bool_type isZero() const { return m_dd.emptiness(); }
+  bool_type isZero() const { return m_dd.isZero(); }
 
   /// Check whether polynomial is constant one 
-  bool_type isOne() const { return m_dd.blankness(); }
+  bool_type isOne() const { return m_dd.isOne(); }
 
   /// Check whether polynomial is zero or one
   bool_type isConstant() const { return m_dd.isConstant(); }

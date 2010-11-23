@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   set_type one_set;
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
-  // emptyness, blankness not tested as they are to be removed
+
   BOOST_TEST_MESSAGE( "isZero, isOne, isConstant" );
   BOOST_CHECK(!diagram.isZero());
   BOOST_CHECK(!one.isZero());

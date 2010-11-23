@@ -66,7 +66,7 @@ corresponding to Variables of given index is replaced by its then-branch" )
 corresponding to Variables of given index is replaced by its else-branch")
     .def("change", &BooleSet::change, 
          "Substitute variable of given index by its complement")
-    .def("empty", &BooleSet::emptiness, "Check, whether BooleSet is empty")
+    .def("empty", &BooleSet::isZero, "Check, whether BooleSet is empty")
     .def("n_nodes", &BooleSet::nNodes, "Number of nodes of the underlying ZDD")
  
     .def("union",&BooleSet::unite, "Set union")

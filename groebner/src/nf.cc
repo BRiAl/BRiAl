@@ -85,7 +85,7 @@ template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec,
 static bool irreducible_lead(Monomial lm, const ReductionStrategy& strat){
 
   return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
-  //        strat.generators.minimalLeadingTerms.intersect(lm.divisors()).emptiness();
+  //        strat.generators.minimalLeadingTerms.intersect(lm.divisors()).isZero();
 }
 
 
@@ -915,7 +915,7 @@ int ReductionStrategy::select_short(const Polynomial& p) const{
   MonomialSet ms=leadingTerms.intersect(p.leadDivisors());
   //Polynomial workaround =Polynomial(ms);
   
-  if (ms.emptiness())
+  if (ms.isZero())
     return -1;
   else {
     
@@ -931,7 +931,7 @@ int ReductionStrategy::select_short(const Polynomial& p) const{
 
 int ReductionStrategy::select_short(const Monomial& m) const{
   MonomialSet ms=leadingTerms.intersect(m.divisors());
-  if (ms.emptiness())
+  if (ms.isZero())
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
@@ -947,7 +947,7 @@ int ReductionStrategy::select1( const Polynomial& p) const{
   MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.leadDivisors());
   //Polynomial workaround =Polynomial(ms);
   
-  if (ms.emptiness())
+  if (ms.isZero())
     return -1;
   else {
 #ifdef LEX_LEAD_RED_STRAT
@@ -966,7 +966,7 @@ int ReductionStrategy::select1( const Polynomial& p) const{
 }
 int ReductionStrategy::select1(const Monomial& m) const {
   MonomialSet ms=leadingTerms.divisorsOf(m);
-  if (ms.emptiness())
+  if (ms.isZero())
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
@@ -977,7 +977,7 @@ int ReductionStrategy::select1(const Monomial& m) const {
 
 int select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
     MonomialSet ms=strat.leadingTerms.divisorsOf(m);
-    if (ms.emptiness())
+    if (ms.isZero())
       return -1;
     else {
       //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
@@ -1007,7 +1007,7 @@ class LexHelper{
         if (strat.optRedTailDegGrowth) return PBORINAME::groebner::irreducible_lead(m,strat);
         else{
             BooleSet ms=strat.leadingTerms.intersect(m.divisors());
-            if (ms.emptiness())
+            if (ms.isZero())
                 return true;
             else {
                 return std::find_if(ms.expBegin(),ms.expEnd(),IsEcart0Predicate(strat))==ms.expEnd();
@@ -1099,7 +1099,7 @@ class BlockOrderHelper{
 };
 int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
-  if (ms.emptiness())
+  if (ms.isZero())
     return -1;
   else {
     //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
@@ -1588,7 +1588,7 @@ class LexHelper{
         if (strat.optRedTailDegGrowth) return PBORINAME::groebner::irreducible_lead(m,strat);
         else{
             BooleSet ms=strat.generators.leadingTerms.intersect(m.divisors());
-            if (ms.emptiness())
+            if (ms.isZero())
                 return true;
             else {
                 return std::find_if(ms.expBegin(),ms.expEnd(),IsEcart0Predicate(strat))==ms.expEnd();
@@ -1673,7 +1673,7 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
 template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
     
     if UNLIKELY(p.isConstant()) return p;
-    //if (reductors.emptiness()) return p;
+    //if (reductors.isZero()) return p;
     
   MonomialSet::navigator p_nav=p.navigation();
   idx_type p_index=*p_nav;
@@ -2191,7 +2191,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     polys.clear();
     std::reverse(polys_triangular.begin(), polys_triangular.end());
     terms_unique = add_up_generic(terms_unique_vec, terms.ring().zero());
-    assert(terms_step1.diff(terms).emptiness());
+    assert(terms_step1.diff(terms).isZero());
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;
     int remaining_cols;

@@ -470,14 +470,6 @@ public:
     return navigator(getNode());
   }
 
-  /// Checks whether the decision diagram is empty
-  bool_type emptiness() const {// to be removed
-    return (isZero());
-  }
-
-  /// Checks whether the decision diagram has every variable negated
-  bool_type blankness() const { return isOne(); }  // to be removed
-
   /// Checks whether the the diagram corresponds to {} or {{}} (polynomial 0 or 1)
   bool_type isConstant() const {
     return (getNode()) && Cudd_IsConstant(getNode());
