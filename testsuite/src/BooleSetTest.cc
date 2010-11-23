@@ -109,6 +109,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(set2,empty);
 
   BOOST_TEST_MESSAGE( "hasTermOfVariables" );// Strange? Does this do what it is supposed to?
+  // set: {{x,y,z}, {x,v}, {y}, {z,v}}
+
+  BOOST_TEST_MESSAGE( output.str() );
   BOOST_CHECK(set.hasTermOfVariables(x*v));
   BOOST_CHECK(set.hasTermOfVariables(x*y*z));
   BOOST_CHECK(set.hasTermOfVariables(x*z*y));
@@ -425,7 +428,7 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
   set_type set = poly.set();
   set = set.add(x);
   set = set.add(x*y);
-  std::cout << set << std::endl;
+
   set_type empty;
   set_type almost_empty;
   almost_empty = almost_empty.add(BooleMonomial());
