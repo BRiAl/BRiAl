@@ -271,6 +271,97 @@ protected:
       throw std::runtime_error(error_text(getManager()));
   }
 
+    /// temporarily (needs to be more generic) (similar fct in pbori_algo.h)
+  template<class ManagerType, class ReverseIterator, class MultReverseIterator>
+  diagram_type
+  cudd_generate_multiples(const ManagerType& mgr, 
+                          ReverseIterator start, ReverseIterator finish,
+                          MultReverseIterator multStart, 
+                          MultReverseIterator multFinish) const {
+
+    DdNode* prev( (getManager())->one );
+    
+    DdNode* zeroNode( (getManager())->zero ); 
+    
+    Cudd_Ref(prev);
+    while(start != finish) {
+      
+      while((multStart != multFinish) && (*start < *multStart)) {
+
+        DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+                                             prev, prev );
+
+        Cudd_Ref(result);
+        Cudd_RecursiveDerefZdd(getManager(), prev);
+
+        prev = result;
+        ++multStart;
+
+      };
+
+      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
+                                           prev, zeroNode );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+
+
+      if((multStart != multFinish) && (*start == *multStart))
+        ++multStart;
+
+
+      ++start;
+    }
+
+    while(multStart != multFinish) {
+
+      DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+                                           prev, prev );
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+      ++multStart;
+
+    };
+
+    Cudd_Deref(prev);
+
+
+    return diagram_type(mgr, prev);
+  }
+
+    /// temporarily (needs to be more generic) (similar fct in pbori_algo.h)
+  template<class ManagerType, class ReverseIterator>
+  diagram_type
+  cudd_generate_divisors(const ManagerType& mgr, 
+                         ReverseIterator start, ReverseIterator finish) const {
+
+
+    DdNode* prev= (getManager())->one;
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+
+      DdNode* result = cuddUniqueInterZdd( getManager(),
+                                           sign_cast<cudd_idx_type>(*start),
+                                           prev, prev);
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+      ++start;
+    }
+
+    Cudd_Deref(prev);
+    ///@todo Next line needs generalization 
+      return diagram_type(mgr, prev);
+
+}
 public:
 
   /// Union Xor
@@ -346,69 +437,6 @@ public:
   last_iterator lastEnd() const { 
     return last_iterator();
   }
-
-  /// temporarily (needs to be more generic)
-  template<class ManagerType, class ReverseIterator, class MultReverseIterator>
-  diagram_type
-  cudd_generate_multiples(const ManagerType& mgr, 
-                          ReverseIterator start, ReverseIterator finish,
-                          MultReverseIterator multStart, 
-                          MultReverseIterator multFinish) const {
-
-    DdNode* prev( (getManager())->one );
-    
-    DdNode* zeroNode( (getManager())->zero ); 
-    
-    Cudd_Ref(prev);
-    while(start != finish) {
-      
-      while((multStart != multFinish) && (*start < *multStart)) {
-
-        DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
-                                             prev, prev );
-
-        Cudd_Ref(result);
-        Cudd_RecursiveDerefZdd(getManager(), prev);
-
-        prev = result;
-        ++multStart;
-
-      };
-
-      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
-                                           prev, zeroNode );
-
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
-
-      prev = result;
-
-
-      if((multStart != multFinish) && (*start == *multStart))
-        ++multStart;
-
-
-      ++start;
-    }
-
-    while(multStart != multFinish) {
-
-      DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
-                                           prev, prev );
-
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
-
-      prev = result;
-      ++multStart;
-
-    };
-
-    Cudd_Deref(prev);
-
-
-    return diagram_type(mgr, prev);
-  }
   
   /// Get decison diagram representing the multiples of the first term
   diagram_type firstMultiples(const std::vector<idx_type>& multipliers) const {
@@ -422,38 +450,6 @@ public:
                                     multipliers.rbegin(),
                                     multipliers.rend() );
   }
-
-
-
-
-  /// temporarily (needs to be more generic)
-  template<class ManagerType, class ReverseIterator>
-  diagram_type
-  cudd_generate_divisors(const ManagerType& mgr, 
-                         ReverseIterator start, ReverseIterator finish) const {
-
-
-    DdNode* prev= (getManager())->one;
-
-    Cudd_Ref(prev);
-    while(start != finish) {
- 
-      DdNode* result = cuddUniqueInterZdd( getManager(),
-                                           sign_cast<cudd_idx_type>(*start),
-                                           prev, prev);
-
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
- 
-      prev = result;
-      ++start;
-    }
-
-    Cudd_Deref(prev);
-    ///@todo Next line needs generalization 
-      return diagram_type(mgr, prev);
-
-}
 
   /// Get decison diagram representing the divisors of the first term
   diagram_type firstDivisors() const {
