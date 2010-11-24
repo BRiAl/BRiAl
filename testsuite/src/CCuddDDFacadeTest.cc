@@ -55,9 +55,25 @@ struct Fdd {
 
 BOOST_FIXTURE_TEST_SUITE(CCuddDDFacadeTestSuite, Fdd )
 
-BOOST_AUTO_TEST_CASE(test_facade) {
-  //dd_type facade(poly.set());
-  //facade.printIntern(std::cout);
+BOOST_AUTO_TEST_CASE(test_constructors) {
+  BOOST_TEST_MESSAGE( "constructors, =" );
+  dd_type diagram(poly.set());
+  output_test_stream output;
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
+  dd_type diagram2 = diagram;
+  output << set_type(diagram2);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
+  diagram = diagram2;
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
+  BoolePolynomial poly1 = x;
+  BoolePolynomial poly2 = y;
+  diagram = dd_type(poly1.set());
+  diagram2 = dd_type(poly2.set());
+  //dd_type diagram3(2,diagram,diagram2);
+  //output << set_type(diagram3);
+  //BOOST_CHECK(output.is_equal("{}"));
 }
 
 BOOST_AUTO_TEST_CASE(test_size) {
@@ -327,7 +343,7 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   diagram_small = dd_type(poly_small.set());
   dd_type diagram_small2 = dd_type(poly_small2.set());
   output << set_type(diagram_large.ite(diagram_small, diagram_small2));
-  BOOST_CHECK(output.is_equal(""));
+  BOOST_CHECK(output.is_equal("{{x,y}}"));
 
   /// What does it do?
   BOOST_TEST_MESSAGE( "implies" );
