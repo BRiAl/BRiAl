@@ -154,7 +154,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
   if (m_index==n_index){
     result=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(), 
                                   m_nav.thenBranch(), n_nav.thenBranch());
-    if (!(result.emptiness())) 
+    if (!(result.isZero())) 
       result = MonomialSet(index, result, cache_mgr.zero());
   } else {
     MonomialSet
@@ -163,7 +163,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
     MonomialSet
       else_path=do_fixed_path_divisors(cache_mgr, a_nav.elseBranch(),
                                        m_nav.thenBranch(), n_nav);
-    if (then_path.emptiness()){
+    if (then_path.isZero()){
       result=else_path;
     } else {
       result=MonomialSet(index,then_path,else_path);
@@ -229,7 +229,7 @@ MonomialSet mod_var_set(const CacheMgr& cache_mgr,
     MonomialSet a0=mod_var_set(cache_mgr, a_e, v);
     MonomialSet a1=mod_var_set(cache_mgr, a_t, v);
     MonomialSet result;
-    if (a1.emptiness()) result=a0;
+    if (a1.isZero()) result=a0;
     else {
       if ((a1.navigation()==a_t)&&(a0.navigation()==a_e))
         result=cache_mgr.generate(a);
@@ -652,7 +652,7 @@ void PairManager::cleanTopByChainCriterion(){
             queue.pop();
             continue;
           }
-          /*if (!(strat->generators.leadingTerms.intersect(lmExp.divisors()).diff(Polynomial(lm)).emptiness())){
+          /*if (!(strat->generators.leadingTerms.intersect(lmExp.divisors()).diff(Polynomial(lm)).isZero())){
             strat->variableChainCriterions++;
            queue.pop();
           } else {
@@ -989,7 +989,7 @@ static std::vector<idx_type> contained_variables(const MonomialSet& m){
 }
 
 MonomialSet minimal_elements_internal(const MonomialSet& s){
-    if (s.emptiness()) return s;
+    if (s.isZero()) return s;
     if (Polynomial(s).isOne()) return s;
     MonomialSet::navigator nav=s.navigation();
     int i=*nav;
@@ -1012,7 +1012,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
     MonomialSet s0_raw=s.subset0(i);
     MonomialSet s0=minimal_elements_internal(s0_raw);
     MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
-    if (!(s0.emptiness())){
+    if (!(s0.isZero())){
         s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
         
     }
@@ -1021,7 +1021,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
 }
 
 MonomialSet minimal_elements_internal2(MonomialSet s){
-    if (s.emptiness()) return s;
+    if (s.isZero()) return s;
     if (Polynomial(s).isOne()) return s;
     
     
@@ -1047,7 +1047,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
         result=cv_set;
     }
     
-    if (s.emptiness()) return result;
+    if (s.isZero()) return result;
     assert(!(Polynomial(s).hasConstantPart()));
     
     
@@ -1071,7 +1071,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     
     /*MonomialSet s0=minimal_elements_internal2(s.subset0(i));
     MonomialSet s1=s.subset1(i);
-    if ((s0!=s1)&&(!(s1.diff(s0).emptiness()))){
+    if ((s0!=s1)&&(!(s1.diff(s0).isZero()))){
         s1=minimal_elements_internal2(s1.unite(s0)).diff(s0);
     } else return s0;
     return s0.unite(s1.change(i));*/
@@ -1079,7 +1079,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     MonomialSet s0_raw=s.subset0(i);
     MonomialSet s0=minimal_elements_internal2(s0_raw);
     MonomialSet s1=minimal_elements_internal2(s.subset1(i).diff(s0_raw));
-    if (!(s0.emptiness())){
+    if (!(s0.isZero())){
         s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
         
     }
@@ -1088,7 +1088,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
 }
 std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
     std::vector<Exponent> result;
-    if (s.emptiness()) return result;
+    if (s.isZero()) return result;
     if ((Polynomial(s).isOne()) || (Polynomial(s).hasConstantPart())){
         result.push_back(Exponent());
         return result;
@@ -1102,7 +1102,7 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
             result.push_back(t);
     }
     
-    if (s.emptiness()){
+    if (s.isZero()){
         return result;
     } else {
         std::vector<Exponent> exponents;
@@ -1428,7 +1428,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
                         literal_factors,
                         p_i);
                impl.push_back(p_i);
-                if ((can_add_directly) &&(!(this->generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).emptiness())))
+                if ((can_add_directly) &&(!(this->generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).isZero())))
                 //e_i is wrong here, have to multiply
                     can_add_directly=false;
             }
@@ -1487,7 +1487,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
 
             if ((include_orig) ||(e_i!=e)){
                 impl.push_back(p_i);
-                if ((can_add_directly)&&(!(this->generators.minimalLeadingTerms.divisorsOf(e_i).emptiness())))
+                if ((can_add_directly)&&(!(this->generators.minimalLeadingTerms.divisorsOf(e_i).isZero())))
                     can_add_directly=false;
                 //impl.push_back(p_i);
                 //addGeneratorDelayed(p_i);
@@ -1523,7 +1523,7 @@ void GroebnerStrategy::addVariablePairs(int s){
          if ((generators[s].lead.deg()==1) ||
             generators[s].literal_factors.occursAsLeadOfFactor(*it))
          {
-              //((MonomialSet(p).subset0(*it).emptiness())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
+              //((MonomialSet(p).subset0(*it).isZero())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       //cout<<"factorcrit"<<endl;
              generators[s].vPairCalculated.insert(*it);
           } else
@@ -1552,7 +1552,7 @@ static MonomialSet divide_monomial_divisors_out_old(const MonomialSet& s, const 
 }
 static MonomialSet do_divide_monomial_divisors_out(const MonomialSet& s, Monomial::const_iterator it, Monomial::const_iterator end){
     if(it==end) return s;
-    if (s.emptiness()) return s;
+    if (s.isZero()) return s;
     
     Monomial::const_iterator itpp=it;
     itpp++;
@@ -1568,7 +1568,7 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
   
   
     std::vector<Monomial> result;
-    if (!(m.divisorsOf(lm).emptiness())){
+    if (!(m.divisorsOf(lm).isZero())){
         result.push_back(lm);
     } else {
         Monomial v;
@@ -1582,7 +1582,7 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
             m=m.subset0(cv[i]);
         }*/
         m=minimal_elements(m);
-        if (!(m.emptiness())){
+        if (!(m.isZero())){
             m=m.unateProduct(lm.diagram());
             result.insert(result.end(), m.begin(), m.end());
         }
@@ -1597,7 +1597,7 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
     std::vector<Exponent> result;
     Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).emptiness())){
+    if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
     } else {
         Monomial v;
@@ -1616,7 +1616,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
     Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).emptiness())){
+    if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
     } else {
         Monomial v;
@@ -1635,7 +1635,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
     std::vector<Exponent> result;
     Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).emptiness())){
+    if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
     } else {
         Monomial v;
@@ -1689,7 +1689,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
 
 MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
-  if (m.emptiness()) return m;
+  if (m.isZero()) return m;
   
   if (m.ownsOne()) return ((Polynomial) 1).diagram();
 
@@ -1726,7 +1726,7 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
 MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   Polynomial p_mod=mod;
-  if (m.emptiness()) return m;
+  if (m.isZero()) return m;
   if (mod.ownsOne())
     return MonomialSet();
   if (m.ownsOne()) return ((Polynomial) 1).diagram();
@@ -1742,8 +1742,8 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   mod=mod_var_set(mod,cv_orig);
   m=mod_var_set(m,cv_orig);
   m=m.diff(mod);
-  if (m.emptiness()) return cv;
-  bool cv_empty=cv.emptiness();
+  if (m.isZero()) return cv;
+  bool cv_empty=cv.isZero();
   
   MonomialSet result;
   int index=*m.navigation();
@@ -1751,7 +1751,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   
   
   
-  if (!mod.emptiness())
+  if (!mod.isZero())
   {
     MonomialSet::navigator nav_mod=mod.navigation();
     while((!(nav_mod.isConstant())) && (index>*nav_mod)){
@@ -1781,7 +1781,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
     return cv.unite((MonomialSet)cache_mgr.generate(cached));
   }
   
-  if (mod.emptiness()){
+  if (mod.isZero()){
     
     MonomialSet result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0),
                                                        mod); 
@@ -1795,7 +1795,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
           result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), mod);
         MonomialSet result1= do_minimal_elements_cudd_style(
           cache_mgr.generate(ms1),result0.unite(mod));
-        if (result1.emptiness()) {result=result0;}
+        if (result1.isZero()) {result=result0;}
         else
           {result= MonomialSet(index,result1,result0);}
       } else {
@@ -1823,7 +1823,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
     PolyEntry e=generators[s];
     int i;
     
-    if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).emptiness()))
+    if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).isZero()))
      {
        BooleMonomial lm=e.lead;
 
@@ -1845,7 +1845,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
               Exponent t=t_divided+e.leadExp;
   #endif
               //MonomialSet lm_d=t_divided.divisors();
-              assert((other_terms.intersect(t_divided.divisors()).emptiness()));
+              assert((other_terms.intersect(t_divided.divisors()).isZero()));
               if (true){
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=generators.leadingTerms.intersect(t.divisors());
@@ -1931,7 +1931,7 @@ MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialS
 
 void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
     Monomial lm=p.lead();
-    assert (!(m.emptiness()));
+    assert (!(m.isZero()));
     idx_type lead_index=*(lm.begin());
     Exponent red_lead=*m.expBegin();
     if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
@@ -1953,7 +1953,7 @@ void ReductionStrategy::setupSetsForLastElement(){
     Monomial lm=e.lead;
     MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
 
-    if(divisors_from_minimal.emptiness()){
+    if(divisors_from_minimal.isZero()){
        
         
         assert(!(Polynomial(lm).isZero()));
@@ -1962,7 +1962,7 @@ void ReductionStrategy::setupSetsForLastElement(){
         lm_multiples_min=lm_multiples_min.diff(lm.diagram());
         //(lm.diagram()).diff(lm.diagram());
     
-        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).emptiness());
+        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).isZero());
 
         {
         
@@ -1984,7 +1984,7 @@ void ReductionStrategy::setupSetsForLastElement(){
     {
         //cerr<<"Warning:adding non minimal element to strategy"<<std::endl;
         //assert(false);
-        if (!(divisors_from_minimal.diff(lm.diagram()).emptiness()))
+        if (!(divisors_from_minimal.diff(lm.diagram()).isZero()))
             (*this)[s].minimal=false;
     }
     leadingTerms = leadingTerms.unite(Polynomial(lm).diagram());
@@ -2057,7 +2057,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
             ot2=generators.leadingTerms11;
           /// deactivated existAbstract, because sigfaults on SatTestCase, AD
           
-        if (!(ot2.emptiness())){
+        if (!(ot2.isZero())){
             ext_prod_terms=ot2.existAbstract(lm).diff(other_terms);
             other_terms=other_terms.unite(ext_prod_terms);
         }
@@ -2421,7 +2421,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
     std::vector<int> implication_indices;
     for(i=0;i<s;i++){
       assert(!(impl[i].isZero()));
-      if (generators.minimalLeadingTerms.divisorsOf(impl[i].leadExp()).emptiness()){
+      if (generators.minimalLeadingTerms.divisorsOf(impl[i].leadExp()).isZero()){
 
         
         Polynomial p_impl=impl[i];
@@ -2436,7 +2436,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
       }
 
     }
-    assert(!(generators.leadingTerms.divisorsOf(p.leadExp()).emptiness()));
+    assert(!(generators.leadingTerms.divisorsOf(p.leadExp()).isZero()));
   }
 }
 Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
@@ -2461,11 +2461,11 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     Exponent lm_exp=p.leadExp();
     MonomialSet divisors=this->generators.leadingTerms.divisorsOf(lm_exp);
     #if 0
-    if (divisors.emptiness())
+    if (divisors.isZero())
         addGenerator(p);
     else addGeneratorDelayed(p);
     #else
-    if ((optDelayNonMinimals) && (!(divisors.emptiness()))){
+    if ((optDelayNonMinimals) && (!(divisors.isZero()))){
       addGeneratorDelayed(p);
       return;
     }else {
@@ -2497,13 +2497,13 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
                     ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
                 this->addGeneratorDelayed(pr);
             } else {
-                if (divisors.emptiness())
+                if (divisors.isZero())
                     this->addGeneratorTrySplit(pr, true);
                 else
                     addGenerator(pr);
             }
         } else
-            if (divisors.emptiness())
+            if (divisors.isZero())
                 this->addGeneratorTrySplit(p, true);
             else
                 addGenerator(p);

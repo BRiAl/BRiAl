@@ -130,7 +130,7 @@ BooleSet::lastLexicographicalTerm() const {
 
   PBORI_TRACE_FUNC( "BooleSet::lastTerm() const" );
 
-  if UNLIKELY(emptiness())
+  if UNLIKELY(isZero())
     throw PBoRiError(CTypes::illegal_on_zero);
 
   return dd_last_lexicographical_term(*this, type_tag<term_type>());
@@ -181,14 +181,14 @@ BooleSet::hasTermOfVariables(const term_type& rhs) const {
 
 #ifdef PBORI_HASTERMOFVARIABLES_HIGHLEVEL
 
-  bool_type result =!divisorsOf(rhs).emptiness();
+  bool_type result =!divisorsOf(rhs).isZero();
 
 #else
 
   bool_type result = dd_owns_term_of_indices(navigation(),
                                              rhs.begin(), rhs.end());
 
-  assert(result == !divisorsOf(rhs).emptiness());
+  assert(result == !divisorsOf(rhs).isZero());
 
 #endif
   
@@ -269,7 +269,7 @@ BooleSet::print(ostream_type& os) const {
 
   typedef CStringLiteral<CLiteralCodes::empty>  empty_type;
 
-  if( base::emptiness() )
+  if( base::isZero() )
     os << "{}";
   else {
     os << "{{";

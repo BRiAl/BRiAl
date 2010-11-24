@@ -128,6 +128,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set.hasTermOfVariables(z*y));
   BOOST_CHECK(!set.hasTermOfVariables(BooleMonomial()));
   BOOST_CHECK(!empty.hasTermOfVariables(y));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*y*z));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*z*y));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*z*v));
   BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial()));
 
   BOOST_TEST_MESSAGE( "contains" );

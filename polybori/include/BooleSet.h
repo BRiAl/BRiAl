@@ -192,7 +192,8 @@ public:
   /// Division by given term
   self divide(const term_type& rhs) const;
 
-  /// Check for empty intersection with divisors of rhs
+  /// Check for empty intersection with divisors of rhs, i.e. test whether there
+  /// are terms made of the given variables.
   bool_type hasTermOfVariables(const term_type& rhs) const;
 
   /// Get minimal elements wrt. inclusion

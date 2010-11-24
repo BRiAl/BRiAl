@@ -133,26 +133,33 @@ class BooleEnv:
   /// Get name of variable with index idx
   static vartext_type getVariableName(idx_type idx);
 
-  /// @name interface for block orderings
+  /// @name interface for block orderings, if the vcurrent orderins is a block ordering
   //@{
+  /// Returns iterator over the indices, where the (next) block starts. 
+  /// (The first one implicitely starts at zero.)
   static block_iterator blockBegin();
+
+  /// Returns end marker of iteration
   static block_iterator blockEnd();
+
+  /// Add index where the next block starts
   static void appendBlock(idx_type idx);
+
+  /// Reset block-related data
   static void clearBlocks();
-  
+
+  /// Index where the last blocks starts
   static idx_type lastBlockStart();
   //@}
 
   /// Change order of current ring
   static void changeOrdering(ordercode_type code);
 
+  /// Print low-level information
   static void printInfo();
 
+  /// Activate given ring
   static void set(ring_type& theRing);
-
-
-protected:
-
   
 };
 
