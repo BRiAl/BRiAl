@@ -196,10 +196,6 @@ public:
       Cudd_ReadZero(getManager());
   }
 
-  /// If-Then-Else operation using current diagram as head
-  self ite(const self& g, const self& h) const { 
-    return apply(Cudd_zddIte, g, h); 
-  }
 
   /// @name Functions for print useful information
   //@{
