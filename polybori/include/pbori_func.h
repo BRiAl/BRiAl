@@ -511,10 +511,7 @@ public:
   DDType& operator()(DDType& lhs, const DDType& rhs) const {
     // several possible implementations
     return 
-#ifdef PBORI_ADD_BY_ITE
-      lhs = lhs.ite(lhs.diff(rhs), rhs);
-
-# elif defined(PBORI_ADD_BY_OR)
+#if defined(PBORI_ADD_BY_OR)
       (lhs = (lhs.diff(rhs)).unite(rhs.diff(lhs)));
 
 # elif defined(PBORI_ADD_BY_UNION)
