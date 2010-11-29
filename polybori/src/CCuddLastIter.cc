@@ -48,7 +48,9 @@ CCuddLastIter::CCuddLastIter(pointer_type ptr):
   if(isValid()){
 
     // go in the direction of last term
-    incrementElse();
+    if(!isConstant())
+      incrementElse();
+
     while(!isConstant()){
       tmp = *this;
       incrementElse();
@@ -86,6 +88,7 @@ CCuddLastIter::operator++() {
   if(isValid()) {
 
     // this node is done; go to next possible node
+    assert(!isConstant());
     incrementThen();
 
     if( !isConstant() ) {       // if still in interior of a path

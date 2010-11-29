@@ -650,7 +650,7 @@ get_mgr_core(const MgrType& rhs) {
 //   return mgr.managerCore();
 // }
 
-/// temporarily (needs to be more generic)
+/// temporarily (needs to be more generic) (similar fct in CCuddDDFacade.h)
 template<class ManagerType, class ReverseIterator, class MultReverseIterator,
 class DDBase>
 inline DDBase
@@ -716,7 +716,7 @@ cudd_generate_multiples(const ManagerType& mgr,
 
 
 
-/// temporarily (needs to be more generic)
+/// temporarily (needs to be more generic) (similar fct in CCuddDDFacade.h)
 template<class ManagerType, class ReverseIterator, class DDBase>
 DDBase
 cudd_generate_divisors(const ManagerType& mgr, 

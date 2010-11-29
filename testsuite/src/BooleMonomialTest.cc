@@ -65,7 +65,20 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_TEST_MESSAGE( "Polynomials from other types (variables, exponents, rings)..." );
   BOOST_CHECK_EQUAL(monom_type(x), x);
   BOOST_CHECK_EQUAL(monom_type(bexp,ring), y);
+  BOOST_CHECK_EQUAL(monom_type(BooleExponent(),ring), BooleMonomial());
   BOOST_CHECK_EQUAL(monom_type(ring), BooleConstant(true));
+
+  BooleExponent exponent;
+  exponent.insert(4);
+  exponent.insert(0);
+  BooleMonomial monom(exponent, ring);
+  output_test_stream output;
+  output << monom;
+  BOOST_CHECK(output.is_equal("x*w"));
+
+  exponent.insert(5);
+  BOOST_CHECK_THROW(BooleMonomial(exponent, ring), PBoRiError);
+
 }
 
 BOOST_AUTO_TEST_CASE(test_assigning_operators) {
@@ -79,6 +92,9 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK(output.is_equal("x*y*z*v*w"));
   output << ((((monom_type(x) *= x) *= x) *= x)*= x);
   BOOST_CHECK(output.is_equal("x"));
+  BOOST_CHECK_EQUAL(monom_type(x*y)*=monom_type(),monom_type(x*y));
+  BOOST_CHECK_EQUAL(monom_type()*=monom_type(x*z),monom_type(x*z));
+  BOOST_CHECK_EQUAL(monom_type()*=monom_type(),monom_type());
 
   BOOST_TEST_MESSAGE( "/=" );
   output << ((monom_type(x*y*z*v*w)/= x)/= v);
@@ -125,6 +141,11 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK(output.is_equal("1"));
   BOOST_CHECK(monom == monom_type());
 
+  // Assertion (if debug) 
+  //   output << monom.popFirst();
+  //   BOOST_CHECK(output.is_equal("1"));
+
+
   BOOST_TEST_MESSAGE( "deg and size" );
   monom = monom_type(v*y*x*x*z);
   output << monom.deg();
@@ -155,6 +176,8 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   monom2 = monom_type(x*y*z*v*w);
   output << monom.multiples(monom2);
   BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,w}, {x,z,v,w}, {x,z,w}}"));
+  output << monom.multiples(monom_type());
+  BOOST_CHECK(output.is_equal("{{x,z,w}}"));
   monom = monom_type();
   monom2 = monom_type(x*y);
   output << monom.multiples(monom2);

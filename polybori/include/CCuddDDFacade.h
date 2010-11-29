@@ -85,7 +85,6 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 #define PBORI_NAME_Union unite
 #define PBORI_NAME_Intersect intersect
 #define PBORI_NAME_Diff diff
-#define PBORI_NAME_DiffConst diffConst
 #define PBORI_NAME_Subset1 subset1
 #define PBORI_NAME_Subset0 subset0
 #define PBORI_NAME_Change change
@@ -138,6 +137,9 @@ public:
   /// Raw context
   typedef typename ring_type::mgr_type mgr_type;
 
+  /// Cudd's index type
+  typedef int cudd_idx_type;
+
   /// Construct diagram from ring and node
   CCuddDDFacade(const ring_type& ring, node_ptr node): 
     p_node(ring, node) {
@@ -165,8 +167,8 @@ public:
     p_node(thenDD.ring(), getNewNode(idx, thenDD, elseDD)) { }
 
   /// Default constructor
-  CCuddDDFacade(): p_node()  {}  ///  @todo NULL?
-
+  private: CCuddDDFacade(): p_node()  {}  ///  @todo NULL?
+    public:
   /// Copy constructor
   CCuddDDFacade(const self &from): p_node(from.p_node) {}
 
@@ -183,10 +185,16 @@ public:
   /// @code
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, const diagram_type&, 
     (Product)(UnateProduct)(WeakDiv)(Divide)(WeakDivF)(DivideF)
-    (Union)(Intersect)(Diff)(DiffConst))
+    (Union)(Intersect)(Diff))
 
   BOOST_PP_SEQ_FOR_EACH(PB_ZDD_APPLY, int, (Subset1)(Subset0)(Change))
   /** @endcode */
+
+  /// Performs the inclusion test for ZDDs
+  bool implies(const self& rhs) const {
+    return Cudd_zddDiffConst(getManager(), getNode(), rhs.getNode()) ==
+      Cudd_ReadZero(getManager());
+  }
 
   /// If-Then-Else operation using current diagram as head
   self ite(const self& g, const self& h) const { 
@@ -263,82 +271,7 @@ protected:
       throw std::runtime_error(error_text(getManager()));
   }
 
-public:
-
-  /// Union Xor
-  diagram_type Xor(const diagram_type& rhs) const {
-    if (rhs.isZero())
-      return *this;
-
-    //    return apply(pboriCudd_zddUnionXor, rhs);
-    base::checkSameManager(rhs);
-    return diagram_type(ring(), pboriCudd_zddUnionXor(getManager(), getNode(), rhs.getNode()) );
-  }
-
-  /// Division with first term of right-hand side
-  diagram_type divideFirst(const diagram_type& rhs) const {
-
-    diagram_type result(*this);
-    PBoRiOutIter<diagram_type, idx_type, subset1_assign<diagram_type> >  outiter(result);
-    std::copy(rhs.firstBegin(), rhs.firstEnd(), outiter);
-
-    return result;
-  }
-
-
-  /// Get number of nodes in decision diagram
-  ostream_type& print(ostream_type& os) const {
-
-    printIntern(os) << std::endl;;
-    PrintMinterm();
-
-    return os;
-  }
-
-
-  /// Get numbers of used variables
-  size_type nSupport() const { return apply(Cudd_SupportSize); }
-
-  /// Get used variables (assuming indices of zero length)
-  template<class VectorLikeType>
-  void usedIndices(VectorLikeType& indices) const {
-
-    int* pIdx =  usedIndices();
-    size_type nlen(ring().nVariables());
-
-    indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
-
-    for(size_type idx = 0; idx < nlen; ++idx)
-      if (pIdx[idx] == 1){
-        indices.push_back(idx);
-      }
-    FREE(pIdx);
-  }
-
-  /// Get used variables (assuming indices of length nSupport())
-  int* usedIndices() const { return apply(Cudd_SupportIndex); }
-
-  /// Start of first term
-  first_iterator firstBegin() const {
-    return first_iterator(navigation());
-  }
-
-  /// Finish of first term 
-  first_iterator firstEnd() const { 
-    return first_iterator();
-  }
-
-  /// Start of first term
-  last_iterator lastBegin() const {
-    return last_iterator(getNode());
-  }
-
-  /// Finish of first term 
-  last_iterator lastEnd() const { 
-    return last_iterator();
-  }
-
-  /// temporarily (needs to be more generic)
+    /// temporarily (needs to be more generic) (similar fct in pbori_algo.h)
   template<class ManagerType, class ReverseIterator, class MultReverseIterator>
   diagram_type
   cudd_generate_multiples(const ManagerType& mgr, 
@@ -400,6 +333,110 @@ public:
 
     return diagram_type(mgr, prev);
   }
+
+    /// temporarily (needs to be more generic) (similar fct in pbori_algo.h)
+  template<class ManagerType, class ReverseIterator>
+  diagram_type
+  cudd_generate_divisors(const ManagerType& mgr, 
+                         ReverseIterator start, ReverseIterator finish) const {
+
+
+    DdNode* prev= (getManager())->one;
+
+    Cudd_Ref(prev);
+    while(start != finish) {
+
+      DdNode* result = cuddUniqueInterZdd( getManager(),
+                                           sign_cast<cudd_idx_type>(*start),
+                                           prev, prev);
+
+      Cudd_Ref(result);
+      Cudd_RecursiveDerefZdd(getManager(), prev);
+
+      prev = result;
+      ++start;
+    }
+
+    Cudd_Deref(prev);
+    ///@todo Next line needs generalization 
+      return diagram_type(mgr, prev);
+
+}
+public:
+
+  /// Union Xor
+  diagram_type Xor(const diagram_type& rhs) const {
+    if (rhs.isZero())
+      return *this;
+
+    //    return apply(pboriCudd_zddUnionXor, rhs);
+    base::checkSameManager(rhs);
+    return diagram_type(ring(), pboriCudd_zddUnionXor(getManager(), getNode(), rhs.getNode()) );
+  }
+
+  /// Division with first term of right-hand side
+  diagram_type divideFirst(const diagram_type& rhs) const {
+
+    diagram_type result(*this);
+    PBoRiOutIter<diagram_type, idx_type, subset1_assign<diagram_type> >  outiter(result);
+    std::copy(rhs.firstBegin(), rhs.firstEnd(), outiter);
+
+    return result;
+  }
+
+
+  /// Get number of nodes in decision diagram
+  ostream_type& print(ostream_type& os) const {
+
+    printIntern(os) << std::endl;;
+    PrintMinterm();
+
+    return os;
+  }
+
+
+  /// Get numbers of used variables
+  size_type nSupport() const { return apply(Cudd_SupportSize); }
+
+  /// Get used variables (assuming indices of zero length)
+  template<class VectorLikeType>
+  void usedIndices(VectorLikeType& indices) const {
+
+    int* pIdx =  usedIndices();
+    size_type nlen(ring().nVariables());
+
+    indices = VectorLikeType();
+    indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
+
+    for(size_type idx = 0; idx < nlen; ++idx)
+      if (pIdx[idx] == 1){
+        indices.push_back(idx);
+      }
+    FREE(pIdx);
+  }
+
+  /// Get used variables (assuming indices of length nSupport())
+  int* usedIndices() const { return apply(Cudd_SupportIndex); }
+
+  /// Start of first term
+  first_iterator firstBegin() const {
+    return first_iterator(navigation());
+  }
+
+  /// Finish of first term 
+  first_iterator firstEnd() const { 
+    return first_iterator();
+  }
+
+  /// Start of first term
+  last_iterator lastBegin() const {
+    return last_iterator(getNode());
+  }
+
+  /// Finish of first term 
+  last_iterator lastEnd() const { 
+    return last_iterator();
+  }
   
   /// Get decison diagram representing the multiples of the first term
   diagram_type firstMultiples(const std::vector<idx_type>& multipliers) const {
@@ -413,37 +450,6 @@ public:
                                     multipliers.rbegin(),
                                     multipliers.rend() );
   }
-
-
-
-
-  /// temporarily (needs to be more generic)
-  template<class ManagerType, class ReverseIterator>
-  diagram_type
-  cudd_generate_divisors(const ManagerType& mgr, 
-                         ReverseIterator start, ReverseIterator finish) const {
-
-
-    DdNode* prev= (getManager())->one;
-
-    Cudd_Ref(prev);
-    while(start != finish) {
- 
-      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
-                                           prev, prev);
-
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
- 
-      prev = result;
-      ++start;
-    }
-
-    Cudd_Deref(prev);
-    ///@todo Next line needs generalization 
-      return diagram_type(mgr, prev);
-
-}
 
   /// Get decison diagram representing the divisors of the first term
   diagram_type firstDivisors() const {
@@ -459,14 +465,6 @@ public:
   navigator navigation() const {
     return navigator(getNode());
   }
-
-  /// Checks whether the decision diagram is empty
-  bool_type emptiness() const {// to be removed
-    return (isZero());
-  }
-
-  /// Checks whether the decision diagram has every variable negated
-  bool_type blankness() const { return isOne(); }  // to be removed
 
   /// Checks whether the the diagram corresponds to {} or {{}} (polynomial 0 or 1)
   bool_type isConstant() const {
@@ -485,7 +483,7 @@ private:
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
       throw PBoRiGenericError<CTypes::invalid_ite>();
     
-    return cuddZddGetNode(ring.getManager(), idx, 
+    return cuddZddGetNode(ring.getManager(), sign_cast<cudd_idx_type>(idx), 
                           thenNavi.getNode(), elseNavi.getNode());
   }
 
@@ -494,7 +492,7 @@ private:
   getNewNode(idx_type idx, const self& thenDD, const self& elseDD) {
     thenDD.checkSameManager(elseDD);
     return getNewNode(thenDD.ring(), 
-                      idx, thenDD.navigation(), elseDD.navigation());
+                      sign_cast<cudd_idx_type>(idx), thenDD.navigation(), elseDD.navigation());
   }
 
 private:

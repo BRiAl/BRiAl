@@ -158,6 +158,13 @@ public:
   /// Exponent vector of variables of the whole set
   exp_type usedVariablesExp() const;
 
+  self change(idx_type idx) const {
+    if UNLIKELY(idx >= ring().nVariables())
+      throw PBoRiError(CTypes::out_of_bounds);
+    return base::change(sign_cast<cudd_idx_type>(idx));
+  }
+
+
   /// Add given monomial to sets
   self add(const term_type& rhs) const;
 
@@ -185,7 +192,8 @@ public:
   /// Division by given term
   self divide(const term_type& rhs) const;
 
-  /// Check for empty intersection with divisors of rhs
+  /// Check for empty intersection with divisors of rhs, i.e. test whether there
+  /// are terms made of the given variables.
   bool_type hasTermOfVariables(const term_type& rhs) const;
 
   /// Get minimal elements wrt. inclusion
@@ -217,9 +225,7 @@ public:
   };
 
   /// Test containment
-  bool_type contains(const self& rhs) const { 
-    return diffConst(rhs).isZero();  
-  }
+  bool_type contains(const self& rhs) const { return rhs.implies(*this); }
 
   /// Returns number of terms
   size_type size() const { return count(); }

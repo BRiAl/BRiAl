@@ -94,7 +94,7 @@ main(){
 
     std::cout <<   bset.intersect((v*w).divisors()) << std::endl;
 
-    std::cout <<   bset.intersect((v*w).divisors()).emptiness() << std::endl;
+    std::cout <<   bset.intersect((v*w).divisors()).isZero() << std::endl;
    std::cout <<   "next" << std::endl;
 
    std::cout <<   bset.hasTermOfVariables((z) ) << std::endl;

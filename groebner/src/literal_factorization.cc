@@ -25,7 +25,7 @@ std::vector<Polynomial> easy_linear_factors(const Polynomial &p){
 }
 
 static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
-  if (m.emptiness()) return m.ring().one();
+  if (m.isZero()) return m.ring().one();
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
     while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
@@ -65,8 +65,8 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
 
 
 static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSet& left,const MonomialSet& right, const Variable& x){
-    if (left.emptiness()) 
-      return Polynomial(right.emptiness(), left.ring());
+    if (left.isZero()) 
+      return Polynomial(right.isZero(), left.ring());
     MonomialSet::navigator nav_l=left.navigation();
     MonomialSet::navigator nav_r=right.navigation();
     typedef PBORI::CacheManager<CCacheTypes::left_equals_right_x_branch_and_r_has_fac_x>
@@ -107,7 +107,7 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
 }
 
 static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,const Variable& y){
-    if (m.emptiness()) return m.ring().one();
+    if (m.isZero()) return m.ring().one();
     assert(!(x==y));
     MonomialSet::navigator nav=m.navigation();
     idx_type min_idx=std::min(x.index(),y.index());
@@ -158,7 +158,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
 //struct has_factor_x_plus_y: public ternary_cache_tag { };
 //struct left_equals_right_x_branch: public ternary_cache_tag { };
 static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& x){
-  if (m.emptiness()) return m.ring().one();
+  if (m.isZero()) return m.ring().one();
     MonomialSet::navigator nav=m.navigation();
     idx_type x_idx=x.index();
     while((!(nav.isConstant())) && (nav.elseBranch().isEmpty())  &&(*nav<x_idx)){
@@ -226,8 +226,8 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
     idx_type v=*it;
     #ifndef ELEMENTAR_FACTORIZATION
     BooleSet s0=r.subset0(v);
-    assert (s0.emptiness()==has_factor_x(r,Variable(v, s0.ring())));
-    if (s0.emptiness()){
+    assert (s0.isZero()==has_factor_x(r,Variable(v, s0.ring())));
+    if (s0.isZero()){
     #else
       Variable v_var(v, p.ring());
       if (has_factor_x(r,Variable(v_var))){
@@ -286,8 +286,8 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                       assert(BooleEnv::ordering().compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
                         assert(r.subset1(v2).change(v2)==r.subset0(v));
-                        assert(r.subset1(v2).subset1(v).emptiness());
-                        assert(r.subset0(v).subset0(v2).emptiness());
+                        assert(r.subset1(v2).subset1(v).isZero());
+                        assert(r.subset0(v).subset0(v2).isZero());
                     #ifndef ELEMENTAR_FACTORIZATION
                         r=s1;
                     #else

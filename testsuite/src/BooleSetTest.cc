@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("{}"));
   set = set.add(x);
   set_type set2;
-  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiError);// Should be specifically PBoRiGenericError, somehow not found here
+  BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiGenericError<CTypes::invalid_ite>);
   set_type set1;
   set1 = set1.add(y);
   set_type set3 = set_type(0,set1,set2);
@@ -73,12 +73,15 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
 BOOST_AUTO_TEST_CASE(test_variables) {
 
-  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" );
   output_test_stream output;
   set_type set = poly.set();
-  BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
   set_type empty;
+
+  BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" ); // BooleMonomial is used as a BooleVariable set here
+  BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
   BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());
+  set_type added_set = set.add(BooleMonomial());
+  BOOST_CHECK_EQUAL(added_set.usedVariables(),x*y*z*v);
   BooleExponent exp = set.usedVariablesExp();
   output << exp;
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
@@ -88,7 +91,13 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
   BOOST_TEST_MESSAGE( "lastLexicographicalTerm" );
   BOOST_CHECK_EQUAL(set.lastLexicographicalTerm(), BooleMonomial(v*z));
-  //BOOST_CHECK_EQUAL(empty.lastLexicographicalTerm(), BooleMonomial());//memory access violation at address 0x00000000
+  BOOST_CHECK_THROW(empty.lastLexicographicalTerm(),  PBoRiError);
+
+  set_type simple = empty.add(BooleMonomial());
+  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial());
+
+  simple = empty.add(x);
+  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), x);
 
   BOOST_TEST_MESSAGE( "minimalElements" );
   set_type set2 = set.minimalElements();
@@ -97,11 +106,16 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   set2 = empty.minimalElements();
   output << set2;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(set2,empty);
 
-  BOOST_TEST_MESSAGE( "hasTermOfVariables" );
+  BOOST_TEST_MESSAGE( "hasTermOfVariables" );// Strange? Does this do what it is supposed to?
+  // set: {{x,y,z}, {x,v}, {y}, {z,v}}
+
+  BOOST_TEST_MESSAGE( output.str() );
   BOOST_CHECK(set.hasTermOfVariables(x*v));
   BOOST_CHECK(set.hasTermOfVariables(x*y*z));
   BOOST_CHECK(set.hasTermOfVariables(x*z*y));
+  BOOST_CHECK(set.hasTermOfVariables(x*z*v));
   BOOST_CHECK(set.hasTermOfVariables(y));
   BOOST_CHECK(set.hasTermOfVariables(z*v));
   BOOST_CHECK(!set.hasTermOfVariables(x));
@@ -112,25 +126,73 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set.hasTermOfVariables(y*x));
   BOOST_CHECK(set.hasTermOfVariables(y*z));
   BOOST_CHECK(set.hasTermOfVariables(z*y));
+  BOOST_CHECK(!set.hasTermOfVariables(BooleMonomial()));
+  BOOST_CHECK(!empty.hasTermOfVariables(y));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*y*z));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*z*y));
+  BOOST_CHECK(!empty.hasTermOfVariables(x*z*v));
+  BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial()));
 
   BOOST_TEST_MESSAGE( "contains" );
-  BOOST_CHECK(!set.contains(empty));
+  BOOST_CHECK(set.contains(empty));
   BOOST_CHECK(set.contains(set));
+  BOOST_CHECK(!empty.contains(set));
   BOOST_CHECK(empty.contains(empty));
+  BOOST_CHECK(!empty.contains(ring.one()));
+  BOOST_CHECK(!set.contains(ring.one()));
   set2 = empty.add(x*y*z);
-  
-  std::cout << set<<" "<<set.ring().hash() <<std::endl;
-  std::cout << set2<<" "<<set2.ring().hash() <<std::endl;
-  
-  //BOOST_CHECK(set.contains(set2)); // memory access violation at address: 0x00000004: no mapping at fault address
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  BOOST_CHECK(set.contains(BoolePolynomial(y).set()));
+  set2 = empty.add(z*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*y*z);
+  set2 = set2.add(x*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*y*z);
+  set2 = set2.add(y);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*y*z);
+  set2 = set2.add(z*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*v);
+  set2 = set2.add(y);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(x*v);
+  set2 = set2.add(z*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = empty.add(y);
+  set2 = set2.add(z*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = set2.add(x*v);
+  BOOST_CHECK(!set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = set2.add(x*y*z);
+  BOOST_CHECK(set2.contains(set));
+  BOOST_CHECK(set.contains(set2));
+  set2 = set2.add(x*y*v);
+  BOOST_CHECK(set2.contains(set));
+  BOOST_CHECK(!set.contains(set2));
 
   BOOST_TEST_MESSAGE( "emptyElement" );
   set_type emptyEl = empty.emptyElement();
   output << emptyEl;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(emptyEl, empty);
   emptyEl = set.emptyElement();
   output << emptyEl;
   BOOST_CHECK(output.is_equal("{}"));
+  BOOST_CHECK_EQUAL(emptyEl, empty);
 
   BOOST_TEST_MESSAGE( "countIndex" );
   BOOST_CHECK_EQUAL(set.countIndex(0),2);
@@ -175,6 +237,9 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*z));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(z*y));
   BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x*y*z));
+  BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleMonomial()));
 
   set_type set1;
   set1 = set1.add(x*y*z);
@@ -198,6 +263,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(y));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(z));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleMonomial()));
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
@@ -259,6 +325,7 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!empty.owns(z));
   BOOST_CHECK(!empty.owns(v));
   BOOST_CHECK(!empty.owns(w));
+  BOOST_CHECK(!empty.owns(BooleMonomial()));
 
   set_type addedset = set.add(x);
   addedset = addedset.add(x*v*z);
@@ -364,24 +431,206 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
   set_type set = poly.set();
   set = set.add(x);
   set = set.add(x*y);
-  std::cout << set << std::endl;
+
   set_type empty;
+  set_type almost_empty;
+  almost_empty = almost_empty.add(BooleMonomial());
 
   BOOST_TEST_MESSAGE( "size" );
   BOOST_CHECK_EQUAL(set.size(),6);
   BOOST_CHECK_EQUAL(empty.size(),0);
+  BOOST_CHECK_EQUAL(almost_empty.size(),1);
 
   BOOST_TEST_MESSAGE( "length" );
   BOOST_CHECK_EQUAL(set.length(),6);
   BOOST_CHECK_EQUAL(empty.length(),0);
+  BOOST_CHECK_EQUAL(almost_empty.length(),1);
 
   BOOST_TEST_MESSAGE( "nVariables" );
   BOOST_CHECK_EQUAL(set.nVariables(),5);
   BOOST_CHECK_EQUAL(empty.nVariables(),5);
+  BOOST_CHECK_EQUAL(almost_empty.nVariables(),5);
 
   BOOST_TEST_MESSAGE( "sizeDouble" );
   BOOST_CHECK_EQUAL(set.sizeDouble(),6);
   BOOST_CHECK_EQUAL(empty.sizeDouble(),0);
+  BOOST_CHECK_EQUAL(almost_empty.sizeDouble(),1);
+}
+
+BOOST_AUTO_TEST_CASE(test_compute) {
+
+  set_type set = poly.set();
+  set_type empty;
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "multiplesOf" );
+  output << set.multiplesOf(x);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}}"));
+  output << set.multiplesOf(y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {y}}"));
+  output << set.multiplesOf(z);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {z,v}}"));
+  output << set.multiplesOf(v);
+  BOOST_CHECK(output.is_equal("{{x,v}, {z,v}}"));
+  output << set.multiplesOf(x*y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(x*y*z);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(x*y);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << set.multiplesOf(z*v);
+  BOOST_CHECK(output.is_equal("{{z,v}}"));
+  output << set.multiplesOf(y*v);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << set.multiplesOf(w);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << set.multiplesOf(BooleMonomial());
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
+  output << empty.multiplesOf(x);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.multiplesOf(x*y);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.multiplesOf(BooleMonomial());
+  BOOST_CHECK(output.is_equal("{}"));
+
+  BOOST_TEST_MESSAGE( "existAbstract" ); // It is not clear what this function is supposed to do
+  output << set.existAbstract(x);
+  BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z,v}, {v}}"));
+  output << set.existAbstract(y);
+  BOOST_CHECK(output.is_equal("{{x,z}, {x,v}, {z,v}, {}}"));
+  output << set.existAbstract(z);
+  BOOST_CHECK(output.is_equal("{{x,y}, {x,v}, {y}, {v}}"));
+  output << set.existAbstract(v);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x}, {y}, {z}}"));
+  output << set.existAbstract(x*y);
+  BOOST_CHECK(output.is_equal("{{z,v}, {z}, {v}, {}}"));
+  output << set.existAbstract(x*z);
+  BOOST_CHECK(output.is_equal("{{y}, {v}}"));
+  output << set.existAbstract(x*v);
+  BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z}, {}}"));
+  output << set.existAbstract(y*z);
+  BOOST_CHECK(output.is_equal("{{x,v}, {x}, {v}, {}}"));
+  output << set.existAbstract(y*v);
+  BOOST_CHECK(output.is_equal("{{x,z}, {x}, {z}, {}}"));
+  output << set.existAbstract(x*y*z);
+  BOOST_CHECK(output.is_equal("{{v}, {}}"));
+  output << set.existAbstract(x*y*v);
+  BOOST_CHECK(output.is_equal("{{z}, {}}"));
+  output << set.existAbstract(y*z*v);
+  BOOST_CHECK(output.is_equal("{{x}, {}}"));
+  output << set.existAbstract(x*y*z*v*w);
+  BOOST_CHECK(output.is_equal("{{}}"));
+  output << set.existAbstract(w);
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
+  output << set.existAbstract(x*w);
+  BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z,v}, {v}}"));
+  output << set.existAbstract(BooleMonomial());
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
+  output << empty.existAbstract(x);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.existAbstract(x*v);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.existAbstract(BooleMonomial());
+  BOOST_CHECK(output.is_equal("{}"));
+
+  BOOST_TEST_MESSAGE( "cartesianProduct" );
+  set_type set1;
+  set1 = set1.add(x);
+  set1 = set1.add(y);
+  set_type set2;
+  set2 = set2.add(v);
+  set2 = set2.add(w);
+  output << set1.cartesianProduct(set2);
+  BOOST_CHECK(output.is_equal("{{x,v}, {x,w}, {y,v}, {y,w}}"));
+  output << set1.cartesianProduct(empty);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.cartesianProduct(set1);
+  BOOST_CHECK(output.is_equal("{}"));
+  output << empty.cartesianProduct(empty);
+  BOOST_CHECK(output.is_equal("{}"));
+}
+
+BOOST_AUTO_TEST_CASE(test_hash) {
+
+  set_type set = poly.set();
+  set_type set2;
+  set2 = set2.add(x*y*z);
+  set2 = set2.add(x*v);
+  set2 = set2.add(y);
+  set2 = set2.add(z*v);
+  set_type set2cpy = set2;
+  set_type empty;
+  set_type empty2;
+  set_type empty2cpy = empty2;
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "hash" );
+  BOOST_CHECK_EQUAL(set, set2);
+  BOOST_CHECK_EQUAL(set.hash(), set2.hash());
+  set2 = set2.add(z);
+  BOOST_CHECK_NE(set.hash(), set2.hash());
+  BOOST_CHECK_EQUAL(empty, empty2);
+  BOOST_CHECK_EQUAL(empty.hash(), empty2.hash());
+  empty2 = empty.add(x);
+  BOOST_CHECK_NE(empty.hash(), empty2.hash());
+  empty2 = empty2cpy;
+  empty2 = empty2.add(BooleMonomial());
+  BOOST_CHECK_NE(empty, empty2);
+  BOOST_CHECK_NE(empty.hash(), empty2.hash());
+
+  set2 = set2cpy;
+  empty2 = empty2cpy;
+  BOOST_TEST_MESSAGE( "stableHash" );
+  BOOST_CHECK_EQUAL(set, set2);
+  BOOST_CHECK_EQUAL(set.stableHash(), set2.stableHash());
+  set2 = set2.add(z);
+  BOOST_CHECK_NE(set.stableHash(), set2.stableHash());
+  BOOST_CHECK_EQUAL(empty, empty2);
+  BOOST_CHECK_EQUAL(empty.stableHash(), empty2.stableHash());
+  empty2 = empty.add(x);
+  BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
+  empty2 = empty2cpy;
+  empty2 = empty2.add(BooleMonomial());
+  BOOST_CHECK_NE(empty, empty2);
+  BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
+}
+
+BOOST_AUTO_TEST_CASE(test_change) {
+  set_type set = poly.set();
+  output_test_stream output;
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
+  BOOST_CHECK_THROW(set.change(-1), PBoRiError);
+  BOOST_CHECK_THROW(set.change(5), PBoRiError);
+  set = set.change(4);
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,z,w}, {x,v,w}, {y,w}, {z,v,w}}"));
+  set = set.change(0);
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,w}, {x,z,v,w}, {y,z,w}, {v,w}}"));
+  set = set.change(1);
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,w}, {y,v,w}, {z,w}}"));
+  set = set.change(2);
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,v,w}, {x,z,w}, {y,z,v,w}, {w}}"));
+  set = set.change(3);
+  output << set;
+  BOOST_CHECK(output.is_equal("{{x,y,w}, {x,z,v,w}, {y,z,w}, {v,w}}"));
+  set_type empty;
+  BOOST_CHECK_THROW(empty.change(-1), PBoRiError);
+  BOOST_CHECK_THROW(empty.change(5), PBoRiError);
+  empty = empty.change(0);
+  output << empty;
+  BOOST_CHECK(output.is_equal("{}"));
+  empty = empty.add(BooleMonomial());
+  empty = empty.change(0);
+  output << empty;
+  BOOST_CHECK(output.is_equal("{{x}}"));
+  empty = empty.add(BooleMonomial());
+  empty = empty.change(1);
+  output << empty;
+  BOOST_CHECK(output.is_equal("{{x,y}, {y}}"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

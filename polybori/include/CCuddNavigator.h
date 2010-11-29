@@ -188,7 +188,7 @@ public:
   const_access_type getNode() const { return pNode; }
 
   /// Constant pointer access operator
-  hash_type hash() const { return reinterpret_cast<long>(pNode); }
+  hash_type hash() const { return reinterpret_cast<hash_type>(pNode); }
 
   /// Equality test
   bool_type operator==(const self& rhs) const { return (pNode == rhs.pNode); }

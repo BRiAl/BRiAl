@@ -43,14 +43,14 @@ BooleExponent::BooleExponent():
 }
 
 // Default constructor
-BooleExponent::BooleExponent(bool):
-  m_data()  {
+// BooleExponent::BooleExponent(bool):
+//   m_data()  {
 
-  PBORI_TRACE_FUNC( "BooleExponent(bool)" );
+//   PBORI_TRACE_FUNC( "BooleExponent(bool)" );
 
-}
+// }
 
-// Default constructor
+// Construct from Boolean monomial
 BooleExponent&
 BooleExponent::get(const monom_type& rhs) {
 
@@ -60,6 +60,14 @@ BooleExponent::get(const monom_type& rhs) {
   std::copy(rhs.begin(), rhs.end(), m_data.begin());
 
   return *this;
+}
+
+// Construct from Boolean monomial
+BooleExponent::BooleExponent(const monom_type& rhs): m_data(rhs.size()) {
+
+  PBORI_TRACE_FUNC( "BooleExponent(const monom_type&)" );
+
+  std::copy(rhs.begin(), rhs.end(), m_data.begin());
 }
 
 // Copy constructor

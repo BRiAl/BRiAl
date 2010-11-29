@@ -53,6 +53,9 @@ public:
   /// Cosntructor for integer values (nontrivial conversion)
   BooleConstant(int value): m_value(value % 2) {}
 
+  /// Cosntructor for unsigned integer values (nontrivial conversion)
+  BooleConstant(unsigned int value): m_value(value % 2) {}
+
   /// Convert to bool value
   operator bool() const { return m_value; }
 

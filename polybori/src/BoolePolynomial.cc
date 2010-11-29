@@ -463,6 +463,7 @@ BEGIN_NAMESPACE_PBORI
 // Constructors and destructor
 //------------------------------------------------------------------------
 
+
 // Default constructor
 BoolePolynomial::BoolePolynomial():
   m_dd( BooleEnv::ring().zero() ) {
@@ -1255,7 +1256,9 @@ BoolePolynomial::eliminationLength() const{
 BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
   const {
+
   assert(garantied_deg_bound>=this->deg());
+
   if (ring().ordering().isTotalDegreeOrder())
     return this->length();
   if (this->leadDeg()==garantied_deg_bound)

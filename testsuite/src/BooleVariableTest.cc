@@ -55,6 +55,8 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK_EQUAL(var_type(0),x);
   BOOST_CHECK_EQUAL(var_type(1,ring),y);
   BOOST_CHECK_EQUAL(var_type(z),z);
+  BOOST_CHECK_THROW(var_type(3), PBoRiError);
+  BOOST_CHECK_THROW(var_type(-1), PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_methods) {
@@ -67,7 +69,8 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK_EQUAL(var_type(1).index(), 1);
   BOOST_CHECK_EQUAL(var_type(z).index(), 2);
   BOOST_CHECK_EQUAL(z.index(), 2);
-  //BOOST_CHECK_EQUAL(var_type(3).index(), 3); // GIVES value in unassigned memory
+
+  BOOST_CHECK_THROW(var_type(3).index(), PBoRiError);
   BOOST_TEST_MESSAGE( "ring" );
   BOOST_CHECK_EQUAL(x.ring().nVariables(), ring.nVariables());
   BOOST_CHECK_EQUAL(x.ring().getVariableName(0), ring.getVariableName(0));
@@ -78,7 +81,7 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK_EQUAL(y.set(),bset);
   BOOST_CHECK_EQUAL(var_type(1).set(),bset);
   BOOST_CHECK_NE(x.set(),bset);
-  //BOOST_CHECK_EQUAL(var_type(3).set(),BooleSet()); //HANGS
+  BOOST_CHECK_THROW(var_type(3).set(), PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_logical_operators) {
@@ -100,7 +103,8 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BoolePolynomial(x*y) / x, BoolePolynomial(y));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / y, BoolePolynomial(0));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / x, BoolePolynomial(1));
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y)); // Does not FIND correct operator
+
+  // BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y)); // Does not FIND correct operator
   //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0)); // Does not FIND correct operator
   //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1)); // Does not FIND correct operator
   BOOST_CHECK_EQUAL(BooleMonomial(x*y)/y, BooleMonomial(x));

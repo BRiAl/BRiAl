@@ -210,14 +210,14 @@ struct CAuxTypes {
   /// Type for lengths, dimensions, etc.
   typedef std::size_t size_type;
 
-  /// Type for polynomial degrees
+  /// Type for polynomial degrees (ranges from -1 to maxint)
   typedef int deg_type;
 
   /// Type for integer numbers
   typedef int integer_type;
 
   /// Type for indices
-  typedef int idx_type;
+  typedef unsigned int idx_type;
 
   /// Type for hashing
   typedef std::size_t hash_type;
@@ -244,7 +244,7 @@ struct CAuxTypes {
   typedef unsigned long large_size_type;
 
   /// Type for counting references
-  typedef long int refcount_type;
+  typedef std::size_t refcount_type;
 };
 
 class BooleSet;
@@ -313,5 +313,42 @@ END_NAMESPACE_PBORI
 # define PBORI_USEDVARS_BY_IDX
 //PBORI_USEDVARS_EXTRA
 #endif 
+
+
+
+template <class ResultType, class Type>
+struct sign_checker;
+
+#define PBORI_SIGN_CHECKER(type) template <>                    \
+struct sign_checker<unsigned type, type> {                      \
+  bool operator()(const type& val) const {  return val >= 0;  } \
+};                                                              \
+\
+template <>                                                     \
+struct sign_checker<type, unsigned type> {                      \
+  bool operator()(const unsigned type & val) const {            \
+    return (reinterpret_cast<const type&>(val) >= 0);           \
+  }                                                             \
+};
+
+PBORI_SIGN_CHECKER(int) 
+PBORI_SIGN_CHECKER(short int) 
+PBORI_SIGN_CHECKER(long int) 
+
+#undef PBORI_SIGN_CHECKER
+
+template <class ResultType, class Type>
+ResultType& sign_cast(Type& val) {
+  typedef sign_checker<ResultType, Type> checker;
+  assert(checker()(val));
+  return reinterpret_cast<ResultType&>(val);
+}
+
+template <class ResultType, class Type>
+const ResultType& sign_cast(const Type& val) {
+  typedef sign_checker<ResultType, Type> checker;
+  assert(checker()(val));
+  return reinterpret_cast<const ResultType&>(val);
+}
 
 #endif // of #ifndef pbori_defs_h_
