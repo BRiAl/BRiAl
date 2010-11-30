@@ -465,6 +465,36 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   poly_large = x*y;
   diagram_large = dd_type(poly_large.set());
   BOOST_CHECK(!diagram_small.implies(diagram_large));
+
+  BOOST_TEST_MESSAGE( "==, !=" );
+  BoolePolynomial poly1(0);
+  BoolePolynomial poly2(0);
+  dd_type diag1(poly1.set());
+  dd_type diag2(poly2.set());
+  BOOST_CHECK(diag1 == diag2);
+  BOOST_CHECK(!(diag1 != diag2));
+  poly1 = 1;
+  diag1 = dd_type(poly1.set());
+  BOOST_CHECK(diag1 != diag2);
+  BOOST_CHECK(!(diag1 == diag2));
+  poly1 = x;
+  poly2 = x;
+  diag1 = dd_type(poly1.set());
+  diag2 = dd_type(poly2.set());
+  BOOST_CHECK(diag1 == diag2);
+  BOOST_CHECK(!(diag1 != diag2));
+  poly1 = x*y;
+  poly2 = y*x;
+  diag1 = dd_type(poly1.set());
+  diag2 = dd_type(poly2.set());
+  BOOST_CHECK(diag1 == diag2);
+  BOOST_CHECK(!(diag1 != diag2));
+  poly1 = x + 1;
+  poly2 = x;
+  diag1 = dd_type(poly1.set());
+  diag2 = dd_type(poly2.set());
+  BOOST_CHECK(diag1 != diag2);
+  BOOST_CHECK(!(diag1 == diag2));
 }
 
 BOOST_AUTO_TEST_CASE(test_refcount) {
@@ -477,6 +507,7 @@ BOOST_AUTO_TEST_CASE(test_refcount) {
   dd_type count3(count1.set());
   BOOST_CHECK(count2.refCount() == 3);
   BOOST_CHECK(count3.refCount() == 3);
+  BOOST_CHECK(count2 == count3);
   BoolePolynomial count4 = count1;
   BOOST_CHECK(count2.refCount() == 4);
   BOOST_CHECK(count3.refCount() == 4);
@@ -495,9 +526,11 @@ BOOST_AUTO_TEST_CASE(test_refcount) {
   count5 = z;
   BOOST_CHECK(count2.refCount() == 2);
   BOOST_CHECK(count3.refCount() == 2);
+  BOOST_CHECK(count2 == count3);
   count3 = dd_type(count1.set());
   BOOST_CHECK(count2.refCount() == 1);
   BOOST_CHECK(count3.refCount() == 2);
+  BOOST_CHECK(count2 != count3);
 }
 
 BOOST_AUTO_TEST_CASE(test_getters) {
