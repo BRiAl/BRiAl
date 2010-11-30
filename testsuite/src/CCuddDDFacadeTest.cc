@@ -62,16 +62,42 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "constructors" );
   BOOST_CHECK_EQUAL(set_type(diagram), poly.set());
-  BoolePolynomial poly1(0);
-  BoolePolynomial poly2(1);
+  BoolePolynomial poly1 = y*z + v;
+  BoolePolynomial poly2 = v*z + y + 1;
   dd_type diagram1(poly1.set());
   dd_type diagram2(poly2.set());
   output_test_stream output;
-  diagram = dd_type(3,diagram1,diagram2);
+  diagram = dd_type(0,diagram1,diagram2);
   output << set_type(diagram);
-  BOOST_CHECK(output.is_equal("{{}}"));
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
+  BOOST_CHECK_THROW(dd_type(1,diagram1,diagram2), PBoRiGenericError<CTypes::invalid_ite>);
+  BOOST_CHECK_THROW(dd_type(2,diagram1,diagram2), PBoRiGenericError<CTypes::invalid_ite>);
+  BOOST_CHECK_THROW(dd_type(-1,diagram1,diagram2), PBoRiGenericError<CTypes::invalid_ite>);
+  poly1 = 0;
+  poly2 = y*z + v;
+  diagram1 = dd_type(poly1.set());
+  diagram2 = dd_type(poly2.set());
+  diagram = dd_type(0,diagram1,diagram2);
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{y,z}, {v}}"));
+  poly1 = 1;
+  poly2 = y*z + v;
+  diagram1 = dd_type(poly1.set());
+  diagram2 = dd_type(poly2.set());
+  diagram = dd_type(0,diagram1,diagram2);
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{x}, {y,z}, {v}}"));
+  poly1 = 1;
+  poly2 = 0;
+  diagram1 = dd_type(poly1.set());
+  diagram2 = dd_type(poly2.set());
+  diagram = dd_type(4,diagram1,diagram2);
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{w}}"));
+  diagram = dd_type(5,diagram1,diagram2);
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{UNDEF}}"));/// Wanted behaviour?
 }
-
 BOOST_AUTO_TEST_CASE(test_size) {
 
   dd_type diagram(poly.set());
@@ -115,7 +141,7 @@ BOOST_AUTO_TEST_CASE(test_indices) {
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
   output_test_stream output;
-  // What does usedIndices do?
+
   BOOST_TEST_MESSAGE( "usedIndices" );
   std::vector<int> indices;
   diagram.usedIndices(indices);
