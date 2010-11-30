@@ -23,6 +23,7 @@ using boost::test_tools::output_test_stream;
 #include "BoolePolynomial.h"
 #include "BooleExponent.h"
 #include "BoolePolyRing.h"
+#include "pbori_order.h"
 #include <vector>
 
 USING_NAMESPACE_PBORI
@@ -55,9 +56,20 @@ struct Fdd {
 
 BOOST_FIXTURE_TEST_SUITE(CCuddDDFacadeTestSuite, Fdd )
 
-BOOST_AUTO_TEST_CASE(test_facade) {
-  //dd_type facade(poly.set());
-  //facade.printIntern(std::cout);
+BOOST_AUTO_TEST_CASE(test_constructors) {
+
+  dd_type diagram(poly.set());
+
+  BOOST_TEST_MESSAGE( "constructors" );
+  BOOST_CHECK_EQUAL(set_type(diagram), poly.set());
+  BoolePolynomial poly1(0);
+  BoolePolynomial poly2(1);
+  dd_type diagram1(poly1.set());
+  dd_type diagram2(poly2.set());
+  output_test_stream output;
+  diagram = dd_type(3,diagram1,diagram2);
+  output << set_type(diagram);
+  BOOST_CHECK(output.is_equal("{{}}"));
 }
 
 BOOST_AUTO_TEST_CASE(test_size) {
@@ -283,13 +295,6 @@ BOOST_AUTO_TEST_CASE(test_multiples) {
   //BOOST_CHECK(output.is_equal("{{x,y,z}}"));
 }
 
-BOOST_AUTO_TEST_CASE(test_print) {
-  dd_type diagram(poly.set());
-  diagram.printIntern(std::cout);/// Why public?
-  diagram.PrintMinterm();/// Why public, why no input of stream?
-  diagram.print(std::cout);/// Not used, no << operator either
-}
-
 BOOST_AUTO_TEST_CASE(test_operators) {
 
   dd_type diagram(poly.set());//x*y*z + v*z - x*v + y + 1;
@@ -484,6 +489,22 @@ BOOST_AUTO_TEST_CASE(test_refcount) {
   count3 = dd_type(count1.set());
   BOOST_CHECK(count2.refCount() == 1);
   BOOST_CHECK(count3.refCount() == 2);
+}
+
+BOOST_AUTO_TEST_CASE(test_getters) {
+
+  dd_type diagram(poly.set());
+  BoolePolyRing other(3, 1, false);
+  BoolePolyRing orig = BooleEnv::ring();
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "ring" );
+  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), diagram.ring().nVariables());
+  BooleEnv::set(other);
+  BOOST_CHECK_NE(BooleEnv::ring().ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
+  BOOST_CHECK_NE(BooleEnv::ring().nVariables(), diagram.ring().nVariables());
+  BooleEnv::set(orig);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
