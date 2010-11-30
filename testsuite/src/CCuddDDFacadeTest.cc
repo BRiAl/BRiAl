@@ -283,6 +283,13 @@ BOOST_AUTO_TEST_CASE(test_multiples) {
   //BOOST_CHECK(output.is_equal("{{x,y,z}}"));
 }
 
+BOOST_AUTO_TEST_CASE(test_print) {
+  dd_type diagram(poly.set());
+  diagram.printIntern(std::cout);/// Why public?
+  diagram.PrintMinterm();/// Why public, why no input of stream?
+  diagram.print(std::cout);/// Not used, no << operator either
+}
+
 BOOST_AUTO_TEST_CASE(test_operators) {
 
   dd_type diagram(poly.set());//x*y*z + v*z - x*v + y + 1;
@@ -318,26 +325,165 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   output << diagram.Xor(diagram_small);
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {v,w}, {}}"));
 
-  /// What does it do?
-  BOOST_TEST_MESSAGE( "ite" ); /// Should it return self or diagram_type (like Xor)?
-  BoolePolynomial poly_large = v;
-  dd_type diagram_large = dd_type(poly_large.set());
-  poly_small = y*z;
-  BoolePolynomial poly_small2 = x*y;
-  diagram_small = dd_type(poly_small.set());
-  dd_type diagram_small2 = dd_type(poly_small2.set());
-  output << set_type(diagram_large.ite(diagram_small, diagram_small2));
-  BOOST_CHECK(output.is_equal(""));
-
-  /// What does it do?
   BOOST_TEST_MESSAGE( "implies" );
+  //diagram = x*y*z + v*z - x*v + y + 1
+  poly_small = 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = z*v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + x*v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - x*v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*v - y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*v - 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = y - 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z - x*v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z + y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z - x*v + y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + x*v + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z  + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - x*v + y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - x*v + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*v + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z - x*v + y;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z - x*v + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z + v*z + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*y*z - x*v + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = v*z - x*v + y + 1;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  BOOST_CHECK(diagram.implies(diagram));
+  poly_small = 0;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(diagram_small.implies(diagram));
+  poly_small = x*w;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram));
+  poly_small = w;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram));
+  poly_small = w + x*y*z;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram));
+  poly_small = x*v*z;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram));
+  poly_small = v;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram));
+  BoolePolynomial poly_large = x;
+  dd_type diagram_large = dd_type( poly_large.set() );
+  poly_small = x*y + z;
+  diagram_small = dd_type( poly_small.set() );
+  BOOST_CHECK(!diagram_small.implies(diagram_large));
+  poly_large = 0;
+  diagram_large = dd_type(poly_large.set());
+  BOOST_CHECK(!diagram_small.implies(diagram_large));
+  BOOST_CHECK(diagram_large.implies(diagram_large));
+  poly_large = w;
+  diagram_large = dd_type(poly_large.set());
+  BOOST_CHECK(!diagram_small.implies(diagram_large));
+  poly_large = x*y;
+  diagram_large = dd_type(poly_large.set());
+  BOOST_CHECK(!diagram_small.implies(diagram_large));
 }
 
-BOOST_AUTO_TEST_CASE(test_print) {
-  dd_type diagram(poly.set());
-  diagram.printIntern(std::cout);/// Why public?
-  diagram.PrintMinterm();/// Why public, why no input of stream?
-  diagram.print(std::cout);/// Not used, no << operator either
+BOOST_AUTO_TEST_CASE(test_refcount) {
+
+  BoolePolynomial count1 = x*y + z - 1;
+  dd_type count2(count1.set());
+
+  BOOST_TEST_MESSAGE( "refCount" );
+  BOOST_CHECK(count2.refCount() == 2);
+  dd_type count3(count1.set());
+  BOOST_CHECK(count2.refCount() == 3);
+  BOOST_CHECK(count3.refCount() == 3);
+  BoolePolynomial count4 = count1;
+  BOOST_CHECK(count2.refCount() == 4);
+  BOOST_CHECK(count3.refCount() == 4);
+  BoolePolynomial count5 = x*y + z - 1;
+  BOOST_CHECK(count2.refCount() == 5);
+  BOOST_CHECK(count3.refCount() == 5);
+  count3 = count2;
+  BOOST_CHECK(count2.refCount() == 5);
+  BOOST_CHECK(count3.refCount() == 5);
+  count1 = x*y + z;
+  BOOST_CHECK(count2.refCount() == 4);
+  BOOST_CHECK(count3.refCount() == 4);
+  count4 = 1;
+  BOOST_CHECK(count2.refCount() == 3);
+  BOOST_CHECK(count3.refCount() == 3);
+  count5 = z;
+  BOOST_CHECK(count2.refCount() == 2);
+  BOOST_CHECK(count3.refCount() == 2);
+  count3 = dd_type(count1.set());
+  BOOST_CHECK(count2.refCount() == 1);
+  BOOST_CHECK(count3.refCount() == 2);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
