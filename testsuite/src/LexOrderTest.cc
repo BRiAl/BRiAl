@@ -46,12 +46,6 @@ struct Flex {
 
 BOOST_FIXTURE_TEST_SUITE(LexOrderTestSuite, Flex )
 
-BOOST_AUTO_TEST_CASE(test) {
-
-  BOOST_TEST_MESSAGE( "test" );
-  order_type order();
-}
-
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   order_type order;
@@ -122,8 +116,36 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(x*y));
   BOOST_CHECK(order.leadFirst(poly)  == poly);
   poly = BoolePolynomial();
-  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///Correct error to throw here?
+  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///Correct error thrown here?
   BOOST_CHECK(order.leadExp(poly) == BooleExponent());
   BOOST_CHECK(order.leadFirst(poly) == poly);
 }
+
+BOOST_AUTO_TEST_CASE(test_blocks) {
+
+  BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart, lieInSameBlock" );
+  order_type order;
+  output_test_stream output;
+  BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  BOOST_CHECK(output.is_equal(""));
+  order.appendBlock(-1);
+  order.appendBlock(0);
+  order.appendBlock(2);
+  order.appendBlock(6);
+  start = order.blockBegin();
+  finish = order.blockEnd();
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  BOOST_CHECK(output.is_equal(""));
+  BOOST_CHECK(order.lieInSameBlock(0,1));
+  BOOST_CHECK(order.lieInSameBlock(-1,4));
+  BOOST_CHECK_EQUAL(order.lastBlockStart(), std::numeric_limits<int>::max());
+}
+
 BOOST_AUTO_TEST_SUITE_END()
