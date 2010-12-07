@@ -25,7 +25,7 @@ USING_NAMESPACE_PBORI
 struct Flex {
   typedef LexOrder order_type;
   Flex():
-    ring(5) {
+      ring(5,COrderEnums::dlex) {
       x = BooleVariable(0);
       y = BooleVariable(1);
       z = BooleVariable(2);
@@ -109,4 +109,21 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   BOOST_CHECK(order.compare(1,-1) == CTypes::greater_than);
 }
 
+BOOST_AUTO_TEST_CASE(test_lead) {
+
+  BOOST_TEST_MESSAGE( "lead, leadExp, leadFirst" );
+  order_type order;
+  BoolePolynomial poly = x*x + x*y + y*z*v*w + 1;
+  BOOST_CHECK(order.lead(poly)    == BooleMonomial(x*y));
+  BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(x*y));
+  BOOST_CHECK(order.lead(poly,-1) == BooleMonomial(x*y));
+  BOOST_CHECK(order.leadExp(poly)    == BooleExponent(x*y));
+  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(x*y));
+  BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(x*y));
+  BOOST_CHECK(order.leadFirst(poly)  == poly);
+  poly = BoolePolynomial();
+  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///Correct error to throw here?
+  BOOST_CHECK(order.leadExp(poly) == BooleExponent());
+  BOOST_CHECK(order.leadFirst(poly) == poly);
+}
 BOOST_AUTO_TEST_SUITE_END()
