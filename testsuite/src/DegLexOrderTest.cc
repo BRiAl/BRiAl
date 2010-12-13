@@ -1,9 +1,9 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file LexOrderTest.cc
+/** @file DegLexOrderTest.cc
  *
  * @author Ket Shcherbakova, Alexander Dreyer
- * @date 2010-11-30
+ * @date 2010-12-07
  *
  * boost/test-driven unit test
  * 
@@ -18,14 +18,14 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "LexOrder.h"
+#include "DegLexOrder.h"
 
 USING_NAMESPACE_PBORI
 
-struct Flex {
-  typedef LexOrder order_type;
-  Flex():
-      ring(5,COrderEnums::dlex) {
+struct Fdeglex {
+  typedef DegLexOrder order_type;
+  Fdeglex():
+      ring(5,COrderEnums::lp) {
       x = BooleVariable(0);
       y = BooleVariable(1);
       z = BooleVariable(2);
@@ -38,35 +38,35 @@ struct Flex {
       ring.setVariableName(3, "v");
       ring.setVariableName(4, "w");
   }
-  ~Flex() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+  ~Fdeglex() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 
   BoolePolyRing ring;
   BooleVariable x, y, z, v, w;
 };
 
-BOOST_FIXTURE_TEST_SUITE(LexOrderTestSuite, Flex )
+BOOST_FIXTURE_TEST_SUITE(DegLexOrderTestSuite, Fdeglex )
 
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   order_type order;
   BOOST_TEST_MESSAGE( "isLexicographical, isSymmetric, isDegreeOrder, isBlockOrder, isTotalDegreeOrder, isDegreeReverseLexicograpical, ascendingVariables, descendingVariables, orderedStandardIteration" );
-  BOOST_CHECK(order.isLexicographical());
+  BOOST_CHECK(!order.isLexicographical());
   BOOST_CHECK(order.isSymmetric());
-  BOOST_CHECK(!order.isDegreeOrder());
+  BOOST_CHECK(order.isDegreeOrder());
   BOOST_CHECK(!order.isBlockOrder());
-  BOOST_CHECK(!order.isTotalDegreeOrder());
+  BOOST_CHECK(order.isTotalDegreeOrder());
   BOOST_CHECK(!order.isDegreeReverseLexicograpical());///Typo in the function name
   BOOST_CHECK(!order.ascendingVariables());
   BOOST_CHECK(order.descendingVariables());
-  BOOST_CHECK(order.orderedStandardIteration());
+  BOOST_CHECK(!order.orderedStandardIteration());
 }
 
 BOOST_AUTO_TEST_CASE(test_getters) {
 
   order_type order;
   BOOST_TEST_MESSAGE( "getOrderCode, getBaseOrderCode" );
-  BOOST_CHECK_EQUAL(order.getOrderCode(), COrderEnums::lp);
-  BOOST_CHECK_EQUAL(order.getBaseOrderCode(), COrderEnums::lp);
+  BOOST_CHECK_EQUAL(order.getOrderCode(), COrderEnums::dlex);
+  BOOST_CHECK_EQUAL(order.getBaseOrderCode(), COrderEnums::dlex);
 }
 
 BOOST_AUTO_TEST_CASE(test_compare) {
@@ -76,11 +76,11 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   BooleMonomial monom1 = x;
   BooleMonomial monom2 = x*x;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::equality);
-  monom1 = y*z*v;
-  monom2 = x*y;
+  monom1 = x*y;
+  monom2 = x*z*v;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::less_than);
-  monom1 = x*y*z;
-  monom2 = x*y;
+  monom1 = v*y;
+  monom2 = x;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::greater_than);
   monom1 = BooleMonomial();
   monom2 = w;
@@ -108,17 +108,38 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_TEST_MESSAGE( "lead, leadExp, leadFirst" );
   order_type order;
   BoolePolynomial poly = x*x + x*y + y*z*v*w + 1;
-  BOOST_CHECK(order.lead(poly)    == BooleMonomial(x*y));
-  BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(x*y));
-  BOOST_CHECK(order.lead(poly,-1) == BooleMonomial(x*y));
-  BOOST_CHECK(order.leadExp(poly)    == BooleExponent(x*y));
-  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(x*y));
-  BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(x*y));
-  BOOST_CHECK(order.leadFirst(poly)  == poly);
+  BOOST_CHECK(order.lead(poly)    == BooleMonomial(y*z*v*w));
+  BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(y*z*v*w));
+  BOOST_CHECK(order.lead(poly,-1) == BooleMonomial(y*z*v*w));
+  BOOST_CHECK(order.leadExp(poly)    == BooleExponent(y*z*v*w));
+  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(y*z*v*w));
+  BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(y*z*v*w));
+  BOOST_CHECK(order.leadFirst(poly)  == BoolePolynomial(y*z*v*w));
   poly = BoolePolynomial();
-  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///Correct error thrown here?
-  BOOST_CHECK(order.leadExp(poly) == BooleExponent());
+  output_test_stream output;
+  output << order.lead(poly);
+  BOOST_CHECK(output.is_equal("0"));/// How is BooleMonomial 0?
+  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///Why error thrown here?
   BOOST_CHECK(order.leadFirst(poly) == poly);
+  poly = x*w + x*z + w*v*y;
+  output << order.lead(poly,0);
+  BOOST_CHECK(output.is_equal("x*z + x*w + y*v*w"));/// How is poly a BooleMonomial?
+  std::cout << order.leadExp(poly,0);
+  BOOST_CHECK(order.leadExp(poly,0)  == BooleExponent());
+
+  BooleMonomial leadterm = z*v*w;
+  poly = x*y + x*v + leadterm;
+  //BOOST_CHECK(order.lead(poly,3)  == BooleMonomial(leadterm));//uncomment this or
+  //BOOST_CHECK(order.leadExp(poly,2)  == BooleExponent(leadterm));//that for interesting effects
+  std::cout << poly << std::endl;///=x*y + x*v + z*v*w
+  std::cout << order.lead(poly, 1) << std::endl;///=x*y + x*v
+  std::cout << order.lead(poly, 2) << std::endl;///=x*y + x*v
+  std::cout << order.lead(poly, 3) << std::endl;///=x*y + x*v
+  std::cout << order.lead(poly, -1) << std::endl;///=x*y + x*v
+  std::cout << order.leadExp(poly, 1) << std::endl;///=(0,1)
+  std::cout << order.leadExp(poly, 2) << std::endl;///=(0,1)
+  std::cout << order.leadExp(poly, 3) << std::endl;///=(0,1)
+  std::cout << order.leadExp(poly, -1) << std::endl;///=(0,1)
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {
@@ -145,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(output.is_equal(""));
   BOOST_CHECK(order.lieInSameBlock(0,1));
   BOOST_CHECK(order.lieInSameBlock(-1,4));
-  BOOST_CHECK_EQUAL(order.lastBlockStart(), std::numeric_limits<int>::max());
+  BOOST_CHECK_EQUAL(order.lastBlockStart(), 0);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
