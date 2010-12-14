@@ -620,13 +620,23 @@ for t in ['booleenv_test']:
     env.Program(TestsPath(t), 
                 [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
                 CPPPATH=CPPPATH)
-"""BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial """
-testclasses = Split("""CCuddDDFacade BooleEnv  BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial """)
+
+testclasses = Split("""BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial""")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
 
 env.Program(TestsPath("unittests"),
             testfiles + [libpb, gb] + libCudd, 
+            CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
+            CPPDEFINES = env['CPPDEFINES'] +
+            ["BOOST_TEST_DYN_LINK"] )
+
+testclassesfacades = Split("""DegRevLexAscOrder DegLexOrder LexOrder CCuddDDFacade""")
+testfilesfacades = [TestsPath('src', file + "Test.cc") for file in
+             testclassesfacades] + [TestsPath('src', "unittests_facades.cc")]
+
+env.Program(TestsPath("unittests_facades"),
+            testfilesfacades + [libpb, gb] + libCudd, 
             CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
             CPPDEFINES = env['CPPDEFINES'] +
             ["BOOST_TEST_DYN_LINK"] )
