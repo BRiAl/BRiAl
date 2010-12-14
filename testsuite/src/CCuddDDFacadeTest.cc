@@ -326,8 +326,7 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   BoolePolynomial poly_small2 = x*y;
   diagram_small = dd_type(poly_small.set());
   dd_type diagram_small2 = dd_type(poly_small2.set());
-  output << set_type(diagram_large.ite(diagram_small, diagram_small2));
-  BOOST_CHECK(output.is_equal(""));
+
 
   /// What does it do?
   BOOST_TEST_MESSAGE( "implies" );

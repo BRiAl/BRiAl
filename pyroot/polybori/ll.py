@@ -91,7 +91,10 @@ def eliminate(polys, on_the_fly=False,prot=False, reduction_function=None, optim
         rest.append(p)
     else:
       rest.append(p)
-  
+  if len(linear_leads)==0:
+      def identity(p):
+          return p
+      return (linear_leads, identity, rest)
   if reduction_function is None:
       if on_the_fly:
           if optimized:
