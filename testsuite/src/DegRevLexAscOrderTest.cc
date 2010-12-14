@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file DegRevLexAscOrder.cc
+/** @file DegRevLexAscOrderTest.cc
  *
  * @author Ket Shcherbakova, Alexander Dreyer
  * @date 2010-12-14
