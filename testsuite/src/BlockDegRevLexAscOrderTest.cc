@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file DegRevLexAscOrderTest.cc
+/** @file BlockDegRevLexAscOrderTest.cc
  *
  * @author Ket Shcherbakova, Alexander Dreyer
  * @date 2010-12-14
@@ -18,13 +18,13 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "DegRevLexAscOrder.h"
+#include "BlockDegRevLexAscOrder.h"
 
 USING_NAMESPACE_PBORI
 
-struct Fdegrevlex {
-  typedef DegRevLexAscOrder order_type;
-  Fdegrevlex():
+struct Fblockdegrevlex {
+  typedef BlockDegRevLexAscOrder order_type;
+  Fblockdegrevlex():
       ring(5,COrderEnums::lp) {
       x = BooleVariable(0);
       y = BooleVariable(1);
@@ -38,24 +38,24 @@ struct Fdegrevlex {
       ring.setVariableName(3, "v");
       ring.setVariableName(4, "w");
   }
-  ~Fdegrevlex() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+  ~Fblockdegrevlex() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 
   BoolePolyRing ring;
   BooleVariable x, y, z, v, w;
 };
 
-BOOST_FIXTURE_TEST_SUITE(DegRevLexAscOrderTestSuite, Fdegrevlex )
+BOOST_FIXTURE_TEST_SUITE(BlockDegRevLexOrderTestSuite, Fblockdegrevlex )
 
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   order_type order;
   BOOST_TEST_MESSAGE( "isLexicographical, isSymmetric, isDegreeOrder, isBlockOrder, isTotalDegreeOrder, isDegreeReverseLexicograpical, ascendingVariables, descendingVariables, orderedStandardIteration" );
   BOOST_CHECK(!order.isLexicographical());
-  BOOST_CHECK(order.isSymmetric());
-  BOOST_CHECK(order.isDegreeOrder());
-  BOOST_CHECK(!order.isBlockOrder());
-  BOOST_CHECK(order.isTotalDegreeOrder());
-  BOOST_CHECK(order.isDegreeReverseLexicograpical());///Typo in the function name
+  BOOST_CHECK(!order.isSymmetric());
+  BOOST_CHECK(!order.isDegreeOrder());
+  BOOST_CHECK(order.isBlockOrder());
+  BOOST_CHECK(!order.isTotalDegreeOrder());
+  BOOST_CHECK(!order.isDegreeReverseLexicograpical());///Typo in the function name
   BOOST_CHECK(order.ascendingVariables());
   BOOST_CHECK(!order.descendingVariables());
   BOOST_CHECK(!order.orderedStandardIteration());
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_getters) {
 
   order_type order;
   BOOST_TEST_MESSAGE( "getOrderCode, getBaseOrderCode" );
-  BOOST_CHECK_EQUAL(order.getOrderCode(), COrderEnums::dp_asc);
+  BOOST_CHECK_EQUAL(order.getOrderCode(), COrderEnums::block_dp_asc);
   BOOST_CHECK_EQUAL(order.getBaseOrderCode(), COrderEnums::dp_asc);
 }
 
@@ -119,26 +119,12 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   output_test_stream output;
   output << order.lead(poly);
   BOOST_CHECK(output.is_equal("0"));/// How is BooleMonomial 0?
-  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///Why error thrown here?
+  BOOST_CHECK(order.leadExp(poly) == BooleExponent());
   BOOST_CHECK(order.leadFirst(poly) == poly);
   poly = x*w + x*z + w*v*y;
   output << order.lead(poly,0);
-  BOOST_CHECK(output.is_equal("x*z + x*w + y*v*w"));/// How is poly a BooleMonomial?
-  BOOST_CHECK(order.leadExp(poly,0)  == BooleExponent());
-
-  BooleMonomial leadterm = z*v*w;
-  poly = x*y + x*v + leadterm;
-  //BOOST_CHECK(order.lead(poly,3)  == BooleMonomial(leadterm));//uncomment this or
-  //BOOST_CHECK(order.leadExp(poly,2)  == BooleExponent(leadterm));//that for interesting effects
-  std::cout << poly << std::endl;///=x*y + x*v + z*v*w
-  std::cout << order.lead(poly, 1) << std::endl;///=x*y + x*v
-  std::cout << order.lead(poly, 2) << std::endl;///=x*y + x*v
-  std::cout << order.lead(poly, 3) << std::endl;///=x*y + x*v
-  std::cout << order.lead(poly, -1) << std::endl;///=x*y + x*v
-  std::cout << order.leadExp(poly, 1) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, 2) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, 3) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, -1) << std::endl;///=(0,1)
+  BOOST_CHECK(order.lead(poly, 0) == BooleMonomial(w*v*y));/// How is poly a BooleMonomial?
+  BOOST_CHECK(order.leadExp(poly, 0) == BooleExponent(w*v*y));
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {
@@ -146,13 +132,15 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart, lieInSameBlock" );
   order_type order;
   output_test_stream output;
+  output_test_stream output_test;
   BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
   while (start != finish) {
     output << *start <<", ";
     ++start;
   }
-  BOOST_CHECK(output.is_equal(""));
-  order.appendBlock(-1);
+  output_test << std::numeric_limits<int>::max() << ", ";
+  BOOST_CHECK(output.is_equal(output_test.str()));
+  order.appendBlock(-1);/// Wrong order of appending blocks = all but -1 are in same block
   order.appendBlock(0);
   order.appendBlock(2);
   order.appendBlock(6);
@@ -162,10 +150,70 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
     output << *start <<", ";
     ++start;
   }
-  BOOST_CHECK(output.is_equal(""));
+  output_test.str("");
+  output_test << std::numeric_limits<unsigned>::max() << ", 0, 2, 6, " << std::numeric_limits<int>::max() << ", ";
+  int intmax = std::numeric_limits<int>::max();
+  BOOST_CHECK(output.is_equal(output_test.str()));
   BOOST_CHECK(order.lieInSameBlock(0,1));
-  BOOST_CHECK(order.lieInSameBlock(-1,4));
-  BOOST_CHECK_EQUAL(order.lastBlockStart(), 0);
+  BOOST_CHECK(order.lieInSameBlock(1,2));/// Should not be in the same block
+  BOOST_CHECK(order.lieInSameBlock(3,2));
+  BOOST_CHECK(order.lieInSameBlock(4,3));
+  BOOST_CHECK(order.lieInSameBlock(4,5));
+  BOOST_CHECK(order.lieInSameBlock(5,6));/// Should not be in the same block
+  BOOST_CHECK(order.lieInSameBlock(6,7));
+  BOOST_CHECK(order.lieInSameBlock(intmax,7));/// Should not be in the same block
+  //BOOST_CHECK(order.lieInSameBlock(-1,-1));///memory access violation (output hangs here)
+  BOOST_CHECK(!order.lieInSameBlock(-1,0));
+  BOOST_CHECK(!order.lieInSameBlock(-1,1));
+  BOOST_CHECK(!order.lieInSameBlock(-1,2));
+  BOOST_CHECK(!order.lieInSameBlock(-1,3));
+  BOOST_CHECK(!order.lieInSameBlock(-1,4));
+  BOOST_CHECK(!order.lieInSameBlock(-1,5));
+  BOOST_CHECK(!order.lieInSameBlock(-1,6));
+  BOOST_CHECK(!order.lieInSameBlock(-1,7));
+  BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
+  BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
+
+  order.clearBlocks();
+  start = order.blockBegin();
+  finish = order.blockEnd();
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  output_test.str("");
+  output_test << intmax << ", ";
+  BOOST_CHECK(output.is_equal(output_test.str()));
+  order.appendBlock(0);
+  order.appendBlock(2);
+  order.appendBlock(6);
+  start = order.blockBegin();
+  finish = order.blockEnd();
+  while (start != finish) {
+    output << *start <<", ";
+    ++start;
+  }
+  output_test.str("");
+  output_test << "0, 2, 6, " << intmax << ", ";
+  BOOST_CHECK(output.is_equal(output_test.str()));
+  BOOST_CHECK(order.lieInSameBlock(0,1));
+  BOOST_CHECK(!order.lieInSameBlock(1,2));
+  BOOST_CHECK(order.lieInSameBlock(3,2));
+  BOOST_CHECK(order.lieInSameBlock(4,3));
+  BOOST_CHECK(order.lieInSameBlock(4,5));
+  BOOST_CHECK(!order.lieInSameBlock(5,6));
+  BOOST_CHECK(order.lieInSameBlock(6,7));
+  BOOST_CHECK(!order.lieInSameBlock(intmax,7));
+  BOOST_CHECK(!order.lieInSameBlock(-1,0));
+  BOOST_CHECK(!order.lieInSameBlock(-1,1));
+  BOOST_CHECK(!order.lieInSameBlock(-1,2));
+  BOOST_CHECK(!order.lieInSameBlock(-1,3));
+  BOOST_CHECK(!order.lieInSameBlock(-1,4));
+  BOOST_CHECK(!order.lieInSameBlock(-1,5));
+  BOOST_CHECK(!order.lieInSameBlock(-1,6));
+  BOOST_CHECK(!order.lieInSameBlock(-1,7));
+  BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
+  BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
