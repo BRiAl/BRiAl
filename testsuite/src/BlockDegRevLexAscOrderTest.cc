@@ -229,6 +229,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(!order.lieInSameBlock(-1,6));
   BOOST_CHECK(!order.lieInSameBlock(-1,7));
   BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
+  //BOOST_CHECK(order.lieInSameBlock(-1,-1)); //loops
   BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
 }
 
