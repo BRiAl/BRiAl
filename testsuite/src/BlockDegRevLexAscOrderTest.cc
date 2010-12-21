@@ -19,13 +19,15 @@
 using boost::test_tools::output_test_stream;
 
 #include "BlockDegRevLexAscOrder.h"
+#include "DegRevLexAscOrder.h"
 
 USING_NAMESPACE_PBORI
 
 struct Fblockdegrevlex {
   typedef BlockDegRevLexAscOrder order_type;
+  typedef DegRevLexAscOrder base_order_type;
   Fblockdegrevlex():
-      ring(5,COrderEnums::lp) {
+      ring(5,COrderEnums::dlex) {
       x = BooleVariable(0);
       y = BooleVariable(1);
       z = BooleVariable(2);
@@ -72,35 +74,48 @@ BOOST_AUTO_TEST_CASE(test_getters) {
 BOOST_AUTO_TEST_CASE(test_compare) {
 
   order_type order;
+  base_order_type baseorder;
   BOOST_TEST_MESSAGE( "compare" );
   BooleMonomial monom1 = x;
   BooleMonomial monom2 = x*x;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1,monom2) == baseorder.compare(monom1,monom2));
   monom1 = x*y;
   monom2 = x*z*v;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1,monom2) == baseorder.compare(monom1,monom2));
   monom1 = v*y;
   monom2 = x;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1,monom2) == baseorder.compare(monom1,monom2));
   monom1 = BooleMonomial();
   monom2 = w;
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1,monom2) == baseorder.compare(monom1,monom2));
   monom1 = BooleMonomial();
   monom2 = BooleMonomial();
   BOOST_CHECK(order.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1,monom2) == baseorder.compare(monom1,monom2));
   BooleExponent exp1(x);
   BooleExponent exp2(x*x);
   BOOST_CHECK(order.compare(exp1, exp2) == CTypes::equality);
+  BOOST_CHECK(order.compare(exp1,exp2) == baseorder.compare(exp1,exp2));
   exp1 = BooleExponent(w*x);
   exp2 = BooleExponent(v*x);
   BOOST_CHECK(order.compare(exp1, exp2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(exp1,exp2) == baseorder.compare(exp1,exp2));
   exp1 = BooleExponent(x*y*z*v*w);
   exp2 = BooleExponent(x*y*z*v);
   BOOST_CHECK(order.compare(exp1, exp2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(exp1,exp2) == baseorder.compare(exp1,exp2));
   BOOST_CHECK(order.compare(0,1) == CTypes::less_than);
+  BOOST_CHECK(order.compare(0,1) == baseorder.compare(0,1));
   BOOST_CHECK(order.compare(2,1) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(2,1) == baseorder.compare(2,1));
   BOOST_CHECK(order.compare(-1,-1) == CTypes::equality);
+  BOOST_CHECK(order.compare(-1,-1) == baseorder.compare(-1,-1));
   BOOST_CHECK(order.compare(1,-1) == CTypes::less_than);
+  BOOST_CHECK(order.compare(-1,-1) == baseorder.compare(-1,-1));
 }
 
 BOOST_AUTO_TEST_CASE(test_lead) {
@@ -197,10 +212,12 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   output_test << "0, 2, 6, " << intmax << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
   BOOST_CHECK(order.lieInSameBlock(0,1));
+  BOOST_CHECK(!order.lieInSameBlock(0,5));
   BOOST_CHECK(!order.lieInSameBlock(1,2));
   BOOST_CHECK(order.lieInSameBlock(3,2));
   BOOST_CHECK(order.lieInSameBlock(4,3));
   BOOST_CHECK(order.lieInSameBlock(4,5));
+  BOOST_CHECK(!order.lieInSameBlock(4,6));
   BOOST_CHECK(!order.lieInSameBlock(5,6));
   BOOST_CHECK(order.lieInSameBlock(6,7));
   BOOST_CHECK(!order.lieInSameBlock(intmax,7));
@@ -214,6 +231,186 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(!order.lieInSameBlock(-1,7));
   BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
   BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
+}
+
+BOOST_AUTO_TEST_CASE(test_compare_blocks) {
+
+  BOOST_TEST_MESSAGE( "compare with appended blocks" );
+  order_type blockorder;//(x,y)(z,v,w)(5-intmax)
+  order_type order;
+  blockorder.appendBlock(2);
+  blockorder.appendBlock(6);
+  // Variable comparison -> variables in different blocks dont follow the ascending order
+  BooleMonomial monom1 = x;
+  BooleMonomial monom2 = y;
+  BooleExponent exp1(monom1);
+  BooleExponent exp2(monom2);
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x;
+  monom2 = v;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) != blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) != blockorder.compare(exp1, exp2));
+  monom1 = z;
+  monom2 = v;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x;
+  monom2 = x*x;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = z;
+  monom2 = z*z;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x;
+  monom2 = BooleMonomial();
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = BooleMonomial();
+  monom2 = BooleMonomial();
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  // Different first blocks -> blockorder result may differ from order 
+  monom1 = x*y;
+  monom2 = y*z;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) != blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) != blockorder.compare(exp1, exp2));
+  monom1 = x*y;
+  monom2 = y*z*v*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) != blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) != blockorder.compare(exp1, exp2));
+  monom1 = y*v*w;
+  monom2 = x*v*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x*y*v*w;
+  monom2 = y*v*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = BooleMonomial();
+  monom2 = y*v*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  // Same first blocks -> blockorder=order
+  monom1 = x*v;
+  monom2 = x*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x*z*v;
+  monom2 = x*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = y*v;
+  monom2 = y*z*v;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x*y*v;
+  monom2 = x*y*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x*y;
+  monom2 = x*y*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  monom1 = x*y*w;
+  monom2 = x*y*w;
+  exp1 = monom1;
+  exp2 = monom2;
+  BOOST_CHECK(blockorder.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK(order.compare(monom1, monom2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(blockorder.compare(exp1, exp2) == blockorder.compare(monom1, monom2));
+  BOOST_CHECK(order.compare(exp1, exp2) == blockorder.compare(exp1, exp2));
+  BOOST_CHECK(blockorder.compare(0,1) == CTypes::less_than);
+  BOOST_CHECK(order.compare(0,1) == blockorder.compare(0,1));
+  BOOST_CHECK(blockorder.compare(1,2) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(1,2) != blockorder.compare(1,2));
+  BOOST_CHECK(blockorder.compare(2,3) == CTypes::less_than);
+  BOOST_CHECK(order.compare(2,3) == blockorder.compare(2,3));
+  BOOST_CHECK(blockorder.compare(3,4) == CTypes::less_than);
+  BOOST_CHECK(order.compare(3,4) == blockorder.compare(3,4));
+  BOOST_CHECK(blockorder.compare(4,5) == CTypes::less_than);
+  BOOST_CHECK(order.compare(4,5) == blockorder.compare(4,5));
+  BOOST_CHECK(blockorder.compare(5,6) == CTypes::greater_than);
+  BOOST_CHECK(order.compare(5,6) != blockorder.compare(5,6));
+  BOOST_CHECK(blockorder.compare(6,7) == CTypes::less_than);
+  BOOST_CHECK(order.compare(6,7) == blockorder.compare(6,7));
+  BOOST_CHECK(blockorder.compare(7,-1) == CTypes::less_than);
+  BOOST_CHECK(order.compare(7,-1) == blockorder.compare(7,-1));
+  BOOST_CHECK(blockorder.compare(1,1) == CTypes::equality);
+  BOOST_CHECK(order.compare(1,1) == blockorder.compare(1,1));
+  BOOST_CHECK(blockorder.compare(3,3) == CTypes::equality);
+  BOOST_CHECK(order.compare(3,3) == blockorder.compare(3,3));
+  BOOST_CHECK(blockorder.compare(7,7) == CTypes::equality);
+  BOOST_CHECK(order.compare(7,7) == blockorder.compare(7,7));
+  BOOST_CHECK(blockorder.compare(-1,-1) == CTypes::equality);
+  BOOST_CHECK(order.compare(-1,-1) == blockorder.compare(-1,-1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
