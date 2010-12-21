@@ -396,4 +396,28 @@ BOOST_AUTO_TEST_CASE(test_compare_blocks) {
   BOOST_CHECK(order.compare(-1,-1) == blockorder.compare(-1,-1));
 }
 
+BOOST_AUTO_TEST_CASE(test_lead_blocks) {
+
+  BOOST_TEST_MESSAGE( "lead with appended blocks" );
+  order_type blockorder;//(x,y)(z,v,w)(5-intmax)
+  order_type order;
+  blockorder.appendBlock(2);
+  blockorder.appendBlock(6);
+
+  BoolePolynomial poly = BoolePolynomial();
+  output_test_stream output;
+  output << blockorder.lead(poly);
+  BOOST_CHECK(output.is_equal("0"));/// How is BooleMonomial 0?
+  BOOST_CHECK_EQUAL(blockorder.lead(poly), order.lead(poly));
+  BOOST_CHECK(blockorder.leadExp(poly) == BooleExponent());
+  BOOST_CHECK_EQUAL(blockorder.leadExp(poly), order.leadExp(poly));
+  BOOST_CHECK(blockorder.leadFirst(poly) == poly);
+  BOOST_CHECK_EQUAL(blockorder.leadFirst(poly), order.leadFirst(poly));
+  poly = y*x + y*z*v*w + v*w + z*w + w*w;/// But y*x > y*z*v*w!
+  std::cout << order.lead(poly) << std::endl;/// Comment this out to get correct lead!
+  BOOST_CHECK(blockorder.lead(poly, 0) == BooleMonomial(y*z*v*w));
+  BOOST_CHECK_EQUAL(blockorder.lead(poly, 0), order.lead(poly, 0));
+  BOOST_CHECK(blockorder.leadExp(poly, 0) == BooleExponent(y*z*v*w));
+  BOOST_CHECK_EQUAL(blockorder.leadExp(poly, 0), order.leadExp(poly, 0));
+}
 BOOST_AUTO_TEST_SUITE_END()
