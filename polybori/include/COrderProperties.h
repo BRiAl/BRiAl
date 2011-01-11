@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2006-07-20
  *
- * 
+ * @todo Unused, to be removed?
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team

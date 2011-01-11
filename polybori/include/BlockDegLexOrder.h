@@ -45,7 +45,7 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderingFacade.h"
+#include "CBlockOrderingFacade.h"
 #include "COrderingTags.h"
 
 #ifndef BlockDegLexOrder_h_
@@ -59,7 +59,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegLexOrder:
-  public COrderingFacade<BlockDegLexOrder>, 
+  public CBlockOrderingFacade<BlockDegLexOrder>, 
   public COrderingTags<block_dlex_tag> { 
 
   /// generic access to current type
