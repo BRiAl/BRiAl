@@ -107,7 +107,7 @@ public:
   }
 
   /// Test whether ordering is deg-rev-lex ordering
-  bool_type isDegreeReverseLexicograpical() const {
+  bool_type isDegreeReverseLexicographical() const {
     return is_valid<typename order_type::degrevlexorder_property>::result;
   }
 

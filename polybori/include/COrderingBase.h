@@ -115,7 +115,7 @@ public:
   virtual bool_type descendingVariables() const = 0;
 
   /// Test whether ordering is deg-rev-lex ordering
-  virtual bool_type isDegreeReverseLexicograpical() const = 0;
+  virtual bool_type isDegreeReverseLexicographical() const = 0;
 
   /// Initialize iterator corresponding to leading term
   virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;

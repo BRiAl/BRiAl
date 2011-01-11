@@ -49,13 +49,13 @@ BOOST_FIXTURE_TEST_SUITE(DegRevLexAscOrderTestSuite, Fdegrevlex )
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   order_type order;
-  BOOST_TEST_MESSAGE( "isLexicographical, isSymmetric, isDegreeOrder, isBlockOrder, isTotalDegreeOrder, isDegreeReverseLexicograpical, ascendingVariables, descendingVariables, orderedStandardIteration" );
+  BOOST_TEST_MESSAGE( "isLexicographical, isSymmetric, isDegreeOrder, isBlockOrder, isTotalDegreeOrder, isDegreeReverseLexicographical, ascendingVariables, descendingVariables, orderedStandardIteration" );
   BOOST_CHECK(!order.isLexicographical());
   BOOST_CHECK(order.isSymmetric());
   BOOST_CHECK(order.isDegreeOrder());
   BOOST_CHECK(!order.isBlockOrder());
   BOOST_CHECK(order.isTotalDegreeOrder());
-  BOOST_CHECK(order.isDegreeReverseLexicograpical());///Typo in the function name
+  BOOST_CHECK(order.isDegreeReverseLexicographical());
   BOOST_CHECK(order.ascendingVariables());
   BOOST_CHECK(!order.descendingVariables());
   BOOST_CHECK(!order.orderedStandardIteration());

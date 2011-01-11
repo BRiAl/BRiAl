@@ -132,7 +132,7 @@ class COrderProperties {
 
   /// Define test whether ordering is deg-rev-lex ordering
   is_same_type<degrevlexorder_property, valid_tag> 
-  isDegreeReverseLexicograpical;
+  isDegreeReverseLexicographical;
 };
 
 
