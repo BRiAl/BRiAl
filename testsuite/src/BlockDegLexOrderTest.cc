@@ -161,18 +161,10 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(order.lieInSameBlock(4,5));
   BOOST_CHECK(order.lieInSameBlock(5,6));/// Should not be in the same block
   BOOST_CHECK(order.lieInSameBlock(6,7));
-  BOOST_CHECK(order.lieInSameBlock(intmax,7));/// Should not be in the same block
-  ///@todo memory access violation (output hangs here) for lieInSameBlock(-1,-1)
-  //BOOST_CHECK(order.lieInSameBlock(-1,-1));
-  BOOST_CHECK(!order.lieInSameBlock(-1,0));
-  BOOST_CHECK(!order.lieInSameBlock(-1,1));
-  BOOST_CHECK(!order.lieInSameBlock(-1,2));
-  BOOST_CHECK(!order.lieInSameBlock(-1,3));
-  BOOST_CHECK(!order.lieInSameBlock(-1,4));
-  BOOST_CHECK(!order.lieInSameBlock(-1,5));
-  BOOST_CHECK(!order.lieInSameBlock(-1,6));
-  BOOST_CHECK(!order.lieInSameBlock(-1,7));
-  BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
+  BOOST_CHECK(order.lieInSameBlock(7,intmax));
+  BOOST_CHECK_THROW(!order.lieInSameBlock(3,-1), std::runtime_error);
+  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,intmax), std::runtime_error);
+  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,-1), std::runtime_error);
   BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
 
   order.clearBlocks();
@@ -204,16 +196,10 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(order.lieInSameBlock(4,5));
   BOOST_CHECK(!order.lieInSameBlock(5,6));
   BOOST_CHECK(order.lieInSameBlock(6,7));
-  BOOST_CHECK(!order.lieInSameBlock(intmax,7));
-  BOOST_CHECK(!order.lieInSameBlock(-1,0));
-  BOOST_CHECK(!order.lieInSameBlock(-1,1));
-  BOOST_CHECK(!order.lieInSameBlock(-1,2));
-  BOOST_CHECK(!order.lieInSameBlock(-1,3));
-  BOOST_CHECK(!order.lieInSameBlock(-1,4));
-  BOOST_CHECK(!order.lieInSameBlock(-1,5));
-  BOOST_CHECK(!order.lieInSameBlock(-1,6));
-  BOOST_CHECK(!order.lieInSameBlock(-1,7));
-  BOOST_CHECK(!order.lieInSameBlock(-1,intmax));
+  BOOST_CHECK(!order.lieInSameBlock(7,intmax));
+  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,3), std::runtime_error);
+  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,intmax), std::runtime_error);
+  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,-1), std::runtime_error);
   BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
 }
 

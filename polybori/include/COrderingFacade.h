@@ -161,6 +161,9 @@ protected:
   bool_type inSameBlockInternal(idx_type first, idx_type second, 
                                 valid_tag) const { // is block order 
     // todo: throw here if first,second >=CTypes::max_idx
+    if(UNLIKELY(first > CTypes::max_idx || second > CTypes::max_idx))
+      throw std::runtime_error("Variable index out of range.");
+
     if (second < first)
       std::swap(first, second);
     
