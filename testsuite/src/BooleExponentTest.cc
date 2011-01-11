@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   output << exponent.divideByIndex(0);
   BOOST_CHECK(output.is_equal("(1, 2)"));
   output << exponent.divideByIndex(4);
-  BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
+  BOOST_CHECK(output.is_equal("()"));///@todo Difference from BooleMonomial?!
   output << exponent.divideByIndex(5);
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial?!
   output << exponent.divideByIndex(-5);
@@ -650,7 +650,7 @@ BOOST_AUTO_TEST_CASE(test_change) {
   exp_type empty = exp_type();
   output_test_stream output;
 
-  BOOST_TEST_MESSAGE( "change, changeAssign" ); // Not so clear what this is supposed to do
+  BOOST_TEST_MESSAGE( "change, changeAssign" ); ///@todo Not so clear what this is supposed to do
   output << exponent.change(1);
   BOOST_CHECK(output.is_equal("(0, 2)"));
   output << exponent.change(0);
@@ -816,7 +816,7 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK(output.is_equal("(1, 2, 4)"));
   output << (exp_type().get(x*y*z*v*w)- exp_type());
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK_EQUAL(exp_type()-exp_type().get(x), exp_type());// Inconsistent
+  BOOST_CHECK_EQUAL(exp_type()-exp_type().get(x), exp_type());///@todo Inconsistent
   BOOST_CHECK_EQUAL(exp_type().get(y)-exp_type().get(x), exp_type());// Inconsistent
   BOOST_CHECK_EQUAL(exp_type().get(z*y)-exp_type().get(x), exp_type());// Inconsistent
 

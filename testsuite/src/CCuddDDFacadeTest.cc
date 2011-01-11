@@ -276,18 +276,18 @@ BOOST_AUTO_TEST_CASE(test_multiples) {
   multipliers[0]= 4;
   multipliers[1]= 3;
   output << diagram.firstMultiples(multipliers);
-  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,w}, {x,y,z,v}, {x,y,z}}")); ///WRONG ordering
+  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,w}, {x,y,z,v}, {x,y,z}}")); ///@todo WRONG ordering
   multipliers[0]= 5;
   multipliers[1]= 6;
-  output << diagram.firstMultiples(multipliers);///UNDEF repetition - TODO should throw
+  output << diagram.firstMultiples(multipliers);///@todo UNDEF repetition - TODO should throw
   BOOST_CHECK(output.is_equal("{{x,y,z,UNDEF,UNDEF}, {x,y,z,UNDEF}, {x,y,z,UNDEF}, {x,y,z}}"));
   multipliers[0]= 3;
   multipliers[1]= 3;
-  output << diagram.firstMultiples(multipliers);/// Repetition - TODO needs investigation
+  output << diagram.firstMultiples(multipliers);///@todo Repetition - TODO needs investigation
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,y,z,v}, {x,y,z,v}, {x,y,z}}"));
   multipliers[0]= 0;
   multipliers[1]= 0;
-  output << diagram.firstMultiples(multipliers);/// How was x lost? - TODO needs investigation
+  output << diagram.firstMultiples(multipliers);///@todo How was x lost? - TODO needs investigation
   BOOST_CHECK(output.is_equal("{{y,z}, {x,y,z}}"));
   multipliers = std::vector<dd_type::idx_type>(3);
   multipliers[0]= 0;
@@ -300,7 +300,8 @@ BOOST_AUTO_TEST_CASE(test_multiples) {
   BOOST_CHECK(output.is_equal("{{x,y,z}}"));
   multipliers = std::vector<dd_type::idx_type>(1);
   multipliers[0]= -1;
-  //output << diagram.firstMultiples(multipliers); /// memory access violation at 0x7fdd1c00097c - TODO needs handling
+  //output << diagram.firstMultiples(multipliers); 
+  ///@todo memory access violation at 0x7fdd1c00097c - TODO needs handling
   //BOOST_CHECK(output.is_equal("{{x,y,z}}"));
 }
 

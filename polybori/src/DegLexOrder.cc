@@ -158,7 +158,7 @@ DegLexOrder::lead(const poly_type& poly) const {
 }
 
 // Extraction of leading term
-// todo: more accurate explanation
+///@todo: more accurate explanation (comments)
 DegLexOrder::monom_type 
 DegLexOrder::lead(const poly_type& poly, size_type bound) const {
 

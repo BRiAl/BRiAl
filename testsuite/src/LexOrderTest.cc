@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(!order.isDegreeOrder());
   BOOST_CHECK(!order.isBlockOrder());
   BOOST_CHECK(!order.isTotalDegreeOrder());
-  BOOST_CHECK(!order.isDegreeReverseLexicograpical());///Typo in the function name
+  BOOST_CHECK(!order.isDegreeReverseLexicograpical());///@todo Typo in the function name
   BOOST_CHECK(!order.ascendingVariables());
   BOOST_CHECK(order.descendingVariables());
   BOOST_CHECK(order.orderedStandardIteration());
@@ -116,7 +116,7 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(x*y));
   BOOST_CHECK(order.leadFirst(poly)  == poly);
   poly = BoolePolynomial();
-  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///Correct error thrown here?
+  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///@todo Correct error thrown here?
   BOOST_CHECK(order.leadExp(poly) == BooleExponent());
   BOOST_CHECK(order.leadFirst(poly) == poly);
 }

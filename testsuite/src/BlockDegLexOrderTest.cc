@@ -118,12 +118,12 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   poly = BoolePolynomial();
   output_test_stream output;
   output << order.lead(poly);
-  BOOST_CHECK(output.is_equal("0"));/// How is BooleMonomial 0?
+  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
   BOOST_CHECK(order.leadExp(poly) == BooleExponent());
   BOOST_CHECK(order.leadFirst(poly) == poly);
   poly = x*w + x*z + w*v*y;
   output << order.lead(poly,0);
-  BOOST_CHECK(order.lead(poly, 0) == BooleMonomial(w*v*y));/// How is poly a BooleMonomial?
+  BOOST_CHECK(order.lead(poly, 0) == BooleMonomial(w*v*y));///@todo How is poly a BooleMonomial?
   BOOST_CHECK(order.leadExp(poly, 0) == BooleExponent(w*v*y));
 }
 
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   }
   output_test << std::numeric_limits<int>::max() << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
-  order.appendBlock(-1);/// Wrong order of appending blocks = all but -1 are in same block
+  order.appendBlock(-1);///@todo Wrong order of appending blocks = all but -1 are in same block
   order.appendBlock(0);
   order.appendBlock(2);
   order.appendBlock(6);
@@ -162,7 +162,8 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(order.lieInSameBlock(5,6));/// Should not be in the same block
   BOOST_CHECK(order.lieInSameBlock(6,7));
   BOOST_CHECK(order.lieInSameBlock(intmax,7));/// Should not be in the same block
-  //BOOST_CHECK(order.lieInSameBlock(-1,-1));///memory access violation (output hangs here)
+  ///@todo memory access violation (output hangs here) for lieInSameBlock(-1,-1)
+  //BOOST_CHECK(order.lieInSameBlock(-1,-1));
   BOOST_CHECK(!order.lieInSameBlock(-1,0));
   BOOST_CHECK(!order.lieInSameBlock(-1,1));
   BOOST_CHECK(!order.lieInSameBlock(-1,2));
@@ -413,6 +414,7 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly), order.leadExp(poly));
   BOOST_CHECK(blockorder.leadFirst(poly) == poly);
   BOOST_CHECK_EQUAL(blockorder.leadFirst(poly), order.leadFirst(poly));
+  ///@todo Calculating the lead with no blocks makes the lead with blocks wrong
   poly = y*x + y*z*v*w + v*w + z*w + w*w;/// But y*x > y*z*v*w!
   std::cout << order.lead(poly) << std::endl;/// Comment this out to get correct lead!
   BOOST_CHECK(blockorder.lead(poly, 0) == BooleMonomial(y*z*v*w));

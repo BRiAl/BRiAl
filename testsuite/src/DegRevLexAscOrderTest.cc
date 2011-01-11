@@ -118,12 +118,12 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   poly = BoolePolynomial();
   output_test_stream output;
   output << order.lead(poly);
-  BOOST_CHECK(output.is_equal("0"));/// How is BooleMonomial 0?
-  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///Why error thrown here?
+  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
+  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///@todo Why error thrown here?
   BOOST_CHECK(order.leadFirst(poly) == poly);
   poly = x*w + x*z + w*v*y;
   output << order.lead(poly,0);
-  BOOST_CHECK(output.is_equal("x*z + x*w + y*v*w"));/// How is poly a BooleMonomial?
+  BOOST_CHECK(output.is_equal("x*z + x*w + y*v*w"));///@todo How is poly a BooleMonomial?
   BOOST_CHECK(order.leadExp(poly,0)  == BooleExponent());
 
   BooleMonomial leadterm = z*v*w;
