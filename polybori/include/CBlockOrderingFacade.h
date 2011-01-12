@@ -22,19 +22,50 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class CBlockOrderingFacade
- * @brief This class initialize the interface for orderings of
- * CDynamicOrderBase for a given OrderType. OrderType must inherit from
- * COrderingFacade<OrderType>.
+ * @brief This class implements block orderings for COrderingFacade.
+ * OrderType must inherit from COrderingFacade<OrderType>.
  */
 template <class OrderType>
 class CBlockOrderingFacade:
     public COrderingFacade <OrderType> {
   typedef CBlockOrderingFacade self;
     /// Actual base type
-  typedef COrderingBase base_type;
+  typedef COrderingFacade<OrderType> facade_type;
 public:
   /// *this is to be used as base for @c OrderType only
   typedef self base;
+
+  /// Default Constructor
+  CBlockOrderingFacade(): facade_type(), m_indices() {
+    m_indices.push_back(0);
+    m_indices.push_back(CTypes::max_index()); 
+  };
+
+  /// Copy Constructor
+  CBlockOrderingFacade(const self& rhs): facade_type(rhs), m_indices(rhs.m_indices) {};
+
+  /// Destructor
+  ~CBlockOrderingFacade() { }
+
+  /// @name interface for block orderings
+  //@{
+  COrderingBase::block_iterator blockBegin() const { return m_indices.begin() + 1; }
+  COrderingBase::block_iterator blockEnd() const { return m_indices.end(); }
+  void appendBlock(COrderingBase::idx_type idx) {
+    /*if(idx > *blockEnd())///@todo think of a better rule here
+      throw std::runtime_error("Blocks must be added in a strictly increasing order.");*/
+    m_indices.back() = idx;
+    m_indices.push_back(CTypes::max_index());
+  }
+  void clearBlocks() {
+    m_indices.clear();
+    m_indices.push_back(0); 
+    m_indices.push_back(CTypes::max_index());
+  }
+  //@}
+
+protected:
+  COrderingBase::block_idx_type m_indices;
 };
 
 END_NAMESPACE_PBORI

@@ -81,13 +81,10 @@ public:
   enum { order_code = CTypes::block_dlex, baseorder_code = CTypes::dlex };
 
   /// Default Constructor
-  BlockDegLexOrder(): base(), m_indices() {
-    m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_index()); 
-  };
+  BlockDegLexOrder(): base() {};
 
   /// Copy Constructor
-  BlockDegLexOrder(const self& rhs): base(rhs), m_indices(rhs.m_indices) {};
+  BlockDegLexOrder(const self& rhs): base(rhs) {};
 
   /// Destructor
   ~BlockDegLexOrder() {};
@@ -118,24 +115,6 @@ public:
   ordered_iterator leadIteratorEnd() const;
   ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
   ordered_exp_iterator leadExpIteratorEnd() const;
-
-  /// @name interface for block orderings
-  //@{
-  block_iterator blockBegin() const { return m_indices.begin() + 1; }
-  block_iterator blockEnd() const { return m_indices.end(); }
-  void appendBlock(idx_type idx) { 
-    m_indices.back() = idx;
-    m_indices.push_back(CTypes::max_index());
-  }
-  void clearBlocks() { 
-    m_indices.clear(); 
-    m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_index());
-  }
-  //@}
-
-private:
-  block_idx_type m_indices;
 };
 
 

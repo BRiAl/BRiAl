@@ -133,40 +133,8 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   order_type order;
   output_test_stream output;
   output_test_stream output_test;
-  BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
-  while (start != finish) {
-    output << *start <<", ";
-    ++start;
-  }
-  output_test << std::numeric_limits<int>::max() << ", ";
-  BOOST_CHECK(output.is_equal(output_test.str()));
-  order.appendBlock(-1);///@todo Wrong order of appending blocks = all but -1 are in same block
-  order.appendBlock(0);
-  order.appendBlock(2);
-  order.appendBlock(6);
-  start = order.blockBegin();
-  finish = order.blockEnd();
-  while (start != finish) {
-    output << *start <<", ";
-    ++start;
-  }
-  output_test.str("");
-  output_test << std::numeric_limits<unsigned>::max() << ", 0, 2, 6, " << std::numeric_limits<int>::max() << ", ";
   int intmax = std::numeric_limits<int>::max();
-  BOOST_CHECK(output.is_equal(output_test.str()));
-  BOOST_CHECK(order.lieInSameBlock(0,1));
-  BOOST_CHECK(order.lieInSameBlock(1,2));/// Should not be in the same block
-  BOOST_CHECK(order.lieInSameBlock(3,2));
-  BOOST_CHECK(order.lieInSameBlock(4,3));
-  BOOST_CHECK(order.lieInSameBlock(4,5));
-  BOOST_CHECK(order.lieInSameBlock(5,6));/// Should not be in the same block
-  BOOST_CHECK(order.lieInSameBlock(6,7));
-  BOOST_CHECK(order.lieInSameBlock(7,intmax));
-  BOOST_CHECK_THROW(!order.lieInSameBlock(3,-1), std::runtime_error);
-  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,intmax), std::runtime_error);
-  BOOST_CHECK_THROW(!order.lieInSameBlock(-1,-1), std::runtime_error);
-  BOOST_CHECK_EQUAL(order.lastBlockStart(), 6);
-
+  BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
   order.clearBlocks();
   start = order.blockBegin();
   finish = order.blockEnd();
@@ -177,6 +145,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   output_test.str("");
   output_test << intmax << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
+  //BOOST_CHECK_THROW(order.appendBlock(-1), std::runtime_error);
   order.appendBlock(0);
   order.appendBlock(2);
   order.appendBlock(6);
