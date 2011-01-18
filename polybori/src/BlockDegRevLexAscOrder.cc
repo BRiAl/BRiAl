@@ -158,7 +158,7 @@ BlockDegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
   PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadexp(const poly_type&, size_type) const)");
   return leadExp(poly);
 }
-
+/*
 // Initialize iterator corresponding to leading term
 BlockDegRevLexAscOrder::ordered_iterator
 BlockDegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
@@ -214,7 +214,7 @@ BlockDegRevLexAscOrder::leadExpIteratorEnd() const {
 
 //   return ordered_exp_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, exp_type>();
-}
+}*/
 
 
 END_NAMESPACE_PBORI

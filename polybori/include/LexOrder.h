@@ -83,11 +83,11 @@ class LexOrder:
   exp_type leadExp(const poly_type& poly, size_type) const {
     return leadExp(poly); }
 
-  /// Initialize iterator corresponding to leading term
+/*  /// Initialize iterator corresponding to leading term
   ordered_iterator leadIteratorBegin(const poly_type&) const;
   ordered_iterator leadIteratorEnd() const;
   ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  ordered_exp_iterator leadExpIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorEnd() const;*/
 
 };
 

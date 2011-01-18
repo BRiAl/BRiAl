@@ -199,7 +199,7 @@ DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
                                          descending_property()) );
 
 }
-
+/*
 // Initialize iterator corresponding to leading term
 DegRevLexAscOrder::ordered_iterator
 DegRevLexAscOrder::leadIteratorBegin(const poly_type& poly) const {
@@ -256,7 +256,7 @@ DegRevLexAscOrder::leadExpIteratorEnd() const {
 //   return ordered_exp_iterator(core_pointer(new iterator_core()));
 
   return CGenericOrderedIter<self, navigator, exp_type>();
-}
+}*/
 
 
 END_NAMESPACE_PBORI

@@ -82,11 +82,11 @@ public:
   /// Get leading exponent (using an upper bound)
   exp_type leadExp(const poly_type&, size_type) const;
 
-  /// Initialize iterator corresponding to leading term
+/*  /// Initialize iterator corresponding to leading term
   ordered_iterator leadIteratorBegin(const poly_type&) const;
   ordered_iterator leadIteratorEnd() const;
   ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  ordered_exp_iterator leadExpIteratorEnd() const;
+  ordered_exp_iterator leadExpIteratorEnd() const;*/
 };
 
 

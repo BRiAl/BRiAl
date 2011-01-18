@@ -149,6 +149,30 @@ public:
     }
     return 0;
   }
+
+  // Initialize iterator corresponding to leading term
+  ordered_iterator
+  leadIteratorBegin(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator,
+      monom_type>(poly.navigation(), poly.ring());
+  }
+
+  ordered_iterator
+  leadIteratorEnd() const {
+    return CGenericOrderedIter<order_type, navigator, monom_type>();
+  }
+
+  // Initialize iterator corresponding to leading term
+  ordered_exp_iterator
+  leadExpIteratorBegin(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator, exp_type>(poly.navigation(), poly.ring()); 
+  }
+
+  ordered_exp_iterator
+  leadExpIteratorEnd() const {
+    return CGenericOrderedIter<order_type, navigator, exp_type>();
+  }
+
 protected:
 
   /// trivial case for non-block orderings

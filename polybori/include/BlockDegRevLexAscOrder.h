@@ -52,13 +52,10 @@ class BlockDegRevLexAscOrder:
   enum { order_code = CTypes::block_dp_asc, baseorder_code = CTypes::dp_asc };
 
   /// Default Constructor
-  BlockDegRevLexAscOrder(): base(), m_indices() {
-    m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_index()); 
-  };
+  BlockDegRevLexAscOrder(): base() {};
 
   /// Copy Constructor
-  BlockDegRevLexAscOrder(const self& rhs): base(rhs), m_indices(rhs.m_indices) {};
+  BlockDegRevLexAscOrder(const self& rhs): base(rhs) {};
 
   /// Destructor
   ~BlockDegRevLexAscOrder() {};
@@ -84,14 +81,11 @@ class BlockDegRevLexAscOrder:
   /// Get leading exponent (using an upper bound)
   exp_type leadExp(const poly_type&, size_type) const;
 
-  /// Initialize iterator corresponding to leading term
+/*  /// Initialize iterator corresponding to leading term
   ordered_iterator leadIteratorBegin(const poly_type&) const;
   ordered_iterator leadIteratorEnd() const;
   ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  ordered_exp_iterator leadExpIteratorEnd() const;
-
-private:
-  block_idx_type m_indices;
+  ordered_exp_iterator leadExpIteratorEnd() const;*/
 };
 
 

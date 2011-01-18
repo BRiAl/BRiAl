@@ -213,7 +213,7 @@ DegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
                                      descending_property());
 }
 
-
+/*
 // Initialize iterator corresponding to leading term
 DegLexOrder::ordered_iterator
 DegLexOrder::leadIteratorBegin(const poly_type& poly) const {
@@ -274,7 +274,7 @@ DegLexOrder::leadExpIteratorEnd() const {
 //   return ordered_exp_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, exp_type>();
 
-}
+}*/
 
 
 END_NAMESPACE_PBORI

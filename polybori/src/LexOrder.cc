@@ -216,7 +216,7 @@ LexOrder::leadExp(const poly_type& poly) const {
   } 
   return leadterm;
 }
-
+/*
 // Initialize iterator corresponding to leading term
 LexOrder::ordered_iterator
 LexOrder::leadIteratorBegin(const poly_type& poly) const {
@@ -282,7 +282,7 @@ LexOrder::leadIteratorEnd() const {
 
 //   return ordered_iterator(core_pointer(new iterator_core()));
   return CGenericOrderedIter<self, navigator, monom_type>();
-}
+}*/
 
 
 END_NAMESPACE_PBORI
