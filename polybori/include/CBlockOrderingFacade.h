@@ -52,8 +52,8 @@ public:
   COrderingBase::block_iterator blockBegin() const { return m_indices.begin() + 1; }
   COrderingBase::block_iterator blockEnd() const { return m_indices.end(); }
   void appendBlock(COrderingBase::idx_type idx) {
-    /*if(idx > *blockEnd())///@todo think of a better rule here
-      throw std::runtime_error("Blocks must be added in a strictly increasing order.");*/
+    if((idx > *(blockEnd()-1)) || ((blockBegin() != (blockEnd()-1)) && (idx <= *(blockEnd()-2))))///@todo think of a better rule here
+      throw std::runtime_error("Blocks must be added in a strictly increasing order.");
     m_indices.back() = idx;
     m_indices.push_back(CTypes::max_index());
   }
