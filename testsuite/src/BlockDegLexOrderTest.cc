@@ -148,8 +148,11 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
   BOOST_CHECK_THROW(order.appendBlock(-1), std::runtime_error);
   order.appendBlock(0);
+  BOOST_CHECK_THROW(order.appendBlock(0), std::runtime_error);
   order.appendBlock(2);
+  BOOST_CHECK_THROW(order.appendBlock(1), std::runtime_error);
   order.appendBlock(6);
+  BOOST_CHECK_THROW(order.appendBlock(intmax), std::runtime_error);
   start = order.blockBegin();
   finish = order.blockEnd();
   while (start != finish) {

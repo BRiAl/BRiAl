@@ -52,7 +52,10 @@ public:
   COrderingBase::block_iterator blockBegin() const { return m_indices.begin() + 1; }
   COrderingBase::block_iterator blockEnd() const { return m_indices.end(); }
   void appendBlock(COrderingBase::idx_type idx) {
-    if((idx > *(blockEnd()-1)) || ((blockBegin() != (blockEnd()-1)) && (idx <= *(blockEnd()-2))))///@todo think of a better rule here
+    // idx should always be >= max(int) (==blockEnd() -1)
+    // and if there are existing blocks (blockBegin()!=blockEnd() -1)...
+    // the added block should be strictly larger than the previously added block
+    if((idx >= *(blockEnd()-1)) || ((blockBegin() != (blockEnd()-1)) && (idx <= *(blockEnd()-2))))
       throw std::runtime_error("Blocks must be added in a strictly increasing order.");
     m_indices.back() = idx;
     m_indices.push_back(CTypes::max_index());
