@@ -373,12 +373,12 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly), order.leadExp(poly));
   BOOST_CHECK(blockorder.leadFirst(poly) == poly);
   BOOST_CHECK_EQUAL(blockorder.leadFirst(poly), order.leadFirst(poly));
-  ///@todo Calculating the lead with no blocks makes the lead with blocks wrong
-  poly = y*x + y*z*v*w + v*w + z*w + w*w;/// But y*x > y*z*v*w!
-  std::cout << order.lead(poly) << std::endl;/// Comment this out to get correct lead!
-  BOOST_CHECK(blockorder.lead(poly, 0) == BooleMonomial(y*z*v*w));
-  BOOST_CHECK_EQUAL(blockorder.lead(poly, 0), order.lead(poly, 0));
-  BOOST_CHECK(blockorder.leadExp(poly, 0) == BooleExponent(y*z*v*w));
-  BOOST_CHECK_EQUAL(blockorder.leadExp(poly, 0), order.leadExp(poly, 0));
+  // Check, that order.lead(poly) doesn't pollute the cache!
+  poly = y*x + y*z*v*w + v*w + z*w + w*w;///  y*x > y*z*v*w!
+  BOOST_CHECK(order.lead(poly) == BooleMonomial(y*z*v*w));
+  BOOST_CHECK(blockorder.lead(poly, 0) == BooleMonomial(x*y));
+  BOOST_CHECK_NE(blockorder.lead(poly, 0), order.lead(poly, 0));
+  BOOST_CHECK(blockorder.leadExp(poly, 0) == BooleExponent(x*y));
+  BOOST_CHECK_NE(blockorder.leadExp(poly, 0), order.leadExp(poly, 0));
 }
 BOOST_AUTO_TEST_SUITE_END()

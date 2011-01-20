@@ -384,10 +384,10 @@ dd_block_degree_lead(const CacheType& cache_mgr,
   }
 
 
-  // Check cache for previous results
-  NaviType cached = cache_mgr.find(navi);
-  if (cached.isValid())
-    return cache_mgr.generate(cached);
+  // Check cache for previous results - Wrong in general, bounds may have changed!
+//   NaviType cached = cache_mgr.find(navi);
+//   if (cached.isValid())
+//     return cache_mgr.generate(cached);
 
   // Go to next branch
     if ( max_block_degree_on_then(deg_mgr, navi, *block_iter, degree, prop) ) {
@@ -402,7 +402,7 @@ dd_block_degree_lead(const CacheType& cache_mgr,
   }
 
   NaviType resultNavi(init.navigation());
-  cache_mgr.insert(navi, resultNavi);
+  //  cache_mgr.insert(navi, resultNavi);
   deg_mgr.insert(resultNavi, *block_iter, degree);
 
   return init;
