@@ -123,13 +123,13 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK(order.leadFirst(poly) == poly);
   poly = x*w + x*z + w*v*y;
   output << order.lead(poly,0);
-  BOOST_CHECK(output.is_equal("x*z + x*w + y*v*w"));///@todo How is poly a BooleMonomial?
+  BOOST_CHECK(output.is_equal("1"));
   BOOST_CHECK(order.leadExp(poly,0)  == BooleExponent());
 
   BooleMonomial leadterm = z*v*w;
   poly = x*y + x*v + leadterm;
-  //BOOST_CHECK(order.lead(poly,3)  == BooleMonomial(leadterm));//uncomment this or
-  //BOOST_CHECK(order.leadExp(poly,2)  == BooleExponent(leadterm));//that for interesting effects
+  BOOST_CHECK_EQUAL(order.lead(poly,3), BooleMonomial(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
   std::cout << poly << std::endl;///=x*y + x*v + z*v*w
   std::cout << order.lead(poly, 1) << std::endl;///=x*y + x*v
   std::cout << order.lead(poly, 2) << std::endl;///=x*y + x*v

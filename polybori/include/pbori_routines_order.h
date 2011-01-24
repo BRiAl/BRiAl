@@ -10,56 +10,7 @@
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
  *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.14  2008/09/21 22:21:03  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.13  2008/07/18 22:37:50  dreyer
- * Fix: doxygen clean-up (removed inclusion loop)
- *
- * Revision 1.12  2008/07/13 22:49:36  dreyer
- * Fix: Doxygen clean-up
- *
- * Revision 1.11  2008/01/17 15:18:41  dreyer
- * CHANGE: removed several calls of BooleEnv::*
- *
- * Revision 1.10  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.9  2007/04/19 09:52:07  dreyer
- * FIX: block dp_asc index comparison
- *
- * Revision 1.8  2007/03/21 08:55:09  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.7  2006/11/03 10:22:59  dreyer
- * FIX: bug at comparison between monomials, extended workaround
- *
- * Revision 1.6  2006/11/03 08:54:38  bricken
- * + same proc to compare lex. for monom/exponent, ignores easy equality
- *
- * Revision 1.5  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.4  2006/10/05 12:51:32  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.3  2006/10/05 07:33:58  dreyer
- * ADD: BoolePolynomial::genericExpBegin()/End()
- *
- * Revision 1.2  2006/10/03 09:55:26  dreyer
- * FIX: monomial comparison broken on dp_asc
- *
- * Revision 1.1  2006/09/04 15:58:43  dreyer
- * ADD: DegLexOrder and preparations
- *
- * @endverbatim
-**/
+ **/
 //*****************************************************************************
 
 // include basic definitions
@@ -511,11 +462,17 @@ block_deg_lex_idx_compare(IdxType lhs, IdxType rhs,
 
   Iterator rhsend = std::find_if(start, finish, 
                                  std::bind2nd(std::greater<IdxType>(), rhs));
-                                 
-  assert((lhsend != finish) && (rhsend != finish));
 
-  CTypes::comp_type result = generic_compare_3way( *lhsend, *rhsend,
-                                                   std::less<IdxType>() );
+  CTypes::comp_type result = CTypes::equality;
+
+  if UNLIKELY( (rhsend == finish) && (lhsend != finish) )
+    result = CTypes::less_than;
+  else if UNLIKELY(lhsend == finish)
+    result = CTypes::greater_than;
+  else {
+    assert((lhsend != finish) && (rhsend != finish));
+    result = generic_compare_3way( *lhsend, *rhsend, std::less<IdxType>() );
+  }
 
   return ( result == CTypes::equality? 
            generic_compare_3way(lhs, rhs, idx_comp): result );

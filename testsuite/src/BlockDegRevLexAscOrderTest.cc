@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   BOOST_CHECK(order.compare(2,1) == baseorder.compare(2,1));
   BOOST_CHECK(order.compare(-1,-1) == CTypes::equality);
   BOOST_CHECK(order.compare(-1,-1) == baseorder.compare(-1,-1));
-  BOOST_CHECK(order.compare(1,-1) == CTypes::less_than);
+  BOOST_CHECK_EQUAL(order.compare(1,-1), CTypes::less_than);
   BOOST_CHECK(order.compare(-1,-1) == baseorder.compare(-1,-1));
 }
 
@@ -387,8 +387,8 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly), order.leadExp(poly));
   BOOST_CHECK(blockorder.leadFirst(poly) == poly);
   BOOST_CHECK_EQUAL(blockorder.leadFirst(poly), order.leadFirst(poly));
-  // Check, that order.lead(poly) doesn't pollute the cache!
-  poly = y*x + y*z*v*w + v*w + z*w + w*w; ///  y*x > y*z*v*w!
+
+  poly = y*x + y*z*v*w + v*w + z*w + w*w; ///  y*x > y*z*v*w for blockorder
   BOOST_CHECK(order.lead(poly) == BooleMonomial(y*z*v*w));
   BOOST_CHECK(blockorder.lead(poly, 0) == BooleMonomial(x*y));
   BOOST_CHECK_NE(blockorder.lead(poly, 0), order.lead(poly, 0));

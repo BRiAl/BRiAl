@@ -257,8 +257,8 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
   if (bound > deg)              // if deg <= bound, we are already finished
     deg = std::max(deg,  dd_cached_degree(cache, navi.elseBranch(), bound) );
 
-  // Write result to cache
-  cache.insert(navi, deg);
+  // Write result to cache @todo fix caching
+  /// cache.insert(navi, deg); // Don't pollute cache with possibly wrong results 
  
   return deg;
 }
@@ -603,7 +603,7 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
                          DescendingProperty prop) {
 
   if ((degree == 0) || navi.isConstant())
-    return cache_mgr.generate(navi);
+    return cache_mgr.one();
 
   // Check cache for previous results
   NaviType cached = cache_mgr.find(navi);
@@ -625,10 +625,10 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
     init = dd_recursive_degree_lead(cache_mgr, deg_mgr, navi.elseBranch(), 
                                     init, degree, prop);
   }
-
-  NaviType resultNavi(init.navigation());
-  cache_mgr.insert(navi, resultNavi);
-  deg_mgr.insert(resultNavi, degree);
+  /// caching deactivated -  wrong results might pollute the cache @todo fix
+//   NaviType resultNavi(init.navigation());
+//   cache_mgr.insert(navi, resultNavi);
+//   deg_mgr.insert(resultNavi, degree);
 
   return init;
 }
