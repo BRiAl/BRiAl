@@ -74,14 +74,21 @@ class LexOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, size_type) const { return lead(poly); }
+  monom_type lead(const poly_type& poly, size_type) const {
+    if UNLIKELY(poly.isZero())
+      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+    return lead(poly);
+  }
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using upper bound)
   exp_type leadExp(const poly_type& poly, size_type) const {
-    return leadExp(poly); }
+    if UNLIKELY(poly.isZero())
+      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+    return leadExp(poly);
+  }
 };
 
 

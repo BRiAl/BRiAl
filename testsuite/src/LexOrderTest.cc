@@ -116,13 +116,16 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly,-1) , BooleExponent(x*y));
   BOOST_CHECK_EQUAL(order.leadFirst(poly)  , poly);
   poly = BoolePolynomial();
-  BOOST_CHECK_THROW(order.lead(poly, 1), std::bad_alloc);///@todo Correct error thrown here?
-  BOOST_CHECK_THROW(order.lead(poly), std::bad_alloc);///@todo Correct error thrown here?
-  BOOST_CHECK_EQUAL(order.leadExp(poly) , BooleExponent());
-  BOOST_CHECK_EQUAL(order.leadFirst(poly) , poly);
+  BOOST_CHECK_THROW(order.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = 1;
   BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
   BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
 }

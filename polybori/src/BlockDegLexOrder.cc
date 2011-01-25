@@ -81,6 +81,9 @@ BlockDegLexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::lead(const poly_type&) const)" );
 
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   CBlockDegreeCache<set_type> blockDegCache(poly.ring());
 
   CacheManager<CCacheTypes::block_dlex_lead> cache_mgr(poly.ring());
@@ -100,6 +103,9 @@ BlockDegLexOrder::lead(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::lead(const poly_type&, size_type) const)" );
 
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   return lead(poly);
 }
 
@@ -111,6 +117,9 @@ BlockDegLexOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&) const)" );
 
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   return exp_type(lead(poly).exp());
 }
 
@@ -120,6 +129,10 @@ BlockDegLexOrder::exp_type
 BlockDegLexOrder::leadExp(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&, size_type) const)");
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   return leadExp(poly);
 }
 

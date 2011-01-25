@@ -70,6 +70,9 @@ DegRevLexAscOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&) const)" );
 
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
   CDegreeCache<set_type> deg_mgr(poly.ring());
@@ -84,6 +87,9 @@ DegRevLexAscOrder::exp_type
 DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   exp_type result;
   size_type deg(poly.deg());
@@ -102,6 +108,9 @@ DegRevLexAscOrder::exp_type
 DegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, size_type) const)" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
@@ -122,6 +131,9 @@ DegRevLexAscOrder::monom_type
 DegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());

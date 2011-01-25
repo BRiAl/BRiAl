@@ -94,6 +94,9 @@ LexOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
 
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
   monom_type leadterm(poly.ring());
    
   // store indices in list
@@ -116,6 +119,9 @@ LexOrder::exp_type
 LexOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExp(const poly_type& poly) const" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   exp_type leadterm;
    

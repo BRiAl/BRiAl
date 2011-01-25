@@ -116,18 +116,20 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly,-1) , BooleExponent(y*z*v*w));
   BOOST_CHECK_EQUAL(order.leadFirst(poly)  , BoolePolynomial(y*z*v*w));
   poly = BoolePolynomial();
-  output_test_stream output;
-  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial());///@todo Where does 1 come from?
-  output << order.lead(poly);
-  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
-  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///@todo Why error thrown here?
-  BOOST_CHECK_EQUAL(order.leadFirst(poly) , poly);
+  BOOST_CHECK_THROW(order.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   poly = 1;
   BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
   BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = x*w + x*z + w*v*y;
+  output_test_stream output;
   output << order.lead(poly,0);
   BOOST_CHECK(output.is_equal("1"));
   std::cout << order.leadExp(poly,0);
