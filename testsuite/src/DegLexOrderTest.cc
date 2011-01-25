@@ -130,11 +130,15 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = x*w + x*z + w*v*y;
   output_test_stream output;
-  output << order.lead(poly,0);
-  BOOST_CHECK(output.is_equal("1"));
-  std::cout << order.leadExp(poly,0);
+  BOOST_CHECK_EQUAL(order.lead(poly,0), BooleMonomial());
   BOOST_CHECK_EQUAL(order.leadExp(poly,0)  , BooleExponent());
-
+  poly=y;
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(y));
   BooleMonomial leadterm = z*v*w;
   poly = x*y + x*v + leadterm;
   ///@todo Lead and leadexp have problems with low bounds
@@ -149,6 +153,23 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   std::cout << order.leadExp(poly, 2) << std::endl;///=(0,1)
   std::cout << order.leadExp(poly, 3) << std::endl;///=(0,1)
   std::cout << order.leadExp(poly, -1) << std::endl;///=(0,1)
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*y));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(x*y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(leadterm));
+  poly += y;
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));// Even as valid term y exists
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*y));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));// Even as valid term y exists
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(x*y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(leadterm));
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {
