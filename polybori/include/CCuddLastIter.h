@@ -12,38 +12,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.4  2007/11/06 16:36:07  dreyer
- * Fix: used correct constructor
- *
- * Revision 1.3  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/12/13 18:07:04  dreyer
- * ADD: poly /= exp
- *
- * Revision 1.1  2006/06/07 08:37:50  dreyer
- * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
- *
- * Revision 1.4  2006/04/06 13:05:54  dreyer
- * CHANGE more suitable names for CCuddNavigator functions
- *
- * Revision 1.3  2006/04/04 15:31:06  dreyer
- * ADD: BoolePolynomial::navigator() and corresp. class CCuddNavigator
- *
- * Revision 1.2  2006/03/30 08:59:42  dreyer
- * FIX: CCuddLastIter works for empty and zero polynomials now
- *
- * Revision 1.1  2006/03/29 16:26:46  dreyer
- * ADD: Class CCuddLastIter used for BoolePolynomial::lead()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

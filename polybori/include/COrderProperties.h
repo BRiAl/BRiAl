@@ -9,47 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.11  2007/11/06 15:03:34  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.10  2007/03/16 16:59:20  dreyer
- * CHANGE: started to rewrite CGenericIter using boost:iterator_facade
- *
- * Revision 1.9  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.8  2006/10/05 12:51:31  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.7  2006/10/04 11:48:28  dreyer
- * ADD: isDegreeReverseLexicograpical()
- *
- * Revision 1.6  2006/09/08 16:15:27  dreyer
- * ADD: Added ordering-dependent term iteration
- *
- * Revision 1.5  2006/09/05 11:10:44  dreyer
- * ADD: BoolePolyRing::Compare(...), fixed assertion in groebner
- *
- * Revision 1.4  2006/09/05 08:48:32  dreyer
- * ADD: BoolePolyRing::is(Total)DegreeOrder()
- *
- * Revision 1.3  2006/09/01 11:02:48  dreyer
- * ADD: OrderedManager::isSymmetric()
- *
- * Revision 1.2  2006/07/20 10:13:59  dreyer
- * CHANGE: Made COrderProperties more generic
- *
- * Revision 1.1  2006/07/20 08:55:49  dreyer
- * ADD isOrdered() and  isLexicographical()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

@@ -9,10 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- * @endverbatim
 **/
 //*****************************************************************************
 

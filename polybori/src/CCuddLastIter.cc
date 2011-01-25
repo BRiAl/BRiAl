@@ -12,23 +12,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.3  2007/11/06 15:03:38  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/08/01 11:12:22  dreyer
- * CHANGE: removed ';' at end of functions (pedantic)
- *
- * Revision 1.1  2006/06/07 08:37:50  dreyer
- * ADD CCuddLastIter and BooleSet::lastLexicographicalTerm()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

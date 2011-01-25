@@ -9,35 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.7  2009/04/09 13:55:14  dreyer
- * Fix: Compatibility: gcc4.3, python 2.6, c++0x
- *
- * Revision 1.6  2008/09/21 22:21:01  dreyer
- * Change: size_type replaces size_type for deg(), etc.
- *
- * Revision 1.5  2007/11/06 15:03:32  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2007/07/31 07:43:49  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.3  2007/04/30 15:20:30  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.2  2007/04/23 15:32:17  dreyer
- * CHANGE: clean-up (reuse stuff from deg-orderings for block-orderings)
- *
- * Revision 1.1  2007/03/21 08:55:08  dreyer
- * ADD: first version of block_dlex running
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

@@ -9,29 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.5  2008/03/11 10:04:13  dreyer
- * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
- *
- * Revision 1.4  2007/11/06 15:03:43  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.3  2007/07/06 18:46:31  dreyer
- * ADD: rewritten C++-Interface for Cudd
- *
- * Revision 1.2  2007/05/18 11:48:39  dreyer
- * ADD: sophisticated term_accumulate
- *
- * Revision 1.1  2007/05/14 16:10:30  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

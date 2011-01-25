@@ -9,41 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.9  2009/03/31 08:30:49  dreyer
- * CHANGE: started consistent use of lead* instea of lm*
- *
- * Revision 1.8  2008/03/11 10:04:13  dreyer
- * Fix: Exceptions: Division by zero, Polynomial(0).lead(), and ITE
- *
- * Revision 1.7  2007/12/13 15:53:50  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.6  2007/11/06 15:03:43  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.5  2006/05/24 11:57:51  dreyer
- * CHANGE alternative modulus operation
- *
- * Revision 1.4  2006/04/19 15:55:53  dreyer
- * ADD BooleMonomial, BoolePolynomial::fetchTerms() and ::terms()
- *
- * Revision 1.3  2006/03/30 11:57:11  dreyer
- * CHANGE: Made use of 0/1 constants and the sets {}, {{}} consistent
- *
- * Revision 1.2  2006/03/30 08:52:57  dreyer
- * CHANGE: testsuite revised
- *
- * Revision 1.1  2006/03/28 07:34:03  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
