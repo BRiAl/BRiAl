@@ -247,8 +247,8 @@ BoolePolynomial::monom_type
 BoolePolynomial::lead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead() const" );
-  if UNLIKELY(isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  //if UNLIKELY(isZero())
+  //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
   
   return ring().ordering().lead(*this);
 }
@@ -258,8 +258,8 @@ BoolePolynomial::monom_type
 BoolePolynomial::lexLead() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lexLead() const" );
-  if UNLIKELY(isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  //if UNLIKELY(isZero())
+  //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return LexOrder().lead(*this);
 }
@@ -269,8 +269,8 @@ BoolePolynomial::monom_type
 BoolePolynomial::boundedLead(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::lead(size_type) const" );
-  if UNLIKELY(isZero()) 
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  //if UNLIKELY(isZero()) 
+  //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return ring().ordering().lead(*this, bound);
 }
@@ -280,8 +280,8 @@ BoolePolynomial::exp_type
 BoolePolynomial::leadExp() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp() const" );
-  if UNLIKELY(isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  //if UNLIKELY(isZero())
+  //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return ring().ordering().leadExp(*this);
 }
@@ -291,8 +291,8 @@ BoolePolynomial::exp_type
 BoolePolynomial::boundedLeadExp(size_type bound) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(size_type) const" );
-  if UNLIKELY(isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  //if UNLIKELY(isZero())
+  //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return ring().ordering().leadExp(*this, bound);
 }
