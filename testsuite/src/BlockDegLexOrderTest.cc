@@ -117,10 +117,17 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadFirst(poly)  , BoolePolynomial(x*y*z*w));
   poly = BoolePolynomial();
   output_test_stream output;
+  output << order.lead(poly, 1);
+  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
   //  output << order.lead(poly);
   //  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
   //   BOOST_CHECK_EQUAL(order.leadExp(poly) , BooleExponent());
 //   BOOST_CHECK_EQUAL(order.leadFirst(poly) , poly);
+  poly = 1;
+  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = x*w + x*z + w*v*y;
   output << order.lead(poly,0);
   BOOST_CHECK_EQUAL(order.lead(poly, 0) , BooleMonomial(w*v*y));
