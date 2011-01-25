@@ -268,43 +268,43 @@ BOOST_AUTO_TEST_CASE(test_LCM) {
   exp2 = exp_type().get(z*v*w);
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y));
-  BOOST_CHECK(exp2 == exp_type().get(z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v*w));
 
   exp1 = exp_type().get(x*x);
   exp2 = exp_type().get(z*v);
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 2, 3)"));
-  BOOST_CHECK(exp1 == exp_type().get(x));
-  BOOST_CHECK(exp2 == exp_type().get(z*v));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type().get(x*y*z*v*w);
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type();
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type();
   exp2 = exp_type().get(x*y*z*v*w);
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type();
   exp2 = exp_type();
   output << LCM(exp1, exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   BOOST_TEST_MESSAGE( "LCM as method of one monomial" );
 
@@ -312,43 +312,43 @@ BOOST_AUTO_TEST_CASE(test_LCM) {
   exp2 = exp_type().get(z*v*w);
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y));
-  BOOST_CHECK(exp2 == exp_type().get(z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v*w));
 
   exp1 = exp_type().get(x*x);
   exp2 = exp_type().get(z*v);
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("(0, 2, 3)"));
-  BOOST_CHECK(exp1 == exp_type().get(x));
-  BOOST_CHECK(exp2 == exp_type().get(z*v));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type();
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type();
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type();
   exp2 = exp_type();
   output << exp1.LCM(exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   BOOST_TEST_MESSAGE( "LCMDeg as method of one monomial" );
 
@@ -356,57 +356,57 @@ BOOST_AUTO_TEST_CASE(test_LCM) {
   exp2 = exp_type().get(z*v*w);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("5"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y));
-  BOOST_CHECK(exp2 == exp_type().get(z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v*w));
 
   exp1 = exp_type().get(x*x);
   exp2 = exp_type().get(z*v);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("3"));
-  BOOST_CHECK(exp1 == exp_type().get(x));
-  BOOST_CHECK(exp2 == exp_type().get(z*v));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("5"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type();
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("5"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type();
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("5"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type();
   exp2 = exp_type();
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("0"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type().get(x);
   exp2 = exp_type().get(x);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("1"));
-  BOOST_CHECK(exp1 == exp_type().get(x));
-  BOOST_CHECK(exp2 == exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x));
 
   exp1 = exp_type().get(x);
   exp2 = exp_type().get(y);
   output << exp1.LCMDeg(exp2);
   BOOST_CHECK(output.is_equal("2"));
-  BOOST_CHECK(exp1 == exp_type().get(x));
-  BOOST_CHECK(exp2 == exp_type().get(y));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(y));
 }
 
 BOOST_AUTO_TEST_CASE(test_GCD) {
@@ -421,36 +421,36 @@ BOOST_AUTO_TEST_CASE(test_GCD) {
   exp2 = exp_type().get(z*v*w);
   output << GCD(exp1, exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y));
-  BOOST_CHECK(exp2 == exp_type().get(z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type().get(x*y*z*v*w);
   output << GCD(exp1, exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type();
   output << GCD(exp1, exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type();
   exp2 = exp_type().get(x*y*z*v*w);
   output << GCD(exp1, exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type();
   exp2 = exp_type();
   output << GCD(exp1, exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   BOOST_TEST_MESSAGE( "GCD as method of one monomial" );
 
@@ -458,36 +458,36 @@ BOOST_AUTO_TEST_CASE(test_GCD) {
   exp2 = exp_type().get(z*v*w);
   output << exp1.GCD(exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y));
-  BOOST_CHECK(exp2 == exp_type().get(z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.GCD(exp2);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type().get(x*y*z*v*w);
   exp2 = exp_type();
   output << exp1.GCD(exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type().get(x*y*z*v*w));
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 
   exp1 = exp_type();
   exp2 = exp_type().get(x*y*z*v*w);
   output << exp1.GCD(exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type().get(x*y*z*v*w));
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type().get(x*y*z*v*w));
 
   exp1 = exp_type();
   exp2 = exp_type();
   output << exp1.GCD(exp2);
   BOOST_CHECK(output.is_equal("()"));
-  BOOST_CHECK(exp1 == exp_type());
-  BOOST_CHECK(exp2 == exp_type());
+  BOOST_CHECK_EQUAL(exp1, exp_type());
+  BOOST_CHECK_EQUAL(exp2, exp_type());
 }
 
 BOOST_AUTO_TEST_CASE(test_add_remove) {
@@ -690,8 +690,8 @@ BOOST_AUTO_TEST_CASE(test_logical_operators) {
   exp_type exp2;
 
   BOOST_TEST_MESSAGE( "== and !=" );
-  BOOST_CHECK_EQUAL(exp_type() == exp_type(), true);
-  BOOST_CHECK_EQUAL(exp_type() != exp_type(), false);
+  BOOST_CHECK_EQUAL(exp_type(), exp_type());
+  BOOST_CHECK(!(exp_type() !=exp_type()));
 
   BOOST_TEST_MESSAGE( "compare as method of one monomial" );
 

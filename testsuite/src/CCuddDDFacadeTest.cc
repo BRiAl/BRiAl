@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   BoolePolynomial poly2(0);
   dd_type diag1(poly1.set());
   dd_type diag2(poly2.set());
-  BOOST_CHECK(diag1 == diag2);
+  BOOST_CHECK(diag1 == diag2);///@TODO BOOST_CHECK_EQUAL(diag1, diag2) not possible as << is ambiguous for dd_type
   BOOST_CHECK(!(diag1 != diag2));
   poly1 = 1;
   diag1 = dd_type(poly1.set());
@@ -504,33 +504,33 @@ BOOST_AUTO_TEST_CASE(test_refcount) {
   dd_type count2(count1.set());
 
   BOOST_TEST_MESSAGE( "refCount" );
-  BOOST_CHECK(count2.refCount() == 2);
+  BOOST_CHECK_EQUAL(count2.refCount(), 2);
   dd_type count3(count1.set());
-  BOOST_CHECK(count2.refCount() == 3);
-  BOOST_CHECK(count3.refCount() == 3);
+  BOOST_CHECK_EQUAL(count2.refCount(), 3);
+  BOOST_CHECK_EQUAL(count3.refCount(), 3);
   BOOST_CHECK(count2 == count3);
   BoolePolynomial count4 = count1;
-  BOOST_CHECK(count2.refCount() == 4);
-  BOOST_CHECK(count3.refCount() == 4);
+  BOOST_CHECK_EQUAL(count2.refCount(), 4);
+  BOOST_CHECK_EQUAL(count3.refCount(), 4);
   BoolePolynomial count5 = x*y + z - 1;
-  BOOST_CHECK(count2.refCount() == 5);
-  BOOST_CHECK(count3.refCount() == 5);
+  BOOST_CHECK_EQUAL(count2.refCount(), 5);
+  BOOST_CHECK_EQUAL(count3.refCount(), 5);
   count3 = count2;
-  BOOST_CHECK(count2.refCount() == 5);
-  BOOST_CHECK(count3.refCount() == 5);
+  BOOST_CHECK_EQUAL(count2.refCount(), 5);
+  BOOST_CHECK_EQUAL(count3.refCount(), 5);
   count1 = x*y + z;
-  BOOST_CHECK(count2.refCount() == 4);
-  BOOST_CHECK(count3.refCount() == 4);
+  BOOST_CHECK_EQUAL(count2.refCount(), 4);
+  BOOST_CHECK_EQUAL(count3.refCount(), 4);
   count4 = 1;
-  BOOST_CHECK(count2.refCount() == 3);
-  BOOST_CHECK(count3.refCount() == 3);
+  BOOST_CHECK_EQUAL(count2.refCount(), 3);
+  BOOST_CHECK_EQUAL(count3.refCount(), 3);
   count5 = z;
-  BOOST_CHECK(count2.refCount() == 2);
-  BOOST_CHECK(count3.refCount() == 2);
+  BOOST_CHECK_EQUAL(count2.refCount(), 2);
+  BOOST_CHECK_EQUAL(count3.refCount(), 2);
   BOOST_CHECK(count2 == count3);
   count3 = dd_type(count1.set());
-  BOOST_CHECK(count2.refCount() == 1);
-  BOOST_CHECK(count3.refCount() == 2);
+  BOOST_CHECK_EQUAL(count2.refCount(), 1);
+  BOOST_CHECK_EQUAL(count3.refCount(), 2);
   BOOST_CHECK(count2 != count3);
 }
 
