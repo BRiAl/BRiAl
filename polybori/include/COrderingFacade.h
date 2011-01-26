@@ -107,7 +107,7 @@ public:
   }
 
   /// Test whether ordering is deg-rev-lex ordering
-  bool_type isDegreeReverseLexicograpical() const {
+  bool_type isDegreeReverseLexicographical() const {
     return is_valid<typename order_type::degrevlexorder_property>::result;
   }
 
@@ -149,6 +149,30 @@ public:
     }
     return 0;
   }
+
+  // Initialize iterator corresponding to leading term
+  ordered_iterator
+  leadIteratorBegin(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator,
+      monom_type>(poly.navigation(), poly.ring());
+  }
+
+  ordered_iterator
+  leadIteratorEnd() const {
+    return CGenericOrderedIter<order_type, navigator, monom_type>();
+  }
+
+  // Initialize iterator corresponding to leading term
+  ordered_exp_iterator
+  leadExpIteratorBegin(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator, exp_type>(poly.navigation(), poly.ring()); 
+  }
+
+  ordered_exp_iterator
+  leadExpIteratorEnd() const {
+    return CGenericOrderedIter<order_type, navigator, exp_type>();
+  }
+
 protected:
 
   /// trivial case for non-block orderings
@@ -160,6 +184,10 @@ protected:
   /// complicated case for block orderings  
   bool_type inSameBlockInternal(idx_type first, idx_type second, 
                                 valid_tag) const { // is block order 
+    // todo: throw here if first,second >=CTypes::max_idx
+    if(UNLIKELY(first > CTypes::max_idx || second > CTypes::max_idx))
+      throw std::runtime_error("Variable index out of range.");
+
     if (second < first)
       std::swap(first, second);
     

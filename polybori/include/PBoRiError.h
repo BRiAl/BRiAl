@@ -10,23 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.3  2007/11/06 15:03:36  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/03/10 08:25:54  dreyer
- * + refined header style
- *
- * Revision 1.1.1.1  2006/03/09 14:34:31  dreyer
- * + Project started
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -47,7 +30,7 @@ BEGIN_NAMESPACE_PBORI
  * 
  **/
 class PBoRiError:
-  std::exception {
+  public std::exception, public CTypes {
 
 public:
   /// adopt global error code enumeration

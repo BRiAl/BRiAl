@@ -10,29 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.5  2007/11/06 15:03:34  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2006/07/04 14:11:03  dreyer
- * ADD: Generic and handy treatment of string literals
- *
- * Revision 1.3  2006/04/18 07:17:24  dreyer
- * FIX bug in CIdxPath using begin() and end() from inherited template
- *
- * Revision 1.2  2006/04/13 07:53:19  dreyer
- * CHANGE BoolePolynomial::print() and deg() produces more useful results
- *
- * Revision 1.1  2006/04/12 16:23:54  dreyer
- * ADD template class CIDXPath<>
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

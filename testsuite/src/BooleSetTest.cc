@@ -493,7 +493,7 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   output << empty.multiplesOf(BooleMonomial());
   BOOST_CHECK(output.is_equal("{}"));
 
-  BOOST_TEST_MESSAGE( "existAbstract" ); // It is not clear what this function is supposed to do
+  BOOST_TEST_MESSAGE( "existAbstract" ); ///@todo It is not clear what this function is supposed to do
   output << set.existAbstract(x);
   BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z,v}, {v}}"));
   output << set.existAbstract(y);

@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(test_ordering) {
 }
 
 BOOST_AUTO_TEST_CASE(test_ring) {
-  // implement == for rings?
+  ///@todo implement == for rings?
   BoolePolyRing notempty(3, 1, false);
   BoolePolyRing empty(0,2,false);
 

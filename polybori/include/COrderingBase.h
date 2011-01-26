@@ -79,13 +79,13 @@ public:
   virtual monom_type lead(const poly_type&) const = 0;
 
   /// Get leading term (using upper bound)
-  virtual monom_type lead(const poly_type&, size_type) const = 0;
+  virtual monom_type lead(const poly_type&, deg_type) const = 0;
 
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
 
   /// Get leading exponent (using upper bound)
-  virtual exp_type leadExp(const poly_type&, size_type) const = 0;
+  virtual exp_type leadExp(const poly_type&, deg_type) const = 0;
 
   /// Generates polynomial with leading term first (other terms may be skipped)
   virtual poly_type leadFirst(const poly_type&) const = 0;
@@ -115,7 +115,7 @@ public:
   virtual bool_type descendingVariables() const = 0;
 
   /// Test whether ordering is deg-rev-lex ordering
-  virtual bool_type isDegreeReverseLexicograpical() const = 0;
+  virtual bool_type isDegreeReverseLexicographical() const = 0;
 
   /// Initialize iterator corresponding to leading term
   virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;

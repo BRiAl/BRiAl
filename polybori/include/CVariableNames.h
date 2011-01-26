@@ -9,32 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.6  2007/11/06 15:03:35  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.5  2007/07/09 14:15:32  dreyer
- * Fix: removed performance issue
- *
- * Revision 1.4  2007/07/09 11:30:50  dreyer
- * Fix: dynamic extension of variable names
- *
- * Revision 1.3  2007/04/24 15:23:04  dreyer
- * FIX: minor changes fixing -Wall warnings
- *
- * Revision 1.2  2007/04/13 13:55:53  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.1  2006/10/24 08:44:04  dreyer
- * CHANGE: Added CVariableNames; variable names handled by OrderedManager
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

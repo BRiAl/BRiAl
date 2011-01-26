@@ -10,20 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.2  2008/04/29 09:02:10  bricken
- * + active_ring moved to BooleEnv.cc
- *
- * Revision 1.1  2007/12/13 15:53:48  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

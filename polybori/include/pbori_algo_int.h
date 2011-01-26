@@ -10,44 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.10  2008/03/14 13:14:43  dreyer
- * Fix: Some doxygen syntax errors
- *
- * Revision 1.9  2007/11/06 15:03:36  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.8  2007/10/25 14:38:00  dreyer
- * ADD: use of CCuddNavigator more secure
- *
- * Revision 1.7  2007/07/30 15:19:39  dreyer
- * CHANGE: CCuddNavigator does not convert to DdNode* impicitely any more
- *
- * Revision 1.6  2007/07/06 14:04:22  dreyer
- * ADD: newly written C++_interface for Cudd
- *
- * Revision 1.5  2006/08/18 19:47:15  dreyer
- * change finished low-level variant of minimal_elements also for lnegth()==2
- *
- * Revision 1.4  2006/08/17 15:35:30  dreyer
- * ADD: extended and activated low-level version of dd_minimal_elements
- *
- * Revision 1.3  2006/08/17 09:51:33  dreyer
- * routine
- *
- * Revision 1.2  2006/08/16 16:11:17  dreyer
- * + first lowlevel variant running
- *
- * Revision 1.1  2006/08/15 16:03:58  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

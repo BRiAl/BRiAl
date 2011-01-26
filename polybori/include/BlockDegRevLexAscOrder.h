@@ -17,7 +17,7 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderingFacade.h"
+#include "CBlockOrderingFacade.h"
 #include "COrderingTags.h"
 
 #ifndef BlockDegRevLexAscOrder_h_
@@ -31,7 +31,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegRevLexAscOrder:
-  public COrderingFacade<BlockDegRevLexAscOrder>, 
+    public CBlockOrderingFacade<BlockDegRevLexAscOrder>, 
    public COrderingTags<block_dp_asc_tag> {
 
   /// generic access to current type
@@ -52,13 +52,10 @@ class BlockDegRevLexAscOrder:
   enum { order_code = CTypes::block_dp_asc, baseorder_code = CTypes::dp_asc };
 
   /// Default Constructor
-  BlockDegRevLexAscOrder(): base(), m_indices() {
-    m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_index()); 
-  };
+  BlockDegRevLexAscOrder(): base() {};
 
   /// Copy Constructor
-  BlockDegRevLexAscOrder(const self& rhs): base(rhs), m_indices(rhs.m_indices) {};
+  BlockDegRevLexAscOrder(const self& rhs): base(rhs) {};
 
   /// Destructor
   ~BlockDegRevLexAscOrder() {};
@@ -76,37 +73,13 @@ class BlockDegRevLexAscOrder:
   monom_type lead(const poly_type&) const;
 
   /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, size_type) const;
+  monom_type lead(const poly_type& poly, deg_type) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
   /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, size_type) const;
-
-  /// Initialize iterator corresponding to leading term
-  ordered_iterator leadIteratorBegin(const poly_type&) const;
-  ordered_iterator leadIteratorEnd() const;
-  ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const;
-  ordered_exp_iterator leadExpIteratorEnd() const;
-
-  /// @name interface for block orderings
-  //@{
-  block_iterator blockBegin() const { return m_indices.begin() + 1; }
-  block_iterator blockEnd() const { return m_indices.end(); }
-  void appendBlock(idx_type idx) { 
-    m_indices.back() = idx;
-    m_indices.push_back(CTypes::max_index());
-  }
-  void clearBlocks() {
-    m_indices.clear(); 
-    m_indices.push_back(0); 
-    m_indices.push_back(CTypes::max_index()); 
-  }
-  //@}
-
-private:
-  block_idx_type m_indices;
+  exp_type leadExp(const poly_type&, deg_type) const;
 };
 
 

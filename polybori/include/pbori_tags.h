@@ -9,23 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.3  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/12/13 18:07:04  dreyer
- * ADD: poly /= exp
- *
- * Revision 1.1  2006/10/06 12:52:01  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

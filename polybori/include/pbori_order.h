@@ -9,53 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.12  2008/07/18 22:37:50  dreyer
- * Fix: doxygen clean-up (removed inclusion loop)
- *
- * Revision 1.11  2007/12/11 15:37:35  dreyer
- * ADD: BooleOrdering started
- *
- * Revision 1.10  2007/12/07 17:06:19  dreyer
- * CHANGE: First try: ring and order separated
- *
- * Revision 1.9  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.8  2007/04/18 15:37:29  dreyer
- * ADD: dp_asc now active
- *
- * Revision 1.7  2007/03/21 08:55:09  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.6  2007/03/19 16:49:39  dreyer
- * CHANGE: ordered iterators made more generic
- *
- * Revision 1.5  2006/10/05 12:51:32  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.4  2006/10/02 09:28:38  dreyer
- * ADD BoolePolyRing::changeOrdering and infrastructure
- *
- * Revision 1.3  2006/09/13 09:05:44  dreyer
- * ADD: dp_asc/DegRevLexAscOrder
- * ADD: BoolePolynomial::endOfNavigation()
- * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
- *   generated more generically using navigation() and endOfNavigation().
- *
- * Revision 1.2  2006/09/05 08:48:33  dreyer
- * ADD: BoolePolyRing::is(Total)DegreeOrder()
- *
- * Revision 1.1  2006/05/23 15:26:25  dreyer
- * CHANGE BoolePolyRing  can handle different orderings (only lex yet)
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

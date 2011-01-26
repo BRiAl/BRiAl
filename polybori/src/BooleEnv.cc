@@ -10,26 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.4  2009/07/23 19:41:06  dreyer
- * ADD: BooleRing::hash
- *
- * Revision 1.3  2008/04/29 09:01:52  bricken
- * + active_ring moved to BooleEnv.cc
- *
- * Revision 1.2  2007/12/13 16:18:07  dreyer
- * CHANGE: removed unnecessary friend declaration
- *
- * Revision 1.1  2007/12/13 15:53:49  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

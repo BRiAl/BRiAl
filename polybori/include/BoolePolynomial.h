@@ -306,13 +306,13 @@ public:
   monom_type lexLead() const;
 
   /// Get leading term (using upper bound)
-  monom_type boundedLead(size_type bound) const;
+  monom_type boundedLead(deg_type bound) const;
 
   /// Get leading term
   exp_type leadExp() const;
 
   /// Get leading term (using upper bound)
-  exp_type boundedLeadExp(size_type bound) const;
+  exp_type boundedLeadExp(deg_type bound) const;
 
   /// Get all divisors of the leading term
   set_type leadDivisors() const { return leadFirst().firstDivisors(); };

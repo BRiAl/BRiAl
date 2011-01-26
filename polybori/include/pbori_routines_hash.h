@@ -9,38 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.8  2008/03/14 13:14:43  dreyer
- * Fix: Some doxygen syntax errors
- *
- * Revision 1.7  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.6  2007/11/29 20:16:22  dreyer
- * Fix: stableHash() consistent for monomials and polynomials/sets
- *
- * Revision 1.5  2007/11/29 16:28:32  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.4  2007/11/29 10:27:35  dreyer
- * Fix: hashes obeye index 0 now, better hashtype used
- *
- * Revision 1.3  2007/11/06 15:03:37  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/09/22 16:05:17  dreyer
- * ADD: switch PBORI_HASH_TAG
- *
- * Revision 1.1  2006/09/20 07:06:39  dreyer
- * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
