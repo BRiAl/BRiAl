@@ -132,9 +132,9 @@ BlockDegRevLexAscOrder::lead(const poly_type& poly) const {
 
 // Extraction of leading term
 BlockDegRevLexAscOrder::monom_type 
-BlockDegRevLexAscOrder::lead(const poly_type& poly, size_type bound) const {
+BlockDegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::lead(const poly_type&, size_type) const)" );
+  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
 
   return lead(poly);
 }
@@ -153,9 +153,9 @@ BlockDegRevLexAscOrder::leadExp(const poly_type& poly) const {
 // maybe common template here
 // Extraction of leading exponent
 BlockDegRevLexAscOrder::exp_type 
-BlockDegRevLexAscOrder::leadExp(const poly_type& poly, size_type bound) const {
+BlockDegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadexp(const poly_type&, size_type) const)");
+  PBORI_TRACE_FUNC( "BlockDegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)");
   return leadExp(poly);
 }
 

@@ -76,8 +76,11 @@ public:
 
   struct map_every_x_to_x_plus_one: public unary_cache_tag { };
 
-  struct dlex_lead: public unary_cache_tag { };
-  struct dp_asc_lead: public unary_cache_tag { };
+//   struct dlex_lead: public unary_cache_tag { };
+//   struct dp_asc_lead: public unary_cache_tag { };
+
+  struct dlex_lead: public binary_cache_tag { };
+  struct dp_asc_lead: public binary_cache_tag { };
 
   struct divisorsof_fixedpath: public ternary_cache_tag { };
   struct testwise_ternary: public ternary_cache_tag { };

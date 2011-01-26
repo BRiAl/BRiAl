@@ -109,36 +109,40 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   order_type order;
   BoolePolynomial poly = x*y*z*w + x*x + x*y + y*z*v*w + 1;
   BOOST_CHECK(order.lead(poly)    == BooleMonomial(y*z*v*w));
-  BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(y*z*v*w));
-  BOOST_CHECK(order.lead(poly,-1) == BooleMonomial(y*z*v*w));
+
+  BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(x));
+  BOOST_CHECK_THROW(order.lead(poly,-1), PBoRiError);
   BOOST_CHECK(order.leadExp(poly)    == BooleExponent(y*z*v*w));
-  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(y*z*v*w));
-  BOOST_CHECK(order.leadExp(poly,-1) == BooleExponent(y*z*v*w));
+  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(x));
+  BOOST_CHECK_THROW(order.leadExp(poly,-1), PBoRiError);
   BOOST_CHECK(order.leadFirst(poly)  == BoolePolynomial(y*z*v*w));
   poly = BoolePolynomial();
   output_test_stream output;
-  output << order.lead(poly);
-  BOOST_CHECK(output.is_equal("0"));///@todo How is BooleMonomial 0?
-  BOOST_CHECK_THROW(order.leadExp(poly), std::length_error);///@todo Why error thrown here?
-  BOOST_CHECK(order.leadFirst(poly) == poly);
+  BOOST_CHECK_THROW(order.lead(poly), PBoRiError);
+  BOOST_CHECK_THROW(order.leadExp(poly), PBoRiError);
+  BOOST_CHECK_THROW(order.leadFirst(poly), PBoRiError);
+
   poly = x*w + x*z + w*v*y;
-  output << order.lead(poly,0);
-  BOOST_CHECK(output.is_equal("1"));
-  BOOST_CHECK(order.leadExp(poly,0)  == BooleExponent());
+
+  BOOST_CHECK_THROW(order.lead(poly, 0), PBoRiError);
+  BOOST_CHECK_THROW(order.leadExp(poly,0), PBoRiError);
 
   BooleMonomial leadterm = z*v*w;
   poly = x*y + x*v + leadterm;
   BOOST_CHECK_EQUAL(order.lead(poly,3), BooleMonomial(leadterm));
   BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
   std::cout << poly << std::endl;///=x*y + x*v + z*v*w
-  std::cout << order.lead(poly, 1) << std::endl;///=x*y + x*v
+
+    //    std::cout << order.lead(poly, 1) <<std::endl;
+
+  BOOST_CHECK_THROW(order.lead(poly, 1), PBoRiError);
   std::cout << order.lead(poly, 2) << std::endl;///=x*y + x*v
   std::cout << order.lead(poly, 3) << std::endl;///=x*y + x*v
-  std::cout << order.lead(poly, -1) << std::endl;///=x*y + x*v
+  BOOST_CHECK_THROW(order.lead(poly, -1),PBoRiError);
   std::cout << order.leadExp(poly, 1) << std::endl;///=(0,1)
   std::cout << order.leadExp(poly, 2) << std::endl;///=(0,1)
   std::cout << order.leadExp(poly, 3) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, -1) << std::endl;///=(0,1)
+    BOOST_CHECK_THROW(order.leadExp(poly, -1),PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {
