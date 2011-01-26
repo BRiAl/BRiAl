@@ -9,71 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.18  2008/09/21 22:21:03  dreyer
- * Change: size_type replaces size_type for deg(), etc.
- *
- * Revision 1.17  2008/01/16 17:10:19  dreyer
- * CHANGE: term-iterators use correct manager now
- *
- * Revision 1.16  2008/01/11 16:58:58  dreyer
- * CHANGE: Experimenting with iterators and correct rings
- *
- * Revision 1.15  2007/11/06 15:03:39  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.14  2007/04/30 15:20:32  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.13  2007/04/13 13:55:54  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.12  2007/03/21 08:55:10  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.11  2007/03/19 16:49:39  dreyer
- * CHANGE: ordered iterators made more generic
- *
- * Revision 1.10  2006/12/04 12:48:17  dreyer
- * CHANGE: cached and recursive lead() and leadexp() refined, generalized
- *
- * Revision 1.9  2006/11/30 19:42:47  dreyer
- * CHANGE: lead(bound) now uses cached and recursive variant
- *
- * Revision 1.8  2006/11/29 13:40:03  dreyer
- * CHANGE: leadexp() made recursive and cached
- *
- * Revision 1.7  2006/11/28 09:32:58  dreyer
- * CHANGE: lead() (for dlex, dp_asc) is recursive and cached now
- *
- * Revision 1.6  2006/10/05 12:51:32  dreyer
- * CHANGE: Made lex-based comparisions more generic.
- *
- * Revision 1.5  2006/10/03 18:17:21  bricken
- * + removed minus sign again
- *
- * Revision 1.4  2006/10/03 11:36:36  bricken
- * + a minus sign
- *
- * Revision 1.3  2006/10/03 09:55:26  dreyer
- * FIX: monomial comparison broken on dp_asc
- *
- * Revision 1.2  2006/09/13 15:07:05  dreyer
- * ADD: lead(sugar) and infrastructure
- *
- * Revision 1.1  2006/09/13 09:05:44  dreyer
- * ADD: dp_asc/DegRevLexAscOrder
- * ADD: BoolePolynomial::endOfNavigation()
- * CHANGE: BoolePolynomial: removed biDegBegin(), biDegEnd(), which can be
- *   generated more generically using navigation() and endOfNavigation().
- *
- * @endverbatim
 **/
 //*****************************************************************************
 
@@ -135,6 +70,9 @@ DegRevLexAscOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&) const)" );
   return self::lead(poly, poly.deg());
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
 }
 
 // maybe common template here
@@ -144,6 +82,9 @@ DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
   return self::leadExp(poly, poly.deg());
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+
 }
 
 // Extraction of leading exponent
@@ -151,6 +92,9 @@ DegRevLexAscOrder::exp_type
 DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
@@ -171,6 +115,9 @@ DegRevLexAscOrder::monom_type
 DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
+
+  if UNLIKELY(poly.isZero())
+    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());

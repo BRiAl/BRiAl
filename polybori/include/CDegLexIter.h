@@ -9,32 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.6  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.5  2007/11/06 15:03:34  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2007/04/30 15:20:30  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.3  2006/09/08 14:31:38  dreyer
- * ADD: COrderedIter and infrastructure for order-dependent iterator
- *
- * Revision 1.2  2006/09/08 10:22:59  dreyer
- * FIX: Gcc 4 ist more pedantic
- *
- * Revision 1.1  2006/09/07 16:04:32  dreyer
- * ADD: CDegLexIter.h
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

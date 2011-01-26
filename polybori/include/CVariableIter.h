@@ -9,23 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2008 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.3  2008/05/26 12:06:39  dreyer
- * ADD: isEnd() as end of iteration check, sing iterator_facade
- *
- * Revision 1.2  2008/03/06 09:18:53  bricken
- * + implement postincrement correctly
- *
- * Revision 1.1  2008/03/05 16:23:37  dreyer
- * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

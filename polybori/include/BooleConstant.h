@@ -10,17 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2008 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.1  2008/03/05 16:23:37  dreyer
- * CHANGE: BooleMonomial::variableBegin()|End(); monom/monom = 0 throws
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

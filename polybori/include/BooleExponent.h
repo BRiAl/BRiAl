@@ -10,62 +10,6 @@
  * 
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.16  2008/09/21 22:21:02  dreyer
- * Change: deg_type replaces size_type for deg(), etc.
- *
- * Revision 1.15  2007/11/30 09:33:19  dreyer
- * CHANGE: more dd-like stableHash()
- *
- * Revision 1.14  2007/11/29 16:28:31  dreyer
- * ADD: fast hash(), where applicable; + stableHashes() anywhere
- *
- * Revision 1.13  2007/11/06 15:03:32  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.12  2007/05/29 12:52:48  dreyer
- * ADD: BooleExponenet::popFirst()
- *
- * Revision 1.11  2007/04/27 21:20:04  dreyer
- * CHANGE: testing exponent iterator
- *
- * Revision 1.10  2007/04/13 13:55:52  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.9  2006/11/29 13:40:03  dreyer
- * CHANGE: leadexp() made recursive and cached
- *
- * Revision 1.8  2006/10/06 12:52:00  dreyer
- * ADD easy_equility_property and used in lex_compare
- *
- * Revision 1.7  2006/09/14 10:57:25  dreyer
- * ADD: usedVariablesExp()
- *
- * Revision 1.6  2006/08/29 09:19:07  dreyer
- * ADD: reserve()
- *
- * Revision 1.5  2006/08/28 14:03:05  dreyer
- * CHANGE operator* to + etc.
- *
- * Revision 1.4  2006/08/28 07:25:07  dreyer
- * CHANGE: BooleExponent nomenclatur
- *
- * Revision 1.3  2006/08/24 16:09:33  bricken
- * + removed typo
- *
- * Revision 1.2  2006/08/24 14:47:49  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.1  2006/08/23 17:00:01  dreyer
- * ADD: initial version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

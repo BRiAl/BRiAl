@@ -9,38 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.8  2009/03/31 08:30:49  dreyer
- * CHANGE: started consistent use of lead* instea of lm*
- *
- * Revision 1.7  2008/11/22 23:47:31  dreyer
- * ADD: BooleSet::rbegin(),end()
- *
- * Revision 1.6  2008/02/28 17:05:48  dreyer
- * Fix: treating constants (0, 1) accordingly
- *
- * Revision 1.5  2007/11/06 15:03:42  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2006/11/29 16:37:35  dreyer
- * CHANGE: updated testsuite
- *
- * Revision 1.3  2006/08/24 14:47:51  dreyer
- * ADD: BooleExponent integrated, FIX: multiples (for indices < first)
- *
- * Revision 1.2  2006/08/15 14:17:29  dreyer
- * ADD minimalElements(), hasTermOfVariables()
- *
- * Revision 1.1  2006/08/09 12:52:32  dreyer
- * CHANGE/ADD: added lowlevel implementation of BooleSet::divisorsOf()
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

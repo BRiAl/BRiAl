@@ -9,64 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.17  2007/12/13 15:53:50  dreyer
- * CHANGE: Ordering in BoolePolyRing again; BooleEnv manages active ring
- *
- * Revision 1.16  2007/11/06 15:03:42  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.15  2007/07/31 07:43:50  dreyer
- * ADD: getBaseOrderCode(), lieInSameBlock(...), isSingleton(), isPair()...
- *
- * Revision 1.14  2007/07/06 18:46:31  dreyer
- * ADD: rewritten C++-Interface for Cudd
- *
- * Revision 1.13  2007/05/03 16:04:46  dreyer
- * CHANGE: new-style CTermIter integrated
- *
- * Revision 1.12  2007/04/30 15:20:32  dreyer
- * CHANGE: Switching from CTermIter to iterators based on CTermStack
- *
- * Revision 1.11  2007/04/13 13:55:54  dreyer
- * CHANGE: using CTermStack for implementing ordered_(exp_)iterator
- *
- * Revision 1.10  2007/03/28 12:34:57  dreyer
- * ADD: added testsuite testcases for blockordering; Fixed errors in block-order
- *
- * Revision 1.9  2007/03/21 08:55:10  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.8  2007/02/20 09:41:06  dreyer
- * CHANGE: now running prototype for dlex-block iteration
- *
- * Revision 1.7  2007/02/19 17:21:51  dreyer
- * CHANGE: routine check-in
- *
- * Revision 1.6  2007/02/16 16:14:22  dreyer
- * CHANGE: routine check-in
- *
- * Revision 1.5  2007/02/15 17:03:12  dreyer
- * + Routine check-in
- *
- * Revision 1.4  2007/02/14 13:56:10  dreyer
- * CHANGE: finished prototype for block iterator
- *
- * Revision 1.3  2007/02/09 17:07:00  dreyer
- * CHANGE: experimenting once more
- *
- * Revision 1.2  2007/02/07 11:01:51  dreyer
- * CHANGE: routine
- *
- * Revision 1.1  2007/01/29 17:03:44  dreyer
- * ADD: toy sandbox for block orderings
- * @endverbatim
 **/
 //*****************************************************************************
 

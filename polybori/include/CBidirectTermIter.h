@@ -9,32 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.6  2007/11/06 15:03:33  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.5  2007/05/03 16:04:45  dreyer
- * CHANGE: new-style CTermIter integrated
- *
- * Revision 1.4  2007/04/18 15:37:28  dreyer
- * ADD: dp_asc now active
- *
- * Revision 1.3  2006/09/13 15:07:04  dreyer
- * ADD: lead(sugar) and infrastructure
- *
- * Revision 1.2  2006/09/12 14:56:55  dreyer
- * ADD bidirectional term iterator template
- *
- * Revision 1.1  2006/09/12 13:48:41  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

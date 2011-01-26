@@ -9,23 +9,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.3  2007/11/06 15:03:35  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2006/10/04 13:09:56  dreyer
- * ADD: added compile-time optimied iterators and genericBegin/genericEnd
- *
- * Revision 1.1  2006/09/08 14:31:39  dreyer
- * ADD: COrderedIter and infrastructure for order-dependent iterator
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

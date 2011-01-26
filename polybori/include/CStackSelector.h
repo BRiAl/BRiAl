@@ -10,26 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2007 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.4  2008/07/18 22:37:50  dreyer
- * Fix: doxygen clean-up (removed inclusion loop)
- *
- * Revision 1.3  2007/11/06 15:03:35  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.2  2007/05/03 16:09:06  dreyer
- * ADD: file description
- *
- * Revision 1.1  2007/05/03 16:04:45  dreyer
- * CHANGE: new-style CTermIter integrated
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

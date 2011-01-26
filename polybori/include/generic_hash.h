@@ -18,32 +18,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.6  2007/11/29 10:27:35  dreyer
- * Fix: hashes obeye index 0 now, better hashtype used
- *
- * Revision 1.5  2007/11/06 15:03:36  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2007/04/24 14:16:57  dreyer
- * FIX: uninitalized values
- *
- * Revision 1.3  2006/09/20 07:06:39  dreyer
- * ADD BoolePolynomial/CDDInterface::isConstant(), used it in deg()
- *
- * Revision 1.2  2006/09/15 16:21:03  dreyer
- * CHANGE: testing more sophisticated hash fucntion for BooleExponent
- *
- * Revision 1.1  2006/09/14 10:55:03  dreyer
- * + Initial Version
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

@@ -10,29 +10,6 @@
  *
  * @par Copyright:
  *   (c) 2006 by The PolyBoRi Team
- *
- * @internal 
- * @version \$Id$
- *
- * @par History:
- * @verbatim
- * $Log$
- * Revision 1.5  2007/11/06 15:03:34  dreyer
- * CHANGE: More generic copyright
- *
- * Revision 1.4  2007/03/21 08:55:08  dreyer
- * ADD: first version of block_dlex running
- *
- * Revision 1.3  2007/02/14 10:30:13  dreyer
- * FIX: wrong constant term
- *
- * Revision 1.2  2006/09/07 16:04:32  dreyer
- * ADD: CDegLexIter.h
- *
- * Revision 1.1  2006/09/04 15:58:42  dreyer
- * ADD: DegLexOrder and preparations
- *
- * @endverbatim
 **/
 //*****************************************************************************
 

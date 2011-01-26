@@ -86,11 +86,11 @@ BOOST_AUTO_TEST_CASE(test_methods) {
 
 BOOST_AUTO_TEST_CASE(test_logical_operators) {
   BOOST_TEST_MESSAGE( "== and !=" );
-  BOOST_CHECK(x == x);
-  BOOST_CHECK(x == var_type());
-  BOOST_CHECK(var_type() == x);
-  BOOST_CHECK(x != y);
-  BOOST_CHECK(y != x);
+  BOOST_CHECK_EQUAL(x, x);
+  BOOST_CHECK_EQUAL(x, var_type());
+  BOOST_CHECK_EQUAL(var_type(), x);
+  BOOST_CHECK_NE(x, y);
+  BOOST_CHECK_NE(y, x);
 }
 
 BOOST_AUTO_TEST_CASE(test_assigning_operators) {

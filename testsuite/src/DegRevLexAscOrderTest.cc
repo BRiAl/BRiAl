@@ -75,32 +75,32 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   BOOST_TEST_MESSAGE( "compare" );
   BooleMonomial monom1 = x;
   BooleMonomial monom2 = x*x;
-  BOOST_CHECK(order.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::equality);
   monom1 = x*y;
   monom2 = x*z*v;
-  BOOST_CHECK(order.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::less_than);
   monom1 = v*y;
   monom2 = x;
-  BOOST_CHECK(order.compare(monom1, monom2) == CTypes::greater_than);
+  BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::greater_than);
   monom1 = BooleMonomial();
   monom2 = w;
-  BOOST_CHECK(order.compare(monom1, monom2) == CTypes::less_than);
+  BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::less_than);
   monom1 = BooleMonomial();
   monom2 = BooleMonomial();
-  BOOST_CHECK(order.compare(monom1, monom2) == CTypes::equality);
+  BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::equality);
   BooleExponent exp1(x);
   BooleExponent exp2(x*x);
-  BOOST_CHECK(order.compare(exp1, exp2) == CTypes::equality);
+  BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , CTypes::equality);
   exp1 = BooleExponent(w*x);
   exp2 = BooleExponent(v*x);
-  BOOST_CHECK(order.compare(exp1, exp2) == CTypes::greater_than);
+  BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , CTypes::greater_than);
   exp1 = BooleExponent(x*y*z*v*w);
   exp2 = BooleExponent(x*y*z*v);
-  BOOST_CHECK(order.compare(exp1, exp2) == CTypes::greater_than);
-  BOOST_CHECK(order.compare(0,1) == CTypes::less_than);
-  BOOST_CHECK(order.compare(2,1) == CTypes::greater_than);
-  BOOST_CHECK(order.compare(-1,-1) == CTypes::equality);
-  BOOST_CHECK(order.compare(1,-1) == CTypes::less_than);
+  BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , CTypes::greater_than);
+  BOOST_CHECK_EQUAL(order.compare(0,1) , CTypes::less_than);
+  BOOST_CHECK_EQUAL(order.compare(2,1) , CTypes::greater_than);
+  BOOST_CHECK_EQUAL(order.compare(-1,-1) , CTypes::equality);
+  BOOST_CHECK_EQUAL(order.compare(1,-1) , CTypes::less_than);
 }
 
 BOOST_AUTO_TEST_CASE(test_lead) {
@@ -108,20 +108,25 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_TEST_MESSAGE( "lead, leadExp, leadFirst" );
   order_type order;
   BoolePolynomial poly = x*y*z*w + x*x + x*y + y*z*v*w + 1;
-  BOOST_CHECK(order.lead(poly)    == BooleMonomial(y*z*v*w));
+  BOOST_CHECK_EQUAL(order.lead(poly)    , BooleMonomial(y*z*v*w));
 
   BOOST_CHECK(order.lead(poly,1)  == BooleMonomial(x));
   BOOST_CHECK_THROW(order.lead(poly,-1), PBoRiError);
-  BOOST_CHECK(order.leadExp(poly)    == BooleExponent(y*z*v*w));
-  BOOST_CHECK(order.leadExp(poly,1)  == BooleExponent(x));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
   BOOST_CHECK_THROW(order.leadExp(poly,-1), PBoRiError);
-  BOOST_CHECK(order.leadFirst(poly)  == BoolePolynomial(y*z*v*w));
   poly = BoolePolynomial();
-  output_test_stream output;
-  BOOST_CHECK_THROW(order.lead(poly), PBoRiError);
-  BOOST_CHECK_THROW(order.leadExp(poly), PBoRiError);
-  BOOST_CHECK_THROW(order.leadFirst(poly), PBoRiError);
-
+  BOOST_CHECK_THROW(order.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadExp(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  BOOST_CHECK_THROW(order.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
+  poly = 1;
+  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = x*w + x*z + w*v*y;
 
   BOOST_CHECK_THROW(order.lead(poly, 0), PBoRiError);
