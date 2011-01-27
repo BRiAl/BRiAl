@@ -20,7 +20,10 @@
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
 #include "COrderedIter.h"
+#include "PBoRiError.h"
+
 #include <vector>
+
 #ifndef COrderingBase_h_
 #define COrderingBase_h_
 
@@ -152,7 +155,11 @@ public:
 
 protected:
   /// Get monomial from set of subsets of Boolean variables (internal use only)
-  monom_type monom(const set_type& rhs) const { return monom_type(rhs); }
+  monom_type monom(const set_type& rhs) const { 
+    if UNLIKELY(rhs.isZero())
+      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+    return monom_type(rhs); 
+  }
 };
 
 

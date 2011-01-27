@@ -120,9 +120,6 @@ LexOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "LexOrder::leadExp(const poly_type& poly) const" );
 
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
-
   exp_type leadterm;
    
   if (!poly.isZero() && !poly.isOne()) {

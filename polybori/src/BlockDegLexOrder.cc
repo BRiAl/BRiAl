@@ -117,9 +117,6 @@ BlockDegLexOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&) const)" );
 
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
-
   return exp_type(lead(poly).exp());
 }
 
@@ -129,9 +126,6 @@ BlockDegLexOrder::exp_type
 BlockDegLexOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "BlockDegLexOrder::leadexp(const poly_type&, deg_type) const)");
-
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return leadExp(poly);
 }
