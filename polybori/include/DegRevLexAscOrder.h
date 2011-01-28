@@ -31,21 +31,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegRevLexAscOrder:
-  public COrderingFacade<DegRevLexAscOrder>, public COrderingTags<dp_asc_tag> {
+  public COrderingFacade<DegRevLexAscOrder, dp_asc_tag> {
 
   /// generic access to current type
   typedef DegRevLexAscOrder self;
 
  public:
-
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag symmetry_property;
-  typedef valid_tag degorder_property;
-  typedef valid_tag totaldegorder_property;
-  typedef valid_tag ascending_property;
-  typedef valid_tag degrevlexorder_property;
-  //@}
 
   /// Get order code
   enum { order_code = CTypes::dp_asc, baseorder_code = order_code };

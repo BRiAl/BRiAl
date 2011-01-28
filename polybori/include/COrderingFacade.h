@@ -21,10 +21,11 @@
 #include "BooleExponent.h"
 
 #include "COrderingBase.h"
+#include "COrderingTags.h"
 #include "COrderedIter.h"
 // include ordering tags
 #include "pbori_tags.h"
-
+#include "order_traits.h"
 // include polybori functionals
 #include "pbori_func.h"
 
@@ -39,21 +40,26 @@ BEGIN_NAMESPACE_PBORI
  * CDynamicOrderBase for a given OrderType. OrderType must inherit from
  * COrderingFacade<OrderType>.
  */
-template <class OrderType>
+template <class OrderType, class OrderTag>
 class COrderingFacade:
-  public COrderingBase { 
+  public COrderingBase, 
+  public COrderingTags<OrderTag>, public order_traits<OrderTag> { 
+
+  /// Name type of *this
   typedef COrderingFacade self;
 
   /// Actual base type
   typedef COrderingBase base_type;
 
 public:
-
   /// *this is to be used as base for @c OrderType only
   typedef self base;
 
   /// Variable ordering definiton functional type
   typedef OrderType order_type;
+
+  /// Tag for for leading monomial cache
+  typedef CCacheTypes::lead_tag<OrderTag> order_lead_tag;
 
   /// Construct new decision diagramm manager
   COrderingFacade(): 
@@ -123,12 +129,12 @@ public:
 
   /// Get numerical code for ordering
   ordercode_type getOrderCode() const {
-    return order_type::order_code;
+    return order_traits<OrderTag>::order_code;
   }
 
   /// Get numerical code for base ordering (the same for non-block orderings)
   ordercode_type getBaseOrderCode() const {
-    return order_type::baseorder_code;
+    return  order_traits<OrderTag>::baseorder_code;
   }
 
   /// Check, whether two indices are in the same block 

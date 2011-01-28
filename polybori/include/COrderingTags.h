@@ -19,6 +19,7 @@
 
 // include basic definitions for tags
 #include "pbori_tags.h"
+#include "order_tags.h"
 
 #ifndef COrderingTags_h_
 #define COrderingTags_h_
@@ -30,24 +31,64 @@ BEGIN_NAMESPACE_PBORI
  * properties. 
  *
  **/
-template <class OrderTag>
-class COrderingTags {
+template <class OrderTag,
+          class LexProp, class DegOrderProp, class BlockOrderProp,
+          class DescendingProp, 
+          class OrderedProp = LexProp,
+          class TotelDegOrderProp = DegOrderProp, 
+          class SymmetryProp =  typename invert_tag<BlockOrderProp>::type >
+
+class COrderingTagsBase {
 public:
   typedef OrderTag order_tag;
-  typedef invalid_tag lex_property; 
-  typedef invalid_tag ordered_property;
-  typedef invalid_tag symmetry_property;
-  typedef invalid_tag degorder_property;
-  typedef invalid_tag blockorder_property;
-  typedef invalid_tag degrevlexorder_property; 
-  typedef invalid_tag totaldegorder_property;
-  typedef invalid_tag ascending_property;
-  typedef invalid_tag descending_property;
+  typedef LexProp lex_property; 
+  typedef OrderedProp ordered_property;
+  typedef SymmetryProp symmetry_property;
+  typedef DegOrderProp degorder_property;
+  typedef BlockOrderProp blockorder_property;
+  typedef TotelDegOrderProp totaldegorder_property;
+  typedef typename invert_tag<DescendingProp>::type ascending_property;
+  typedef typename and_tag<DegOrderProp, ascending_property>::type
+  degrevlexorder_property; 
+  typedef DescendingProp descending_property;
 };
 
+template <class OrderTag, class DescProp>
+class CDegreeOrderingTags:
+  public COrderingTagsBase <OrderTag, 
+                            invalid_tag, valid_tag, invalid_tag, DescProp> {
+};
+
+template <class OrderTag, class DescProp>
+class CBlockDegreeOrderingTags:
+  public COrderingTagsBase <OrderTag, 
+                            invalid_tag, invalid_tag, valid_tag, DescProp> {
+};
+
+template <class OrderTag>
+class COrderingTags;
+
+template <>
+class COrderingTags<lex_tag>:
+  public COrderingTagsBase <lex_tag, valid_tag, invalid_tag, invalid_tag, valid_tag> { };
+
+template <>
+class COrderingTags<dlex_tag>:
+  public CDegreeOrderingTags <dlex_tag, valid_tag> { };
 
 
-#undef RESOLVE_PROPERTY
+template <>
+class COrderingTags<dp_asc_tag>:
+  public CDegreeOrderingTags<dp_asc_tag, invalid_tag> { };
+
+template <>
+class COrderingTags<block_dlex_tag>:
+  public CBlockDegreeOrderingTags<block_dlex_tag, valid_tag> { };
+
+
+template <>
+class COrderingTags<block_dp_asc_tag>:
+  public CBlockDegreeOrderingTags<block_dp_asc_tag, invalid_tag> { };
 
 END_NAMESPACE_PBORI
 

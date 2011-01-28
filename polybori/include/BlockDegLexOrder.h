@@ -30,20 +30,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegLexOrder:
-  public CBlockOrderingFacade<BlockDegLexOrder>, 
-  public COrderingTags<block_dlex_tag> { 
+  public CBlockOrderingFacade<BlockDegLexOrder, block_dlex_tag> { 
 
   /// generic access to current type
   typedef BlockDegLexOrder self;
 
 public:
-
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag blockorder_property;
-  typedef valid_tag descending_property;
-  typedef block_dlex_tag order_tag;
-  //@}
 
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
@@ -69,17 +61,6 @@ public:
   /// Comparison of exponent vectors
   comp_type compare(const exp_type&, const exp_type&) const;
 
-  /// Get leading term
-  monom_type lead(const poly_type&) const;
-
-  /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
-
-  /// Get leading exponent
-  exp_type leadExp(const poly_type&) const;
-
-  /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
 };
 
 

@@ -31,20 +31,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class BlockDegRevLexAscOrder:
-    public CBlockOrderingFacade<BlockDegRevLexAscOrder>, 
-   public COrderingTags<block_dp_asc_tag> {
+  public CBlockOrderingFacade<BlockDegRevLexAscOrder, block_dp_asc_tag> {
 
   /// generic access to current type
   typedef BlockDegRevLexAscOrder self;
 
- public:
-
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag blockorder_property;
-  typedef valid_tag ascending_property;
-  //@}
-
+public:
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;
 
@@ -69,17 +61,6 @@ class BlockDegRevLexAscOrder:
   /// Comparison of exponent vectors
   comp_type compare(const exp_type&, const exp_type&) const;
 
-  /// Get leading term
-  monom_type lead(const poly_type&) const;
-
-  /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
-
-  /// Get leading exponent
-  exp_type leadExp(const poly_type&) const;
-
-  /// Get leading exponent (using an upper bound)
-  exp_type leadExp(const poly_type&, deg_type) const;
 };
 
 

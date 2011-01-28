@@ -31,20 +31,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegLexOrder:
-  public COrderingFacade<DegLexOrder>, public COrderingTags<dlex_tag> {
+  public COrderingFacade<DegLexOrder, dlex_tag> {
 
   /// generic access to current type
   typedef DegLexOrder self;
 
 public:
-
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag symmetry_property;
-  typedef valid_tag degorder_property;
-  typedef valid_tag totaldegorder_property;
-  typedef valid_tag descending_property;
-  //@}
 
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;

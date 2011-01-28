@@ -121,8 +121,8 @@ LexOrder::leadExp(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "LexOrder::leadExp(const poly_type& poly) const" );
 
   exp_type leadterm;
-   
-  if (!poly.isZero() && !poly.isOne()) {
+
+  if (!poly.isConstant()) {
 
     leadterm.reserve(poly.lexLeadDeg());
     // wrt. given indices to a monomial
