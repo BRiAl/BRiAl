@@ -38,9 +38,6 @@ class LexOrder:
 
  public:
 
-  /// Get order code
-  //  enum { order_code = CTypes::lp, baseorder_code = order_code };
-
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
 
@@ -65,7 +62,8 @@ class LexOrder:
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
-  /// Get leading term (using upper bound)
+  /// Leading monomial with bound (just the ordinary leading monomial)
+  /// @note falls back to @c leadExp, ignores second argument
   monom_type lead(const poly_type& poly, deg_type) const {
     return lead(poly);
   }
@@ -73,7 +71,8 @@ class LexOrder:
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
-  /// Get leading exponent (using upper bound)
+  /// Leading exponent with bound (just the ordinary leading monomial)
+  /// @note falls back to @c leadExp, ignores second argument
   exp_type leadExp(const poly_type& poly, deg_type) const {
     return leadExp(poly);
   }

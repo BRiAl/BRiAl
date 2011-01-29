@@ -275,6 +275,10 @@ protected:
                           MultReverseIterator multStart, 
                           MultReverseIterator multFinish) const {
 
+    // assuming unsigned!
+    while ((multStart != multFinish) && (*multStart > CTypes::max_idx))
+      ++multStart;
+
     DdNode* prev( (getManager())->one );
     
     DdNode* zeroNode( (getManager())->zero ); 
@@ -435,8 +439,9 @@ public:
   }
   
   /// Get decison diagram representing the multiples of the first term
-  diagram_type firstMultiples(const std::vector<idx_type>& multipliers) const {
+  diagram_type firstMultiples(const std::vector<idx_type>& input_multipliers) const {
 
+    std::set<idx_type> multipliers(input_multipliers.begin(), input_multipliers.end());
     std::vector<idx_type> indices( std::distance(firstBegin(), firstEnd()) );
 
     std::copy( firstBegin(), firstEnd(), indices.begin() );

@@ -93,8 +93,9 @@ public:
                                         set_type(), descending) );
   }
 
-  /// Leading monomial with bound is just the ordinary leading monomial
-  monom_type lead(const poly_type& poly, deg_type bound) const {
+  /// Leading monomial with bound (just the ordinary leading monomial)
+  /// @note falls back to @c lead, ignores second argument
+  monom_type lead(const poly_type& poly, deg_type) const {
     return lead(poly); 
   }
 
@@ -103,8 +104,9 @@ public:
     return lead(poly).exp();
   }
 
-  /// Leading exponent with bound is just the leading exponent
-  exp_type leadExp(const poly_type& poly, deg_type bound) const {
+  /// Leading exponent with bound  (just the ordinary leading monomial)
+  /// @note falls back to @c leadExp, ignores second argument
+  exp_type leadExp(const poly_type& poly, deg_type) const {
     return leadExp(poly);
   }
 

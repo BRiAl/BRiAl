@@ -170,7 +170,13 @@ BoolePolynomial::operator*=(const self& rhs) {
   return (*this = result);
 }
 
+// Division
+BoolePolynomial&
+BoolePolynomial::operator/=(const var_type& rhs) {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const var_type&)" );
+  return operator/=(monom_type(rhs));
+}
 // Division
 BoolePolynomial&
 BoolePolynomial::operator/=(const monom_type& rhs) {
@@ -240,7 +246,13 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   return *this;
 }
+// Modulus
+BoolePolynomial&
+BoolePolynomial::operator%=(const var_type& rhs) {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const var_type&)" );
+  return operator%=(monom_type(rhs));
+}
 
 // Leading term
 BoolePolynomial::monom_type

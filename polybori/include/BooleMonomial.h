@@ -397,13 +397,6 @@ operator*(const BoolePolynomial& lhs,
 }
 
 /// Division of a polynomial by a variable (forcing monomial variant)
-inline BoolePolynomial&
-operator/=(BoolePolynomial& lhs, const BooleVariable& rhs){
-
-  return lhs /= BooleMonomial(rhs);
-}
-
-/// Division of a polynomial by a variable (forcing monomial variant)
 inline BoolePolynomial
 operator/(const BoolePolynomial& lhs, 
           const BooleVariable& rhs){
@@ -420,13 +413,6 @@ operator%(const BoolePolynomial& lhs,
   return lhs % BooleMonomial(rhs);
 }
 
-/// Remainder of division of a polynomial by a variable (with assignment)
-inline BoolePolynomial&
-operator%=(BoolePolynomial& lhs, 
-          const BooleVariable& rhs){
-
-  return lhs %= BooleMonomial(rhs);
-}
 
 END_NAMESPACE_PBORI
 

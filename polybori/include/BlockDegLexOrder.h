@@ -40,9 +40,6 @@ public:
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
 
-  /// Get order code
-  enum { order_code = CTypes::block_dlex, baseorder_code = CTypes::dlex };
-
   /// Default Constructor
   BlockDegLexOrder(): base() {};
 

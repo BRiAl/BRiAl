@@ -28,6 +28,8 @@ using boost::test_tools::output_test_stream;
 
 USING_NAMESPACE_PBORI
 
+
+
 struct Fdd {
   typedef BooleSet set_type;
   typedef CCuddDDFacade<BoolePolyRing, set_type> dd_type;
@@ -53,6 +55,14 @@ struct Fdd {
   BooleVariable x, y, z, v, w;
   BoolePolynomial poly;
 };
+
+// Testing environment needs correct stream operator
+inline std::ostream&
+operator<<(std::ostream& os, Fdd::dd_type diagram) {
+  return diagram.printIntern(os);
+}
+
+
 
 BOOST_FIXTURE_TEST_SUITE(CCuddDDFacadeTestSuite, Fdd )
 
@@ -144,15 +154,19 @@ BOOST_AUTO_TEST_CASE(test_indices) {
   dd_type::first_iterator start = diagram.firstBegin();
   dd_type::first_iterator finish = diagram.firstEnd();
   while (start != finish) {
-    std::cout << *start <<", ";
+    output<<  *start <<", ";
     ++start;
   }
+  BOOST_CHECK(output.is_equal("0, 1, 2, "));
+
   dd_type::last_iterator last_start = diagram.lastBegin();
   dd_type::last_iterator last_finish = diagram.lastEnd();
   while (last_start != last_finish) {
-    std::cout << *last_start <<", ";
+    output << *last_start <<", ";
     ++last_start;
   }
+  BOOST_CHECK(output.is_equal(""));
+
 }
 
 BOOST_AUTO_TEST_CASE(test_divide) {
@@ -208,18 +222,24 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   diagram_small =dd_type(poly_small.set());
   output << diagram_large.divideFirst(diagram_small);
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
-  poly_small = 0;
-  diagram_small =dd_type(poly_small.set());
+
+  poly_small = 0; // Assuming rhs to be monomial, so this is not a valid input.
+                  // Anyway, the result must be sane, be behaving like 1 is fine
+  diagram_small = dd_type(poly_small.set());
+  BOOST_CHECK_EQUAL(diagram_large.divideFirst(diagram_small), diagram_large);
   output << diagram_large.divideFirst(diagram_small);
-  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));/// Why all not nothing?
+  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}, {}}"));
+
   poly_small = w;// nonexisting variable in poly_large
   diagram_small =dd_type(poly_small.set());
   output << diagram_large.divideFirst(diagram_small);
   BOOST_CHECK(output.is_equal("{}"));
+
   poly_small = x*w;// nonexisting variable combination in poly_large
   diagram_small =dd_type(poly_small.set());
   output << diagram_large.divideFirst(diagram_small);
   BOOST_CHECK(output.is_equal("{}"));
+
   poly_small = y*v;// nonexisting combination in poly_large
   diagram_small =dd_type(poly_small.set());
   output << diagram_large.divideFirst(diagram_small);
@@ -262,47 +282,54 @@ BOOST_AUTO_TEST_CASE(test_multiples) {
   multipliers[1]= 1;
   multipliers[2]= 0;
   output << diagram.firstMultiples(multipliers);
-  BOOST_CHECK(output.is_equal("{{x}, {x,y}, {x,z}, {x,y,z}}")); ///WRONG
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+
   multipliers[0]= 2;
   multipliers[1]= 0;
   multipliers[2]= 1;
   output << diagram.firstMultiples(multipliers);
-  BOOST_CHECK(output.is_equal("{{x,y}, {x,y,z}}")); ///WRONG
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+
   multipliers = std::vector<dd_type::idx_type>(2);
   multipliers[0]= 3;
   multipliers[1]= 4;
   output << diagram.firstMultiples(multipliers);
   BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,v}, {x,y,z,w}, {x,y,z}}"));
+
   multipliers[0]= 4;
   multipliers[1]= 3;
   output << diagram.firstMultiples(multipliers);
-  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,w}, {x,y,z,v}, {x,y,z}}")); ///@todo WRONG ordering
+  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,v}, {x,y,z,w}, {x,y,z}}"));
+
   multipliers[0]= 5;
   multipliers[1]= 6;
-  output << diagram.firstMultiples(multipliers);///@todo UNDEF repetition - TODO should throw
+  output << diagram.firstMultiples(multipliers); ///@todo UNDEFs - maybe should throw
   BOOST_CHECK(output.is_equal("{{x,y,z,UNDEF,UNDEF}, {x,y,z,UNDEF}, {x,y,z,UNDEF}, {x,y,z}}"));
+
   multipliers[0]= 3;
   multipliers[1]= 3;
-  output << diagram.firstMultiples(multipliers);///@todo Repetition - TODO needs investigation
-  BOOST_CHECK(output.is_equal("{{x,y,z}, {x,y,z,v}, {x,y,z,v}, {x,y,z}}"));
+  output << diagram.firstMultiples(multipliers);
+  BOOST_CHECK(output.is_equal("{{x,y,z,v}, {x,y,z}}"));
+
   multipliers[0]= 0;
   multipliers[1]= 0;
-  output << diagram.firstMultiples(multipliers);///@todo How was x lost? - TODO needs investigation
-  BOOST_CHECK(output.is_equal("{{y,z}, {x,y,z}}"));
+
+  output << diagram.firstMultiples(multipliers);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
   multipliers = std::vector<dd_type::idx_type>(3);
   multipliers[0]= 0;
   multipliers[1]= 0;
   multipliers[2]= 0;
-  output << diagram.firstMultiples(multipliers);/// Repetition
-  BOOST_CHECK(output.is_equal("{{x,y,z}, {y,z}, {y,z}, {x,y,z}}"));
+
+  output << diagram.firstMultiples(multipliers);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
   multipliers = std::vector<dd_type::idx_type>(0);
   output << diagram.firstMultiples(multipliers);
   BOOST_CHECK(output.is_equal("{{x,y,z}}"));
   multipliers = std::vector<dd_type::idx_type>(1);
   multipliers[0]= -1;
-  //output << diagram.firstMultiples(multipliers); 
-  ///@todo memory access violation at 0x7fdd1c00097c - TODO needs handling
-  //BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << diagram.firstMultiples(multipliers); 
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
 }
 
 BOOST_AUTO_TEST_CASE(test_operators) {
@@ -472,28 +499,33 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   BoolePolynomial poly2(0);
   dd_type diag1(poly1.set());
   dd_type diag2(poly2.set());
-  BOOST_CHECK(diag1 == diag2);///@TODO BOOST_CHECK_EQUAL(diag1, diag2) not possible as << is ambiguous for dd_type
+  BOOST_CHECK(diag1 == diag2);
+  BOOST_CHECK_EQUAL(diag1, diag2);
   BOOST_CHECK(!(diag1 != diag2));
   poly1 = 1;
   diag1 = dd_type(poly1.set());
+  BOOST_CHECK_NE(diag1, diag2);
   BOOST_CHECK(diag1 != diag2);
   BOOST_CHECK(!(diag1 == diag2));
   poly1 = x;
   poly2 = x;
   diag1 = dd_type(poly1.set());
   diag2 = dd_type(poly2.set());
+  BOOST_CHECK_EQUAL(diag1, diag2);
   BOOST_CHECK(diag1 == diag2);
   BOOST_CHECK(!(diag1 != diag2));
   poly1 = x*y;
   poly2 = y*x;
   diag1 = dd_type(poly1.set());
   diag2 = dd_type(poly2.set());
+  BOOST_CHECK_EQUAL(diag1, diag2);
   BOOST_CHECK(diag1 == diag2);
   BOOST_CHECK(!(diag1 != diag2));
   poly1 = x + 1;
   poly2 = x;
   diag1 = dd_type(poly1.set());
   diag2 = dd_type(poly2.set());
+  BOOST_CHECK_NE(diag1, diag2);
   BOOST_CHECK(diag1 != diag2);
   BOOST_CHECK(!(diag1 == diag2));
 }

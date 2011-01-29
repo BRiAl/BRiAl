@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   output_test.str("");
   output_test << intmax << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
-  std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
+  //  std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
   BOOST_CHECK_THROW(order.appendBlock(-1), std::runtime_error);
   order.appendBlock(0);
   BOOST_CHECK_THROW(order.appendBlock(0), std::runtime_error);
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_THROW(blockorder.leadExp(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(blockorder.leadExp(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(blockorder.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
-  ///@TODO Check, that order.lead(poly) doesn't pollute the cache!
+  /// Check, that order.lead(poly) doesn't pollute the cache!
   poly = 1;
   BOOST_CHECK_EQUAL(blockorder.lead(poly, 1), BooleMonomial());
   BOOST_CHECK_EQUAL(blockorder.lead(poly), BooleMonomial());

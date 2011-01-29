@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   output_test.str("");
   output_test << intmax << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
-  std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
+  //  std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
   BOOST_CHECK_THROW(order.appendBlock(-1), std::runtime_error);
   order.appendBlock(0);
   BOOST_CHECK_THROW(order.appendBlock(0), std::runtime_error);

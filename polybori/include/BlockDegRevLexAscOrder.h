@@ -40,9 +40,6 @@ public:
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;
 
-  /// Get order code
-  enum { order_code = CTypes::block_dp_asc, baseorder_code = CTypes::dp_asc };
-
   /// Default Constructor
   BlockDegRevLexAscOrder(): base() {};
 

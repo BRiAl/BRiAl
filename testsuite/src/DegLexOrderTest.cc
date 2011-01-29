@@ -138,19 +138,19 @@ BOOST_AUTO_TEST_CASE(test_lead) {
 
   BooleMonomial leadterm = z*v*w;
   poly = x*y + x*v + leadterm;
-  ///@todo Lead and leadexp have problems with low bounds
+
   BOOST_CHECK_EQUAL(order.lead(poly, 3), BooleMonomial(leadterm));
   BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
-  std::cout << poly << std::endl;///=x*y + x*v + z*v*w
+  BOOST_CHECK_EQUAL(poly, x*y + x*v + z*v*w);
 
   BOOST_CHECK_THROW(order.lead(poly, 1), PBoRiError);
-  std::cout << order.lead(poly, 2) << std::endl;///=x*y + x*v
-  std::cout << order.lead(poly, 3) << std::endl;///=x*y + x*v
-   BOOST_CHECK_THROW(order.lead(poly, -1), PBoRiError);
-   //std::cout << order.leadExp(poly, 1) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, 2) << std::endl;///=(0,1)
-  std::cout << order.leadExp(poly, 3) << std::endl;///=(0,1)
-    //  std::cout << order.leadExp(poly, -1) << std::endl;///=(0,1)
+  BOOST_CHECK_EQUAL(order.lead(poly, 2), x*y);
+  BOOST_CHECK_EQUAL(order.lead(poly, 3), z*v*w);
+  BOOST_CHECK_THROW(order.lead(poly, -1), PBoRiError);
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 2), (x*y).exp());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, 3), (z*v*w).exp());
+  BOOST_CHECK_EQUAL(order.leadExp(poly, -1),  BooleExponent());
 
 }
 

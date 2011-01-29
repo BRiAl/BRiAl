@@ -38,9 +38,6 @@ class DegRevLexAscOrder:
 
  public:
 
-  /// Get order code
-  enum { order_code = CTypes::dp_asc, baseorder_code = order_code };
-
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;
 
@@ -65,13 +62,15 @@ class DegRevLexAscOrder:
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
-  /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  /// Get leading term (using upper bound of the polynomial degree)
+  /// @note returns @c lead of the sub-polynomial of degree @c bound
+  monom_type lead(const poly_type& poly, deg_type bound) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
-  /// Get leading exponent (using an upper bound)
+  /// Get leading exponent (using an upper bound of the polynomial degree)
+  /// @note See note of the bounded @c lead
   exp_type leadExp(const poly_type&, deg_type) const;
 };
 
