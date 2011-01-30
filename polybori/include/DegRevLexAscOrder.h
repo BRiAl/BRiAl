@@ -37,7 +37,6 @@ class DegRevLexAscOrder:
   typedef DegRevLexAscOrder self;
 
  public:
-
   /// Define binary predicate for index comparision
   typedef std::greater<idx_type> idx_comparer_type;
 

@@ -60,7 +60,7 @@ public:
 
   /// Tag for for leading monomial cache
   typedef CCacheTypes::lead_tag<OrderTag> order_lead_tag;
-
+  typedef COrderingTags<OrderTag> ordering_tags;
   /// Construct new decision diagramm manager
   COrderingFacade(): 
     base_type() { }
@@ -84,47 +84,47 @@ public:
 
   /// Check whether ring is lexicographical 
   bool_type isLexicographical() const {
-    return is_valid<typename order_type::lex_property>::result;
+    return is_valid<typename ordering_tags::lex_property>::result;
   }
 
   /// Test whether iterators respect order
   bool_type orderedStandardIteration() const {
-    return is_valid<typename order_type::ordered_property>::result;
+    return is_valid<typename ordering_tags::ordered_property>::result;
   }
 
   /// Test whether variable pertubation do not change the order
   bool_type isSymmetric() const {
-    return is_valid<typename order_type::symmetry_property>::result;
+    return is_valid<typename ordering_tags::symmetry_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isDegreeOrder() const {
-    return is_valid<typename order_type::degorder_property>::result;
+    return is_valid<typename ordering_tags::degorder_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isBlockOrder() const {
-    return is_valid<typename order_type::blockorder_property>::result;
+    return is_valid<typename ordering_tags::blockorder_property>::result;
   }
 
   /// Test whether we deal with a total degree-ordering
   bool_type isTotalDegreeOrder() const {
-    return is_valid<typename order_type::totaldegorder_property>::result;
+    return is_valid<typename ordering_tags::totaldegorder_property>::result;
   }
 
   /// Test whether ordering is deg-rev-lex ordering
   bool_type isDegreeReverseLexicographical() const {
-    return is_valid<typename order_type::degrevlexorder_property>::result;
+    return is_valid<typename ordering_tags::degrevlexorder_property>::result;
   }
 
   /// Test whether variables are in ascending order
   bool_type ascendingVariables() const {
-    return is_valid<typename order_type::ascending_property>::result;
+    return is_valid<typename ordering_tags::ascending_property>::result;
   }
 
   /// Test whether variables are in descending order
   bool_type descendingVariables() const {
-    return is_valid<typename order_type::descending_property>::result;
+    return is_valid<typename ordering_tags::descending_property>::result;
   }
 
   /// Get numerical code for ordering
@@ -141,7 +141,7 @@ public:
   /// (true for nonblock orderings)
   bool_type lieInSameBlock(idx_type first, idx_type second) const {
     return inSameBlockInternal(first, second, 
-                               typename order_type::blockorder_property());
+                               typename ordering_tags::blockorder_property());
   }
 
 
