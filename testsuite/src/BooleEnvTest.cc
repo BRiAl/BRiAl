@@ -71,10 +71,10 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(BooleEnv::getVariableName(5), "t");
 
 
-  BOOST_CHECK_THROW( BooleEnv::setVariableName(-1, "r"), std::bad_alloc); 
+  BOOST_CHECK_THROW( BooleEnv::setVariableName(-1, "r"), std::exception); 
 
-  BOOST_CHECK_EQUAL(BooleEnv::getVariableName(-1), ring.getVariableName(-1));
-  BOOST_CHECK_EQUAL(BooleEnv::getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(BooleEnv::getVariableName(-1), std::exception);
+  BOOST_CHECK_THROW(BooleEnv::getVariableName(-1), std::exception);
 }
 
 BOOST_AUTO_TEST_CASE(test_ordering) {

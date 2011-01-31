@@ -64,7 +64,7 @@ public:
   //@{
   COrderingBase::block_iterator blockBegin() const { return m_indices.begin() + 1; }
   COrderingBase::block_iterator blockEnd() const { return m_indices.end(); }
-  void appendBlock(COrderingBase::idx_type idx) {
+  void appendBlock(COrderingBase::checked_idx_type idx) {
     // idx should always be >= max(int) (==blockEnd() -1)
     // and if there are existing blocks (blockBegin()!=blockEnd() -1)...
     // the added block should be strictly larger than the previously added block

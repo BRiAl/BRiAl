@@ -185,14 +185,12 @@ public:
 
   /// @note unused (do not use permutations if the variables)
   idx_type ReadPermZdd(idx_type idx) const { 
-    return sign_cast<idx_type>(Cudd_ReadPermZdd(*this, 
-                                               sign_cast<cudd_idx_type>(idx))); 
+    return Cudd_ReadPermZdd(*this, idx); 
   }
 
   /// @note unused (do not use permutations if the variables)
   idx_type ReadInvPermZdd(idx_type idx) const { 
-    return sign_cast<idx_type>(Cudd_ReadInvPermZdd(*this, 
-                                               sign_cast<cudd_idx_type>(idx)));
+    return Cudd_ReadInvPermZdd(*this, idx);
   }
 
   void AddHook(DD_HFP f, Cudd_HookType where) { 
@@ -339,7 +337,7 @@ protected:
 
   /// Apply function to given index
   node_ptr apply(unary_int_function func, idx_type idx) const  { 
-    return checkedResult(func(*this, sign_cast<cudd_idx_type>(idx)) );
+    return checkedResult(func(*this, idx) );
   }
 
   /// Call function 
@@ -356,8 +354,7 @@ protected:
   /// Generate raw variable
   void initVar(node_ptr& node, idx_type idx) const {
     Cudd_Ref(node = cuddUniqueInterZdd(*this, 
-                                       sign_cast<cudd_idx_type>(idx), zddOne(),
-                                       zddZero()));
+                                       idx, zddOne(),  zddZero()));
   }
 
   /// Wrapping memeber function as functional

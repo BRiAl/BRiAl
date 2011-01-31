@@ -161,7 +161,7 @@ public:
   self change(idx_type idx) const {
     if UNLIKELY(idx >= ring().nVariables())
       throw PBoRiError(CTypes::out_of_bounds);
-    return base::change(sign_cast<cudd_idx_type>(idx));
+    return base::change(idx);
   }
 
 

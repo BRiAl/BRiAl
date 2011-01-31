@@ -40,6 +40,9 @@
 // Getting error coe functionality
 #include "PBoRiGenericError.h"
 
+// test input idx_type
+#include "CCheckedIdx.h"
+
 #include "pbori_algo.h"
 #include "pbori_tags.h"
 #include "pbori_routines_hash.h"
@@ -139,6 +142,9 @@ public:
 
   /// Cudd's index type
   typedef int cudd_idx_type;
+
+  /// Cudd's index type
+  typedef CCheckedIdx checked_idx_type;
 
   /// Construct diagram from ring and node
   CCuddDDFacade(const ring_type& ring, node_ptr node): 
@@ -275,9 +281,12 @@ protected:
                           MultReverseIterator multStart, 
                           MultReverseIterator multFinish) const {
 
-    // assuming unsigned!
+    // signed case
     while ((multStart != multFinish) && (*multStart > CTypes::max_idx))
       ++multStart;
+    // unsigned case
+    while ((multStart != multFinish) && (*multStart < 0))
+      --multFinish;
 
     DdNode* prev( (getManager())->one );
     
@@ -347,8 +356,7 @@ protected:
     while(start != finish) {
 
       DdNode* result = cuddUniqueInterZdd( getManager(),
-                                           sign_cast<cudd_idx_type>(*start),
-                                           prev, prev);
+                                           *start, prev, prev);
 
       Cudd_Ref(result);
       Cudd_RecursiveDerefZdd(getManager(), prev);
@@ -478,13 +486,13 @@ private:
 
   /// Save variant for generating fast ite operation (when idx < root index)
   static node_ptr
-  getNewNode(const ring_type& ring, idx_type idx, 
+  getNewNode(const ring_type& ring, checked_idx_type idx, 
              navigator thenNavi, navigator elseNavi) {
 
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
       throw PBoRiGenericError<CTypes::invalid_ite>();
     
-    return cuddZddGetNode(ring.getManager(), sign_cast<cudd_idx_type>(idx), 
+    return cuddZddGetNode(ring.getManager(), idx, 
                           thenNavi.getNode(), elseNavi.getNode());
   }
 
@@ -493,7 +501,7 @@ private:
   getNewNode(idx_type idx, const self& thenDD, const self& elseDD) {
     thenDD.checkSameManager(elseDD);
     return getNewNode(thenDD.ring(), 
-                      sign_cast<cudd_idx_type>(idx), thenDD.navigation(), elseDD.navigation());
+                      idx, thenDD.navigation(), elseDD.navigation());
   }
 
 private:

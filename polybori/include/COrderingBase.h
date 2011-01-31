@@ -21,6 +21,7 @@
 #include "BooleExponent.h"
 #include "COrderedIter.h"
 #include "PBoRiError.h"
+#include "CCheckedIdx.h"
 
 #include <vector>
 
@@ -55,6 +56,9 @@ public:
   typedef COrderedIter<navigator, monom_type> ordered_iterator;
   typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
   //@}
+
+  /// Check index on input
+  typedef CCheckedIdx checked_idx_type;
 
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
@@ -142,7 +146,7 @@ public:
   //@{
   virtual block_iterator blockBegin() const { return block_iterator(); }
   virtual block_iterator blockEnd() const { return block_iterator(); }
-  virtual void appendBlock(idx_type) {}
+  virtual void appendBlock(checked_idx_type) {}
   virtual void clearBlocks() {}
   //@}
 
