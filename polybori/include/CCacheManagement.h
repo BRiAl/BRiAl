@@ -80,7 +80,7 @@ public:
 
   struct map_every_x_to_x_plus_one: public unary_cache_tag { };
 
-  typedef lead_tag<lex_tag> lex_lead;
+  struct lex_lead: public unary_cache_tag {};
   typedef lead_tag<dlex_tag> dlex_lead;
   typedef lead_tag<dp_asc_tag> dp_asc_lead;
 

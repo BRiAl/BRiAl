@@ -87,16 +87,33 @@ LexOrder::compare(idx_type lhs, idx_type rhs) const {
   return generic_compare_3way(lhs, rhs, idx_comparer_type());
 }
 
+template <class CacheType, class NaviType, class DDType>
+DDType
+dd_lex_lead(const CacheType& cache, NaviType navi, const DDType& init) {
+  if (navi.isConstant())
+    return cache.generate(navi);
+
+  NaviType cached = cache.find(navi);
+  if (cached.isValid())
+    return cache.generate(cached);
+
+  DDType result = dd_lex_lead(cache, navi.thenBranch(), init).change(*navi);
+
+  cache.insert(navi, result.navigation());
+  return result;
+}
+
 // Extraction of leading term
 LexOrder::monom_type 
 LexOrder::lead(const poly_type& poly) const {
 
 
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
+  CacheManager<CCacheTypes::lex_lead> cache(poly.ring());
 
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  return monom(dd_lex_lead(cache, poly.navigation(), set_type()));
 
+#if 0
   monom_type leadterm(poly.ring());
    
   // store indices in list
@@ -110,7 +127,10 @@ LexOrder::lead(const poly_type& poly) const {
   // insert backward (for efficiency reasons)
   reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
 
+  dd_lex_lead(poly.firstBegin(), poly.firstEnd(), leadterm);
   return leadterm;
+
+#endif
 }
 
 // maybe common template here
