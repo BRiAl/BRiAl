@@ -60,7 +60,8 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi) {
   // Look whether result was cached before
   typename DegreeCacher::node_type result = cache.find(navi);
   if (result.isValid())
-    return sign_cast<deg_type>(*result);
+    return (*result);
+  //    return sign_cast<deg_type>(*result); // broken at least on gcc4.1.2 -O3
 
   // Get degree of then branch (contains at least one valid path)...
   deg_type deg = dd_cached_degree(cache, navi.thenBranch()) + 1;

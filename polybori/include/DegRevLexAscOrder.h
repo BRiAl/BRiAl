@@ -31,7 +31,7 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegRevLexAscOrder:
-  public COrderingFacade<DegRevLexAscOrder, dp_asc_tag>, public COrderingTags<dp_asc_tag> {
+  public COrderingFacade<DegRevLexAscOrder, dp_asc_tag> {
 
   /// generic access to current type
   typedef DegRevLexAscOrder self;
