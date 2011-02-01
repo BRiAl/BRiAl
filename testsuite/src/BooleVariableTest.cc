@@ -103,10 +103,10 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BoolePolynomial(x*y) / x, BoolePolynomial(y));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / y, BoolePolynomial(0));
   BOOST_CHECK_EQUAL(BoolePolynomial(x) / x, BoolePolynomial(1));
-  ///@todo Correct operators not found
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y)); // Does not FIND correct operator
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0)); // Does not FIND correct operator
-  //BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1)); // Does not FIND correct operator
+
+  BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y));
+  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0));
+  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1));
   BOOST_CHECK_EQUAL(BooleMonomial(x*y)/y, BooleMonomial(x));
   BOOST_CHECK_EQUAL(BooleMonomial(x)/x, BooleMonomial());
   BOOST_CHECK_THROW(BooleMonomial(x)/y, PBoRiError);

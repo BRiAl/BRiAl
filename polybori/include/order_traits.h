@@ -15,24 +15,43 @@
 // include basic definitions
 #include "pbori_defs.h"
 
-// include orderings
-#include "LexOrder.h"
-#include "DegLexOrder.h"
-#include "DegRevLexAscOrder.h"
-
-#include <functional>
+// include ordering tags
+#include "order_tags.h"
 
 #ifndef order_traits_h_
 #define order_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 
+template <class OrderTag>
+struct order_traits_code;
 
+template <>
+struct order_traits_code<lex_tag> { enum {order_code = CTypes::lp}; };
+template <>
+struct order_traits_code<dlex_tag> { enum {order_code = CTypes::dlex}; };
+template <>
+struct order_traits_code<dp_asc_tag> { enum {order_code = CTypes::dp_asc}; };
+template <>
+struct order_traits_code<block_dlex_tag> { enum {order_code = CTypes::block_dlex}; };
+template <>
+struct order_traits_code<block_dp_asc_tag> { enum {order_code = CTypes::block_dp_asc}; };
 
-template <class OrderType>
+template <class OrderTag>
+class order_traits;
+
+template <class BaseOrderTag>
+class order_traits<block_tag<BaseOrderTag> > {
+public:
+  enum { order_code = order_traits_code<block_tag<BaseOrderTag> >::order_code,
+         baseorder_code = order_traits_code<BaseOrderTag>::order_code };
+};
+
+template <class OrderTag>
 class order_traits {
-
-
+public:
+  enum { order_code = order_traits_code<OrderTag>::order_code,
+         baseorder_code = order_code };
 };
 
 END_NAMESPACE_PBORI

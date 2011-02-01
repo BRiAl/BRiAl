@@ -554,8 +554,8 @@ libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 ######################################################################
 
 pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
-    CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc CCuddNavigator.cc
-    BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
+    CCheckedIdx.cc CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc
+    CCuddNavigator.cc BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
     BooleExponent.cc DegLexOrder.cc DegRevLexAscOrder.cc
     pbori_routines.cc BlockDegLexOrder.cc BlockDegRevLexAscOrder.cc""")
 pb_src=[PBPath('src', source) for source in pb_src]

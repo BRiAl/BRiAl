@@ -20,7 +20,11 @@
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
 #include "COrderedIter.h"
+#include "PBoRiError.h"
+#include "CCheckedIdx.h"
+
 #include <vector>
+
 #ifndef COrderingBase_h_
 #define COrderingBase_h_
 
@@ -53,6 +57,9 @@ public:
   typedef COrderedIter<navigator, exp_type> ordered_exp_iterator;
   //@}
 
+  /// Check index on input
+  typedef CCheckedIdx checked_idx_type;
+
   /// Type for block indices
   typedef std::vector<idx_type> block_idx_type;
 
@@ -79,13 +86,13 @@ public:
   virtual monom_type lead(const poly_type&) const = 0;
 
   /// Get leading term (using upper bound)
-  virtual monom_type lead(const poly_type&, size_type) const = 0;
+  virtual monom_type lead(const poly_type&, deg_type) const = 0;
 
   /// Get leading exponent
   virtual exp_type leadExp(const poly_type&) const = 0;
 
   /// Get leading exponent (using upper bound)
-  virtual exp_type leadExp(const poly_type&, size_type) const = 0;
+  virtual exp_type leadExp(const poly_type&, deg_type) const = 0;
 
   /// Generates polynomial with leading term first (other terms may be skipped)
   virtual poly_type leadFirst(const poly_type&) const = 0;
@@ -139,7 +146,7 @@ public:
   //@{
   virtual block_iterator blockBegin() const { return block_iterator(); }
   virtual block_iterator blockEnd() const { return block_iterator(); }
-  virtual void appendBlock(idx_type) {}
+  virtual void appendBlock(checked_idx_type) {}
   virtual void clearBlocks() {}
   //@}
 
@@ -152,7 +159,11 @@ public:
 
 protected:
   /// Get monomial from set of subsets of Boolean variables (internal use only)
-  monom_type monom(const set_type& rhs) const { return monom_type(rhs); }
+  monom_type monom(const set_type& rhs) const { 
+    if UNLIKELY(rhs.isZero())
+      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+    return monom_type(rhs); 
+  }
 };
 
 

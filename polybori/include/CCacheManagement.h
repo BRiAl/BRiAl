@@ -30,6 +30,7 @@
 BEGIN_NAMESPACE_PBORI
 
 
+
 class CCacheTypes {
 
 public:
@@ -37,6 +38,9 @@ public:
   struct unary_cache_tag { enum { nargs = 1 }; };
   struct binary_cache_tag { enum { nargs = 2 }; };
   struct ternary_cache_tag { enum { nargs = 3 }; };
+
+  template <class TagType>
+  struct lead_tag: public binary_cache_tag {};
 
   // user functions
   struct no_cache: public no_cache_tag { };
@@ -76,8 +80,12 @@ public:
 
   struct map_every_x_to_x_plus_one: public unary_cache_tag { };
 
-  struct dlex_lead: public unary_cache_tag { };
-  struct dp_asc_lead: public unary_cache_tag { };
+  struct lex_lead: public unary_cache_tag {};
+  typedef lead_tag<dlex_tag> dlex_lead;
+  typedef lead_tag<dp_asc_tag> dp_asc_lead;
+
+  typedef lead_tag<block_dlex_tag> block_dlex_lead;
+  typedef lead_tag<block_dp_asc_tag> block_dp_asc_lead;
 
   struct divisorsof_fixedpath: public ternary_cache_tag { };
   struct testwise_ternary: public ternary_cache_tag { };
@@ -85,8 +93,8 @@ public:
   struct used_variables: public unary_cache_tag { };
 
   struct block_degree: public binary_cache_tag { };
-  struct block_dlex_lead: public unary_cache_tag { };
-  
+
+ 
   struct has_factor_x_plus_y: public ternary_cache_tag { };
   struct left_equals_right_x_branch_and_r_has_fac_x:
     public ternary_cache_tag { };

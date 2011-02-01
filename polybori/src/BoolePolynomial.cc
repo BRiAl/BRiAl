@@ -170,7 +170,13 @@ BoolePolynomial::operator*=(const self& rhs) {
   return (*this = result);
 }
 
+// Division
+BoolePolynomial&
+BoolePolynomial::operator/=(const var_type& rhs) {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const var_type&)" );
+  return operator/=(monom_type(rhs));
+}
 // Division
 BoolePolynomial&
 BoolePolynomial::operator/=(const monom_type& rhs) {
@@ -240,7 +246,13 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   return *this;
 }
+// Modulus
+BoolePolynomial&
+BoolePolynomial::operator%=(const var_type& rhs) {
 
+  PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const var_type&)" );
+  return operator%=(monom_type(rhs));
+}
 
 // Leading term
 BoolePolynomial::monom_type
@@ -266,9 +278,9 @@ BoolePolynomial::lexLead() const {
 
 // Leading term (bound)
 BoolePolynomial::monom_type
-BoolePolynomial::boundedLead(size_type bound) const {
+BoolePolynomial::boundedLead(deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::lead(size_type) const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::lead(deg_type) const" );
   //if UNLIKELY(isZero()) 
   //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
@@ -288,9 +300,9 @@ BoolePolynomial::leadExp() const {
 
 // Leading exponent (bound)
 BoolePolynomial::exp_type
-BoolePolynomial::boundedLeadExp(size_type bound) const {
+BoolePolynomial::boundedLeadExp(deg_type bound) const {
 
-  PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(size_type) const" );
+  PBORI_TRACE_FUNC( "BoolePolynomial::leadExp(deg_type) const" );
   //if UNLIKELY(isZero())
   //  throw PBoRiGenericError<CTypes::illegal_on_zero>();
 

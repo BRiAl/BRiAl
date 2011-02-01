@@ -130,10 +130,10 @@ class BooleExponent:
   /// For the exponent we only have one type of hashes
   hash_type hash() const { return stableHash(); }
 
-  /// Substitute variable with index idx by its complement and assign
+  /// Insert a given index, if it is not there, remove otherwise; assign the result
   self& changeAssign(idx_type);
 
-  /// Substitute variable with index idx by its complement
+  /// Insert a given index, if it is not there, remove otherwise; return the result
   self change(idx_type) const;
 
   /// Insert variable with index idx in exponent vector

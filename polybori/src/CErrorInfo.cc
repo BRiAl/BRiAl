@@ -33,7 +33,7 @@ CErrorInfo::CErrorInfo() {
   pErrorText[CTypes::out_of_bounds] = "Variable index out of bounds.";
   pErrorText[CTypes::io_error] = "I/O error.";
   pErrorText[CTypes::monomial_zero] = "Monomial operation resulted in zero.";
-  pErrorText[CTypes::illegal_on_zero] = "Illegal operation on zero.";
+  pErrorText[CTypes::illegal_on_zero] = "Illegal operation on zero diagram or (sub-)polynomial.";
   pErrorText[CTypes::division_by_zero] = "Division by zero.";
   pErrorText[CTypes::invalid_ite] = 
     "Node index must be smaller than top indices of then- and else-branch.";

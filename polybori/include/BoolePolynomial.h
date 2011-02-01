@@ -260,10 +260,12 @@ public:
     if (!rhs) *this = ring().zero();
     return *this;
   }
+  self& operator/=(const var_type&);
   self& operator/=(const monom_type&);
   self& operator/=(const exp_type&);
   self& operator/=(const self& rhs);
   self& operator/=(constant_type rhs);
+  self& operator%=(const var_type&);
   self& operator%=(const monom_type&);
   self& operator%=(const self& rhs) { 
     return (*this) -= (self(rhs) *= (self(*this) /= rhs)); 
@@ -305,14 +307,18 @@ public:
   /// Get leading term w.r.t. lexicographical order
   monom_type lexLead() const;
 
-  /// Get leading term (using upper bound)
-  monom_type boundedLead(size_type bound) const;
+  /// Get leading term (using upper bound of the polynomial degree)
+  /** @note Implementation note: for degree orderings (dlex, dp_asc)
+   *  returns the lead of the sub-polynomial of degree 'bound', 
+   *  falls back to @c lead for all other orderings (lp, block_*) */
+  monom_type boundedLead(deg_type bound) const;
 
   /// Get leading term
   exp_type leadExp() const;
 
-  /// Get leading term (using upper bound)
-  exp_type boundedLeadExp(size_type bound) const;
+  /// Get leading term (using upper bound of the polynomial degree)
+  /// @note See implementation notes of @c boundedLead
+  exp_type boundedLeadExp(deg_type bound) const;
 
   /// Get all divisors of the leading term
   set_type leadDivisors() const { return leadFirst().firstDivisors(); };

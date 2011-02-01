@@ -20,6 +20,7 @@
 // include basic decision diagram manager interface 
 #include "CCuddCore.h"
 #include "PBoRiError.h"
+#include "CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
 
 #include <list>
@@ -29,6 +30,8 @@
 
 
 BEGIN_NAMESPACE_PBORI
+
+
 
 /** @class BoolePolyRing
  * @brief This class reinterprets decicion diagram managers as Boolean
@@ -62,6 +65,9 @@ class BoolePolyRing:
   typedef CTypes::ordercode_type ordercode_type;
   typedef CTypes::vartext_type vartext_type;
   //@}
+
+  /// Check indices bevor using
+  typedef CCheckedIdx checked_idx_type;
 
   /// Type of actual data
   typedef CCuddCore core_type;
@@ -117,12 +123,12 @@ public:
   size_type nVariables() const { return p_core->m_mgr.nVariables(); }
 
   /// Get name of variable with index idx
-  vartext_type getVariableName(idx_type idx) const {
+  vartext_type getVariableName(checked_idx_type idx) const {
     return p_core->m_names[idx];
   }
 
   /// Set name of variable with index idx
-  void setVariableName(idx_type idx, vartext_type varname) {
+  void setVariableName(checked_idx_type idx, vartext_type varname) {
     p_core->m_names.set(idx, varname);
   }
 
@@ -163,7 +169,7 @@ public:
   var_type coerce(const var_type& rhs) const;
 
   /// Access nvar-th ring variable as diagram
-  dd_type variable(idx_type nvar) const;
+  dd_type variable(checked_idx_type nvar) const;
 
   /// Get empty decision diagram 
   dd_type zero() const; // inlined below
@@ -198,7 +204,7 @@ inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_type(*this
   /// Get constant one or zero
 inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
 
-inline  BoolePolyRing::dd_type BoolePolyRing::variable(idx_type nvar) const {
+inline  BoolePolyRing::dd_type BoolePolyRing::variable(checked_idx_type nvar) const {
     return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
   }
 

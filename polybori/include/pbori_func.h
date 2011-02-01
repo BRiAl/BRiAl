@@ -104,6 +104,7 @@ class subset1_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
+
     rhs = rhs.subset1(lhs);
     return rhs;
   } 

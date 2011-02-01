@@ -31,23 +31,12 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class LexOrder:
-  public COrderingFacade<LexOrder>, public COrderingTags<lex_tag> {
+  public COrderingFacade<LexOrder, lex_tag> {
 
   /// generic access to current type
   typedef LexOrder self;
 
  public:
-
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag lex_property; 
-  typedef valid_tag ordered_property;
-  typedef valid_tag symmetry_property;
-  typedef valid_tag descending_property;
-  //@}
-
-  /// Get order code
-  enum { order_code = CTypes::lp, baseorder_code = order_code };
 
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
@@ -73,20 +62,18 @@ class LexOrder:
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
-  /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, size_type) const {
-    if UNLIKELY(poly.isZero())
-      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  /// Leading monomial with bound (just the ordinary leading monomial)
+  /// @note falls back to @c leadExp, ignores second argument
+  monom_type lead(const poly_type& poly, deg_type) const {
     return lead(poly);
   }
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
-  /// Get leading exponent (using upper bound)
-  exp_type leadExp(const poly_type& poly, size_type) const {
-    if UNLIKELY(poly.isZero())
-      throw PBoRiGenericError<CTypes::illegal_on_zero>();
+  /// Leading exponent with bound (just the ordinary leading monomial)
+  /// @note falls back to @c leadExp, ignores second argument
+  exp_type leadExp(const poly_type& poly, deg_type) const {
     return leadExp(poly);
   }
 };

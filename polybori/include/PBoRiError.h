@@ -30,7 +30,7 @@ BEGIN_NAMESPACE_PBORI
  * 
  **/
 class PBoRiError:
-  std::exception {
+  public std::exception, public CTypes {
 
 public:
   /// adopt global error code enumeration
