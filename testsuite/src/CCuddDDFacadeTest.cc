@@ -110,6 +110,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   diagram = dd_type(5,diagram1,diagram2);
   output << set_type(diagram);
   BOOST_CHECK(output.is_equal("{{UNDEF}}"));/// Wanted behaviour?
+  BOOST_CHECK_THROW(dd_type(ring, NULL), std::runtime_error);
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {

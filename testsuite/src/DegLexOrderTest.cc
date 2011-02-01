@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   poly=y;
   BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(y));
   BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(y));
-  BOOST_CHECK_EQUAL(order.lead(poly,-1), BooleMonomial(y));
+  BOOST_CHECK_THROW(order.lead(poly,-1), std::exception);
   BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(y));
   BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(y));
   BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(y));

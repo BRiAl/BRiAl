@@ -527,6 +527,8 @@ BOOST_AUTO_TEST_CASE(test_add_remove) {
   BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z));
   exponent2.push_back(4);
   BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*w));
+  exponent2.push_back(4);
+  BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*w));
   exponent2.push_back(3);
   BOOST_CHECK_EQUAL(exponent2, exp_type().get(x*y*z*v*w));
   exponent2.push_back(5);

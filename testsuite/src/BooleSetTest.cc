@@ -23,6 +23,7 @@ using boost::test_tools::output_test_stream;
 #include "BoolePolynomial.h"
 #include "BooleExponent.h"
 #include "BoolePolyRing.h"
+#include "LexOrder.h"
 
 USING_NAMESPACE_PBORI
 
@@ -631,6 +632,44 @@ BOOST_AUTO_TEST_CASE(test_change) {
   empty = empty.change(1);
   output << empty;
   BOOST_CHECK(output.is_equal("{{x,y}, {y}}"));
+}
+
+BOOST_AUTO_TEST_CASE(test_iter) {
+
+  set_type set;
+  set = set.add(x*z);
+  set = set.add(y);
+  set_type empty;
+  output_test_stream output;
+
+  BOOST_TEST_MESSAGE( "iterators" );
+  BooleSet::const_reverse_iterator startr(set.rbegin()),finishr(set.rend());
+  while (startr != finishr) {
+    output << *startr <<", ";
+    ++startr;
+  }
+  BOOST_CHECK(output.is_equal("y, x*z, "));
+  startr = empty.rbegin();
+  finishr = empty.rend();
+  while (startr != finishr) {
+    output << *startr <<", ";
+    ++startr;
+  }
+  BOOST_CHECK(output.is_equal(""));
+
+  BooleSet::const_iterator startc(set.begin()),finishc(set.end());
+  while (startc != finishc) {
+    output << *startc <<", ";
+    ++startc;
+  }
+  BOOST_CHECK(output.is_equal("x*z, y, "));
+  startc = empty.begin();
+  finishc = empty.end();
+  while (startc != finishc) {
+    output << *startc <<", ";
+    ++startc;
+  }
+  BOOST_CHECK(output.is_equal(""));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

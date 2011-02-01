@@ -299,9 +299,11 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
 
   BOOST_CHECK(poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(x+y)));
 
-
   BOOST_CHECK(!poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(v+w)));
- 
+
+  BOOST_CHECK(!poly_type().firstReducibleBy(poly_type(x + y + y*v*w + v*w)));
+
+  BOOST_CHECK(poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(1)));
 
   poly_type poly1(1), poly2(1);
   std::size_t len(1);
