@@ -130,6 +130,16 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
 }
 
+BOOST_AUTO_TEST_CASE(test_lead_iter) {
+
+  order_type order;
+  BoolePolynomial poly = x*x + x*y + y*z*v*w + 1;
+
+  BOOST_TEST_MESSAGE( "leadIteratorBegin" );
+  order_type::ordered_iterator start(order.leadIteratorBegin(poly));
+  start.increment();
+}
+
 BOOST_AUTO_TEST_CASE(test_blocks) {
 
   BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart, lieInSameBlock" );
