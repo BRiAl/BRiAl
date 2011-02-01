@@ -70,9 +70,6 @@ DegRevLexAscOrder::lead(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&) const)" );
   return self::lead(poly, poly.deg());
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
-
 }
 
 // maybe common template here
@@ -81,10 +78,10 @@ DegRevLexAscOrder::exp_type
 DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
-  return self::leadExp(poly, poly.deg());
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+//   if UNLIKELY(poly.isZero())
+//     throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
+  return self::leadExp(poly, poly.deg());
 }
 
 // Extraction of leading exponent
@@ -93,8 +90,8 @@ DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)" );
 
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
+//    if UNLIKELY(poly.isZero())
+//      throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());
@@ -115,9 +112,6 @@ DegRevLexAscOrder::monom_type
 DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::lead(const poly_type&, deg_type) const)" );
-
-  if UNLIKELY(poly.isZero())
-    throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 
     cache_mgr(poly.ring());

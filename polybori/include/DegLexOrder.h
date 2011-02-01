@@ -31,26 +31,15 @@ BEGIN_NAMESPACE_PBORI
  *
  **/
 class DegLexOrder:
-  public COrderingFacade<DegLexOrder>, public COrderingTags<dlex_tag> {
+  public COrderingFacade<DegLexOrder, dlex_tag> {
 
   /// generic access to current type
   typedef DegLexOrder self;
 
 public:
 
-  /// @name define generic property markers
-  //@{
-  typedef valid_tag symmetry_property;
-  typedef valid_tag degorder_property;
-  typedef valid_tag totaldegorder_property;
-  typedef valid_tag descending_property;
-  //@}
-
   /// Define binary predicate for index comparision
   typedef std::less<idx_type> idx_comparer_type;
-
-  /// Get order code
-  enum { order_code = CTypes::dlex, baseorder_code = order_code };
 
   /// Default Constructor
   DegLexOrder(): base() {};
@@ -73,13 +62,15 @@ public:
   /// Get leading term
   monom_type lead(const poly_type&) const;
 
-  /// Get leading term (using upper bound)
-  monom_type lead(const poly_type& poly, deg_type) const;
+  /// Get leading term (using upper bound of the polynomial degree)
+  /// @note returns @c lead of the sub-polynomial of degree @c bound
+  monom_type lead(const poly_type& poly, deg_type bound) const;
 
   /// Get leading exponent
   exp_type leadExp(const poly_type&) const;
 
-  /// Get leading exponent (using an upper bound)
+  /// Get leading exponent (using an upper bound of the polynomial degree)
+  /// @note See note of the bounded @c lead
   exp_type leadExp(const poly_type&, deg_type) const;
 };
 

@@ -35,15 +35,17 @@ struct dlex_tag {};
  **/
 struct dp_asc_tag {};
 
-/**@class block_dlex_tag
- * @brief Marker for block deg-lex ordering.
+/**@class block_tag<Tag>
+ * @brief Marker for block orderings.
  **/
-struct block_dlex_tag {};
+template <class TagType>
+struct block_tag {};
 
-/**@class block_dp_asc_tag
- * @brief Marker for ascending block deg-rev-lex ordering.
- **/
-struct block_dp_asc_tag {};
+/// Marker for block deg-lex ordering.
+typedef block_tag<dlex_tag> block_dlex_tag;
+
+/// Marker for ascending block deg-rev-lex ordering.
+typedef block_tag<dp_asc_tag> block_dp_asc_tag;
 
 END_NAMESPACE_PBORI
 

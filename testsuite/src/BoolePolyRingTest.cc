@@ -110,18 +110,18 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
   BOOST_TEST_MESSAGE( "nVariables, getVariableName, setVariableName" );
 
-  BOOST_CHECK_EQUAL(ring.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(ring.getVariableName(-1),PBoRiError)
   BOOST_CHECK_EQUAL(ring.getVariableName(0), "x(0)");
   BOOST_CHECK_EQUAL(ring.getVariableName(1), "x(1)");
   BOOST_CHECK_EQUAL(ring.getVariableName(2), "x(2)");
   BOOST_CHECK_EQUAL(ring.getVariableName(3), "UNDEF");
   BOOST_CHECK_EQUAL(ring.getVariableName(323223), "UNDEF");
   BOOST_CHECK_EQUAL(ring.nVariables(), 3);
-  BOOST_CHECK_EQUAL(empty.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(empty.getVariableName(-1), PBoRiError);
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "UNDEF");
   BOOST_CHECK_EQUAL(empty.getVariableName(1), "UNDEF");
   BOOST_CHECK_EQUAL(empty.nVariables(), 0);
-  BOOST_CHECK_EQUAL(defaultr.getVariableName(-1), ring.getVariableName(-1));
+  BOOST_CHECK_THROW(defaultr.getVariableName(-1), PBoRiError);
   BOOST_CHECK_EQUAL(defaultr.getVariableName(0), ring.getVariableName(0));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(1), ring.getVariableName(1));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(2), ring.getVariableName(2));
@@ -132,25 +132,25 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   ring.setVariableName(0, "x");
   defaultr.setVariableName(1, "y");
   ring.setVariableName(3, "v");
-  BOOST_CHECK_THROW( defaultr.setVariableName(-1, "w"), std::bad_alloc);
+  BOOST_CHECK_THROW( defaultr.setVariableName(-1, "w"), std::exception);
 
   empty.setVariableName(0, "x");
   empty.setVariableName(1, "y");
-  BOOST_CHECK_THROW(empty.setVariableName(-1, "z"), std::bad_alloc);
+  BOOST_CHECK_THROW(empty.setVariableName(-1, "z"), std::exception);
 
-  BOOST_CHECK_EQUAL(ring.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(ring.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(ring.getVariableName(0), "x");
   BOOST_CHECK_EQUAL(ring.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(ring.getVariableName(2), "x(2)");
   BOOST_CHECK_EQUAL(ring.getVariableName(3), "v");
   BOOST_CHECK_EQUAL(ring.nVariables(), 3);
-  BOOST_CHECK_EQUAL(defaultr.getVariableName(-1), ring.getVariableName(-1));
+  BOOST_CHECK_THROW(defaultr.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(defaultr.getVariableName(0), ring.getVariableName(0));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(1), ring.getVariableName(1));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(2), ring.getVariableName(2));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(3), ring.getVariableName(3));
   BOOST_CHECK_EQUAL(defaultr.nVariables(), ring.nVariables());
-  BOOST_CHECK_EQUAL(empty.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(empty.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "x");
   BOOST_CHECK_EQUAL(empty.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(empty.nVariables(), 0);
@@ -160,21 +160,21 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   ring.setVariableName(2, "*");
   defaultr.setVariableName(4, "ö");
   empty.setVariableName(0, "variable");
-  BOOST_CHECK_EQUAL(ring.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(ring.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(ring.getVariableName(0), "y");
   BOOST_CHECK_EQUAL(ring.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(ring.getVariableName(2), "*");
   BOOST_CHECK_EQUAL(ring.getVariableName(3), "-y");
   BOOST_CHECK_EQUAL(ring.getVariableName(4), "ö");
   BOOST_CHECK_EQUAL(ring.nVariables(), 3);
-  BOOST_CHECK_EQUAL(defaultr.getVariableName(-1), ring.getVariableName(-1));
+  BOOST_CHECK_THROW(defaultr.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(defaultr.getVariableName(0), ring.getVariableName(0));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(1), ring.getVariableName(1));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(2), ring.getVariableName(2));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(3), ring.getVariableName(3));
   BOOST_CHECK_EQUAL(defaultr.getVariableName(4), ring.getVariableName(4));
   BOOST_CHECK_EQUAL(defaultr.nVariables(), ring.nVariables());
-  BOOST_CHECK_EQUAL(empty.getVariableName(-1), "UNDEF");
+  BOOST_CHECK_THROW(empty.getVariableName(-1), std::exception);
   BOOST_CHECK_EQUAL(empty.getVariableName(0), "variable");
   BOOST_CHECK_EQUAL(empty.getVariableName(1), "y");
   BOOST_CHECK_EQUAL(empty.nVariables(), 0);

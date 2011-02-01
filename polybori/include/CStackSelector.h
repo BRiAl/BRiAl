@@ -25,6 +25,7 @@
 // include standard iterator functionality
 #include <iterator>
 
+#include "COrderingTags.h"
 
 #ifndef CStackSelector_h_
 #define CStackSelector_h_
@@ -40,9 +41,11 @@ class CStackSelector {
   //@{
   typedef BaseType base;
   typedef NaviType navigator;
-  typedef typename OrderType::descending_property descending;
-  typedef typename OrderType::degorder_property deg_prop;
-  typedef typename OrderType::blockorder_property block_prop;
+  typedef COrderingTags<typename OrderType::order_tag> orderings_tags;
+
+  typedef typename orderings_tags::descending_property descending;
+  typedef typename orderings_tags::degorder_property deg_prop;
+  typedef typename orderings_tags::blockorder_property block_prop;
   //@}
 
   /// Natural and lexicographical iterator's stack

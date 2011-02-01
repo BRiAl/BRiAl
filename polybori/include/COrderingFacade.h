@@ -21,10 +21,11 @@
 #include "BooleExponent.h"
 
 #include "COrderingBase.h"
+#include "COrderingTags.h"
 #include "COrderedIter.h"
 // include ordering tags
 #include "pbori_tags.h"
-
+#include "order_traits.h"
 // include polybori functionals
 #include "pbori_func.h"
 
@@ -39,22 +40,27 @@ BEGIN_NAMESPACE_PBORI
  * CDynamicOrderBase for a given OrderType. OrderType must inherit from
  * COrderingFacade<OrderType>.
  */
-template <class OrderType>
+template <class OrderType, class OrderTag>
 class COrderingFacade:
-  public COrderingBase { 
+  public COrderingBase, 
+  public COrderingTags<OrderTag>, public order_traits<OrderTag> { 
+
+  /// Name type of *this
   typedef COrderingFacade self;
 
   /// Actual base type
   typedef COrderingBase base_type;
 
 public:
-
   /// *this is to be used as base for @c OrderType only
   typedef self base;
 
   /// Variable ordering definiton functional type
   typedef OrderType order_type;
 
+  /// Tag for for leading monomial cache
+  typedef CCacheTypes::lead_tag<OrderTag> order_lead_tag;
+  typedef COrderingTags<OrderTag> ordering_tags;
   /// Construct new decision diagramm manager
   COrderingFacade(): 
     base_type() { }
@@ -78,64 +84,64 @@ public:
 
   /// Check whether ring is lexicographical 
   bool_type isLexicographical() const {
-    return is_valid<typename order_type::lex_property>::result;
+    return is_valid<typename ordering_tags::lex_property>::result;
   }
 
   /// Test whether iterators respect order
   bool_type orderedStandardIteration() const {
-    return is_valid<typename order_type::ordered_property>::result;
+    return is_valid<typename ordering_tags::ordered_property>::result;
   }
 
   /// Test whether variable pertubation do not change the order
   bool_type isSymmetric() const {
-    return is_valid<typename order_type::symmetry_property>::result;
+    return is_valid<typename ordering_tags::symmetry_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isDegreeOrder() const {
-    return is_valid<typename order_type::degorder_property>::result;
+    return is_valid<typename ordering_tags::degorder_property>::result;
   }
 
   /// Test whether we deal with a degree-ordering
   bool_type isBlockOrder() const {
-    return is_valid<typename order_type::blockorder_property>::result;
+    return is_valid<typename ordering_tags::blockorder_property>::result;
   }
 
   /// Test whether we deal with a total degree-ordering
   bool_type isTotalDegreeOrder() const {
-    return is_valid<typename order_type::totaldegorder_property>::result;
+    return is_valid<typename ordering_tags::totaldegorder_property>::result;
   }
 
   /// Test whether ordering is deg-rev-lex ordering
   bool_type isDegreeReverseLexicographical() const {
-    return is_valid<typename order_type::degrevlexorder_property>::result;
+    return is_valid<typename ordering_tags::degrevlexorder_property>::result;
   }
 
   /// Test whether variables are in ascending order
   bool_type ascendingVariables() const {
-    return is_valid<typename order_type::ascending_property>::result;
+    return is_valid<typename ordering_tags::ascending_property>::result;
   }
 
   /// Test whether variables are in descending order
   bool_type descendingVariables() const {
-    return is_valid<typename order_type::descending_property>::result;
+    return is_valid<typename ordering_tags::descending_property>::result;
   }
 
   /// Get numerical code for ordering
   ordercode_type getOrderCode() const {
-    return order_type::order_code;
+    return order_traits<OrderTag>::order_code;
   }
 
   /// Get numerical code for base ordering (the same for non-block orderings)
   ordercode_type getBaseOrderCode() const {
-    return order_type::baseorder_code;
+    return  order_traits<OrderTag>::baseorder_code;
   }
 
   /// Check, whether two indices are in the same block 
   /// (true for nonblock orderings)
   bool_type lieInSameBlock(idx_type first, idx_type second) const {
     return inSameBlockInternal(first, second, 
-                               typename order_type::blockorder_property());
+                               typename ordering_tags::blockorder_property());
   }
 
 
@@ -185,7 +191,8 @@ protected:
   bool_type inSameBlockInternal(idx_type first, idx_type second, 
                                 valid_tag) const { // is block order 
     // todo: throw here if first,second >=CTypes::max_idx
-    if(UNLIKELY(first > CTypes::max_idx || second > CTypes::max_idx))
+    if(UNLIKELY(first > CTypes::max_idx || second > CTypes::max_idx || 
+                first < 0 || second < 0))
       throw std::runtime_error("Variable index out of range.");
 
     if (second < first)
