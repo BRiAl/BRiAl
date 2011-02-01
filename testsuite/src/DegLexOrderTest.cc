@@ -135,7 +135,13 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_THROW(order.lead(poly, 0), std::exception);
 
   BOOST_CHECK_EQUAL(order.leadExp(poly,0), BooleExponent());
-
+  poly=y;
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(y));
   BooleMonomial leadterm = z*v*w;
   poly = x*y + x*v + leadterm;
 
@@ -150,8 +156,23 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly, 2), (x*y).exp());
   BOOST_CHECK_EQUAL(order.leadExp(poly, 3), (z*v*w).exp());
-  BOOST_CHECK_EQUAL(order.leadExp(poly, -1),  BooleExponent());
-
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*y));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(x*y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(leadterm));
+  poly += y;
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));// Even as valid term y exists
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*y));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));// Even as valid term y exists
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(x*y));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(leadterm));
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {

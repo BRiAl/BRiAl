@@ -145,8 +145,20 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.lead(poly, 3), z*v*w);
   BOOST_CHECK_THROW(order.lead(poly, -1), PBoRiError);
 
-  BOOST_CHECK_THROW(order.lead(poly, 1), PBoRiError);
-  BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*v));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,2), BooleExponent(x*v));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,3), BooleExponent(leadterm));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent(leadterm));
+  poly += y;
+  BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(y));
+  BOOST_CHECK_EQUAL(order.lead(poly,2), BooleMonomial(x*v));
+  BOOST_CHECK_EQUAL(order.lead(poly,3), leadterm);
+  BOOST_CHECK_EQUAL(order.lead(poly,-1), leadterm);
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(y));
   BOOST_CHECK_EQUAL(order.leadExp(poly, 2), BooleExponent(x*v));
   BOOST_CHECK_EQUAL(order.leadExp(poly, 3), BooleExponent(z*v*w));
   BOOST_CHECK_EQUAL(order.leadExp(poly, -1), BooleExponent());
