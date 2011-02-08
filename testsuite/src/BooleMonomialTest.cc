@@ -96,16 +96,39 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(monom_type()*=monom_type(x*z),monom_type(x*z));
   BOOST_CHECK_EQUAL(monom_type()*=monom_type(),monom_type());
 
-  BOOST_TEST_MESSAGE( "/=" );
+  BOOST_TEST_MESSAGE( "/ and /=" );
   output << ((monom_type(x*y*z*v*w)/= x)/= v);
   BOOST_CHECK(output.is_equal("y*z*w"));
   output << ((monom_type(x*y*z*v*w)/= x)/= v);
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << ((monom_type(x*y*z*v*w)/= monom_type(x))/= monom_type(v));
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << ((monom_type(x*y*z*v*w)/= monom_type(x))/= monom_type(v));
   BOOST_CHECK(output.is_equal("y*z*w"));
   output << (monom_type(x*y*z*v*w)/= monom_type());
+  BOOST_CHECK(output.is_equal("x*y*z*v*w"));
+  output << ((monom_type(x*y*z*v*w)/ x)/ v);
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << ((monom_type(x*y*z*v*w)/ x)/ v);
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << ((monom_type(x*y*z*v*w)/ monom_type(x))/ monom_type(v));
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << ((monom_type(x*y*z*v*w)/ monom_type(x))/ monom_type(v));
+  BOOST_CHECK(output.is_equal("y*z*w"));
+  output << (monom_type(x*y*z*v*w)/ monom_type());
   BOOST_CHECK(output.is_equal("x*y*z*v*w"));
   BOOST_CHECK_THROW(monom_type()/monom_type(x), PBoRiError);
   BOOST_CHECK_THROW(monom_type(y)/monom_type(x), PBoRiError);
   BOOST_CHECK_THROW(monom_type(z*y)/monom_type(x), PBoRiError);
+  BOOST_CHECK_THROW(monom_type()/=monom_type(x), PBoRiError);
+  BOOST_CHECK_THROW(monom_type(y)/=monom_type(x), PBoRiError);
+  BOOST_CHECK_THROW(monom_type(z*y)/=monom_type(x), PBoRiError);
+  BOOST_CHECK_THROW(monom_type()/x, PBoRiError);
+  BOOST_CHECK_THROW(monom_type(y)/x, PBoRiError);
+  BOOST_CHECK_THROW(monom_type(z*y)/x, PBoRiError);
+  BOOST_CHECK_THROW(monom_type()/=x, PBoRiError);
+  BOOST_CHECK_THROW(monom_type(y)/=x, PBoRiError);
+  BOOST_CHECK_THROW(monom_type(z*y)/=x, PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
@@ -383,6 +406,13 @@ BOOST_AUTO_TEST_CASE(test_LCM) {
   BOOST_CHECK_EQUAL(monom1, monom_type(x*y));
   BOOST_CHECK_EQUAL(monom2, monom_type(z*v*w));
 
+  monom1 = monom_type(z*v*w);
+  monom2 = monom_type(x*y*z);
+  output << monom1.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("5"));
+  BOOST_CHECK_EQUAL(monom1, monom_type(z*v*w));
+  BOOST_CHECK_EQUAL(monom2, monom_type(x*y*z));
+
   monom1 = monom_type(x*y*z*v*w);
   monom2 = monom_type(x*y*z*v*w);
   output << monom1.LCMDeg(monom2);
@@ -423,6 +453,17 @@ BOOST_AUTO_TEST_CASE(test_LCM) {
   output << monom1.LCMDeg(monom2);
   BOOST_CHECK(output.is_equal("2"));
   BOOST_CHECK_EQUAL(monom1, monom_type(x));
+  BOOST_CHECK_EQUAL(monom2, monom_type(y));
+
+  monom_type zero;
+  BOOST_CHECK_THROW(zero/=x, PBoRiError);
+
+  output << zero.LCMDeg(monom2);
+  BOOST_CHECK(output.is_equal("0"));
+  BOOST_CHECK_EQUAL(monom2, monom_type(y));
+
+  output << monom2.LCMDeg(zero);
+  BOOST_CHECK(output.is_equal("0"));
   BOOST_CHECK_EQUAL(monom2, monom_type(y));
 }
 
@@ -514,6 +555,13 @@ BOOST_AUTO_TEST_CASE(test_GCD) {
   BOOST_CHECK_EQUAL(monom1, monom_type());
   BOOST_CHECK_EQUAL(monom2, monom_type(z*v*w));
 
+  monom1 = monom_type(z*v*w);
+  monom2 = monom_type(x*y*z);
+  output << monom1.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("z"));
+  BOOST_CHECK_EQUAL(monom1, monom_type(z));
+  BOOST_CHECK_EQUAL(monom2, monom_type(x*y*z));
+
   monom1 = monom_type(x*y*z*v*w);
   monom2 = monom_type(x*y*z*v*w);
   output << monom1.GCDAssign(monom2);
@@ -542,6 +590,17 @@ BOOST_AUTO_TEST_CASE(test_GCD) {
   BOOST_CHECK_EQUAL(monom1, monom_type());
   BOOST_CHECK_EQUAL(monom2, monom_type());
 
+  monom_type zero;
+  BOOST_CHECK_THROW(zero/=x, PBoRiError);
+
+  monom2 = monom_type(x*y);
+  output << zero.GCDAssign(monom2);
+  BOOST_CHECK(output.is_equal("0"));
+  BOOST_CHECK_EQUAL(monom2, monom_type(x*y));
+
+  output << monom2.GCDAssign(zero);
+  BOOST_CHECK(output.is_equal("0"));
+  BOOST_CHECK_EQUAL(monom2, zero);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
