@@ -631,7 +631,7 @@ env.Program(TestsPath("unittests"),
             CPPDEFINES = env['CPPDEFINES'] +
             ["BOOST_TEST_DYN_LINK"] )
 
-testclassesfacades = Split("""DegRevLexAscOrder DegLexOrder BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder CCuddDDFacade""")
+testclassesfacades = Split("""PBoRiError DegRevLexAscOrder DegLexOrder BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder CCuddDDFacade""")
 testfilesfacades = [TestsPath('src', file + "Test.cc") for file in
              testclassesfacades] + [TestsPath('src', "unittests_facades.cc")]
 
