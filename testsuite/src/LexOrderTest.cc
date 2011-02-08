@@ -165,6 +165,10 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(order.lieInSameBlock(0,1));
   BOOST_CHECK(order.lieInSameBlock(-1,4));
   BOOST_CHECK_EQUAL(order.lastBlockStart(), std::numeric_limits<int>::max());
+  order.clearBlocks();
+  start = order.blockBegin();
+  finish = order.blockEnd();
+  BOOST_CHECK(start==finish);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

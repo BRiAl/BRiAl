@@ -108,6 +108,11 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   output << ((poly_type(x) *= y) += z);
   BOOST_CHECK(output.is_equal("x*y + z"));
   
+  output << (poly_type(x) += BooleConstant(0));
+  BOOST_CHECK(output.is_equal("x"));
+  
+  output << (poly_type(x) *= BooleConstant(0));
+  BOOST_CHECK(output.is_equal("0"));
    
   output << (poly =  (((poly_type(x) *= v) += (poly_type(y) *= v) ) += z));
   BOOST_CHECK(output.is_equal("x*v + y*v + z"));
