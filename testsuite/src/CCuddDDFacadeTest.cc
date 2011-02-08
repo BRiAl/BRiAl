@@ -161,11 +161,26 @@ BOOST_AUTO_TEST_CASE(test_indices) {
   }
   BOOST_CHECK(output.is_equal("0, 1, 2, "));
 
+  diagram = BoolePolynomial(x*y*z + x*y).set();
   dd_type::last_iterator last_start = diagram.lastBegin();
   dd_type::last_iterator last_finish = diagram.lastEnd();
   while (last_start != last_finish) {
     output << *last_start <<", ";
     ++last_start;
+  }
+  BOOST_CHECK(output.is_equal("0, 1, "));
+  last_start = diagram.lastBegin();
+  last_finish = diagram.lastEnd();
+  while (last_start != last_finish) {
+    output << *last_start <<", ";
+    last_start++;
+  }
+  BOOST_CHECK(output.is_equal("0, 1, "));
+  last_start = one.lastBegin();
+  last_finish = one.lastEnd();
+  while (last_start != last_finish) {
+    output << *last_start <<", ";
+    last_start++;
   }
   BOOST_CHECK(output.is_equal(""));
 

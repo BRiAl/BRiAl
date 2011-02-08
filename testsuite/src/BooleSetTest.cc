@@ -241,6 +241,23 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x*y*z));
   BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*v)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*y*z)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*z*y)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(y)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(z*v)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(z)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(v)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(w)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*y)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(y*x)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(y*z)));
+  BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(z*y)));
+  BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleExponent()));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(BooleExponent(x)));
+  BOOST_CHECK(!empty.containsDivisorsOfDecDeg(BooleExponent(x*y*z)));
+  BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleExponent()));
 
   set_type set1;
   set1 = set1.add(x*y*z);
@@ -251,6 +268,10 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x*y));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(y*z));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x*z));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(x*y*z)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(x*y)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(y*z)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(x*z)));
   set1 = set1.add(x);
   set1 = set1.add(y);
   set1 = set1.add(z);
@@ -260,11 +281,21 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(y));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(z));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(x*y)));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(y*z)));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(x*z)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(x)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(y)));
+  BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(z)));
   set1 = set1.add(BooleMonomial());
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(y));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(z));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(x)));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(y)));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(z)));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent()));
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {
@@ -327,6 +358,22 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!empty.owns(v));
   BOOST_CHECK(!empty.owns(w));
   BOOST_CHECK(!empty.owns(BooleMonomial()));
+  BOOST_CHECK(set.owns(BooleExponent(x*y*z)));
+  BOOST_CHECK(set.owns(BooleExponent(v*z)));
+  BOOST_CHECK(set.owns(BooleExponent(x*v)));
+  BOOST_CHECK(set.owns(BooleExponent(y)));
+  BOOST_CHECK(!set.owns(BooleExponent(x)));
+  BOOST_CHECK(!set.owns(BooleExponent(z)));
+  BOOST_CHECK(!set.owns(BooleExponent(v)));
+  BOOST_CHECK(!set.owns(BooleExponent(w)));
+  BOOST_CHECK(!set.owns(BooleExponent(x*v*z)));
+  BOOST_CHECK(!set.owns(BooleExponent()));
+  BOOST_CHECK(!empty.owns(BooleExponent(x)));
+  BOOST_CHECK(!empty.owns(BooleExponent(y)));
+  BOOST_CHECK(!empty.owns(BooleExponent(z)));
+  BOOST_CHECK(!empty.owns(BooleExponent(v)));
+  BOOST_CHECK(!empty.owns(BooleExponent(w)));
+  BOOST_CHECK(!empty.owns(BooleExponent()));
 
   set_type addedset = set.add(x);
   addedset = addedset.add(x*v*z);
@@ -338,7 +385,16 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!addedset.owns(z));
   BOOST_CHECK(!addedset.owns(v));
   BOOST_CHECK(!addedset.owns(w));
-  BOOST_CHECK(addedset.owns(x*v*z));
+  BOOST_CHECK(addedset.owns(BooleExponent(x*v*z)));
+  BOOST_CHECK(addedset.owns(BooleExponent(x*y*z)));
+  BOOST_CHECK(addedset.owns(BooleExponent(v*z)));
+  BOOST_CHECK(addedset.owns(BooleExponent(x*v)));
+  BOOST_CHECK(addedset.owns(BooleExponent(y)));
+  BOOST_CHECK(addedset.owns(BooleExponent(x)));
+  BOOST_CHECK(!addedset.owns(BooleExponent(z)));
+  BOOST_CHECK(!addedset.owns(BooleExponent(v)));
+  BOOST_CHECK(!addedset.owns(BooleExponent(w)));
+  BOOST_CHECK(addedset.owns(BooleExponent(x*v*z)));
   addedset = empty.add(x);
   addedset = addedset.add(y);
   addedset = addedset.add(v*w);
@@ -347,10 +403,16 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(addedset.owns(v*w));
   BOOST_CHECK(!addedset.owns(v));
   BOOST_CHECK(!addedset.owns(w));
+  BOOST_CHECK(addedset.owns(BooleExponent(x)));
+  BOOST_CHECK(addedset.owns(BooleExponent(y)));
+  BOOST_CHECK(addedset.owns(BooleExponent(v*w)));
+  BOOST_CHECK(!addedset.owns(BooleExponent(v)));
+  BOOST_CHECK(!addedset.owns(BooleExponent(w)));
 
   set_type empty2;
   empty2 = empty2.add(x);
   BOOST_CHECK(empty2.owns(x));
+  BOOST_CHECK(empty2.owns(BooleExponent(x)));
 
   BOOST_CHECK(!set.ownsOne());
   addedset = set.add(BooleMonomial());
@@ -369,18 +431,39 @@ BOOST_AUTO_TEST_CASE(test_division) {
   set_type result = set.divisorsOf(x);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
+  result = set.divisorsOf(BooleExponent(x));
+  output << result;
+  BOOST_CHECK(output.is_equal("{}"));
   result = set.divisorsOf(y);
+  output << result;
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  result = set.divisorsOf(BooleExponent(y));
   output << result;
   BOOST_CHECK(output.is_equal("{{y}}"));
   result = set.divisorsOf(z);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
+  result = set.divisorsOf(BooleExponent(z));
+  output << result;
+  BOOST_CHECK(output.is_equal("{}"));
   result = set.divisorsOf(v);
+  output << result;
+  BOOST_CHECK(output.is_equal("{}"));
+  result = set.divisorsOf(BooleExponent(v));
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
   result = set.divisorsOf(w);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
+  result = set.divisorsOf(BooleExponent(w));
+  output << result;
+  BOOST_CHECK(output.is_equal("{}"));
+  result = set.divisorsOf(x*y);
+  output << result;
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  result = set.divisorsOf(BooleExponent(x*y));
+  output << result;
+  BOOST_CHECK(output.is_equal("{{y}}"));
 
   BOOST_TEST_MESSAGE( "divide" );
 
@@ -668,6 +751,20 @@ BOOST_AUTO_TEST_CASE(test_iter) {
   while (startc != finishc) {
     output << *startc <<", ";
     ++startc;
+  }
+  BOOST_CHECK(output.is_equal(""));
+
+  BooleSet::exp_iterator starte(set.expBegin()),finishe(set.expEnd());
+  while (starte != finishe) {
+    output << *starte <<", ";
+    ++starte;
+  }
+  BOOST_CHECK(output.is_equal("(0, 2), (1), "));
+  starte = empty.expBegin();
+  finishe = empty.expEnd();
+  while (starte != finishe) {
+    output << *starte <<", ";
+    ++starte;
   }
   BOOST_CHECK(output.is_equal(""));
 }

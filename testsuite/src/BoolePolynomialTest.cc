@@ -98,6 +98,9 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   
   BOOST_TEST_MESSAGE( "+=, -= and *=" );
   
+  BOOST_CHECK_EQUAL(BoolePolynomial() *= BooleExponent(x*y), 0);
+  BOOST_CHECK_EQUAL(BoolePolynomial(z*w) *= BooleExponent(x*y), x*y*z*w);
+  
   BOOST_CHECK_EQUAL(BoolePolynomial(x) += x, 0);
   BOOST_CHECK_EQUAL( (BoolePolynomial(x) += y ) += x, y);
   
@@ -123,6 +126,10 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK(output.is_equal("x*y*v + y*z*v + y*v"));
   
   BOOST_TEST_MESSAGE( "/= and %=" );
+  
+  BOOST_CHECK_THROW(BoolePolynomial(x) /= BoolePolynomial(), PBoRiGenericError<CTypes::division_by_zero>);
+  BOOST_CHECK_THROW(BoolePolynomial(x) /= (false), PBoRiGenericError<CTypes::division_by_zero>);
+  
   output << (poly = (poly_type(x*y*z + x*z*w +v) /= BooleMonomial(x*z)));
   BOOST_CHECK_EQUAL(poly, (y + w));
   BOOST_CHECK(output.is_equal("y + w"));
@@ -145,6 +152,10 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK(output.is_equal("v"));
 
   output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleMonomial(y*z)));
+  BOOST_CHECK_EQUAL(poly, x+v);
+  BOOST_CHECK(output.is_equal("x + v"));
+
+  output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleVariable(1)));
   BOOST_CHECK_EQUAL(poly, x+v);
   BOOST_CHECK(output.is_equal("x + v"));
 
@@ -259,6 +270,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).lexLead(), x*y);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z).lexLead(), x*y);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).lexLead(), x*y);
+  BOOST_CHECK_EQUAL(poly_type().lexLeadDeg(), -1);
 
   BOOST_TEST_MESSAGE( "stableHash");
   BOOST_CHECK_EQUAL(poly_type(1).stableHash(), 4801919416);
@@ -296,6 +308,19 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x + y*z + 1).totalDeg(), 2);
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z).totalDeg(), 2);
   BOOST_CHECK_EQUAL(poly_type(x + y*z + z*v*w ).totalDeg(), 3);
+
+  BOOST_CHECK_EQUAL(poly_type().leadTotalDeg(), -1);
+  BOOST_CHECK_EQUAL(poly_type(0).leadTotalDeg(), -1);
+  BOOST_CHECK_EQUAL(poly_type(1).leadTotalDeg(), 0);
+  BOOST_CHECK_EQUAL(poly_type(x).leadTotalDeg(), 1);
+  BOOST_CHECK_EQUAL(poly_type(x*y).leadTotalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z).leadTotalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).leadTotalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).leadTotalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).leadTotalDeg(), 2);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + 1).leadTotalDeg(), 1);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + z).leadTotalDeg(), 1);
+  BOOST_CHECK_EQUAL(poly_type(x + y*z + z*v*w ).leadTotalDeg(), 1);
 
   BOOST_CHECK(poly_type(x + y + y*v*w + v*w).firstReducibleBy(poly_type(x+y)));
 
@@ -447,6 +472,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
   BOOST_CHECK_EQUAL(poly1.boundedLeadExp(1), BooleExponent().change(0));
   BOOST_CHECK_EQUAL(poly2.boundedLeadExp(1), BooleExponent().change(0));
 
+  BOOST_CHECK_EQUAL(poly_type().leadDeg(), -1);
   BOOST_CHECK_EQUAL(poly1.leadDeg(), 1);
   BOOST_CHECK_EQUAL(poly2.leadDeg(), 1);
 
@@ -507,10 +533,17 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
   BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(lex_tag()), poly2.genericExpEnd(lex_tag()),
                                 exps2, exps2 + 5);
 
+  BOOST_CHECK_EQUAL(poly_type().eliminationLength(), 0);
   BOOST_CHECK_EQUAL(poly1.eliminationLength(), 10);
   BOOST_CHECK_EQUAL(poly2.eliminationLength(), 8);
   BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 10);
   BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 8);
+
+  BOOST_CHECK_EQUAL(poly1.compare(poly1), CTypes::equality);
+  BOOST_CHECK_EQUAL(poly1.compare(poly2), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly2.compare(poly1), CTypes::less_than);
+  BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
@@ -585,11 +618,17 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
   BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(dlex_tag()), poly2.genericExpEnd(dlex_tag()),
                                 exps2, exps2 + 5);
 
+  BOOST_CHECK_EQUAL(poly_type().eliminationLength(), 0);
   BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
 
+  BOOST_CHECK_EQUAL(poly1.compare(poly1), CTypes::equality);
+  BOOST_CHECK_EQUAL(poly1.compare(poly2), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly2.compare(poly1), CTypes::less_than);
+  BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>) {
@@ -664,11 +703,17 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>
   BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(dp_asc_tag()), poly2.genericExpEnd(dp_asc_tag()),
                                 exps2, exps2 + 5);
 
+  BOOST_CHECK_EQUAL(poly_type().eliminationLength(), 0);
   BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
 
+  BOOST_CHECK_EQUAL(poly1.compare(poly1), CTypes::equality);
+  BOOST_CHECK_EQUAL(poly1.compare(poly2), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly2.compare(poly1), CTypes::less_than);
+  BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::block_dlex>) {
@@ -745,11 +790,17 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::blo
   BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(block_dlex_tag()), poly2.genericExpEnd(block_dlex_tag()),
                                 exps2, exps2 + 5);
 
+  BOOST_CHECK_EQUAL(poly_type().eliminationLength(), 0);
   BOOST_CHECK_EQUAL(poly1.eliminationLength(), 10);
   BOOST_CHECK_EQUAL(poly2.eliminationLength(), 8);
   BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 10);
   BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 8);
 
+  BOOST_CHECK_EQUAL(poly1.compare(poly1), CTypes::equality);
+  BOOST_CHECK_EQUAL(poly1.compare(poly2), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly2.compare(poly1), CTypes::less_than);
+  BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
 
 BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::block_dp_asc>) {
@@ -825,11 +876,17 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
   BOOST_CHECK_EQUAL_COLLECTIONS(poly2.genericExpBegin(block_dp_asc_tag()), poly2.genericExpEnd(block_dp_asc_tag()),
                                 exps2, exps2 + 5);
 
+  BOOST_CHECK_EQUAL(poly_type().eliminationLength(), 0);
   BOOST_CHECK_EQUAL(poly1.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLength(), 5);
   BOOST_CHECK_EQUAL(poly1.eliminationLengthWithDegBound(3), 5);
   BOOST_CHECK_EQUAL(poly2.eliminationLengthWithDegBound(2), 5);
 
+  BOOST_CHECK_EQUAL(poly1.compare(poly1), CTypes::equality);
+  BOOST_CHECK_EQUAL(poly1.compare(poly2), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly2.compare(poly1), CTypes::less_than);
+  BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
+  BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
 
 
