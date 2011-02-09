@@ -570,6 +570,7 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   BOOST_CHECK(output.is_equal("{}"));
   output << set.multiplesOf(BooleMonomial());
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
+
   output << empty.multiplesOf(x);
   BOOST_CHECK(output.is_equal("{}"));
   output << empty.multiplesOf(x*y);

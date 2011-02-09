@@ -22,7 +22,7 @@ BEGIN_NAMESPACE_PBORI
 
 // dummy for cuddcache
 DdNode* 
-pboriCuddZddUnionXor__(DdManager *, DdNode *, DdNode *){ return NULL; }
+pboriCuddZddUnionXor__(DdManager *, DdNode *, DdNode *){ return NULL; } // LCOV_EXCL_LINE
 
 END_NAMESPACE_PBORI
 

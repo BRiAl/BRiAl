@@ -108,13 +108,28 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_TEST_MESSAGE( "lead, leadExp, leadFirst" );
   order_type order;
   BoolePolynomial poly = x + x*y + y*z*v*w + 1;
+
+  // testing leadexp first, since they do not cache results (but call the cache)
+  BOOST_CHECK_EQUAL(order.leadExp(poly)    , BooleExponent(y*z*v*w));
+  BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly,0), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly-1,0), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+
   BOOST_CHECK_EQUAL(order.lead(poly)    , BooleMonomial(y*z*v*w));
   BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));
-  BOOST_CHECK_THROW(order.lead(poly,-1), PBoRiError);
-  BOOST_CHECK_EQUAL(order.leadExp(poly)    , BooleExponent(y*z*v*w));
+  BOOST_CHECK_EQUAL(order.lead(poly,0), BooleMonomial());
 
+  BOOST_CHECK_THROW(order.lead(poly,-1), PBoRiError);
+
+  poly = x + x*y + y + 1;
+  BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent(x*y));
   BOOST_CHECK_EQUAL(order.leadExp(poly,-1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+
+  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial(x*y));
+  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial(x));
+  BOOST_CHECK_THROW(order.lead(poly, -1), PBoRiError);
 
   // Empty (zero) poly
   poly = BoolePolynomial();
@@ -122,6 +137,7 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_THROW(order.lead(poly,1), PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent());
+  BOOST_CHECK_EQUAL(order.leadExp(poly,0), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_THROW(order.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   poly = 1;

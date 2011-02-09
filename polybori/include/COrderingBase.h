@@ -73,7 +73,7 @@ public:
   COrderingBase() { }
 
   // Destructor
-  virtual ~COrderingBase() { }
+  virtual ~COrderingBase() { }  // LCOV_EXCL_LINE 
 
   /// Comparison of monomials
   virtual comp_type compare(idx_type, idx_type) const = 0;

@@ -22,6 +22,7 @@ using boost::test_tools::output_test_stream;
 
 USING_NAMESPACE_PBORI
 
+
 struct Flex {
   typedef LexOrder order_type;
   Flex():
@@ -146,22 +147,16 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   order_type order;
   output_test_stream output;
   BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
-  while (start != finish) {
-    output << *start <<", ";
-    ++start;
-  }
-  BOOST_CHECK(output.is_equal(""));
+
+  BOOST_CHECK(start == finish);
   BOOST_CHECK_THROW(order.appendBlock(-1), std::exception);
   order.appendBlock(0);
   order.appendBlock(2);
   order.appendBlock(6);
   start = order.blockBegin();
   finish = order.blockEnd();
-  while (start != finish) {
-    output << *start <<", ";
-    ++start;
-  }
-  BOOST_CHECK(output.is_equal(""));
+  BOOST_CHECK(start == finish);
+
   BOOST_CHECK(order.lieInSameBlock(0,1));
   BOOST_CHECK(order.lieInSameBlock(-1,4));
   BOOST_CHECK_EQUAL(order.lastBlockStart(), std::numeric_limits<int>::max());
@@ -170,5 +165,6 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   finish = order.blockEnd();
   BOOST_CHECK(start==finish);
 }
+
 
 BOOST_AUTO_TEST_SUITE_END()

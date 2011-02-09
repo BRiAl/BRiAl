@@ -33,6 +33,13 @@ struct Fring {
   ~Fring() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 };
 
+
+class InheritedFromRing:
+  public BoolePolyRing {
+public:
+  InheritedFromRing (size_type num, ordercode_type order, bool active):
+    BoolePolyRing(num, order, active) {}
+};
 BOOST_FIXTURE_TEST_SUITE(BoolePolyRingTestSuite, Fring )
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
@@ -98,7 +105,12 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   ring15.activate();
   defaultr = ring_type();
   BOOST_CHECK_EQUAL(ring15.hash(),defaultr.hash());
- 
+
+  // Mainly vor coverage
+  InheritedFromRing alsoring(1, 2, true);
+  InheritedFromRing alsoring2(1, 2, false);
+  BOOST_CHECK(dynamic_cast<ring_type*>(&alsoring) != NULL);
+  BOOST_CHECK(dynamic_cast<ring_type*>(&alsoring2) != NULL);
 }
 
 BOOST_AUTO_TEST_CASE(test_variables) {

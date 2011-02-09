@@ -322,8 +322,8 @@ protected:
 
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(typename base::internal_manager_type,node_type){
-    return NULL;
+  static node_type cache_dummy(typename base::internal_manager_type,node_type){ // LCOV_EXCL_LINE
+    return NULL; // LCOV_EXCL_LINE
   }
 };
 
@@ -376,9 +376,9 @@ protected:
 
 private:
   /// Define unique static function, as marker for Cudd cache
-  static node_type cache_dummy(typename base::internal_manager_type, 
-                               node_type, node_type){
-    return NULL;
+  static node_type cache_dummy(typename base::internal_manager_type,  // LCOV_EXCL_LINE
+                               node_type, node_type){ // LCOV_EXCL_LINE
+    return NULL;  // LCOV_EXCL_LINE
   }
 };
 

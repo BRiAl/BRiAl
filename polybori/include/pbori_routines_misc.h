@@ -110,8 +110,10 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
     deg = std::max(deg,  dd_cached_degree(cache, navi.elseBranch(), bound) );
 
   // Write result to cache
-  if ((deg >=0) && (bound >= 0))
+  if (deg >= 0) {
+    assert(bound >= 0);
     cache.insert(navi, bound, deg);
+  }
 
   return deg;
 }
@@ -292,10 +294,8 @@ dd_multiply_recursively_monom(const CacheType& cache_mgr,
   typedef NaviType navigator;
 
   if (monomNavi.isConstant()) {
-    if(monomNavi.terminalValue())
-      return cache_mgr.generate(navi);
-    else 
-      return cache_mgr.zero();
+    assert(monomNavi.terminalValue() == true);
+    cache_mgr.generate(navi);
   }
 
   assert(monomNavi.elseBranch().isEmpty());
@@ -915,11 +915,10 @@ dd_first_multiples_of(const CacheType& cache_mgr,
 
   typedef typename SetType::dd_type dd_type;
 
-  if(rhsNavi.isConstant())
-    if(rhsNavi.terminalValue())
-      return cache_mgr.generate(navi);
-    else
-      return cache_mgr.generate(rhsNavi);
+  if(rhsNavi.isConstant()) {
+    assert(rhsNavi.terminalValue() == true);
+    return cache_mgr.generate(navi);
+  }
 
   if (navi.isConstant() || (*navi > *rhsNavi)) 
     return cache_mgr.zero();

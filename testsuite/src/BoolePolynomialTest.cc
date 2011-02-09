@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   poly_type::termlist_type terms;
   (x + y*z + z*v*w).fetchTerms(terms);
 
-  BooleMonomial termsref[] = {x, y*z, z*v*w};
+  BooleMonomial termsref[] = {x, y*z, z*v*w, BooleMonomial()};
 
   BOOST_CHECK_EQUAL_COLLECTIONS(terms.begin(), terms.end(), 
                                 termsref, termsref + 3);
@@ -376,11 +376,12 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL_COLLECTIONS(terms.begin(), terms.end(), 
                                 termsref, termsref + 3);
   poly_type poly = (x + y*z + z*v*w);
-  poly_type::deg_type degs[] = {1, 2, 3};
+  poly_type::deg_type degs[] = {1, 2, 3, 0};
   poly_type::exp_type 
     exps[] = {BooleExponent().change(0), 
               BooleExponent().change(1).change(2),
-              BooleExponent().change(2).change(3).change(4)};
+              BooleExponent().change(2).change(3).change(4),
+              BooleExponent()};
   
   BOOST_CHECK_EQUAL_COLLECTIONS(poly.begin(), poly.end(), 
                                 termsref, termsref + 3);
@@ -391,6 +392,19 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
                                 exps, exps + 3);
 
   BOOST_CHECK_EQUAL(poly_type(x*y + z*v + v*w).firstTerm(), x*y);
+
+
+  poly = (x + y*z + z*v*w + 1); // same as the latter, but  + 1
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.begin(), poly.end(), 
+                                termsref, termsref + 4);
+
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.degBegin(), poly.degEnd(), 
+                                degs, degs + 4);
+  BOOST_CHECK_EQUAL_COLLECTIONS(poly.expBegin(), poly.expEnd(), 
+                                exps, exps + 4);
+
+  BOOST_CHECK_EQUAL(poly_type(x*y + z*v + v*w).firstTerm(), x*y);
+
 
   poly = (x*y + z*v + v*w);
   poly_type::idx_type idxs[] = {0, 1};
@@ -411,6 +425,8 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(0), 1);
   BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(1), x);
   BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(2), z*v);
+  BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(3), z*v*w);
+  // repeat for covering sucessfull cache-calls
   BOOST_CHECK_EQUAL(poly_type(x + z*v + z*v*w + 1).gradedPart(3), z*v*w);
 
   output << poly_type(x + z*v + z*v*w + 1).set();
@@ -893,6 +909,20 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
   BOOST_CHECK_EQUAL(poly1.compare(poly_type()), CTypes::greater_than);
   BOOST_CHECK_EQUAL(poly_type().compare(poly2), CTypes::less_than);
 }
+
+
+
+BOOST_AUTO_TEST_CASE(test_incompatible) {
+
+  BOOST_TEST_MESSAGE( "Incompatible operands..." ); 
+  BoolePolyRing other_ring(5, CTypes::lp, false);
+
+  BoolePolynomial other_poly = other_ring.variable(2);
+
+  BOOST_CHECK_THROW((x*y + z) +other_poly, std::exception);
+
+}
+
 
 
 BOOST_AUTO_TEST_SUITE_END()

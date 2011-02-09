@@ -392,4 +392,11 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly, 0) , BooleExponent(x*y));
   BOOST_CHECK_NE(blockorder.leadExp(poly, 0), order.leadExp(poly, 0));
 }
+
+BOOST_AUTO_TEST_CASE(test_is_ring) {
+
+  BoolePolyRing block_ring(CTypes::block_dlex, 5, false);
+
+}
+
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,13 +1,14 @@
 Release Name: 0.7.0:
 * Polynomials, monomials, variables, and BooleSets now own a reference to a
   fully-functionally BoolePolyRing (including ordering)
+* Orderings can work independently from ring
 * Simplified interface: remove *Assign() variants from diagrams
 * Added polybori.nf.simple_nf
 * Simplification of declare_ring in ipbori
 * Rename BoolePolynomials::reducibleBy -> BoolePolynomials::firstReducibleBy
 * idx_type is unsigned now
-* unittests for libpolybori are available
-
+* unittests for libpolybori are available, covering 98% of libpolybori
+	
 Release Name: 0.6.5:
 * If boost/boost-python is not available we already stop at onfiguring
   (does not affect EXTERNAL_PYTHON_EXTENSION=True)	
