@@ -7,7 +7,8 @@ Release Name: 0.7.0:
 * Simplification of declare_ring in ipbori
 * Rename BoolePolynomials::reducibleBy -> BoolePolynomials::firstReducibleBy
 * idx_type is unsigned now
-* unittests for libpolybori are available, covering 98% of libpolybori
+* Unittests for libpolybori are available, covering 98% of libpolybori
+* Added experimental PolyGUI
 	
 Release Name: 0.6.5:
 * If boost/boost-python is not available we already stop at onfiguring
