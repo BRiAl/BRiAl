@@ -129,7 +129,26 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
  
   output << ( poly *=(poly_type(v)*=y));
   BOOST_CHECK(output.is_equal("x*y*v + y*z*v + y*v"));
-  
+
+
+  BOOST_CHECK_EQUAL((x*z + y) *= (x*y).exp() ,  x*y*z +x*y);
+  BOOST_CHECK_EQUAL((x*z + z) *= (x*y).exp() ,  0);
+
+  BOOST_CHECK_EQUAL((x*y) * (x*z + y), x*y*z +x*y);
+  BOOST_CHECK_EQUAL((x*z + z) *= x*y ,  0);
+
+  BOOST_CHECK_EQUAL(poly_type(0) *= (x*y).exp(),  0);
+  BOOST_CHECK_EQUAL((x*y) * poly_type(0), 0);  
+
+  BOOST_CHECK_EQUAL(poly_type(1) *= (x*y).exp(),  x*y);
+  BOOST_CHECK_EQUAL((x*y) * poly_type(1), x*y);  
+
+  BOOST_CHECK_EQUAL(poly_type(x + y) *= v*w, x*v*w + y*v*w);
+  BOOST_CHECK_EQUAL(poly_type(x + y) *= (v*w).exp(), x*v*w + y*v*w);
+
+  BOOST_CHECK_EQUAL(poly_type(v + w) *= (x*y).exp(), x*y*v + x*y*w);
+  BOOST_CHECK_EQUAL(poly_type(v + w) *= (x*v).exp(), x*v + x*v*w);
+
   BOOST_TEST_MESSAGE( "/= and %=" );
   
   BOOST_CHECK_THROW(BoolePolynomial(x) /= BoolePolynomial(), PBoRiGenericError<CTypes::division_by_zero>);
@@ -151,7 +170,39 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(poly, (x*y*z + x*z*w + v));
   BOOST_CHECK(output.is_equal("x*y*z + x*z*w + v"));
   
-  
+  output << (poly = (poly_type(0) /= (x*y)));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(1) /= (x*y)));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(0) /= (x*y).exp()));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(1) /= (x*y).exp()));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(v+w) /= (x*y).exp()));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(v+w) /= (x*y)));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(x*v + x*w) /= (x*y).exp()));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+  output << (poly = (poly_type(x*v + x*w) /= (x*y)));
+  BOOST_CHECK_EQUAL(poly, 0);
+  BOOST_CHECK(output.is_equal("0"));
+
+
   output << (poly = (poly_type(x*y*z + x*z*w +v) %= BooleMonomial(x*z)));
   BOOST_CHECK_EQUAL(poly, v);
   BOOST_CHECK(output.is_equal("v"));
@@ -166,6 +217,8 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
 
 
   BOOST_CHECK_EQUAL(-(x*y*z + x*z*w +v), (x*y*z + x*z*w +v));
+
+
 }
 
 

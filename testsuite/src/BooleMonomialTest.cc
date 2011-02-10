@@ -129,6 +129,7 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_THROW(monom_type()/=x, PBoRiError);
   BOOST_CHECK_THROW(monom_type(y)/=x, PBoRiError);
   BOOST_CHECK_THROW(monom_type(z*y)/=x, PBoRiError);
+
 }
 
 BOOST_AUTO_TEST_CASE(test_properties) {

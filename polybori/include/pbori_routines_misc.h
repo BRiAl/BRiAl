@@ -643,10 +643,8 @@ dd_divide_recursively(const CacheType& cache_mgr,
   typedef typename PolyType::dd_type dd_type;
 
   if (monomNavi.isConstant()) {
-    if(monomNavi.terminalValue())
-      return cache_mgr.generate(navi);
-    else 
-      return cache_mgr.zero();
+    assert(monomNavi.terminalValue() == true);
+    return cache_mgr.generate(navi);
   }
 
   assert(monomNavi.elseBranch().isEmpty());

@@ -43,8 +43,7 @@ BOOST_AUTO_TEST_CASE(test_text) {
 
   try { throw PBoRiError(-1); }
   catch (PBoRiError e) {
-    ///@todo CErrorInfo accesses an array without checking size
-    //BOOST_CHECK_EQUAL(e.text(), CErrorInfo::text(-1));
+    BOOST_CHECK_EQUAL(e.text(), CErrorInfo::text(-1));
   }
 }
 
@@ -61,7 +60,7 @@ BOOST_AUTO_TEST_CASE(test_what) {
 
   try { throw PBoRiError(-1); }
   catch (PBoRiError e) {
-    //BOOST_CHECK_EQUAL(e.what(), CErrorInfo::text(-1));
+    BOOST_CHECK_EQUAL(e.what(), CErrorInfo::text(-1));
   }
 }
 

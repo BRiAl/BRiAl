@@ -47,6 +47,9 @@ CErrorInfo::errortext_type
 CErrorInfo::text(errornum_type num) {
 
   PBORI_TRACE_FUNC( "CErrorInfo::text(errornum_type) const" );
+  if UNLIKELY(num > CTypes::last_error)
+    return "Unknown error occured.";
+
   return pErrorText[num];
 }
 

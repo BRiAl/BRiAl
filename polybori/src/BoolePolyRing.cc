@@ -30,6 +30,9 @@
 
 #include "cuddInt.h"
 
+#include <climits> // LINE_MAX
+#include <cstdio> // just for tmpfile()
+
 BEGIN_NAMESPACE_PBORI
 
 
@@ -89,6 +92,45 @@ BoolePolyRing::monom_type BoolePolyRing::coerce(const monom_type& rhs) const {
 BoolePolyRing::var_type BoolePolyRing::coerce(const var_type& rhs) const {
   return var_type(rhs.index(), *this);
 }
+
+
+#if !defined(__GNUC__) && !defined(fmemopen)
+FILE *fmemopen (void *buf, size_t size, const char *opentype)
+{
+FILE *f;
+
+assert(strcmp(opentype, "r") == 0);
+
+f = tmpfile();
+fwrite(buf, 1, size, f);
+rewind(f);
+
+return f;
+}
+#endif
+
+BoolePolyRing::ostream_type& 
+BoolePolyRing::print(ostream_type& os) const {
+
+  FILE* out = tmpfile();
+  bool no_error = false;
+  if (out)
+    no_error = Cudd_PrintInfo(getManager(), out);
+
+  if (no_error) {
+    rewind(out);
+    char str_buf[LINE_MAX];
+    while( fgets(str_buf, LINE_MAX, out) )
+      os <<"## "<< str_buf;
+  }
+  else
+    os << "##  No ring info available" << std::endl;
+
+  fclose(out);
+
+  return os;
+}
+
 
 
 END_NAMESPACE_PBORI

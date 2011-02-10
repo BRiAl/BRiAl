@@ -42,6 +42,12 @@ static BooleMonomial var_power(const BooleVariable& p, int n){
 void print_variable(const BooleVariable & p){
   ((const BoolePolynomial&) p).print(cout);
 }
+
+
+void print_ring_info() {
+  BooleEnv::print(std::cout);
+}
+
 bool have_degree_order(){
   return BooleEnv::ordering().isDegreeOrder();
 }
@@ -121,7 +127,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   };
 };*/
   def("get_order_code",&BooleEnv::getOrderCode);  
-  def("print_ring_info", &BooleEnv::printInfo);
+  def("print_ring_info", print_ring_info);
   
   boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring") 
     //.def(boost::python::init <>())

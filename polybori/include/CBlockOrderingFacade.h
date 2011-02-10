@@ -58,18 +58,22 @@ public:
   CBlockOrderingFacade(const self& rhs): base_type(rhs), m_indices(rhs.m_indices) {};
 
   /// Destructor
-  ~CBlockOrderingFacade() { }
+  ~CBlockOrderingFacade() = 0;
 
   /// @name interface for block orderings
   //@{
   COrderingBase::block_iterator blockBegin() const { return m_indices.begin() + 1; }
   COrderingBase::block_iterator blockEnd() const { return m_indices.end(); }
+
   void appendBlock(COrderingBase::checked_idx_type idx) {
-    // idx should always be >= max(int) (==blockEnd() -1)
-    // and if there are existing blocks (blockBegin()!=blockEnd() -1)...
-    // the added block should be strictly larger than the previously added block
-    if((idx >= *(blockEnd()-1)) || ((blockBegin() != (blockEnd()-1)) && (idx <= *(blockEnd()-2))))
-      throw std::runtime_error("Blocks must be added in a strictly increasing order.");
+
+    // by checked_idx_type idx should always be <= max(int) (== blockEnd() - 1)
+    assert(idx <= *(blockEnd() - 1));
+
+    if ((idx >= CTypes::max_index()) || (idx <= *(blockEnd() - 2)))
+      throw std::runtime_error("Blocks must be positive and have to be "
+                               "added in a strictly increasing order.");
+
     m_indices.back() = idx;
     m_indices.push_back(CTypes::max_index());
   }
@@ -124,6 +128,9 @@ protected:
   /// index data
   COrderingBase::block_idx_type m_indices;
 };
+
+template <class OrderType, class OrderTag>
+inline CBlockOrderingFacade<OrderType, OrderTag>::~CBlockOrderingFacade() {}
 
 END_NAMESPACE_PBORI
 

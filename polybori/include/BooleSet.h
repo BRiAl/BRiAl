@@ -213,7 +213,10 @@ public:
   /// Test, whether we have two terms only
   bool_type isPair() const { return dd_is_pair(navigation()); }
 
-  /// Compute existential abstraction
+  /// Compute existential abstraction:
+  /// Given a diagram @c F, and a set of variables @c S, remove all occurrences
+  /// of each @c s in @c S from any subset in @c F. This can be implemented by 
+  /// cofactoring @c F w.r.t. @c s = 1 and @c s = 0, then forming their union
   self existAbstract(const term_type& rhs) const;
 
   /// Access internal decision diagram

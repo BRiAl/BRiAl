@@ -115,11 +115,13 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly,0), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly-1,0), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly,1), BooleExponent(x));
+  BOOST_CHECK_EQUAL(order.leadExp(x + y, 0), BooleExponent());
 
   BOOST_CHECK_EQUAL(order.lead(poly)    , BooleMonomial(y*z*v*w));
   BOOST_CHECK_EQUAL(order.lead(poly,1), BooleMonomial(x));
   BOOST_CHECK_EQUAL(order.lead(poly,0), BooleMonomial());
 
+  BOOST_CHECK_THROW(order.lead(x + y, 0), PBoRiError);
   BOOST_CHECK_THROW(order.lead(poly,-1), PBoRiError);
 
   poly = x + x*y + y + 1;
@@ -220,6 +222,34 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   start = order.blockBegin();
   finish = order.blockEnd();
   BOOST_CHECK(start==finish);
+}
+
+
+BOOST_AUTO_TEST_CASE(test_cover_constructors_and_destructors) {
+  int order_code = CTypes::dlex;
+  BoolePolyRing block_ring(5, order_code, false);
+
+  BOOST_CHECK_EQUAL(block_ring.ordering().getOrderCode(), order_code);
+
+  class Inherited: public order_type {};
+
+  Inherited dummy;
+  BOOST_CHECK_EQUAL(dummy.getOrderCode(), order_code);
+
+  order_type self;
+  BOOST_CHECK_EQUAL(self.getOrderCode(), order_code);
+
+  order_type* pSelf = new order_type;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  pSelf = new Inherited;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  Inherited* pDummy = new Inherited;
+  BOOST_CHECK_EQUAL(pDummy->getOrderCode(), order_code);
+  delete pDummy;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

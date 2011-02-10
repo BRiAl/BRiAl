@@ -24,6 +24,7 @@ using boost::test_tools::output_test_stream;
 #include "pbori_order.h"
 #include "COrderingBase.h"
 
+#include <cstdio>
 USING_NAMESPACE_PBORI
 
 struct Fring {
@@ -424,6 +425,15 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   ring_type empty2(0, 0, false);
   BOOST_CHECK_NE(empty1.hash(), empty2.hash());// Not equal because different
                                 // instances (but of likewise rings)
+}
+
+BOOST_AUTO_TEST_CASE(test_print) {
+
+  ring_type r(1, CTypes::lp, false);
+  output_test_stream output;
+  output << r;
+  BOOST_CHECK(!output.is_empty());
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -153,9 +153,6 @@ public:
   /// Get (shared) pointer to initialized manager
   mgr_ptr pManager() const { return p_mgr; }
 
-  /// Print statistical information
-  void info() const { checkedResult(Cudd_PrintInfo(*this,stdout)); }
-
   /// Assignment operation 
   self& operator=(const self & right) {
     p_mgr = right.p_mgr;

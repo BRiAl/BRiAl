@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), std::numeric_limits<int>::max());
   output_test_stream output, output_ring;
   BooleEnv::changeOrdering(COrderEnums::block_dlex);
-  BooleEnv::appendBlock(0);
+  BOOST_CHECK_THROW(BooleEnv::appendBlock(0), std::exception);
   BooleEnv::appendBlock(2);
   BoolePolyRing::block_iterator start(BooleEnv::blockBegin()), 
                                 finish(BooleEnv::blockEnd());
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   }
   BOOST_CHECK_EQUAL(output.str(),output_ring.str());
   output_ring.str("");
-  output_ring << "0, 2, " << std::numeric_limits<int>::max() << ", ";
+  output_ring << "2, " << std::numeric_limits<int>::max() << ", ";
   BOOST_CHECK_EQUAL(output.str(), output_ring.str());
 
   BooleEnv::clearBlocks();

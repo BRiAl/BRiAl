@@ -153,11 +153,11 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(output.is_equal(output_test.str()));
   //  std::cout << "fin " << *finish << " fin-1 " << *(finish-1) << " fin-2 " << *(finish-2);;
   BOOST_CHECK_THROW(order.appendBlock(-1), std::exception);
-  order.appendBlock(0);
   BOOST_CHECK_THROW(order.appendBlock(0), std::runtime_error);
   order.appendBlock(2);
   BOOST_CHECK_THROW(order.appendBlock(1), std::runtime_error);
   order.appendBlock(6);
+  BOOST_CHECK_THROW(order.appendBlock(6), std::runtime_error);
   BOOST_CHECK_THROW(order.appendBlock(intmax), std::runtime_error);
   start = order.blockBegin();
   finish = order.blockEnd();
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
     ++start;
   }
   output_test.str("");
-  output_test << "0, 2, 6, " << intmax << ", ";
+  output_test << "2, 6, " << intmax << ", ";
   BOOST_CHECK(output.is_equal(output_test.str()));
   BOOST_CHECK(order.lieInSameBlock(0,1));
   BOOST_CHECK(!order.lieInSameBlock(1,2));
@@ -393,10 +393,31 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_NE(blockorder.leadExp(poly, 0), order.leadExp(poly, 0));
 }
 
-BOOST_AUTO_TEST_CASE(test_is_ring) {
+BOOST_AUTO_TEST_CASE(test_cover_constructors_and_destructors) {
+  int order_code = CTypes::block_dlex;
+  BoolePolyRing block_ring(5, order_code, false);
 
-  BoolePolyRing block_ring(CTypes::block_dlex, 5, false);
+  BOOST_CHECK_EQUAL(block_ring.ordering().getOrderCode(), order_code);
 
+  class Inherited: public order_type {};
+
+  Inherited dummy;
+  BOOST_CHECK_EQUAL(dummy.getOrderCode(), order_code);
+
+  order_type self;
+  BOOST_CHECK_EQUAL(self.getOrderCode(), order_code);
+
+  order_type* pSelf = new order_type;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  pSelf = new Inherited;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  Inherited* pDummy = new Inherited;
+  BOOST_CHECK_EQUAL(pDummy->getOrderCode(), order_code);
+  delete pDummy;
 }
 
 BOOST_AUTO_TEST_SUITE_END()

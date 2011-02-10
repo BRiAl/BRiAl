@@ -135,8 +135,8 @@ public:
   /// Clears the function cache
   void clearCache() { p_core->m_mgr.cacheFlush(); }
 
-  /// Print out statistics and settings for current ring
-  void printInfo() {  return p_core->m_mgr.info(); }
+  /// Print out statistics and settings for current ring to output stream
+  ostream_type& print(ostream_type&) const;
 
   /// Get unique identifier for manager of *this
   hash_type hash() const { 
@@ -187,6 +187,12 @@ protected:
   /// Smart pointer to actual data
   core_ptr p_core;
 };
+
+/// Stream output operator
+inline BoolePolyRing::ostream_type& 
+operator<<(BoolePolyRing::ostream_type& os, const BoolePolyRing& ring) {
+  return ring.print(os);
+}
 
 END_NAMESPACE_PBORI
 

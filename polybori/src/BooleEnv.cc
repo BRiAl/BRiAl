@@ -119,20 +119,17 @@ BooleEnv::ordercode_type BooleEnv::getBaseOrderCode() {
   return ordering().getBaseOrderCode(); 
 }
 
-
-void
-BooleEnv::printInfo() {
-
-  return ring().printInfo();
+/// Access idx-th variable of the active ring
+BooleEnv::dd_type BooleEnv::variable(idx_type idx) {
+  return ring().variable(idx);
 }
 
 
+BooleEnv::ostream_type& 
+BooleEnv::print(ostream_type& os) {
 
-  /// Access idx-th variable of the active ring
-BooleEnv::dd_type BooleEnv::variable(idx_type idx) { 
-  return ring().variable(idx); 
+  return ring().print(os); 
 } 
-
 
 
 void BooleEnv::set(ring_type& theRing) { ring() = theRing; }

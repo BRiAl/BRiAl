@@ -195,4 +195,34 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   BOOST_CHECK(start==finish);
 }
 
+
+
+BOOST_AUTO_TEST_CASE(test_cover_constructors_and_destructors) {
+  int order_code = CTypes::dp_asc;
+  BoolePolyRing block_ring(5, order_code, false);
+
+  BOOST_CHECK_EQUAL(block_ring.ordering().getOrderCode(), order_code);
+
+  class Inherited: public order_type {};
+
+  Inherited dummy;
+  BOOST_CHECK_EQUAL(dummy.getOrderCode(), order_code);
+
+  order_type self;
+  BOOST_CHECK_EQUAL(self.getOrderCode(), order_code);
+
+  order_type* pSelf = new order_type;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  pSelf = new Inherited;
+  BOOST_CHECK_EQUAL(pSelf->getOrderCode(), order_code);
+  delete pSelf;
+
+  Inherited* pDummy = new Inherited;
+  BOOST_CHECK_EQUAL(pDummy->getOrderCode(), order_code);
+  delete pDummy;
+}
+
+
 BOOST_AUTO_TEST_SUITE_END()

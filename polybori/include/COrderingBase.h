@@ -73,7 +73,7 @@ public:
   COrderingBase() { }
 
   // Destructor
-  virtual ~COrderingBase() { }  // LCOV_EXCL_LINE 
+  virtual ~COrderingBase() = 0;
 
   /// Comparison of monomials
   virtual comp_type compare(idx_type, idx_type) const = 0;
@@ -166,6 +166,8 @@ protected:
   }
 };
 
+inline
+COrderingBase::~COrderingBase() { }
 
 END_NAMESPACE_PBORI
 

@@ -142,11 +142,10 @@ class BooleEnv:
   static void changeOrdering(ordercode_type code);
 
   /// Print low-level information
-  static void printInfo();
+  static ostream_type& print(ostream_type&);
 
   /// Activate given ring
   static void set(ring_type& theRing);
-  
 };
 
 ///please use BooleEnv::ring()
