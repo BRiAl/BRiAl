@@ -2,7 +2,19 @@
 
 # boxlayout.py
 
-import pathadjuster
+import sys
+import os.path
+
+# path adjustment 
+from os import environ as env
+
+pbdir = '..'
+if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
+pyroot = '$GUIPYPREFIX'
+if pyroot[0] == '$': pyroot = os.path.join(pbdir, "pyroot")
+sys.path.insert(0,  os.path.join(os.path.dirname(__file__), pyroot))
+
+
 from polybori.gbrefs import my_import, load_file, clean_data
 import resource
 from polybori.memusage import *
@@ -17,8 +29,6 @@ from polybori.PyPolyBoRi import *
 from polybori.statistics import used_vars
 
 
-import sys
-import os.path
 import tempfile
 from optparse import OptionParser
 from optparse import Values
@@ -26,6 +36,9 @@ from optparse import Values
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 #from PyQt4 import QDialog
+
+
+
 
 #pbdefaultoptionsdic={'faugere': False, 'interpolation_gb': False, 'show': True, 'showtime': False, 'linear_algebra_in_last_block': True, 'preprocess_only': False, 'incremental': False, 'selection_size': 1000, 'heuristic': True, 'clean_arguments': True, 'full_prot': False, 'recursion': False, 'invert': False, 'prot': True, 'fix_deg_bound': True, 'eliminate_identical_variables': True, 'convert_with_fglm_from_ring': None, 'cleanup': False, 'noro': False, 'easy_linear_polynomials': True, 'lazy': True, 'blocks': 'auto', 'step_factor': 1, 'max_growth': 2.0, 'exchange': True, 'red_tail_deg_growth': True, 'auto': False, 'matrix_prefix': 'matrix', 'red_tail': True, 'implementation': 'Python', 'gauss_on_linear': True, 'modified_linear_algebra': True, 'll_constants': True, 'result_to_list': True, 'aes': False, 'clean_and_restart_algorithm': False, 'llfirst': False, 'other_ordering_first': False, 'deg_bound': False, 'redsb': True, 'implications': False, 'draw_matrices': False, 'ordering': 'lp', 'minsb': True, 'll': False, 'llfirstonthefly': False, 'unique_ideal_generator': False}
 

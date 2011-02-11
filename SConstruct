@@ -64,9 +64,11 @@ def shell_output(*args):
 
 pyroot="pyroot/"
 ipbroot = 'ipbori'
+guiroot = 'gui'
 cudd_name = 'pboriCudd'
 
-[PyRootPath, IPBPath] = [PathJoiner(fdir) for fdir in [pyroot, ipbroot] ]
+[PyRootPath, IPBPath, GUIPath] = [PathJoiner(fdir) for fdir in [pyroot, ipbroot,
+                                                                guiroot] ]
 
 
 try:
@@ -1231,10 +1233,23 @@ if 'install' in COMMAND_LINE_TARGETS:
         installedfile = InstPyPath(relpath(pyroot, instfile.path))
         pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
+    env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
+                                 env['PYINSTALLPREFIX'])
+    print "path", relpath(expand_repeated(GUIPath(), env),
+                          env['PYINSTALLPREFIX']), "!", expand_repeated(GUIPath(), env), "!", env['PYINSTALLPREFIX']
     
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
 
+    for instfile in [ GUIPath('PolyGUI') ]:
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
+        
+    for instfile in [GUIPath('cnf2ideal.py')]:
+        pyfiles += FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+        
+    for instfile in [ GUIPath('polybori.png') ]:
+        FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+    
     # Copy c++ documentation
     if HAVE_DOXYGEN:
         cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
@@ -1289,9 +1304,15 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Symlink from executable into bin directory
     ipboribin = env.SymLink(InstExecPath('ipbori'),
                             InstPath(IPBPath('ipbori')))
+
+    guibin = env.SymLink(InstExecPath('PolyGUI'),
+                         InstPath(GUIPath('PolyGUI')))
+    
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
-
+    env.AlwaysBuild(guibin)   
+    env.Alias('install', guibin)
+    
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 
