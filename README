@@ -132,3 +132,7 @@ CCFLAGS="-library=stlport4"
 
 Also CPPPATH, LIBPATH and PYTHON might be adjusted to use library/binaries, which
 are compatible with the stlport4 option.
+
+
+====================
+See also: Singular/README
