@@ -23,7 +23,7 @@ needed:
 * python 2.4 (deprecated) or python 2.5 (recommended)
 * scons (v0.96 or later, recommended v0.98 or later)
 * the boost library, version 1.33.1 (for python 2.4; deprecated) or 
-  version 1.34.1 (for python 2.5; recommended)
+  version 1.34.1 (for python 2.5; recommended), version 1.36.1 (for unit tests)
 
 In addition, for running the ipbori command line tool IPython is needed.
 
