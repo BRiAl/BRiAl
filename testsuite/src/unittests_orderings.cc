@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file unittests_facades.cc
+/** @file unittests_orderings.cc
  *
  * @author Ket Shcherbakova, Alexander Dreyer
  * @date 2010-11-30
@@ -12,7 +12,7 @@
  *
  **/
 //*****************************************************************************
-#define BOOST_TEST_MODULE UnitTests
+#define BOOST_TEST_MODULE UnitTestsOrderings
 
 #include <boost/test/unit_test.hpp>
 
