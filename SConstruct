@@ -1235,8 +1235,6 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
                                  env['PYINSTALLPREFIX'])
-    print "path", relpath(expand_repeated(GUIPath(), env),
-                          env['PYINSTALLPREFIX']), "!", expand_repeated(GUIPath(), env), "!", env['PYINSTALLPREFIX']
     
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))

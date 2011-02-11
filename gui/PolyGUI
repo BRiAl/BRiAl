@@ -11,9 +11,11 @@ from os import environ as env
 pbdir = '..'
 if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 pyroot = '$GUIPYPREFIX'
+this_dir = os.path.dirname(os.path.realpath(__file__))
 if pyroot[0] == '$': pyroot = os.path.join(pbdir, "pyroot")
-sys.path.insert(0,  os.path.join(os.path.dirname(__file__), pyroot))
 
+for searchdir in  [os.path.join(this_dir, pyroot), this_dir]:
+  sys.path.insert(0,  searchdir)
 
 from polybori.gbrefs import my_import, load_file, clean_data
 import resource
