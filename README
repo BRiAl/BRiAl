@@ -25,7 +25,7 @@ needed:
 * the boost library, version 1.33.1 (for python 2.4; deprecated) or 
   version 1.34.1 (for python 2.5; recommended)
 
-In addition, for running the ipbori command line tools IPython is needed.
+In addition, for running the ipbori command line tool IPython is needed.
 
 
 Installation:
