@@ -1278,3 +1278,75 @@ def less_than_n_solutions(ideal,n):
     else:
         return False
 \end{lstlisting}
+
+\section{Alternative user interfaces}
+
+In addition to our Python-based tool~\texttt{ipbori} and the \PolyBoRi
+package of Sage  we also support two more front ends.
+
+\subsection{PolyGUI}
+\PolyBoRi comes with a QT-based  graphical user interface, which is started
+by typing~\texttt{PolyGUI} at the command prompt.
+
+\begin{figure}
+\includegraphics[width=.4\textwidth]{PolyGui}~%
+\includegraphics[width=.4\textwidth]{PolyGui-Options}
+\caption{PolyGUI:  A graphical user interface for \PolyBoRi's
+  \texttt{groebner_basis} command}
+\end{figure}
+
+
+The user make a \Groebner analysis of custom polynomial systems by selecting various options
+of \PolyBoRi's \texttt{groebner_basis} command. The ``Open File'' dialog can be
+used to load \PolyBoRi-compatible data files. They have to be written in
+Python syntax and must contain a ring declaration and the definition of an
+\texttt{ideal} (given as a lit of Boolean polynomials).
+
+\paragraph{Example}
+\begin{lstlisting}
+declare_ring([Block("x", 10), Block("y", 10)])
+ideal = [x(1) + x(2), x(2) + y(1)]
+\end{lstlisting}
+
+\subsection{\textsc{Singular}'s pyobject extension}
+
+This approach uses \textsc{Singular}'s upcoming built-in \texttt{pyobject}
+extension. For using \PolyBoRi from \textsc{Singular} you must ensure, 
+that \PolyBoRi is installed either in the python 
+search path, or in \textsc{Singular}'s binary path. PolyBoRi's default installation
+target (in the system resources) will work. In case you do not have root access,
+you can customize the installation:
+
+\begin{lstlisting}
+  scons install PREFIX=/path/to/my/bin PYINSTALLPREFIX=/path/to/python/modules
+\end{lstlisting}
+
+where \texttt{/path/to/my/bin} is the users path, and \texttt{/path/to/python/modules}
+could be for instance \textsc{Singular}'s binary directory. If you also do not have write
+permission to the latter, please add a custom directory to environment
+variable \texttt{PYTHONPATH} and use that directory for \texttt{PYINSTALLPREFIX}.
+
+The following session illustrates how \PolyBoRi's functionality can be accessed
+from \textsc{Singular}:
+
+\paragraph{Example}
+\begin{lstlisting}[language=C]
+                     SINGULAR                                 /  Development
+ A Computer Algebra System for Polynomial Computations       /   version 3-1-2
+                                                           0<
+ by: W. Decker, G.-M. Greuel, G. Pfister, H. Schoenemann     \   Oct 2010
+FB Mathematik der Universitaet, D-67653 Kaiserslautern        \
+// ** executing LIB/.singularrc
+> python_import("polybori");
+> declare_ring(list(Block("x", 10), Block("y", 10)));
+<polybori.dynamic.PyPolyBoRi.Ring object at 0xddf050>
+> list polybori_ideal = (x(1)+x(2),x(2)+y(1));
+> def result = groebner_basis(polybori_ideal);
+> result;
+[x(1) + y(1), x(2) + y(1)]
+> typeof(result);
+pyobject
+> result[1];
+x(2) + y(1)
+> Auf Wiedersehen.
+\end{lstlisting}
