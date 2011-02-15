@@ -21,7 +21,7 @@ The \lstinline|declare_ring|-function takes two arguments.
 The first argument is a list of variables or blocks or variables, and the second is a dictionary where the ring and the variable declarations are written to. The ring always get the name \functionname{r} in that dictionary (the best choice is to use the dictionary of global variables). In addition to that the ring is returned.
 \paragraph{Example}
 \begin{lstlisting}
-In [1]: declare_ring([Block("x",2),Block("y",3)],globals())
+In [1]: declare_ring([Block("x",2),Block("y",3)])
 Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 
 In [2]: r
@@ -30,7 +30,7 @@ Out[2]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 In [3]: [Variable(i) for i in xrange(r.n_variables())]
 Out[3]: [x(0), x(1), y(0), y(1), y(2)]
 
-In [4]: declare_ring([AlternatingBlock(["x","y"],2)],globals())
+In [4]: declare_ring([AlternatingBlock(["x","y"],2)])
 Out[4]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2370b70>
 
 In [5]: [Variable(i) for i in xrange(r.n_variables())]
@@ -42,7 +42,7 @@ Out[6]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x26a86d8>
 In [7]: [Variable(i) for i in xrange(r.n_variables())]
 Out[7]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
 
-In [8]: declare_ring(["x","y","z"],globals())
+In [8]: declare_ring(["x","y","z"])
 Out[8]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
 
 In [9]: [Variable(i) for i in xrange(r.n_variables())]
@@ -58,7 +58,7 @@ The monomial ordering can be changed by calling
 In contrast to the lexicographical, degree lexicographical ordering, and the degree reverse lexicographical ordering in \Singular, our degree reverse lexicographical ordering has a reverse variable order (the first ring variable is smaller than the second, the second smaller than the third). This is a result of the fact, that efficient implementation of monomial orderings using ZDD structures is quite difficult (and the performance depends on the ordering).
 \paragraph{Example}
 \begin{lstlisting}
-In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
+In [1]: r=declare_ring([Block("x",10),Block("y",10)])
 
 In [2]: x(0)>x(1)
 Out[2]: True
@@ -141,7 +141,7 @@ Out[4]: [2, 5]
 Another important feature in \PolyBoRi is the ability to iterate over a polynomial in the current monomial ordering.
 
 \begin{lstlisting}
-In [1]: r=declare_ring([Block("x",10),Block("y",10)],globals())
+In [1]: r=declare_ring([Block("x",10),Block("y",10)])
 
 In [2]: f=x(0)+x(1)*x(2)+x(2)
 
@@ -423,7 +423,7 @@ This can be done as in the classical case despite the field equations using an e
 \paragraph{Example} % (fold)
 \label{par:example-elimination}
 \begin{lstlisting}
-In [1]: declare_ring([Block("x",3),Block("y",3)],globals())
+In [1]: declare_ring([Block("x",3),Block("y",3)])
 Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
 
 In [2]: change_ordering(block_dp_asc)

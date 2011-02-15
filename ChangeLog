@@ -8,6 +8,7 @@ Release Name: 0.7.0:
 * Rename BoolePolynomials::reducibleBy -> BoolePolynomials::firstReducibleBy
 * Unittests for libpolybori are available, covering 98% of libpolybori
 * Added experimental PolyGUI
+* declare_ring uses global context per default
 	
 Release Name: 0.6.5:
 * If boost/boost-python is not available we already stop at onfiguring
