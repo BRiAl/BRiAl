@@ -32,13 +32,14 @@ Installation:
 =============
 Changing to the build directory (where you find this README file), and typing  
 
-  scons install INSTALLDIR=/path/to/program PREFIX=/prefix/for/executables
+  scons install INSTALLDIR=/path/to/exe PREFIX=/prefix/for/exe PYINSTALLPREFIX=/path/to/python/site-packages
 
 should be enough to build and install PolyBoRi to /path/to/program/.
 In addition, a symbolic link to the 'ipbori' executable will be installed to
 /prefix/for/executables/bin. See /path/to/program/doc for documentation. The
 default value of INSTALLDIR is $PREFIX/share/polybori, while PREFIX defaults to
-/usr/local.
+/usr/local. The standard value from PYINSTALLPREFIX is extracted from the
+corresponding python executable (customizable via PYTHON).
 
 If might also be useful to add some custom setting to the file 'custom.py' in
 the build directory, see the following example.
