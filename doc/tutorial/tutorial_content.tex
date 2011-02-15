@@ -27,27 +27,26 @@ Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 In [2]: r
 Out[2]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 
-
 In [3]: [Variable(i) for i in xrange(r.n_variables())]
 Out[3]: [x(0), x(1), y(0), y(1), y(2)]
 
 In [4]: declare_ring([AlternatingBlock(["x","y"],2)],globals())
 Out[4]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2370b70>
 
-
-
 In [5]: [Variable(i) for i in xrange(r.n_variables())]
 Out[5]: [x(0), y(0), x(1), y(1)]
 
+In [6]: declare_ring([HigherOrderBlock("x", (2, 3))])
+Out[6]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x26a86d8>
 
-In [6]: [Variable(i) for i in xrange(r.n_variables())]
-Out[6]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
+In [7]: [Variable(i) for i in xrange(r.n_variables())]
+Out[7]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
 
-In [7]: declare_ring(["x","y","z"],globals())
-Out[7]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
+In [8]: declare_ring(["x","y","z"],globals())
+Out[8]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
 
-In [8]: [Variable(i) for i in xrange(r.n_variables())]
-Out[8]: [x, y, z]  
+In [9]: [Variable(i) for i in xrange(r.n_variables())]
+Out[9]: [x, y, z]  
 \end{lstlisting}
 
 
@@ -338,7 +337,8 @@ Important options are the following:
 
 \subsubsection{Parallelization}
 With a view towards parallel computing \PolyBoRi also has a preliminary support
-for concurrent processing of  different strategies.
+for concurrent processing of  different strategies. Note, this needs the
+pyprocessing module to be installed.
 For this purpose the function\\
 \functionname{groebner_basis_first_finished} had been established.
 Very much like the command \functionname{groebner_basis}
@@ -349,8 +349,7 @@ Further arguments are the options for the different strategies (in form of dicti
 It returns the result of the variant, which  terminates first.
 
 \begin{lstlisting}
-In [1]: from polybori.parallel import\
-    groebner_basis_first_finished
+In [1]: from polybori.parallel import groebner_basis_first_finished
 
 In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
    {'heuristic':False}, {'heuristic': True}) 
@@ -378,8 +377,7 @@ Another important set of alternative option sets consists of computing with and
 without (dense) linear algebra.
 
 \begin{lstlisting}
-In [1]: from polybori.parallel\
-    import groebner_basis_first_finished
+In [1]: from polybori.parallel import groebner_basis_first_finished
 
 In [2]: groebner_basis_first_finished([x(2)*x(1), x(1)+1],
    ...:   {'faugere':False,
@@ -1087,7 +1085,7 @@ In [7]: Z2=BooleSet([x(0)*x(1),x(1)*x(2),x(0)*x(2)])
 
 In [8]: g=PartialFunction(zeros=Z2,ones=O2)
 
-In [9]: f & g
+In [9]: f&g
 Out[9]: PartialFunction(
           zeros={{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {x(2)}}, 
           ones={})

@@ -36,9 +36,38 @@
 % Surround parts of graphics with box
 \usepackage{boxedminipage}
 
+
 % Package for including code in the document
 \usepackage{listings}
+\newif\ifhttex \ifx\HCode\undefined \httexfalse \else \httextrue \fi
 
+% Monkey patch for fixing *
+\ifhttex%
+\makeatletter
+\lst@CCPutMacro
+    \lst@ProcessOther {"23}\#
+    \lst@ProcessLetter{"24}\textdollar
+    \lst@ProcessOther {"25}\%
+    \lst@ProcessOther {"26}\&
+    \lst@ProcessOther {"27}{\lst@ifupquote \textquotesingle
+                                     \else \char39\relax \fi}
+    \lst@ProcessOther {"2A}{\HCode{*}}%
+    \lst@ProcessOther {"2D}{\lst@ttfamily{-{}}{$-$}}
+    \lst@ProcessOther {"3C}{\lst@ttfamily<\textless}
+    \lst@ProcessOther {"3E}{\lst@ttfamily>\textgreater}
+    \lst@ProcessOther {"5C}{\lst@ttfamily{\char92}\textbackslash}
+    \lst@ProcessOther {"5E}{\HCode{^}}%
+    \lst@ProcessLetter{"5F}{\lst@ttfamily{\char95}\textunderscore}
+    \lst@ProcessOther {"60}{\lst@ifupquote \textasciigrave
+                                     \else \char96\relax \fi}
+    \lst@ProcessOther {"7B}{\lst@ttfamily{\char123}\textbraceleft}
+    \lst@ProcessOther {"7C}{\lst@ttfamily|\textbar}
+    \lst@ProcessOther {"7D}{\lst@ttfamily{\char125}\textbraceright}
+    \lst@ProcessOther {"7E}\textasciitilde
+    \lst@ProcessOther {"7F}-
+    \@empty\z@\@empty
+\makeatother
+\fi
 % If you want to generate a toc for each chapter (use with book)
 %%\usepackage{minitoc}
 
