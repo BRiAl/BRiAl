@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
     poly1 *= (poly_type(ring.variable(idx)) + 1);
     BOOST_CHECK_EQUAL(poly1.deg(), idx + 1);
     BOOST_CHECK_EQUAL(poly1.totalDeg(), idx + 1);
-    BOOST_CHECK_EQUAL(poly1.nNodes(), idx + 2);
+    BOOST_CHECK_EQUAL(poly1.nNodes(), idx + 1);
     BOOST_CHECK_EQUAL(poly1.nUsedVariables(), idx + 1);
     BOOST_CHECK_EQUAL(poly1.usedVariables(), monom);
     BOOST_CHECK_EQUAL(poly1.usedVariablesExp(), monom.exp());
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
       BOOST_CHECK_EQUAL(poly2.deg(), idx);
       BOOST_CHECK_EQUAL(poly2.totalDeg(), idx);
       BOOST_CHECK_EQUAL(poly2.length(), len);
-      BOOST_CHECK_EQUAL(poly2.nNodes(), 3*idx+1);
+      BOOST_CHECK_EQUAL(poly2.nNodes(), 3*idx-1);
       BOOST_CHECK_EQUAL(poly2.nUsedVariables(), idx + 1); 
       BOOST_CHECK_EQUAL(poly2.usedVariables(), monom);
       BOOST_CHECK_EQUAL(poly2.usedVariablesExp(), monom.exp());

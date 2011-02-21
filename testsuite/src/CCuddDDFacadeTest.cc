@@ -611,8 +611,8 @@ BOOST_AUTO_TEST_CASE(test_size) {
   BOOST_CHECK_EQUAL(one.count(), 1);
   BOOST_CHECK_EQUAL(diagram.countDouble(), 5);
   BOOST_CHECK_EQUAL(one.countDouble(), 1);
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 8);
-  BOOST_CHECK_EQUAL(one.nNodes(), 1);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 6);
+  BOOST_CHECK_EQUAL(one.nNodes(), 0);
   BOOST_CHECK_EQUAL(diagram.rootIndex(), 0);
   BOOST_CHECK_EQUAL(one.rootIndex(), std::numeric_limits<int>::max());
   BOOST_CHECK_EQUAL(diagram.nSupport(), 4);
@@ -620,25 +620,25 @@ BOOST_AUTO_TEST_CASE(test_size) {
 
   BoolePolynomial pol(1);
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 1);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 0);
   pol = 0;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 1);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 0);
   pol = y + 1;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 2);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 1);
   pol = x;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 3);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 1);
   pol = y;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 3);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 1);
   pol = x*y;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 4);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 2);
   pol = x*y + z;
   diagram = dd_type(pol.set());
-  BOOST_CHECK_EQUAL(diagram.nNodes(), 5);
+  BOOST_CHECK_EQUAL(diagram.nNodes(), 3);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -231,7 +231,7 @@ public:
   size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
 
   /// Number of nodes in the current decision diagram
-  size_type nNodes() const { return (size_type)(Cudd_DagSize(getNode())); }
+  size_type nNodes() const { return (size_type)(Cudd_zddDagSize(getNode())); }
 
   /// Number of references pointing here
   size_type refCount() const { 
