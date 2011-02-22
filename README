@@ -43,7 +43,8 @@ There are several installation locations which depend on PREFIX per default,
 
   scons -h
 
-for more information and default values.
+for more information and default values. There's also an exhaustive 'ipbori'
+tutorial in the DOCDIR.
 
 If might also be useful to add some custom setting to the file 'custom.py' in
 the build directory, see the following example.
