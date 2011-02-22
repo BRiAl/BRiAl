@@ -12,7 +12,12 @@ built-in one, which can be accessed by typing~\texttt{ipbori}
 at the command line prompt.
 
 
-In ipbori a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
+In \texttt{ipbori} a global ring is predefined and a set of variables called  $x(0), \ldots, x(9999)$. The default ordering is lexicographical ordering (lp).
+
+In order to follow the instructions of this tutorial a basic knowledge of 
+\ipython is necessary. For instance, when  interactively entering programming
+blocks (loops, functional definitions), the latter are closed by typing two
+additional line breaks.
 
 \subsection{Ring Declarations}
 While in ipbori usually a standard ring is predefined,
@@ -1305,6 +1310,13 @@ Python syntax and must contain a ring declaration and the definition of an
 declare_ring([Block("x", 10), Block("y", 10)])
 ideal = [x(1) + x(2), x(2) + y(1)]
 \end{lstlisting}
+
+The user interface comes with several switches and buttons which can be used to set
+the monomial ordering and the available options of the  \texttt{groebner_basis};
+including the protocol  output.
+The ``Run'' button is then to be used to execute the \Groebner basis computation.
+
+
 
 \subsection{\textsc{Singular}'s pyobject extension}
 
