@@ -456,7 +456,7 @@ For special cases elimination (depending on the formulation of the equations) el
 
 % subsection  (end)$
 
-\section{How to program efficiently}
+\section{How to program ef{}f{}iciently}
 \label{sec:program-efficiently}
 The goal of this section is to explain how to get most performance out of \PolyBoRi using the underlying ZDD structure.
 This awareness can be seen on several levels
@@ -481,9 +481,9 @@ It creates either exactly one node, or retrieves the correct node from the cache
 Function calls which come essentially down to a single $\ite$ call are very cheap.
 
 For example taking the product \[
-    x_1 \boolemult (x_2\boolemult(x3\boolemult (x_4\boolemult x_5)))
+    x_1 \boolemult (x_2\boolemult(x_3\boolemult (x_4\boolemult x_5)))
 \] is much cheaper than \[
-    ((((x_1 \boolemult x_2)\boolemult x3)\boolemult x_4)\boolemult x_5).
+    ((((x_1 \boolemult x_2)\boolemult x_3)\boolemult x_4)\boolemult x_5).
 \]
 In the first case, in each step a single node is prepended to the diagram, while in the second case, a completely new diagram is created.
 The same argument would apply for the addition of these variables.

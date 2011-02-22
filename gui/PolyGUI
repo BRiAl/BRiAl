@@ -13,6 +13,7 @@ if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 pyroot = '$GUIPYPREFIX'
 this_dir = os.path.dirname(os.path.realpath(__file__))
 if pyroot[0] == '$': pyroot = os.path.join(pbdir, "pyroot")
+logofile = os.path.join(this_dir, 'polybori.png')
 
 for searchdir in  [os.path.join(this_dir, pyroot), this_dir]:
   sys.path.insert(0,  searchdir)
@@ -391,7 +392,7 @@ class BoxLayout(QtGui.QWidget):
         self.displayFile.setFocusPolicy(QtCore.Qt.NoFocus)
 
        
-        pixmap = QtGui.QPixmap("polybori.png")
+        pixmap = QtGui.QPixmap(logofile)
         label = QtGui.QLabel(self)
         label.setPixmap(pixmap)
         grid.addWidget(label,0,0,3,3)
