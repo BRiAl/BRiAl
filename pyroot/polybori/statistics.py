@@ -9,12 +9,15 @@ def used_vars(l, bound=None):
     return m
 
 def used_vars_set(l,bound=None):
-    m=Monomial()
+    m = Monomial()
     s=set()
     for p in l:
         s.update(Polynomial(p).vars_as_monomial().variables())
         if bound and len(s)>bound:
             break
-    for v in sorted(list(s),key=top_index,reverse=True):
-        m=v*m
+    sorted_s = sorted(list(s),key=top_index,reverse=True)
+    if sorted_s:
+        m = sorted_s[0]
+        for v in sorted_s[1:]:
+            m=v*m
     return m
