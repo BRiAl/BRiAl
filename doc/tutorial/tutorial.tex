@@ -71,7 +71,6 @@
 % If you want to generate a toc for each chapter (use with book)
 %%\usepackage{minitoc}
 
-
 \usepackage{xspace}
 % This is now the recommended way for checking for PDFLaTeX:
 \usepackage{ifpdf}
@@ -108,8 +107,13 @@
 %\pdftrue
 %\fi
 
+\makeatletter
+\@input@{versionnumber}%
+\makeatother
+\providecommand{\versionnumber}{}
 
-\title{\PolyBoRi Tutorial}
+
+\title{\PolyBoRi Tutorial\\Release \versionnumber}
 \author{Michael Brickenstein -- Alexander Dreyer}
 
 \lstdefinelanguage[IPython]{Python}[]{Python}{%
@@ -134,6 +138,7 @@
 
 
 \newcommand{\Singular}{{\sc Singular}}
+
 \begin{document}
 \maketitle
 \input{tutorial_content}

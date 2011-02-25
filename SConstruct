@@ -9,8 +9,13 @@ opts = Variables('custom.py')
 
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
-pboriversion = "0.7"
-pborirelease = "1"
+try:
+    versionnumber = open('versionnumber', 'r').read().rstrip()
+    (pboriversion, pborirelease) = versionnumber.split('-')
+except:
+    pboriversion = "0.0"
+    pborirelease = "0"
+
 
 libraryversion = "0.0.0"
 debname = "polybori-" + pboriversion
@@ -28,6 +33,16 @@ m4ri=["grayflex.c", "permutation.c",
 m4ri=[path.join("M4RI", m) for m in m4ri]
 
 m4ri_inc = 'M4RI/m4ri'
+
+
+def preprocessed_substitute(target, source, env):
+    def preprocess_at(page):
+        import re
+        p = re.compile('@([^@\n]*) @', re.VERBOSE)
+        return p.sub(r'$\1', page)
+        
+    substitute_install(target, source, env, preprocess=preprocess_at)
+    
 
 # Fix some paths and names
 class PathJoiner(object):
@@ -258,6 +273,7 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
         getenv[key] = os.environ[key]
     except KeyError:
         pass
+
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
@@ -837,7 +853,7 @@ if distribute or rpm_generation or deb_generation:
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex tutorial/tutorial_content.tex tutorial/PolyGui.png
-    tutorial/PolyGui-Options.png python/genpythondoc.py
+    tutorial/PolyGui-Options.png tutorial/versionnumber.tex.in python/genpythondoc.py
     man/ipbori.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
@@ -1095,7 +1111,12 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
                      'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld,
                      'DebBuilder': debbld})
 
-tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + glob(DocPath('tutorial/*.tex'))
+
+version4tex = env.Command([DocPath('tutorial/versionnumber')],
+                          DocPath('tutorial/versionnumber.in'),
+                          preprocessed_substitute)
+
+tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + version4tex + glob(DocPath('tutorial/*.tex'))
 if have_l2h:
     tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')), tutorial_srcs)
 else:
@@ -1160,14 +1181,7 @@ if prepare_deb or generate_deb:
                                                   DebPath('control.in')))
     env['cdbs'] = 'cdbs (>= 0.4.23-1.1), debhelper (>= 5), quilt, patchutils (>= 0.2.25), cdbs (>= 0.4.27-1)'
 
-    def preprocessed_substitute(target, source, env):
-        def preprocess_at(page):
-            import re
-            p = re.compile('@([^@\n]*) @', re.VERBOSE)
-            return p.sub(r'$\1', page)
-        
-        substitute_install(target, source, env, preprocess=preprocess_at)
-    
+
     debsrc += FinalizeNonExecs(env.Command([DebInstPath('control')],
                                            DebPath('control.in'),
                                            preprocessed_substitute))
