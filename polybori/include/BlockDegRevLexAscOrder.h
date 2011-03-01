@@ -17,8 +17,8 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "CBlockOrderingFacade.h"
-#include "COrderingTags.h"
+#include <orderings/CBlockOrderingFacade.h>
+#include <orderings/COrderingTags.h>
 
 #ifndef BlockDegRevLexAscOrder_h_
 #define BlockDegRevLexAscOrder_h_

@@ -67,7 +67,7 @@
 #include "CGenericIter.h"
 #include "CExpIter.h"
 
-#include "pbori_order.h"
+#include <orderings/pbori_order.h>
 
 BEGIN_NAMESPACE_PBORI
 

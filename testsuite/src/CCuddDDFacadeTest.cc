@@ -23,7 +23,7 @@ using boost::test_tools::output_test_stream;
 #include "BoolePolynomial.h"
 #include "BooleExponent.h"
 #include "BoolePolyRing.h"
-#include "pbori_order.h"
+#include <orderings/pbori_order.h>
 #include <vector>
 
 USING_NAMESPACE_PBORI

@@ -17,8 +17,8 @@
 #include "pbori_defs.h"
 
 // include base order definitions
-#include "COrderingFacade.h"
-#include "COrderingTags.h"
+#include <orderings/COrderingFacade.h>
+#include <orderings/COrderingTags.h>
 
 #ifndef DegRevLexAscOrder_h_
 #define DegRevLexAscOrder_h_

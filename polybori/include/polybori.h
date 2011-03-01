@@ -30,5 +30,5 @@
 #include "CExpIter.h"
 
 #include "pbori_algorithms.h"
-#include "pbori_order.h"
+#include <orderings/pbori_order.h>
 #endif // of #ifndef polybori_h_

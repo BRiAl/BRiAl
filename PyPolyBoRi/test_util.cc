@@ -7,7 +7,7 @@
  *
  */
 #include <boost/python.hpp>
-#include <pbori_order.h>
+#include <orderings/pbori_order.h>
 #include <BoolePolynomial.h>
 #include <COrderedIter.h>
 using namespace boost::python;

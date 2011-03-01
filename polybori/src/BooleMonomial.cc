@@ -22,7 +22,7 @@
 // get ring definitions
 #include "BooleEnv.h"
 
-#include "COrderingBase.h"
+#include <orderings/COrderingBase.h>
 
 BEGIN_NAMESPACE_PBORI
 

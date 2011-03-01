@@ -21,7 +21,7 @@
 
 // get ring definitions
 # include "BoolePolyRing.h"
-#include "COrderingBase.h"
+#include <orderings/COrderingBase.h>
 # include "PBoRiError.h"
 
 #include "pbori_routines.h"

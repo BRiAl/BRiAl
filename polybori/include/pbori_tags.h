@@ -14,7 +14,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-#include "order_tags.h"
+#include <orderings/order_tags.h>
 
 #ifndef pbori_tags_h_
 #define pbori_tags_h_

@@ -23,7 +23,7 @@
 // get error types
 # include "PBoRiError.h"
 
-#include "pbori_order.h"
+#include <orderings/pbori_order.h>
 
 #include "BooleExponent.h"
 #include "BooleMonomial.h"

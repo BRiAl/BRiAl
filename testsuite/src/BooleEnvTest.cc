@@ -20,7 +20,7 @@ using boost::test_tools::output_test_stream;
 
 #include "pbori_defs.h"
 #include "BooleEnv.h"
-#include "pbori_order.h"
+#include <orderings/pbori_order.h>
 
 USING_NAMESPACE_PBORI
 

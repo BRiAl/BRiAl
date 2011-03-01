@@ -25,7 +25,7 @@
 // include standard iterator functionality
 #include <iterator>
 
-#include "COrderingTags.h"
+#include <orderings/COrderingTags.h>
 
 #ifndef CStackSelector_h_
 #define CStackSelector_h_
