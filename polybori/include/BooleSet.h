@@ -21,7 +21,7 @@
 // include polybori functionals
 #include <routines/pbori_func.h>
 
-#include "CCuddDDFacade.h"
+#include <diagram/CCuddDDFacade.h>
 
 #include "BoolePolyRing.h"
 

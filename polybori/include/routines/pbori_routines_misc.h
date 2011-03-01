@@ -21,7 +21,7 @@
 // temprarily
 #include <cache/CacheManager.h>
 
-#include "CDDOperations.h"
+#include <diagram/CDDOperations.h>
 
 BEGIN_NAMESPACE_PBORI
 
