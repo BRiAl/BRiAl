@@ -24,7 +24,7 @@
 
 #include <routines/pbori_algo.h>
 
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 #include <iterators/CTermIter.h>
 
@@ -32,7 +32,7 @@
 
 #include "BoolePolynomial.h"
 
-#include "CTermStack.h"
+#include <iterators/CTermStack.h>
 
 USING_NAMESPACE_PBORI
 

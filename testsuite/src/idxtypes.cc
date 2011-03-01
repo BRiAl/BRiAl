@@ -18,7 +18,7 @@
 
 // load polybori header file
 # include "polybori.h"
-# include "pbori_func.h"
+# include <routines/pbori_func.h>
 
 #include "CIdxPath.h"
 #include <literals/CStringLiteral.h>

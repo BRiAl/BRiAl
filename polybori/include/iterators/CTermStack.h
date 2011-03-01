@@ -34,7 +34,7 @@
    
 #include "BooleEnv.h"
 #include <cache/CDegreeCache.h>
-#include <iterators/CBidirectTermIter.h>
+#include "CBidirectTermIter.h"
   
 #include "BooleSet.h"
 
