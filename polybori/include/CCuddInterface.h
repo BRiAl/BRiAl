@@ -20,7 +20,7 @@
 #include "cudd.h"
 #include "cuddInt.h"
 
-#include "pbori_func.h"         // handle_error
+#include <routines/pbori_func.h>         // handle_error
 #include "CCallbackWrapper.h"
 
 #include <vector>

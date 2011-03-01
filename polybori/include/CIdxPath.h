@@ -23,7 +23,7 @@
 #include "pbori_defs.h"
 
 // get functionals and algorithms
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 #include <routines/pbori_algo.h>
 
 #include <literals/CStringLiteral.h>

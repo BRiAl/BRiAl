@@ -18,7 +18,7 @@
 #include "pbori_defs.h"
 
 // include polybori functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
   //#include "BooleSet.h"
 

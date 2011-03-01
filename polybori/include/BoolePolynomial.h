@@ -31,7 +31,7 @@
 
 // include definition of sets of Boolean variables
 
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 #include "pbori_tags.h"
 #include "BooleSet.h"
 

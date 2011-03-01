@@ -43,7 +43,7 @@
 # include <routines/pbori_algo.h>
 
 // get functionals
-# include "pbori_func.h"
+# include <routines/pbori_func.h>
 
 // include definition of output iterator over monomials
 //# include "OutMonomIter.h"

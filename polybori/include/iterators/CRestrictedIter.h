@@ -15,7 +15,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 #include "BoolePolynomial.h"
 #include "CDelayedTermIter.h"

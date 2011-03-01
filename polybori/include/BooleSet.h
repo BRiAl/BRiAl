@@ -19,7 +19,7 @@
 
 
 // include polybori functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 #include "CCuddDDFacade.h"
 

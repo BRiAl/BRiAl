@@ -27,7 +27,7 @@
 #include "pbori_tags.h"
 #include "order_traits.h"
 // include polybori functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 #ifndef COrderingFacade_h_
 #define COrderingFacade_h_

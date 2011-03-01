@@ -16,7 +16,7 @@
 #include "pbori_defs.h"
 
 // include polybori functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 // include polybori properties
 #include "pbori_traits.h"

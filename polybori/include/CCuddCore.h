@@ -23,7 +23,7 @@
 #include "CVariableNames.h"
 
 // get PolyBoRi routines and functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 #include "pbori_traits.h"
 
 // intrisive (shared) pointer functionality

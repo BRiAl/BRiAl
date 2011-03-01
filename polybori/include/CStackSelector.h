@@ -17,7 +17,7 @@
 #include "pbori_defs.h"
 
 // include polybori's functionals
-#include "pbori_func.h"
+#include <routines/pbori_func.h>
 
 // get stack types, which are used to store and handle paths of current terms
 #include "CTermStack.h"
