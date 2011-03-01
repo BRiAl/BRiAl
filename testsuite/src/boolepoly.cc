@@ -23,7 +23,7 @@
 
 USING_NAMESPACE_PBORI
 
-# include "pbori_routines.h"
+# include <routines/pbori_routines.h>
 template <class NaviType>
 NaviType
 test_union_xor(NaviType first, NaviType second) {

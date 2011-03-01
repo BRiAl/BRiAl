@@ -17,7 +17,7 @@
 
 #include "BlockDegLexOrder.h"
 
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 #include <iterators/PBoRiOutIter.h>
 #include "CIdxPath.h"
 
@@ -25,7 +25,7 @@
 #include <iterators/CDelayedTermIter.h>
 
 // get internal routines
-#include "pbori_routines.h"
+#include <routines/pbori_routines.h>
 
 #include <iterators/CDegLexIter.h>
 

@@ -19,7 +19,7 @@
 #include "cudd.h"
 #include "extrafwd.h"
 
-#include "pbori_routines.h"
+#include <routines/pbori_routines.h>
 #include "CCacheManagement.h"
 
 #include "BoolePolyRing.h"

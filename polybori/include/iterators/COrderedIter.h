@@ -15,7 +15,7 @@
 
 // include basic definitions
 #include "pbori_defs.h"
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 
  
 #include "BoolePolynomial.h"

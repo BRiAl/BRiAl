@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <numeric>
 
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 #include "CIdxPath.h"
 
 #define PBORI_USE_CCUDDFIRSTITER
@@ -40,7 +40,7 @@
 # include "CIdxPath.h"
 
 // get transformation algorithms
-# include "pbori_algo.h"
+# include <routines/pbori_algo.h>
 
 // get functionals
 # include "pbori_func.h"
@@ -59,7 +59,7 @@
 # include "CPrintOperation.h"
 
 // get internal routines
-# include "pbori_routines.h"
+# include <routines/pbori_routines.h>
 # include "CDDOperations.h"
 # include "CDegreeCache.h"
 

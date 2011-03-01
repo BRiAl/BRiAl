@@ -19,7 +19,7 @@
 
 // load polybori header file
 # include "polybori.h"
-#include "pbori_routines.h"
+#include <routines/pbori_routines.h>
 
 #include "CDegreeCache.h"
 #include "CCacheManagement.h"

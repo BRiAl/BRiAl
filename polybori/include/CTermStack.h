@@ -27,7 +27,7 @@
 // include polybori properties
 #include "pbori_traits.h"
 
-#include "pbori_routines.h"
+#include <routines/pbori_routines.h>
  
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>

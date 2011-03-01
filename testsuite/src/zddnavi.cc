@@ -22,7 +22,7 @@
 // load polybori header file
 # include "polybori.h"
 
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 
 #include "pbori_func.h"
 

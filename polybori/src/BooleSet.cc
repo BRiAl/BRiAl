@@ -23,14 +23,14 @@
 # include "CIdxPath.h"
 # include <iterators/PBoRiOutIter.h>
 # include <iterator>
-# include "pbori_algo.h"
+# include <routines/pbori_algo.h>
 
 
-#include "pbori_algo_int.h"
+#include <routines/pbori_algo_int.h>
 
 
 // get internal routines
-# include "pbori_routines.h"
+# include <routines/pbori_routines.h>
 # include "CDDOperations.h"
 # include "CCacheManagement.h"
 

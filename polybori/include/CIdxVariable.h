@@ -18,7 +18,7 @@
 
 // get functionals and algorithms
 #include "pbori_func.h"
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 
 #include "CStringLiteral.h"
 #include "CPrintOperation.h"

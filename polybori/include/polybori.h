@@ -29,6 +29,6 @@
 #include <iterators/CGenericIter.h>
 #include <iterators/CExpIter.h>
 
-#include "pbori_algorithms.h"
+#include <routines/pbori_algorithms.h>
 #include <orderings/pbori_order.h>
 #endif // of #ifndef polybori_h_

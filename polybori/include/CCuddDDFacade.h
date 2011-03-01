@@ -21,7 +21,7 @@
 
 #include "cuddInt.h"
 #include "CApplyNodeFacade.h"
-#include "pbori_routines_cuddext.h"
+#include <routines/pbori_routines_cuddext.h>
 
 #include "CExtrusivePtr.h"
 
@@ -43,9 +43,9 @@
 // test input idx_type
 #include "CCheckedIdx.h"
 
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 #include "pbori_tags.h"
-#include "pbori_routines_hash.h"
+#include <routines/pbori_routines_hash.h>
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

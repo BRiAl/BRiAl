@@ -19,7 +19,7 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
 #include "strategy_wrapper.h"
-#include "pbori_algo.h"
+#include <routines/pbori_algo.h>
 
 static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolynomial& q){
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>

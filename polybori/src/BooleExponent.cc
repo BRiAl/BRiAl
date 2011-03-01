@@ -24,8 +24,8 @@
 #include <orderings/COrderingBase.h>
 # include <errors/PBoRiError.h>
 
-#include "pbori_routines.h"
-#include "pbori_algo.h"
+#include <routines/pbori_routines.h>
+#include <routines/pbori_algo.h>
 #include <functional>
 
 BEGIN_NAMESPACE_PBORI
