@@ -53,7 +53,7 @@
 # include <iterators/COrderedIter.h>
 
 // include definition of generic string literals
-# include "CStringLiteral.h"
+# include <literals/CStringLiteral.h>
 
 // include definition of generic print operation
 # include "CPrintOperation.h"

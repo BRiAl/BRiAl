@@ -20,7 +20,7 @@
 #include "pbori_func.h"
 #include <routines/pbori_algo.h>
 
-#include "CStringLiteral.h"
+#include <literals/CStringLiteral.h>
 #include "CPrintOperation.h"
 
 

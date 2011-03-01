@@ -21,7 +21,7 @@
 # include "pbori_func.h"
 
 #include "CIdxPath.h"
-#include "CStringLiteral.h"
+#include <literals/CStringLiteral.h>
 
 USING_NAMESPACE_PBORI
 
