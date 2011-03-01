@@ -21,7 +21,7 @@
 #include "pbori_defs.h"
 #include "pbori_tags.h"
 
-#include "CCuddInterface.h"
+#include <ring/CCuddInterface.h>
 
 #ifndef CCuddNavigator_h_
 #define CCuddNavigator_h_

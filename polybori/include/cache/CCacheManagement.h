@@ -19,7 +19,7 @@
 // get DD navigation
 #include <iterators/CCuddNavigator.h>
 
-#include "CCuddCore.h"
+#include <ring/CCuddCore.h>
 #include <boost/intrusive_ptr.hpp>
 // get standard functionality
 #include <functional>

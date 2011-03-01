@@ -26,7 +26,7 @@
 // temporarily
 #include "cudd.h"
 #include "cuddInt.h"
-#include "CCuddInterface.h"
+#include <ring/CCuddInterface.h>
 
 #ifndef pbori_algo_h_
 #define pbori_algo_h_

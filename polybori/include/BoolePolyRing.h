@@ -18,7 +18,7 @@
 # include "pbori_defs.h"
 
 // include basic decision diagram manager interface 
-#include "CCuddCore.h"
+#include <ring/CCuddCore.h>
 #include <errors/PBoRiError.h>
 #include "CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
