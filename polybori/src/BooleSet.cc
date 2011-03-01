@@ -32,7 +32,7 @@
 // get internal routines
 # include <routines/pbori_routines.h>
 # include "CDDOperations.h"
-# include "CCacheManagement.h"
+# include <cache/CCacheManagement.h>
 
 // include polybori iterator
 #include <iterators/CGenericIter.h>

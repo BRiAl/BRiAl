@@ -33,7 +33,7 @@
 #include <boost/iterator/indirect_iterator.hpp>
    
 #include "BooleEnv.h"
-#include "CDegreeCache.h"
+#include <cache/CDegreeCache.h>
 #include <iterators/CBidirectTermIter.h>
   
 #include "BooleSet.h"

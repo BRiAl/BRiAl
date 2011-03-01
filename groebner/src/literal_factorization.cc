@@ -9,7 +9,7 @@
 
 #include "literal_factorization.h"
 #include <iostream>
-#include <CCacheManagement.h>
+#include <cache/CCacheManagement.h>
 BEGIN_NAMESPACE_PBORIGB
 
 std::vector<Polynomial> easy_linear_factors(const Polynomial &p){

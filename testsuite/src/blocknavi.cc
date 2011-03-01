@@ -21,8 +21,8 @@
 # include "polybori.h"
 #include <routines/pbori_routines.h>
 
-#include "CDegreeCache.h"
-#include "CCacheManagement.h"
+#include <cache/CDegreeCache.h>
+#include <cache/CCacheManagement.h>
 
 USING_NAMESPACE_PBORI
 

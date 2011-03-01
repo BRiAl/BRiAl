@@ -20,7 +20,7 @@
 #include "extrafwd.h"
 
 #include <routines/pbori_routines.h>
-#include "CCacheManagement.h"
+#include <cache/CCacheManagement.h>
 
 #include "BoolePolyRing.h"
 

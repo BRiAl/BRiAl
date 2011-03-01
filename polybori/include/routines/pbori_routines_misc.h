@@ -19,7 +19,7 @@
 #include "CIdxVariable.h"
 
 // temprarily
-#include "CacheManager.h"
+#include <cache/CacheManager.h>
 
 #include "CDDOperations.h"
 

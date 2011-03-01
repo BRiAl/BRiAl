@@ -30,7 +30,7 @@
 #include <iterators/CDegLexIter.h>
 
 
-#include "CDegreeCache.h"
+#include <cache/CDegreeCache.h>
 
 #include "BooleSet.h"
 

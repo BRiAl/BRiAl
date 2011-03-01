@@ -61,7 +61,7 @@
 // get internal routines
 # include <routines/pbori_routines.h>
 # include "CDDOperations.h"
-# include "CDegreeCache.h"
+# include <cache/CDegreeCache.h>
 
 #include <iterators/CDelayedTermIter.h>
 #include <iterators/CGenericIter.h>

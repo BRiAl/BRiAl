@@ -27,7 +27,7 @@
 
 #include <iterators/CDegLexIter.h>
 
-#include "CDegreeCache.h"
+#include <cache/CDegreeCache.h>
 
 BEGIN_NAMESPACE_PBORI
 
