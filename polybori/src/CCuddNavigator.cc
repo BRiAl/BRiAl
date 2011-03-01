@@ -15,7 +15,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "CCuddNavigator.h"
+#include <iterators/CCuddNavigator.h>
 
 BEGIN_NAMESPACE_PBORI
 

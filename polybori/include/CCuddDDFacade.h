@@ -26,16 +26,16 @@
 #include "CExtrusivePtr.h"
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
-#include "CCuddNavigator.h"
+#include <iterators/CCuddNavigator.h>
 
 // Getting iterator type for retrieving first term from Cudd's ZDDs
-#include "CCuddFirstIter.h"
+#include <iterators/CCuddFirstIter.h>
 
 // Getting iterator type for retrieving last term from Cudd's ZDDs
-#include "CCuddLastIter.h"
+#include <iterators/CCuddLastIter.h>
 
 // Getting output iterator functionality
-#include "PBoRiOutIter.h"
+#include <iterators/PBoRiOutIter.h>
 
 // Getting error coe functionality
 #include "PBoRiGenericError.h"

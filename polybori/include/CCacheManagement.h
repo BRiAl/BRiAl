@@ -17,7 +17,7 @@
 #include "pbori_defs.h"
 
 // get DD navigation
-#include "CCuddNavigator.h"
+#include <iterators/CCuddNavigator.h>
 
 #include "CCuddCore.h"
 #include <boost/intrusive_ptr.hpp>

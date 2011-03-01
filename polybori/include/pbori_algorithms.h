@@ -32,7 +32,7 @@
 // include PolyBoRi class definitions, which are used here
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
-#include "CGenericIter.h"
+#include <iterators/CGenericIter.h>
 
 
 BEGIN_NAMESPACE_PBORI

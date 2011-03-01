@@ -18,16 +18,16 @@
 #include "DegLexOrder.h"
 
 #include "pbori_algo.h"
-#include "PBoRiOutIter.h"
+#include <iterators/PBoRiOutIter.h>
 #include "CIdxPath.h"
 
 
-#include "CDelayedTermIter.h"
+#include <iterators/CDelayedTermIter.h>
 
 // get internal routines
 #include "pbori_routines.h"
 
-#include "CDegLexIter.h"
+#include <iterators/CDegLexIter.h>
 
 
 #include "CDegreeCache.h"

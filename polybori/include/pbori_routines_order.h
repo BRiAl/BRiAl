@@ -18,7 +18,7 @@
 #include "pbori_algo.h"
 #include "pbori_traits.h"
 
-#include "CRestrictedIter.h"
+#include <iterators/CRestrictedIter.h>
 
 BEGIN_NAMESPACE_PBORI
 

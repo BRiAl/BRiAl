@@ -16,7 +16,7 @@
 #include "LexOrder.h"
 
 #include "pbori_algo.h"
-# include "PBoRiOutIter.h"
+# include <iterators/PBoRiOutIter.h>
 #include "CIdxPath.h"
 #include "PBoRiError.h"
 

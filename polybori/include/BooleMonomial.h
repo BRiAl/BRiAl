@@ -28,7 +28,7 @@
 #include <map>
 
 // get variable iterator
-#include "CVariableIter.h"
+#include <iterators/CVariableIter.h>
 
 // get variable iterator
 #include "PBoRiError.h"

@@ -35,9 +35,9 @@
 #include "pbori_tags.h"
 #include "BooleSet.h"
 
-#include "CTermIter.h"
-#include "CGenericIter.h"
-#include "CBidirectTermIter.h"
+#include <iterators/CTermIter.h>
+#include <iterators/CGenericIter.h>
+#include <iterators/CBidirectTermIter.h>
 
 #include "BooleConstant.h"
 

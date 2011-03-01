@@ -26,9 +26,9 @@
 
 #include "pbori_func.h"
 
-#include "CTermIter.h"
+#include <iterators/CTermIter.h>
 
-#include "CCuddLastIter.h"
+#include <iterators/CCuddLastIter.h>
 
 #include "BoolePolynomial.h"
 

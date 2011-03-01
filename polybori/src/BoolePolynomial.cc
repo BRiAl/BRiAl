@@ -47,10 +47,10 @@
 
 // include definition of output iterator over monomials
 //# include "OutMonomIter.h"
-# include "PBoRiOutIter.h"
+# include <iterators/PBoRiOutIter.h>
 
 
-# include "COrderedIter.h"
+# include <iterators/COrderedIter.h>
 
 // include definition of generic string literals
 # include "CStringLiteral.h"
@@ -63,9 +63,9 @@
 # include "CDDOperations.h"
 # include "CDegreeCache.h"
 
-#include "CDelayedTermIter.h"
-#include "CGenericIter.h"
-#include "CExpIter.h"
+#include <iterators/CDelayedTermIter.h>
+#include <iterators/CGenericIter.h>
+#include <iterators/CExpIter.h>
 
 #include <orderings/pbori_order.h>
 

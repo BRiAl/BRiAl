@@ -19,7 +19,7 @@
 #include "BoolePolynomial.h"
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
-#include "COrderedIter.h"
+#include <iterators/COrderedIter.h>
 #include "PBoRiError.h"
 #include "CCheckedIdx.h"
 

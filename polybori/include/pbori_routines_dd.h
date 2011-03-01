@@ -17,8 +17,8 @@
 #include "pbori_defs.h"
 
 // get addition definitions
-#include "CTermIter.h"
-#include "PBoRiOutIter.h"
+#include <iterators/CTermIter.h>
+#include <iterators/PBoRiOutIter.h>
 #include <set>
 #include <vector>
 

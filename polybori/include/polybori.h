@@ -26,8 +26,8 @@
 #include "PBoRiError.h"
 #include "PBoRiGenericError.h"
 
-#include "CGenericIter.h"
-#include "CExpIter.h"
+#include <iterators/CGenericIter.h>
+#include <iterators/CExpIter.h>
 
 #include "pbori_algorithms.h"
 #include <orderings/pbori_order.h>

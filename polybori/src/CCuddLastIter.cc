@@ -16,7 +16,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "CCuddLastIter.h"
+#include <iterators/CCuddLastIter.h>
 
 BEGIN_NAMESPACE_PBORI
 

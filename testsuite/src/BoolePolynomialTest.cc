@@ -32,7 +32,7 @@ using boost::test_tools::output_test_stream;
 #include "BlockDegLexOrder.h"
 #include "BlockDegRevLexAscOrder.h"
 
-#include "CExpIter.h"
+#include <iterators/CExpIter.h>
 
 USING_NAMESPACE_PBORI
 

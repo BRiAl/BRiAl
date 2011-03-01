@@ -21,7 +21,7 @@
 # include "BooleExponent.h"
 # include "BoolePolyRing.h"
 # include "CIdxPath.h"
-# include "PBoRiOutIter.h"
+# include <iterators/PBoRiOutIter.h>
 # include <iterator>
 # include "pbori_algo.h"
 
@@ -35,7 +35,7 @@
 # include "CCacheManagement.h"
 
 // include polybori iterator
-#include "CGenericIter.h"
+#include <iterators/CGenericIter.h>
 #include "LexOrder.h"
 
 BEGIN_NAMESPACE_PBORI

@@ -18,7 +18,7 @@
 
 // get polybori's functionals
 #include "pbori_func.h"
-#include "CCuddNavigator.h"
+#include <iterators/CCuddNavigator.h>
 #ifndef pbori_algo_int_h_
 #define pbori_algo_int_h_
 

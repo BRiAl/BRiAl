@@ -18,7 +18,7 @@
 #include "lexbuckets.h"
 #include <LexOrder.h>
 #include <iostream>
-#include <COrderedIter.h>
+#include <iterators/COrderedIter.h>
 #ifdef HAVE_NTL
 #include <NTL/GF2.h>
 #include <NTL/mat_GF2.h>

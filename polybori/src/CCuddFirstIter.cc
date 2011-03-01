@@ -16,7 +16,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "CCuddFirstIter.h"
+#include <iterators/CCuddFirstIter.h>
 
 BEGIN_NAMESPACE_PBORI
 

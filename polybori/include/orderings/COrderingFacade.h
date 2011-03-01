@@ -22,7 +22,7 @@
 
 #include "COrderingBase.h"
 #include "COrderingTags.h"
-#include "COrderedIter.h"
+#include <iterators/COrderedIter.h>
 // include ordering tags
 #include "pbori_tags.h"
 #include "order_traits.h"
