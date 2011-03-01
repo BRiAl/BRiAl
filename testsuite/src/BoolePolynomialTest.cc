@@ -25,7 +25,7 @@ using boost::test_tools::output_test_stream;
 #include "BooleExponent.h"
 #include "BooleVariable.h"
 #include "BooleMonomial.h"
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 #include "LexOrder.h"
 #include "DegLexOrder.h"
 #include "DegRevLexAscOrder.h"

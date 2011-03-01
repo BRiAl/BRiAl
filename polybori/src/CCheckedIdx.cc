@@ -16,7 +16,7 @@
 // include basic definitions
 #include "pbori_defs.h"
 #include "CCheckedIdx.h"
-#include "PBoRiGenericError.h"
+#include <errors/PBoRiGenericError.h>
 
 BEGIN_NAMESPACE_PBORI
 

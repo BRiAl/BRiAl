@@ -38,7 +38,7 @@
 #include <iterators/PBoRiOutIter.h>
 
 // Getting error coe functionality
-#include "PBoRiGenericError.h"
+#include <errors/PBoRiGenericError.h>
 
 // test input idx_type
 #include "CCheckedIdx.h"

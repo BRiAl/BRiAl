@@ -22,7 +22,7 @@
 // get ring definitions
 # include "BoolePolyRing.h"
 #include <orderings/COrderingBase.h>
-# include "PBoRiError.h"
+# include <errors/PBoRiError.h>
 
 #include "pbori_routines.h"
 #include "pbori_algo.h"

@@ -19,7 +19,7 @@
 
 // include basic decision diagram manager interface 
 #include "CCuddCore.h"
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 #include "CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
 

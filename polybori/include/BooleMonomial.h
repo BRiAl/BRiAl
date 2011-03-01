@@ -31,7 +31,7 @@
 #include <iterators/CVariableIter.h>
 
 // get variable iterator
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 
 BEGIN_NAMESPACE_PBORI
 

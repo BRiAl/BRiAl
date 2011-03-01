@@ -23,8 +23,8 @@
 #include "BooleMonomial.h"
 #include "BooleVariable.h"
 #include "BooleExponent.h"
-#include "PBoRiError.h"
-#include "PBoRiGenericError.h"
+#include <errors/PBoRiError.h>
+#include <errors/PBoRiGenericError.h>
 
 #include <iterators/CGenericIter.h>
 #include <iterators/CExpIter.h>

@@ -20,7 +20,7 @@
 #include "BooleMonomial.h"
 #include "BooleExponent.h"
 #include <iterators/COrderedIter.h>
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 #include "CCheckedIdx.h"
 
 #include <vector>

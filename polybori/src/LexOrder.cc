@@ -18,7 +18,7 @@
 #include "pbori_algo.h"
 # include <iterators/PBoRiOutIter.h>
 #include "CIdxPath.h"
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 
 // get internal routines
 #include "pbori_routines.h"

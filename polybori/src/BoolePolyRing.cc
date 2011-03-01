@@ -21,7 +21,7 @@
 
 
 // get error types
-# include "PBoRiError.h"
+# include <errors/PBoRiError.h>
 
 #include <orderings/pbori_order.h>
 

@@ -34,7 +34,7 @@
 # include "BoolePolyRing.h"
 #include "BooleEnv.h"
 // get error types
-# include "PBoRiGenericError.h"
+# include <errors/PBoRiGenericError.h>
 
 // get 
 # include "CIdxPath.h"

@@ -32,7 +32,7 @@
 #include <boost/preprocessor/facilities/expand.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-#include "PBoRiError.h"
+#include <errors/PBoRiError.h>
 
 #include <stdexcept>
 #include <algorithm>

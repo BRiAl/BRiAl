@@ -13,8 +13,8 @@
 **/
 
 // load header file
-#include "PBoRiError.h"
-#include "CErrorInfo.h"
+#include <errors/PBoRiError.h>
+#include <errors/CErrorInfo.h>
 
 BEGIN_NAMESPACE_PBORI
 
