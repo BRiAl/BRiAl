@@ -56,7 +56,7 @@ class PathJoiner(object):
         return [str(elt).replace('/', sep) for elt in args]
 
 [TestsPath, PyPBPath, CuddPath, GBPath, PBPath, DocPath] = [ PathJoiner(fdir)
-    for fdir in Split("""testsuite PyPolyBoRi Cudd groebner polybori doc""") ]
+    for fdir in Split("""testsuite PyPolyBoRi Cudd groebner libpolybori doc""") ]
 
 DataPath = PathJoiner(TestsPath('py/data'))
 
