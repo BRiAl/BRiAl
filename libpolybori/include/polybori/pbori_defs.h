@@ -22,7 +22,7 @@
 #include "util.h"
 #include "cudd.h"
 
-#include <cacheopts.h>
+#include "cacheopts.h"
 
 #ifndef pbori_defs_h_
 #define pbori_defs_h_

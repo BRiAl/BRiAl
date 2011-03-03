@@ -310,7 +310,7 @@ def _sonamecmd(prefix, target, suffix, env = env):
     
 env['_sonamecmd'] = _sonamecmd
 
-cache_opts = PBPath('include/cacheopts.h')
+cache_opts = PBPath('include/polybori/cacheopts.h')
 cache_opts_file = open(cache_opts, "w")
 for m in pbori_cache_macros:
     if env.get(m,None):
@@ -828,7 +828,7 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
-    for dirname in Split("""groebner ipbori M4RI polybori 
+    for dirname in Split("""groebner ipbori M4RI libpolybori 
     PyPolyBoRi pyroot Singular pkgs gui"""):
         allsrcs.append(env.Dir(dirname))
 
@@ -889,9 +889,19 @@ readabledevellibs = SymlinkReadableLibname(devellibs)
 if 'devel-install' in COMMAND_LINE_TARGETS:
     DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
     
-    SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
+    PBInclPath = PathJoiner(PBPath('include/polybori'))
+    DevelInstInclPath = PathJoiner(DevelInstPath('include/polybori'))
     
-    env.Install(DevelInstPath('include/polybori'), glob(PBPath('include/*.h')))
+    SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
+
+    for elt in [''] + Split("""cache diagram errors iterators literals
+    orderings ring routines"""):
+        env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
+
+    env.Install(DevelInstPath('include'), PBPath('include/polybori.h'))
+
+    env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
+    
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('src/*.h')))
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
