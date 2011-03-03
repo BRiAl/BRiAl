@@ -18,8 +18,8 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include <errors/PBoRiGenericError.h>
-#include <errors/CErrorInfo.h>
+#include <polybori/errors/PBoRiGenericError.h>
+#include <polybori/errors/CErrorInfo.h>
 
 USING_NAMESPACE_PBORI
 

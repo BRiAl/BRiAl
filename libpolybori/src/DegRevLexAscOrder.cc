@@ -13,21 +13,21 @@
 //*****************************************************************************
 
 // include  definitions
-#include "DegRevLexAscOrder.h"
+#include "polybori/DegRevLexAscOrder.h"
 
-#include <routines/pbori_algo.h>
-#include <iterators/PBoRiOutIter.h>
-#include "CIdxPath.h"
+#include <polybori/routines/pbori_algo.h>
+#include <polybori/iterators/PBoRiOutIter.h>
+#include "polybori/CIdxPath.h"
 
 
-#include <iterators/CDelayedTermIter.h>
+#include <polybori/iterators/CDelayedTermIter.h>
 
 // get internal routines
-#include <routines/pbori_routines.h>
+#include <polybori/routines/pbori_routines.h>
 
-#include <iterators/CDegLexIter.h>
+#include <polybori/iterators/CDegLexIter.h>
 
-#include <cache/CDegreeCache.h>
+#include <polybori/cache/CDegreeCache.h>
 
 BEGIN_NAMESPACE_PBORI
 

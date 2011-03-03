@@ -14,7 +14,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 
 BEGIN_NAMESPACE_PBORI
 

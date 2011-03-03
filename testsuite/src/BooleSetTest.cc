@@ -17,13 +17,13 @@
 #include <boost/test/output_test_stream.hpp>
 using boost::test_tools::output_test_stream;
 
-#include "pbori_defs.h"
-#include "BooleVariable.h"
-#include "BooleMonomial.h"
-#include "BoolePolynomial.h"
-#include "BooleExponent.h"
-#include "BoolePolyRing.h"
-#include "LexOrder.h"
+#include "polybori/pbori_defs.h"
+#include "polybori/BooleVariable.h"
+#include "polybori/BooleMonomial.h"
+#include "polybori/BoolePolynomial.h"
+#include "polybori/BooleExponent.h"
+#include "polybori/BoolePolyRing.h"
+#include "polybori/LexOrder.h"
 
 USING_NAMESPACE_PBORI
 

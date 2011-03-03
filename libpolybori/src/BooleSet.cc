@@ -16,27 +16,27 @@
 
 
 // load header files
-# include "BooleSet.h"
-# include "BooleMonomial.h"
-# include "BooleExponent.h"
-# include "BoolePolyRing.h"
-# include "CIdxPath.h"
-# include <iterators/PBoRiOutIter.h>
+# include "polybori/BooleSet.h"
+# include "polybori/BooleMonomial.h"
+# include "polybori/BooleExponent.h"
+# include "polybori/BoolePolyRing.h"
+# include "polybori/CIdxPath.h"
+# include <polybori/iterators/PBoRiOutIter.h>
 # include <iterator>
-# include <routines/pbori_algo.h>
+# include <polybori/routines/pbori_algo.h>
 
 
-#include <routines/pbori_algo_int.h>
+#include <polybori/routines/pbori_algo_int.h>
 
 
 // get internal routines
-# include <routines/pbori_routines.h>
-# include <diagram/CDDOperations.h>
-# include <cache/CCacheManagement.h>
+# include <polybori/routines/pbori_routines.h>
+# include <polybori/diagram/CDDOperations.h>
+# include <polybori/cache/CCacheManagement.h>
 
 // include polybori iterator
-#include <iterators/CGenericIter.h>
-#include "LexOrder.h"
+#include <polybori/iterators/CGenericIter.h>
+#include "polybori/LexOrder.h"
 
 BEGIN_NAMESPACE_PBORI
 

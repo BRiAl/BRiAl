@@ -6,7 +6,7 @@
 #include "misc_wrapper.h"
 
 #include "polybori.h"
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 #include <iostream>
 using namespace boost::python;
 using namespace std;

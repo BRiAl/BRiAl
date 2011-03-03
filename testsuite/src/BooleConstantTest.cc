@@ -18,8 +18,8 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "pbori_defs.h"
-#include "BooleConstant.h"
+#include "polybori/pbori_defs.h"
+#include "polybori/BooleConstant.h"
 
 USING_NAMESPACE_PBORI
 

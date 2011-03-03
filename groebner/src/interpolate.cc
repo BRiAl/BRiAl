@@ -5,8 +5,8 @@
 //  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 
 #include "groebner_defs.h"
-#include <cache/CCacheManagement.h>
-#include <cache/CacheManager.h>
+#include <polybori/cache/CCacheManagement.h>
+#include <polybori/cache/CacheManager.h>
 #include <algorithm>
 #include <iostream>
 #include "interpolate.h"

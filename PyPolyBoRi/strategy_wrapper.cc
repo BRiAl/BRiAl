@@ -13,13 +13,13 @@
 #include "nf.h"
 #include <groebner_alg.h>
 #include <literal_factorization.h>
-#include <BoolePolyRing.h>
+#include <polybori/BoolePolyRing.h>
 #include "slimgb_wrapper.h"
 #include "interpolate.h"
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 //#include <iostream>
 //#include "polybori.h"
-//#include "pbori_defs.h"
+//#include "polybori/pbori_defs.h"
 using namespace boost::python;
 using namespace std;
 #include "variable_block.h"

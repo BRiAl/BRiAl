@@ -15,14 +15,14 @@
 
 
 // load header files
-# include "BooleMonomial.h"
-# include "BooleVariable.h"
-# include "BooleExponent.h"
+# include "polybori/BooleMonomial.h"
+# include "polybori/BooleVariable.h"
+# include "polybori/BooleExponent.h"
 
 // get ring definitions
-#include "BooleEnv.h"
+#include "polybori/BooleEnv.h"
 
-#include <orderings/COrderingBase.h>
+#include <polybori/orderings/COrderingBase.h>
 
 BEGIN_NAMESPACE_PBORI
 

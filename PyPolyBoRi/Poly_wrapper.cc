@@ -9,7 +9,7 @@
 #include <boost/python.hpp>
 #include <iostream>
 #include "polybori.h"
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 #include "groebner_alg.h"
 #include "interpolate.h"
 #include "out_helper.h"
@@ -19,7 +19,7 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 #include "Poly_wrapper.h"
 #include "strategy_wrapper.h"
-#include <routines/pbori_algo.h>
+#include <polybori/routines/pbori_algo.h>
 
 static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolynomial& q){
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>

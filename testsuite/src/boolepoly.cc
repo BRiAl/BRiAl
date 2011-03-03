@@ -19,11 +19,11 @@
 // load polybori header file
 # include "polybori.h"
 
-#include <cache/CCacheManagement.h>
+#include <polybori/cache/CCacheManagement.h>
 
 USING_NAMESPACE_PBORI
 
-# include <routines/pbori_routines.h>
+# include <polybori/routines/pbori_routines.h>
 template <class NaviType>
 NaviType
 test_union_xor(NaviType first, NaviType second) {

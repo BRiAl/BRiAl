@@ -16,16 +16,16 @@
 
 
 // load header files
-# include "BooleExponent.h"
-# include "BooleVariable.h"
+# include "polybori/BooleExponent.h"
+# include "polybori/BooleVariable.h"
 
 // get ring definitions
-# include "BoolePolyRing.h"
-#include <orderings/COrderingBase.h>
-# include <errors/PBoRiError.h>
+# include "polybori/BoolePolyRing.h"
+#include <polybori/orderings/COrderingBase.h>
+# include <polybori/errors/PBoRiError.h>
 
-#include <routines/pbori_routines.h>
-#include <routines/pbori_algo.h>
+#include <polybori/routines/pbori_routines.h>
+#include <polybori/routines/pbori_algo.h>
 #include <functional>
 
 BEGIN_NAMESPACE_PBORI

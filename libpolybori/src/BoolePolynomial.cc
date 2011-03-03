@@ -19,55 +19,55 @@
 #include <algorithm>
 #include <numeric>
 
-#include <routines/pbori_algo.h>
-#include "CIdxPath.h"
+#include <polybori/routines/pbori_algo.h>
+#include "polybori/CIdxPath.h"
 
 #define PBORI_USE_CCUDDFIRSTITER
 
 // load header file
-# include "BoolePolynomial.h"
-# include "BooleMonomial.h"
-# include "BooleExponent.h"
-# include "BooleSet.h"
+# include "polybori/BoolePolynomial.h"
+# include "polybori/BooleMonomial.h"
+# include "polybori/BooleExponent.h"
+# include "polybori/BooleSet.h"
 
 // get polynomial riung definition
-# include "BoolePolyRing.h"
-#include "BooleEnv.h"
+# include "polybori/BoolePolyRing.h"
+#include "polybori/BooleEnv.h"
 // get error types
-# include <errors/PBoRiGenericError.h>
+# include <polybori/errors/PBoRiGenericError.h>
 
 // get 
-# include "CIdxPath.h"
+# include "polybori/CIdxPath.h"
 
 // get transformation algorithms
-# include <routines/pbori_algo.h>
+# include <polybori/routines/pbori_algo.h>
 
 // get functionals
-# include <routines/pbori_func.h>
+# include <polybori/routines/pbori_func.h>
 
 // include definition of output iterator over monomials
 //# include "OutMonomIter.h"
-# include <iterators/PBoRiOutIter.h>
+# include <polybori/iterators/PBoRiOutIter.h>
 
 
-# include <iterators/COrderedIter.h>
+# include <polybori/iterators/COrderedIter.h>
 
 // include definition of generic string literals
-# include <literals/CStringLiteral.h>
+# include <polybori/literals/CStringLiteral.h>
 
 // include definition of generic print operation
-# include "CPrintOperation.h"
+# include "polybori/CPrintOperation.h"
 
 // get internal routines
-# include <routines/pbori_routines.h>
-# include <diagram/CDDOperations.h>
-# include <cache/CDegreeCache.h>
+# include <polybori/routines/pbori_routines.h>
+# include <polybori/diagram/CDDOperations.h>
+# include <polybori/cache/CDegreeCache.h>
 
-#include <iterators/CDelayedTermIter.h>
-#include <iterators/CGenericIter.h>
-#include <iterators/CExpIter.h>
+#include <polybori/iterators/CDelayedTermIter.h>
+#include <polybori/iterators/CGenericIter.h>
+#include <polybori/iterators/CExpIter.h>
 
-#include <orderings/pbori_order.h>
+#include <polybori/orderings/pbori_order.h>
 
 BEGIN_NAMESPACE_PBORI
 

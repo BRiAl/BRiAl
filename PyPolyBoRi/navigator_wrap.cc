@@ -10,7 +10,7 @@
 #include <boost/python.hpp>
 #include <iostream>
 #include "polybori.h"
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 using namespace boost::python;
 using namespace std;
 USING_NAMESPACE_PBORI

@@ -18,11 +18,11 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "pbori_defs.h"
-#include "BoolePolyRing.h"
-#include "BooleVariable.h"
-#include <orderings/pbori_order.h>
-#include <orderings/COrderingBase.h>
+#include "polybori/pbori_defs.h"
+#include "polybori/BoolePolyRing.h"
+#include "polybori/BooleVariable.h"
+#include <polybori/orderings/pbori_order.h>
+#include <polybori/orderings/COrderingBase.h>
 
 #include <cstdio>
 USING_NAMESPACE_PBORI

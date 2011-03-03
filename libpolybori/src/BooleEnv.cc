@@ -15,9 +15,9 @@
 
 
 // load header file
-#include "BooleEnv.h"
-#include "BoolePolyRing.h"
-#include <orderings/COrderingBase.h>
+#include "polybori/BooleEnv.h"
+#include "polybori/BoolePolyRing.h"
+#include <polybori/orderings/COrderingBase.h>
 
 BEGIN_NAMESPACE_PBORI
 

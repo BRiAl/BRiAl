@@ -16,17 +16,17 @@
 
 
 // load header file
-# include "BoolePolyRing.h"
-#include "BooleEnv.h"
+# include "polybori/BoolePolyRing.h"
+#include "polybori/BooleEnv.h"
 
 
 // get error types
-# include <errors/PBoRiError.h>
+# include <polybori/errors/PBoRiError.h>
 
-#include <orderings/pbori_order.h>
+#include <polybori/orderings/pbori_order.h>
 
-#include "BooleExponent.h"
-#include "BooleMonomial.h"
+#include "polybori/BooleExponent.h"
+#include "polybori/BooleMonomial.h"
 
 #include "cuddInt.h"
 

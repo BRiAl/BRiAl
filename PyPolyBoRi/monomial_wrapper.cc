@@ -17,7 +17,7 @@
 #include <iostream>
 #include <vector>
 #include "polybori.h"
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 #include "out_helper.h"
 using namespace boost::python;
 using namespace std;

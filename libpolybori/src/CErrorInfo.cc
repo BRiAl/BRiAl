@@ -14,7 +14,7 @@
 //*****************************************************************************
 
 // load header file
-#include <errors/CErrorInfo.h>
+#include <polybori/errors/CErrorInfo.h>
 
 BEGIN_NAMESPACE_PBORI
 

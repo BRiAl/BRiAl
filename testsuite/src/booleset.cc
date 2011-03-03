@@ -18,7 +18,7 @@
 
 // load polybori header file
 # include "polybori.h"
-#include <cache/CacheManager.h>
+#include <polybori/cache/CacheManager.h>
 
 USING_NAMESPACE_PBORI
 

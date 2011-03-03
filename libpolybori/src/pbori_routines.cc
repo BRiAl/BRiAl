@@ -13,7 +13,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 
 #include "cudd.h"
 #include "cuddInt.h"

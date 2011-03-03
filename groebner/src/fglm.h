@@ -9,7 +9,7 @@
 #ifndef fglm_header
 #define fglm_header
 
-#include <BooleEnv.h>
+#include <polybori/BooleEnv.h>
 #include "groebner_alg.h"
 extern "C" {
 #include <m4ri/m4ri.h>

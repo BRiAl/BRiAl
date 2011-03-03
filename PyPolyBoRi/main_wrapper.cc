@@ -3,7 +3,7 @@
 #include <boost/python.hpp>
 #include <iostream>
 #include "polybori.h"
-#include "pbori_defs.h"
+#include "polybori/pbori_defs.h"
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
 #include "navigator_wrap.h"

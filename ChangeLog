@@ -1,3 +1,7 @@
+Release Name: 0.7.1:
+* Renamed subdirectory polybori to libpolybori
+* new directory structure in libpolybori/include
+
 Release Name: 0.7.0:
 * Polynomials, monomials, variables, and BooleSets now own a reference to a
   fully-functionally BoolePolyRing (including ordering)

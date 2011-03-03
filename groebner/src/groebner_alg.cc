@@ -31,7 +31,7 @@
 #include "dp_asc4data.h"
 #endif
 
-#include <cache/CacheManager.h>
+#include <polybori/cache/CacheManager.h>
 
 
 BEGIN_NAMESPACE_PBORIGB

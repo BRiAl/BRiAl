@@ -16,7 +16,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include <iterators/CCuddFirstIter.h>
+#include <polybori/iterators/CCuddFirstIter.h>
 
 BEGIN_NAMESPACE_PBORI
 

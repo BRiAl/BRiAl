@@ -13,15 +13,15 @@
 //*****************************************************************************
 
 // include  definitions
-#include "LexOrder.h"
+#include "polybori/LexOrder.h"
 
-#include <routines/pbori_algo.h>
-# include <iterators/PBoRiOutIter.h>
-#include "CIdxPath.h"
-#include <errors/PBoRiError.h>
+#include <polybori/routines/pbori_algo.h>
+# include <polybori/iterators/PBoRiOutIter.h>
+#include "polybori/CIdxPath.h"
+#include <polybori/errors/PBoRiError.h>
 
 // get internal routines
-#include <routines/pbori_routines.h>
+#include <polybori/routines/pbori_routines.h>
 
 BEGIN_NAMESPACE_PBORI
 
