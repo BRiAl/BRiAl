@@ -17,7 +17,6 @@
 
 // Get Cudd definitions
 #include "cudd.h"
-#include "polybori/extrafwd.h"
 
 #include <polybori/routines/pbori_routines.h>
 #include <polybori/cache/CCacheManagement.h>
