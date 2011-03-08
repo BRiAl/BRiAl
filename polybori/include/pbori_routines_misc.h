@@ -294,8 +294,10 @@ dd_multiply_recursively_monom(const CacheType& cache_mgr,
   typedef NaviType navigator;
 
   if (monomNavi.isConstant()) {
-    assert(monomNavi.terminalValue() == true);
-    cache_mgr.generate(navi);
+    if(monomNavi.terminalValue())
+      return cache_mgr.generate(navi);
+    else 
+      return cache_mgr.zero();
   }
 
   assert(monomNavi.elseBranch().isEmpty());
