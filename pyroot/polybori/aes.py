@@ -32,9 +32,9 @@ def cached_GB(I,prot=False):
     
     m=Monomial()
     if I:
-      m = I[0]
+      m = I[0].vars_as_monomial()
       for p in I[1:]:
-          m = p*m
+          m = m*p.vars_as_monomial()
 
     table_to_ring=dict(enumerate([v.index() for v in m.variables()]))
     table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m.variables())])
