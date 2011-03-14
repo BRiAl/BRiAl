@@ -30,10 +30,12 @@ def cached_GB(I,prot=False):
     
     #return list(symmGB_F2_C(I,prot=True, opt_lazy=False,opt_exchange=False).minimalize_and_tail_reduce())
     
-    
     m=Monomial()
-    for p in I:
-        m=m*p.vars_as_monomial()
+    if I:
+      m = I[0].vars_as_monomial()
+      for p in I[1:]:
+          m = m*p.vars_as_monomial()
+
     table_to_ring=dict(enumerate([v.index() for v in m.variables()]))
     table_to_123=dict([(v.index(),k) for (k,v) in enumerate(m.variables())])
     codes=tuple(sorted([p2code(p,table_to_123) for p in I]))
