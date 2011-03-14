@@ -18,8 +18,8 @@
 #include <iterator>
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
-#include "polybori/pbori_tags.h"
+#include <polybori/pbori_defs.h>
+#include <polybori/common/tags.h>
 
 #include <polybori/ring/CCuddInterface.h>
 

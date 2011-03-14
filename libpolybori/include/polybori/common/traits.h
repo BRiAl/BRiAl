@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_traits.h
+/** @file traits.h
  *
  * @author Alexander Dreyer
  * @date 2006-04-24
@@ -17,17 +17,16 @@
 #include <vector>
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
-#include "polybori/pbori_tags.h"
-// #include "CCuddInterface.h"
+#include <polybori/pbori_defs.h>
+#include <polybori/common/tags.h>
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/facilities/expand.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-#ifndef pbori_traits_h_
-#define pbori_traits_h_
+#ifndef polybori_common_traits_h_
+#define polybori_common_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 

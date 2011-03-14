@@ -15,10 +15,10 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include basic definitions for tags
-#include "polybori/pbori_tags.h"
+#include <polybori/common/tags.h>
 #include "order_tags.h"
 
 #ifndef COrderingTags_h_

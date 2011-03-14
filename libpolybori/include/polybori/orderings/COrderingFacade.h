@@ -14,17 +14,17 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BooleMonomial.h"
-#include "polybori/BooleExponent.h"
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleMonomial.h>
+#include <polybori/BooleExponent.h>
 
 #include "COrderingBase.h"
 #include "COrderingTags.h"
 #include <polybori/iterators/COrderedIter.h>
 // include ordering tags
-#include "polybori/pbori_tags.h"
+#include <polybori/common/tags.h>
 #include "order_traits.h"
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>

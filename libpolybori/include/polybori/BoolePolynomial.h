@@ -27,19 +27,19 @@
 // get standard algorithmic functionalites
 #include <algorithm>
 
-#include "polybori/BoolePolyRing.h"
+#include <polybori/BoolePolyRing.h>
 
 // include definition of sets of Boolean variables
 
 #include <polybori/routines/pbori_func.h>
-#include "polybori/pbori_tags.h"
-#include "polybori/BooleSet.h"
+#include <polybori/common/tags.h>
+#include <polybori/BooleSet.h>
 
 #include <polybori/iterators/CTermIter.h>
 #include <polybori/iterators/CGenericIter.h>
 #include <polybori/iterators/CBidirectTermIter.h>
 
-#include "polybori/BooleConstant.h"
+#include <polybori/BooleConstant.h>
 
 BEGIN_NAMESPACE_PBORI
 

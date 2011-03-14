@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file pbori_tags.h
+/** @file tags.h
  *
  * @author Alexander Dreyer
  * @date 2006-07-20
@@ -13,11 +13,11 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include <polybori/orderings/order_tags.h>
 
-#ifndef pbori_tags_h_
-#define pbori_tags_h_
+#ifndef polybori_common_tags_h_
+#define polybori_common_tags_h_
 
 BEGIN_NAMESPACE_PBORI
 

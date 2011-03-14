@@ -13,19 +13,19 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
 
 // include polybori properties
-#include "polybori/pbori_traits.h"
+#include <polybori/common/traits.h>
 
 
 // include boost's interator facade
 #include <boost/iterator/iterator_facade.hpp>
 
-#include "polybori/BooleEnv.h"
+#include <polybori/BooleEnv.h>
 #ifndef CTermIter_h_
 #define CTermIter_h_
 

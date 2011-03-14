@@ -13,10 +13,10 @@
 //*****************************************************************************
 
 // get polybori definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get polybori properties
-#include "polybori/pbori_traits.h"
+#include <polybori/common/traits.h>
 
 // get standard string and string stream functionality
 #include <string>

@@ -17,11 +17,11 @@
 //*****************************************************************************
 
 // include polybori's definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get polybori's functionals
 #include "pbori_func.h"
-#include "polybori/pbori_traits.h"
+#include <polybori/common/traits.h>
 
 // temporarily
 #include "cudd.h"

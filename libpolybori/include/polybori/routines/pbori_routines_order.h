@@ -14,9 +14,9 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include "pbori_algo.h"
-#include "polybori/pbori_traits.h"
+#include <polybori/common/traits.h>
 
 
 BEGIN_NAMESPACE_PBORI

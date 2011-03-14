@@ -19,24 +19,24 @@
 #include <utility> // for std::pair
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
 
 // include polybori properties
-#include "polybori/pbori_traits.h"
+#include <polybori/common/traits.h>
 
 #include <polybori/routines/pbori_routines.h>
  
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>
    
-#include "polybori/BooleEnv.h"
+#include <polybori/BooleEnv.h>
 #include <polybori/cache/CDegreeCache.h>
 #include "CBidirectTermIter.h"
   
-#include "polybori/BooleSet.h"
+#include <polybori/BooleSet.h>
 
 #ifndef CTermStack_h_
 #define CTermStack_h_

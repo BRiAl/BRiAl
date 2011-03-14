@@ -24,7 +24,7 @@
 
 // get PolyBoRi routines and functionals
 #include <polybori/routines/pbori_func.h>
-#include <polybori/pbori_traits.h>
+#include <polybori/common/traits.h>
 
 // intrisive (shared) pointer functionality
 #include <boost/intrusive_ptr.hpp>

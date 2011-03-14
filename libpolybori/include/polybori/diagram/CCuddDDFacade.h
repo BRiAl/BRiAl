@@ -14,7 +14,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 #ifndef CCuddDDFacade_h
 #define CCuddDDFacade_h
@@ -41,10 +41,10 @@
 #include <polybori/errors/PBoRiGenericError.h>
 
 // test input idx_type
-#include "polybori/common/CCheckedIdx.h"
+#include <polybori/common/CCheckedIdx.h>
 
 #include <polybori/routines/pbori_algo.h>
-#include "polybori/pbori_tags.h"
+#include <polybori/common/tags.h>
 #include <polybori/routines/pbori_routines_hash.h>
 
 #include <boost/preprocessor/cat.hpp>
