@@ -95,20 +95,6 @@ stable_term_hash(Iterator start, Iterator finish) {
   return seed;
 }
 
-
-// The following may be used without polybori. Hence, we have to load it in the
-// namespace here
-
-// Get generic hash functions
-// #include "polybori/generic_hash.h"
-
-// #ifndef PBORI_HASH_TAG
-// #define PBORI_HASH_TAG js_tag
-// #endif
-
-
-// typedef generic_hash_tags::PBORI_HASH_TAG pbori_hash_tag;
-
 END_NAMESPACE_PBORI
 
 #endif

@@ -16,9 +16,6 @@
 #include "polybori/pbori_defs.h"
 
 // temprarily
-#include "polybori/CIdxVariable.h"
-
-// temprarily
 #include <polybori/cache/CacheManager.h>
 
 #include <polybori/diagram/CDDOperations.h>

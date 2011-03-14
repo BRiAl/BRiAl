@@ -17,7 +17,6 @@
 
 #include <polybori/routines/pbori_algo.h>
 # include <polybori/iterators/PBoRiOutIter.h>
-#include "polybori/CIdxPath.h"
 #include <polybori/errors/PBoRiError.h>
 
 // get internal routines
@@ -112,25 +111,6 @@ LexOrder::lead(const poly_type& poly) const {
   CacheManager<CCacheTypes::lex_lead> cache(poly.ring());
 
   return monom(dd_lex_lead(cache, poly.navigation(), set_type()));
-
-#if 0
-  monom_type leadterm(poly.ring());
-   
-  // store indices in list
-  CIdxPath<idx_type> indices(poly.lexLeadDeg());
-  
-  // iterator, which uses changeAssign to insert variable
-  // wrt. given indices to a monomial
-  PBoRiOutIter<monom_type, idx_type, change_assign<monom_type> >  
-    outiter(leadterm) ;
-  
-  // insert backward (for efficiency reasons)
-  reversed_inter_copy(poly.firstBegin(), poly.firstEnd(), indices, outiter);
-
-  dd_lex_lead(poly.firstBegin(), poly.firstEnd(), leadterm);
-  return leadterm;
-
-#endif
 }
 
 // maybe common template here

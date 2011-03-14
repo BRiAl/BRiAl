@@ -20,7 +20,6 @@
 # include "polybori/BooleMonomial.h"
 # include "polybori/BooleExponent.h"
 # include "polybori/BoolePolyRing.h"
-# include "polybori/CIdxPath.h"
 # include <polybori/iterators/PBoRiOutIter.h>
 # include <iterator>
 # include <polybori/routines/pbori_algo.h>
@@ -36,7 +35,9 @@
 
 // include polybori iterator
 #include <polybori/iterators/CGenericIter.h>
-#include "polybori/LexOrder.h"
+#include <polybori/LexOrder.h>
+
+#include <polybori/literals/CStringLiteral.h>
 
 BEGIN_NAMESPACE_PBORI
 

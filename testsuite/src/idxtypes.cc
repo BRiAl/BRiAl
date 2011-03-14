@@ -20,7 +20,6 @@
 # include "polybori.h"
 # include <polybori/routines/pbori_func.h>
 
-#include "polybori/CIdxPath.h"
 #include <polybori/literals/CStringLiteral.h>
 
 USING_NAMESPACE_PBORI
@@ -28,6 +27,7 @@ USING_NAMESPACE_PBORI
 int
 main(){
 
+#if 0
   std::cout << "Testing CIdxPath, CIdx" <<std::endl;   
 
   try {
@@ -56,6 +56,6 @@ main(){
     std::cout << "  Caught error # "<< err.code() <<std::endl;   
     std::cout << "    which says: "<< err.text() <<std::endl;  
  }
-
+#endif
   return 0;
 }

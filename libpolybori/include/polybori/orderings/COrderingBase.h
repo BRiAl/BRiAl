@@ -21,7 +21,7 @@
 #include "polybori/BooleExponent.h"
 #include <polybori/iterators/COrderedIter.h>
 #include <polybori/errors/PBoRiError.h>
-#include "polybori/CCheckedIdx.h"
+#include "polybori/common/CCheckedIdx.h"
 
 #include <vector>
 

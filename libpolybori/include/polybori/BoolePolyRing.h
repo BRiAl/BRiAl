@@ -20,7 +20,7 @@
 // include basic decision diagram manager interface 
 #include <polybori/ring/CCuddCore.h>
 #include <polybori/errors/PBoRiError.h>
-#include "polybori/CCheckedIdx.h"
+#include "polybori/common/CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
 
 #include <list>

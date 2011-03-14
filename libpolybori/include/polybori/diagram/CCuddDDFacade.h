@@ -23,7 +23,7 @@
 #include "CApplyNodeFacade.h"
 #include <polybori/routines/pbori_routines_cuddext.h>
 
-#include "polybori/CExtrusivePtr.h"
+#include <polybori/common/CExtrusivePtr.h>
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
 #include <polybori/iterators/CCuddNavigator.h>
@@ -41,7 +41,7 @@
 #include <polybori/errors/PBoRiGenericError.h>
 
 // test input idx_type
-#include "polybori/CCheckedIdx.h"
+#include "polybori/common/CCheckedIdx.h"
 
 #include <polybori/routines/pbori_algo.h>
 #include "polybori/pbori_tags.h"

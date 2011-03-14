@@ -17,15 +17,10 @@
 
 #include <polybori/routines/pbori_algo.h>
 #include <polybori/iterators/PBoRiOutIter.h>
-#include "polybori/CIdxPath.h"
 
-
-#include <polybori/iterators/CDelayedTermIter.h>
 
 // get internal routines
 #include <polybori/routines/pbori_routines.h>
-
-#include <polybori/iterators/CDegLexIter.h>
 
 #include <polybori/cache/CDegreeCache.h>
 

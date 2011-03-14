@@ -17,14 +17,14 @@
 #define CCuddCore_h
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 #include "CCuddInterface.h"
-#include "polybori/CVariableNames.h"
+#include "CVariableNames.h"
 
 // get PolyBoRi routines and functionals
 #include <polybori/routines/pbori_func.h>
-#include "polybori/pbori_traits.h"
+#include <polybori/pbori_traits.h>
 
 // intrisive (shared) pointer functionality
 #include <boost/intrusive_ptr.hpp>

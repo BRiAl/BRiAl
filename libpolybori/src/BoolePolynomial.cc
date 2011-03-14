@@ -20,7 +20,6 @@
 #include <numeric>
 
 #include <polybori/routines/pbori_algo.h>
-#include "polybori/CIdxPath.h"
 
 #define PBORI_USE_CCUDDFIRSTITER
 
@@ -35,9 +34,6 @@
 #include "polybori/BooleEnv.h"
 // get error types
 # include <polybori/errors/PBoRiGenericError.h>
-
-// get 
-# include "polybori/CIdxPath.h"
 
 // get transformation algorithms
 # include <polybori/routines/pbori_algo.h>
@@ -55,15 +51,11 @@
 // include definition of generic string literals
 # include <polybori/literals/CStringLiteral.h>
 
-// include definition of generic print operation
-# include "polybori/CPrintOperation.h"
-
 // get internal routines
 # include <polybori/routines/pbori_routines.h>
 # include <polybori/diagram/CDDOperations.h>
 # include <polybori/cache/CDegreeCache.h>
 
-#include <polybori/iterators/CDelayedTermIter.h>
 #include <polybori/iterators/CGenericIter.h>
 #include <polybori/iterators/CExpIter.h>
 
@@ -315,34 +307,7 @@ BoolePolynomial::set_type
 BoolePolynomial::firstDivisors() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::firstDivisors() const" );
-
-#ifdef PBORI_DIVISORS_HIGHLEVEL
-
-  // Implementation relying on CCuddFirstIter (may be buggy)
-  set_type terms;
-
-  if (m_dd.emptiness())
-    terms = m_dd;
-  else {
-    terms = manager_reference(m_dd).blank();
-
-    // store indices in list
-    CIdxPath<idx_type> indices(leadDeg());
-
-    // define iterator, which uses appends the divisors wrt. a Boolean
-    // variable of given index
-    PBoRiOutIter<dd_type, idx_type, append_indexed_divisor<dd_type> >  
-      outiter(terms);
-    
-    // insert backward (for efficiency reasons)
-    reversed_inter_copy(firstBegin(), firstEnd(), indices, outiter);
-  }
-
-  return terms;
-#else
-
   return m_dd.firstDivisors();
-#endif 
 }
 
 // hash value of lead

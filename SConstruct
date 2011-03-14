@@ -573,7 +573,7 @@ libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 
 pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
     CCheckedIdx.cc CErrorInfo.cc PBoRiError.cc CCuddFirstIter.cc
-    CCuddNavigator.cc BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
+    BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
     BooleExponent.cc DegLexOrder.cc DegRevLexAscOrder.cc
     pbori_routines.cc BlockDegLexOrder.cc BlockDegRevLexAscOrder.cc""")
 pb_src=[PBPath('src', source) for source in pb_src]
@@ -615,7 +615,7 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
 #DefaultBuild(libgbShared)
 
-tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
+tests_pb=["errorcodes", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
   "booleset", "blocknavi", "termaccu"]
 tests_gb=["strategy_initialization", "minimalCPP"]
