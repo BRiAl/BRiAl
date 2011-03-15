@@ -631,8 +631,8 @@ for t in tests_gb:
     env.Program(TestsPath(t), 
         [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
         CPPPATH=CPPPATH)
-#BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade
-testclasses = Split("""CStringLiteral """)
+
+testclasses = Split("""CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
 
