@@ -632,7 +632,7 @@ for t in tests_gb:
         [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
         CPPPATH=CPPPATH)
 
-testclasses = Split("""CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
+testclasses = Split("""term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
 
