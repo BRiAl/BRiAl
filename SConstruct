@@ -615,9 +615,7 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
 #DefaultBuild(libgbShared)
 
-tests_pb=["errorcodes", "boolevars", "boolepoly", "cuddinterface", 
-  "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
-  "booleset", "blocknavi", "termaccu"]
+tests_pb=["spoly", "zddnavi", "idxtypes", "stringlit", "termaccu"]
 tests_gb=["strategy_initialization", "minimalCPP"]
 CPPPATH=env['CPPPATH']+[GBPath('src')]
 #print env['CCFLAGS']
@@ -633,11 +631,6 @@ for t in tests_gb:
     env.Program(TestsPath(t), 
         [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
         CPPPATH=CPPPATH)
-
-for t in ['booleenv_test']:
-    env.Program(TestsPath(t), 
-                [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
-                CPPPATH=CPPPATH)
 
 testclasses = Split("""BooleEnv BooleSet BooleConstant BoolePolyRing
   BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
