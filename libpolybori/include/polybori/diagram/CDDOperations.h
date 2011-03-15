@@ -23,8 +23,8 @@
 
 #include "polybori/BoolePolyRing.h"
 
-#ifndef CDDOperations_h_
-#define CDDOperations_h_
+#ifndef polybori_diagram_CDDOperations_h_
+#define polybori_diagram_CDDOperations_h_
 
 BEGIN_NAMESPACE_PBORI
 

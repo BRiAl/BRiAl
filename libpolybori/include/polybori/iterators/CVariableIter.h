@@ -15,8 +15,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef CVariableIter_h_
-#define CVariableIter_h_
+#ifndef polybori_iterators_CVariableIter_h_
+#define polybori_iterators_CVariableIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

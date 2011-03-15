@@ -15,8 +15,8 @@
 
 #include "COrderingFacade.h"
 
-#ifndef CBlockOrderingFacade_h_
-#define CBlockOrderingFacade_h_
+#ifndef polybori_orderings_CBlockOrderingFacade_h_
+#define polybori_orderings_CBlockOrderingFacade_h_
 
 
 BEGIN_NAMESPACE_PBORI

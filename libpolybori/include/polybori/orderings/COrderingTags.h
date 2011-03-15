@@ -21,8 +21,8 @@
 #include <polybori/common/tags.h>
 #include "order_tags.h"
 
-#ifndef COrderingTags_h_
-#define COrderingTags_h_
+#ifndef polybori_orderings_COrderingTags_h_
+#define polybori_orderings_COrderingTags_h_
 
 BEGIN_NAMESPACE_PBORI
 

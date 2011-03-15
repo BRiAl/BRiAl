@@ -19,8 +19,8 @@
 // Get runtime-definable error type
 #include "PBoRiError.h"
 
-#ifndef PBoRiGenericError_h_
-#define PBoRiGenericError_h_
+#ifndef polybori_error_PBoRiGenericError_h_
+#define polybori_error_PBoRiGenericError_h_
 
 
 BEGIN_NAMESPACE_PBORI

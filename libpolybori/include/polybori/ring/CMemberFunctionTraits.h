@@ -19,8 +19,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef PBORI_CMemberFunctionTraits_h_
-#define PBORI_CMemberFunctionTraits_h_
+#ifndef polybori_ring_CMemberFunctionTraits_h_
+#define polybori_ring_CMemberFunctionTraits_h_
 
 BEGIN_NAMESPACE_PBORI
 

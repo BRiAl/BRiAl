@@ -22,6 +22,8 @@
 #include <set>
 #include <vector>
 
+#ifndef polybori_routines_pbori_routines_dd_h_
+#define polybori_routines_pbori_routines_dd_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -56,3 +58,5 @@ dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
 
 
 END_NAMESPACE_PBORI
+
+#endif

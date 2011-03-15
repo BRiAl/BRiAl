@@ -20,6 +20,9 @@
 
 #include <algorithm>            // std::swap
 
+#ifndef polybori_common_CExtrusivePtr_h_
+#define polybori_common_CExtrusivePtr_h_
+
 BEGIN_NAMESPACE_PBORI
 
 /** @class CExtrusivePtr
@@ -164,3 +167,5 @@ operator!=(Type1* lhs, const CExtrusivePtr<Data2, Type2> & rhs) {
 }
 
 END_NAMESPACE_PBORI
+
+#endif

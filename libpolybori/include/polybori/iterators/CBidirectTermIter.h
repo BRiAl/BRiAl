@@ -23,8 +23,8 @@
 #include "CTermIter.h"
 
 
-#ifndef CBidirectTermIter_h_
-#define CBidirectTermIter_h_
+#ifndef polybori_iterators_CBidirectTermIter_h_
+#define polybori_iterators_CBidirectTermIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

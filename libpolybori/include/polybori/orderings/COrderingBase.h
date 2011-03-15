@@ -25,8 +25,8 @@
 
 #include <vector>
 
-#ifndef COrderingBase_h_
-#define COrderingBase_h_
+#ifndef polybori_orderings_COrderingBase_h_
+#define polybori_orderings_COrderingBase_h_
 
 BEGIN_NAMESPACE_PBORI
 class BoolePolynomial;

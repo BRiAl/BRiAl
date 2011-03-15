@@ -21,8 +21,8 @@
 
 #include "polybori/BoolePolyRing.h"
 
-#ifndef CacheManager_h_
-#define CacheManager_h_
+#ifndef polybori_cache_CacheManager_h_
+#define polybori_cache_CacheManager_h_
 
 BEGIN_NAMESPACE_PBORI
 

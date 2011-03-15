@@ -24,8 +24,8 @@
 // get standard functionality
 #include <functional>
 
-#ifndef CCacheManagement_h_
-#define CCacheManagement_h_
+#ifndef polybori_cache_CCacheManagement_h_
+#define polybori_cache_CCacheManagement_h_
 
 BEGIN_NAMESPACE_PBORI
 

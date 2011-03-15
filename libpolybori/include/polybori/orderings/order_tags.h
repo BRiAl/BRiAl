@@ -15,8 +15,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef order_tags_h_
-#define order_tags_h_
+#ifndef polybori_orderings_order_tags_h_
+#define polybori_orderings_order_tags_h_
 
 BEGIN_NAMESPACE_PBORI
 

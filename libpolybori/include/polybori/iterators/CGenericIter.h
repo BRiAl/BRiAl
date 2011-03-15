@@ -23,8 +23,8 @@
 #include "CTermGenerator.h"
 
 
-#ifndef CGenericIter_h_
-#define CGenericIter_h_
+#ifndef polybori_iterators_CGenericIter_h_
+#define polybori_iterators_CGenericIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

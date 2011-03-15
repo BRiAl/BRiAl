@@ -18,8 +18,8 @@
 // include ordering tags
 #include "order_tags.h"
 
-#ifndef order_traits_h_
-#define order_traits_h_
+#ifndef polybori_orderings_order_traits_h_
+#define polybori_orderings_order_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 

@@ -23,8 +23,8 @@
 
 #include <polybori/ring/CCuddInterface.h>
 
-#ifndef CCuddNavigator_h_
-#define CCuddNavigator_h_
+#ifndef polybori_iterators_CCuddNavigator_h_
+#define polybori_iterators_CCuddNavigator_h_
 
 BEGIN_NAMESPACE_PBORI
 

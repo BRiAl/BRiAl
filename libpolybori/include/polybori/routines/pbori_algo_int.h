@@ -19,8 +19,8 @@
 // get polybori's functionals
 #include "pbori_func.h"
 #include <polybori/iterators/CCuddNavigator.h>
-#ifndef pbori_algo_int_h_
-#define pbori_algo_int_h_
+#ifndef polybori_routines_pbori_algo_int_h_
+#define polybori_routines_pbori_algo_int_h_
 
 BEGIN_NAMESPACE_PBORI
 

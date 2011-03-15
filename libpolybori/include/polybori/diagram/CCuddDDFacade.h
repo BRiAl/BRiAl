@@ -16,8 +16,8 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
-#ifndef CCuddDDFacade_h
-#define CCuddDDFacade_h
+#ifndef polybori_diagram_CCuddDDFacade_h
+#define polybori_diagram_CCuddDDFacade_h
 
 #include "cuddInt.h"
 #include "CApplyNodeFacade.h"

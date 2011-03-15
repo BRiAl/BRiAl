@@ -23,8 +23,8 @@
 #include <sstream>
 
 
-#ifndef CVariableNames_h_
-#define CVariableNames_h_
+#ifndef polybori_ring_CVariableNames_h_
+#define polybori_ring_CVariableNames_h_
 
 BEGIN_NAMESPACE_PBORI
 

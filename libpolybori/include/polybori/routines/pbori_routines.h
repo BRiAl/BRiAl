@@ -20,8 +20,8 @@
 #include "pbori_algo.h"
 #include "pbori_func.h"
 
-#ifndef PBORI_ROUTINES_H_
-#define PBORI_ROUTINES_H_
+#ifndef polybori_routines_pbori_routines_h_
+#define polybori_routines_pbori_routines_h_
 
 
 // Get routines, which add features related to decision diagrams

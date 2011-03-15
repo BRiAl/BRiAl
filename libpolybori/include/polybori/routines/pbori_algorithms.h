@@ -17,8 +17,8 @@
 **/
 //*****************************************************************************
 
-#ifndef pbori_algorithms_h_
-#define pbori_algorithms_h_
+#ifndef polybori_routines_pbori_algorithms_h_
+#define polybori_routines_pbori_algorithms_h_
 
 // include standard headers
 #include <numeric>

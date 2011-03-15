@@ -38,8 +38,8 @@
   
 #include <polybori/BooleSet.h>
 
-#ifndef CTermStack_h_
-#define CTermStack_h_
+#ifndef polybori_iterators_CTermStack_h_
+#define polybori_iterators_CTermStack_h_
 
 BEGIN_NAMESPACE_PBORI
 

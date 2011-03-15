@@ -15,8 +15,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef pbori_order_h_
-#define pbori_order_h_
+#ifndef polybori_orderings_pbori_order_h_
+#define polybori_orderings_pbori_order_h_
 
 // Get infrastructure for dynamic orderings
 #include "COrderingBase.h"

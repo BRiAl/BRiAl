@@ -20,8 +20,8 @@
 
 #include "CCacheManagement.h"
 
-#ifndef CDegreeCache_h_
-#define CDegreeCache_h_ 
+#ifndef polybori_cache_CDegreeCache_h_
+#define polybori_cache_CDegreeCache_h_ 
 
 BEGIN_NAMESPACE_PBORI
 //class BoolePolyRing;

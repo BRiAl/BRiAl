@@ -14,8 +14,8 @@
 **/
 //*****************************************************************************
 
-#ifndef CCuddZDD_h
-#define CCuddZDD_h
+#ifndef polybori_diagram_CApplyNodeFacade_h
+#define polybori_diagram_CApplyNodeFacade_h
 
 // include basic definitions
 #include "polybori/pbori_defs.h"

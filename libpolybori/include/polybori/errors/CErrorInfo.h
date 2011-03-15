@@ -15,6 +15,9 @@
 
 #include "polybori/pbori_defs.h"
 
+#ifndef polybori_error_CErrorInfo_h_
+#define polybori_error_CErrorInfo_h_
+
 BEGIN_NAMESPACE_PBORI
 
 /** @internal @class CErrorInfo
@@ -42,3 +45,5 @@ protected:
 
 
 END_NAMESPACE_PBORI
+
+#endif

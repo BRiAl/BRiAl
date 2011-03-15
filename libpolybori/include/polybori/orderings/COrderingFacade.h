@@ -29,8 +29,8 @@
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
 
-#ifndef COrderingFacade_h_
-#define COrderingFacade_h_
+#ifndef polybori_orderings_COrderingFacade_h_
+#define polybori_orderings_COrderingFacade_h_
 
 
 BEGIN_NAMESPACE_PBORI

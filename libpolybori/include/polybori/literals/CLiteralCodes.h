@@ -15,8 +15,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef CLiteralCodes_h_
-#define CLiteralCodes_h_
+#ifndef polybori_literals_CLiteralCodes_h_
+#define polybori_literals_CLiteralCodes_h_
 
 BEGIN_NAMESPACE_PBORI
 

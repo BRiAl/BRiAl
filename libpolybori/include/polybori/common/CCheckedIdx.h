@@ -16,8 +16,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef CCheckedIdx_h_
-#define CCheckedIdx_h_
+#ifndef polybori_common_CCheckedIdx_h_
+#define polybori_common_CCheckedIdx_h_
 
 BEGIN_NAMESPACE_PBORI
 

@@ -27,8 +27,8 @@
 
 #include <polybori/orderings/COrderingTags.h>
 
-#ifndef CStackSelector_h_
-#define CStackSelector_h_
+#ifndef polybori_iterators_CStackSelector_h_
+#define polybori_iterators_CStackSelector_h_
 
 BEGIN_NAMESPACE_PBORI
 /** @class CStackSelector

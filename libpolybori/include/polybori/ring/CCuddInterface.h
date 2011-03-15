@@ -37,8 +37,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-#ifndef CCuddInterface_h_
-#define CCuddInterface_h_
+#ifndef polybori_ring_CCuddInterface_h_
+#define polybori_ring_CCuddInterface_h_
 
   // get cudd error texts
 inline const char* error_text(DdManager* mgr) {

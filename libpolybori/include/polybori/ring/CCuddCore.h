@@ -13,8 +13,8 @@
 **/
 //*****************************************************************************
 
-#ifndef CCuddCore_h
-#define CCuddCore_h
+#ifndef polybori_ring_CCuddCore_h
+#define polybori_ring_CCuddCore_h
 
 // include basic definitions
 #include <polybori/pbori_defs.h>

@@ -21,8 +21,8 @@
 // get literal codes (enumeration)
 #include "CLiteralCodes.h"
 
-#ifndef CStringLiteral_h_
-#define CStringLiteral_h_
+#ifndef polybori_literals_CStringLiteral_h_
+#define polybori_literals_CStringLiteral_h_
 
 BEGIN_NAMESPACE_PBORI
 

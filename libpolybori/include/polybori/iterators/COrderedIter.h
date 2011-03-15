@@ -25,8 +25,8 @@
 #include "CStackSelector.h"
 #include "CTermGenerator.h"
 
-#ifndef COrderedIter_h_
-#define COrderedIter_h_
+#ifndef polybori_iterators_COrderedIter_h_
+#define polybori_iterators_COrderedIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

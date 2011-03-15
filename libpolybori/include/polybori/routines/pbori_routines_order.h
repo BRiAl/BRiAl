@@ -13,6 +13,9 @@
  **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_routines_order_h_
+#define polybori_routines_pbori_routines_order_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 #include "pbori_algo.h"
@@ -478,3 +481,5 @@ block_deg_lex_idx_compare(IdxType lhs, IdxType rhs,
 }
 
 END_NAMESPACE_PBORI
+
+#endif

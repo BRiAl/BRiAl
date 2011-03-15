@@ -16,8 +16,8 @@
 #include <polybori/pbori_defs.h>
 #include <polybori/orderings/order_tags.h>
 
-#ifndef polybori_common_tags_h_
-#define polybori_common_tags_h_
+#ifndef polybori_common_common_tags_h_
+#define polybori_common_common_tags_h_
 
 BEGIN_NAMESPACE_PBORI
 

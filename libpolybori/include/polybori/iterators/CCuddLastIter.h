@@ -18,8 +18,8 @@
 // include basic definitions
 #include "CCuddNavigator.h"
 
-#ifndef CCuddLastIter_h_
-#define CCuddLastIter_h_
+#ifndef polybori_iterators_CCuddLastIter_h_
+#define polybori_iterators_CCuddLastIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

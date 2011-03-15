@@ -38,8 +38,8 @@
 #  endif
 #endif
 
-#ifndef pbori_func_h_
-#define pbori_func_h_
+#ifndef polybori_routines_pbori_func_h_
+#define polybori_routines_pbori_func_h_
 
 BEGIN_NAMESPACE_PBORI
 

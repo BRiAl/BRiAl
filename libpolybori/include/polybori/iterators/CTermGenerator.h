@@ -22,8 +22,8 @@
 
   //#include "polybori/BooleSet.h"
 
-#ifndef CTermGenerator_h_
-#define CTermGenerator_h_
+#ifndef polybori_iterators_CTermGenerator_h_
+#define polybori_iterators_CTermGenerator_h_
 
 BEGIN_NAMESPACE_PBORI
 

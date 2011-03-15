@@ -26,8 +26,8 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 #include <polybori/BooleEnv.h>
-#ifndef CTermIter_h_
-#define CTermIter_h_
+#ifndef polybori_iterators_CTermIter_h_
+#define polybori_iterators_CTermIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

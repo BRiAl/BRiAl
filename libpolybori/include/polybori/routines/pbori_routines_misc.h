@@ -12,6 +12,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_routines_misc_h_
+#define polybori_routines_pbori_routines_misc_h_
+
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
@@ -972,3 +975,5 @@ substitute_variables(const RingType& ring,
 
 
 END_NAMESPACE_PBORI
+
+#endif

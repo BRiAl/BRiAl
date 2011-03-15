@@ -18,8 +18,8 @@
 #include "polybori/pbori_defs.h"
 #include <map>
 
-#ifndef PBORI_pbori_routines_cuddext_h_
-#define PBORI_pbori_routines_cuddext_h_
+#ifndef polybori_routines_pbori_routines_cuddext_h_
+#define polybori_routines_pbori_routines_cuddext_h_
 
 BEGIN_NAMESPACE_PBORI
 

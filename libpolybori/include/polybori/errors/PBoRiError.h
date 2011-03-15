@@ -17,8 +17,8 @@
 #include "polybori/pbori_defs.h"
 #include <exception>
 
-#ifndef PBoRiError_h_
-#define PBoRiError_h_
+#ifndef polybori_error_PBoRiError_h_
+#define polybori_error_PBoRiError_h_
 
 
 BEGIN_NAMESPACE_PBORI

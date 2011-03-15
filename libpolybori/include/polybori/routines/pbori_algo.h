@@ -28,8 +28,8 @@
 #include "cuddInt.h"
 #include <polybori/ring/CCuddInterface.h>
 
-#ifndef pbori_algo_h_
-#define pbori_algo_h_
+#ifndef polybori_routines_pbori_algo_h_
+#define polybori_routines_pbori_algo_h_
 
 BEGIN_NAMESPACE_PBORI
 

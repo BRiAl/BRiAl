@@ -20,8 +20,8 @@
 #include "CTermStack.h"
 #include "CTermIter.h"
 
-#ifndef CExpIter_h_
-#define CExpIter_h_
+#ifndef polybori_iterators_CExpIter_h_
+#define polybori_iterators_CExpIter_h_
 
 BEGIN_NAMESPACE_PBORI
 
