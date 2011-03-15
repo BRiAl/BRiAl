@@ -18,16 +18,24 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include <polybori.h>
 #include <groebner_alg.h>
 
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 struct Fstrat {
-  Fstrat(): ring(1000) { BOOST_TEST_MESSAGE( "setup fixture" ); }
+  Fstrat(): 
+    ring(1000) {
+    BOOST_TEST_MESSAGE( "setup fixture" );
+    x = BooleVariable(0);
+    y = BooleVariable(1);
+    z = BooleVariable(2);
+    v = BooleVariable(3);
+    w = BooleVariable(4);
+  }
   ~Fstrat() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 
   BoolePolyRing ring;
+  BooleVariable x, y, z, v, w;
 };
 
 BOOST_FIXTURE_TEST_SUITE(GroebnerStrategyTestSuite, Fstrat )
@@ -38,6 +46,10 @@ BOOST_AUTO_TEST_CASE(test_nf) {
   for (int i=0;i<1000;i++){
     strat.addGenerator(BoolePolynomial(BooleVariable(i)+BoolePolynomial(true)));
   }
+
+  ///@TODO: GroebnerStrategy needs more tests
+  BoolePolynomial poly = x+1;
+  BOOST_CHECK_EQUAL(strat.nf(poly), BoolePolynomial());
 }
 
 BOOST_AUTO_TEST_SUITE_END()
