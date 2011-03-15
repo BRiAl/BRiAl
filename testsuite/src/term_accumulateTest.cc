@@ -24,7 +24,7 @@ USING_NAMESPACE_PBORI
 
 struct Ftermaccu {
   Ftermaccu(): 
-    ring(5,COrderEnums::dp_asc) {
+    ring(5) {
     BOOST_TEST_MESSAGE( "setup fixture" );
     x = BooleVariable(0);
     y = BooleVariable(1);
@@ -45,73 +45,45 @@ BOOST_AUTO_TEST_CASE(test_termaccu) {
   BOOST_TEST_MESSAGE("term_accumulate");
 
   BoolePolynomial poly = x*y +z +x*z +y*z;
-
   BoolePolynomial result = term_accumulate(poly.begin(), poly.end(),
                                           BoolePolynomial());
-
-  std::cout << "Result (lex-ordered): "<<std::endl;std::cout.flush();
-  std::cout << result <<std::endl;
-
-  std::cout << "Result (current order): "<<std::endl;
+  BOOST_CHECK_EQUAL(poly, result);
+  // Only meant to work for lexicographical ordering, so same result
   result = term_accumulate(poly.orderedBegin(), poly.orderedEnd(),
                           BoolePolynomial());
-  
-  std::cout << result <<std::endl;
+  BOOST_CHECK_EQUAL(poly, result);
 
+  // Sophisticated accumulation
   BoolePolynomial::ordered_iterator start(poly.orderedBegin()),
-  start2(poly.orderedBegin());
-
-  std::cout << "Testing sophisticated accumulation: "<<std::endl;
-  start = poly.orderedBegin();
+                                    start2(poly.orderedBegin());
   ++start;
+  start2 = start;++start2; ++start2;
+  result = std::accumulate(start, start2, BoolePolynomial(0));
+  BoolePolynomial result2 = term_accumulate(start, start2, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, result2);
+  result2 = term_accumulate(start.begin(), start.end(), start.navigation(),
+                      start2.begin(), start2.end(), BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, result2);
 
-  start2 = start;
-  ++start2;
-  ++start2;
-  std::cout << "Correct result:       " << 
-    std::accumulate(start, start2, BoolePolynomial(0))  <<std::endl;
-  std::cout << "Sophisticated result: " << 
-    term_accumulate(start.begin(), start.end(), start.navigation(),
-                      start2.begin(), start2.end(), BoolePolynomial(0))  <<std::endl;
-
-
+  // Lower summing 1)
   poly = x*z + x*w+ y*z + y*w + y;
+  start = poly.orderedBegin();++start;
+  start2 = start;++start2;++start2;
 
-  start = poly.orderedBegin();
-  ++start;
-  start2 = start;
-  ++start2;
-  ++start2;
+  result = lower_term_accumulate(start.navigation(),
+                      start2.begin(), start2.end(), BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, x*z + x*w+ y*z);
+  result = term_accumulate(start, start2, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, x*w+ y*z);
 
-  std::cout << "testing...       "<<poly << std::endl;
-
-  std::cout << "lower " << 
-    lower_term_accumulate(start.navigation(),
-                      start2.begin(), start2.end(), BoolePolynomial(0))  <<std::endl;
-
-  std::cout << "summing >= "<<*start <<" .. <  "<<*start2 << std::endl;
-  std::cout<<  term_accumulate(start, start2, BoolePolynomial(0))
-    <<std::endl;
-  
-
+  // Lower summing 2)
   poly = x*y +x*z +y*z + 1;
-  std::cout << "testing...       "<<poly << std::endl;
-
-  start = poly.orderedBegin();
-  ++start;
-  start2 = start;
+  start = poly.orderedBegin();++start;
+  start2 = start;++start2;++start2;
+  result = term_accumulate(start, start2, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, x*z +y*z);
   ++start2;
-  ++start2;
-  std::cout << "summing >= "<<*start <<" .. <  "<<*start2 << std::endl;
-
-  std::cout <<term_accumulate(start, start2, BoolePolynomial(0)) <<std::endl;
-
-  ++start2;
-  std::cout << "summing >= "<<*start <<" .. <  "<< 
-    ((start2 ==  poly.orderedEnd())? BoolePolynomial(0) : 
-    BoolePolynomial(*start2)) << std::endl;
-  std::cout.flush();
-
-  std::cout <<term_accumulate(start, start2, BoolePolynomial(0)) <<std::endl;
+  result = term_accumulate(start, start2, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(result, x*z +y*z + 1);
 }
 BOOST_AUTO_TEST_SUITE_END()
