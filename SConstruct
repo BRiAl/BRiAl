@@ -615,8 +615,8 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
 #DefaultBuild(libgbShared)
 
-tests_pb=["spoly", "zddnavi", "idxtypes", "stringlit", "termaccu"]
-tests_gb=["strategy_initialization", "minimalCPP"]
+tests_pb=["spoly", "stringlit", "termaccu"]
+tests_gb=["strategy_initialization"]
 CPPPATH=env['CPPPATH']+[GBPath('src')]
 #print env['CCFLAGS']
 #print env['CXXFLAGS']
