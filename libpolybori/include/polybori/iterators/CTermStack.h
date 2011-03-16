@@ -31,7 +31,8 @@
  
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>
-   
+
+
 #include <polybori/BooleEnv.h>
 #include <polybori/cache/CDegreeCache.h>
 #include "CBidirectTermIter.h"
@@ -76,8 +77,7 @@ public:
   typedef typename cache_type::manager_type manager_type;
 
   cached_block_deg(const manager_type& mgr):
-    //  m_indices(BoolePolyRing::blockRingBegin()), 
-    m_current_block(BooleEnv::blockBegin()), ///  todo!!!
+    m_current_block(block_begin(mgr)),
     m_deg_cache(mgr) { }
 
   typename NavigatorType::size_type

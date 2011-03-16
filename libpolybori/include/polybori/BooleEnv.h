@@ -150,6 +150,16 @@ class BooleEnv:
 
 ///please use BooleEnv::ring()
 
+
+/// Extract block data without exposing ordering stuff
+BooleEnv::block_iterator 
+block_begin(const BooleEnv::ring_type& ring);
+
+
+/// Extract block data without exposing ordering stuff
+BooleEnv::block_iterator 
+block_end(const BooleEnv::ring_type& ring);
+
 END_NAMESPACE_PBORI
 
 #endif // of #ifndef BooleEnv_h_

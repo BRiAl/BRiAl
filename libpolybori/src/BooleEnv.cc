@@ -134,5 +134,17 @@ BooleEnv::print(ostream_type& os) {
 
 void BooleEnv::set(ring_type& theRing) { ring() = theRing; }
 
+/// Extract block data without exposing ordering stuff
+BooleEnv::block_iterator 
+block_begin(const BooleEnv::ring_type& ring) {
+  return ring.ordering().blockBegin();
+}
+
+
+/// Extract block data without exposing ordering stuff
+BooleEnv::block_iterator 
+block_end(const BooleEnv::ring_type& ring) {
+  return ring.ordering().blockEnd();
+}
 
 END_NAMESPACE_PBORI
