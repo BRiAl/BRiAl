@@ -85,5 +85,55 @@ BOOST_AUTO_TEST_CASE(test_termaccu) {
   ++start2;
   result = term_accumulate(start, start2, BoolePolynomial(0));
   BOOST_CHECK_EQUAL(result, x*z +y*z + 1);
+
 }
+
+
+BOOST_AUTO_TEST_CASE(test_termaccu_other) {
+
+  BOOST_TEST_MESSAGE("term_accumulate other orderings");
+
+  BoolePolynomial poly = x*y +z +x*z +y*z;
+
+  for (unsigned ordernum = 1; ordernum <= 4; ++ordernum) {
+
+    BoolePolyRing ring_other = ring.clone();
+    //    ring_other.activate();
+    ring_other.changeOrdering(ordernum);
+    BoolePolynomial init(ring_other.zero());
+
+    BoolePolynomial poly_other = ring_other.coerce(poly);
+    BoolePolynomial result = term_accumulate(poly_other.begin(), poly_other.end(),
+                                             init);
+    
+    BOOST_CHECK_EQUAL(poly_other, result);
+    
+    // Sophisticated accumulation
+    BoolePolynomial::ordered_iterator start_other(poly_other.orderedBegin()),
+      last_other(poly_other.orderedBegin());
+    ++start_other;
+    last_other = start_other;
+    ++last_other; ++last_other;
+
+    BoolePolynomial::ordered_iterator start(poly.orderedBegin()),
+      last(poly.orderedBegin());
+    
+    while ((*start) != (*start_other) )
+      ++start;
+    
+    while ((*last) != (*last_other) )
+      ++last;
+    
+
+    result = term_accumulate(start_other, last_other, init);
+    
+    /// Term accumulate sums up in a lexicographical way
+    BOOST_CHECK_EQUAL(result,  std::accumulate(start, last, init));
+  }
+
+}
+
+
+
+
 BOOST_AUTO_TEST_SUITE_END()
