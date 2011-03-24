@@ -13,8 +13,8 @@
 **/
 //*****************************************************************************
 
-#ifndef BooleExponent_h_
-#define BooleExponent_h_
+#ifndef polybori_BooleExponent_h_
+#define polybori_BooleExponent_h_
 
 // include basic definitions
 #include "polybori/pbori_defs.h"
@@ -314,4 +314,4 @@ operator<<(BooleExponent::ostream_type& os, const BooleExponent& rhs) {
 
 END_NAMESPACE_PBORI
 
-#endif // of BooleExponent_h_
+#endif // of polybori_BooleExponent_h_

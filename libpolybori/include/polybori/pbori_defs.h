@@ -24,8 +24,8 @@
 
 #include "cacheopts.h"
 
-#ifndef pbori_defs_h_
-#define pbori_defs_h_
+#ifndef polybori_pbori_defs_h_
+#define polybori_pbori_defs_h_
 
 #ifndef PBORI_UNIQUE_SLOTS
 #  define PBORI_UNIQUE_SLOTS CUDD_UNIQUE_SLOTS // initial size of subtables
@@ -315,4 +315,4 @@ END_NAMESPACE_PBORI
 #endif 
 
 
-#endif // of #ifndef pbori_defs_h_
+#endif // of #ifndef polybori_pbori_defs_h_

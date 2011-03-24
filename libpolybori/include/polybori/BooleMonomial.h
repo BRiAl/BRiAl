@@ -15,8 +15,8 @@
 **/
 //*****************************************************************************
 
-#ifndef BooleMonomial_h_
-#define BooleMonomial_h_
+#ifndef polybori_BooleMonomial_h_
+#define polybori_BooleMonomial_h_
 
 // include basic definitions
 #include "polybori/pbori_defs.h"
@@ -417,4 +417,4 @@ operator%(const BoolePolynomial& lhs,
 END_NAMESPACE_PBORI
 
 
-#endif // of BooleMonomial_h_
+#endif // of polybori_BooleMonomial_h_

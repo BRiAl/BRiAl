@@ -15,8 +15,8 @@
 **/
 //*****************************************************************************
 
-#ifndef BooleVariable_h_
-#define BooleVariable_h_
+#ifndef polybori_BooleVariable_h_
+#define polybori_BooleVariable_h_
 
 // include basic definitions
 #include "polybori/pbori_defs.h"
@@ -111,4 +111,4 @@ operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
 
 END_NAMESPACE_PBORI
 
-#endif // of BooleVariable_h_
+#endif // of polybori_BooleVariable_h_

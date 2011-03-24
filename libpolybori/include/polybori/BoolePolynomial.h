@@ -15,8 +15,8 @@
 **/
 //*****************************************************************************
 
-#ifndef BoolePolynomial_h_
-#define BoolePolynomial_h_
+#ifndef polybori_BoolePolynomial_h_
+#define polybori_BoolePolynomial_h_
 
 // include standard definitions
 #include <vector>
@@ -604,4 +604,4 @@ BoolePolynomial::firstReducibleBy(const self& rhs) const {
 
 END_NAMESPACE_PBORI
 
-#endif // of BoolePolynomial_h_
+#endif // of polybori_BoolePolynomial_h_

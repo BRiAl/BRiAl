@@ -25,8 +25,8 @@
 
 #include <list>
 
-#ifndef BoolePolyRing_h_
-#define BoolePolyRing_h_
+#ifndef polybori_BoolePolyRing_h_
+#define polybori_BoolePolyRing_h_
 
 
 BEGIN_NAMESPACE_PBORI
@@ -216,4 +216,4 @@ inline  BoolePolyRing::dd_type BoolePolyRing::variable(checked_idx_type nvar) co
 
 END_NAMESPACE_PBORI
 
-#endif // of #ifndef BoolePolyRing_h_
+#endif // of #ifndef polybori_BoolePolyRing_h_

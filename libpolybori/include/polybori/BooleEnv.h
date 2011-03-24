@@ -20,8 +20,8 @@
 #include "polybori/BoolePolyRing.h"
 #include <vector>
 
-#ifndef BooleEnv_h_
-#define BooleEnv_h_
+#ifndef polybori_BooleEnv_h_
+#define polybori_BooleEnv_h_
 
 // Obey stricter dependence of Sun Studio compiler
 // todo: resolve dependency 
@@ -162,4 +162,4 @@ block_end(const BooleEnv::ring_type& ring);
 
 END_NAMESPACE_PBORI
 
-#endif // of #ifndef BooleEnv_h_
+#endif // of #ifndef polybori_BooleEnv_h_

@@ -20,8 +20,8 @@
 #include <polybori/orderings/COrderingFacade.h>
 #include <polybori/orderings/COrderingTags.h>
 
-#ifndef DegLexOrder_h_
-#define DegLexOrder_h_
+#ifndef polybori_DegLexOrder_h_
+#define polybori_DegLexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -77,4 +77,4 @@ public:
 
 END_NAMESPACE_PBORI
 
-#endif // DegLexOrder_h_
+#endif // polybori_DegLexOrder_h_

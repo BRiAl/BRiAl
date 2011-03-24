@@ -20,8 +20,8 @@
 #include <polybori/orderings/COrderingFacade.h>
 #include <polybori/orderings/COrderingTags.h>
 
-#ifndef LexOrder_h_
-#define LexOrder_h_
+#ifndef polybori_LexOrder_h_
+#define polybori_LexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -81,4 +81,4 @@ class LexOrder:
 
 END_NAMESPACE_PBORI
 
-#endif // LexOrder_h_
+#endif // polybori_LexOrder_h_

@@ -20,8 +20,8 @@
 #include <polybori/orderings/CBlockOrderingFacade.h>
 #include <polybori/orderings/COrderingTags.h>
 
-#ifndef BlockDegRevLexAscOrder_h_
-#define BlockDegRevLexAscOrder_h_
+#ifndef polybori_BlockDegRevLexAscOrder_h_
+#define polybori_BlockDegRevLexAscOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -63,4 +63,4 @@ public:
 
 END_NAMESPACE_PBORI
 
-#endif // BlockDegRevLexAscOrder_h_
+#endif // polybori_BlockDegRevLexAscOrder_h_

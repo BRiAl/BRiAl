@@ -26,8 +26,8 @@
 #include "polybori/BoolePolyRing.h"
 
 
-#ifndef BooleSet_h_
-#define BooleSet_h_
+#ifndef polybori_BooleSet_h_
+#define polybori_BooleSet_h_
 
   //#include "polybori/BoolePolyRing.h"
 BEGIN_NAMESPACE_PBORI

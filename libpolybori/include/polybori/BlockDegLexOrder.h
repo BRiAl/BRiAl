@@ -19,8 +19,8 @@
 #include <polybori/orderings/CBlockOrderingFacade.h>
 #include <polybori/orderings/COrderingTags.h>
 
-#ifndef BlockDegLexOrder_h_
-#define BlockDegLexOrder_h_
+#ifndef polybori_BlockDegLexOrder_h_
+#define polybori_BlockDegLexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -63,4 +63,4 @@ public:
 
 END_NAMESPACE_PBORI
 
-#endif // BlockDegLexOrder_h_
+#endif // polybori_BlockDegLexOrder_h_

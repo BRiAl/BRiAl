@@ -16,8 +16,8 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-#ifndef BooleConstant_h_
-#define BooleConstant_h_
+#ifndef polybori_BooleConstant_h_
+#define polybori_BooleConstant_h_
 
 BEGIN_NAMESPACE_PBORI
 
@@ -65,4 +65,4 @@ operator<<(CTypes::ostream_type& os, const BooleConstant& rhs) {
 
 END_NAMESPACE_PBORI
 
-#endif // BooleConstant_h_
+#endif // polybori_BooleConstant_h_
