@@ -500,11 +500,11 @@ if not env['PLATFORM'] in ["darwin", "cygwin"] :
 
 env.Append(LIBPATH=[CuddPath()])
 
-cudd_resources = [CuddPath('obj/cuddObj.cc')]
-cudd_resources += glob(CuddPath('util/*.c'))
-
-cudd_headers = [ CuddPath(fname) for fname in ['obj/cuddObj.hh', 'util/util.h',
-                                               'cudd/cuddInt.h'] ] 
+#cudd_resources = [CuddPath('obj/cuddObj.cc')]
+#cudd_resources += glob(CuddPath('util/*.c'))
+cudd_resources = glob(CuddPath('util/*.c'))
+cudd_headers = [ CuddPath(fname) for fname in ['util/util.h',
+                                               'cudd/cuddInt.h'] ] #'obj/cuddObj.hh', 
 
 env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['obj', 'util'] ])
 
@@ -516,7 +516,8 @@ for fdir in Split("cudd mtr st epd"):
     cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
-toberemoved = Split("""cudd/cuddAddAbs.c cudd/cuddAddApply.c cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddNeg.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/MatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c""")
+toberemoved = Split("""cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/MatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c cudd/cuddZddReorder.c""")
+#When cuddObj.cc is removed then these are needed: cudd/cuddAddApply.c cudd/cuddAddNeg.c cudd/cuddAddAbs.c
 print "files before ", cudd_resources
 
 # exclude the following files
