@@ -516,7 +516,7 @@ for fdir in Split("cudd mtr st epd"):
     cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
-toberemoved = Split(""" """)
+toberemoved = Split("""cudd/cuddAddAbs.c cudd/cuddAddApply.c cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddNeg.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/MatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c""")
 print "files before ", cudd_resources
 
 # exclude the following files
