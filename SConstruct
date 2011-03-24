@@ -516,11 +516,15 @@ for fdir in Split("cudd mtr st epd"):
     cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
+toberemoved = Split(""" """)
+print "files before ", cudd_resources
 
 # exclude the following files
-for fname in ['util/saveimage.c', 'util/test*.c']:
+for fname in ['util/saveimage.c', 'util/test*.c'] + toberemoved:
     for file in glob(CuddPath(fname)):
         cudd_resources.remove(file)
+
+print "files after ", cudd_resources
 
 cudd_shared = shared_object(cudd_resources)
 
@@ -615,22 +619,9 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
 #DefaultBuild(libgbShared)
 
-tests_pb=["spoly", "stringlit", "termaccu"]
-tests_gb=["strategy_initialization"]
 CPPPATH=env['CPPPATH']+[GBPath('src')]
 #print env['CCFLAGS']
 #print env['CXXFLAGS']
-
-
-for t in tests_pb:
-    env.Program(TestsPath(t), 
-        [TestsPath('src', t + ".cc"),  libpb] + libCudd, 
-        CPPPATH=CPPPATH, LIBS = env['LIBS'] + pyconf.libs)
-
-for t in tests_gb:
-    env.Program(TestsPath(t), 
-        [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
-        CPPPATH=CPPPATH)
 
 testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
