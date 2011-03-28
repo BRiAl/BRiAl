@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file polybori.h 
+/** @file include/polybori.h 
  *
  * @author Alexander Dreyer
  * @date 2006-03-06

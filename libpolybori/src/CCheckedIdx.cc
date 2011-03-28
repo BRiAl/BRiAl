@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file CCheckedIdx.c
+/** @file CCheckedIdx.cc
  *
  * @author Alexander Dreyer
  * @date 2011-02-31
