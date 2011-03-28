@@ -1208,7 +1208,7 @@ cuddUniqueInter(
 
 } /* end of cuddUniqueInter */
 
-
+#ifdef CUDD_ORIGINAL_INCLUSION
 /**Function********************************************************************
 
   Synopsis [Wrapper for cuddUniqueInter that is independent of variable
@@ -1244,7 +1244,7 @@ cuddUniqueInterIVO(
     Cudd_RecursiveDeref(unique, v);
     return(result);
 }
-
+#endif
 
 /**Function********************************************************************
 

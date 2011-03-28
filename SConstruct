@@ -517,7 +517,7 @@ for fdir in Split("cudd mtr st epd"):
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
 toberemoved = Split("""cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/cuddMatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c util/cpu_stats.c util/getopt.c util/pathsearch.c util/pipefork.c util/prtime.c util/ptime.c util/state.c util/strsav.c util/stub.c util/texpand.c util/tmpffile.c
-cudd/cuddAddIte.c cudd/cuddSat.c cudd/cuddBddAbs.c cudd/cuddCof.c cudd/cuddZddIsop.c""")
+cudd/cuddAddIte.c cudd/cuddSat.c cudd/cuddBddAbs.c cudd/cuddCof.c cudd/cuddZddIsop.c cudd/cuddBddIte.c""")
 #When cuddObj.cc is removed then these are needed: cudd/cuddAddApply.c cudd/cuddAddNeg.c cudd/cuddAddAbs.c
 print "files before ", cudd_resources
 
