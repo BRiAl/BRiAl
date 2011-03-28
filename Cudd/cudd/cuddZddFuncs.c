@@ -307,7 +307,7 @@ Cudd_zddDivideF(
 
 } /* end of Cudd_zddDivideF */
 
-
+#ifdef CUDD_ORIGINAL_INCLUSION
 /**Function********************************************************************
 
   Synopsis    [Computes a complement cover for a ZDD node.]
@@ -354,7 +354,7 @@ Cudd_zddComplement(
     Cudd_Deref(zdd_I);
     return(zdd_I);
 } /* end of Cudd_zddComplement */
-
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* Definition of internal functions                                          */
@@ -1499,7 +1499,7 @@ cuddZddGetCofactors2(
 
 } /* end of cuddZddGetCofactors2 */
 
-
+#ifdef CUDD_ORIGINAL_INCLUSION
 /**Function********************************************************************
 
   Synopsis    [Computes a complement of a ZDD node.]
@@ -1544,7 +1544,7 @@ cuddZddComplement(
     cuddDeref(zdd_I);
     return(zdd_I);
 } /* end of cuddZddComplement */
-
+#endif
 
 /**Function********************************************************************
 
