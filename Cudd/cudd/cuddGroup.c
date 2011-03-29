@@ -487,12 +487,14 @@ ddReorderChildren(
 #endif
 	    } while (result != 0);
 	    break;
+#ifdef CUDD_ORIGINAL_INCLUSION
 	case CUDD_REORDER_SYMM_SIFT:
 	    result = cuddSymmSifting(table,lower,upper);
 	    break;
 	case CUDD_REORDER_SYMM_SIFT_CONV:
 	    result = cuddSymmSiftingConv(table,lower,upper);
 	    break;
+#endif
 	case CUDD_REORDER_GROUP_SIFT:
 	    if (table->groupcheck == CUDD_NO_CHECK) {
 		result = ddGroupSifting(table,lower,upper,ddNoCheck,
@@ -509,6 +511,7 @@ ddReorderChildren(
 		result = 0;
 	    }
 	    break;
+#ifdef CUDD_ORIGINAL_INCLUSION
 	case CUDD_REORDER_GROUP_SIFT_CONV:
 	    do {
 		initialSize = table->keys - table->isolated;
@@ -571,6 +574,7 @@ ddReorderChildren(
 	case CUDD_REORDER_EXACT:
 	    result = cuddExact(table,lower,upper);
 	    break;
+#endif
 	case CUDD_REORDER_LAZY_SIFT:
 	    result = ddGroupSifting(table,lower,upper,ddVarGroupCheck,
 				    DD_LAZY_SIFT);
