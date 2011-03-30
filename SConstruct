@@ -169,20 +169,6 @@ opts.Add('CFLAGS', "C compiler flags", "-std=c99",
 opts.Add('CXXFLAGS', "C++ compiler flags", "-std=c++98 -ftemplate-depth-100",
          converter = Split)
 
-for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
-SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
-    if defaultenv.has_key(var):
-        opts.Add(var, "inherited from SCons", defaultenv[var])
-    else:
-        print "Variable", var, "not in default environment!"
-
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
-    if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons",
-             defaultenv[flag], converter = Split)
-    else:
-        print "Flags", flag, "not in default environment!"        
-    
 opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'])# + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
@@ -260,7 +246,23 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         for arg in ['default', 'suncc', 'sunc++', 'sunar']:
             if arg in tools:
                 tools.remove(arg)
-                tools +=  [ 'gcc', 'g++', 'ar']
+        tools +=  [ 'gcc', 'g++', 'ar']
+        defaultenv = Environment(tools=tools)
+
+for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
+    if defaultenv.has_key(var):
+        opts.Add(var, "inherited from SCons", defaultenv[var])
+    else:
+        print "Variable", var, "not in default environment!"
+
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
+    if defaultenv.has_key(flag):
+        opts.Add(flag, "flags inherited from SCons",
+             defaultenv[flag], converter = Split)
+    else:
+        print "Flags", flag, "not in default environment!"
+
 
 if not GetOption('clean'):
     tools +=  ["disttar", "doxygen"]
