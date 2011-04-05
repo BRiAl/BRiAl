@@ -1653,15 +1653,6 @@ Polynomial red_tail_short(const ReductionStrategy& strat, Polynomial p){
 template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial 
 ll_red_nf_generic(const Polynomial&, const BooleSet&);
 
-template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
-Polynomial
-ll_red_nf_generic(const Polynomial&  p, const BooleSet::navigator navi) {
-
-  return ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(p,
-                                       (BooleSet)BooleSet::dd_type(p.ring(), 
-                                                      navi));
-}
-
 template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial& q){
     typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
       cache_mgr_type;
@@ -1670,14 +1661,16 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
                              p.navigation(), q.navigation(),
                              BoolePolynomial());
 }
-template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication> Polynomial ll_red_nf_generic(const Polynomial& p,const BooleSet& reductors){
-    
+
+template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
+Polynomial 
+ll_red_nf_generic(const Polynomial& p,MonomialSet::navigator r_nav){    
     if UNLIKELY(p.isConstant()) return p;
     //if (reductors.isZero()) return p;
     
   MonomialSet::navigator p_nav=p.navigation();
   idx_type p_index=*p_nav;
-  MonomialSet::navigator r_nav=reductors.navigation();
+  //  MonomialSet::navigator r_nav=reductors.navigation();
 
   
   while((*r_nav)<p_index){
@@ -1694,24 +1687,36 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
   if LIKELY(cached.isValid()) return MonomialSet(cache_mgr.generate(cached));
   Polynomial res(0, p.ring());
   if ((*r_nav)==p_index){
-    if (have_redsb){  
-      res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
-      +multiply<fast_multiplication>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),ll_red_nf_generic<have_redsb,single_call_for_noredsb, fast_multiplication>(MonomialSet(cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch()));
-   }else{
-       if (!(single_call_for_noredsb)){
-      res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(
-          cache_mgr.generate(p_nav.elseBranch())),r_nav.thenBranch())
-        +multiply<fast_multiplication>(ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(Polynomial(MonomialSet(
-            cache_mgr.generate(r_nav.elseBranch()))),r_nav.thenBranch()),
-        ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(MonomialSet(
-            cache_mgr.generate(p_nav.thenBranch())),r_nav.thenBranch()));
-} else {
-       res=ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(
-           Polynomial(MonomialSet(cache_mgr.generate(p_nav.elseBranch())))
-           +multiply<fast_multiplication>(Polynomial(MonomialSet(cache_mgr.generate(r_nav.elseBranch()))),
-           Polynomial(MonomialSet(cache_mgr.generate(p_nav.thenBranch())))),r_nav.thenBranch());
-}
-   }
+
+    Polynomial p_nav_else(cache_mgr.generate(p_nav.elseBranch()));
+    Polynomial p_nav_then(cache_mgr.generate(p_nav.thenBranch()));
+    Polynomial r_nav_else(cache_mgr.generate(r_nav.elseBranch()));
+
+    if (have_redsb){
+
+
+      Polynomial tmp = ll_red_nf_generic<have_redsb, single_call_for_noredsb,
+        fast_multiplication>(p_nav_else,r_nav.thenBranch());
+      
+      
+      Polynomial tmp2 = ll_red_nf_generic<have_redsb,single_call_for_noredsb, fast_multiplication>(p_nav_then,r_nav.thenBranch());
+      res = tmp + multiply<fast_multiplication>(r_nav_else, tmp2);
+    }
+    else{
+      if (!(single_call_for_noredsb)){
+
+        Polynomial tmp1 = ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(p_nav_else, r_nav.thenBranch());
+        Polynomial tmp2 = ll_red_nf_generic<have_redsb, single_call_for_noredsb,
+          fast_multiplication>(r_nav_else, r_nav.thenBranch());
+        Polynomial tmp3 = ll_red_nf_generic<have_redsb, single_call_for_noredsb, fast_multiplication>(p_nav_then, r_nav.thenBranch());
+
+        res = tmp1 + multiply<fast_multiplication>(tmp2, tmp3);
+      } 
+      else {
+        res = ll_red_nf_generic<have_redsb, single_call_for_noredsb, 
+          fast_multiplication>(p_nav_else +  multiply<fast_multiplication>(r_nav_else, p_nav_then), r_nav.thenBranch());
+      }
+    }
   } else{
       assert((*r_nav)>p_index);
       
@@ -1725,8 +1730,16 @@ template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplicatio
   cache_mgr.insert(p_nav,r_nav,res.navigation());
   return res;
 
-    
 }
+
+template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
+Polynomial
+ll_red_nf_generic(const Polynomial&  p, const BooleSet& reductors) {
+
+  return ll_red_nf_generic<have_redsb, single_call_for_noredsb,
+    fast_multiplication>(p, reductors.navigation());
+}
+
 Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors){
     return ll_red_nf_generic<true, false, false>(p,reductors);
 }
