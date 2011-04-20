@@ -1249,11 +1249,12 @@ if 'install' in COMMAND_LINE_TARGETS:
     FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/ipbori.1')))
     
     # Executables and shared libraries to be installed
-    pyfiles = []
+    so_pyfiles = []
     for instfile in dynamic_modules :
         installedfile = InstPyPath(relpath(pyroot, instfile.path))
-        pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
+        so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
+    pyfiles = []
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
                                  env['PYINSTALLPREFIX'])
     
@@ -1310,7 +1311,12 @@ if 'install' in COMMAND_LINE_TARGETS:
         pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
-        FinalizeNonExecs(GeneratePyc(pyfiles))
+        cmdline = """$PYTHON -c "import compileall; compileall.compile_dir('"""
+        cmdline += InstPyPath() + """', ddir = '""" + ''  + """'); """ 
+        cmdline += """compileall.compile_dir('"""+ InstPath(GUIPath())
+        cmdline += """', ddir='')" """
+        FinalizeNonExecs(env.Command([file.path + 'c' for file in pyfiles],
+                                     pyfiles, cmdline))
 
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
     env['RELATIVEPYPREFIX'] = relpath(expand_repeated(IPBPath(),env),
