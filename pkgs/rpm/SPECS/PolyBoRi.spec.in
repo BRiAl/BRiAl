@@ -8,11 +8,9 @@
 #
 # norootforbuild
 
-BuildRequires: scons boost-devel gcc python-devel doxygen 
+BuildRequires: scons boost-devel gcc gcc-c++ python-devel doxygen 
 
-Requires: python >= 2.4
 Requires: IPython >= 0.6
-Requires: boost >= 1.33
 
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
