@@ -16,13 +16,13 @@ Requires: boost >= 1.33
 
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
-Version: $PBVERSION
-Release: $PBRELEASE
+Version: $PBVERSION.$PBRELEASE
+Release: 0
 License: GPL3
 Group: Productivity/Scientific/Math
 Group(de): Produktivität/Wissenschaftlich/Math
 URL: http://polybori.sf.net
-Source0: %{name}-%{version}.tar.gz
+Source0: %{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 
 
@@ -44,11 +44,20 @@ structures. On top of this, we provide a Python interface for parsing of complex
 polynomial systems, as well as for sophisticated and extendable strategies for
 Groebner base computation.
 
+%package doc
+Summary: Documentation package for %{name}
+Group: Productivity/Scientific/Math
+Group(de): Produktivität/Wissenschaftlich/Math
+Requires: %{name} = %{version}
+
+%description doc
+This package contains the documentation and tutorial of %{name}.
+
 %prep
 %setup -q
 
 %build
-scons -j 5 prepare-install
+scons %{?jobs:-j%jobs} prepare-install
 
 %install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
@@ -67,16 +76,21 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README LICENSE ChangeLog %{pbori_tmpdoc}/* 
-%attr(644,root,man) %{_mandir}/man1/ipbori.1*
-
 %attr(755, root, root) %{pbori_eprefix}/ipbori
+%attr(755, root, root) %{pbori_eprefix}/PolyGUI
 
 %{pbori_instdir}
 %{pbori_pyinstprefix}/polybori
 
+%files doc
+%defattr(-,root,root,-)
+%doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
+%attr(644,root,man) %{_mandir}/man1/ipbori.1*
+
 
 %changelog
+* Wed Apr 20 2011 Alexander Dreyer <adreyer@gmx.de> - 
+- Updating SPEC file, added PolyGUI, splitted doc.
 * Fri Jan 29 2010 Alexander Dreyer <adreyer@gmx.de> - 
 - Updating sources (PolyBoRi 0.6-4).
 * Tue Mar 31 2009 Alexander Dreyer <adreyer@gmx.de> - 

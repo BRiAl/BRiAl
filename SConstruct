@@ -855,7 +855,7 @@ if distribute or rpm_generation or deb_generation:
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex tutorial/tutorial_content.tex tutorial/PolyGui.png
-    tutorial/PolyGui-Options.png tutorial/versionnumber.tex.in python/genpythondoc.py
+    tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
     man/ipbori.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
@@ -1104,7 +1104,8 @@ def generate_rpmbuilder(rpmopts, emitt = rpmemitter):
                    Dir(RPMPath()).abspath +  "' $SOURCE", emitter = emitt)
 
 srpmbld  = generate_rpmbuilder('-bs', srpmemitter)
-rpmbld  = generate_rpmbuilder('-bb', rpmemitter)
+rpmbld  = generate_rpmbuilder('--define="jobs ' + str(GetOption('num_jobs')) +
+                              '" -bb', rpmemitter)
 
 # debbuilder is very experimental, we ignore dependencies currently (-d)
 debbld = Builder(action = "dpkg-buildpackage -d -rfakeroot")
@@ -1137,7 +1138,7 @@ env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split(documastersubdirs) ] + [
     env.Dir('Cudd/cudd/doc')])  
 
-pbrpmname = pboriname + '-' + pboriversion + "-" + pborirelease 
+pbrpmname = pboriname + '-' + pboriversion + "." + pborirelease 
 
 if rpm_generation:
     # Some file servers use invalid group-ids, so change to current gid
@@ -1145,8 +1146,8 @@ if rpm_generation:
         os.chown(target[0].path, -1, os.getgid())
 
     rpmsrcs = FinalizeNonExecs(env.DistTar(RPMPath('SOURCES',
-                                                   "PolyBoRi-" + pboriversion),
-                                           allsrcs))
+                                                   pbrpmname),
+                                           allsrcs, DISTTAR_FORMAT = 'bz2'))
     env.AddPostAction(rpmsrcs, correctgid)
     
     pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
