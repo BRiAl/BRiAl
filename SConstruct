@@ -1319,7 +1319,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                                      pyfiles, cmdline))
 
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
-    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(IPBPath(),env),
+    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
                                       env['PYINSTALLPREFIX'])       
 
     for instfile in [IPBPath('ipythonrc-polybori') ] :
