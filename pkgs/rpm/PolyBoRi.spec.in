@@ -43,7 +43,6 @@ strategies for Groebner base computation.
 %package doc
 Summary: Documentation package for %{name}
 Group: Documentation
-Requires: locales-doc
 Requires: %{name} = %{version}
 
 %description doc
