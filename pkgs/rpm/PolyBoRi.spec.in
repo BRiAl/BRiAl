@@ -10,9 +10,6 @@
 
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel doxygen
  
-Requires: IPython >= 0.6
-Requires: python-base = %{py_ver}
- 
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
 Version: $PBVERSION.$PBRELEASE
@@ -23,6 +20,7 @@ URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires: python-%{name} = %{version}-%{release}
+Requires: IPython >= 0.6
 
 %define pbori_prefix %{_prefix}
 %define pbori_pyprefix %{py_prefix}
@@ -54,7 +52,7 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Applications/Engineering
-Provides: python-%{name} = %{version}-%{release}
+Requires: python-base = %{py_ver}
 
 %description -n python-%{name}
 This package contains the python core routines of %{name}.
