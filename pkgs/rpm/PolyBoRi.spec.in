@@ -11,7 +11,7 @@
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel doxygen
  
 Requires: IPython >= 0.6
-Requires: python-base >= %{py_ver}
+Requires: python-base = %{py_ver}
  
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
@@ -32,7 +32,7 @@ Requires: python-%{name} = %{version}-%{release}
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
 %define pbori_tmpdoc docs
- 
+
 %description
 PolyBoRi is a special purpose computer algebra system for computations in
 Boolean Rings. The core is a C++ library, which provides high-level data types
