@@ -1,4 +1,4 @@
-# spec file for package PolyBoRi (Version $PBVERSION)
+# spec file for package PolyBoRi (Version $PBVERSION.$PBRELEASE)
 #
 # Copyright (c) 2008-2011 The PolyBoRi Team
 # This file and all modifications and additions to the pristine
@@ -24,13 +24,11 @@ Requires: python-%{name} = %{version}-%{release}
 Requires: IPython >= 0.6
 
 %define pbori_prefix %{_prefix}
-%define pbori_pyprefix %{py_prefix}
 
-%if %defined py_sitedir == 0
-%define py_sitedir %{py_prefix}/%{_lib}/python%{py_ver}/site-packages
-%endif
+%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")}
 
-%define pbori_pyinstprefix %{py_sitedir}
+%define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
+
 %define pbori_eprefix %{_bindir}
  
 %define pbori_instdir %{_datadir}/%{name}
@@ -73,7 +71,7 @@ scons %{?jobs:-j%jobs} prepare-install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
               PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
               INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-              PYPREFIX=%{pbori_pyprefix} PYTHON=%{__python} \
+              PYTHON=%{__python} \
               DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
               MANDIR=$RPM_BUILD_ROOT/%{_mandir}
  
