@@ -264,6 +264,9 @@ for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
         print "Flags", flag, "not in default environment!"
 
 
+opts.Add('CONFFILE', "Dump settings to file, if given", '')
+
+
 if not GetOption('clean'):
     tools +=  ["disttar", "doxygen"]
 
@@ -601,9 +604,11 @@ env.Clean([libpb] + pb_shared, cache_opts)
 
 gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc fglm.cc polynomial_properties.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src = [GBPath('src', source) for source in gb_src]
+
 if not(external_m4ri):
    gb_src += m4ri
-gb=env.StaticLibrary(GBPath('groebner'), gb_src)#+[libpb])
+
+gb=env.StaticLibrary(GBPath('groebner'), gb_src)
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
@@ -822,7 +827,7 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0"""),
+           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej"""),
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
            auxiliary"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
@@ -856,7 +861,7 @@ if distribute or rpm_generation or deb_generation:
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex tutorial/tutorial_content.tex tutorial/PolyGui.png
     tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
-    man/ipbori.1 """) ]
+    man/ipbori.1 man/PolyGUI.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
 
@@ -1247,6 +1252,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                       InstManPath()]:
         env.Alias('install', inst_path)
     FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/ipbori.1')))
+    FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1')))
     
     # Executables and shared libraries to be installed
     so_pyfiles = []
@@ -1337,7 +1343,22 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', ipboribin)
     env.AlwaysBuild(guibin)   
     env.Alias('install', guibin)
+
+    # we dump the flags for reuse by other developers
+    def build_conffile(target, source, env):
+        opts.Save(target[0].path, env)
+        return None
+
+    conffilebld = Builder(action = build_conffile)
+    env.Append(BUILDERS = {'ConfFile': Builder(action = build_conffile)})
+
+    conffilename = env['CONFFILE']
+    if conffilename:
+        conffile = env.ConfFile(target = conffilename, source = 'SConstruct')
+        env.AlwaysBuild(conffile)
+        env.Alias('install', conffile)
     
+
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 

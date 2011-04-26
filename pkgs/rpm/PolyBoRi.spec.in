@@ -25,6 +25,11 @@ Requires: IPython >= 0.6
 
 %define pbori_prefix %{_prefix}
 %define pbori_pyprefix %{py_prefix}
+
+%if %defined py_sitedir == 0
+%define py_sitedir %{py_prefix}/%{_lib}/python%{py_ver}/site-packages
+%endif
+
 %define pbori_pyinstprefix %{py_sitedir}
 %define pbori_eprefix %{_bindir}
  
@@ -56,12 +61,13 @@ Requires: python-base = %{py_ver}
 
 %description -n python-%{name}
 This package contains the python core routines of %{name}.
+It incorporates code from CUDD and M4RI.
 
 %prep
 %setup -q
  
 %build
-scons %{?jobs:-j%jobs} prepare-install
+scons %{?jobs:-j%jobs} prepare-install 
 
 %install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
@@ -83,11 +89,14 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{pbori_eprefix}/ipbori
 %attr(755, root, root) %{pbori_eprefix}/PolyGUI
 %attr(644,root,man) %{_mandir}/man1/ipbori.1*
+%attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
 %{pbori_instdir}
+%doc README LICENSE ChangeLog
 
 %files -n python-%{name}
 %defattr(-,root,root,-)
 %{pbori_pyinstprefix}/polybori
+%doc README LICENSE ChangeLog
 
 %files doc
 %defattr(-,root,root,-)
@@ -95,8 +104,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Apr 26 2011 Alexander Dreyer <adreyer@gmx.de> - 
+- Latest sources (PolyBoRi $PBVERSION.$PBRELEASE-0).
 * Wed Apr 20 2011 Alexander Dreyer <adreyer@gmx.de> - 
-- Updating SPEC file, added PolyGUI, splitted doc.
+- Updating SPEC file, added PolyGUI, splitted doc and python.
 * Fri Jan 29 2010 Alexander Dreyer <adreyer@gmx.de> - 
 - Updating sources (PolyBoRi 0.6-4).
 * Tue Mar 31 2009 Alexander Dreyer <adreyer@gmx.de> - 

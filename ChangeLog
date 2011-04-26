@@ -1,10 +1,11 @@
 Release Name: 0.7.1:
 * Fixed building on Solaris with gcc 4.6.0 (broken default flags)
-* Spec file for RPM updated (added PolyGUI, splitted doc package off),
-  PolyBoRi revision number added to rpm version
+* Spec file for RPM updated (added PolyGUI, splitted doc and python
+  package off), PolyBoRi revision number added to rpm version
 * Version number handling simplified
 * ll_red_nf code fixed to compile with -O0 again
 * More routines in aes.py and gbcore.py not active ring-dependent anymore
+* scons CONFFILE=/path/to/file.conf stores the build configuration
 
 Release Name: 0.7.0:
 * Polynomials, monomials, variables, and BooleSets now own a reference to a
