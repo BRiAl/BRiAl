@@ -46,7 +46,7 @@ strategies for Groebner base computation.
  
 %package doc
 Summary: Documentation package for %{name}
-Group: Documentation
+Group: Documentation/Other
 Requires: %{name} = %{version}
 
 %description doc
