@@ -1150,8 +1150,8 @@ if rpm_generation:
                                            allsrcs, DISTTAR_FORMAT = 'bz2'))
     env.AddPostAction(rpmsrcs, correctgid)
     
-    pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
-                                              SpecsPath('PolyBoRi.spec.in')))
+    pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pboriname +'.spec'),
+                                              RPMPath('PolyBoRi.spec.in')))
 
         
     env.AddPostAction(pbspec, correctgid)
