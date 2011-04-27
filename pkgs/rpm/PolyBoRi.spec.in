@@ -11,7 +11,6 @@
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel
 BuildRequires: doxygen %{?suse_version:texlive-latex texlive-tex4ht} %{?fedora:tex4ht}
 
-Requires: python-base >= %{py_ver}
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
 Version: $PBVERSION.$PBRELEASE
@@ -58,7 +57,9 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Applications/Engineering
+%if %{defined suse_version}
 Requires: python-base = %{py_ver}
+%endif
 
 %description -n python-%{name}
 This package contains the python core routines of %{name}.
