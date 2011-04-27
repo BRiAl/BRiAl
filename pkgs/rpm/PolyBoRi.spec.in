@@ -8,9 +8,9 @@
 #
 # norootforbuild
 
-BuildRequires: scons boost-devel gcc gcc-c++ python-devel doxygen
- 
-Requires: python-base >= %{py_ver}
+BuildRequires: scons boost-devel gcc gcc-c++ python-devel
+BuildRequires: doxygen %{?suse_version:texlive-latex texlive-tex4ht} %{?fedora:tex4ht}
+
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
 Version: $PBVERSION.$PBRELEASE
@@ -25,7 +25,9 @@ Requires: IPython >= 0.6
 
 %define pbori_prefix %{_prefix}
 
-%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")}
+%define pbori_pythonsearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
+
+%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%pbori_pythonsearch}
 
 %define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
 
@@ -46,7 +48,7 @@ strategies for Groebner base computation.
  
 %package doc
 Summary: Documentation package for %{name}
-Group: Documentation
+Group: Documentation/Other
 Requires: %{name} = %{version}
 
 %description doc
@@ -55,7 +57,9 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Applications/Engineering
+%if %{defined suse_version}
 Requires: python-base = %{py_ver}
+%endif
 
 %description -n python-%{name}
 This package contains the python core routines of %{name}.
