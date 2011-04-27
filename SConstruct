@@ -110,7 +110,8 @@ generate_deb = 'deb' in COMMAND_LINE_TARGETS
 deb_generation = prepare_deb or generate_deb
 generate_rpm = 'rpm' in COMMAND_LINE_TARGETS
 generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
-rpm_generation = generate_rpm or generate_srpm
+prepare_rpm = 'prepare-rpm' in COMMAND_LINE_TARGETS
+rpm_generation = generate_rpm or generate_srpm or prepare_rpm
 
 DefaultBuild = Default
 if distribute or rpm_generation or deb_generation:
@@ -1158,6 +1159,8 @@ if rpm_generation:
     env.AddPostAction(pbspec, correctgid)
 
     env.AlwaysBuild(pbspec)
+    env.Alias('prepare-rpm', pbspec)
+    env.Alias('prepare-rpm', rpmsrcs)
     
     pbsrpm = env.SRPMBuilder(RPMPath('SRPMS', pbrpmname),
                              pbspec + rpmsrcs)
