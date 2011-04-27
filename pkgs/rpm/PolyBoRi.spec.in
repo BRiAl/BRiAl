@@ -26,9 +26,11 @@ Requires: IPython >= 0.6
 
 %define pbori_prefix %{_prefix}
 
-%define pbori_pysite_fallback %{?python_sitelib} %{!?python_sitelib:%(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")}
+%define pbori_pythonsearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
 
-%define pbori_pyinstprefix %{?py_sitedir} %{!?py_sitedir:%pbori_pysite_fallback}
+%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%pbori_pythonsearch}
+
+%define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
 
 %define pbori_eprefix %{_bindir}
  
