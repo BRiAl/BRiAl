@@ -9,8 +9,8 @@
 # norootforbuild
 
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel
-BuildRequires: doxygen %{?suse_version:texlive texlive-tex4ht} %{?fedora:tex4ht}
- 
+BuildRequires: doxygen %{?suse_version:texlive-latex texlive-tex4ht} %{?fedora:tex4ht}
+
 Requires: python-base >= %{py_ver}
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
