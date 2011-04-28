@@ -494,6 +494,9 @@ symlinkbld = Builder(action = build_symlink)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld})
 
+def shared_object(o):
+    return env.SharedObject(o)
+
 ######################################################################
 # Stuff for building Cudd library
 ######################################################################
@@ -506,21 +509,13 @@ if not env['PLATFORM'] in ["darwin", "cygwin"] :
 
 env.Append(LIBPATH=[CuddPath()])
 
-cudd_headers = [ CuddPath(fname) for fname in ['cudd/cuddInt.h'] ]
-
-def shared_object(o):
-    return env.SharedObject(o)
+cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
+cuddInt cudd util""") ]
     
-for fdir in Split("cudd"):
-    env.Append( CPPPATH=[CuddPath(fdir)] )
-    cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
+env.Append( CPPPATH=[CuddPath("cudd")] )
 
 cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
-API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c
-ZddSetop.c""") ]
-
-#cudd_resources += [CuddPath(elt) for elt in Split("""
-#util/safe_mem.c""") ]
+API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 
