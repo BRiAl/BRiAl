@@ -173,7 +173,6 @@ public:
     return checkedResult(DD_ONE(getManager()));
   }
 
-#ifndef CUDD_ORIGINAL_INCLUSION
   /// @name Member functions mimicking/interfacing with CUDD procedures 
   /// @note See preprocessor generated members below
   //@{
@@ -217,9 +216,6 @@ public:
 
   void PrintVersion(FILE * fp) const { std::cout.flush(); Cudd_PrintVersion(fp); }
 
-  MtrNode* MakeZddTreeNode(size_type low, size_type size, size_type type) {
-    return Cudd_MakeZddTreeNode(*this, low, size, type);
-  }
   void zddPrintSubtable() const{ 
     std::cout.flush();
     Cudd_zddPrintSubtable(*this);
@@ -249,7 +245,7 @@ public:
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_SWITCH, BOOST_PP_NIL, 
     (zddRealignEnable)(zddRealignDisable)
-    (AutodynDisableZdd)(FreeZddTree)
+    (AutodynDisableZdd)
     (EnableGarbageCollection)(DisableGarbageCollection)
     (TurnOnCountDead)(TurnOffCountDead)(ClearErrorCode)  
   )
@@ -283,13 +279,9 @@ public:
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
 
-  BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, MtrNode*, (ReadZddTree))
-
   PB_CUDDMGR_SET(BOOST_PP_NIL, Cudd_ReorderingType, AutodynEnableZdd)
   PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
   PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
-  PB_CUDDMGR_SET(BOOST_PP_NIL, MtrNode*, SetZddTree)
-#endif
   /** @endcode */
   /// 
   //@}

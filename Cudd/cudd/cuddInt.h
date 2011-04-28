@@ -51,6 +51,7 @@
 #ifndef _CUDDINT
 #define _CUDDINT
 
+
 /// For optimizing if-branches
 #ifdef __GNUC__
 #ifndef LIKELY
@@ -431,8 +432,10 @@ struct DdManager {	/* specialized DD symbol table */
     int realignZ;		/* realign BDD order after ZDD reordering */
     unsigned int nextDyn;	/* reorder if this size is reached */
     unsigned int countDead;	/* if 0, count deads to trigger reordering */
+#ifdef CUDD_ORIG_INCLUSION
     MtrNode *tree;		/* Variable group tree (BDD) */
     MtrNode *treeZ;		/* Variable group tree (ZDD) */
+#endif
     Cudd_AggregationType groupcheck; /* Used during group sifting */
     int recomb;			/* Used during group sifting */
     int symmviolation;		/* Used during group sifting */
@@ -1072,7 +1075,10 @@ extern void cuddCacheFlush (DdManager *table);
 extern int cuddComputeFloorLog2 (unsigned int value);
 extern int cuddHeapProfile (DdManager *dd);
 extern void cuddPrintNode (DdNode *f, FILE *fp);
-extern void cuddPrintVarGroups (DdManager * dd, MtrNode * root, int zdd, int silent);
+#ifdef CUDD_ORIG_INCLUSION
+extern void cuddPrintVarGroups (DdManager * dd, MtrNode * root, int zdd, int
+silent);
+#endif
 extern DdNode * cuddBddClippingAnd (DdManager *dd, DdNode *f, DdNode *g, int maxDepth, int direction);
 extern DdNode * cuddBddClippingAndAbstract (DdManager *dd, DdNode *f, DdNode *g, DdNode *cube, int maxDepth, int direction);
 extern void cuddGetBranches (DdNode *g, DdNode **g1, DdNode **g0);

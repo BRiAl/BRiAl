@@ -157,7 +157,9 @@ static void cuddRotateLeft (DdNodePtr *nodeP);
 static void cuddRotateRight (DdNodePtr *nodeP);
 static void cuddDoRebalance (DdNodePtr **stack, int stackN);
 #endif
+#ifdef CUDD_ORIG_INCLUSION
 static void ddPatchTree (DdManager *dd, MtrNode *treenode);
+#endif
 #ifdef DD_DEBUG
 static int cuddCheckCollisionOrdering (DdManager *unique, int i, int j);
 #endif
@@ -519,8 +521,10 @@ cuddInitTable(
     unique->countDead = ~0;
     unique->siftMaxVar = DD_SIFT_MAX_VAR;
     unique->siftMaxSwap = DD_SIFT_MAX_SWAPS;
+#ifdef CUDD_ORIG_INCLUSION
     unique->tree = NULL;
     unique->treeZ = NULL;
+#endif
     unique->groupcheck = CUDD_GROUP_CHECK7;
     unique->recomb = DD_DEFAULT_RECOMB;
     unique->symmviolation = 0;
@@ -618,8 +622,11 @@ cuddFreeTable(
 #ifndef DD_NO_DEATH_ROW
     FREE(unique->deathRow);
 #endif
+
+#ifdef CUDD_ORIG_INCLUSION
     if (unique->tree != NULL) Mtr_FreeTree(unique->tree);
     if (unique->treeZ != NULL) Mtr_FreeTree(unique->treeZ);
+#endif
     if (unique->linear != NULL) FREE(unique->linear);
     while (unique->preGCHook != NULL)
 	Cudd_RemoveHook(unique,unique->preGCHook->f,CUDD_PRE_GC_HOOK);
@@ -3007,6 +3014,7 @@ cuddDoRebalance(
   SeeAlso     []
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 static void
 ddPatchTree(
   DdManager *dd,
@@ -3025,7 +3033,7 @@ ddPatchTree(
     return;
 
 } /* end of ddPatchTree */
-
+#endif
 
 #ifdef DD_DEBUG
 /**Function********************************************************************

@@ -3893,6 +3893,7 @@ Cudd_SetMaxMemory(
   SeeAlso     [Cudd_bddUnbindVar]
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 int
 Cudd_bddBindVar(
   DdManager *dd /* manager */,
@@ -4437,3 +4438,4 @@ addMultiplicityGroups(
 
 } /* end of addMultiplicityGroups */
 
+#endif

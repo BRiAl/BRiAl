@@ -511,7 +511,7 @@ cudd_headers = [ CuddPath(fname) for fname in ['cudd/cuddInt.h'] ]
 def shared_object(o):
     return env.SharedObject(o)
     
-for fdir in Split("cudd mtr st util"):
+for fdir in Split("cudd st util"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
@@ -520,7 +520,7 @@ API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c
 ZddMisc.c ZddSetop.c""") ]
 
 cudd_resources += [CuddPath(elt) for elt in Split("""
-util/safe_mem.c mtr/mtrBasic.c st/st.c""") ]
+util/safe_mem.c st/st.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 

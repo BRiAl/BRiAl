@@ -61,9 +61,8 @@
 /* Nested includes                                                           */
 /*---------------------------------------------------------------------------*/
 
-#include "mtr.h"
-
 #ifdef CUDD_ORIG_INCLUSION
+#include "mtr.h"
 #include "epd.h"
 #endif
 #ifdef __cplusplus
@@ -687,12 +686,14 @@ extern double Cudd_ReadMaxGrowthAlternate (DdManager * dd);
 extern void Cudd_SetMaxGrowthAlternate (DdManager * dd, double mg);
 extern int Cudd_ReadReorderingCycle (DdManager * dd);
 extern void Cudd_SetReorderingCycle (DdManager * dd, int cycle);
+#ifdef CUDD_ORIG_INCLUSION
 extern MtrNode * Cudd_ReadTree (DdManager *dd);
 extern void Cudd_SetTree (DdManager *dd, MtrNode *tree);
 extern void Cudd_FreeTree (DdManager *dd);
 extern MtrNode * Cudd_ReadZddTree (DdManager *dd);
 extern void Cudd_SetZddTree (DdManager *dd, MtrNode *tree);
 extern void Cudd_FreeZddTree (DdManager *dd);
+#endif
 extern unsigned int Cudd_NodeReadIndex (DdNode *node);
 extern int Cudd_ReadPerm (DdManager *dd, int i);
 extern int Cudd_ReadPermZdd (DdManager *dd, int i);
@@ -886,7 +887,10 @@ extern DdNode * Cudd_bddSqueeze (DdManager *dd, DdNode *l, DdNode *u);
 extern DdNode * Cudd_bddMinimize (DdManager *dd, DdNode *f, DdNode *c);
 extern DdNode * Cudd_SubsetCompress (DdManager *dd, DdNode *f, int nvars, int threshold);
 extern DdNode * Cudd_SupersetCompress (DdManager *dd, DdNode *f, int nvars, int threshold);
-extern MtrNode * Cudd_MakeTreeNode (DdManager *dd, unsigned int low, unsigned int size, unsigned int type);
+#ifdef CUDD_ORIG_INCLUSION
+extern MtrNode * Cudd_MakeTreeNode (DdManager *dd, unsigned int low, unsigned
+int size, unsigned int type);
+#endif
 extern int Cudd_addHarwell (FILE *fp, DdManager *dd, DdNode **E, DdNode ***x, DdNode ***y, DdNode ***xn, DdNode ***yn_, int *nx, int *ny, int *m, int *n, int bx, int sx, int by, int sy, int pr);
 extern DdManager * Cudd_Init (unsigned int numVars, unsigned int numVarsZ, unsigned int numSlots, unsigned int cacheSize, unsigned long maxMemory);
 extern void Cudd_Quit (DdManager *unique);
@@ -991,7 +995,10 @@ extern DdNode	* Cudd_zddDivide (DdManager *dd, DdNode *f, DdNode *g);
 extern DdNode	* Cudd_zddWeakDivF (DdManager *dd, DdNode *f, DdNode *g);
 extern DdNode	* Cudd_zddDivideF (DdManager *dd, DdNode *f, DdNode *g);
 extern DdNode	* Cudd_zddComplement (DdManager *dd, DdNode *node);
-extern MtrNode * Cudd_MakeZddTreeNode (DdManager *dd, unsigned int low, unsigned int size, unsigned int type);
+#ifdef CUDD_ORIG_INCLUSION
+extern MtrNode * Cudd_MakeZddTreeNode (DdManager *dd, unsigned int low, unsigned
+int size, unsigned int type);
+#endif
 extern DdNode	* Cudd_zddIsop (DdManager *dd, DdNode *L, DdNode *U, DdNode **zdd_I);
 extern DdNode	* Cudd_bddIsop (DdManager *dd, DdNode *L, DdNode *U);
 extern DdNode	* Cudd_MakeBddFromZddCover (DdManager *dd, DdNode *node);
