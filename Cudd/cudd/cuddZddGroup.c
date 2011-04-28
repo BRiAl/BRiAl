@@ -467,18 +467,15 @@ zddReorderChildren(
 #endif
 	    } while (result != 0);
 	    break;
-#ifdef CUDD_ORIGINAL_INCLUSION
 	case CUDD_REORDER_SYMM_SIFT:
 	    result = cuddZddSymmSifting(table,lower,upper);
 	    break;
 	case CUDD_REORDER_SYMM_SIFT_CONV:
 	    result = cuddZddSymmSiftingConv(table,lower,upper);
 	    break;
-#endif
 	case CUDD_REORDER_GROUP_SIFT:
 	    result = zddGroupSifting(table,lower,upper);
 	    break;
-#ifdef CUDD_ORIGINAL_INCLUSION
 	case CUDD_REORDER_LINEAR:
 	    result = cuddZddLinearSifting(table,lower,upper);
 	    break;
@@ -494,7 +491,6 @@ zddReorderChildren(
 #endif
 	    } while (result != 0);
 	    break;
-#endif
 	default:
 	    return(0);
 	}
