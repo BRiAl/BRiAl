@@ -113,7 +113,6 @@ static char rcsid[] MTR_UNUSED = "$Id$";
   SeeAlso     [Mtr_DeallocNode]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
 MtrNode *
 Mtr_AllocNode(void)
 {
@@ -123,7 +122,7 @@ Mtr_AllocNode(void)
     return node;
 
 } /* Mtr_AllocNode */
-#endif
+
 
 /**Function********************************************************************
 
@@ -145,7 +144,7 @@ Mtr_DeallocNode(
 
 } /* end of Mtr_DeallocNode */
 
-#ifdef CUDD_ORIG_INCLUSION
+
 /**Function********************************************************************
 
   Synopsis    [Initializes tree with one node.]
@@ -171,7 +170,7 @@ Mtr_InitTree(void)
     return(node);
 
 } /* end of Mtr_InitTree */
-#endif
+
 
 /**Function********************************************************************
 
@@ -211,7 +210,6 @@ Mtr_FreeTree(
   SeeAlso     [Mtr_InitTree]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
 MtrNode *
 Mtr_CopyTree(
   MtrNode * node,
@@ -442,7 +440,6 @@ Mtr_PrintTree(
     return;
 
 } /* end of Mtr_PrintTree */
-#endif
 
 /*---------------------------------------------------------------------------*/
 /* Definition of internal functions                                          */
