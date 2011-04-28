@@ -88,8 +88,9 @@
 
 #include <math.h>
 #include "cudd.h"
+#ifdef CUDD_ORIG_INCLUSION
 #include "st.h"
-
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif

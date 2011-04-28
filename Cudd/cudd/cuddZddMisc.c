@@ -150,7 +150,6 @@ Cudd_zddDagSize(
   SeeAlso     [Cudd_zddCountDouble]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
 double
 Cudd_zddCountMinterm(
   DdManager * zdd,
@@ -239,7 +238,7 @@ Cudd_zddPrintSubtable(
     putchar('\n');
 
 } /* Cudd_zddPrintSubtable */
-#endif
+
 
 /*---------------------------------------------------------------------------*/
 /* Definition of static functions                                            */

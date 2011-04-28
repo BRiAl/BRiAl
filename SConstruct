@@ -517,10 +517,10 @@ for fdir in Split("cudd st util"):
 
 cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
 API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c
-ZddMisc.c ZddSetop.c""") ]
+ZddSetop.c""") ]
 
 cudd_resources += [CuddPath(elt) for elt in Split("""
-util/safe_mem.c st/st.c""") ]
+util/safe_mem.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 
