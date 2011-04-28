@@ -137,20 +137,6 @@ BOOST_AUTO_TEST_CASE(test_indices) {
   dd_type one(one_set);
   output_test_stream output;
 
-  BOOST_TEST_MESSAGE( "usedIndices" );
-  std::vector<int> indices;
-  diagram.usedIndices(indices);
-  for(unsigned i=0;i<indices.size();i++)
-    output<< indices[i] << " ";
-  BOOST_CHECK(output.is_equal("0 1 2 3 "));
-
-  one.usedIndices(indices);
-  for(unsigned i=0;i<indices.size();i++)
-    output<< indices[i] << " ";
-  BOOST_CHECK(output.is_equal(""));
-  BOOST_CHECK_EQUAL(*diagram.usedIndices(), 1);
-  BOOST_CHECK_EQUAL(*one.usedIndices(), 0);
-
   BOOST_TEST_MESSAGE( "firstBegin, firstEnd, lastBegin, lastEnd" );
   BOOST_CHECK_EQUAL(*diagram.firstBegin(), 0);
   dd_type::first_iterator start = diagram.firstBegin();
@@ -606,7 +592,7 @@ BOOST_AUTO_TEST_CASE(test_size) {
   one_set = one_set.add(BooleMonomial());
   dd_type one(one_set);
 
-  BOOST_TEST_MESSAGE( "count, countDouble, nNodes, rootIndex, nSupport" );
+  BOOST_TEST_MESSAGE( "count, countDouble, nNodes, rootIndex" );
   BOOST_CHECK_EQUAL(diagram.count(), 5);
   BOOST_CHECK_EQUAL(one.count(), 1);
   BOOST_CHECK_EQUAL(diagram.countDouble(), 5);
@@ -615,8 +601,6 @@ BOOST_AUTO_TEST_CASE(test_size) {
   BOOST_CHECK_EQUAL(one.nNodes(), 0);
   BOOST_CHECK_EQUAL(diagram.rootIndex(), 0);
   BOOST_CHECK_EQUAL(one.rootIndex(), std::numeric_limits<int>::max());
-  BOOST_CHECK_EQUAL(diagram.nSupport(), 4);
-  BOOST_CHECK_EQUAL(one.nSupport(), 0);
 
   BoolePolynomial pol(1);
   diagram = dd_type(pol.set());

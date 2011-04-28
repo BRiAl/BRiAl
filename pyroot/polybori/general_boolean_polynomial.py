@@ -1,4 +1,4 @@
-#!/usr/bin/python
+# -*- python -*-
 import pathadjuster
 import sys
 import resource

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# -*- python -*-
 # encoding: utf-8
 """
 plot.py

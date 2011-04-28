@@ -110,7 +110,8 @@ generate_deb = 'deb' in COMMAND_LINE_TARGETS
 deb_generation = prepare_deb or generate_deb
 generate_rpm = 'rpm' in COMMAND_LINE_TARGETS
 generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
-rpm_generation = generate_rpm or generate_srpm
+prepare_rpm = 'prepare-rpm' in COMMAND_LINE_TARGETS
+rpm_generation = generate_rpm or generate_srpm or prepare_rpm
 
 DefaultBuild = Default
 if distribute or rpm_generation or deb_generation:
@@ -169,21 +170,7 @@ opts.Add('CFLAGS', "C compiler flags", "-std=c99",
 opts.Add('CXXFLAGS', "C++ compiler flags", "-std=c++98 -ftemplate-depth-100",
          converter = Split)
 
-for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
-SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
-    if defaultenv.has_key(var):
-        opts.Add(var, "inherited from SCons", defaultenv[var])
-    else:
-        print "Variable", var, "not in default environment!"
-
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
-    if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons",
-             defaultenv[flag], converter = Split)
-    else:
-        print "Flags", flag, "not in default environment!"        
-    
-opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'])# + ['-s'])
+opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
@@ -260,7 +247,26 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         for arg in ['default', 'suncc', 'sunc++', 'sunar']:
             if arg in tools:
                 tools.remove(arg)
-                tools +=  [ 'gcc', 'g++', 'ar']
+        tools +=  [ 'gcc', 'g++', 'ar']
+        defaultenv = Environment(tools=tools)
+
+for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
+    if defaultenv.has_key(var):
+        opts.Add(var, "inherited from SCons", defaultenv[var])
+    else:
+        print "Variable", var, "not in default environment!"
+
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
+    if defaultenv.has_key(flag):
+        opts.Add(flag, "flags inherited from SCons",
+             defaultenv[flag], converter = Split)
+    else:
+        print "Flags", flag, "not in default environment!"
+
+
+opts.Add('CONFFILE', "Dump settings to file, if given", '')
+
 
 if not GetOption('clean'):
     tools +=  ["disttar", "doxygen"]
@@ -500,32 +506,21 @@ if not env['PLATFORM'] in ["darwin", "cygwin"] :
 
 env.Append(LIBPATH=[CuddPath()])
 
-#cudd_resources = [CuddPath('obj/cuddObj.cc')]
-#cudd_resources += glob(CuddPath('util/*.c'))
-cudd_resources = glob(CuddPath('util/*.c'))
-cudd_headers = [ CuddPath(fname) for fname in ['util/util.h',
-                                               'cudd/cuddInt.h'] ] #'obj/cuddObj.hh', 
-
-env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['util'] ])#'obj'
+cudd_headers = [ CuddPath(fname) for fname in ['cudd/cuddInt.h'] ]
 
 def shared_object(o):
     return env.SharedObject(o)
     
-for fdir in Split("cudd mtr st epd"):
+for fdir in Split("cudd"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
-    cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
-toberemoved = Split("""cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/cuddMatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c util/cpu_stats.c util/getopt.c util/pathsearch.c util/pipefork.c util/prtime.c util/ptime.c util/state.c util/strsav.c util/stub.c util/texpand.c util/tmpfile.c
-cudd/cuddAddIte.c cudd/cuddSat.c cudd/cuddBddAbs.c cudd/cuddCof.c cudd/cuddZddIsop.c cudd/cuddBddIte.c cudd/cuddAddApply.c cudd/cuddAddNeg.c cudd/cuddAddAbs.c cudd/cuddAnneal.c cudd/cuddGenetic.c cudd/cuddLinear.c cudd/cuddExact.c cudd/cuddSymmetry.c cudd/cuddWindow.c cudd/cuddZddLin.c cudd/cuddZddSymm.c""")
-print "files before ", cudd_resources
+cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
+API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c
+ZddSetop.c""") ]
 
-# exclude the following files
-for fname in ['util/saveimage.c', 'util/test*.c'] + toberemoved:
-    for file in glob(CuddPath(fname)):
-        cudd_resources.remove(file)
-
-print "files after ", cudd_resources
+#cudd_resources += [CuddPath(elt) for elt in Split("""
+#util/safe_mem.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 
@@ -533,6 +528,11 @@ libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
 DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
+
+###################
+# End of Cudd stuff
+###################
+
 
 def SymlinkReadableLibname(files):
     """ Generate symbolik link with more readable library name."""
@@ -604,9 +604,11 @@ env.Clean([libpb] + pb_shared, cache_opts)
 
 gb_src=Split("groebner.cc literal_factorization.cc randomset.cc pairs.cc groebner_alg.cc fglm.cc polynomial_properties.cc lexbuckets.cc dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc")
 gb_src = [GBPath('src', source) for source in gb_src]
+
 if not(external_m4ri):
    gb_src += m4ri
-gb=env.StaticLibrary(GBPath('groebner'), gb_src)#+[libpb])
+
+gb=env.StaticLibrary(GBPath('groebner'), gb_src)
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
@@ -804,14 +806,15 @@ if HAVE_SINGULAR_EXTENSION:
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0"""),
+           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej"""),
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
            auxiliary"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
            coding.py """))
 
 if distribute or rpm_generation or deb_generation:
-    allsrcs = Split("SConstruct README LICENSE ChangeLog disttar.py doxygen.py")
+    allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
+disttar.py doxygen.py""")
     for dirname in Split("""groebner ipbori M4RI libpolybori 
     PyPolyBoRi pyroot Singular pkgs gui"""):
         allsrcs.append(env.Dir(dirname))
@@ -837,8 +840,8 @@ if distribute or rpm_generation or deb_generation:
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex tutorial/tutorial_content.tex tutorial/PolyGui.png
-    tutorial/PolyGui-Options.png tutorial/versionnumber.tex.in python/genpythondoc.py
-    man/ipbori.1 """) ]
+    tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
+    man/ipbori.1 man/PolyGUI.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
 
 
@@ -1096,7 +1099,8 @@ def generate_rpmbuilder(rpmopts, emitt = rpmemitter):
                    Dir(RPMPath()).abspath +  "' $SOURCE", emitter = emitt)
 
 srpmbld  = generate_rpmbuilder('-bs', srpmemitter)
-rpmbld  = generate_rpmbuilder('-bb', rpmemitter)
+rpmbld  = generate_rpmbuilder('--define="jobs ' + str(GetOption('num_jobs')) +
+                              '" -bb', rpmemitter)
 
 # debbuilder is very experimental, we ignore dependencies currently (-d)
 debbld = Builder(action = "dpkg-buildpackage -d -rfakeroot")
@@ -1129,7 +1133,7 @@ env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
     env.Dir(DocPath(srcs)) for srcs in Split(documastersubdirs) ] + [
     env.Dir('Cudd/cudd/doc')])  
 
-pbrpmname = pboriname + '-' + pboriversion + "-" + pborirelease 
+pbrpmname = pboriname + '-' + pboriversion + "." + pborirelease 
 
 if rpm_generation:
     # Some file servers use invalid group-ids, so change to current gid
@@ -1137,17 +1141,19 @@ if rpm_generation:
         os.chown(target[0].path, -1, os.getgid())
 
     rpmsrcs = FinalizeNonExecs(env.DistTar(RPMPath('SOURCES',
-                                                   "PolyBoRi-" + pboriversion),
-                                           allsrcs))
+                                                   pbrpmname),
+                                           allsrcs, DISTTAR_FORMAT = 'bz2'))
     env.AddPostAction(rpmsrcs, correctgid)
     
-    pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pbrpmname +'.spec'),
-                                              SpecsPath('PolyBoRi.spec.in')))
+    pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pboriname +'.spec'),
+                                              RPMPath('PolyBoRi.spec.in')))
 
         
     env.AddPostAction(pbspec, correctgid)
 
     env.AlwaysBuild(pbspec)
+    env.Alias('prepare-rpm', pbspec)
+    env.Alias('prepare-rpm', rpmsrcs)
     
     pbsrpm = env.SRPMBuilder(RPMPath('SRPMS', pbrpmname),
                              pbspec + rpmsrcs)
@@ -1238,13 +1244,15 @@ if 'install' in COMMAND_LINE_TARGETS:
                       InstManPath()]:
         env.Alias('install', inst_path)
     FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/ipbori.1')))
+    FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1')))
     
     # Executables and shared libraries to be installed
-    pyfiles = []
+    so_pyfiles = []
     for instfile in dynamic_modules :
         installedfile = InstPyPath(relpath(pyroot, instfile.path))
-        pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
+        so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
+    pyfiles = []
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
                                  env['PYINSTALLPREFIX'])
     
@@ -1301,10 +1309,15 @@ if 'install' in COMMAND_LINE_TARGETS:
         pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
-        FinalizeNonExecs(GeneratePyc(pyfiles))
+        cmdline = """$PYTHON -c "import compileall; compileall.compile_dir('"""
+        cmdline += InstPyPath() + """', ddir = ''); """ 
+        cmdline += """compileall.compile_dir('"""+ InstPath(GUIPath())
+        cmdline += """', ddir='')" """
+        FinalizeNonExecs(env.Command([file.path + 'c' for file in pyfiles],
+                                     pyfiles, cmdline))
 
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
-    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(IPBPath(),env),
+    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
                                       env['PYINSTALLPREFIX'])       
 
     for instfile in [IPBPath('ipythonrc-polybori') ] :
@@ -1322,7 +1335,22 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', ipboribin)
     env.AlwaysBuild(guibin)   
     env.Alias('install', guibin)
+
+    # we dump the flags for reuse by other developers
+    def build_conffile(target, source, env):
+        opts.Save(target[0].path, env)
+        return None
+
+    conffilebld = Builder(action = build_conffile)
+    env.Append(BUILDERS = {'ConfFile': Builder(action = build_conffile)})
+
+    conffilename = env['CONFFILE']
+    if conffilename:
+        conffile = env.ConfFile(target = conffilename, source = 'SConstruct')
+        env.AlwaysBuild(conffile)
+        env.Alias('install', conffile)
     
+
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 

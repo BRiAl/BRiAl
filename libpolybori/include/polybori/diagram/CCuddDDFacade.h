@@ -21,8 +21,9 @@
 
 #include "cuddInt.h"
 #include "CApplyNodeFacade.h"
-#include <polybori/routines/pbori_routines_cuddext.h>
+#include "CNodeCounter.h"
 
+#include <polybori/routines/pbori_routines_cuddext.h>
 #include <polybori/common/CExtrusivePtr.h>
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
@@ -91,7 +92,6 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 #define PBORI_NAME_Subset1 subset1
 #define PBORI_NAME_Subset0 subset0
 #define PBORI_NAME_Change change
-
 
 #define PB_ZDD_APPLY(count, data, funcname) \
   diagram_type BOOST_PP_CAT(PBORI_NAME_, funcname)(data rhs) const {    \
@@ -231,7 +231,7 @@ public:
   size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
 
   /// Number of nodes in the current decision diagram
-  size_type nNodes() const { return (size_type)(Cudd_zddDagSize(getNode())); }
+  size_type nNodes() const { return CNodeCounter<navigator>()(navigation()); }
 
   /// Number of references pointing here
   size_type refCount() const { 
@@ -404,27 +404,7 @@ public:
 
 
   /// Get numbers of used variables
-  size_type nSupport() const { return apply(Cudd_SupportSize); }
-
-  /// Get used variables (assuming indices of zero length)
-  template<class VectorLikeType>
-  void usedIndices(VectorLikeType& indices) const {
-
-    int* pIdx =  usedIndices();
-    size_type nlen(ring().nVariables());
-
-    indices = VectorLikeType();
-    indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
-
-    for(size_type idx = 0; idx < nlen; ++idx)
-      if (pIdx[idx] == 1){
-        indices.push_back(idx);
-      }
-    FREE(pIdx);
-  }
-
-  /// Get used variables (assuming indices of length nSupport())
-  int* usedIndices() const { return apply(Cudd_SupportIndex); }
+  //  size_type nSupport() const { return apply(Cudd_SupportSize); }
 
   /// Start of first term
   first_iterator firstBegin() const {

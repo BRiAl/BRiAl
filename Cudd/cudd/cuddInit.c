@@ -62,7 +62,19 @@
 /*---------------------------------------------------------------------------*/
 /* Constant declarations                                                     */
 /*---------------------------------------------------------------------------*/
+#ifndef CUDD_ORIG_INCLUSION
+void (*MMoutOfMemory)(long) = MMout_of_memory;
+/* MMout_of_memory -- out of memory for lazy people, flush and exit */
 
+inline void 
+MMout_of_memory(long size)
+{
+    (void) fflush(stdout);
+    (void) fprintf(stderr, "\nout of memory allocating %u bytes\n",
+		   (unsigned) size);
+    exit(1);
+}
+#endif
 
 /*---------------------------------------------------------------------------*/
 /* Stucture declarations                                                     */

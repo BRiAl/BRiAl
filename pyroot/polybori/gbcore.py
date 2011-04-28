@@ -38,9 +38,10 @@ def want_interpolation_gb(G):
 def ll_is_good(I):
     lex_lead=set()
     for p in I:
-        m=p.lex_lead()
-        if m.deg()==1:
-            lex_lead.add(iter(m.variables()).next().index())
+        if not p.is_zero():
+            m=p.lex_lead()
+            if m.deg()==1:
+                lex_lead.add(iter(m.variables()).next().index())
     if len(lex_lead)>=0.8*len(I):
         uv=used_vars_set(I).deg()#don't use len here, which will yield 1
         if len(lex_lead)>0.9*uv:
@@ -74,7 +75,7 @@ def change_order_heuristic(d):
             non_linear=0
             if code==OrderCode.lp:
                 for p in I:
-                    if p.lead().deg()>1:
+                    if p.lead_deg()>1:
                         non_linear=non_linear+1
                         if non_linear>max_non_linear:
                             break

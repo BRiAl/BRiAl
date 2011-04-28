@@ -7,38 +7,7 @@
 # This file is a configuration file for ipython -- ipythonrc format
 #
 # @par Copyright:
-#   (c) 2007 by The PolyBoRi Team
-#
-# @version \$Id$
-#
-# $Log$
-# Revision 1.9  2008/02/19 14:07:19  dreyer
-# Fix: rpm-installation issues (paths)
-#
-# Revision 1.8  2007/12/13 14:01:06  bricken
-# + just import polybori
-#
-# Revision 1.7  2007/11/29 16:23:52  dreyer
-# ADD: preparation for installation of pythond modules in other directory
-#
-# Revision 1.6  2007/11/28 15:02:30  dreyer
-# CHANGE: python moduls may be installed somewhere alse
-#
-# Revision 1.5  2007/11/28 06:18:19  bricken
-# + load_file
-#
-# Revision 1.4  2007/11/23 07:48:25  dreyer
-# CHANGE: copyright message
-#
-# Revision 1.3  2007/11/21 12:51:04  dreyer
-# Fix: refined copyright and paths
-#
-# Revision 1.2  2007/11/06 15:03:32  dreyer
-# CHANGE: More generic copyright
-#
-# Revision 1.1  2007/10/19 12:48:48  dreyer
-# ADD: ipython functionality and wrapper
-#
+#   (c) 2007-2011 by The PolyBoRi Team
 #
 # Configuration file for ipython -- ipythonrc format
 #
@@ -56,11 +25,15 @@ execute from os import path as os_path
 execute pbdir = '..'
 execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 
+execute ipbdir = os_path.join(pbdir, 'ipbori')
+execute if 'IPBDIR' in env.keys(): pbdir = env['IPBDIR']
+
+                              
 # Get program name and prompt something
 execute ipbname = 'ipbori'
 execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
 execute print ipbname, "-- PolyBoRi's interactive command line tool"
-execute print 'Type "polybori_copyright" or "polybori_license"',
+execute print 'Type "polybori_copyright()" or "polybori_license()"',
 execute print 'for more information.\n'
 
 # Uncomment, if we want to skip the banner 
@@ -73,8 +46,9 @@ include ipythonrc
 execute from sys import path
 
 # The following string may be changed by install. If not installed, use default.
-execute pyroot = '$RELATIVEPYPREFIX'
-execute if pyroot[0] == '$': pyroot = os_path.join(pbdir, "pyroot")
+execute relpyroot = '$RELATIVEPYPREFIX'
+execute if relpyroot[0] == '$': relpyroot = '../pyroot'
+execute pyroot = os_path.join(ipbdir, relpyroot)
 execute path.insert(0, pyroot)
 
 # Get all basic stuff from PyPolyBoRi

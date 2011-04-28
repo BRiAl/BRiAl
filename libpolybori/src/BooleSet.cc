@@ -16,10 +16,10 @@
 
 
 // load header files
-# include "polybori/BooleSet.h"
-# include "polybori/BooleMonomial.h"
-# include "polybori/BooleExponent.h"
-# include "polybori/BoolePolyRing.h"
+# include <polybori/BooleSet.h>
+# include <polybori/BooleMonomial.h>
+# include <polybori/BooleExponent.h>
+# include <polybori/BoolePolyRing.h>
 # include <polybori/iterators/PBoRiOutIter.h>
 # include <iterator>
 # include <polybori/routines/pbori_algo.h>
@@ -234,10 +234,7 @@ BooleSet::exp_type
 BooleSet::usedVariablesExp() const {
 
   PBORI_TRACE_FUNC( "BooleSet::usedVariablesExp() const" );
-
-  exp_type result;
-  usedIndices(result);
-  return result;
+  return usedVariables().exp();
 }
 
 // Computes existential abstraction wrt to the variables in the first
