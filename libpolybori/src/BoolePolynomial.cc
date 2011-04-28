@@ -410,7 +410,7 @@ BoolePolynomial::nUsedVariables() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::nUsedVariables() const" );
 
-  return m_dd.nSupport();
+  return usedVariables().size();
 }
 
 // Set of variables of the polynomial
@@ -431,9 +431,7 @@ BoolePolynomial::usedVariablesExp() const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::usedVariablesExp() const" );
 
-  exp_type result;
-  m_dd.usedIndices(result);
-  return result;
+  return m_dd.usedVariablesExp();
 }
 
 

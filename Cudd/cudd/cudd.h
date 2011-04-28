@@ -62,8 +62,10 @@
 /*---------------------------------------------------------------------------*/
 
 #include "mtr.h"
-#include "epd.h"
 
+#ifdef CUDD_ORIG_INCLUSION
+#include "epd.h"
+#endif
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -943,8 +945,10 @@ extern int Cudd_DagSize (DdNode *node);
 extern int Cudd_EstimateCofactor (DdManager *dd, DdNode * node, int i, int phase);
 extern int Cudd_EstimateCofactorSimple (DdNode * node, int i);
 extern int Cudd_SharingSize (DdNode **nodeArray, int n);
+#ifdef CUDD_ORIG_INCLUSION
 extern double Cudd_CountMinterm (DdManager *manager, DdNode *node, int nvars);
 extern int Cudd_EpdCountMinterm (DdManager *manager, DdNode *node, int nvars, EpDouble *epd);
+#endif
 extern double Cudd_CountPath (DdNode *node);
 extern double Cudd_CountPathsToNonZero (DdNode *node);
 extern DdNode * Cudd_Support (DdManager *dd, DdNode *f);

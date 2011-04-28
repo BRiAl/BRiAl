@@ -404,27 +404,7 @@ public:
 
 
   /// Get numbers of used variables
-  size_type nSupport() const { return apply(Cudd_SupportSize); }
-
-  /// Get used variables (assuming indices of zero length)
-  template<class VectorLikeType>
-  void usedIndices(VectorLikeType& indices) const {
-
-    int* pIdx =  usedIndices();
-    size_type nlen(ring().nVariables());
-
-    indices = VectorLikeType();
-    indices.reserve(std::accumulate(pIdx, pIdx + nlen, size_type()));
-
-    for(size_type idx = 0; idx < nlen; ++idx)
-      if (pIdx[idx] == 1){
-        indices.push_back(idx);
-      }
-    FREE(pIdx);
-  }
-
-  /// Get used variables (assuming indices of length nSupport())
-  int* usedIndices() const { return apply(Cudd_SupportIndex); }
+  //  size_type nSupport() const { return apply(Cudd_SupportSize); }
 
   /// Start of first term
   first_iterator firstBegin() const {

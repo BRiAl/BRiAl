@@ -1134,8 +1134,10 @@ extern void cuddShrinkDeathRow (DdManager *table);
 extern DdNode * cuddDynamicAllocNode (DdManager *table);
 extern int cuddSifting (DdManager *table, int lower, int upper);
 extern int cuddSwapping (DdManager *table, int lower, int upper, Cudd_ReorderingType heuristic);
+#ifdef CUDD_ORIG_INCLUSION
 extern int cuddNextHigh (DdManager *table, int x);
 extern int cuddNextLow (DdManager *table, int x);
+#endif
 extern int cuddSwapInPlace (DdManager *table, int x, int y);
 extern int cuddBddAlignToZdd (DdManager *table);
 extern DdNode * cuddBddMakePrime (DdManager *dd, DdNode *cube, DdNode *f);
@@ -1215,8 +1217,10 @@ extern DdNode	* cuddBddIsop (DdManager *dd, DdNode *L, DdNode *U);
 extern DdNode	* cuddMakeBddFromZddCover (DdManager *dd, DdNode *node);
 extern int cuddZddLinearSifting (DdManager *table, int lower, int upper);
 extern int cuddZddAlignToBdd (DdManager *table);
+#ifdef CUDD_ORIG_INCLUSION
 extern int cuddZddNextHigh (DdManager *table, int x);
 extern int cuddZddNextLow (DdManager *table, int x);
+#endif
 extern int cuddZddUniqueCompare (int *ptr_x, int *ptr_y);
 extern int cuddZddSwapInPlace (DdManager *table, int x, int y);
 extern int cuddZddSwapping (DdManager *table, int lower, int upper, Cudd_ReorderingType heuristic);
@@ -1238,6 +1242,11 @@ extern int cuddZddP (DdManager *zdd, DdNode *f);
 
 #ifdef __cplusplus
 } /* end of extern "C" */
+#endif
+
+
+#ifndef CUDD_ORIG_INCLUSION
+#define Cudd_OutOfMem MMout_of_memory
 #endif
 
 #endif /* _CUDDINT */

@@ -977,7 +977,7 @@ cuddZddGetNode(
 
 } /* end of cuddZddGetNode */
 #endif
-
+#ifdef CUDD_ORIG_INCLUSION
 /**Function********************************************************************
 
   Synopsis [Wrapper for cuddUniqueInterZdd that is independent of variable
@@ -1029,7 +1029,7 @@ cuddZddGetNodeIVO(
     return(r);
 
 } /* end of cuddZddGetNodeIVO */
-
+#endif
 
 /**Function********************************************************************
 
@@ -1048,6 +1048,7 @@ cuddZddGetNodeIVO(
   SeeAlso     [cuddUniqueInterZdd]
 
 ******************************************************************************/
+
 DdNode *
 cuddUniqueInter(
   DdManager * unique,
@@ -1110,6 +1111,7 @@ cuddUniqueInter(
     }
 
     /* countDead is 0 if deads should be counted and ~0 if they should not. */
+#ifdef CUDD_ORIG_INCLUSION
     if (unique->autoDyn &&
     unique->keys - (unique->dead & unique->countDead) >= unique->nextDyn) {
 #ifdef DD_DEBUG
@@ -1128,6 +1130,7 @@ cuddUniqueInter(
 #endif
 	return(NULL);
     }
+#endif /* CUDD_ORIG_INCLUSION*/
 
     if (subtable->keys > subtable->maxKeys) {
         if (unique->gcEnabled &&
@@ -1321,6 +1324,7 @@ cuddUniqueInterZdd(
     }
 
     /* countDead is 0 if deads should be counted and ~0 if they should not. */
+#ifdef CUDD_ORIG_INCLUSION
     if (unique->autoDynZ &&
     unique->keysZ - (unique->deadZ & unique->countDead) >= unique->nextDyn) {
 #ifdef DD_DEBUG
@@ -1339,7 +1343,7 @@ cuddUniqueInterZdd(
 #endif
 	return(NULL);
     }
-
+#endif /* CUDD_ORIG_INCLUSION  */
     unique->keysZ++;
     subtable->keys++;
 
@@ -1624,6 +1628,7 @@ cuddRehash(
   SeeAlso     [cuddRehash]
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 void
 cuddShrinkSubtable(
   DdManager *unique,
@@ -2014,7 +2019,6 @@ cuddInsertSubtables(
 
 } /* end of cuddInsertSubtables */
 
-
 /**Function********************************************************************
 
   Synopsis [Destroys the n most recently created subtables in a unique table.]
@@ -2145,7 +2149,7 @@ cuddDestroySubtables(
     return(1);
 
 } /* end of cuddDestroySubtables */
-
+#endif
 
 /**Function********************************************************************
 

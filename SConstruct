@@ -506,33 +506,21 @@ if not env['PLATFORM'] in ["darwin", "cygwin"] :
 
 env.Append(LIBPATH=[CuddPath()])
 
-#cudd_resources = [CuddPath('obj/cuddObj.cc')]
-#cudd_resources += glob(CuddPath('util/*.c'))
-cudd_resources = glob(CuddPath('util/*.c'))
-cudd_headers = [ CuddPath(fname) for fname in ['util/util.h',
-                                               'cudd/cuddInt.h'] ] #'obj/cuddObj.hh', 
-
-env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['util'] ])#'obj'
+cudd_headers = [ CuddPath(fname) for fname in ['cudd/cuddInt.h'] ]
 
 def shared_object(o):
     return env.SharedObject(o)
     
-for fdir in Split("cudd mtr st epd"):
+for fdir in Split("cudd mtr st util"):
     env.Append( CPPPATH=[CuddPath(fdir)] )
-    cudd_resources += glob(CuddPath(fdir, fdir + '*.c'))
     cudd_headers += [ CuddPath(fdir, fdir +'.h') ]
 
-toberemoved = Split("""cudd/cuddAddFind.c cudd/cuddAddInv.c cudd/cuddAddWalsh.c cudd/cuddAndAbs.c cudd/cuddApa.c cudd/cuddApprox.c cudd/cuddBddCorr.c cudd/cuddBridge.c cudd/cuddClip.c cudd/cuddCompose.c cudd/cuddDecomp.c cudd/cuddEssent.c cudd/cuddExport.c cudd/cuddGenCof.c cudd/cuddHarwell.c cudd/cuddLevelQ.c cudd/cuddLiteral.c cudd/cuddMatMult.c cudd/cuddPriority.c cudd/cuddRead.c cudd/cuddSign.c cudd/cuddSolve.c cudd/cuddSplit.c cudd/cuddSubsetHB.c cudd/cuddSubsetSP.c cudd/cuddZddPort.c cudd/cuddZddUtil.c util/cpu_stats.c util/getopt.c util/pathsearch.c util/pipefork.c util/prtime.c util/ptime.c util/state.c util/strsav.c util/stub.c util/texpand.c util/tmpffile.c
-cudd/cuddAddIte.c cudd/cuddSat.c cudd/cuddBddAbs.c cudd/cuddCof.c cudd/cuddZddIsop.c cudd/cuddBddIte.c""")
-#When cuddObj.cc is removed then these are needed: cudd/cuddAddApply.c cudd/cuddAddNeg.c cudd/cuddAddAbs.c
-print "files before ", cudd_resources
+cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
+API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c
+ZddMisc.c ZddSetop.c""") ]
 
-# exclude the following files
-for fname in ['util/saveimage.c', 'util/test*.c'] + toberemoved:
-    for file in glob(CuddPath(fname)):
-        cudd_resources.remove(file)
-
-print "files after ", cudd_resources
+cudd_resources += [CuddPath(elt) for elt in Split("""
+util/safe_mem.c mtr/mtrBasic.c st/st.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 
@@ -540,6 +528,11 @@ libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
 DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
+
+###################
+# End of Cudd stuff
+###################
+
 
 def SymlinkReadableLibname(files):
     """ Generate symbolik link with more readable library name."""

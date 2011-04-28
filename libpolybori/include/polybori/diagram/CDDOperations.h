@@ -21,7 +21,7 @@
 #include <polybori/routines/pbori_routines.h>
 #include <polybori/cache/CCacheManagement.h>
 
-#include "polybori/BoolePolyRing.h"
+#include <polybori/BoolePolyRing.h>
 
 #ifndef polybori_diagram_CDDOperations_h_
 #define polybori_diagram_CDDOperations_h_

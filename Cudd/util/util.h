@@ -4,7 +4,13 @@
 #define UTIL_H
 
 #ifdef __cplusplus
+
+#include <ctime>
 extern "C" {
+
+#else
+#include <time.h>
+
 #endif
 
 #if defined(__GNUC__)
@@ -190,7 +196,18 @@ extern void (*MMoutOfMemory) (long);
 extern char *MMrealloc (char *, long);
 #endif
 
+
+#ifdef CUDD_ORIGINAL_INCLUSION
 extern long util_cpu_time (void);
+
+#else
+  
+  inline long util_cpu_time () {
+    clock_t saved_time = clock();
+    return (((long)saved_time)*1000) / CLOCKS_PER_SEC;
+
+  }
+#endif
 extern int util_getopt (int, char **, char *);
 extern void util_getopt_reset (void);
 extern char *util_path_search (char *);
@@ -207,8 +224,18 @@ extern void util_restart (char *, char *, int);
 /* util_getopt() global variables (ack !) */
 extern int util_optind;
 extern char *util_optarg;
-
+#ifdef CUDD_ORIGINAL_INCLUSION
 extern long getSoftDataLimit (void);
+#else
+inline long
+getSoftDataLimit(void) {
+  const long RLIMIT_DATA_DEFAULT = 67108864;	/* assume 64MB by default */
+  return RLIMIT_DATA_DEFAULT;
+} /* end of getSoftDataLimit */
+
+
+#endif
+
 
 #ifdef __cplusplus
 }

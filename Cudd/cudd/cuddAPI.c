@@ -223,10 +223,10 @@ static char rcsid[] DD_UNUSED = "$Id$";
 /*---------------------------------------------------------------------------*/
 /* Static function prototypes                                                */
 /*---------------------------------------------------------------------------*/
-
+#ifdef CUDD_ORIG_INCLUSION
 static void fixVarTree (MtrNode *treenode, int *perm, int size);
 static int addMultiplicityGroups (DdManager *dd, MtrNode *treenode, int multiplicity, char *vmask, char *lmask);
-
+#endif
 /**AutomaticEnd***************************************************************/
 
 
@@ -251,6 +251,7 @@ static int addMultiplicityGroups (DdManager *dd, MtrNode *treenode, int multipli
   Cudd_addNewVarAtLevel]
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 DdNode *
 Cudd_addNewVar(
   DdManager * dd)
@@ -425,7 +426,7 @@ Cudd_bddIthVar(
     return(res);
 
 } /* end of Cudd_bddIthVar */
-
+#endif
 
 /**Function********************************************************************
 
@@ -511,6 +512,7 @@ Cudd_zddIthVar(
   SeeAlso     [Cudd_bddNewVar Cudd_bddIthVar Cudd_bddNewVarAtLevel]
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 int
 Cudd_zddVarsFromBddVars(
   DdManager * dd /* DD manager */,
@@ -597,7 +599,7 @@ Cudd_zddVarsFromBddVars(
     return(1);
 
 } /* end of Cudd_zddVarsFromBddVars */
-
+#endif
 
 /**Function********************************************************************
 
@@ -2124,6 +2126,7 @@ Cudd_SetReorderingCycle(
   SeeAlso     [Cudd_SetTree Cudd_FreeTree Cudd_ReadZddTree]
 
 ******************************************************************************/
+#ifdef CUDD_ORIG_INCLUSION
 MtrNode *
 Cudd_ReadTree(
   DdManager * dd)
@@ -2255,7 +2258,7 @@ Cudd_FreeZddTree(
     return;
 
 } /* end of Cudd_FreeZddTree */
-
+#endif
 
 /**Function********************************************************************
 
