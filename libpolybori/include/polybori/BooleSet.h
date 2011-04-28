@@ -16,20 +16,17 @@
 // include basic definitions
 #include "polybori/pbori_defs.h"
 
-
-
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
 
 #include <polybori/diagram/CCuddDDFacade.h>
 
-#include "polybori/BoolePolyRing.h"
+#include "BoolePolyRing.h"
 
 
 #ifndef polybori_BooleSet_h_
 #define polybori_BooleSet_h_
 
-  //#include "polybori/BoolePolyRing.h"
 BEGIN_NAMESPACE_PBORI
 
 /// Forward declaration of monomial type

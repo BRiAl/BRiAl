@@ -21,8 +21,9 @@
 
 #include "cuddInt.h"
 #include "CApplyNodeFacade.h"
-#include <polybori/routines/pbori_routines_cuddext.h>
+#include "CNodeCounter.h"
 
+#include <polybori/routines/pbori_routines_cuddext.h>
 #include <polybori/common/CExtrusivePtr.h>
 
 // Getting iterator type for navigating through Cudd's ZDDs structure
@@ -91,29 +92,6 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 #define PBORI_NAME_Subset1 subset1
 #define PBORI_NAME_Subset0 subset0
 #define PBORI_NAME_Change change
-
-template<class NaviType>
-class CNodeCounter {
-  typedef CNodeCounter self;
-
-public:
-  typedef NaviType navigator;
-  typedef typename NaviType::size_type size_type;
-
-  CNodeCounter(): m_visited() {}
-  CNodeCounter(const self& rhs): m_visited(rhs.m_visited) {}
-
-  size_type operator()(navigator navi) {
-    if (navi.isConstant() || m_visited.count(navi))
-      return 0;
-
-    m_visited.insert(navi);
-    return (1 + operator()(navi.thenBranch()) + operator()(navi.elseBranch()));
-  } 
-
-private:
-  std::set<navigator> m_visited;
-};
 
 #define PB_ZDD_APPLY(count, data, funcname) \
   diagram_type BOOST_PP_CAT(PBORI_NAME_, funcname)(data rhs) const {    \
