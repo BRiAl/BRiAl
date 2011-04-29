@@ -26,13 +26,20 @@ using boost::test_tools::output_test_stream;
 #include <polybori/orderings/pbori_order.h>
 #include <vector>
 
+BEGIN_NAMESPACE_PBORI
+typedef CCuddDDFacade<BoolePolyRing, BooleSet> test_dd_type;
+// Testing environment needs correct stream operator
+inline std::ostream&
+operator<<(std::ostream& os, const  test_dd_type& diagram) {
+  return diagram.printIntern(os);
+}
+END_NAMESPACE_PBORI
+
 USING_NAMESPACE_PBORI
-
-
 
 struct Fdd {
   typedef BooleSet set_type;
-  typedef CCuddDDFacade<BoolePolyRing, set_type> dd_type;
+  typedef test_dd_type dd_type;
   Fdd():
     ring(5) {
       x = BooleVariable(0);
@@ -56,11 +63,6 @@ struct Fdd {
   BoolePolynomial poly;
 };
 
-// Testing environment needs correct stream operator
-inline std::ostream&
-operator<<(std::ostream& os, Fdd::dd_type diagram) {
-  return diagram.printIntern(os);
-}
 
 
 
@@ -73,6 +75,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_TEST_MESSAGE( "constructors" );
 
   BOOST_CHECK_EQUAL(set_type(diagram), poly.set());
+  BOOST_CHECK(set_type(diagram) == poly.set());
 
   BoolePolynomial poly1 = y*z + v;
   BoolePolynomial poly2 = v*z + y + 1;
