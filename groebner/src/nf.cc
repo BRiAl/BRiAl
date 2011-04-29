@@ -63,7 +63,7 @@ void drawmatrix(mzd_t* mat, const char* filename){
 
 static int log2_floor(int n){
     int i;
-    for(i=0;TWOPOW(i)<=n;i++){}
+    for(i=0;__M4RI_TWOPOW(i)<=n;i++){}
     return i-1;
 }
 static int optimal_k_for_multiplication(int a,int b,int c,const GroebnerStrategy& strat){

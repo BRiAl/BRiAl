@@ -13,6 +13,10 @@
 #if HAVE_M4RI
 extern "C"{
 #include "m4ri/m4ri.h"
+
+#ifndef __M4RI_TWOPOW
+#define __M4RI_TWOPOW TWOPOW
+#endif
 }
 #endif
 #ifndef PBORI_GB_NF_H
