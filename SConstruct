@@ -163,7 +163,15 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-opts.Add('CCFLAGS', "C/C++ compiler flags", "-O3", converter = Split)
+def get_ccdefault_flags():
+    import SCons
+    if SCons.__version__.split('.') < ['0','97','0'] :
+        print "OLD SCons!"
+        return "-O3 -std=c99"
+    return "-O3"
+
+opts.Add('CCFLAGS', "C/C++ compiler flags", 
+         get_ccdefault_flags(), converter = Split)
 
 opts.Add('CFLAGS', "C compiler flags", "-std=c99",
          converter = Split)

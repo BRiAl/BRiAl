@@ -36,12 +36,12 @@ extern "C" {
 
 extern void (*MMoutOfMemory) (long);
 
-inline long util_cpu_time () {
+static inline long util_cpu_time () {
   clock_t saved_time = clock();
   return (((long)saved_time)*1000) / CLOCKS_PER_SEC;
 }
 
-inline long
+static inline long
 getSoftDataLimit(void) {
   const long RLIMIT_DATA_DEFAULT = 67108864;	/* assume 64MB by default */
   return RLIMIT_DATA_DEFAULT;
@@ -67,7 +67,7 @@ getSoftDataLimit(void) {
 void 
 MMout_of_memory(long size);
 
-inline char*
+static inline char*
 MMalloc(long size) {
   if (size == 0) size = sizeof(long);
 
@@ -78,7 +78,7 @@ MMalloc(long size) {
   return result;
 }
 
-inline char *
+static inline char *
 MMrealloc(char *obj, long size) {
   if (!obj) return MMalloc(size);
   if (size <= 0) size = sizeof(long);
@@ -90,7 +90,7 @@ MMrealloc(char *obj, long size) {
   return result;
 }
 
-inline void
+static inline void
 MMfree(char *obj) {
   if (obj) free(obj); 
 }
