@@ -603,7 +603,7 @@ BOOST_AUTO_TEST_CASE(test_size) {
   BOOST_CHECK_EQUAL(diagram.nNodes(), 6);
   BOOST_CHECK_EQUAL(one.nNodes(), 0);
   BOOST_CHECK_EQUAL(diagram.rootIndex(), 0);
-  BOOST_CHECK_EQUAL(one.rootIndex(), std::numeric_limits<int>::max());
+  BOOST_CHECK_EQUAL(one.rootIndex(), CUDD_MAXINDEX);
 
   BoolePolynomial pol(1);
   diagram = dd_type(pol.set());

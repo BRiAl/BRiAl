@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   order_type order;
   output_test_stream output;
   output_test_stream output_test;
-  int intmax = std::numeric_limits<int>::max();
+  int intmax = CUDD_MAXINDEX;
   BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
   order.clearBlocks();
   start = order.blockBegin();

@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
 
   BOOST_TEST_MESSAGE( "blockBegin, blockEnd, appendBlock, clearBlocks, lastBlockStart" );
   BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), ring.ordering().lastBlockStart());
-  BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), std::numeric_limits<int>::max());
+  BOOST_CHECK_EQUAL(BooleEnv::lastBlockStart(), CUDD_MAXINDEX);
   output_test_stream output, output_ring;
   BooleEnv::changeOrdering(COrderEnums::block_dlex);
   BOOST_CHECK_THROW(BooleEnv::appendBlock(0), std::exception);
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   }
   BOOST_CHECK_EQUAL(output.str(),output_ring.str());
   output_ring.str("");
-  output_ring << "2, " << std::numeric_limits<int>::max() << ", ";
+  output_ring << "2, " << CUDD_MAXINDEX << ", ";
   BOOST_CHECK_EQUAL(output.str(), output_ring.str());
 
   BooleEnv::clearBlocks();
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   }
   BOOST_CHECK_EQUAL(output.str(), output_ring.str());
   output_ring.str("");
-  output_ring << std::numeric_limits<int>::max() << ", ";
+  output_ring << CUDD_MAXINDEX << ", ";
   BOOST_CHECK_EQUAL(output.str(), output_ring.str());
 }
 
