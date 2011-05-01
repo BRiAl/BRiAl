@@ -64,8 +64,14 @@ getSoftDataLimit(void) {
  *  and exit routine).
  */
 
-void 
-MMout_of_memory(long size);
+static inline void 
+MMout_of_memory(long size)
+{
+    (void) fflush(stdout);
+    (void) fprintf(stderr, "\nout of memory allocating %u bytes\n",
+		   (unsigned) size);
+    exit(1);
+}
 
 static inline char*
 MMalloc(long size) {

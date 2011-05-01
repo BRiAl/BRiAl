@@ -163,15 +163,8 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-def get_ccdefault_flags():
-    import SCons
-    if SCons.__version__.split('.') < ['0','97','0'] :
-        print "OLD SCons!"
-        return "-O3 -std=c99"
-    return "-O3"
-
 opts.Add('CCFLAGS', "C/C++ compiler flags", 
-         get_ccdefault_flags(), converter = Split)
+         "-O3", converter = Split)
 
 opts.Add('CFLAGS', "C compiler flags", "-std=c99",
          converter = Split)
@@ -470,6 +463,14 @@ else:
 
 env.Clean('.', glob('*.pyc') + ['config.log'] )
 
+def fix_oldscons_flags():
+    import SCons
+    if SCons.__version__.split('.') < ['0','97','0'] :
+         env.Append(CXXFLAGS = env['CCFLAGS'])
+         env.Append(CCFLAGS = env['CFLAGS'])
+    
+fix_oldscons_flags()
+
 have_pydoc = env['HAVE_PYDOC']
 
 env['PBVERSION'] = pboriversion
@@ -512,8 +513,6 @@ def shared_object(o):
 if IS_x64:
     env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
 env.Append(CPPDEFINES=["HAVE_IEEE_754"])
-if not env['PLATFORM'] in ["darwin", "cygwin"] :
-    env.Append(CPPDEFINES=["BSD"])
 
 env.Append(LIBPATH=[CuddPath()])
 
