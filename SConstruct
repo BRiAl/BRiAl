@@ -328,9 +328,6 @@ cache_opts_file.close()
 #    applelink.generate(env)
 
 
-# todo: More generic?
-IS_x64 = (2**32).__class__==int
-
 # todo: machtype does not deliver the correct value for rpm and deb
 # (only interesting for scons -c rpm|srpm|prepare-debian|deb)
 try:
@@ -372,7 +369,21 @@ have_l2h = have_t4h = False
 external_m4ri = False
 
 if not env.GetOption('clean'):
-    conf = Configure(env)
+    def Check64Bit(context):
+        context.Message('Checking for 64 bit... ')
+        test_src_64bit =  """
+        int main(int argc, char **argv) {
+          return sizeof(void*) == 8;
+        }
+        """
+        result = context.TryLink(test_src_64bit, '.c')
+        context.Result(result)
+        return result
+
+    conf = Configure(env, custom_tests = {'Check64Bit' : Check64Bit})
+    if conf.Check64Bit():
+        env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
+
     if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
         env.Append(LIBS=["gd"])
         env.Append(CPPDEFINES=["HAVE_GD"])
@@ -510,8 +521,6 @@ def shared_object(o):
 # Stuff for building Cudd library
 ######################################################################
 
-if IS_x64:
-    env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
 env.Append(CPPDEFINES=["HAVE_IEEE_754"])
 
 env.Append(LIBPATH=[CuddPath()])
