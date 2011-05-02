@@ -554,8 +554,8 @@ API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]
 
 cudd_shared = shared_object(cudd_resources)
 
-libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
-DefaultBuild(libCudd)
+#libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
+#DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
 
@@ -599,7 +599,7 @@ if env['SHLIBVERSIONING']:
 #    slib=env.LoadableModule
 
 
-libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
+#libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 
 
 ######################################################################
@@ -611,19 +611,21 @@ pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
     BooleMonomial.cc BooleSet.cc LexOrder.cc CCuddLastIter.cc 
     BooleExponent.cc DegLexOrder.cc DegRevLexAscOrder.cc
     pbori_routines.cc BlockDegLexOrder.cc BlockDegRevLexAscOrder.cc""")
+
 pb_src=[PBPath('src', source) for source in pb_src]
-libpb=env.StaticLibrary(PBPath('polybori'), pb_src)
-#print "l:", l, dir(l)
-#sometimes l seems to be boxed by a list
+
+libpb_name = 'polybori'
+libpb=env.StaticLibrary(PBPath(libpb_name), pb_src + cudd_resources)
+
 if isinstance(libpb,list):
     libpb=libpb[0]
+
 DefaultBuild(libpb)
 
-
-pb_shared = shared_object(pb_src)#env.SharedObject(pb_src)
+pb_shared = shared_object(pb_src)
 shared_resources += pb_shared
 
-libpbShared = slib(PBPath('polybori'), list(shared_resources))
+libpbShared = slib(PBPath(libpb_name), list(shared_resources))
 #DefaultBuild(libpbShared)
 
 env.Clean([libpb] + pb_shared, cache_opts)
@@ -638,7 +640,8 @@ gb_src = [GBPath('src', source) for source in gb_src]
 if not(external_m4ri):
    gb_src += m4ri
 
-gb=env.StaticLibrary(GBPath('groebner'), gb_src)
+libgb_name = libpb_name + '_groebner'
+gb=env.StaticLibrary(GBPath(libgb_name), gb_src)
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
@@ -649,7 +652,7 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(GBPath('groebner'), list(shared_resources))
+libgbShared = slib(GBPath(libgb_name), list(gb_shared))
 #DefaultBuild(libgbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('src')]
@@ -661,7 +664,7 @@ testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
 
 env.Program(TestsPath("unittests"),
-            testfiles + [libpb, gb] + libCudd, 
+            testfiles + [libpb, gb], 
             CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
             CPPDEFINES = env['CPPDEFINES'] +
             ["BOOST_TEST_DYN_LINK"] )
@@ -672,14 +675,14 @@ testfilesorderings = [TestsPath('src', file + "Test.cc") for file in
              testclassesorderings] + [TestsPath('src', "unittests_orderings.cc")]
 
 env.Program(TestsPath("unittests_orderings"),
-            testfilesorderings + [libpb, gb] + libCudd, 
+            testfilesorderings + [libpb, gb], 
             CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
             CPPDEFINES = env['CPPDEFINES'] +
             ["BOOST_TEST_DYN_LINK"] )
 
 LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
 
-LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
+LIBS_static = [libpb_name, libgb_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
 
 
@@ -740,7 +743,7 @@ if HAVE_PYTHON_EXTENSION:
 
 
     
-    to_append_for_profile = [libpb, gb] + libCudd
+    to_append_for_profile = [libpb, gb]
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
@@ -793,7 +796,7 @@ docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target = docutarget)
     #env.AlwaysBuild(cxxdocu)
-    env.Depends(cxxdocu, [PBPath(), 'groebner'])
+    env.Depends(cxxdocu, [PBPath(), GBPath()])
 
 env.Clean(DocPath('c++'), docutarget)
 
@@ -806,7 +809,7 @@ else:
 
 if HAVE_SINGULAR_EXTENSION:
 
-    SINGULAR_LIBS = env['LIBS'] + ['groebner', 'polybori']
+    SINGULAR_LIBS = env['LIBS'] + [libgb_name, libpb_name]
     
     SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
     SING_ARCH=SING_ARCH.replace("\n","")
@@ -899,7 +902,7 @@ if distribute:
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
-devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
+devellibs = [libpb,gb] + libpbShared + libgbShared
 readabledevellibs = SymlinkReadableLibname(devellibs)
 
 # Installation for development purposes
