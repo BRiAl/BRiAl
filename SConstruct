@@ -920,7 +920,6 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
 
     env.Install(DevelInstPath('include'), PBPath('include/polybori.h'))
 
-    env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
     
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('src/*.h')))
