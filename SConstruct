@@ -378,8 +378,8 @@ external_m4ri = False
 
 if not env.GetOption('clean'):
     def Check64Bit(context):
-        context.Message('Checking for 64 bit... ')
-        test_src_64bit =  """/* $CCFLAGS */
+        context.Message('Detecting sizeof(void) and sizeof(long)... ')
+        test_src_64bit =  """
         #include <stdio.h>
         int main(int argc, char **argv) {
         printf("%i %i", sizeof(void*), sizeof(long));
