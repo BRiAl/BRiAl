@@ -7,8 +7,8 @@
  *
  */
 
-#include "groebner_alg.h"
-#include "nf.h"
+#include <polybori/groebner/groebner_alg.h>
+#include <polybori/groebner/nf.h>
 #include <algorithm>
 #include <set>
 
@@ -16,19 +16,19 @@
 #define HAVE_DLEX4_DATA 1
 
 #ifdef HAVE_DLEX4_DATA
-#include "dlex4data.h"
+#include <polybori/groebner/dlex4data.h>
 #endif
 
 #define HAVE_LP4_DATA 1
 
 #ifdef HAVE_LP4_DATA
-#include "lp4data.h"
+#include <polybori/groebner/lp4data.h>
 #endif
 
 #define HAVE_DP_ASC4_DATA 1
 
 #ifdef HAVE_DP_ASC4_DATA
-#include "dp_asc4data.h"
+#include <polybori/groebner/dp_asc4data.h>
 #endif
 
 #include <polybori/cache/CacheManager.h>

@@ -6,7 +6,7 @@
 // The method using this tables is actually described in 
 // http://arxiv.org/abs/0801.1177 
 
-#include "lp4data.h"
+#include <polybori/groebner/lp4data.h>
 BEGIN_NAMESPACE_PBORIGB
 const unsigned short lp4var_data[][7]={
     {0, 0, 0, 0, 0, 0, 0},

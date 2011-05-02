@@ -8,10 +8,10 @@
  */
 #include <boost/python.hpp>
 #include <iostream>
-#include "polybori.h"
-#include "polybori/pbori_defs.h"
-#include "groebner_alg.h"
-#include "interpolate.h"
+#include <polybori.h>
+#include <polybori/pbori_defs.h>
+#include <polybori/groebner/groebner_alg.h>
+#include <polybori/groebner/interpolate.h>
 #include "out_helper.h"
 using namespace boost::python;
 using namespace std;

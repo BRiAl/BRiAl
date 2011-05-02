@@ -5,7 +5,7 @@
 // patents.
 // The method using this tables is actually described in 
 // http://arxiv.org/abs/0801.1177 
-#include "dp_asc4data.h"
+#include <polybori/groebner/dp_asc4data.h>
 BEGIN_NAMESPACE_PBORIGB
 const unsigned short dp_asc4var_data[][7]={
     {0, 0, 0, 0, 0, 0, 0},

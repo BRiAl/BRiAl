@@ -5,7 +5,7 @@
 // patents.
 // The method using this tables is actually described in 
 // http://arxiv.org/abs/0801.1177 
-#include "dlex4data.h"
+#include <polybori/groebner/dlex4data.h>
 BEGIN_NAMESPACE_PBORIGB
 const unsigned short dlex4var_data[][7]={
     {0, 0, 0, 0, 0, 0, 0},

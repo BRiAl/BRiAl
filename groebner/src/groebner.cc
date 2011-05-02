@@ -7,5 +7,5 @@
  *
  */
 
-#include "groebner.h"
-#include "groebner_alg.h"
+#include <polybori/groebner/groebner.h>
+#include <polybori/groebner/groebner_alg.h>

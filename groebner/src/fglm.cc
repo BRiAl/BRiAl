@@ -6,9 +6,9 @@
 //  Copyright 2008 The PolyBoRi Team.
 // 
 #include <exception>
-#include "fglm.h"
-#include "nf.h"
-#include "interpolate.h"
+#include <polybori/groebner/fglm.h>
+#include <polybori/groebner/nf.h>
+#include <polybori/groebner/interpolate.h>
 extern "C" {
 #include <m4ri/packedmatrix.h>
 }

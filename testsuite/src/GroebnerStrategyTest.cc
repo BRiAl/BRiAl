@@ -18,7 +18,7 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include <groebner_alg.h>
+#include <polybori/groebner/groebner_alg.h>
 
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB

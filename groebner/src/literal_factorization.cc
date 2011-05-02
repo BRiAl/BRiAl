@@ -7,7 +7,7 @@
  *
  */
 
-#include "literal_factorization.h"
+#include <polybori/groebner/literal_factorization.h>
 #include <iostream>
 #include <polybori/cache/CCacheManagement.h>
 BEGIN_NAMESPACE_PBORIGB

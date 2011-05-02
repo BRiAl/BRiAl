@@ -4,8 +4,8 @@
 //  Created by  on 2008-04-16.
 //  Copyright (c) 2008 The PolyBoRi Team. See LICENSE file.
 //  PolyBoRi Project
-#include "groebner_defs.h"
-#include "polynomial_properties.h"
+#include <polybori/groebner/groebner_defs.h>
+#include <polybori/groebner/polynomial_properties.h>
 #include <iostream>
 using namespace std;
 BEGIN_NAMESPACE_PBORIGB

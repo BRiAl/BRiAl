@@ -7,7 +7,7 @@
  *
  */
 
-#include "pairs.h"
+#include <polybori/groebner/pairs.h>
 BEGIN_NAMESPACE_PBORIGB
 PairData::~PairData(){
 }

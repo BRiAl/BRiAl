@@ -5,7 +5,8 @@
 //  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 //  PolyBoRi Project
 
-#ifndef RANDOM_HEADER
+#ifndef PB_GB_RANDOM_HEADER
+#define PB_GB_RANDOM_HEADER
 #include "groebner_defs.h"
 #include <boost/random/uniform_smallint.hpp>
 #include <boost/random/linear_congruential.hpp>

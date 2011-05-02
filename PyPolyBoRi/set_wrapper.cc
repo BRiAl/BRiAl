@@ -9,10 +9,10 @@
 #include <boost/python.hpp>
 #include <iostream>
 
-#include "polybori.h"
-#include "interpolate.h"
-#include "groebner_alg.h"
-#include "nf.h"
+#include <polybori.h>
+#include <polybori/groebner/interpolate.h>
+#include <polybori/groebner/groebner_alg.h>
+#include <polybori/groebner/nf.h>
 #include "out_helper.h"
 
 using namespace boost::python;

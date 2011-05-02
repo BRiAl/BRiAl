@@ -13,9 +13,9 @@
 #include <stdio.h>
 #include <gd.h>
 #endif
-#include "nf.h"
-#include "polynomial_properties.h"
-#include "lexbuckets.h"
+#include <polybori/groebner/nf.h>
+#include <polybori/groebner/polynomial_properties.h>
+#include <polybori/groebner/lexbuckets.h>
 #include <polybori/LexOrder.h>
 #include <iostream>
 #include <polybori/iterators/COrderedIter.h>

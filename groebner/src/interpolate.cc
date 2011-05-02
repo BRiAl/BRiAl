@@ -4,14 +4,14 @@
 //  Created by Michael Brickenstein on 2007-07-02.
 //  Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 
-#include "groebner_defs.h"
+#include <polybori/groebner/groebner_defs.h>
 #include <polybori/cache/CCacheManagement.h>
 #include <polybori/cache/CacheManager.h>
 #include <algorithm>
 #include <iostream>
-#include "interpolate.h"
-#include "randomset.h"
-#include "nf.h"
+#include <polybori/groebner/interpolate.h>
+#include <polybori/groebner/randomset.h>
+#include <polybori/groebner/nf.h>
 BEGIN_NAMESPACE_PBORIGB
 
 std::vector<Polynomial> variety_lex_groebner_basis(const MonomialSet& points,const Monomial & variables){

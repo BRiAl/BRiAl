@@ -10,12 +10,12 @@
 #include "strategy_wrapper.h"
 #include <iostream>
 #include <vector>
-#include "nf.h"
-#include <groebner_alg.h>
-#include <literal_factorization.h>
+#include <polybori/groebner/nf.h>
+#include <polybori/groebner/groebner_alg.h>
+#include <polybori/groebner/literal_factorization.h>
 #include <polybori/BoolePolyRing.h>
 #include "slimgb_wrapper.h"
-#include "interpolate.h"
+#include <polybori/groebner/interpolate.h>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 //#include <iostream>
 //#include "polybori.h"

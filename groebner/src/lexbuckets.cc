@@ -7,7 +7,7 @@
  *
  */
 
-#include "lexbuckets.h"
+#include <polybori/groebner/lexbuckets.h>
 BEGIN_NAMESPACE_PBORIGB
 
 static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, 

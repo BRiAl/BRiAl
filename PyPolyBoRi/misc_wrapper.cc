@@ -5,15 +5,15 @@
 #include <boost/python/return_value_policy.hpp>
 #include "misc_wrapper.h"
 
-#include "polybori.h"
-#include "polybori/pbori_defs.h"
+#include <polybori.h>
+#include <polybori/pbori_defs.h>
 #include <iostream>
 using namespace boost::python;
 using namespace std;
-#include "groebner_alg.h"
-#include "randomset.h"
-#include "interpolate.h"
-#include "nf.h"
+#include <polybori/groebner/groebner_alg.h>
+#include <polybori/groebner/randomset.h>
+#include <polybori/groebner/interpolate.h>
+#include <polybori/groebner/nf.h>
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 

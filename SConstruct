@@ -417,7 +417,7 @@ if not env.GetOption('clean'):
         env.Append(CPPPATH=[pyconf.incdir])
         env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
 
-        env.Append(CPPPATH=[PBPath('include')])
+        env.Append(CPPPATH=[PBPath('include'), GBPath('include')])
         env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
         env.Append(LIBPATH=["polybori","groebner"])
         env.Prepend(LIBS = ["m"])
@@ -655,7 +655,7 @@ shared_resources += gb_shared
 libgbShared = slib(GBPath(libgb_name), list(gb_shared))
 #DefaultBuild(libgbShared)
 
-CPPPATH=env['CPPPATH']+[GBPath('src')]
+CPPPATH=env['CPPPATH']+[GBPath('include')]
 #print env['CCFLAGS']
 #print env['CXXFLAGS']
 
@@ -922,7 +922,7 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
 
     
     env.Install(DevelInstPath('include/polybori/groebner'),
-                glob(GBPath('src/*.h')))
+                glob(GBPath('include/polybori/groebner/*.h')))
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
     if not(external_m4ri):
         env.Install(DevelInstPath('include/m4ri'), glob('M4RI/*.h'))
