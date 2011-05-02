@@ -43,6 +43,14 @@ def preprocessed_substitute(target, source, env):
         
     substitute_install(target, source, env, preprocess=preprocess_at)
     
+def expand_repeated(val, env):
+    from string import Template
+    newval = Template(val).safe_substitute(env)
+    while (val != newval):
+        val = newval
+        newval = Template(val).safe_substitute(env)
+
+    return val
 
 # Fix some paths and names
 class PathJoiner(object):
@@ -371,19 +379,25 @@ external_m4ri = False
 if not env.GetOption('clean'):
     def Check64Bit(context):
         context.Message('Checking for 64 bit... ')
-        test_src_64bit =  """
+        test_src_64bit =  """/* $CCFLAGS */
+        #include <stdio.h>
         int main(int argc, char **argv) {
-          return sizeof(void*) == 8;
+        printf("%i %i", sizeof(void*), sizeof(long));
+          return 0;
         }
         """
-        result = context.TryLink(test_src_64bit, '.c')
+        (result, values) = context.TryRun(test_src_64bit, '.c')
+        result = (result == 1)
+        if result:
+            values = values.split()
+            env.Append(CPPDEFINES=["SIZEOF_VOID_P=" + values[0],
+                                   "SIZEOF_LONG=" + values[1]])
         context.Result(result)
         return result
 
     conf = Configure(env, custom_tests = {'Check64Bit' : Check64Bit})
-    if conf.Check64Bit():
-        env.Append(CPPDEFINES=["SIZEOF_VOID_P=8", "SIZEOF_LONG=8"])
-
+    conf.Check64Bit()
+    
     if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
         env.Append(LIBS=["gd"])
         env.Append(CPPDEFINES=["HAVE_GD"])
@@ -419,11 +433,13 @@ if not env.GetOption('clean'):
     if HAVE_PYTHON_EXTENSION:
         if not (conf.CheckLib(pyconf.libname)):
             print "Python library not available (needed for python extension)!"
+            conf.Finish()
             Exit(1)
 
         if not (conf.CheckCXXHeader(path.join('boost', 'python.hpp'))):
             print "Developer's version of boost/python not available ",
             print "(needed for python extension)!"
+            conf.Finish()       
             Exit(1)   
 
         if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
@@ -431,6 +447,7 @@ if not env.GetOption('clean'):
             HAVE_PYTHON_EXTENSION = False
             print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
             print ") not available (needed for python extension)!"
+            conf.Finish()
             Exit(1)
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
@@ -1227,15 +1244,7 @@ def GeneratePyc(sources):
     return results
 
 
-def expand_repeated(val, env):
-    from string import Template
-    newval = Template(val).safe_substitute(env)
-    while (val != newval):
-        val = newval
-        newval = Template(val).safe_substitute(env)
-
-    return val
-        
+       
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS:
     # Setting umask for newly generated directories
