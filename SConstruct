@@ -377,26 +377,25 @@ have_l2h = have_t4h = False
 external_m4ri = False
 
 if not env.GetOption('clean'):
-    def Check64Bit(context):
-        context.Message('Detecting sizeof(void) and sizeof(long)... ')
-        test_src_64bit =  """
+    def CheckSizeOfTypes(context):
+        context.Message('Detecting type sizes... ')
+        test_src_sizeof =  """
         #include <stdio.h>
         int main(int argc, char **argv) {
-        printf("%i %i", sizeof(void*), sizeof(long));
+          printf("SIZEOF_VOID_P=%i SIZEOF_LONG=%i", sizeof(void*), sizeof(long));
           return 0;
         }
         """
-        (result, values) = context.TryRun(test_src_64bit, '.c')
+        (result, values) = context.TryRun(test_src_sizeof, '.c')
         result = (result == 1)
         if result:
-            values = values.split()
-            env.Append(CPPDEFINES=["SIZEOF_VOID_P=" + values[0],
-                                   "SIZEOF_LONG=" + values[1]])
+            context.Message('got ' + values + '...')
+            env.Append(CPPDEFINES=Split(values))
         context.Result(result)
         return result
 
-    conf = Configure(env, custom_tests = {'Check64Bit' : Check64Bit})
-    conf.Check64Bit()
+    conf = Configure(env, custom_tests = {'CheckSizeOfTypes' : CheckSizeOfTypes})
+    conf.CheckSizeOfTypes()
     
     if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
         env.Append(LIBS=["gd"])
@@ -433,22 +432,25 @@ if not env.GetOption('clean'):
     if HAVE_PYTHON_EXTENSION:
         if not (conf.CheckLib(pyconf.libname)):
             print "Python library not available (needed for python extension)!"
-            conf.Finish()
-            Exit(1)
-
+            HAVE_PYTHON_EXTENSION = False
+            #conf.Finish()
+            #Exit(1)
+    if HAVE_PYTHON_EXTENSION:
         if not (conf.CheckCXXHeader(path.join('boost', 'python.hpp'))):
             print "Developer's version of boost/python not available ",
             print "(needed for python extension)!"
-            conf.Finish()       
-            Exit(1)   
-
+            HAVE_PYTHON_EXTENSION = False
+            #conf.Finish()       
+            #Exit(1)   
+    if HAVE_PYTHON_EXTENSION:
         if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
                  path.join('boost', 'python.hpp'), 'c++') ):
             HAVE_PYTHON_EXTENSION = False
             print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
             print ") not available (needed for python extension)!"
-            conf.Finish()
-            Exit(1)
+            HAVE_PYTHON_EXTENSION = False
+            #conf.Finish()
+            #Exit(1)
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
