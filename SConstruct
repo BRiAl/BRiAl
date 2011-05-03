@@ -10,8 +10,8 @@ opts = Variables('custom.py')
 # Some hard-coded settings
 pboriname = 'PolyBoRi'
 try:
-    versionnumber = open('versionnumber', 'r').read().rstrip()
-    (pboriversion, pborirelease) = (versionnumber.split('-') + [''])[:2]
+    versionnumber = open('versionnumber', 'r').read().rstrip() + "-0"
+    (pboriversion, pborirelease) = versionnumber.split('-')[:2]
 except:
     pboriversion = "0.0"
     pborirelease = "0"
