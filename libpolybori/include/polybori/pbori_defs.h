@@ -21,7 +21,7 @@
 #include <iostream>
 #include <cudd/cudd.h>
 
-#include "cacheopts.h"
+#include "config.h"
 
 #ifndef polybori_pbori_defs_h_
 #define polybori_pbori_defs_h_
