@@ -909,18 +909,17 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
 
-    for elt in [''] + Split("""cache diagram except iterators literals
+    for elt in Split(""".. . cache diagram except iterators literals
     orderings ring routines"""):
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 
-    env.Install(DevelInstPath('include'), PBPath('include/polybori.h'))
-
-    
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('include/polybori/groebner/*.h')))
+
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
+
     if not(external_m4ri):
-        env.Install(DevelInstPath('include/m4ri'), glob('M4RI/*.h'))
+        env.Install(DevelInstPath('include/m4ri'), glob('M4RI/m4ri/*.h'))
         
     env.Alias('devel-install', DevelInstPath())
 
