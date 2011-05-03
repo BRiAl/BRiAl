@@ -277,8 +277,7 @@ for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
 opts.Add('CONFFILE', "Dump settings to file, if given", '')
 
 
-if not GetOption('clean'):
-    tools +=  ["disttar", "doxygen"]
+tools +=  ["disttar", "doxygen"]
 
 # Get paths an related things from current environment
 # todo: Are these settings sane in any case?
@@ -353,10 +352,11 @@ def config_h_build(target, source, env):
         config_h.write(config_h_in.format(a_target, config_ver, config_defs))
         config_h.close()
 
-config_h = env.AlwaysBuild(env.Command(PBPath('include/polybori/config.h'), 'SConstruct', config_h_build))
+config_h = env.AlwaysBuild(env.Command(PBPath('include/polybori/config.h'),
+                                       'SConstruct', config_h_build))
 
 # todo: machtype does not deliver the correct value for rpm and deb
-# (only interesting for scons -c rpm|srpm|prepare-debian|deb)
+# (only interesting for scons -c prepare-debian|deb)
 try:
     machtype = os.environ['MACHTYPE']
 except KeyError:
@@ -881,7 +881,7 @@ disttar.py doxygen.py""")
         for file in glob(TestsPath('py', exclsrc)):
             allsrcs.remove(file)
         
-    for dirname in Split("src ref"):
+    for dirname in Split("src"):
         allsrcs.append(env.Dir(TestsPath(dirname)))
 
     # doc is not distributed completely
@@ -1132,7 +1132,8 @@ def spec_builder(target, source, env):
 specbld = Builder(action = spec_builder)
 
 def rpmemitter(target, source, env):
-    target = [RPMPath('RPMS', machtype, target[0].name + '.' +machtype+ '.rpm')]
+    rpm_arch =  shell_output("rpm", "-E", "%_arch")
+    target = [RPMPath('RPMS', rpm_arch, target[0].name + '.' + rpm_arch + '.rpm')]
     return (target, source)
 
 def srpmemitter(target, source, env):
