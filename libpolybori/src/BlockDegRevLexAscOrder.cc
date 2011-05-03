@@ -15,7 +15,7 @@
 // include  definitions
 
 
-#include "polybori/BlockDegRevLexAscOrder.h"
+#include <polybori/BlockDegRevLexAscOrder.h>
 
 #include <polybori/routines/pbori_algo.h>
 #include <polybori/iterators/PBoRiOutIter.h>
@@ -27,7 +27,7 @@
 
 #include <polybori/cache/CDegreeCache.h>
 
-#include "polybori/BooleSet.h"
+#include <polybori/BooleSet.h>
 
 BEGIN_NAMESPACE_PBORI
 

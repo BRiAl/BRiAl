@@ -14,9 +14,9 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
-#include "polybori/common/CCheckedIdx.h"
-#include <polybori/errors/PBoRiGenericError.h>
+#include <polybori/pbori_defs.h>
+#include <polybori/common/CCheckedIdx.h>
+#include <polybori/except/PBoRiGenericError.h>
 
 BEGIN_NAMESPACE_PBORI
 

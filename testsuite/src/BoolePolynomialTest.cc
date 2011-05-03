@@ -17,20 +17,20 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "polybori/pbori_defs.h"
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BoolePolyRing.h"
-#include "polybori/BooleEnv.h"
-#include "polybori/BooleSet.h"
-#include "polybori/BooleExponent.h"
-#include "polybori/BooleVariable.h"
-#include "polybori/BooleMonomial.h"
-#include <polybori/errors/PBoRiError.h>
-#include "polybori/LexOrder.h"
-#include "polybori/DegLexOrder.h"
-#include "polybori/DegRevLexAscOrder.h"
-#include "polybori/BlockDegLexOrder.h"
-#include "polybori/BlockDegRevLexAscOrder.h"
+#include <polybori/pbori_defs.h>
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BoolePolyRing.h>
+#include <polybori/BooleEnv.h>
+#include <polybori/BooleSet.h>
+#include <polybori/BooleExponent.h>
+#include <polybori/BooleVariable.h>
+#include <polybori/BooleMonomial.h>
+#include <polybori/except/PBoRiError.h>
+#include <polybori/LexOrder.h>
+#include <polybori/DegLexOrder.h>
+#include <polybori/DegRevLexAscOrder.h>
+#include <polybori/BlockDegLexOrder.h>
+#include <polybori/BlockDegRevLexAscOrder.h>
 
 #include <polybori/iterators/CExpIter.h>
 

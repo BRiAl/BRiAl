@@ -15,10 +15,10 @@
 
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
-#include "cudd.h"
-#include "cuddInt.h"
+#include <cudd/cudd.h>
+#include <cudd/cuddInt.h>
 
 #include <polybori/routines/pbori_func.h>         // handle_error
 #include "CCallbackWrapper.h"
@@ -32,7 +32,7 @@
 #include <boost/preprocessor/facilities/expand.hpp>
 #include <boost/preprocessor/stringize.hpp>
 
-#include <polybori/errors/PBoRiError.h>
+#include <polybori/except/PBoRiError.h>
 
 #include <stdexcept>
 #include <algorithm>

@@ -12,7 +12,7 @@
 #include "groebner_alg.h"
 #if HAVE_M4RI
 extern "C"{
-#include "m4ri/m4ri.h"
+#include <m4ri/m4ri.h>
 
 #ifndef __M4RI_TWOPOW
 #define __M4RI_TWOPOW TWOPOW

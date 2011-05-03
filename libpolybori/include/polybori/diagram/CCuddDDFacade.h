@@ -19,7 +19,7 @@
 #ifndef polybori_diagram_CCuddDDFacade_h
 #define polybori_diagram_CCuddDDFacade_h
 
-#include "cuddInt.h"
+#include <cudd/cuddInt.h>
 #include "CApplyNodeFacade.h"
 #include "CNodeCounter.h"
 
@@ -39,7 +39,7 @@
 #include <polybori/iterators/PBoRiOutIter.h>
 
 // Getting error coe functionality
-#include <polybori/errors/PBoRiGenericError.h>
+#include <polybori/except/PBoRiGenericError.h>
 
 // test input idx_type
 #include <polybori/common/CCheckedIdx.h>

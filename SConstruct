@@ -30,7 +30,7 @@ m4ri=["grayflex.c", "permutation.c",
     "packedmatrix.c","strassen.c","misc.c",
     "brilliantrussian.c",
     "lqup.c", "trsm.c", "pluq_mmpf.c"]
-m4ri=[path.join("M4RI", m) for m in m4ri]
+m4ri=[path.join("M4RI/m4ri", m) for m in m4ri]
 
 m4ri_inc = 'M4RI/m4ri'
 
@@ -475,11 +475,6 @@ if not env.GetOption('clean'):
     else:
        env['CPPPATH'] += ['M4RI']
 
-       # generate M4RI/m4ri, to allow canonical #include <m4ri/m4ri.h>
-       if not path.exists(m4ri_inc):
-           print "Symlinking to", m4ri_inc, "..."
-           os.symlink('.', m4ri_inc)
-
     env = conf.Finish()
 
 
@@ -547,7 +542,7 @@ env.Append(LIBPATH=[CuddPath()])
 cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
 cuddInt cudd util""") ]
     
-env.Append( CPPPATH=[CuddPath("cudd")] )
+env.Append( CPPPATH=[CuddPath()] )
 
 cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
 API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]
@@ -914,7 +909,7 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
 
-    for elt in [''] + Split("""cache diagram errors iterators literals
+    for elt in [''] + Split("""cache diagram except iterators literals
     orderings ring routines"""):
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 

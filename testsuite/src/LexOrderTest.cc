@@ -18,7 +18,7 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "polybori/LexOrder.h"
+#include <polybori/LexOrder.h>
 
 USING_NAMESPACE_PBORI
 

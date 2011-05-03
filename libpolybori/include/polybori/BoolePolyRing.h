@@ -15,12 +15,12 @@
 //*****************************************************************************
 
 // load PolyBoRi settings
-# include "polybori/pbori_defs.h"
+# include <polybori/pbori_defs.h>
 
 // include basic decision diagram manager interface 
-#include <polybori/ring/CCuddCore.h>
-#include <polybori/errors/PBoRiError.h>
-#include "polybori/common/CCheckedIdx.h"
+#include "ring/CCuddCore.h"
+#include "except/PBoRiError.h"
+#include "common/CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
 
 #include <list>

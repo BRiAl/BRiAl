@@ -13,10 +13,10 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
-#include "cudd.h"
-#include "cuddInt.h"
+#include <cudd/cudd.h>
+#include <cudd/cuddInt.h>
 
 BEGIN_NAMESPACE_PBORI
 

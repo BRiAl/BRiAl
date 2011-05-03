@@ -13,11 +13,11 @@
 //*****************************************************************************
 
 // include  definitions
-#include "polybori/LexOrder.h"
+#include <polybori/LexOrder.h>
 
 #include <polybori/routines/pbori_algo.h>
-# include <polybori/iterators/PBoRiOutIter.h>
-#include <polybori/errors/PBoRiError.h>
+#include <polybori/iterators/PBoRiOutIter.h>
+#include <polybori/except/PBoRiError.h>
 
 // get internal routines
 #include <polybori/routines/pbori_routines.h>

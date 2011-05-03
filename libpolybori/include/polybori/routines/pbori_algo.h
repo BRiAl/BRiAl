@@ -24,8 +24,8 @@
 #include <polybori/common/traits.h>
 
 // temporarily
-#include "cudd.h"
-#include "cuddInt.h"
+#include <cudd/cudd.h>
+#include <cudd/cuddInt.h>
 #include <polybori/ring/CCuddInterface.h>
 
 #ifndef polybori_routines_pbori_algo_h_

@@ -24,16 +24,16 @@
 #define PBORI_USE_CCUDDFIRSTITER
 
 // load header file
-# include "polybori/BoolePolynomial.h"
-# include "polybori/BooleMonomial.h"
-# include "polybori/BooleExponent.h"
-# include "polybori/BooleSet.h"
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleMonomial.h>
+#include <polybori/BooleExponent.h>
+#include <polybori/BooleSet.h>
 
-// get polynomial riung definition
-# include "polybori/BoolePolyRing.h"
-#include "polybori/BooleEnv.h"
+// get polynomial ring definition
+#include <polybori/BoolePolyRing.h>
+#include <polybori/BooleEnv.h>
 // get error types
-# include <polybori/errors/PBoRiGenericError.h>
+# include <polybori/except/PBoRiGenericError.h>
 
 // get transformation algorithms
 # include <polybori/routines/pbori_algo.h>

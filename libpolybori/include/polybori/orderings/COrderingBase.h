@@ -14,14 +14,14 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BooleMonomial.h"
-#include "polybori/BooleExponent.h"
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleMonomial.h>
+#include <polybori/BooleExponent.h>
 #include <polybori/iterators/COrderedIter.h>
-#include <polybori/errors/PBoRiError.h>
-#include "polybori/common/CCheckedIdx.h"
+#include <polybori/except/PBoRiError.h>
+#include <polybori/common/CCheckedIdx.h>
 
 #include <vector>
 

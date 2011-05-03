@@ -18,9 +18,9 @@
 #include <boost/test/output_test_stream.hpp> 
 using boost::test_tools::output_test_stream;
 
-#include "polybori/pbori_defs.h"
-#include "polybori/BoolePolyRing.h"
-#include "polybori/BooleVariable.h"
+#include <polybori/pbori_defs.h>
+#include <polybori/BoolePolyRing.h>
+#include <polybori/BooleVariable.h>
 #include <polybori/orderings/pbori_order.h>
 #include <polybori/orderings/COrderingBase.h>
 

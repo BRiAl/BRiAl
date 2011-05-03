@@ -19,8 +19,7 @@
 #include <cstddef>
 
 #include <iostream>
-#include "util.h"
-#include "cudd.h"
+#include <cudd/cudd.h>
 
 #include "cacheopts.h"
 

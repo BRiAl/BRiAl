@@ -16,19 +16,19 @@
 
 
 // load header file
-# include "polybori/BoolePolyRing.h"
-#include "polybori/BooleEnv.h"
+#include <polybori/BoolePolyRing.h>
+#include <polybori/BooleEnv.h>
 
 
 // get error types
-# include <polybori/errors/PBoRiError.h>
+#include <polybori/except/PBoRiError.h>
 
 #include <polybori/orderings/pbori_order.h>
 
-#include "polybori/BooleExponent.h"
-#include "polybori/BooleMonomial.h"
+#include <polybori/BooleExponent.h>
+#include <polybori/BooleMonomial.h>
 
-#include "cuddInt.h"
+#include <cudd/cuddInt.h>
 
 #include <climits> // LINE_MAX
 #include <cstdio> // just for tmpfile()

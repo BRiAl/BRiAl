@@ -13,10 +13,10 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // Get Cudd definitions
-#include "cudd.h"
+#include <cudd/cudd.h>
 
 #include <polybori/routines/pbori_routines.h>
 #include <polybori/cache/CCacheManagement.h>

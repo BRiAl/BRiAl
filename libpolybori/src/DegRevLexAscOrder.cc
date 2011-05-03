@@ -13,7 +13,7 @@
 //*****************************************************************************
 
 // include  definitions
-#include "polybori/DegRevLexAscOrder.h"
+#include <polybori/DegRevLexAscOrder.h>
 
 #include <polybori/routines/pbori_algo.h>
 #include <polybori/iterators/PBoRiOutIter.h>

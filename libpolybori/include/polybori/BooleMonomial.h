@@ -19,11 +19,11 @@
 #define polybori_BooleMonomial_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get definition of BoolePolynomial and BooleVariable
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BooleVariable.h"
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleVariable.h>
 // get standard map functionality
 #include <map>
 
@@ -31,7 +31,7 @@
 #include <polybori/iterators/CVariableIter.h>
 
 // get variable iterator
-#include <polybori/errors/PBoRiError.h>
+#include <polybori/except/PBoRiError.h>
 
 BEGIN_NAMESPACE_PBORI
 
