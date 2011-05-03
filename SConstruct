@@ -335,7 +335,7 @@ def config_h_build(target, source, env):
     from string import join
     macros = [elt.split('=') + [''] for elt in env['CPPDEFINES'] ]
     for macro in pbori_cache_macros:
-        if macro in env: macros += [ (macro,  env[macro]) ]
+        if env.get(macro, None): macros += [ (macro,  env[macro]) ]
     
     config_defs =  join([define_line(elt[0], elt[1]) for elt in macros], '')
     config_h_in = """/* File: {0}
