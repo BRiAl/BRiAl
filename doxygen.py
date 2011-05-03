@@ -60,10 +60,10 @@ def DoxyfileParse(file_contents):
          key_token = False
       else:
          if token == "+=":
-            if not data.has_key(key):
-               data[key] = list()
+            if key not in data:
+               data[key] = []
          elif token == "=":
-            data[key] = list()
+            data[key] = []
          else:
             append_data( data, key, new_data, token )
             new_data = True
@@ -76,22 +76,17 @@ def DoxyfileParse(file_contents):
          append_data( data, key, new_data, '\\' )
 
    # compress lists of len 1 into single strings
-   for (k, v) in data.items():
+   for k, v in data.items():
       if len(v) == 0:
          data.pop(k)
 
       # items in the following list will be kept as lists and not converted to strings
-      from re import sub
-      
-      if k=="INPUT":
-          data[k]=v
-          continue
-      if k in ["FILE_PATTERNS", "EXCLUDE_PATTERNS"]:
+      if k in ["INPUT", "FILE_PATTERNS", "EXCLUDE_PATTERNS"]:
          continue
 
       if len(v) == 1:
          data[k] = v[0]
-   #print "parsed Data", data
+
    return data
 
 def DoxySourceScan(node, env, path):
@@ -100,7 +95,10 @@ def DoxySourceScan(node, env, path):
    any files used to generate docs to the list of source files.
    """
    default_file_patterns = [
-     '*.cc', '*.h'
+      '*.c', '*.cc', '*.cxx', '*.cpp', '*.c++', '*.java', '*.ii', '*.ixx',
+      '*.ipp', '*.i++', '*.inl', '*.h', '*.hh ', '*.hxx', '*.hpp', '*.h++',
+      '*.idl', '*.odl', '*.cs', '*.php', '*.php3', '*.inc', '*.m', '*.mm',
+      '*.py',
    ]
 
    default_exclude_patterns = [
@@ -111,17 +109,12 @@ def DoxySourceScan(node, env, path):
 
    data = DoxyfileParse(node.get_contents())
 
-   if data.get("RECURSIVE", "NO") == "YES":
-      recursive = True
-   else:
-      recursive = False
+   recursive = data.get("RECURSIVE") == "YES"
 
    file_patterns = data.get("FILE_PATTERNS", default_file_patterns)
    exclude_patterns = data.get("EXCLUDE_PATTERNS", default_exclude_patterns)
-   #print "INPUT", data["INPUT"]
+
    for node in data.get("INPUT", []):
-      node=node.replace("../","")#dirty hack
-      #print "PATH IS BLABLA",node
       if os.path.isfile(node):
          sources.append(node)
       elif os.path.isdir(node):
@@ -130,18 +123,16 @@ def DoxySourceScan(node, env, path):
                for f in files:
                   filename = os.path.join(root, f)
 
-                  pattern_check = reduce(lambda x, y: x or bool(fnmatch(filename, y)), file_patterns, False)
-                  exclude_check = reduce(lambda x, y: x and fnmatch(filename, y), exclude_patterns, True)
+                  pattern_check = any(fnmatch(filename, y) for y in file_patterns)
+                  exclude_check = any(fnmatch(filename, y) for y in exclude_patterns)
 
                   if pattern_check and not exclude_check:
                      sources.append(filename)
          else:
-            #print "skjgkjdsgkjdsgkj"
             for pattern in file_patterns:
                sources.extend(glob.glob("/".join([node, pattern])))
 
-   sources = map( lambda path: env.File(path), sources )
-   #print "SOURCES:",sources
+   sources = [env.File(path) for path in sources]
    return sources
 
 
@@ -156,17 +147,17 @@ def DoxyEmitter(source, target, env):
       "HTML": ("YES", "html"),
       "LATEX": ("YES", "latex"),
       "RTF": ("NO", "rtf"),
-      "MAN": ("YES", "man"),
+      "MAN": ("NO", "man"),
       "XML": ("NO", "xml"),
    }
 
    data = DoxyfileParse(source[0].get_contents())
 
    targets = []
-   out_dir = "doc/"+data.get("OUTPUT_DIRECTORY", ".")
+   out_dir = data.get("OUTPUT_DIRECTORY", ".")
 
    # add our output locations
-   for (k, v) in output_formats.items():
+   for k, v in output_formats.items():
       if data.get("GENERATE_" + k, v[0]) == "YES":
          targets.append(env.Dir( os.path.join(out_dir, data.get(k + "_OUTPUT", v[1]))) )
 
@@ -193,7 +184,8 @@ def generate(env):
 
    import SCons.Builder
    doxyfile_builder = SCons.Builder.Builder(
-      action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
+#      action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
+      action = "${DOXYGEN} ${SOURCE.path}",
       emitter = DoxyEmitter,
       target_factory = env.fs.Entry,
       single_source = True,

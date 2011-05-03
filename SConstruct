@@ -352,9 +352,9 @@ def config_h_build(target, source, env):
         config_h.write(config_h_in.format(a_target, config_ver, config_defs))
         config_h.close()
 
-config_h = env.AlwaysBuild(env.Command(PBPath('include/polybori/config.h'),
-                                       'SConstruct', config_h_build))
-
+config_h = env.Command(PBPath('include/polybori/config.h'),
+                       'SConstruct', config_h_build)
+env.AlwaysBuild(config_h)
 
 class PythonConfig(object):
     def __init__(self, python_executable):
@@ -650,6 +650,7 @@ gb=env.StaticLibrary(GBPath(libgb_name), gb_src)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
     gb=gb[0]
+
 DefaultBuild(gb)
 
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
@@ -662,27 +663,44 @@ CPPPATH=env['CPPPATH']+[GBPath('include')]
 #print env['CCFLAGS']
 #print env['CXXFLAGS']
 
-testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
-testfiles = [TestsPath('src', src + "Test.cc") for src in
-             testclasses] + [TestsPath('src', "unittests.cc")]
+
+######################################################################
+# Doxygen-based docu
+######################################################################
+
+docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
+if HAVE_DOXYGEN:
+    cxxdocu = env.Doxygen(DocPath('doxygen.conf'))
+    #env.AlwaysBuild(cxxdocu)
+
+env.Clean(DocPath('c++'), docutarget)
+
+######################################################################
+# Boost-test based tests
+######################################################################
+
+testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade DegRevLexAscOrder DegLexOrder
+BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder""")
+testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
+             testclasses])
+testmain = env.Object([TestsPath('src', "unittests.cc")],
+                      CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
 
 env.Program(TestsPath("unittests"),
-            testfiles + [libpb, gb], 
+            testfiles + testmain + [libpb, gb], 
             CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
-            CPPDEFINES = env['CPPDEFINES'] +
-            ["BOOST_TEST_DYN_LINK"] )
+            CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
-testclassesorderings = Split("""DegRevLexAscOrder DegLexOrder
-BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder""")
-testfilesorderings = [TestsPath('src', src + "Test.cc") for src in
-             testclassesorderings] + [TestsPath('src', "unittests_orderings.cc")]
+for testfile in testfiles:
+    env.Program(testfile.path.replace('.o',''),
+                [testfile] + testmain + [libpb, gb], 
+                CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
+                CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
-env.Program(TestsPath("unittests_orderings"),
-            testfilesorderings + [libpb, gb], 
-            CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
-            CPPDEFINES = env['CPPDEFINES'] +
-            ["BOOST_TEST_DYN_LINK"] )
 
+######################################################################
+# python extension
+######################################################################
 LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
 
 LIBS_static = [libpb_name, libgb_name] + LIBS
@@ -701,9 +719,6 @@ documentable_python_modules = [PyRootPath('polybori', f)
 
 # Currently all python modules are at place
 installable_python_modules = []
-
-
-
 
 pydocu = []
 dynamic_modules = []
@@ -794,14 +809,6 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
 
     
 HAVE_SINGULAR_EXTENSION=True
-
-docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
-if HAVE_DOXYGEN:
-    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target = docutarget)
-    #env.AlwaysBuild(cxxdocu)
-    env.Depends(cxxdocu, [PBPath(), GBPath()])
-
-env.Clean(DocPath('c++'), docutarget)
 
 import subprocess
 #import re

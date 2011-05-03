@@ -21,7 +21,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
 //BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
 
 /// @todo needs inlining!!!
