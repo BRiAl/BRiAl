@@ -355,13 +355,6 @@ def config_h_build(target, source, env):
 config_h = env.AlwaysBuild(env.Command(PBPath('include/polybori/config.h'),
                                        'SConstruct', config_h_build))
 
-# todo: machtype does not deliver the correct value for rpm and deb
-# (only interesting for scons -c prepare-debian|deb)
-try:
-    machtype = os.environ['MACHTYPE']
-except KeyError:
-    machtype = 'undefined'
-
 
 class PythonConfig(object):
     def __init__(self, python_executable):
@@ -452,15 +445,13 @@ if not env.GetOption('clean'):
         if not (conf.CheckLib(pyconf.libname)):
             print "Python library not available (needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
-            #conf.Finish()
-            #Exit(1)
+
     if HAVE_PYTHON_EXTENSION:
         if not (conf.CheckCXXHeader(path.join('boost', 'python.hpp'))):
             print "Developer's version of boost/python not available ",
             print "(needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
-            #conf.Finish()       
-            #Exit(1)   
+
     if HAVE_PYTHON_EXTENSION:
         if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
                  path.join('boost', 'python.hpp'), 'c++') ):
@@ -468,8 +459,6 @@ if not env.GetOption('clean'):
             print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
             print ") not available (needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
-            #conf.Finish()
-            #Exit(1)
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
@@ -1242,9 +1231,9 @@ if prepare_deb or generate_deb:
         
     env.Alias('prepare-debian', DebInstPath())
     env.Clean(DebInstPath(), DebInstPath())
-    
+    deb_arch =  shell_output("dpkg-architecture", "-qDEB_HOST_GNU_CPU")
     pbdeb = env.DebBuilder(path.join('..', debname + '-' + pborirelease +
-                                     '.' + machtype + '.deb'), debsrc)
+                                     '.' + deb_arch + '.deb'), debsrc)
     
     env.AlwaysBuild(env.Alias('deb', pbdeb))    
     
