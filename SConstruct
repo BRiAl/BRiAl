@@ -1375,16 +1375,13 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Alias('install', guibin)
 
     # we dump the flags for reuse by other developers
-    def build_conffile(target, source, env):
-        opts.Save(target[0].path, env)
-        return None
-
-    conffilebld = Builder(action = build_conffile)
-    env.Append(BUILDERS = {'ConfFile': Builder(action = build_conffile)})
-
     conffilename = env['CONFFILE']
     if conffilename:
-        conffile = env.ConfFile(target = conffilename, source = 'SConstruct')
+        def build_conffile(target, source, env):
+            opts.Save(target[0].path, env)
+            return None
+
+        conffile = env.Command(conffilename, 'SConstruct', build_conffile)
         env.AlwaysBuild(conffile)
         env.Alias('install', conffile)
     
