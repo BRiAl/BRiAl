@@ -115,6 +115,7 @@ def DoxySourceScan(node, env, path):
    exclude_patterns = data.get("EXCLUDE_PATTERNS", default_exclude_patterns)
 
    for node in data.get("INPUT", []):
+      node=node.replace("../","")#dirty hack
       if os.path.isfile(node):
          sources.append(node)
       elif os.path.isdir(node):
@@ -154,7 +155,7 @@ def DoxyEmitter(source, target, env):
    data = DoxyfileParse(source[0].get_contents())
 
    targets = []
-   out_dir = data.get("OUTPUT_DIRECTORY", ".")
+   out_dir = "doc/"+data.get("OUTPUT_DIRECTORY", ".")
 
    # add our output locations
    for k, v in output_formats.items():
@@ -184,8 +185,7 @@ def generate(env):
 
    import SCons.Builder
    doxyfile_builder = SCons.Builder.Builder(
-#      action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
-      action = "${DOXYGEN} ${SOURCE.path}",
+      action = "cd ${SOURCE.dir}  &&  ${DOXYGEN} ${SOURCE.file}",
       emitter = DoxyEmitter,
       target_factory = env.fs.Entry,
       single_source = True,

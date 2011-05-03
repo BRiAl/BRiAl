@@ -670,9 +670,8 @@ CPPPATH=env['CPPPATH']+[GBPath('include')]
 
 docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
 if HAVE_DOXYGEN:
-    cxxdocu = env.Doxygen(DocPath('doxygen.conf'))
-    #env.AlwaysBuild(cxxdocu)
-
+    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target=docutarget)
+ 
 env.Clean(DocPath('c++'), docutarget)
 
 ######################################################################
