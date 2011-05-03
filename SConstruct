@@ -280,7 +280,7 @@ opts.Add('CONFFILE', "Dump settings to file, if given", '')
 tools +=  ["disttar", "doxygen"]
 
 # Get paths an related things from current environment
-# todo: Are these settings sane in any case?
+# note: we cannot avoid those due to non-standard system setups
 getenv = dict()
 for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
     try:

@@ -119,7 +119,7 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
     idx_type m_idx=*nav;
 
     if (m_idx==min_idx){
-        Variable other;
+        Variable other(0, m.ring());
         if (min_idx!=x.index()) other=x; else other=y;
         return
           Polynomial(do_left_equals_right_x_branch_and_r_has_fac_x(
@@ -426,12 +426,12 @@ LiteralFactorizationIterator::self& LiteralFactorizationIterator::operator++(){
 }
 Polynomial LiteralFactorizationIterator::operator*() const{
     if (var2const_iter!=literal_factorization->factors.end()){
-           return Variable(var2const_iter->first)
-               + var2const_iter->second;
+      return Variable(var2const_iter->first, m_ring)
+        + Polynomial(var2const_iter->second, m_ring);
        }
        if (var2var_iter!=literal_factorization->var2var_map.end()){
-           return Variable(var2var_iter->first)
-               + Variable(var2var_iter->second);
+         return Variable(var2var_iter->first, m_ring)
+           + Variable(var2var_iter->second,m_ring);
        }
 }
 

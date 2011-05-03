@@ -230,7 +230,7 @@ void FGLMStrategy::setupMultiplicationTables(){
         while(it!=end){
             idx_type ring_var_index=*it;
             idx_type our_var_index=ring2Index[ring_var_index];
-            Monomial divided=m/Variable(ring_var_index);
+            Monomial divided=m / Variable(ring_var_index, m.ring());
             size_t divided_index=standardMonomialsFrom2Index[divided];
             mzd_t* mat=multiplicationTables[our_var_index];
             mzd_write_bit(mat, divided_index,i, 1);

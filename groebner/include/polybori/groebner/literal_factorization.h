@@ -53,7 +53,8 @@ public:
         LiteralFactorization::var2var_map_type::const_iterator
             var2var_iter
             
-    ){
+        ): m_ring(literal_factorization->rest.ring())
+      {
         this->literal_factorization=literal_factorization;
         this->var2const_iter=var2const_iter;
         this->var2var_iter=var2var_iter;
@@ -77,7 +78,7 @@ public:
 private: 
     const LiteralFactorization* literal_factorization;
    
-      
+    BoolePolyRing m_ring;
 };
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b);
 END_NAMESPACE_PBORIGB
