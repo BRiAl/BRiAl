@@ -1338,8 +1338,12 @@ if 'install' in COMMAND_LINE_TARGETS:
         c++ cudd""") ] ))
 
     # Non-executables to be installed
-    for instfile in glob(PyRootPath('polybori/*.py')) + [
-        PyRootPath('polybori/dynamic/__init__.py') ] :
+    pyfile_srcs = glob(PyRootPath('polybori/*.py'))
+    pyfile_srcs += [PyRootPath('polybori/dynamic/__init__.py') ]
+    if (float(pyconf.version) < '2.5'): # removing advanced functionality
+        pyfile_srcs.remove(PyRootPath('polybori/context.py'))
+                       
+    for instfile in pyfile_srcs :
         targetfile = InstPyPath(relpath(PyRootPath(), instfile))
         pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
 
