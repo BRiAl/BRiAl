@@ -26,7 +26,7 @@ BEGIN_NAMESPACE_PBORI
 /// @todo needs inlining!!!
 #ifdef PBORI_ENV_RING_NOTINLINED
 BooleEnv::ring_type& BooleEnv::ring() {
-    static BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
+  static BooleEnv::ring_type active_ring(1000, CTypes::lp, false);
   return active_ring; 
 }
 #endif 

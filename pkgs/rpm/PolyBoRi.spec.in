@@ -72,8 +72,7 @@ It incorporates code from CUDD and M4RI.
 scons %{?jobs:-j%jobs} prepare-install
  
 %check
-scons %{?jobs:-j%jobs} testsuite
-testsuite/unittests && testsuite/unittests_orderings
+scons %{?jobs:-j%jobs} testsuite && testsuite/unittests
 
 %install
 scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
