@@ -685,16 +685,16 @@ testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
 testmain = env.Object([TestsPath('src', "unittests.cc")],
                       CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
 
-env.Program(TestsPath("unittests"),
-            testfiles + testmain + [libpb, gb], 
-            CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
-            CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
+def test_building(target, sources, env):
+    env.Program(target, sources + testmain + [libpb, gb], 
+                CPPPATH=CPPPATH, 
+                LIBS = env['LIBS'] + ["boost_unit_test_framework"],
+                CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
+
+test_building(TestsPath("unittests"), testfiles, env)
 
 for testfile in testfiles:
-    env.Program(testfile.path.replace('.o',''),
-                [testfile] + testmain + [libpb, gb], 
-                CPPPATH=CPPPATH, LIBS = env['LIBS'] + ["boost_unit_test_framework"],
-                CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
+    test_building(testfile.path.replace('.o','.bin'), [testfile], env)
 
 
 ######################################################################
