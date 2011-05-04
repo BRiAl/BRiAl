@@ -54,7 +54,11 @@ class CNFEncoder(object):
         while not rest.empty():
             l = choose(rest)
             l_variables = set(l.variables())
-            block_dict = dict([(v, 1 if v in l_variables else 0) for v in variables])
+            def get_val(var):
+                if var in l_variables:
+                    return 1
+                return 0
+            block_dict = dict([(v, get_val(v)) for v in variables])
             l = l.set()
             self.random_generator.shuffle(variables)
             for v in variables:
@@ -108,12 +112,14 @@ class CNFEncoder(object):
         return v.index()+1
         
     def dimacs_encode_clause(self, c):
+        def get_sign(val):
+            if value == 1: 
+                return 1
+            return -1
         return " ".join(
         [str(v) for v in 
             [
-            self.to_dimacs_index(variable) 
-            if value==1 
-            else -self.to_dimacs_index(variable) 
+            get_sign(value)*self.to_dimacs_index(variable) 
             for (variable, value) in c.iteritems()]+[0]])
             
     def dimacs_encode_polynomial(self, p):

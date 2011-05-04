@@ -171,13 +171,24 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-opts.Add('CCFLAGS', "C/C++ compiler flags", 
-         "-O3", converter = Split)
+def oldstyle_flags():
+    import SCons
+    return SCons.__version__.split('.') < ['0','97','0']
 
-opts.Add('CFLAGS', "C compiler flags", "-std=c99",
-         converter = Split)
-opts.Add('CXXFLAGS', "C++ compiler flags", "-std=c++98 -ftemplate-depth-100",
-         converter = Split)
+if oldstyle_flags() :
+    opts.Add('CCFLAGS', "C compiler flags", 
+             "-O3 -std=c99", converter = Split)
+    opts.Add('CXXFLAGS', "C++ compiler flags", 
+             "-O3 -std=c++98 -ftemplate-depth-100",
+             converter = Split)
+else:
+    opts.Add('CCFLAGS', "C/C++ compiler flags", 
+             "-O3", converter = Split)
+    opts.Add('CFLAGS', "C compiler flags", "-std=c99",
+             converter = Split)
+    opts.Add('CXXFLAGS', "C++ compiler flags", 
+             "-std=c++98 -ftemplate-depth-100",
+             converter = Split)
 
 opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
@@ -497,14 +508,6 @@ else:
 # end of not cleaning
 
 env.Clean('.', glob('*.pyc') + ['config.log'] )
-
-def fix_oldscons_flags():
-    import SCons
-    if SCons.__version__.split('.') < ['0','97','0'] :
-         env.Append(CXXFLAGS = env['CCFLAGS'])
-         env.Append(CCFLAGS = env['CFLAGS'])
-    
-fix_oldscons_flags()
 
 have_pydoc = env['HAVE_PYDOC']
 
