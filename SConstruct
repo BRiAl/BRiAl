@@ -694,7 +694,7 @@ def test_building(target, sources, env):
 test_building(TestsPath("unittests"), testfiles, env)
 
 for testfile in testfiles:
-    test_building(testfile.path.replace('.o','.bin'), [testfile], env)
+    test_building(path.splitext(testfile.path)[0] + '.bin', [testfile], env)
 
 
 ######################################################################
