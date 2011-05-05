@@ -4,6 +4,7 @@ Release Name: 0.8.0
 * libgroebner renamed libpolybori_groebner
 * using only part of CUDD (linked into libpolybori)
 * Officially introducing VariableBlock
+* Added factories to replace active ring
 	
 Release Name: 0.7.1:
 * Fixed building on Solaris with gcc 4.6.0 (broken default flags)
