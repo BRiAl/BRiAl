@@ -5,7 +5,7 @@
  * @author 
  * @date 
  *
- * 
+ * This file includes the definition of the class @c Skeleton.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -14,7 +14,7 @@
 //*****************************************************************************
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 BEGIN_NAMESPACE_PBORI
 
