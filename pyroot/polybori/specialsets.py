@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import BooleSet,Variable,Polynomial,mod_mon_set, if_then_else, Monomial, top_index
+from polybori.PyPolyBoRi import BooleSet,Polynomial,mod_mon_set, if_then_else, Monomial, top_index
 
 #def all_monomials_of_degree_d(d,variables):
 #    res=all_monomials_of_degree_d_new(d, variables)

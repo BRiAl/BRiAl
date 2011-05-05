@@ -25,13 +25,11 @@ USING_NAMESPACE_PBORI
 
 struct Fexp {
   typedef BooleExponent exp_type;
-  Fexp():
-    ring(5) {
-    x = (BooleVariable(0));
-    y = (BooleVariable(1));
-    z = (BooleVariable(2));
-    v = (BooleVariable(3));
-    w = (BooleVariable(4));
+  Fexp(const BoolePolyRing& input_ring = BoolePolyRing(5)):  
+    ring(input_ring),
+    x(0, input_ring), y(1, input_ring), z(2, input_ring),
+    v(3, input_ring), w(4, input_ring) {
+
     BOOST_TEST_MESSAGE( "setup fixture" );
     ring.setVariableName(0, "x");
     ring.setVariableName(1, "y");
@@ -113,9 +111,9 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("()"));// Difference from BooleMonomial
   output << exponent.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("(0, 2)"));
-  output << exponent.divide(BooleVariable(4));
+  output << exponent.divide(BooleVariable(4, ring));
   BOOST_CHECK(output.is_equal("()"));
-  output << exponent.divide(BooleVariable());
+  output << exponent.divide(BooleVariable(ring));
   BOOST_CHECK(output.is_equal("(1, 2)"));
   output << exponent.divide(x*y*z);
   BOOST_CHECK(output.is_equal("()"));
@@ -135,9 +133,9 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(BooleVariable(y));
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(BooleVariable(4));
+  output << empty.divide(BooleVariable(4, ring));
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(BooleVariable());
+  output << empty.divide(BooleVariable(ring));
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(x*y*z);
   BOOST_CHECK(output.is_equal("()"));
@@ -186,9 +184,9 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
 
   output << exponent.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3)"));
-  output << exponent.multiply(BooleVariable(4));
+  output << exponent.multiply(BooleVariable(4, ring));
   BOOST_CHECK(output.is_equal("(0, 1, 2, 4)"));
-  output << exponent.multiply(BooleVariable());
+  output << exponent.multiply(BooleVariable(ring));
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << exponent.multiply(v*w);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
@@ -208,9 +206,9 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(100)"));
   output << empty.multiply(BooleVariable(v));
   BOOST_CHECK(output.is_equal("(3)"));
-  output << empty.multiply(BooleVariable(4));
+  output << empty.multiply(BooleVariable(4, ring));
   BOOST_CHECK(output.is_equal("(4)"));
-  output << empty.multiply(BooleVariable());
+  output << empty.multiply(BooleVariable(ring));
   BOOST_CHECK(output.is_equal("(0)"));
   output << empty.multiply(v*w);
   BOOST_CHECK(output.is_equal("(3, 4)"));
@@ -785,9 +783,9 @@ BOOST_AUTO_TEST_CASE(test_reducible) {
   BOOST_CHECK(exponent.reducibleBy(x));
   BOOST_CHECK(exponent.reducibleBy(y));
   BOOST_CHECK(exponent.reducibleBy(z));
-  BOOST_CHECK(exponent.reducibleBy(BooleVariable()));
+  BOOST_CHECK(exponent.reducibleBy(BooleVariable(ring)));
   BOOST_CHECK(!exponent.reducibleBy(v));
-  BOOST_CHECK(!empty.reducibleBy(BooleVariable())); // as BooleVariable() = x
+  BOOST_CHECK(!empty.reducibleBy(BooleVariable(ring))); // as BooleVariable() = x
   BOOST_CHECK(!empty.reducibleBy(x));
 
   BOOST_CHECK(exponent.reducibleBy(0));

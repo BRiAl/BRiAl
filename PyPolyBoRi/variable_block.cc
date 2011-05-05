@@ -2,11 +2,11 @@
 
 #include <boost/python.hpp>
 #include <polybori.h>
+#include <polybori/VariableBlock.h>
+
 #include "variable_block.h"
 #include <boost/type_traits.hpp>
-//#include <iostream>
-//#include "polybori.h"
-//#include "polybori/pbori_defs.h"
+
 using namespace boost::python;
 using namespace std;
 
@@ -28,38 +28,29 @@ typedef CTypes::idx_type idx_type;
 static void translator(VariableIndexException const& x) {
     PyErr_SetString( PyExc_IndexError, "Wrong VariableIndex");
 }
-template <bool reverse> class VariableBlock {
-public:
-    idx_type size;
-    idx_type start_index;
-    idx_type offset;
-    BooleVariable get(idx_type i){
-        if UNLIKELY((i>=start_index+size)||(i<start_index)){
-            throw VariableIndexException();
-        }
-        return BooleVariable(reverse?offset+start_index+size-1-i:i-start_index+offset );
-    }
-    VariableBlock(idx_type size, idx_type start_index,idx_type offset){
-        this->size=size;
-        this->start_index=start_index;
-        this->offset=offset;
-        
-    }
-    VariableBlock(){}
-};
-boost::python::object variable_block(idx_type size,idx_type start_index,idx_type offset,bool reverse){
-    if (reverse) return boost::python::object(VariableBlock<true>(size,start_index,offset));
-    else return boost::python::object(VariableBlock<false>(size,start_index,offset));
+
+boost::python::object
+variable_block(idx_type size,idx_type start_index,idx_type offset,bool reverse){
+  if (reverse) return
+    boost::python::object(VariableBlock<true>(size,start_index,offset, BooleEnv::ring()));
+    else return boost::python::object(VariableBlock<false>(size,start_index,offset, BooleEnv::ring()));
+    
+}
+boost::python::object
+ring_variable_block(const BoolePolyRing& ring) {
+  return boost::python::object(VariableBlock<false>(ring));
     
 }
 
 template <class ValueType, class StringType>
 void export_variable_block_bool(ValueType, StringType str) {
 
-  boost::python::class_<VariableBlock<ValueType::value> >(str)
+  boost::python::class_<VariableBlock<ValueType::value> >(str,
+                                                          "polybori_VariableBlock",
+                                                          init<const BoolePolyRing&>())
     .def(init<const VariableBlock<ValueType::value>&>())    
-    .def(init<idx_type,idx_type,idx_type>())
-    .def("__call__",&VariableBlock<ValueType::value>::get);
+    .def(init<idx_type,idx_type,idx_type, BoolePolyRing>())
+    .def("__call__",&VariableBlock<ValueType::value>::operator());
     boost::python::register_exception_translator<
               VariableIndexException>(translator);
 
@@ -67,6 +58,7 @@ void export_variable_block_bool(ValueType, StringType str) {
 
 void export_variable_block_init(){
     def("VariableBlock",variable_block);
+    def("ring_variable_block", ring_variable_block);
 }
 
 // Note: Wrapping the def(...) leads to better performance (for unknown reasons)

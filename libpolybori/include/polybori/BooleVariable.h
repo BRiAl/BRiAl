@@ -51,13 +51,17 @@ class BooleVariable:
   typedef BoolePolyRing ring_type;
 
   /// Constructor idx-th variable of active ring
-  /**/
+  /**
   explicit BooleVariable(idx_type idx = 0):
     m_poly( BooleEnv::ring().variable(idx) ) {}
-  /**/
-  /// Constructor idx-th variable of a given ring
+  **/
+  /// Construct idx-th variable of a given ring
   BooleVariable(idx_type idx, const ring_type& ring):
     m_poly( ring.variable(idx) ) {}
+
+  /// Construct first variable of a given ring
+  BooleVariable(const ring_type& ring):
+    m_poly( ring.variable(0) ) {}
 
   /// Copy constructor
   BooleVariable(const self& rhs):  

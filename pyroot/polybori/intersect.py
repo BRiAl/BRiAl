@@ -6,7 +6,7 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import Variable
+from polybori.PyPolyBoRi import BooleVariable
 from polybori.gbcore import groebner_basis
 from polybori.statistics import used_vars_set
 from itertools import chain
@@ -17,13 +17,15 @@ def intersect(i,j,**gb_opts):
     intersection. It is assumed, that it doesn't occur in the ideals, and that we have an elimination ordering
     for this variables. Both assumptions are checked.
     >>> from polybori.PyPolyBoRi import Ring
-    >>> r=Ring(1000)
-    >>> x=Variable
+    >>> r=declare_ring(Block["x", 1000], globals())
     >>> intersect([x(1),x(2)+1],[x(1),x(2)])
     [x(1)]
     """
+    if not i or not j:
+        return []
+    
     uv=used_vars_set(i)*used_vars_set(j)
-    t=Variable(0)
+    t = BooleVariable(0, i.ring())
     if uv.reducible_by(t):
         raise ValueError, "First ring variable has to be reserved as helper variable t"
     if not t>uv:

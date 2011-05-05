@@ -101,7 +101,7 @@ def my_import(name, globals=None, locals=None):
     return mod
 def dyn_generate(content, name):
     module=imp.new_module(name)
-    import_header="""from polybori.PyPolyBoRi import Variable, Monomial, Polynomial, Ring, OrderCode
+    import_header="""from polybori.PyPolyBoRi import Monomial, Polynomial, Ring, OrderCode
 from itertools import chain
 from polybori.blocks import AlternatingBlock,Block,AdderBlock,if_then,HigherOrderBlock,declare_ring as orig_declare_ring,declare_block_scheme,MacroBlock\n
 def declare_ring(blocks, context=None):

@@ -46,11 +46,11 @@ struct Fpoly {
     ring(100, BoolePolyRing::lp, true), 
     bset(), 
     bexp(BooleExponent().change(1)) {
-    x = (BooleVariable(0));
-    y = (BooleVariable(1));
-    z = (BooleVariable(2));
-    v = (BooleVariable(3));
-    w = (BooleVariable(4));
+    x = (BooleVariable(0, ring));
+    y = (BooleVariable(1, ring));
+    z = (BooleVariable(2, ring));
+    v = (BooleVariable(3, ring));
+    w = (BooleVariable(4, ring));
 
     BOOST_TEST_MESSAGE( "setup fixture" ); 
     bset = BooleSet(1, ring.one(), ring.zero()); // something non-trivial
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(poly, x+v);
   BOOST_CHECK(output.is_equal("x + v"));
 
-  output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleVariable(1)));
+  output << (poly = (poly_type(x+x*y*z + y*z*w +v) %= BooleVariable(1,ring)));
   BOOST_CHECK_EQUAL(poly, x+v);
   BOOST_CHECK(output.is_equal("x + v"));
 

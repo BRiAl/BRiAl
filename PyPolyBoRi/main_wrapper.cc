@@ -2,8 +2,8 @@
 
 #include <boost/python.hpp>
 #include <iostream>
-#include "polybori.h"
-#include "polybori/pbori_defs.h"
+#include <polybori.h>
+#include <polybori/pbori_defs.h>
 #include "dd_wrapper.h"
 #include "Poly_wrapper.h"
 #include "navigator_wrap.h"
@@ -22,8 +22,8 @@
 #ifdef HAVE_M4RI
 #define PACKED 1
 extern "C"{
-#include "m4ri/packedmatrix.h"
-#include "m4ri/grayflex.h"
+#include <m4ri/packedmatrix.h>
+#include <m4ri/grayflex.h>
 }
 
 #endif
@@ -166,9 +166,11 @@ with inverted variable order\n\
     .def("__str__", streamable_as_str<BooleConstant>)
     .def("__repr__", streamable_as_str<BooleConstant>);
   ;
-  boost::python::class_<BooleVariable>("Variable", "Boolean Variable")
+  boost::python::class_<BooleVariable>("BooleVariable", "Boolean Variable", init<const BoolePolyRing&>())
   .def(init<const BooleVariable &>())
-  .def(init<BooleVariable::idx_type>("Get Variable of given index"))
+  .def(init<const BoolePolyRing&>("Get first Variable in a given ring"))
+  .def(init<BooleVariable::idx_type, 
+       const BoolePolyRing&>("Get Variable of given index in a given ring"))
   .def(self*self)
   .def(self/self)
   .def(self*BooleMonomial())

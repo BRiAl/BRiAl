@@ -1,5 +1,5 @@
 from random import Random
-from polybori.PyPolyBoRi import Monomial, Variable, BooleSet, Polynomial, if_then_else as ite,\
+from polybori.PyPolyBoRi import Monomial, BooleSet, Polynomial, if_then_else as ite,\
     change_ordering, lp, gauss_on_polys, global_ring, ll_red_nf_redsb
 from polybori.ll import ll_encode
 from polybori.statistics import used_vars_set

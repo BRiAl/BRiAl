@@ -23,14 +23,13 @@ using boost::test_tools::output_test_stream;
 USING_NAMESPACE_PBORI
 
 struct Fspoly {
-  Fspoly(): 
-    ring(5) {
+  Fspoly(const BoolePolyRing& input_ring = BoolePolyRing(5)): 
+    ring(input_ring),
+    x(BooleVariable(0, input_ring)), y(BooleVariable(1, input_ring)),
+    z(BooleVariable(2, input_ring)),
+    v(BooleVariable(3, input_ring)), w(BooleVariable(4, input_ring)) {
+
     BOOST_TEST_MESSAGE( "setup fixture" );
-    x = BooleVariable(0);
-    y = BooleVariable(1);
-    z = BooleVariable(2);
-    v = BooleVariable(3);
-    w = BooleVariable(4);
   }
   ~Fspoly() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 

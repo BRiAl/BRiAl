@@ -1,16 +1,20 @@
-from polybori import Polynomial,Variable
+from polybori import Polynomial,BooleVariable
 def get_splitting(f,variables):
+    ring = s.ring()
     s=f.set()
     for var_index in variables:
         s1=Polynomial(s.subset1(var_index))
         s0=Polynomial(s.subset0(var_index))
         f1=s0+s1
         f0=s0
+        var = BooleVariable(var_index, ring)
         if f1.constant():
-            return dict(b=f1,a=Polynomial(1),x=Variable(var_index),g=f0)
+            return dict(b=f1,a=Polynomial(1, ring),x=var,g=f0)
         if f0.constant():
-            return dict(b=f0,a=Polynomial(0),x=Variable(var_index),g=f1)
+            return dict(b=f0,a=Polynomial(0, ring),x=var,g=f1)
     return None
+
+
 def nested_canalyzing_function(f,variables=None):
     f=Polynomial(f)
     if variables is None:

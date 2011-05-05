@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import Monomial, Variable, global_ring, random_set, Polynomial, set_random_seed, Ring, ll_red_nf_redsb
+from polybori.PyPolyBoRi import Monomial, BooleVariable, global_ring, random_set, Polynomial, set_random_seed, Ring, ll_red_nf_redsb
 from polybori.ll import ll_encode
 from random import Random
 from pprint import pprint, pformat
@@ -41,7 +41,7 @@ def sparse_random_system(number_of_polynomials, variables_per_polynomial, degree
         set_random_seed(random_seed)
     random_generator = Random(random_seed)
     solutions=[]
-    variables = [Variable(i) for i in xrange(ring.n_variables())]
+    variables = [BooleVariable(i, ring) for i in xrange(ring.n_variables())]
     for v in variables:
         solutions.append(v+random_generator.randint(0,1))
     solutions=ll_encode(solutions)

@@ -54,7 +54,7 @@ execute path.insert(0, pyroot)
 # Get all basic stuff from PyPolyBoRi
 execute from polybori.PyPolyBoRi import *
 execute r = Ring(10000)
-execute x = Variable
+execute x = Variable = ring_variable_block(r)
 
 # Get all-inclusive groebner routine
 execute from polybori.gbcore import groebner_basis

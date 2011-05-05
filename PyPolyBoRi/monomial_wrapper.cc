@@ -16,8 +16,8 @@
 #include <boost/python/iterator.hpp>
 #include <iostream>
 #include <vector>
-#include "polybori.h"
-#include "polybori/pbori_defs.h"
+#include <polybori.h>
+
 #include "out_helper.h"
 using namespace boost::python;
 using namespace std;
@@ -50,6 +50,9 @@ static BoolePolynomial::navigator nav(const BoolePolynomial& p){
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
+  BoolePolyRing dummy_ring;
+  BooleVariable var(0, dummy_ring);
+
   BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
 
@@ -98,10 +101,10 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self+int())
   .def(int()+self)
   .def(int()-self)
-  .def(self+ BooleVariable())
-  .def(self- BooleVariable())
-  .def(BooleVariable()+self)
-  .def(BooleVariable()-self) 
+  .def(self+ var)
+  .def(self- var)
+  .def(var+self)
+  .def(var-self) 
   //.def("isOne", &BooleMonomial::isOne)
   .def("has_constant_part", has_constant_part_wrap)
     .def("deg", &BooleMonomial::deg, "Degree of the monomial")

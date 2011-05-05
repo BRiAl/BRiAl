@@ -326,10 +326,12 @@ def declare_ring(blocks,context=None):
       else:
           n=n+len(b)
   #n=sum([len(b) for b in blocks])
-  r=Ring(n) 
+  r=Ring(n)
+  context["Variable"] = ring_variable_block(r)
   declare_block_scheme(blocks,context)
   context["r"]=r
   return r
+
 def declare_block_scheme(blocks,context):
     start=0
     block_starts=[]

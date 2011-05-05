@@ -26,11 +26,11 @@ struct Ftermaccu {
   Ftermaccu(): 
     ring(5) {
     BOOST_TEST_MESSAGE( "setup fixture" );
-    x = BooleVariable(0);
-    y = BooleVariable(1);
-    z = BooleVariable(2);
-    v = BooleVariable(3);
-    w = BooleVariable(4);
+    x = (BooleVariable(0, ring));
+    y = (BooleVariable(1, ring));
+    z = (BooleVariable(2, ring));
+    v = (BooleVariable(3, ring));
+    w = (BooleVariable(4, ring));
   }
   ~Ftermaccu() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 

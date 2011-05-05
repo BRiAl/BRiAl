@@ -27,23 +27,22 @@ USING_NAMESPACE_PBORI
 
 struct Fvar {
   typedef BooleVariable var_type;
-  Fvar():
-    ring(3) {
-      x = var_type(0);
-      y = var_type(1);
-      z = var_type(2);
-      BOOST_TEST_MESSAGE( "setup fixture" );
-      ring.setVariableName(0, "x");
-      ring.setVariableName(1, "y");
-      ring.setVariableName(2, "z");
-      bset = BooleSet(1, ring.one(), ring.zero());
-    }
+  Fvar(const BoolePolyRing& input_ring = BoolePolyRing(3)):
+    ring(input_ring), 
+    x(0, input_ring), y(1, input_ring), z(2, input_ring) {
 
-    ~Fvar() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+    BOOST_TEST_MESSAGE( "setup fixture" );
+    ring.setVariableName(0, "x");
+    ring.setVariableName(1, "y");
+    ring.setVariableName(2, "z");
+    bset = BooleSet(1, ring.one(), ring.zero());
+  }
 
-    BoolePolyRing ring;
-    BooleVariable x, y, z;
-    BooleSet bset;
+  ~Fvar() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
+  
+  BoolePolyRing ring;
+  BooleVariable x, y, z;
+  BooleSet bset;
 };
 
 BOOST_FIXTURE_TEST_SUITE(BooleVariableTestSuite, Fvar )
@@ -51,26 +50,26 @@ BOOST_FIXTURE_TEST_SUITE(BooleVariableTestSuite, Fvar )
 BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Constructors..." );
-  BOOST_CHECK_EQUAL(var_type(), var_type(0));
-  BOOST_CHECK_EQUAL(var_type(0),x);
-  BOOST_CHECK_EQUAL(var_type(1,ring),y);
-  BOOST_CHECK_EQUAL(var_type(z),z);
-  BOOST_CHECK_THROW(var_type(3), PBoRiError);
-  BOOST_CHECK_THROW(var_type(-1), PBoRiError);
+  BOOST_CHECK_EQUAL(var_type(ring), var_type(0, ring));
+  BOOST_CHECK_EQUAL(var_type(0, ring), x);
+  BOOST_CHECK_EQUAL(var_type(1, ring), y);
+  BOOST_CHECK_EQUAL(var_type(z), z);
+  BOOST_CHECK_THROW(var_type(3, ring), PBoRiError);
+  BOOST_CHECK_THROW(var_type(-1, ring), PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_methods) {
 
   BOOST_TEST_MESSAGE( "Casting to poly_type" );
   BOOST_CHECK_EQUAL((BoolePolynomial)x, BoolePolynomial(x));
-  BOOST_CHECK_EQUAL((BoolePolynomial)var_type(), BoolePolynomial(x));
+  BOOST_CHECK_EQUAL((BoolePolynomial)var_type(ring), BoolePolynomial(x));
   BOOST_TEST_MESSAGE( "index" );
-  BOOST_CHECK_EQUAL(var_type().index(), 0);
-  BOOST_CHECK_EQUAL(var_type(1).index(), 1);
+  BOOST_CHECK_EQUAL(var_type(ring).index(), 0);
+  BOOST_CHECK_EQUAL(var_type(1, ring).index(), 1);
   BOOST_CHECK_EQUAL(var_type(z).index(), 2);
   BOOST_CHECK_EQUAL(z.index(), 2);
 
-  BOOST_CHECK_THROW(var_type(3).index(), PBoRiError);
+  BOOST_CHECK_THROW(var_type(3, ring).index(), PBoRiError);
   BOOST_TEST_MESSAGE( "ring" );
   BOOST_CHECK_EQUAL(x.ring().nVariables(), ring.nVariables());
   BOOST_CHECK_EQUAL(x.ring().getVariableName(0), ring.getVariableName(0));
@@ -79,16 +78,16 @@ BOOST_AUTO_TEST_CASE(test_methods) {
   BOOST_CHECK_EQUAL(x.ring().getVariableName(3), ring.getVariableName(3));
   BOOST_TEST_MESSAGE( "set" );
   BOOST_CHECK_EQUAL(y.set(),bset);
-  BOOST_CHECK_EQUAL(var_type(1).set(),bset);
+  BOOST_CHECK_EQUAL(var_type(1, ring).set(),bset);
   BOOST_CHECK_NE(x.set(),bset);
-  BOOST_CHECK_THROW(var_type(3).set(), PBoRiError);
+  BOOST_CHECK_THROW(var_type(3, ring).set(), PBoRiError);
 }
 
 BOOST_AUTO_TEST_CASE(test_logical_operators) {
   BOOST_TEST_MESSAGE( "== and !=" );
   BOOST_CHECK_EQUAL(x, x);
-  BOOST_CHECK_EQUAL(x, var_type());
-  BOOST_CHECK_EQUAL(var_type(), x);
+  BOOST_CHECK_EQUAL(x, var_type(ring));
+  BOOST_CHECK_EQUAL(var_type(ring), x);
   BOOST_CHECK_NE(x, y);
   BOOST_CHECK_NE(y, x);
 }
@@ -111,8 +110,8 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BooleMonomial(x)/x, BooleMonomial());
   BOOST_CHECK_THROW(BooleMonomial(x)/y, PBoRiError);
   BOOST_CHECK_EQUAL(x / x, BoolePolynomial(1));
-  BOOST_CHECK_EQUAL(var_type() / x, BoolePolynomial(1));
-  BOOST_CHECK_EQUAL(var_type() / var_type(), BoolePolynomial(1));
+  BOOST_CHECK_EQUAL(var_type(ring) / x, BoolePolynomial(1));
+  BOOST_CHECK_EQUAL(var_type(ring) / var_type(ring), BoolePolynomial(1));
 
   BOOST_TEST_MESSAGE( "*" );
   BOOST_CHECK_EQUAL(x*y, BooleMonomial(x*y));

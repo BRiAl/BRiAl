@@ -9,7 +9,7 @@ Copyright (c) 2008 The PolyBoRi Team.
 
 import sys
 import os
-from polybori.PyPolyBoRi import Ring, Polynomial, Variable, BooleSet
+from polybori.PyPolyBoRi import Ring, Polynomial, BooleSet
 from subprocess import Popen, PIPE
 
 

@@ -40,21 +40,19 @@ USING_NAMESPACE_PBORI
 struct Fdd {
   typedef BooleSet set_type;
   typedef test_dd_type dd_type;
-  Fdd():
-    ring(5) {
-      x = BooleVariable(0);
-      y = BooleVariable(1);
-      z = BooleVariable(2);
-      v = BooleVariable(3);
-      w = BooleVariable(4);
-      BOOST_TEST_MESSAGE( "setup fixture" );
-      ring.setVariableName(0, "x");
-      ring.setVariableName(1, "y");
-      ring.setVariableName(2, "z");
-      ring.setVariableName(3, "v");
-      ring.setVariableName(4, "w");
-      poly = x*y*z + v*z - x*v + y + 1;
-    }
+  Fdd(const BoolePolyRing& input_ring = BoolePolyRing(5)): 
+    ring(input_ring),
+    x(0, input_ring), y(1, input_ring), z(2, input_ring),
+    v(3, input_ring), w(4, input_ring) {
+
+    BOOST_TEST_MESSAGE( "setup fixture" );
+    ring.setVariableName(0, "x");
+    ring.setVariableName(1, "y");
+    ring.setVariableName(2, "z");
+    ring.setVariableName(3, "v");
+    ring.setVariableName(4, "w");
+    poly = x*y*z + v*z - x*v + y + 1;
+  }
 
   ~Fdd() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
 

@@ -362,10 +362,10 @@ BOOST_AUTO_TEST_CASE(test_coerce) {
   ring.setVariableName(3, "v");
   ring.setVariableName(4, "a");
   output_test_stream output;
-  BooleVariable x(0);
-  BooleVariable y(1);
-  BooleVariable z(2);
-  BooleVariable v(3);
+  BooleVariable x(0, defaultr);
+  BooleVariable y(1, defaultr);
+  BooleVariable z(2, defaultr);
+  BooleVariable v(3, defaultr);
   BoolePolynomial poly = x*y*v + y*z*v + y*v;
   BooleMonomial monom = x*y*z;
 

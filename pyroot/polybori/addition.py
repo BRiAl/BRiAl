@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import Polynomial, Variable, BooleSet
+from polybori.PyPolyBoRi import Polynomial, BooleSet
 from polybori.partial import PartialFunction
 from polybori.specialsets import all_monomials_of_degree_d, power_set
 from polybori.ll import ll_encode, ll_red_nf_redsb

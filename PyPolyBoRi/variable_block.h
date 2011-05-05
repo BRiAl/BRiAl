@@ -8,8 +8,6 @@
  */
 #ifndef VARIABLE_BLOCK_H
 #define VARIABLE_BLOCK_H
-class VariableIndexException{
-    
-};
+
 void export_variable_block();
 #endif

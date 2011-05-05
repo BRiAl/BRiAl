@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import Monomial,Polynomial,Variable,top_index
+from polybori.PyPolyBoRi import Monomial,Polynomial,top_index
 
 def used_vars(l, bound=None):
     m=Monomial()
