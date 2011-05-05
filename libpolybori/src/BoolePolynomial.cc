@@ -230,7 +230,7 @@ BoolePolynomial::operator%=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator%=(const monom_type&)" );
 
-  monom_type allvars;
+  monom_type allvars(ring());
   for(idx_type nvar = ring().nVariables(); nvar != 0;)
     allvars = allvars.change(--nvar);
 
@@ -739,7 +739,7 @@ BoolePolynomial::fetchTerms(termlist_type& theOutputList) const {
 
   PBORI_TRACE_FUNC("BoolePolynomial:fetchTerms(const termlist_type&)");
 
-  theOutputList.resize(length());
+  theOutputList.resize(length(), ring());
 
   std::copy(begin(), end(), theOutputList.begin());
 }

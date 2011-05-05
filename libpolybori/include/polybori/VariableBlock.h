@@ -73,7 +73,7 @@ protected:
   idx_type m_start_index;
   idx_type m_offset;
 
-  ring_type m_ring;
+  const ring_type& m_ring;
 };
 
 END_NAMESPACE_PBORI
