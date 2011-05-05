@@ -205,10 +205,6 @@ public:
   /// Default constructor
   BoolePolynomial();
 
-  /// Construct zero-polynomial from ring
-  BoolePolynomial(const ring_type& ring):
-    m_dd(ring.zero())  { }
-
   /// Construct polynomial from a constant value 0 or 1
   explicit BoolePolynomial(constant_type);
 

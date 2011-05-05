@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(test_pseudo_constructors) {
 
   BOOST_CHECK_EQUAL(factory(ring), BooleConstant(false));
 
-  BOOST_CHECK_EQUAL(factory(BooleVariable(3)), 
-		    BooleVariable(3, ring));
+  BOOST_CHECK_EQUAL(factory(z), 
+		    BooleVariable(2, ring));
 
   BOOST_CHECK_EQUAL(factory(0), BooleConstant(false));
   BOOST_CHECK_EQUAL(factory(2), BooleConstant(false));
