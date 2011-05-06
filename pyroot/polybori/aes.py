@@ -17,7 +17,7 @@ def p2code(p,table):
 def translate_m(m,table):
     res=Monomial()
     for v in m.variables():
-        res=Monomial(Variable(table[v.index()]))*res
+        res=Monomial(BooleVariable(table[v.index()], v.ring()))*res
     return res
 def translate(p,table):
     res=0
