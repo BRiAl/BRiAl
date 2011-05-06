@@ -34,7 +34,7 @@ def to_fast_pickable(l):
     EXAMPLES:
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable
+        >>> x=Variable = ring_variable_block(r)
         >>> to_fast_pickable([Polynomial(1)])
         [[1], []]
         >>> to_fast_pickable([Polynomial(0)])
@@ -104,7 +104,7 @@ def from_fast_pickable(l,r=None):
     EXAMPLES:
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable
+        >>> x=Variable = ring_variable_block(r)
         >>> from_fast_pickable([[1], []])
         [1]
         >>> from_fast_pickable([[0], []])
@@ -156,7 +156,7 @@ def groebner_basis_first_finished(I, *l):
     EXAMPLES:    
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable
+        >>> x=Variable = ring_variable_block(r)
         >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
         [x(1), x(2)]
     """

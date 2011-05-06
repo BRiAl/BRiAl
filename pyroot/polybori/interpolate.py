@@ -94,7 +94,7 @@ def lex_groebner_basis_for_polynomial_via_variety(p):
     return lex_groebner_basis_points(p.zeros_in(variables.divisors()),variables)
 if __name__=='__main__':
     nvariables=100
-    r=Ring(nvariables)
+    declare_ring([Block("x",nvariables)])
     for number_of_points in (100,500,1000,2000,3000,4000,5000,10000,20000,50000,100000):
         print "----------"
         print "number_of_points:",number_of_points

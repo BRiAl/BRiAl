@@ -100,7 +100,7 @@ def plot(p, filename, colored=True,format="png",
     EXAMPLES:
 
     >>> r=Ring(1000)
-    >>> x=Variable
+    >>> x = Variable = ring_variable_block(r)
     >>> plot(x(1)+x(0),"/dev/null", colored=True)
     >>> plot(x(1)+x(0),"/dev/null", colored=False)
     """
@@ -171,7 +171,7 @@ def plot(p, filename, colored=True,format="png",
         
 def main():
     r=Ring(1000)
-    x=Variable
+    x = Variable = ring_variable_block(r)
     from os import system
     from polybori.specialsets import all_monomials_of_degree_d, power_set
     full_set=list(power_set([Variable(i) for i in xrange(15)]))

@@ -74,9 +74,16 @@ class AlternatingBlock(object):
   
   def register(self,start,context):
     def gen_var_func(var_pos):
-      def var_func(i):
-        return Variable(self.index2pos[i]*len(self.var_names)+var_pos+start)
-      return var_func
+
+      class var_factory(object):
+          def __init__(self, ring):
+              self.ring = ring
+          def __call__(idx):
+              return BooleVariable(self.index2pos[i]*len(self.var_names) +
+                                   var_pos+start, self.ring)
+              
+      return var_factory(context["r"])
+
     for (var_pos,n) in enumerate(self.var_names):
       var_func=gen_var_func(var_pos)
       var_func.__name__=n
@@ -328,8 +335,8 @@ def declare_ring(blocks,context=None):
   #n=sum([len(b) for b in blocks])
   r=Ring(n)
   context["Variable"] = ring_variable_block(r)
-  declare_block_scheme(blocks,context)
   context["r"]=r
+  declare_block_scheme(blocks,context)
   return r
 
 def declare_block_scheme(blocks,context):
@@ -339,7 +346,7 @@ def declare_block_scheme(blocks,context):
       if start!=0:
           block_starts.append(start)
       if isinstance(b,str):
-        context[b]=Variable(start)
+        context[b]=BooleVariable(start, context["r"])
         set_variable_name(start,b)
         start=start+1
       else:
@@ -358,7 +365,7 @@ def main():
   ablock=AlternatingBlock(["a","b","c"],100)
   declare_block_scheme([ablock],globals())
   for i in range(10):
-     print Variable(i)
+     print BooleVariable(i, r)
      
   print list(ablock)
   declare_block_scheme([

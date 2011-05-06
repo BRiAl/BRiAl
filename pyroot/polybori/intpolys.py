@@ -17,15 +17,14 @@ class IntegerPolynomial(object):
                 if and_:
                     res.append(i)
             return (self, IntegerPolynomial(dict([(i, Polynomial(1)) for i in res])))
-        if isinstance(other, Variable) or isinstance(other, Monomial):
+        if isinstance(other, BooleVariable) or isinstance(other, Monomial):
             other=Polynomial(other)
         if isinstance(other, Polynomial):
             return (self, IntegerPolynomial(dict([(0, other)])))
         return None
     def __add__(self, other):
         """
-        >>> r=Ring(1000)
-        >>> x=Variable
+        >>> declare_ring([Block["x",1000)])
         >>> p=IntegerPolynomial(x(1))
         >>> p
         {0: x(1)}
