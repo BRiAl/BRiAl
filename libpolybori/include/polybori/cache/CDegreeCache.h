@@ -126,7 +126,7 @@ protected:
   navigator toNode(idx_type idx, const manager_type& mgr) const {
 
     if LIKELY((size_type)idx < mgr.nVariables())
-      return  mgr.variable(idx).navigation();
+	       return  mgr.variable(idx).set().navigation();
 
     return  mgr.zero().navigation();
   }

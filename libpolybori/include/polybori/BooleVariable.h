@@ -95,7 +95,6 @@ class BooleVariable:
   /// Access ring, where this belongs to
   const ring_type& ring() const { return m_poly.ring(); } 
 
-  BoolePolynomial::navigator navigation() const {return m_poly.navigation();}
 private:
   friend class BoolePolyRing;
   BooleVariable(const BoolePolynomial& poly):m_poly(poly){}
@@ -109,12 +108,6 @@ inline BoolePolynomial
 operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
   return BoolePolynomial(BooleConstant(lhs == rhs), lhs.ring());
 }
-
-// /// Access nvar-th ring variable
-// inline BooleVariable BoolePolyRing::variable(idx_type nvar) const {
-//   return var_type(nvar, *this);
-// }
-
 
 END_NAMESPACE_PBORI
 
