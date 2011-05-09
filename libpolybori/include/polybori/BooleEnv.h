@@ -63,6 +63,7 @@ class BooleEnv:
   //@{
   typedef CTypes::ordercode_type ordercode_type;
   typedef BoolePolyRing::dd_type dd_type;
+  typedef BoolePolyRing::var_type var_type;
   typedef CTypes::vartext_type vartext_type;
   //@}
 
@@ -80,7 +81,7 @@ class BooleEnv:
   using base::ordercodes;
 
   /// Access idx-th variable of the active ring
-  static dd_type variable(idx_type idx);
+  static var_type variable(idx_type idx);
 
   /// Get numerical code for current ordering
   static ordercode_type getOrderCode();

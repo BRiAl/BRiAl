@@ -93,6 +93,11 @@ BoolePolyRing::var_type BoolePolyRing::coerce(const var_type& rhs) const {
   return var_type(rhs.index(), *this);
 }
 
+BoolePolyRing::var_type 
+BoolePolyRing::variable(checked_idx_type nvar) const {
+  return var_type(nvar, *this); 
+}
+
 
 #if !defined(__GNUC__) && !defined(fmemopen)
 FILE *fmemopen (void *buf, size_t size, const char *opentype)

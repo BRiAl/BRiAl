@@ -169,7 +169,10 @@ public:
   var_type coerce(const var_type& rhs) const;
 
   /// Access nvar-th ring variable as diagram
-  dd_type variable(checked_idx_type nvar) const;
+  dd_type variableDiagram(checked_idx_type nvar) const;
+
+  /// Access nvar-th ring variable as diagram
+  var_type variable(checked_idx_type nvar) const;
 
   /// Get empty decision diagram 
   dd_type zero() const; // inlined below
@@ -208,11 +211,13 @@ inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_type(*this
 
 
   /// Get constant one or zero
-inline  BoolePolyRing::dd_type BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
+inline  BoolePolyRing::dd_type
+BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
 
-inline  BoolePolyRing::dd_type BoolePolyRing::variable(checked_idx_type nvar) const {
-    return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
-  }
+inline  BoolePolyRing::dd_type 
+BoolePolyRing::variableDiagram(checked_idx_type nvar) const {
+  return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
+}
 
 END_NAMESPACE_PBORI
 

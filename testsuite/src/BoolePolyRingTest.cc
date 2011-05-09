@@ -294,19 +294,35 @@ BOOST_AUTO_TEST_CASE(test_dd_type) {
 
   BOOST_TEST_MESSAGE( "variable" );
   output << ring.variable(0);
-  BOOST_CHECK(output.is_equal("{{x}}"));
+  BOOST_CHECK(output.is_equal("x"));
   output << ring.variable(1);
-  BOOST_CHECK(output.is_equal("{{y}}"));
+  BOOST_CHECK(output.is_equal("y"));
   output << ring.variable(2);
+  BOOST_CHECK(output.is_equal("z"));
+
+  output << ring.variableDiagram(0);
+  BOOST_CHECK(output.is_equal("{{x}}"));
+  output << ring.variableDiagram(1);
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  output << ring.variableDiagram(2);
   BOOST_CHECK(output.is_equal("{{z}}"));
+
   BOOST_CHECK_THROW(ring.variable(3), PBoRiError);
   BOOST_CHECK_THROW(ring.variable(-1), PBoRiError);
   output << defaultr.variable(0);
-  BOOST_CHECK(output.is_equal("{{x}}"));
+  BOOST_CHECK(output.is_equal("x"));
   output << defaultr.variable(1);
-  BOOST_CHECK(output.is_equal("{{y}}"));
+  BOOST_CHECK(output.is_equal("y"));
   output << defaultr.variable(2);
+  BOOST_CHECK(output.is_equal("z"));
+
+  output << defaultr.variableDiagram(0);
+  BOOST_CHECK(output.is_equal("{{x}}"));
+  output << defaultr.variableDiagram(1);
+  BOOST_CHECK(output.is_equal("{{y}}"));
+  output << defaultr.variableDiagram(2);
   BOOST_CHECK(output.is_equal("{{z}}"));
+
   BOOST_CHECK_THROW(defaultr.variable(3), PBoRiError);
   BOOST_CHECK_THROW(defaultr.variable(-1), PBoRiError);
   BOOST_CHECK_THROW(empty.variable(-1), PBoRiError);

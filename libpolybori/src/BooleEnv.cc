@@ -119,7 +119,7 @@ BooleEnv::ordercode_type BooleEnv::getBaseOrderCode() {
 }
 
 /// Access idx-th variable of the active ring
-BooleEnv::dd_type BooleEnv::variable(idx_type idx) {
+BooleEnv::var_type BooleEnv::variable(idx_type idx) {
   return ring().variable(idx);
 }
 

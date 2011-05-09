@@ -57,11 +57,11 @@ class BooleVariable:
   **/
   /// Construct idx-th variable of a given ring
   BooleVariable(idx_type idx, const ring_type& ring):
-    m_poly( ring.variable(idx) ) {}
+    m_poly( ring.variableDiagram(idx) ) {}
 
   /// Construct first variable of a given ring
   BooleVariable(const ring_type& ring):
-    m_poly( ring.variable(0) ) {}
+    m_poly( ring.variableDiagram(0) ) {}
 
   /// Copy constructor
   BooleVariable(const self& rhs):  
@@ -95,6 +95,7 @@ class BooleVariable:
   /// Access ring, where this belongs to
   const ring_type& ring() const { return m_poly.ring(); } 
 
+  BoolePolynomial::navigator navigation() const {return m_poly.navigation();}
 private:
   friend class BoolePolyRing;
   BooleVariable(const BoolePolynomial& poly):m_poly(poly){}
@@ -113,6 +114,7 @@ operator/(const BooleVariable& lhs, const BooleVariable& rhs) {
 // inline BooleVariable BoolePolyRing::variable(idx_type nvar) const {
 //   return var_type(nvar, *this);
 // }
+
 
 END_NAMESPACE_PBORI
 
