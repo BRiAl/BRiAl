@@ -103,12 +103,16 @@ public:
            const ring_type& ring): 
     base(ring, idx, first, second) { }
  
-  /// Construct new node (using navigator nodes)
+  /// Construct new node (using nodes)
   BooleSet(const ring_type& ring, node_ptr node): 
     base(ring, node) { }
 
+  /// Construct new node (using navigator nodes)
   BooleSet(const ring_type& ring, navigator navi): 
     base(ring, navi.getNode()) { }
+
+  /// Construct empty set in ring
+  BooleSet(const ring_type& ring);
 
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):
