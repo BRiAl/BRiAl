@@ -337,6 +337,7 @@ env['_sonamecmd'] = _sonamecmd
 
 # config.h generator
 def config_h_build(target, source, env):
+    """ config_h building..."""
     def define_line(name, value):
         return """#ifndef %(name)s
 #define %(name)s %(value)s
@@ -366,7 +367,9 @@ def config_h_build(target, source, env):
         config_h.close()
 
 config_h = env.Command(PBPath('include/polybori/config.h'),
-                       'SConstruct', config_h_build)
+                       'SConstruct',
+                       action = env.Action(config_h_build, 
+                                           "writing config.h..."))
 env.AlwaysBuild(config_h)
 
 class PythonConfig(object):
