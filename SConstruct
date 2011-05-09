@@ -715,7 +715,7 @@ LIBS_static = [libpb_name, libgb_name] + LIBS
 documentable_python_modules = [PyRootPath('polybori', f)
                                for f in Split("""ll.py check_claims.py nf.py
                                gbrefs.py statistics.py randompoly.py blocks.py 
-                               specialsets.py aes.py memusage.py
+                               specialsets.py memusage.py
                                heuristics.py gbcore.py interpolate.py
                                interred.py ncf.py partial.py simplebb.py
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
@@ -864,26 +864,13 @@ if distribute or rpm_generation or deb_generation:
     allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
 disttar.py doxygen.py""")
     for dirname in Split("""groebner ipbori M4RI libpolybori 
-    PyPolyBoRi pyroot Singular pkgs gui"""):
+    PyPolyBoRi pyroot Singular pkgs gui testsuite"""):
         allsrcs.append(env.Dir(dirname))
 
     # Cudd is not distributed completely (unused and unfree things removed)
-    allsrcs += [CuddPath(src) for src in Split("""LICENSE Makefile README
-    RELEASE.NOTES setup.sh shutdown.sh""") ]
-    allsrcs += [env.Dir(CuddPath(src)) for src in Split("""cudd
-    obj epd mtr st util""") ]
-
-    # Testsuite is not distributed completely
-    allsrcs += [TestsPath('execsuite')]
-    allsrcs += glob(TestsPath('py/*.py'))
-
-    for exclsrc in Split("""aes_elim.py gbrefs_pair.py red_search.py
-    rtpblocks.py runstas1.py rundummy.py specialsets2.py"""):
-        for file in glob(TestsPath('py', exclsrc)):
-            allsrcs.remove(file)
-        
-    for dirname in Split("src"):
-        allsrcs.append(env.Dir(TestsPath(dirname)))
+    allsrcs += [CuddPath(src) for src in Split("""LICENSE README
+    RELEASE.NOTES""") ]
+    allsrcs += [env.Dir(CuddPath(src)) for src in Split("""cudd""") ]
 
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in

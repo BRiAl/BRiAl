@@ -23,7 +23,6 @@ import resource
 from polybori.memusage import *
 from polybori.gbrefs import SINGLE,AUTO,parse_blocks
 from polybori.nf import *
-import polybori.aes as aes
 from polybori.gbcore import *
 
 from re import *
@@ -45,7 +44,7 @@ from PyQt4 import QtCore
 
 #pbdefaultoptionsdic={'faugere': False, 'interpolation_gb': False, 'show': True, 'showtime': False, 'linear_algebra_in_last_block': True, 'preprocess_only': False, 'incremental': False, 'selection_size': 1000, 'heuristic': True, 'clean_arguments': True, 'full_prot': False, 'recursion': False, 'invert': False, 'prot': True, 'fix_deg_bound': True, 'eliminate_identical_variables': True, 'convert_with_fglm_from_ring': None, 'cleanup': False, 'noro': False, 'easy_linear_polynomials': True, 'lazy': True, 'blocks': 'auto', 'step_factor': 1, 'max_growth': 2.0, 'exchange': True, 'red_tail_deg_growth': True, 'auto': False, 'matrix_prefix': 'matrix', 'red_tail': True, 'implementation': 'Python', 'gauss_on_linear': True, 'modified_linear_algebra': True, 'll_constants': True, 'result_to_list': True, 'aes': False, 'clean_and_restart_algorithm': False, 'llfirst': False, 'other_ordering_first': False, 'deg_bound': False, 'redsb': True, 'implications': False, 'draw_matrices': False, 'ordering': 'lp', 'minsb': True, 'll': False, 'llfirstonthefly': False, 'unique_ideal_generator': False}
 
-pbdefaultoptionsdic={'faugere': "Auto", 'interpolation_gb': False, 'show': True, 'showtime': False, 'linear_algebra_in_last_block': "Auto", 'preprocess_only': "Auto", 'incremental': False, 'selection_size': "Auto", 'heuristic': True, 'clean_arguments': "Auto", 'full_prot': False, 'recursion': "Auto", 'invert': False, 'prot': True, 'fix_deg_bound': True, 'eliminate_identical_variables': True, 'convert_with_fglm_from_ring': None, 'cleanup': "Auto", 'noro': "Auto", 'easy_linear_polynomials': True, 'lazy': "Auto", 'blocks': 'auto', 'step_factor': "Auto", 'max_growth': "Auto", 'exchange': "Auto", 'red_tail_deg_growth': True, 'auto': False, 'matrix_prefix': "Auto", 'red_tail': "Auto", 'implementation': 'Python', 'gauss_on_linear': True, 'modified_linear_algebra': True, 'll_constants': True, 'result_to_list': True, 'aes': "Auto", 'clean_and_restart_algorithm': False, 'llfirst': "Auto", 'other_ordering_first': False, 'deg_bound': False, 'redsb': True, 'implications': "Auto", 'draw_matrices': False, 'ordering': 'lp', 'minsb': True, 'll': "Auto", 'llfirstonthefly': "Auto", 'unique_ideal_generator': False}
+pbdefaultoptionsdic={'faugere': "Auto", 'interpolation_gb': False, 'show': True, 'showtime': False, 'linear_algebra_in_last_block': "Auto", 'preprocess_only': "Auto", 'incremental': False, 'selection_size': "Auto", 'heuristic': True, 'clean_arguments': "Auto", 'full_prot': False, 'recursion': "Auto", 'invert': False, 'prot': True, 'fix_deg_bound': True, 'eliminate_identical_variables': True, 'convert_with_fglm_from_ring': None, 'cleanup': "Auto", 'noro': "Auto", 'easy_linear_polynomials': True, 'lazy': "Auto", 'blocks': 'auto', 'step_factor': "Auto", 'max_growth': "Auto", 'exchange': "Auto", 'red_tail_deg_growth': True, 'auto': False, 'matrix_prefix': "Auto", 'red_tail': "Auto", 'implementation': 'Python', 'gauss_on_linear': True, 'modified_linear_algebra': True, 'll_constants': True, 'result_to_list': True, 'clean_and_restart_algorithm': False, 'llfirst': "Auto", 'other_ordering_first': False, 'deg_bound': False, 'redsb': True, 'implications': "Auto", 'draw_matrices': False, 'ordering': 'lp', 'minsb': True, 'll': "Auto", 'llfirstonthefly': "Auto", 'unique_ideal_generator': False}
 
 class eddegbound(QtGui.QWidget):
   def __init__(self, parent=None):
@@ -606,9 +605,9 @@ class OptionWindow(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.setWindowTitle('Options')
         self.posi()
-        self.realnames=  ['show','invert', 'auto', 'preprocess_only','aes','full_prot','cleanup','redsb','lazy','exchange','recursion','llfirst','llfirstonthefly','linear_algebra_in_last_block','red_tail','implications','draw_matrices']
-        self.buttonnames=['show','invert', 'override all options ','only preprocess','hint that this is a AES system','full protocol on','clean up','red SB output','lazy','exchange','recursion','lex eliminate first','lex eliminate on fly first','linear algebra in last block','tail reductions','implications','save matrices as png']
-        self.whichauto=[False,False,False,True,True,False,True,False,True,True,True,True,True,True,True,True,False]
+        self.realnames=  ['show','invert', 'auto', 'preprocess_only','full_prot','cleanup','redsb','lazy','exchange','recursion','llfirst','llfirstonthefly','linear_algebra_in_last_block','red_tail','implications','draw_matrices']
+        self.buttonnames=['show','invert', 'override all options ','only preprocess','full protocol on','clean up','red SB output','lazy','exchange','recursion','lex eliminate first','lex eliminate on fly first','linear algebra in last block','tail reductions','implications','save matrices as png']
+        self.whichauto=[False,False,False,True,False,True,False,True,True,True,True,True,True,True,True,False]
         
         
 

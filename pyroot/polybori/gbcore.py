@@ -1,5 +1,4 @@
 from polybori.nf import *
-import polybori.aes as aesmod
 
 from polybori.PyPolyBoRi import *
 from polybori.ll import eliminate, ll_encode
@@ -454,11 +453,11 @@ def groebner_basis(I, faugere=False,
        deg_bound=False, lazy= True, ll= False,
        max_growth= 2.0, exchange= True,
        matrix_prefix= "matrix", red_tail= True,
-       implementation="Python", aes= False,
+       implementation="Python",
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
        linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
-       red_tail_deg_growth=True, modified_linear_algebra=True):
+       red_tail_deg_growth=True, modified_linear_algebra=True, preprocessor=None):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
     
     if full_prot:
@@ -491,14 +490,11 @@ def groebner_basis(I, faugere=False,
         implementation=symmGB_F2_python
     else:
         implementation=symmGB_F2_C
-    
-    if aes:
-        pt=time()
-        I=aesmod.preprocess(I, prot=prot)
-        pt2=time()
-        if prot:
-          print "preprocessing time", pt2-pt
 
+    # custom preprocessing
+    if preprocessor:
+        I = preprocessor(I)
+        
     if preprocess_only:
       for p in I:
         print p
