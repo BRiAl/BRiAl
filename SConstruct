@@ -366,10 +366,13 @@ def config_h_build(target, source, env):
         config_h.write(config_h_in % conf_repl)
         config_h.close()
 
+def config_h_message(*args):
+    return "writing config.h..."
+
 config_h = env.Command(PBPath('include/polybori/config.h'),
                        'SConstruct',
                        action = env.Action(config_h_build, 
-                                           "writing config.h..."))
+                                           config_h_message))
 env.AlwaysBuild(config_h)
 
 class PythonConfig(object):
