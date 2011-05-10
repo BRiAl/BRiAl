@@ -14,8 +14,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_CFactoryBase_h_
-#define polybori_CFactoryBase_h_
+#ifndef polybori_factories_CFactoryBase_h_
+#define polybori_factories_CFactoryBase_h_
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
@@ -58,4 +58,4 @@ private:
 
 END_NAMESPACE_PBORI
 
-#endif /* polybori_CFactoryBase_h_ */
+#endif /* polybori_factories_CFactoryBase_h_ */

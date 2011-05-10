@@ -14,8 +14,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_PolynomialFactory_h_
-#define polybori_PolynomialFactory_h_
+#ifndef polybori_factories_PolynomialFactory_h_
+#define polybori_factories_PolynomialFactory_h_
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
@@ -113,4 +113,4 @@ public:
 
 END_NAMESPACE_PBORI
 
-#endif /* polybori_PolynomialFactory_h_ */
+#endif /* polybori_factories_PolynomialFactory_h_ */

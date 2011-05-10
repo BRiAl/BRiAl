@@ -14,8 +14,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_VariableFactory_h_
-#define polybori_VariableFactory_h_
+#ifndef polybori_factories_VariableFactory_h_
+#define polybori_factories_VariableFactory_h_
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
@@ -77,4 +77,4 @@ public:
 
 END_NAMESPACE_PBORI
 
-#endif /* polybori_VariableFactory_h_ */
+#endif /* polybori_factories_VariableFactory_h_ */

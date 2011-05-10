@@ -2,7 +2,7 @@
 
 #include <boost/python.hpp>
 #include <polybori.h>
-#include <polybori/VariableBlock.h>
+#include <polybori/factories/VariableBlock.h>
 #include <polybori/factories/VariableFactory.h>
 
 #include "variable_block.h"
