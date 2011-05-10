@@ -166,7 +166,7 @@ with inverted variable order\n\
     .def("__str__", streamable_as_str<BooleConstant>)
     .def("__repr__", streamable_as_str<BooleConstant>);
   ;
-  boost::python::class_<BooleVariable>("BooleVariable", "Boolean Variable", init<const BoolePolyRing&>())
+  boost::python::class_<BooleVariable>("Variable", "Boolean Variable", init<const BoolePolyRing&>())
   .def(init<const BooleVariable &>())
   .def(init<const BoolePolyRing&>("Get first Variable in a given ring"))
   .def(init<BooleVariable::idx_type, 

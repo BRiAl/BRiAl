@@ -1,4 +1,10 @@
-from polybori.PyPolyBoRi import *
+if __name__=='__main__':
+    from sys import path as search_path
+    from os import path as file_path
+    search_path.append(file_path.join(file_path.dirname(__file__), '..'))
+    
+from polybori.PyPolyBoRi import Monomial, Polynomial, BooleSet
+from polybori.PyPolyBoRi import Variable as VariableType
 
 class IntegerPolynomial(object):
     """Polynomial with positive integer coefficients"""
@@ -17,14 +23,16 @@ class IntegerPolynomial(object):
                 if and_:
                     res.append(i)
             return (self, IntegerPolynomial(dict([(i, Polynomial(1)) for i in res])))
-        if isinstance(other, BooleVariable) or isinstance(other, Monomial):
+        if isinstance(other,  VariableType) or isinstance(other, Monomial):
             other=Polynomial(other)
         if isinstance(other, Polynomial):
             return (self, IntegerPolynomial(dict([(0, other)])))
         return None
     def __add__(self, other):
         """
-        >>> declare_ring([Block["x",1000)])
+        >>> from polybori import *
+        >>> declare_ring([Block("x",1000)], globals()) # doctest: +ELLIPSIS
+        <...>
         >>> p=IntegerPolynomial(x(1))
         >>> p
         {0: x(1)}

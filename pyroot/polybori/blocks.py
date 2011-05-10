@@ -2,7 +2,8 @@ import sys
 if __name__=='__main__':
     import pathadjuster
 
-from polybori.PyPolyBoRi import *
+from polybori.PyPolyBoRi import Ring, VariableBlock, Polynomial
+from polybori.PyPolyBoRi import VariableFactory, set_variable_name
 from itertools import chain,islice
 #class BlockEndException(object):
   #pass
@@ -44,7 +45,7 @@ class Block(object):
       #def var_func(i):
       #  return Variable(self.index2pos[i]+start)
       
-      var_func=VariableBlock(self.size,self.start_index,start,self.reverse)
+      var_func=VariableBlock(self.size,self.start_index,start,self.reverse, context["r"])
       var_func.__name__=self.var_name
       context[self.var_name]=var_func
 
@@ -79,8 +80,8 @@ class AlternatingBlock(object):
           def __init__(self, ring):
               self.ring = ring
           def __call__(idx):
-              return BooleVariable(self.index2pos[i]*len(self.var_names) +
-                                   var_pos+start, self.ring)
+              return self.ring.variable(self.index2pos[i]*len(self.var_names) +
+                                        var_pos+start)
               
       return var_factory(context["r"])
 
@@ -324,7 +325,7 @@ def declare_ring(blocks,context=None):
   and the variable blocks x and y in the context dictionary globals(), which consists of the global variables of the python module
   """
   if context is None:
-    context = modules['__main__'].__dict__
+      context = sys.modules['__main__'].__dict__
   blocks=list(blocks)
   n=0
   for b in blocks:
@@ -334,7 +335,7 @@ def declare_ring(blocks,context=None):
           n=n+len(b)
   #n=sum([len(b) for b in blocks])
   r=Ring(n)
-  context["Variable"] = ring_variable_block(r)
+  context["Variable"] = VariableFactory(r)
   context["r"]=r
   declare_block_scheme(blocks,context)
   return r
@@ -346,7 +347,7 @@ def declare_block_scheme(blocks,context):
       if start!=0:
           block_starts.append(start)
       if isinstance(b,str):
-        context[b]=BooleVariable(start, context["r"])
+        context[b] = context["Variable"](start)
         set_variable_name(start,b)
         start=start+1
       else:
@@ -365,7 +366,7 @@ def main():
   ablock=AlternatingBlock(["a","b","c"],100)
   declare_block_scheme([ablock],globals())
   for i in range(10):
-     print BooleVariable(i, r)
+     print r.variable(i)
      
   print list(ablock)
   declare_block_scheme([

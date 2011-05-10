@@ -15,7 +15,7 @@
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
-#include <polybori/BooleVariable.h>
+#include <polybori/factories/VariableFactory.h>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -29,51 +29,50 @@ class VariableIndexException{
  * We break down the two-argumented class @c BooleVariables(idx, ring) to a one argumented
  * call over a functional object @c var(idx) which knows about the ring ("currying").
  **/
-template <bool reverse>
-class VariableBlock {
+class VariableBlock:
+  protected VariableFactory{
+
   /// Type of *this
   typedef VariableBlock self;
 
 public:
-  typedef BooleVariable var_type;
-  typedef typename var_type::ring_type ring_type;
-  typedef typename var_type::idx_type idx_type;
+  typedef VariableFactory base;
+  typedef base::value_type var_type;
 
-  /// Construct first Variable of given ring
-  VariableBlock(const ring_type& ring):
-    m_size(ring.nVariables()), m_start_index(0), m_offset(0), m_ring(ring) { }
+  typedef var_type::ring_type ring_type;
+  typedef var_type::idx_type idx_type;
 
   /// Construct block
   VariableBlock(idx_type size, idx_type start_index, idx_type offset,
-                const ring_type& ring): 
-    m_size(size), m_start_index(start_index), m_offset(offset),
-    m_ring(ring) { }
+                bool reverse, const ring_type& ring):
+    base(ring), 
+    m_start_index(start_index), m_offset(offset),
+    m_last (start_index + size - 1), m_reverse(reverse) { }
 
   /// Copy constructor
   VariableBlock(const self& rhs):
-    m_size(rhs.m_size),
-    m_start_index(rhs.m_start_index), m_offset(rhs.m_offset),
-    m_ring(rhs.m_ring) { }
+    base(rhs),
+    m_start_index(rhs.m_start_index),
+    m_offset(rhs.m_offset),
+    m_last(rhs.m_last), m_reverse(rhs.m_reverse) { } 
 
   /// Destructor
   ~VariableBlock() {}
 
   /// We may easily
   var_type operator()(idx_type i){
-    if UNLIKELY((i>=m_start_index+m_size)||(i<m_start_index)){
+    if UNLIKELY( (i > m_last) || (i < m_start_index) ){
       throw VariableIndexException();
     }
     return
-      var_type((reverse?m_offset+m_start_index+m_size-1-i:i-m_start_index+m_offset),
-               m_ring);
+      base::operator()(m_offset + (m_reverse? m_last - i: i - m_start_index));
   }
 
 protected:
-  idx_type m_size;
-  idx_type m_start_index;
-  idx_type m_offset;
-
-  const ring_type& m_ring;
+  const idx_type m_start_index;
+  const idx_type m_last;
+  const idx_type m_offset;
+  const bool m_reverse;
 };
 
 END_NAMESPACE_PBORI

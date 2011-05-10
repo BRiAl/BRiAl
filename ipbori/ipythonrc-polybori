@@ -26,7 +26,7 @@ execute pbdir = '..'
 execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
 
 execute ipbdir = os_path.join(pbdir, 'ipbori')
-execute if 'IPBDIR' in env.keys(): pbdir = env['IPBDIR']
+execute if 'IPBDIR' in env.keys(): ipbdir = env['IPBDIR']
 
                               
 # Get program name and prompt something
@@ -43,56 +43,25 @@ execute print 'for more information.\n'
 include ipythonrc
 
 # Append the PolyBoRi application directory to current search path
-execute from sys import path
+execute from sys import path as search_path
 
 # The following string may be changed by install. If not installed, use default.
 execute relpyroot = '$RELATIVEPYPREFIX'
 execute if relpyroot[0] == '$': relpyroot = '../pyroot'
 execute pyroot = os_path.join(ipbdir, relpyroot)
-execute path.insert(0, pyroot)
+execute search_path.insert(0, pyroot)
 
-# Get all basic stuff from PyPolyBoRi
-execute from polybori.PyPolyBoRi import *
-execute r = Ring(10000)
-execute x = Variable = ring_variable_block(r)
-
-# Get all-inclusive groebner routine
-execute from polybori.gbcore import groebner_basis
-
-# Import some high-level modelling functionality
+# Import basic functionality
 execute from polybori import *
 
-execute pb_copy =  "Copyright (c) 2007-2010 by The PolyBoRi Team.\n"
-execute pb_copy +=  "  Michael Brickenstein (MFO)  brickenstein@mfo.de\n"
-execute pb_copy +=  "  Alexander Dreyer (ITWM)     "
-execute pb_copy +=  "alexander.dreyer@itwm.fraunhofer.de\n\n"
-
-execute pb_copy += "The PolyBoRi Team is a joint project of\n"
-execute pb_copy += "Mathematisches Forschungsinstitut Oberwolfach (MFO), "
-execute pb_copy += "Germany\n"
-execute pb_copy += "Department of Mathematics, University of Kaiserslautern, "
-execute pb_copy += "Germany, and\n"
-execute pb_copy += "Fraunhofer Institute for Industrial Mathematics (ITWM), "
-execute pb_copy += "Kaiserslautern, Germany."
-
-execute pb_lic  = "ipbori and the PolyBoRi framework are licensed under the "
-execute pb_lic += "terms\nof the GNU General Public License (GPL) version 3 "
-execute pb_lic += "or later. \n"
-execute pb_lic += "See http://www.gnu.org/licenses/ for details."
-
-execute pb_copy += "\n\nPolyBoRi incorporates the following works:\n"
-execute pb_copy += "The CU Decision Diagrams Package "
-execute pb_copy += "Release 2.4.1 (CUDD)\nby Fabio Somenzi, Copyright (c) "
-execute pb_copy += "1995-2004,\nRegents of the University of Colorado. "
-execute pb_copy += "All Rights Reserved.\n\n"
-execute pb_copy += "The Method of the Four Russians Inversion (M4RI)\n"
-execute pb_copy += "Copyright (C) 2007 Gregory Bard <gregory.bard@ieee.org>"
-
-execute def polybori_copyright(): print pb_copy 
-execute def polybori_license(): print pb_lic
-
 # Get special stuff for this user interface
-execute from polybori.frontend import *
+execute from polybori.frontend import ternary_declare_ring as _decring
+execute from polybori.frontend import copyright as polybori_copyright
+execute from polybori.frontend import license as polybori_license
 
 # Simplify ring declaration
-execute def declare_ring(arg1, arg2 = None): return ternary_declare_ring(arg1, arg2, globals())
+execute def declare_ring(arg1, arg2=None): return _decring(arg1,arg2,globals())
+
+# Here come the defaults
+execute r = Ring(10000)
+execute x = Variable = ring_variable_block(r)

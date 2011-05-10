@@ -37,7 +37,7 @@ class GeneralBooleanPolynomial:
 		"""
 		#print "type of polynomials", type(polynomial)
 		#print "polynomials is int?", isinstance(polynomial, int)
-		assert isinstance(polynomial, Polynomial) or isinstance(polynomial, Monomial) or isinstance(polynomial, BooleVariable) or isinstance(polynomial, int)
+		assert isinstance(polynomial, Polynomial) or isinstance(polynomial, Monomial) or isinstance(polynomial, PyPolyBoRi.Variable) or isinstance(polynomial, int)
 		self.polys=[]
 		self.k = k
 		if isinstance(polynomial, int):
@@ -91,7 +91,7 @@ class GeneralBooleanPolynomial:
 		terms = set([])
 		for i in xrange(self.k):
 			if not isinstance(self.polys[i], Polynomial):
-				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i], BooleVariable) 
+				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i],  PyPolyBoRi.Variable) 
 				self[i] = Polynomial(self[i])
 			terms = terms.union( set( self[i].terms() ) )
 		# Sort the terms
@@ -276,7 +276,7 @@ class GeneralBooleanPolynomial:
 		terms = set([])
 		for i in xrange(self.k):
 			if not isinstance(self.polys[i], Polynomial):
-				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i], BooleVariable) 
+				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i],  PyPolyBoRi.Variable) 
 				self[i] = Polynomial(self[i])
 			terms = terms.union( set( self[i].terms() ) )
 		if len(terms)>1:

@@ -1,4 +1,4 @@
-from polybori import Polynomial,BooleVariable
+from polybori import Polynomial
 def get_splitting(f,variables):
     ring = s.ring()
     s=f.set()
@@ -7,7 +7,7 @@ def get_splitting(f,variables):
         s0=Polynomial(s.subset0(var_index))
         f1=s0+s1
         f0=s0
-        var = BooleVariable(var_index, ring)
+        var = ring.variable(var_index)
         if f1.constant():
             return dict(b=f1,a=Polynomial(1, ring),x=var,g=f0)
         if f0.constant():

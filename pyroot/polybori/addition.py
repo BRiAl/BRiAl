@@ -100,7 +100,7 @@ def multiply_by_addition(word_a, word_b):
     """Multiply two words
     >>> from polybori import Ring
     >>> r=Ring(1000)
-    >>> x = Variable = ring_variable_block(r)
+    >>> x = Variable = VariableFactory(r)
     >>> n=9
     >>> res=multiply_by_addition([x(200+2*i)  for i in xrange(n)], [x(200+2*i+1)  for i in xrange(n)])
     >>> [p.n_nodes() for p in res]

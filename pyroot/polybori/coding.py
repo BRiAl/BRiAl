@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import *
+from polybori.PyPolyBoRi import Polynomial
 from polybori.nf import symmGB_F2_C
 from polybori.ll import ll_encode
 from itertools import ifilter

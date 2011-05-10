@@ -82,7 +82,7 @@ def monomial_python_div(self, arg):
 
 Monomial.__div__ = monomial_python_div
 
-variable_cplusplus_div = BooleVariable.__div__
+variable_cplusplus_div = Variable.__div__
 
 def variable_python_div(self, arg):
     try:
@@ -90,7 +90,8 @@ def variable_python_div(self, arg):
     except ValueError:
         return Polynomial(0, self.ring())
 
-BooleVariable.__div__ = variable_python_div
+Variable.__div__ = variable_python_div
+
 _gauss_on_polys=gauss_on_polys
 def gauss_on_polys(l):
     vec=BoolePolynomialVector(l)

@@ -260,7 +260,7 @@ def ll_constants_pre(I):
 def variety_size_from_gb(I):
     """
     >>> r=Ring(100)
-    >>> x = Variable = ring_variable_block(r)
+    >>> x = Variable = VariableFactory(r)
     >>> variety_size_from_gb([])
     1
     >>> variety_size_from_gb([0])

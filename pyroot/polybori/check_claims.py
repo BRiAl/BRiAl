@@ -10,7 +10,7 @@ import sys
 from optparse import OptionParser
 #if __name__ == "__main__":
 #    import pathadjuster
-from polybori.PyPolyBoRi import *
+from polybori.PyPolyBoRi import Polynomial, Monomial
 from polybori.gbrefs import my_import, load_data, clean_data,load_file
 from polybori.blocks import IfThen
 from copy import copy

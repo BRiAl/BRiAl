@@ -6,7 +6,6 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import BooleVariable
 from polybori.gbcore import groebner_basis
 from polybori.statistics import used_vars_set
 from itertools import chain
@@ -25,7 +24,7 @@ def intersect(i,j,**gb_opts):
         return []
     
     uv=used_vars_set(i)*used_vars_set(j)
-    t = BooleVariable(0, i.ring())
+    t = i.ring().variable(0)
     if uv.reducible_by(t):
         raise ValueError, "First ring variable has to be reserved as helper variable t"
     if not t>uv:
