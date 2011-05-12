@@ -133,6 +133,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables")
     .def("__hash__", &BoolePolyRing::hash)
     .def("var", ring_var, "i-th ring Variable")
+    .def("variable", &BoolePolyRing::variable, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
     .def("set",&BooleEnv::set, "Activate current Ring")
