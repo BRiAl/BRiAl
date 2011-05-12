@@ -10,7 +10,7 @@
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
 extern "C" {
-#include <m4ri/packedmatrix.h>
+#include <m4ri/m4ri.h>
 }
 
 using namespace std;
