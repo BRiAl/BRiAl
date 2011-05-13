@@ -13,11 +13,10 @@
 **/
 //*****************************************************************************
 
-#include "COrderingFacade.h"
-
 #ifndef polybori_orderings_CBlockOrderingFacade_h_
 #define polybori_orderings_CBlockOrderingFacade_h_
 
+#include "COrderingFacade.h"
 
 BEGIN_NAMESPACE_PBORI
 

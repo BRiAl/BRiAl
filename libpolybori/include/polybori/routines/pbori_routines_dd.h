@@ -13,17 +13,17 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_routines_dd_h_
+#define polybori_routines_pbori_routines_dd_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get addition definitions
 #include <polybori/iterators/CTermIter.h>
 #include <polybori/iterators/PBoRiOutIter.h>
 #include <set>
 #include <vector>
-
-#ifndef polybori_routines_pbori_routines_dd_h_
-#define polybori_routines_pbori_routines_dd_h_
 
 BEGIN_NAMESPACE_PBORI
 

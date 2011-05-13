@@ -13,8 +13,11 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_cache_CCacheManagement_h_
+#define polybori_cache_CCacheManagement_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get DD navigation
 #include <polybori/iterators/CCuddNavigator.h>
@@ -24,12 +27,7 @@
 // get standard functionality
 #include <functional>
 
-#ifndef polybori_cache_CCacheManagement_h_
-#define polybori_cache_CCacheManagement_h_
-
 BEGIN_NAMESPACE_PBORI
-
-
 
 class CCacheTypes {
 

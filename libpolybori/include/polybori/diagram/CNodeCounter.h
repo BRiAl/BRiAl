@@ -14,8 +14,11 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_diagram_CNodeCounter_h_
+#define polybori_diagram_CNodeCounter_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -47,4 +50,7 @@ public:
 private:
   std::set<navigator> m_visited;
 };
+
 END_NAMESPACE_PBORI
+
+#endif /* polybori_diagram_CNodeCounter_h_ */

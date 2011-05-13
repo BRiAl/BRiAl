@@ -12,6 +12,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CTermIter_h_
+#define polybori_iterators_CTermIter_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
@@ -26,8 +29,7 @@
 #include <boost/iterator/iterator_facade.hpp>
 
 #include <polybori/BooleEnv.h>
-#ifndef polybori_iterators_CTermIter_h_
-#define polybori_iterators_CTermIter_h_
+
 
 BEGIN_NAMESPACE_PBORI
 

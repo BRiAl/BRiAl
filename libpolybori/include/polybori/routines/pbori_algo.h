@@ -16,6 +16,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_algo_h_
+#define polybori_routines_pbori_algo_h_
+
 // include polybori's definitions
 #include <polybori/pbori_defs.h>
 
@@ -27,9 +30,6 @@
 #include <cudd/cudd.h>
 #include <cudd/cuddInt.h>
 #include <polybori/ring/CCuddInterface.h>
-
-#ifndef polybori_routines_pbori_algo_h_
-#define polybori_routines_pbori_algo_h_
 
 BEGIN_NAMESPACE_PBORI
 

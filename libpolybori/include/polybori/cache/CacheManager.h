@@ -13,16 +13,16 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_cache_CacheManager_h_
+#define polybori_cache_CacheManager_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get internal cache management classes
 #include "CCacheManagement.h"
 
-#include "polybori/BoolePolyRing.h"
-
-#ifndef polybori_cache_CacheManager_h_
-#define polybori_cache_CacheManager_h_
+#include <polybori/BoolePolyRing.h>
 
 BEGIN_NAMESPACE_PBORI
 

@@ -13,11 +13,11 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include <polybori/pbori_defs.h>
-
 #ifndef polybori_diagram_CCuddDDFacade_h
 #define polybori_diagram_CCuddDDFacade_h
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
 
 #include <cudd/cuddInt.h>
 #include "CApplyNodeFacade.h"

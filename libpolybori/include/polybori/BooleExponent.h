@@ -17,11 +17,11 @@
 #define polybori_BooleExponent_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get definition of BoolePolynomial, BooleMonomial, and BooleVariable
-#include "polybori/BooleMonomial.h"
-#include "polybori/BooleVariable.h"
+#include <polybori/BooleMonomial.h>
+#include <polybori/BooleVariable.h>
 
 BEGIN_NAMESPACE_PBORI
 

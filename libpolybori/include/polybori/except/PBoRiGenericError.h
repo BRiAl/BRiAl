@@ -13,15 +13,14 @@
 **/
 //*****************************************************************************
 
-// load PolyBoRi settings
-#include "polybori/pbori_defs.h"
-
-// Get runtime-definable error type
-#include "PBoRiError.h"
-
 #ifndef polybori_error_PBoRiGenericError_h_
 #define polybori_error_PBoRiGenericError_h_
 
+// load PolyBoRi settings
+#include <polybori/pbori_defs.h>
+
+// Get runtime-definable error type
+#include "PBoRiError.h"
 
 BEGIN_NAMESPACE_PBORI
 

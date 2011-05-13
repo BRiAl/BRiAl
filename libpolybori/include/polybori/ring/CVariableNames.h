@@ -12,8 +12,11 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_ring_CVariableNames_h_
+#define polybori_ring_CVariableNames_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get standard vector functionality
 #include <vector>
@@ -21,10 +24,6 @@
 // get standard string functionalities
 #include <string>
 #include <sstream>
-
-
-#ifndef polybori_ring_CVariableNames_h_
-#define polybori_ring_CVariableNames_h_
 
 BEGIN_NAMESPACE_PBORI
 

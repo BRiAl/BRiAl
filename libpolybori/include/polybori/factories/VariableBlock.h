@@ -13,12 +13,12 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_factories_VariableBlock_h_
+#define polybori_factories_VariableBlock_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 #include <polybori/factories/VariableFactory.h>
-
-#ifndef polybori_factories_VariableBlock_h_
-#define polybori_factories_VariableBlock_h_
 
 BEGIN_NAMESPACE_PBORI
 

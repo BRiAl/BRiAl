@@ -14,15 +14,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_orderings_COrderingTags_h_
+#define polybori_orderings_COrderingTags_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
 // include basic definitions for tags
 #include <polybori/common/tags.h>
 #include "order_tags.h"
-
-#ifndef polybori_orderings_COrderingTags_h_
-#define polybori_orderings_COrderingTags_h_
 
 BEGIN_NAMESPACE_PBORI
 

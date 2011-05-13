@@ -19,12 +19,12 @@
 #define polybori_BooleVariable_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get BoolePolynomial's definition
-#include "polybori/BooleEnv.h"
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BooleSet.h"
+#include <polybori/BooleEnv.h>
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleSet.h>
 
 BEGIN_NAMESPACE_PBORI
 

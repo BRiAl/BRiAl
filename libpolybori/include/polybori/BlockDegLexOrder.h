@@ -12,15 +12,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_BlockDegLexOrder_h_
+#define polybori_BlockDegLexOrder_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include base order definitions
 #include <polybori/orderings/CBlockOrderingFacade.h>
 #include <polybori/orderings/COrderingTags.h>
-
-#ifndef polybori_BlockDegLexOrder_h_
-#define polybori_BlockDegLexOrder_h_
 
 BEGIN_NAMESPACE_PBORI
 

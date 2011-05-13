@@ -24,14 +24,14 @@
 #include <numeric>
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include PolyBoRi algorithm, which do not depend on PolyBoRi classes
 #include "pbori_algo.h"
 
 // include PolyBoRi class definitions, which are used here
-#include "polybori/BoolePolynomial.h"
-#include "polybori/BooleMonomial.h"
+#include <polybori/BoolePolynomial.h>
+#include <polybori/BooleMonomial.h>
 #include <polybori/iterators/CGenericIter.h>
 
 

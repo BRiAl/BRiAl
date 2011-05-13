@@ -15,13 +15,12 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-
-#include <algorithm>            // std::swap
-
 #ifndef polybori_common_CExtrusivePtr_h_
 #define polybori_common_CExtrusivePtr_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
+#include <algorithm>            // std::swap
 
 BEGIN_NAMESPACE_PBORI
 

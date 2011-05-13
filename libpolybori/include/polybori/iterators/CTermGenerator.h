@@ -14,16 +14,18 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CTermGenerator_h_
+#define polybori_iterators_CTermGenerator_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
 
-  //#include "polybori/BooleSet.h"
+  //#include <polybori/BooleSet.h>
 
-#ifndef polybori_iterators_CTermGenerator_h_
-#define polybori_iterators_CTermGenerator_h_
+
 
 BEGIN_NAMESPACE_PBORI
 

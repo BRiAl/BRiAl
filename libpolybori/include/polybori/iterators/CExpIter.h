@@ -13,15 +13,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CExpIter_h_
+#define polybori_iterators_CExpIter_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get stuff for term iteration
 #include "CTermStack.h"
 #include "CTermIter.h"
-
-#ifndef polybori_iterators_CExpIter_h_
-#define polybori_iterators_CExpIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

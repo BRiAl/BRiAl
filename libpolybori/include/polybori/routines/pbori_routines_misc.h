@@ -16,7 +16,7 @@
 #define polybori_routines_pbori_routines_misc_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // temprarily
 #include <polybori/cache/CacheManager.h>

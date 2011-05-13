@@ -12,6 +12,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_diagram_CDDOperations_h_
+#define polybori_diagram_CDDOperations_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
@@ -20,11 +23,7 @@
 
 #include <polybori/routines/pbori_routines.h>
 #include <polybori/cache/CCacheManagement.h>
-
 #include <polybori/BoolePolyRing.h>
-
-#ifndef polybori_diagram_CDDOperations_h_
-#define polybori_diagram_CDDOperations_h_
 
 BEGIN_NAMESPACE_PBORI
 

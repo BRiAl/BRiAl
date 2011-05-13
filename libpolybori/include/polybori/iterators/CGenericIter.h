@@ -12,19 +12,17 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CGenericIter_h_
+#define polybori_iterators_CGenericIter_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include <polybori/routines/pbori_algo.h>
 
 // get stuff for term iteration
 #include "CStackSelector.h"
 #include "CTermIter.h"
 #include "CTermGenerator.h"
-
-
-#ifndef polybori_iterators_CGenericIter_h_
-#define polybori_iterators_CGenericIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

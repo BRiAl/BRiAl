@@ -13,15 +13,14 @@
 **/
 //*****************************************************************************
 
-
-// load PolyBoRi settings
-# include "polybori/pbori_defs.h"
-
-#include "polybori/BoolePolyRing.h"
-#include <vector>
-
 #ifndef polybori_BooleEnv_h_
 #define polybori_BooleEnv_h_
+
+// load PolyBoRi settings
+# include <polybori/pbori_defs.h>
+
+#include <polybori/BoolePolyRing.h>
+#include <vector>
 
 // Obey stricter dependence of Sun Studio compiler
 // todo: resolve dependency 

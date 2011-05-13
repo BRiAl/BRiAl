@@ -13,6 +13,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_orderings_COrderingBase_h_
+#define polybori_orderings_COrderingBase_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
@@ -25,10 +28,8 @@
 
 #include <vector>
 
-#ifndef polybori_orderings_COrderingBase_h_
-#define polybori_orderings_COrderingBase_h_
-
 BEGIN_NAMESPACE_PBORI
+
 class BoolePolynomial;
 class BooleMonomial;
 class BooleExponent;

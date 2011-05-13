@@ -13,6 +13,8 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_ring_CCuddInterface_h_
+#define polybori_ring_CCuddInterface_h_
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
@@ -37,10 +39,7 @@
 #include <stdexcept>
 #include <algorithm>
 
-#ifndef polybori_ring_CCuddInterface_h_
-#define polybori_ring_CCuddInterface_h_
-
-  // get cudd error texts
+// get cudd error texts
 inline const char* error_text(DdManager* mgr) {
     switch (Cudd_ReadErrorCode(mgr)) {
     CUDD_MEMORY_OUT:

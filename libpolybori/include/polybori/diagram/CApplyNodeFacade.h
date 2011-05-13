@@ -18,7 +18,7 @@
 #define polybori_diagram_CApplyNodeFacade_h
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include <stdexcept>
 
 

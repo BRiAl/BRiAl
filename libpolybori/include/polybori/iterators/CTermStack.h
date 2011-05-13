@@ -13,6 +13,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CTermStack_h_
+#define polybori_iterators_CTermStack_h_
+
 // get standard header
 #include <stack>
 #include <iterator>
@@ -38,9 +41,6 @@
 #include "CBidirectTermIter.h"
   
 #include <polybori/BooleSet.h>
-
-#ifndef polybori_iterators_CTermStack_h_
-#define polybori_iterators_CTermStack_h_
 
 BEGIN_NAMESPACE_PBORI
 

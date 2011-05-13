@@ -13,6 +13,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_orderings_COrderingFacade_h_
+#define polybori_orderings_COrderingFacade_h_
+
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
@@ -28,10 +31,6 @@
 #include "order_traits.h"
 // include polybori functionals
 #include <polybori/routines/pbori_func.h>
-
-#ifndef polybori_orderings_COrderingFacade_h_
-#define polybori_orderings_COrderingFacade_h_
-
 
 BEGIN_NAMESPACE_PBORI
 

@@ -14,12 +14,12 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-#include "CMemberFunctionTraits.h"
-
 #ifndef polybori_ring_CCallback_Wrapper_h_
 #define polybori_ring_CCallback_Wrapper_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
+#include "CMemberFunctionTraits.h"
 
 BEGIN_NAMESPACE_PBORI
 

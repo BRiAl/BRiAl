@@ -12,19 +12,18 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CBidirectTermIter_h_
+#define polybori_iterators_CBidirectTermIter_h_
+
 // get standard header
 #include <stack>
 #include <utility>
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // Get forward term iterator
 #include "CTermIter.h"
-
-
-#ifndef polybori_iterators_CBidirectTermIter_h_
-#define polybori_iterators_CBidirectTermIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

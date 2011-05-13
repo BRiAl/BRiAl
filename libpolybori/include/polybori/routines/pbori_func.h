@@ -12,6 +12,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_func_h_
+#define polybori_routines_pbori_func_h_
+
 // get polybori definitions
 #include <polybori/pbori_defs.h>
 
@@ -21,7 +24,6 @@
 // get standard string and string stream functionality
 #include <string>
 #include <sstream>
-
 
 
 #ifdef HAVE_TR1_UNORDERED_MAP
@@ -37,9 +39,6 @@
 #    endif
 #  endif
 #endif
-
-#ifndef polybori_routines_pbori_func_h_
-#define polybori_routines_pbori_func_h_
 
 BEGIN_NAMESPACE_PBORI
 

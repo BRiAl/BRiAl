@@ -14,12 +14,13 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-#include <map>
-
 #ifndef polybori_routines_pbori_routines_cuddext_h_
 #define polybori_routines_pbori_routines_cuddext_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
+#include <map>
+
 
 BEGIN_NAMESPACE_PBORI
 

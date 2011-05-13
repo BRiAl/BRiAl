@@ -14,6 +14,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_BoolePolyRing_h_
+#define polybori_BoolePolyRing_h_
+
 // load PolyBoRi settings
 # include <polybori/pbori_defs.h>
 
@@ -24,10 +27,6 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <list>
-
-#ifndef polybori_BoolePolyRing_h_
-#define polybori_BoolePolyRing_h_
-
 
 BEGIN_NAMESPACE_PBORI
 
@@ -199,7 +198,7 @@ operator<<(BoolePolyRing::ostream_type& os, const BoolePolyRing& ring) {
 
 END_NAMESPACE_PBORI
 
-#include "polybori/BooleSet.h"
+#include <polybori/BooleSet.h>
 
 BEGIN_NAMESPACE_PBORI
 

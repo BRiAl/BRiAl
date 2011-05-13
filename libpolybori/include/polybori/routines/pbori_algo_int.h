@@ -13,14 +13,16 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_algo_int_h_
+#define polybori_routines_pbori_algo_int_h_
+
 // include polybori's definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // get polybori's functionals
 #include "pbori_func.h"
 #include <polybori/iterators/CCuddNavigator.h>
-#ifndef polybori_routines_pbori_algo_int_h_
-#define polybori_routines_pbori_algo_int_h_
+
 
 BEGIN_NAMESPACE_PBORI
 

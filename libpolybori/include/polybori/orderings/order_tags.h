@@ -12,11 +12,12 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-
 #ifndef polybori_orderings_order_tags_h_
 #define polybori_orderings_order_tags_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
+
 
 BEGIN_NAMESPACE_PBORI
 

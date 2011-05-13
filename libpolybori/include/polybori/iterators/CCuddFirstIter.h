@@ -15,14 +15,14 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CCuddFirstIter_h_
+#define polybori_iterators_CCuddFirstIter_h_
+
 // include basic definitions
 #include "CCuddNavigator.h"
 
 // include boost's interator facade
 #include <boost/iterator/iterator_facade.hpp>
-
-#ifndef polybori_iterators_CCuddFirstIter_h_
-#define polybori_iterators_CCuddFirstIter_h_
 
 BEGIN_NAMESPACE_PBORI
 

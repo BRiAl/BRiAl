@@ -12,14 +12,14 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_orderings_order_traits_h_
+#define polybori_orderings_order_traits_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include ordering tags
 #include "order_tags.h"
-
-#ifndef polybori_orderings_order_traits_h_
-#define polybori_orderings_order_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 

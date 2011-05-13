@@ -15,7 +15,7 @@
 #ifndef polybori_routines_pbori_routines_hash_h_
 #define polybori_routines_pbori_routines_hash_h_
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include <boost/functional/hash.hpp>
 
 

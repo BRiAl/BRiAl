@@ -15,11 +15,11 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "CCuddNavigator.h"
-
 #ifndef polybori_iterators_CCuddLastIter_h_
 #define polybori_iterators_CCuddLastIter_h_
+
+// include basic definitions
+#include "CCuddNavigator.h"
 
 BEGIN_NAMESPACE_PBORI
 

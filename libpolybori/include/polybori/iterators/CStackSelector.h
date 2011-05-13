@@ -13,8 +13,11 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CStackSelector_h_
+#define polybori_iterators_CStackSelector_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include polybori's functionals
 #include <polybori/routines/pbori_func.h>
@@ -26,9 +29,6 @@
 #include <iterator>
 
 #include <polybori/orderings/COrderingTags.h>
-
-#ifndef polybori_iterators_CStackSelector_h_
-#define polybori_iterators_CStackSelector_h_
 
 BEGIN_NAMESPACE_PBORI
 /** @class CStackSelector

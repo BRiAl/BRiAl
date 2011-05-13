@@ -13,15 +13,14 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-
-#include "polybori/BooleEnv.h"
-
-#include "CCacheManagement.h"
-
 #ifndef polybori_cache_CDegreeCache_h_
 #define polybori_cache_CDegreeCache_h_ 
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
+#include <polybori/BooleEnv.h>
+
+#include "CCacheManagement.h"
 
 BEGIN_NAMESPACE_PBORI
 //class BoolePolyRing;
@@ -29,7 +28,6 @@ BEGIN_NAMESPACE_PBORI
  * @brief This class defines an uses an navigator-like type for storing integer
  * values from 0 upto nmax (number of currently active ring variables).
  **/
-
 
 template <class NaviType>
 class CIndexHandle {

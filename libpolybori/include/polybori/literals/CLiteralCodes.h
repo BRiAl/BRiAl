@@ -12,11 +12,11 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-
 #ifndef polybori_literals_CLiteralCodes_h_
 #define polybori_literals_CLiteralCodes_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
 
 BEGIN_NAMESPACE_PBORI
 

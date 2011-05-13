@@ -13,16 +13,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_routines_pbori_routines_h_
+#define polybori_routines_pbori_routines_h_
+
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 
 // include polybori algorithms and functionals
 #include "pbori_algo.h"
 #include "pbori_func.h"
-
-#ifndef polybori_routines_pbori_routines_h_
-#define polybori_routines_pbori_routines_h_
-
 
 // Get routines, which add features related to decision diagrams
 #include "pbori_routines_dd.h"

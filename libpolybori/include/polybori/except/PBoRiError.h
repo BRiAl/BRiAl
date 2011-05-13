@@ -13,13 +13,12 @@
 **/
 //*****************************************************************************
 
-// load PolyBoRi settings
-#include "polybori/pbori_defs.h"
-#include <exception>
-
 #ifndef polybori_error_PBoRiError_h_
 #define polybori_error_PBoRiError_h_
 
+// load PolyBoRi settings
+#include <polybori/pbori_defs.h>
+#include <exception>
 
 BEGIN_NAMESPACE_PBORI
 

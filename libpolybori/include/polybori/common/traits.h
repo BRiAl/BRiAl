@@ -13,6 +13,9 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_common_common_traits_h_
+#define polybori_common_common_traits_h_
+
 #include <set>
 #include <vector>
 
@@ -24,9 +27,6 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/facilities/expand.hpp>
 #include <boost/preprocessor/stringize.hpp>
-
-#ifndef polybori_common_common_traits_h_
-#define polybori_common_common_traits_h_
 
 BEGIN_NAMESPACE_PBORI
 

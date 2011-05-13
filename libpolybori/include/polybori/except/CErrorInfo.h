@@ -13,10 +13,10 @@
 **/
 //*****************************************************************************
 
-#include "polybori/pbori_defs.h"
-
 #ifndef polybori_error_CErrorInfo_h_
 #define polybori_error_CErrorInfo_h_
+
+#include <polybori/pbori_defs.h>
 
 BEGIN_NAMESPACE_PBORI
 

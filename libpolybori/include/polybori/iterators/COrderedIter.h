@@ -16,11 +16,11 @@
 #define polybori_iterators_COrderedIter_h_
 
 // include basic definitions
-#include "polybori/pbori_defs.h"
+#include <polybori/pbori_defs.h>
 #include <polybori/routines/pbori_algo.h>
 
  
-#include "polybori/BoolePolynomial.h"
+#include <polybori/BoolePolynomial.h>
 #include "CBidirectTermIter.h"
 #include <algorithm>
 

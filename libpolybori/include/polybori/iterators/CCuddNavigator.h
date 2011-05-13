@@ -15,16 +15,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_CCuddNavigator_h_
+#define polybori_iterators_CCuddNavigator_h_
+
 #include <iterator>
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
 #include <polybori/common/tags.h>
-
 #include <polybori/ring/CCuddInterface.h>
-
-#ifndef polybori_iterators_CCuddNavigator_h_
-#define polybori_iterators_CCuddNavigator_h_
 
 BEGIN_NAMESPACE_PBORI
 

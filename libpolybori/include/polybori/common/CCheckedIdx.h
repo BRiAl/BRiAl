@@ -13,11 +13,11 @@
 **/
 //*****************************************************************************
 
-// include basic definitions
-#include "polybori/pbori_defs.h"
-
 #ifndef polybori_common_CCheckedIdx_h_
 #define polybori_common_CCheckedIdx_h_
+
+// include basic definitions
+#include <polybori/pbori_defs.h>
 
 BEGIN_NAMESPACE_PBORI
 

@@ -16,15 +16,15 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_pbori_defs_h_
+#define polybori_pbori_defs_h_
+
 #include <cstddef>
 
 #include <iostream>
 #include <cudd/cudd.h>
 
 #include "config.h"
-
-#ifndef polybori_pbori_defs_h_
-#define polybori_pbori_defs_h_
 
 #ifndef PBORI_UNIQUE_SLOTS
 #  define PBORI_UNIQUE_SLOTS CUDD_UNIQUE_SLOTS // initial size of subtables
