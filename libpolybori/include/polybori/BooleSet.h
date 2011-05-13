@@ -13,9 +13,6 @@
 **/
 //*****************************************************************************
 
-// force ring definition before BooleSet definition
-#include "BoolePolyRing.h"
-
 #ifndef polybori_BooleSet_h_
 #define polybori_BooleSet_h_
 
@@ -27,6 +24,7 @@
 
 #include <polybori/diagram/CCuddDDFacade.h>
 
+#include "BoolePolyRing.h"
 
 BEGIN_NAMESPACE_PBORI
 
@@ -113,7 +111,8 @@ public:
     base(ring, navi.getNode()) { }
 
   /// Construct empty set in ring
-  BooleSet(const ring_type& ring);
+  BooleSet(const ring_type& ring): 
+    base(ring.zero()) { };
 
   /// Construct new node (using navigator for then and else-branches)
   BooleSet(idx_type idx, const self& rhs):

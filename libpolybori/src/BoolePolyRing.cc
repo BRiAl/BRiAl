@@ -33,7 +33,27 @@
 #include <climits> // LINE_MAX
 #include <cstdio> // just for tmpfile()
 
+#include <polybori/BooleSet.h>
+
 BEGIN_NAMESPACE_PBORI
+
+ /// Get empty decision diagram 
+BoolePolyRing::dd_type
+BoolePolyRing::zero() const { return dd_type(*this, p_core->m_mgr.zddZero()); }
+
+  /// Get decision diagram with all variables negated
+BoolePolyRing::dd_type
+BoolePolyRing::one() const { return dd_type(*this, p_core->m_mgr.zddOne()); }
+
+
+  /// Get constant one or zero
+BoolePolyRing::dd_type
+BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
+
+BoolePolyRing::dd_type 
+BoolePolyRing::variableDiagram(checked_idx_type nvar) const {
+  return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
+}
 
 
 /// Constructor for @em nvars variables
@@ -139,3 +159,4 @@ BoolePolyRing::print(ostream_type& os) const {
 
 
 END_NAMESPACE_PBORI
+

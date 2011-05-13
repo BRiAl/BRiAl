@@ -174,13 +174,13 @@ public:
   var_type variable(checked_idx_type nvar) const;
 
   /// Get empty decision diagram 
-  dd_type zero() const; // inlined below
+  dd_type zero() const; 
 
   /// Get decision diagram with all variables negated
-  dd_type one() const; // inlined below
+  dd_type one() const;
 
   /// Get constant one or zero
-  dd_type constant(bool is_one) const; // inlined below
+  dd_type constant(bool is_one) const;
 
 protected:
   /// Access to actual data (via ->)
@@ -198,26 +198,5 @@ operator<<(BoolePolyRing::ostream_type& os, const BoolePolyRing& ring) {
 
 END_NAMESPACE_PBORI
 
-#include <polybori/BooleSet.h>
-
-BEGIN_NAMESPACE_PBORI
-
- /// Get empty decision diagram 
-inline BoolePolyRing::dd_type BoolePolyRing::zero() const { return dd_type(*this, p_core->m_mgr.zddZero()); }
-
-  /// Get decision diagram with all variables negated
-  inline  BoolePolyRing::dd_type BoolePolyRing::one() const { return dd_type(*this, p_core->m_mgr.zddOne()); }
-
-
-  /// Get constant one or zero
-inline  BoolePolyRing::dd_type
-BoolePolyRing::constant(bool is_one) const { return (is_one? one(): zero()); }
-
-inline  BoolePolyRing::dd_type 
-BoolePolyRing::variableDiagram(checked_idx_type nvar) const {
-  return dd_type(*this, p_core->m_mgr.getVar(nvar)); 
-}
-
-END_NAMESPACE_PBORI
 
 #endif // of #ifndef polybori_BoolePolyRing_h_

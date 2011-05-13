@@ -52,13 +52,7 @@ BooleSet::BooleSet():
   PBORI_TRACE_FUNC( "BooleSet()" );
 
 }
-// Default constructor
-BooleSet::BooleSet(const ring_type& ring):
-  base( ring.zero() )  {
 
-  PBORI_TRACE_FUNC( "BooleSet(const ring_type&)" );
-
-}
 // Add given monomial to sets
 BooleSet
 BooleSet::add(const term_type& rhs) const {
