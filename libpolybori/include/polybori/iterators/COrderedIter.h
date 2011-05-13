@@ -12,6 +12,8 @@
 **/
 //*****************************************************************************
 
+#ifndef polybori_iterators_COrderedIter_h_
+#define polybori_iterators_COrderedIter_h_
 
 // include basic definitions
 #include "polybori/pbori_defs.h"
@@ -25,11 +27,8 @@
 #include "CStackSelector.h"
 #include "CTermGenerator.h"
 
-#ifndef polybori_iterators_COrderedIter_h_
-#define polybori_iterators_COrderedIter_h_
 
 BEGIN_NAMESPACE_PBORI
-
 
 template <class NavigatorType>
 class CAbstractStackBase {
