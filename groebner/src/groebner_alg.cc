@@ -1368,8 +1368,8 @@ static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, 
     }
     return p;
 }
-static int get_table_entry4(int p_code, int pos){
-  switch(BooleEnv::ordering().getBaseOrderCode()){
+static int get_table_entry4(const BoolePolyRing& ring, int p_code, int pos){
+  switch(ring.ordering().getBaseOrderCode()){
         #ifdef HAVE_LP4_DATA
         case COrderEnums::lp:
             return lp4var_data[p_code][pos];
@@ -1413,7 +1413,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     unsigned int p_code=p2code_4(p, ring_2_0123);
     int i;
-    if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
+    if ((get_table_entry4(this->r, p_code,0)==p_code) &&
+        (get_table_entry4(this->r, p_code,1)==0)){
         if (s>=0)
             mark_all_variable_pairs_as_calculated(*this, s);
         return std::vector<Polynomial>();
@@ -1422,8 +1423,8 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     //Exponent e_i_high=multiply_with_literal_factor(literal_factors,Polynomial(Monomial(e_i)).lead());
     bool can_add_directly=true;
     std::vector<Polynomial> impl;
-    for(i=0;get_table_entry4(p_code,i)!=0;i++){
-        unsigned int impl_code=get_table_entry4(p_code,i);
+    for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
+      unsigned int impl_code=get_table_entry4(this->r, p_code,i);
         if ((include_orig) ||(p_code!=impl_code)){
           Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
@@ -1475,7 +1476,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     
     unsigned int p_code=p2code_4(p, ring_2_0123);
 
-    if ((get_table_entry4(p_code,0)==p_code) && (get_table_entry4(p_code,1)==0)){
+    if ((get_table_entry4(this->r,p_code,0)==p_code) && (get_table_entry4(this->r,p_code,1)==0)){
         if(s>=0)
             mark_all_variable_pairs_as_calculated(*this, s);
 
@@ -1485,8 +1486,8 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     int i;
     bool can_add_directly=true;
     std::vector<Polynomial> impl;
-    for(i=0;get_table_entry4(p_code,i)!=0;i++){
-        unsigned int impl_code=get_table_entry4(p_code,i);
+    for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
+      unsigned int impl_code=get_table_entry4(this->r,p_code,i);
         if ((include_orig) ||(p_code!=impl_code)){
           Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
