@@ -367,8 +367,8 @@ MonomialSet contained_deg2_cudd_style(const MonomialSet& m){
     else return MonomialSet(cache_mgr.zero());
 }
 
-static bool have_ordering_for_tables(){  
-    const int order_code=BooleEnv::ordering().getOrderCode();
+static bool have_ordering_for_tables(const BoolePolyRing& ring){  
+  const int order_code=ring.ordering().getOrderCode();
     #ifdef HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
@@ -383,8 +383,8 @@ static bool have_ordering_for_tables(){
     #endif
     return false;
 }
-static bool have_base_ordering_for_tables(){  
-    const int order_code=BooleEnv::ordering().getBaseOrderCode();
+static bool have_base_ordering_for_tables(const BoolePolyRing& ring){  
+  const int order_code=ring.ordering().getBaseOrderCode();
     #ifdef HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
@@ -1666,7 +1666,9 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   std::vector<Polynomial> impl;
   PolyEntry& e=generators[s];
-  if ((have_ordering_for_tables())||((have_base_ordering_for_tables())&&(polynomial_in_one_block(generators[s].p)))){
+  if ((have_ordering_for_tables(this->r))||
+      ((have_base_ordering_for_tables(this->r))&&
+       (polynomial_in_one_block(generators[s].p)))) { 
     int uv=e.usedVariables.deg();
     if (uv<=4){
       impl=add4ImplDelayed(e.p,e.leadExp,e.usedVariables,s,false);
@@ -2370,7 +2372,9 @@ class ShorterEliminationLengthModified{
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
   std::vector<Polynomial> impl;
   int way=0;
-  if ((have_ordering_for_tables())||((have_base_ordering_for_tables()) && (polynomial_in_one_block(p)))){
+  if ((have_ordering_for_tables(this->r)) ||
+      ((have_base_ordering_for_tables(this->r)) &&
+       (polynomial_in_one_block(p)))) { 
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
