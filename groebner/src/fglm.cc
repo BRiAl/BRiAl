@@ -101,8 +101,7 @@ static void mult_by_combining_rows(mzd_t* dest, mzd_t* A, packedmatrix* B, packe
 
 
 void FGLMStrategy::setupStandardMonomialsFromTables(){
-     ring_with_ordering_type backup_ring=BooleEnv::ring();
-     BooleEnv::set(from);
+
      standardMonomialsFromVector.resize(varietySize, from);
      MonomialSet::const_iterator it_set=standardMonomialsFrom.begin();
      MonomialSet::const_iterator end_set=standardMonomialsFrom.end();
@@ -118,8 +117,6 @@ void FGLMStrategy::setupStandardMonomialsFromTables(){
          i--;
      }
 
-     BooleEnv::set(backup_ring);
-     
 }
 #if 0
 void FGLMStrategy::writeTailToRow(MonomialSet tail, mzd_t* row){
@@ -205,8 +202,6 @@ Polynomial FGLMStrategy::rowToPoly(mzd_t* row){
 }
 
 void FGLMStrategy::setupMultiplicationTables(){
-    ring_with_ordering_type backup_ring=BooleEnv::ring();
-    BooleEnv::set(from);
     
     //first we write into rows, later we transpose
     //algorithm here
@@ -344,9 +339,6 @@ void FGLMStrategy::setupMultiplicationTables(){
         }
         #endif
     }
-    
-    
-    BooleEnv::set(backup_ring);
 }
 void FGLMStrategy::findVectorInMultTables(mzd_t* dst, Monomial m){
     mzd_t* mat=multiplicationTables[monomial2MultiplicationMatrix[m]];
@@ -388,13 +380,11 @@ void FGLMStrategy::transposeMultiplicationTables(){
     transposed=(!(transposed));
 }
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
-    ring_with_ordering_type backup_ring=BooleEnv::ring();
-    BooleEnv::set(from);
 
     vars=gb.leadingTerms.usedVariables();
     int i;
     for (i=0;i<gb.size();i++){
-        vars=vars * Monomial(gb[i].usedVariables,BooleEnv::ring());
+        vars=vars * Monomial(gb[i].usedVariables, from);
     }
     
     Monomial::variable_iterator it_var=vars.variableBegin();
@@ -412,7 +402,7 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
 
 
     nVariables=vars.deg();
-    ring2Index.resize(BooleEnv::ring().nVariables());
+    ring2Index.resize(from.nVariables());
     index2Ring.resize(nVariables);
     idx_type ring_index;
     idx_type our_index=0;
@@ -431,9 +421,8 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
 
     leadingTermsFrom=gb.leadingTerms;
     varietySize=standardMonomialsFrom.size();
-            
-    BooleEnv::set(backup_ring);
 }
+
 class FGLMNoLinearCombinationException: public std::exception
 {
 public:
@@ -560,9 +549,7 @@ PolynomialVector FGLMStrategy::main(){
         F.push_back(monomial_one);
         return F;
     }
-    ring_with_ordering_type bak_ring=BooleEnv::ring();
     //variables are oriented at Tim Wichmanns Diploma thesis
-    BooleEnv::set(to);
 
     mzd_t* acc1=mzd_init(1, varietySize);
     mzd_t* acc2=mzd_init(1, varietySize);
@@ -720,7 +707,7 @@ PolynomialVector FGLMStrategy::main(){
     mzd_free(w);
     mzd_free(v_d);
     mzd_free(v);
-    BooleEnv::set(bak_ring);
+
     for(i=0;i<addTheseLater.size();i++){
         F.push_back(addTheseLater[i]);
     }
@@ -733,8 +720,7 @@ PolynomialVector FGLMStrategy::main(){
 
 void FGLMStrategy::testMultiplicationTables(){
     #ifndef NDEBUG
-    ring_with_ordering_type backup_ring=BooleEnv::ring();
-    BooleEnv::set(from);
+
     int i;
     int j;
 
@@ -764,17 +750,13 @@ void FGLMStrategy::testMultiplicationTables(){
             assert(sum==product);
         }
     }
-    BooleEnv::set(backup_ring);
     #endif
 }
 Polynomial FGLMStrategy::reducedNormalFormInFromRing(Polynomial f){
-    ring_with_ordering_type bak_ring=BooleEnv::ring();
-    BooleEnv::set(from);
     Polynomial res=gbFrom.reducedNormalForm(f);
-    BooleEnv::set(bak_ring);
     return res;
-    
 }
+
 bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     Monomial lm_from=from.ordering().lead(p);
     size_t length=p.length();
@@ -795,8 +777,7 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
 {
     prot=false;
     transposed=false;
-    ring_with_ordering_type backup_ring=BooleEnv::ring();
-    BooleEnv::set(from);
+
     PolynomialVector::const_iterator it=gb.begin();
     PolynomialVector::const_iterator end=gb.end();
     
@@ -836,6 +817,5 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
     }
     if (prot)
         cout<<"initialization finished"<<endl;
-    BooleEnv::set(backup_ring);
 }
 END_NAMESPACE_PBORIGB
