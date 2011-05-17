@@ -40,7 +40,7 @@ BOOST_FIXTURE_TEST_SUITE(GroebnerStrategyTestSuite, Fstrat )
 
 BOOST_AUTO_TEST_CASE(test_nf) {
 
-  GroebnerStrategy strat;
+  GroebnerStrategy strat(ring);
   for (int i=0;i<1000;i++){
     strat.addGenerator(BoolePolynomial(BooleVariable(i, ring)+BoolePolynomial(true,ring)));
   }

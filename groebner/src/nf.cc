@@ -450,7 +450,7 @@ public:
     }
     this->length+=length;
     this->length-=2;
-    if (BooleEnv::ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
+    if (p2.ring().ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
     
     assert((p.isZero())|| (lm==p.lead()));
     assert((p.isZero())||(exp==p.leadExp()));
@@ -521,7 +521,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         Polynomial to_red=curr[i].value();
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);
-        if (BooleEnv::ordering().isTotalDegreeOrder())
+        if (lm.ring().ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(),new_len);
         else
             curr[i]=PolynomialSugar(to_red);
@@ -556,7 +556,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);
         //curr[i]=PolynomialSugar(to_red);
-        if (BooleEnv::ordering().isTotalDegreeOrder())
+        if (lm.ring().ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(), new_len);
         else
             curr[i]=PolynomialSugar(to_red,to_red.deg(),new_len);
@@ -571,7 +571,7 @@ static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& 
         wlen_type new_len=curr[i].getLengthEstimation();
         to_red=reduce_complete(to_red,strat.generators[index],new_len);//BooleSet(to_red).diff(strat.generators[index].lead.multiples(to_red.usedVariables()));
         //curr[i]=PolynomialSugar(to_red);
-        if (BooleEnv::ordering().isTotalDegreeOrder())
+        if (to_red.ring().ordering().isTotalDegreeOrder())
             curr[i]=PolynomialSugar(to_red,curr[i].getSugar(),new_len);
         else
             curr[i]=PolynomialSugar(to_red,to_red.deg(),new_len);
@@ -782,7 +782,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     
     to_reduce.push(to_push);
   }
-  const idx_type last_block_start=BooleEnv::ordering().lastBlockStart();
+  const idx_type last_block_start=strat.r.ordering().lastBlockStart();
   while (!(to_reduce.empty())){
 
     std::vector<PolynomialSugar> curr;
@@ -951,7 +951,7 @@ int ReductionStrategy::select1( const Polynomial& p) const{
     return -1;
   else {
 #ifdef LEX_LEAD_RED_STRAT
-    if (BooleEnv::ordering().isLexicographical()){
+    if (p.ring().ordering().isLexicographical()){
       Exponent min=*(ms.expBegin());
       return exp2Index.find(min)->second;
     }
@@ -1215,21 +1215,20 @@ static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int s
     return MonomialSet(idx,add_up_lex_sorted_monomials(vec,start,limes),add_up_lex_sorted_monomials(vec,limes,end));
 }
 
-/// @note This function uses the active manager!
-/// @todo Make save!
-
-static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int start, int end){
+static MonomialSet
+add_up_lex_sorted_exponents(const BoolePolyRing& ring,
+                            std::vector<Exponent>& vec, int start, int end){
     assert(end<=vec.size());
     assert(start>=0);
     int d=end-start;
     assert(d>=0);
     if (d<=2){
         switch(d){
-            case 0:return MonomialSet();
-        case 1:return Monomial(vec[start], BooleEnv::ring()).diagram();
+            case 0:return MonomialSet(ring);
+        case 1:return Monomial(vec[start], ring).diagram();
             case 2: 
-              Polynomial res=Monomial(vec[start], BooleEnv::ring()) + 
-                Monomial(vec[start+1],BooleEnv::ring());
+              Polynomial res=Monomial(vec[start], ring) + 
+                Monomial(vec[start+1],ring);
               return MonomialSet(res.diagram());
         }
 
@@ -1251,7 +1250,8 @@ static MonomialSet add_up_lex_sorted_exponents(std::vector<Exponent>& vec, int s
             //vec[limes].changeAssign(idx);
     }
     
-    return MonomialSet(idx,add_up_lex_sorted_exponents(vec,start,limes),add_up_lex_sorted_exponents(vec,limes,end));
+    return MonomialSet(idx, add_up_lex_sorted_exponents(ring, vec,start,limes),
+                       add_up_lex_sorted_exponents(ring, vec,limes,end));
 }
 
 /// @note This function is deactivated, because it always uses the active manager!
@@ -1303,13 +1303,14 @@ Polynomial add_up_polynomials(const std::vector<Polynomial>& vec){
                               (Polynomial)vec[0].ring().zero()) );
 
 }
-Polynomial add_up_exponents(const std::vector<Exponent>& vec){
+Polynomial add_up_exponents(const BoolePolyRing& ring, 
+                            const std::vector<Exponent>& vec){
     //return add_up_generic(vec);
     std::vector<Exponent> vec_sorted=vec;
     std::sort(vec_sorted.begin(),vec_sorted.end(),LexOrderGreaterComparer());
     
    
-    return add_up_lex_sorted_exponents(vec_sorted,0,vec_sorted.size());
+    return add_up_lex_sorted_exponents(ring, vec_sorted,0,vec_sorted.size());
 }
 
 
@@ -1462,7 +1463,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
     
     
     //p=Polynomial(p.diagram().diff(lm.diagram()));
-    if (!(BooleEnv::ordering().isDegreeOrder()))
+    if (!(p.ring().ordering().isDegreeOrder()))
         p=nf3(strat,p, rest_lead);
     else{
         p=nf3_degree_order(strat,p,rest_lead);
@@ -1629,13 +1630,13 @@ class DegOrderHelper{
 };*/
 
 Polynomial red_tail(const ReductionStrategy& strat, Polynomial p){
-    if (BooleEnv::ordering().isLexicographical())
-        return red_tail_generic<LexHelper>(strat,p);
-    if (BooleEnv::ordering().isDegreeOrder())
-        return red_tail_generic<DegOrderHelper>(strat,p);
-    if (BooleEnv::ordering().isBlockOrder())
-        return red_tail_generic<BlockOrderHelper>(strat,p);
-    return red_tail_general(strat,p);
+  if (p.ring().ordering().isLexicographical())
+    return red_tail_generic<LexHelper>(strat,p);
+  if (p.ring().ordering().isDegreeOrder())
+    return red_tail_generic<DegOrderHelper>(strat,p);
+  if (p.ring().ordering().isBlockOrder())
+    return red_tail_generic<BlockOrderHelper>(strat,p);
+  return red_tail_general(strat,p);
 }
 #endif
 Polynomial red_tail_short(const ReductionStrategy& strat, Polynomial p){
@@ -1919,7 +1920,8 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
                 p_t.push_back(terms_as_exp[j]);
             }
         }
-        Polynomial from_mat=add_up_exponents(p_t);
+        assert(polys.size()!=0);
+        Polynomial from_mat=add_up_exponents(polys[0].ring(), p_t);
         if (UNLIKELY(from_mat.isOne())){
             polys.clear();
             polys.push_back(from_mat);
@@ -2087,7 +2089,8 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
             for(j=0;j<p_t_i.size();j++){
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
-            polys.push_back(add_up_lex_sorted_exponents(p_t,0,p_t.size()));
+            polys.push_back(add_up_lex_sorted_exponents(leads_from_strat.ring(),
+                                                        p_t,0,p_t.size()));
             assert(!(polys[polys.size()-1].isZero()));
         }
     }
@@ -2505,7 +2508,7 @@ Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
     if UNLIKELY(p.isZero()) return p;
     
     Polynomial res;
-    if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
+    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
     else res=nf3(*this,p,p.lead());
     if ((res.isZero())) return res;
     res=red_tail(*this,res);
@@ -2515,7 +2518,7 @@ Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
     if UNLIKELY(p.isZero()) return p;
     
     Polynomial res;
-    if (BooleEnv::ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
+    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
     else res=nf3(*this,p,p.lead());
     return res;
 }

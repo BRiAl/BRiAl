@@ -237,8 +237,9 @@ void export_strategy(){
         .def("head_normal_form",&ReductionStrategy::headNormalForm)
         .def_readonly("monomials",&ReductionStrategy::monomials);
   
-  boost::python::class_<GroebnerStrategy>("GroebnerStrategy")
-  .def(init<>())
+  boost::python::class_<GroebnerStrategy>("GroebnerStrategy", 
+                                          "Groebner Strategy",
+                                          init<const BoolePolyRing&>())
   .def(init<const GroebnerStrategy&>())
   .def("suggest_plugin_variable",&GroebnerStrategy::suggestPluginVariable)
   .def("add_generator", add_generator)//&GroebnerStrategy::addGenerator)

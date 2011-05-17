@@ -58,7 +58,8 @@ def gen_strat(polys):
   polys=[Polynomial(p) for p in polys]
   polys=[p for p in polys if not p.is_zero()]
   assert len(set([p.lead() for p in polys]))==len(polys)
-  strat=GroebnerStrategy()
+  assert polys
+  strat=GroebnerStrategy(polys[0].ring())
   for p in polys:
     print "Adding"
     strat.add_generator(p)

@@ -39,7 +39,7 @@ class CacheManager{
             
         }
         res_type lookup(const Polynomial& p, bool& succ){
-          int nv=BooleEnv::ring().nVariables();
+          int nv=p.ring().nVariables();
             BooleExponent used_exp=p.usedVariablesExp();
             std::vector<idx_type> back_2_ring(used_exp.size());
             std::vector<idx_type> ring_2_0123(nv);
@@ -65,7 +65,7 @@ class CacheManager{
             }
         }
         void insert(const Polynomial& key, const poly_vec_type& value){
-            int nv=BooleEnv::ring().nVariables();
+            int nv=key.ring().nVariables();
             BooleExponent used_exp=key.usedVariablesExp();
             std::vector<idx_type> back_2_ring(used_exp.size());
             std::vector<idx_type> ring_2_0123(nv);

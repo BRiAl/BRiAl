@@ -165,7 +165,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         if len(G)==0:
             return []
         G=[Polynomial(g) for g in G]  
-        strat=GroebnerStrategy()
+        strat=GroebnerStrategy(G[0].ring())
         strat.reduction_strategy.opt_red_tail=opt_red_tail
         strat.opt_lazy=opt_lazy
         strat.opt_exchange=opt_exchange
@@ -317,11 +317,12 @@ def GPS(G,vars_start, vars_end):
             var=var-1
         step(strat, trace, var, 0)
         step(strat, trace, var, 1)
-    strat=GroebnerStrategy()
-    #strat.add_generator(G[0])
-    for g in G[:]:
-        strat.add_generator_delayed(g)
-    branch(strat,[],vars_end-1)
+    if G:
+        strat=GroebnerStrategy(G[0].ring())
+        #strat.add_generator(G[0])
+        for g in G[:]:
+            strat.add_generator_delayed(g)
+        branch(strat,[],vars_end-1)
 
 
 
@@ -367,7 +368,7 @@ def GPS_with_proof_path(G,proof_path, deg_bound,over_deg_bound):
         
         step(strat, trace,  proof_path, pos, 0)
         step(strat, trace,  proof_path, pos, 1)
-    strat=GroebnerStrategy()
+    strat=GroebnerStrategy(G[0].ring())
     strat.add_generator(Polynomial(G[0]))
     for g in G[1:]:
         strat.add_generator_delayed(Polynomial(g))
@@ -419,7 +420,9 @@ def GPS_with_suggestions(G,deg_bound,over_deg_bound, opt_lazy=True,opt_red_tail=
     def sort_crit(p):
         #return (p.deg(),p.lead(),p.elength())
         return (p.lead(),p.deg(),p.elength())
-    strat=GroebnerStrategy()
+    if not G:
+        return 
+    strat=GroebnerStrategy(G[0].ring())
     strat.reduction_strategy.opt_red_tail=opt_red_tail#True
     strat.opt_exchange=False
     strat.opt_allow_recursion=False
@@ -494,7 +497,7 @@ def GPS_with_non_binary_proof_path(G,proof_path, deg_bound,over_deg_bound):
         for i in xrange(len(proof_path[pos])):
             step(strat, trace,  proof_path, pos, i)
  
-    strat=GroebnerStrategy()
+    strat=GroebnerStrategy(G[0].ring())
     strat.add_generator(G[0])
     for g in G[1:]:
         strat.add_generator_delayed(g)
@@ -521,7 +524,7 @@ def symmGB_F2_C(G,opt_exchange=True,
             
         
         G=[Polynomial(g) for g in G]    
-        strat=GroebnerStrategy()
+        strat=GroebnerStrategy(G[0].ring())
         strat.reduction_strategy.opt_red_tail=opt_red_tail
         strat.enabled_log=prot
         strat.opt_lazy=opt_lazy

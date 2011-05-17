@@ -198,7 +198,9 @@ public:
   bool optRedTailInLastBlock;
 
 
-	GroebnerStrategy():r(BooleEnv::ring()),pairs(*this),cache(new CacheManager()){
+	GroebnerStrategy(const BoolePolyRing& input_ring):
+          r(input_ring), pairs(*this), cache(new CacheManager()) {
+
         optDrawMatrices=false;
         optModifiedLinearAlgebra=false;
         matrixPrefix="mat";
@@ -207,7 +209,7 @@ public:
 		chainCriterions=0;
 		enabledLog=false;
         
-        //if (BooleEnv::ordering().isDegreeOrder())
+        //if (this->r.ordering().isDegreeOrder())
 		//    optBrutalReductions=false;
 		//else
         
@@ -220,12 +222,12 @@ public:
 		optStepBounded=false;
 		optAllowRecursion=true;
         optLinearAlgebraInLastBlock=true;
-        if (BooleEnv::ordering().isBlockOrder())
+        if (this->r.ordering().isBlockOrder())
             optRedTailInLastBlock=true;
         else 
             optRedTailInLastBlock=false;
 
-		if (BooleEnv::ordering().isDegreeOrder())
+		if (this->r.ordering().isDegreeOrder())
 			optLazy=false;
 		else
 			optLazy=true;

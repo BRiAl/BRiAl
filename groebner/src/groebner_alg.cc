@@ -700,7 +700,7 @@ PolyEntry::PolyEntry(const Polynomial &poly):
 
 void PolyEntry::recomputeInformation(){
   assert(this->lead==p.lead());
-  if (!(BooleEnv::ordering().isDegreeOrder()))
+  if (!(this->p.ring().ordering().isDegreeOrder()))
       this->deg=p.deg();
   //so also lmExp keeps constant
   this->length=p.length();
@@ -1110,7 +1110,7 @@ std::vector<Exponent> minimal_elements_internal3(MonomialSet s){
         std::vector<Exponent> exponents;
         //Pol sp=s;
         exponents.insert(exponents.end(), s.expBegin(),s.expEnd());
-        int nvars=BooleEnv::ring().nVariables();
+        int nvars=s.ring().nVariables();
         std::vector<std::vector<int> > occ_vecs(nvars);
         for(i=0;i<exponents.size()-1;i++){
             Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
@@ -1391,7 +1391,7 @@ bool polynomial_in_one_block(const Polynomial p){
     if (p.isConstant()) return true;
     Monomial vars=p.usedVariables();
     
-    return BooleEnv::ordering().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
+    return p.ring().ordering().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
 }
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
@@ -2447,7 +2447,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 }
 Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
     Polynomial::navigator nav=p.navigation();
-    idx_type last=BooleEnv::ordering().lastBlockStart();
+    idx_type last=p.ring().ordering().lastBlockStart();
     if ((*nav)>=last) //includes constant polynomials
         return p;
     while ((*nav)<last){
@@ -2605,7 +2605,7 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& 
     bool succ;
     CacheManager::res_type cache_res=cache.lookup(p,succ);
     if (!(succ)){
-    GroebnerStrategy strat;
+      GroebnerStrategy strat(p.ring());
     strat.cache=strat_param.cache;
     //strat.log("Recursive call");
     strat.optAllowRecursion=true;
@@ -2622,7 +2622,7 @@ std::vector<Polynomial> full_implication_gb(const Polynomial & p, CacheManager& 
     }
 }
 int GroebnerStrategy::suggestPluginVariable(){
-    std::vector<int> ranking(BooleEnv::ring().nVariables());
+    std::vector<int> ranking(this->r.nVariables());
     int s=ranking.size();
     int i;
     for(i=0;i<s;i++){ ranking[i]=0;}

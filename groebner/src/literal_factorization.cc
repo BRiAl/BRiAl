@@ -268,7 +268,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                 while(other_it!=other_end){
                     
                     idx_type v2=*other_it;
-                    if (UNLIKELY(BooleEnv::ordering().compare(v, v2)!=BoolePolyRing::greater_than)){
+                    if (UNLIKELY(p.ring().ordering().compare(v, v2)!=BoolePolyRing::greater_than)){
                         ++other_it;
                         continue;
                     }
@@ -285,7 +285,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p){
                       if (has_factor_x_plus_y(r,Variable(v, r.ring()),v2_var)){
                     #endif
                     
-                      assert(BooleEnv::ordering().compare(v, v2)==BoolePolyRing::greater_than);
+                        assert(p.ring().ordering().compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
                         assert(r.subset1(v2).change(v2)==r.subset0(v));
                         assert(r.subset1(v2).subset1(v).isZero());

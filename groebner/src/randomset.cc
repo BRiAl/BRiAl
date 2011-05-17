@@ -33,7 +33,7 @@ MonomialSet random_set_using_generator(const Monomial& variables, unsigned int l
     }
     std::vector<Exponent> exponents_vec(exponents.size());
     std::copy(exponents.begin(),exponents.end(),exponents_vec.begin());
-    Polynomial p=add_up_exponents(exponents_vec);
+    Polynomial p=add_up_exponents(variables.ring(), exponents_vec);
     return p.diagram();
 }
 MonomialSet random_set(const Monomial& variables, unsigned int len){

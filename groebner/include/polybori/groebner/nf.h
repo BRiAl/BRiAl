@@ -26,7 +26,7 @@ BEGIN_NAMESPACE_PBORIGB
 
 void drawmatrix(mzd_t* mat, const char* filename);
 
-Polynomial add_up_exponents(const std::vector<Exponent>& vec);
+Polynomial add_up_exponents(const BoolePolyRing&, const std::vector<Exponent>& vec);
 Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
 
 
