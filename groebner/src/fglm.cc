@@ -554,7 +554,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
 #endif
 PolynomialVector FGLMStrategy::main(){
     PolynomialVector F;
-    const Monomial monomial_one(leadingTermsFrom.ring());
+    const Monomial monomial_one(to);
 
     if (leadingTermsFrom.owns(monomial_one)){
         F.push_back(monomial_one);
