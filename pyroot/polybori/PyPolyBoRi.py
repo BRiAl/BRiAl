@@ -32,7 +32,7 @@ def monomial_new_init(self,arg=None):
       - sequence of variables
     """
     if not arg:
-        monomial_old_init(globalring())
+        monomial_old_init(self,global_ring())
     else:
         try:
             monomial_old_init(self,arg)
