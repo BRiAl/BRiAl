@@ -29,7 +29,7 @@ static unsigned long iterate_reference_ordered(BoolePolynomial& p){
     unsigned long res=0;
     BoolePolynomial::ordered_iterator it=p.orderedBegin();
     BoolePolynomial::ordered_iterator end=p.orderedEnd();
-    BooleMonomial m;
+    BooleMonomial m(p.ring());
     while(it!=end){
         m=*it;
         res++;

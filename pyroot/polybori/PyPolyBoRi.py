@@ -31,17 +31,18 @@ def monomial_new_init(self,arg=None):
       - Variable
       - sequence of variables
     """
-    if arg==None:
-        monomial_old_init(self)
+    if not arg:
+        monomial_old_init(globalring())
     else:
         try:
             monomial_old_init(self,arg)
         except:
-            prototype=Monomial()
             items=sorted((x for x in arg),reverse=True, key=top_index)
-            for x in items:
+            prototype=Monomial(items[0])
+            for x in items[1:]:
                 prototype*=x
             monomial_old_init(self,prototype)
+
 Monomial.__init__=monomial_new_init
 
 booleset_old_init=BooleSet.__init__

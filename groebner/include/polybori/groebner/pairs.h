@@ -21,11 +21,10 @@
  BEGIN_NAMESPACE_PBORIGB
 
 class PolyEntry{
+   PolyEntry();                 /* never use this one! */
 public:
   PolyEntry(const Polynomial &p);
-  PolyEntry(){
-      
-  }
+
   bool operator==(const PolyEntry& other) const{
       return p==other.p;
   }

@@ -54,9 +54,14 @@ public:
   /// Destructor
   ~SetFactory() {}
 
-  /// Get first variable of the ring
+  /// Get empty set of the ring
   value_type operator()() const {
     return value_type(parent());
+  }
+
+  /// Indirect copy constructor
+  value_type operator()(const value_type& rhs) const {
+    return rhs;
   }
 
   /// Get first variable of explicit ring

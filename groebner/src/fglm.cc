@@ -103,7 +103,7 @@ static void mult_by_combining_rows(mzd_t* dest, mzd_t* A, packedmatrix* B, packe
 void FGLMStrategy::setupStandardMonomialsFromTables(){
      ring_with_ordering_type backup_ring=BooleEnv::ring();
      BooleEnv::set(from);
-     standardMonomialsFromVector.resize(varietySize);
+     standardMonomialsFromVector.resize(varietySize, from);
      MonomialSet::const_iterator it_set=standardMonomialsFrom.begin();
      MonomialSet::const_iterator end_set=standardMonomialsFrom.end();
      //assume only that iteration is descending w.r.t. divisibility
@@ -259,7 +259,7 @@ void FGLMStrategy::setupMultiplicationTables(){
     MonomialSet edges=standardMonomialsFrom.cartesianProduct(varsSet).
         diff(standardMonomialsFrom).diff(leadingTermsFrom);
     Polynomial edges_poly=edges;
-    MonomialVector edges_vec(edges.size());
+    MonomialVector edges_vec(edges.size(), from);
     std::copy(edges_poly.orderedBegin(), edges_poly.orderedEnd(), edges_vec.begin());
     
     //reverse is important, so that divisors and elements in the tail have already been treated
@@ -554,7 +554,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
 #endif
 PolynomialVector FGLMStrategy::main(){
     PolynomialVector F;
-    const Monomial monomial_one;
+    const Monomial monomial_one(leadingTermsFrom.ring());
 
     if (leadingTermsFrom.owns(monomial_one)){
         F.push_back(monomial_one);
@@ -790,7 +790,8 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     return false;
 }
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
-  :to(to_ring), from(from_ring), gbFrom(from_ring)
+  :to(to_ring), from(from_ring), gbFrom(from_ring),
+   vars(from_ring)
 {
     prot=false;
     transposed=false;

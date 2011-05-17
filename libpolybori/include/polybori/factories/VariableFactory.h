@@ -59,6 +59,11 @@ public:
     return value_type(0, parent());
   }
 
+  /// Indirect copy constructor
+  value_type operator()(const value_type& rhs) const {
+    return rhs;
+  }
+
   /// Get first variable of explicit ring
   value_type operator()(const value_type::ring_type& ring) const {
     return value_type(0, ring);

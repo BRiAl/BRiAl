@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   // removed, because this constructor is useless and confusing
   //    BOOST_CHECK_EQUAL(exp_type(), exp_type(true));
   //   BOOST_CHECK_EQUAL(exp_type(), exp_type(false));
-  BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial()));
+  BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial(ring)));
 
   BOOST_TEST_MESSAGE( "Exponents from monomials" );
   output_test_stream output;
@@ -61,13 +61,13 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << exp_type().get(x);
   BOOST_CHECK(output.is_equal("(0)"));
-  output << exp_type().get(BooleMonomial());
+  output << exp_type().get(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("()"));
   BOOST_CHECK_EQUAL(exp_type().get(BooleMonomial(exp_type(), ring)), exp_type());
   BOOST_CHECK_EQUAL(exp_type(x*y*z), exp_type().get(x*y*z));
   BOOST_CHECK_EQUAL(exp_type(x), exp_type().get(x));
-  BOOST_CHECK_EQUAL(exp_type(BooleMonomial()), exp_type().get(BooleMonomial()));
-  BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial()));
+  BOOST_CHECK_EQUAL(exp_type(BooleMonomial(ring)), exp_type().get(BooleMonomial(ring)));
+  BOOST_CHECK_EQUAL(exp_type(), exp_type().get(BooleMonomial(ring)));
   BOOST_CHECK_EQUAL(exp_type(x*y*z).get(v*w), exp_type().get(v*w));
 }
 
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("(1, 2)"));
   output << exponent.divide(x*y*z);
   BOOST_CHECK(output.is_equal("()"));
-  output << exponent.divide(BooleMonomial());
+  output << exponent.divide(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << empty.divide(exp_type().get(y*z));// Difference from BooleMonomial for all empty.divide
   BOOST_CHECK(output.is_equal("()"));
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BOOST_CHECK(output.is_equal("()"));
   output << empty.divide(x*y*z);
   BOOST_CHECK(output.is_equal("()"));
-  output << empty.divide(BooleMonomial());
+  output << empty.divide(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("()"));
 }
 
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << exponent.multiply(v*w);
   BOOST_CHECK(output.is_equal("(0, 1, 2, 3, 4)"));
-  output << exponent.multiply(BooleMonomial());
+  output << exponent.multiply(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   output << empty.multiply(exp_type().get(y*z*v*w));
   BOOST_CHECK(output.is_equal("(1, 2, 3, 4)"));
@@ -212,14 +212,14 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("(0)"));
   output << empty.multiply(v*w);
   BOOST_CHECK(output.is_equal("(3, 4)"));
-  output << empty.multiply(BooleMonomial());
+  output << empty.multiply(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("()"));
 
   BOOST_TEST_MESSAGE( "multiplyFirst" );
   BooleSet set;
   output << exponent.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
-  set = set.add(BooleMonomial());
+  set = set.add(BooleMonomial(ring));
   output << exponent.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   set = set.add(v);
@@ -237,7 +237,7 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   set = BooleSet();
   output << empty.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("()"));
-  set = set.add(BooleMonomial());
+  set = set.add(BooleMonomial(ring));
   output << empty.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("()"));
   set = set.add(v);
@@ -773,10 +773,10 @@ BOOST_AUTO_TEST_CASE(test_reducible) {
   BOOST_CHECK(exponent.reducibleBy(x*z));
   BOOST_CHECK(exponent.reducibleBy(y*z));
   BOOST_CHECK(exponent.reducibleBy(y*z*x));
-  BOOST_CHECK(exponent.reducibleBy(BooleMonomial()));
+  BOOST_CHECK(exponent.reducibleBy(BooleMonomial(ring)));
   BOOST_CHECK(!exponent.reducibleBy(BooleMonomial(v)));
   BOOST_CHECK(!exponent.reducibleBy(x*v));
-  BOOST_CHECK(empty.reducibleBy(BooleMonomial()));
+  BOOST_CHECK(empty.reducibleBy(BooleMonomial(ring)));
   BOOST_CHECK(!empty.reducibleBy(BooleMonomial(x)));
   BOOST_CHECK(!empty.reducibleBy(x*y));
 
@@ -828,7 +828,7 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(exponent, exp_type().get(x*y*z));
   exponent = x;
   BOOST_CHECK_EQUAL(exponent, exp_type().get(x));
-  exponent = BooleMonomial();
+  exponent = BooleMonomial(ring);
   BOOST_CHECK_EQUAL(exponent, exp_type());
   BooleExponent exponent2;
   exponent2.insert(5);

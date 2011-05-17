@@ -31,5 +31,12 @@
 
 #include "routines/pbori_algorithms.h"
 #include "orderings/pbori_order.h"
+#include "orderings/pbori_order.h"
+
+#include "factories/MonomialFactory.h"
+#include "factories/PolynomialFactory.h"
+#include "factories/SetFactory.h"
+#include "factories/VariableBlock.h"
+#include "factories/VariableFactory.h"
 
 #endif // of #ifndef polybori_polybori_h_

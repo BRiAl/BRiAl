@@ -1413,7 +1413,7 @@ Polynomial red_tail(const GroebnerStrategy& strat, Polynomial p){
 }
 #else
 Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
-  Polynomial res;
+  Polynomial res(p.ring().zero());
   int deg_bound=p.deg();
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
@@ -1436,7 +1436,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
         irr.push_back(*it);
         it++;
     }
-    Monomial rest_lead;
+    Monomial rest_lead(p.ring());
     
     if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
@@ -1499,7 +1499,7 @@ Polynomial cheap_reductions(const ReductionStrategy& strat, Polynomial p){
 }
 
 template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& strat, Polynomial p){
-  Polynomial res;
+  Polynomial res(p.ring().zero());
   int deg_bound=p.deg();
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
@@ -1551,7 +1551,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     } else {
         rest_is_irreducible=true;
     }
-    Monomial rest_lead;
+    Monomial rest_lead(p.ring());
     
     if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
@@ -2165,19 +2165,20 @@ static mzd_t* transposePackedMB(mzd_t* mat){
 static void 
 linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
 {
-    
-     int unmodified_rows=polys.size();
-     int unmodified_cols=terms.size();
-     if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
-       PBoRiError error(CTypes::matrix_size_exceeded);
-         throw error;
-     }
+    BoolePolyRing current_ring(terms.ring());
+
+    int unmodified_rows=polys.size();
+    int unmodified_cols=terms.size();
+    if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
+      PBoRiError error(CTypes::matrix_size_exceeded);
+      throw error;
+    }
     static int round=0;
     round++;
     const int russian_k=16;
-    MonomialSet     terms_unique;
+    MonomialSet     terms_unique(current_ring);
     vector < Monomial > terms_unique_vec;
-    MonomialSet     terms_step1;
+    MonomialSet     terms_step1(current_ring);
     int             i;
     vector < pair < Polynomial, Monomial > >polys_lm;
     for (i = 0; i < polys.size(); i++) {
@@ -2190,7 +2191,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     //special cases
     if UNLIKELY(polys_lm.size() == 0)
         return;
-    Monomial        last;
+    Monomial        last(current_ring);
     if UNLIKELY(polys_lm[0].second.deg() == 0) {
         assert(polys_lm[0].first.isOne());
         polys.resize(1);

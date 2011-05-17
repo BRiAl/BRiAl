@@ -100,10 +100,6 @@ public:
   /// The property whether the equality check is easy is inherited from dd_type
   typedef dd_type::easy_equality_property easy_equality_property;
 
-  /// Default Constructor (Constructs monomial one of the active ring)
-  BooleMonomial():
-    m_poly( BooleEnv::one() )  { }
-
   /// Copy constructor
   BooleMonomial(const self& rhs):  
     m_poly(rhs.m_poly) {}

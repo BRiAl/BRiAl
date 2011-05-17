@@ -3,7 +3,7 @@ if __name__=='__main__':
     import pathadjuster
 
 from polybori.PyPolyBoRi import Ring, VariableBlock, Polynomial
-from polybori.PyPolyBoRi import VariableFactory, set_variable_name
+from polybori.PyPolyBoRi import VariableFactory, MonomialFactory, set_variable_name
 from itertools import chain,islice
 #class BlockEndException(object):
   #pass
@@ -336,6 +336,7 @@ def declare_ring(blocks,context=None):
   #n=sum([len(b) for b in blocks])
   r=Ring(n)
   context["Variable"] = VariableFactory(r)
+  context["Monomial"] = MonomialFactory(r)
   context["r"]=r
   declare_block_scheme(blocks,context)
   return r

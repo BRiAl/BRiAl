@@ -24,7 +24,7 @@ USING_NAMESPACE_PBORI
 
 struct Ftermaccu {
   Ftermaccu(): 
-    ring(5) {
+    ring(5), x(ring), y(ring), z(ring), v(ring), w(ring) {
     BOOST_TEST_MESSAGE( "setup fixture" );
     x = (BooleVariable(0, ring));
     y = (BooleVariable(1, ring));

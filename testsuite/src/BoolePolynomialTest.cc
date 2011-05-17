@@ -42,15 +42,16 @@ USING_NAMESPACE_PBORI
 
 struct Fpoly {
   typedef BoolePolynomial poly_type;
-  Fpoly():
-    ring(100, BoolePolyRing::lp, true), 
-    bset(), 
-    bexp(BooleExponent().change(1)) {
-    x = (BooleVariable(0, ring));
-    y = (BooleVariable(1, ring));
-    z = (BooleVariable(2, ring));
-    v = (BooleVariable(3, ring));
-    w = (BooleVariable(4, ring));
+  Fpoly(const BoolePolyRing& input_ring =
+        BoolePolyRing(100, BoolePolyRing::lp, true)):
+    ring(input_ring), 
+    bset(input_ring), 
+    bexp(BooleExponent().change(1)),
+    x(BooleVariable(0, input_ring)),
+    y(BooleVariable(1, input_ring)),
+    z(BooleVariable(2, input_ring)),
+    v(BooleVariable(3, input_ring)),
+    w(BooleVariable(4, input_ring))  {
 
     BOOST_TEST_MESSAGE( "setup fixture" ); 
     bset = BooleSet(1, ring.one(), ring.zero()); // something non-trivial
@@ -323,7 +324,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_THROW(poly_type().lexLead(), PBoRiError);
   BOOST_CHECK_THROW(poly_type(0).lexLead(), PBoRiError);
 
-  BOOST_CHECK_EQUAL(poly_type(1).lexLead(), BooleMonomial());
+  BOOST_CHECK_EQUAL(poly_type(1).lexLead(), BooleMonomial(ring));
   BOOST_CHECK_EQUAL(poly_type(x).lexLead(), x);
   BOOST_CHECK_EQUAL(poly_type(x*y).lexLead(), x*y);
   BOOST_CHECK_EQUAL(poly_type(x*y + z).lexLead(), x*y);
@@ -403,7 +404,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
 
   poly_type poly1(1), poly2(1);
   std::size_t len(1);
-  BooleMonomial monom;
+  BooleMonomial monom(ring);
   for (std::size_t idx = 0; idx < ring.nVariables(); ++idx, (len <<= 1)) {
     monom = monom.change(idx);
     BOOST_CHECK_EQUAL(poly1.length(), len);
@@ -434,7 +435,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   poly_type::termlist_type terms;
   (x + y*z + z*v*w).fetchTerms(terms);
 
-  BooleMonomial termsref[] = {x, y*z, z*v*w, BooleMonomial()};
+  BooleMonomial termsref[] = {x, y*z, z*v*w, BooleMonomial(ring)};
 
   BOOST_CHECK_EQUAL_COLLECTIONS(terms.begin(), terms.end(), 
                                 termsref, termsref + 3);
@@ -506,7 +507,7 @@ template <int order>
 struct OrderGenFix {
   typedef BoolePolynomial poly_type;
   OrderGenFix():
-    ring(100, order, true) {
+    ring(100, order, true), a(ring),b(ring),c(ring),d(ring),e(ring),f(ring),g(ring),h(ring) {
 
     ring.setVariableName(0, "a");
     ring.setVariableName(1, "b");

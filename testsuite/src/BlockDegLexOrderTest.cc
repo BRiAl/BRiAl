@@ -81,11 +81,11 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   monom1 = v*y;
   monom2 = x;
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::greater_than);
-  monom1 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
   monom2 = w;
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::less_than);
-  monom1 = BooleMonomial();
-  monom2 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
+  monom2 = BooleMonomial(ring);
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::equality);
   BooleExponent exp1(x);
   BooleExponent exp2(x*x);
@@ -122,8 +122,8 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_THROW(order.leadExp(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   poly = 1;
-  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
-  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial(ring));
+  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial(ring));
   BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
@@ -230,15 +230,15 @@ BOOST_AUTO_TEST_CASE(test_compare_blocks) {
   BOOST_CHECK_EQUAL(blockorder.compare(exp1, exp2) , blockorder.compare(monom1, monom2));
   BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , blockorder.compare(exp1, exp2));
   monom1 = x;
-  monom2 = BooleMonomial();
+  monom2 = BooleMonomial(ring);
   exp1 = monom1;
   exp2 = monom2;
   BOOST_CHECK_EQUAL(blockorder.compare(monom1, monom2) , CTypes::greater_than);
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , blockorder.compare(monom1, monom2));
   BOOST_CHECK_EQUAL(blockorder.compare(exp1, exp2) , blockorder.compare(monom1, monom2));
   BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , blockorder.compare(exp1, exp2));
-  monom1 = BooleMonomial();
-  monom2 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
+  monom2 = BooleMonomial(ring);
   exp1 = monom1;
   exp2 = monom2;
   BOOST_CHECK_EQUAL(blockorder.compare(monom1, monom2) , CTypes::equality);
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(test_compare_blocks) {
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , blockorder.compare(monom1, monom2));
   BOOST_CHECK_EQUAL(blockorder.compare(exp1, exp2) , blockorder.compare(monom1, monom2));
   BOOST_CHECK_EQUAL(order.compare(exp1, exp2) , blockorder.compare(exp1, exp2));
-  monom1 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
   monom2 = y*v*w;
   exp1 = monom1;
   exp2 = monom2;
@@ -379,8 +379,8 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   BOOST_CHECK_THROW(blockorder.leadFirst(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
   /// Check, that order.lead(poly) doesn't pollute the cache!
   poly = 1;
-  BOOST_CHECK_EQUAL(blockorder.lead(poly, 1), BooleMonomial());
-  BOOST_CHECK_EQUAL(blockorder.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(blockorder.lead(poly, 1), BooleMonomial(ring));
+  BOOST_CHECK_EQUAL(blockorder.lead(poly), BooleMonomial(ring));
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly,1), BooleExponent());
   BOOST_CHECK_EQUAL(blockorder.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(blockorder.leadFirst(poly), poly);

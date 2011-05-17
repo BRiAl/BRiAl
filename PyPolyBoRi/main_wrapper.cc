@@ -88,6 +88,7 @@ BoolePolynomial coerce(const BoolePolyRing& ring, const BoolePolynomial& poly){
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
   BoolePolyRing r(10);
+  BooleMonomial monom(r);
 
   #ifdef HAVE_M4RI
   m4ri_build_all_codes();
@@ -173,9 +174,9 @@ with inverted variable order\n\
        const BoolePolyRing&>("Get Variable of given index in a given ring"))
   .def(self*self)
   .def(self/self)
-  .def(self*BooleMonomial())
-  .def(self/BooleMonomial())
-  .def(BooleMonomial()*self)
+  .def(self*monom)
+  .def(self/monom)
+  .def(monom*self)
   .def(self*int())
   .def(self/int())
   .def(int()*self)

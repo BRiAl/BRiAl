@@ -64,6 +64,11 @@ public:
     return value_type(ring);
   }
 
+  /// Indirect copy constructor
+  value_type operator()(const value_type& rhs) const {
+    return rhs;
+  }
+
   /// Construct from Boolean variable (does not need ring)
   value_type operator()(value_type::var_type var) const {
     return value_type(var);

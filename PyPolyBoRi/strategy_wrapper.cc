@@ -200,8 +200,9 @@ static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
 void export_strategy(){
   export_slimgb();
   def("easy_linear_factors", easy_linear_factors);
-  boost::python::class_<PolyEntry>("PolyEntry", "Entry with polynomial and statistical information")
-  .def(init<const Polynomial&>())
+  boost::python::class_<PolyEntry>("PolyEntry",
+                          "Entry with polynomial and statistical information",
+                          init<const Polynomial&>())
   .def_readwrite("p",&PolyEntry::p)
   .def_readwrite("lead",&PolyEntry::lead)
   .def_readwrite("weighted_length",&PolyEntry::weightedLength)

@@ -82,11 +82,11 @@ BOOST_AUTO_TEST_CASE(test_compare) {
   monom1 = x*y*z;
   monom2 = x*y;
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::greater_than);
-  monom1 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
   monom2 = w;
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::less_than);
-  monom1 = BooleMonomial();
-  monom2 = BooleMonomial();
+  monom1 = BooleMonomial(ring);
+  monom2 = BooleMonomial(ring);
   BOOST_CHECK_EQUAL(order.compare(monom1, monom2) , CTypes::equality);
   BooleExponent exp1(x);
   BooleExponent exp2(x*x);
@@ -123,8 +123,8 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);
   poly = 1;
-  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial());
-  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial());
+  BOOST_CHECK_EQUAL(order.lead(poly, 1), BooleMonomial(ring));
+  BOOST_CHECK_EQUAL(order.lead(poly), BooleMonomial(ring));
   BOOST_CHECK_EQUAL(order.leadExp(poly, 1), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadExp(poly), BooleExponent());
   BOOST_CHECK_EQUAL(order.leadFirst(poly), poly);

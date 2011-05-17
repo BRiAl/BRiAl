@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_spoly) {
   BOOST_CHECK_EQUAL(theSpoly, x*z*w + w);
   BOOST_CHECK_THROW(spoly(BoolePolynomial(), BoolePolynomial()),
                     PBoRiGenericError<CTypes::illegal_on_zero>);
-  BOOST_CHECK_EQUAL(spoly(BooleMonomial(), BooleMonomial()),BoolePolynomial());
+  BOOST_CHECK_EQUAL(spoly(BooleMonomial(ring), BooleMonomial(ring)),BoolePolynomial());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

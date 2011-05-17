@@ -57,8 +57,9 @@ void export_monomial(){
  // bool (BooleMonomial::*redv)(void) = &BooleMonomial::diagram;
 
   bool  (BooleMonomial::*reducibleBy)(const BooleMonomial&) const = &BooleMonomial::reducibleBy;
-  boost::python::class_<BooleMonomial>("Monomial", "Boolean monomial")
-  .def(init<>("Construct Boolean monomial"))
+
+  boost::python::class_<BooleMonomial>("Monomial", "Boolean monomial",
+       init<const BoolePolyRing&>("Construct Boolean monomial from ring"))
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
   .def("variables", range(&BooleMonomial::variableBegin, &BooleMonomial::variableEnd))
@@ -132,5 +133,32 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   //wrap usedVariables
   //.def("toStdOut", &print_monomial);
 
+  typedef BooleMonomial value_type;
+  typedef value_type::var_type var_type;
+  typedef value_type::exp_type exp_type;
+  typedef value_type::ring_type ring_type;
+
+  boost::python::class_<MonomialFactory>("MonomialFactory",
+     "Generator for Boolean monomials",
+     init<const ring_type &>("Construct Generator for given ring") )
+    .def("__call__",
+         (value_type(MonomialFactory::*)() const)
+         (&MonomialFactory::operator()))
+
+    .def("__call__",
+         (value_type(MonomialFactory::*)(var_type) const)
+         (&MonomialFactory::operator()))
+
+    .def("__call__",
+         (value_type(MonomialFactory::*)(const BooleMonomial&) const)
+         (&MonomialFactory::operator()))
+   
+    .def("__call__",
+         (value_type(MonomialFactory::*)(const exp_type&) const)
+         (&MonomialFactory::operator()))
+
+    .def("__call__",
+         (value_type(MonomialFactory::*)(const exp_type&, const ring_type&) const)
+         (&MonomialFactory::operator()));
   
 }

@@ -78,8 +78,8 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
   BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" ); // BooleMonomial is used as a BooleVariable set here
   BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
-  BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial());
-  set_type added_set = set.add(BooleMonomial());
+  BOOST_CHECK_EQUAL(empty.usedVariables(),BooleMonomial(ring));
+  set_type added_set = set.add(BooleMonomial(ring));
   BOOST_CHECK_EQUAL(added_set.usedVariables(),x*y*z*v);
   BooleExponent exp = set.usedVariablesExp();
   output << exp;
@@ -92,8 +92,8 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK_EQUAL(set.lastLexicographicalTerm(), BooleMonomial(v*z));
   BOOST_CHECK_THROW(empty.lastLexicographicalTerm(),  PBoRiError);
 
-  set_type simple = empty.add(BooleMonomial());
-  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial());
+  set_type simple = empty.add(BooleMonomial(ring));
+  BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), BooleMonomial(ring));
 
   simple = empty.add(x);
   BOOST_CHECK_EQUAL(simple.lastLexicographicalTerm(), x);
@@ -125,12 +125,12 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(set.hasTermOfVariables(y*x));
   BOOST_CHECK(set.hasTermOfVariables(y*z));
   BOOST_CHECK(set.hasTermOfVariables(z*y));
-  BOOST_CHECK(!set.hasTermOfVariables(BooleMonomial()));
+  BOOST_CHECK(!set.hasTermOfVariables(BooleMonomial(ring)));
   BOOST_CHECK(!empty.hasTermOfVariables(y));
   BOOST_CHECK(!empty.hasTermOfVariables(x*y*z));
   BOOST_CHECK(!empty.hasTermOfVariables(x*z*y));
   BOOST_CHECK(!empty.hasTermOfVariables(x*z*v));
-  BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial()));
+  BOOST_CHECK(!empty.hasTermOfVariables(BooleMonomial(ring)));
 
   BOOST_TEST_MESSAGE( "contains" );
   BOOST_CHECK(set.contains(empty));
@@ -235,10 +235,10 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*x));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(y*z));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(z*y));
-  BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(set.containsDivisorsOfDecDeg(BooleMonomial(ring)));
   BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(!empty.containsDivisorsOfDecDeg(x*y*z));
-  BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleMonomial(ring)));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*v)));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*y*z)));
   BOOST_CHECK(!set.containsDivisorsOfDecDeg(BooleExponent(x*z*y)));
@@ -285,11 +285,11 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(x)));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(y)));
   BOOST_CHECK(!set1.containsDivisorsOfDecDeg(BooleExponent(z)));
-  set1 = set1.add(BooleMonomial());
+  set1 = set1.add(BooleMonomial(ring));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(x));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(y));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(z));
-  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleMonomial()));
+  BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleMonomial(ring)));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(x)));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(y)));
   BOOST_CHECK(set1.containsDivisorsOfDecDeg(BooleExponent(z)));
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(empty.isSingleton());
   BOOST_CHECK(empty.isSingletonOrPair());
   BOOST_CHECK(!empty.isPair());
-  empty = empty.add(BooleMonomial());
+  empty = empty.add(BooleMonomial(ring));
   BOOST_CHECK(empty.isSingleton());
   BOOST_CHECK(empty.isSingletonOrPair());
   BOOST_CHECK(!empty.isPair());
@@ -319,7 +319,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(single.isSingleton());
   BOOST_CHECK(single.isSingletonOrPair());
   BOOST_CHECK(!single.isPair());
-  single = single.add(BooleMonomial());
+  single = single.add(BooleMonomial(ring));
   BOOST_CHECK(!single.isSingleton());
   BOOST_CHECK(single.isSingletonOrPair());
   BOOST_CHECK(single.isPair());
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(!pair.isSingleton());
   BOOST_CHECK(pair.isSingletonOrPair());
   BOOST_CHECK(pair.isPair());
-  pair = pair.add(BooleMonomial());
+  pair = pair.add(BooleMonomial(ring));
   BOOST_CHECK(!pair.isSingleton());
   BOOST_CHECK(!pair.isSingletonOrPair());
   BOOST_CHECK(!pair.isPair());
@@ -349,13 +349,13 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!set.owns(v));
   BOOST_CHECK(!set.owns(w));
   BOOST_CHECK(!set.owns(x*v*z));
-  BOOST_CHECK(!set.owns(BooleMonomial()));
+  BOOST_CHECK(!set.owns(BooleMonomial(ring)));
   BOOST_CHECK(!empty.owns(x));
   BOOST_CHECK(!empty.owns(y));
   BOOST_CHECK(!empty.owns(z));
   BOOST_CHECK(!empty.owns(v));
   BOOST_CHECK(!empty.owns(w));
-  BOOST_CHECK(!empty.owns(BooleMonomial()));
+  BOOST_CHECK(!empty.owns(BooleMonomial(ring)));
   BOOST_CHECK(set.owns(BooleExponent(x*y*z)));
   BOOST_CHECK(set.owns(BooleExponent(v*z)));
   BOOST_CHECK(set.owns(BooleExponent(x*v)));
@@ -413,10 +413,10 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(empty2.owns(BooleExponent(x)));
 
   BOOST_CHECK(!set.ownsOne());
-  addedset = set.add(BooleMonomial());
+  addedset = set.add(BooleMonomial(ring));
   BOOST_CHECK(addedset.ownsOne());
   BOOST_CHECK(!empty.ownsOne());
-  addedset = empty.add(BooleMonomial());
+  addedset = empty.add(BooleMonomial(ring));
   BOOST_CHECK(addedset.ownsOne());
 }
 
@@ -489,14 +489,14 @@ BOOST_AUTO_TEST_CASE(test_division) {
   result = set.divide(x*v*y);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
-  result = set.divide(BooleMonomial());
+  result = set.divide(BooleMonomial(ring));
   output << result;
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
   set_type empty;
   result = empty.divide(x*v*y);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
-  result = empty.divide(BooleMonomial());
+  result = empty.divide(BooleMonomial(ring));
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
 
@@ -516,7 +516,7 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
 
   set_type empty;
   set_type almost_empty;
-  almost_empty = almost_empty.add(BooleMonomial());
+  almost_empty = almost_empty.add(BooleMonomial(ring));
 
   BOOST_TEST_MESSAGE( "size" );
   BOOST_CHECK_EQUAL(set.size(),6);
@@ -566,14 +566,14 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   BOOST_CHECK(output.is_equal("{}"));
   output << set.multiplesOf(w);
   BOOST_CHECK(output.is_equal("{}"));
-  output << set.multiplesOf(BooleMonomial());
+  output << set.multiplesOf(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
 
   output << empty.multiplesOf(x);
   BOOST_CHECK(output.is_equal("{}"));
   output << empty.multiplesOf(x*y);
   BOOST_CHECK(output.is_equal("{}"));
-  output << empty.multiplesOf(BooleMonomial());
+  output << empty.multiplesOf(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("{}"));
 
   BOOST_TEST_MESSAGE( "existAbstract" );
@@ -607,13 +607,13 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
   output << set.existAbstract(x*w);
   BOOST_CHECK(output.is_equal("{{y,z}, {y}, {z,v}, {v}}"));
-  output << set.existAbstract(BooleMonomial());
+  output << set.existAbstract(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
   output << empty.existAbstract(x);
   BOOST_CHECK(output.is_equal("{}"));
   output << empty.existAbstract(x*v);
   BOOST_CHECK(output.is_equal("{}"));
-  output << empty.existAbstract(BooleMonomial());
+  output << empty.existAbstract(BooleMonomial(ring));
   BOOST_CHECK(output.is_equal("{}"));
 
   BOOST_TEST_MESSAGE( "cartesianProduct" );
@@ -657,7 +657,7 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   empty2 = empty.add(x);
   BOOST_CHECK_NE(empty.hash(), empty2.hash());
   empty2 = empty2cpy;
-  empty2 = empty2.add(BooleMonomial());
+  empty2 = empty2.add(BooleMonomial(ring));
   BOOST_CHECK_NE(empty, empty2);
   BOOST_CHECK_NE(empty.hash(), empty2.hash());
 
@@ -673,7 +673,7 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   empty2 = empty.add(x);
   BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
   empty2 = empty2cpy;
-  empty2 = empty2.add(BooleMonomial());
+  empty2 = empty2.add(BooleMonomial(ring));
   BOOST_CHECK_NE(empty, empty2);
   BOOST_CHECK_NE(empty.stableHash(), empty2.stableHash());
 }
@@ -706,11 +706,11 @@ BOOST_AUTO_TEST_CASE(test_change) {
   empty = empty.change(0);
   output << empty;
   BOOST_CHECK(output.is_equal("{}"));
-  empty = empty.add(BooleMonomial());
+  empty = empty.add(BooleMonomial(ring));
   empty = empty.change(0);
   output << empty;
   BOOST_CHECK(output.is_equal("{{x}}"));
-  empty = empty.add(BooleMonomial());
+  empty = empty.add(BooleMonomial(ring));
   empty = empty.change(1);
   output << empty;
   BOOST_CHECK(output.is_equal("{{x,y}, {y}}"));

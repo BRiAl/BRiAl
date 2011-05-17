@@ -676,23 +676,25 @@ void PairManager::cleanTopByChainCriterion(){
   }
 }
 
-PolyEntry::PolyEntry(const Polynomial &p):literal_factors(p){
-  this->p=p;
-  this->deg=p.deg();
+PolyEntry::PolyEntry(const Polynomial &poly):
+  literal_factors(poly),
+  p(poly), usedVariables(poly.usedVariablesExp()),
+  deg(poly.deg()), length(poly.length()), minimal(true),
+  // empty/zero default values to be filled below (TODO: use inheritance here)
+  lead(poly.ring()), leadExp(), leadDeg(),
+  weightedLength(), tailVariables(), gcdOfTerms(poly.ring()) {
+
   this->lead=p.boundedLead(deg);
   this->leadExp=lead.exp();
   this->leadDeg=leadExp.deg();
-  this->length=p.length();
+
   if (leadDeg==deg)
     this->weightedLength=this->length;
   else
-    this->weightedLength=p.eliminationLengthWithDegBound(deg);
+    this->weightedLength=poly.eliminationLengthWithDegBound(deg);
   
-  this->usedVariables=p.usedVariablesExp();
-  tail=p-lead;
+  tail=poly-lead;
   this->tailVariables=tail.usedVariablesExp();
-  
-  this->minimal=true;
 }
 
 
@@ -1304,9 +1306,10 @@ static unsigned int p2code_4(Polynomial p, const std::vector<char> & ring_2_0123
 }
 
 /// @todo: This uses always the active ring
-static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring){
+static Monomial code_2_m_4(const BoolePolyRing& ring, 
+                           unsigned int code, std::vector<idx_type> back_2_ring){
     int i;
-    Monomial res;
+    Monomial res(ring);
     //cout<<"m_code:"<<code<<endl;
     for(i=3;i>=0;i--){
         if ((code & (1<<i))!=0){
@@ -1314,16 +1317,17 @@ static Monomial code_2_m_4(unsigned int code, std::vector<idx_type> back_2_ring)
             //res=res.diagram().change(back_2_ring[i]);
         }
     }
-    //cout<<"m:"<<res<<endl;
+    //cout<<"m:"<<res<<endl;           
     return res;
 }
-static Polynomial code_2_poly_4(unsigned int code, std::vector<idx_type> back_2_ring){
-    int i;
-    Polynomial p;
+static Polynomial code_2_poly_4(const BoolePolyRing& ring,
+                                unsigned int code, std::vector<idx_type> back_2_ring){
+   int i;
+    Polynomial p(ring);
     //unsigned int m_code;
     for(i=15;i>=0;i--){
         if ((code & (1<<i))!=0){
-            Monomial m=code_2_m_4(i,back_2_ring);
+          Monomial m=code_2_m_4(ring, i,back_2_ring);
             p+=m;
         }
     }
@@ -1395,15 +1399,16 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
             mark_all_variable_pairs_as_calculated(*this, s);
         return std::vector<Polynomial>();
     }
+
     Polynomial p=literal_factors.rest;
-    
+    BoolePolyRing current_ring(p.ring());
    
     //Monomial used_variables_m=p.usedVariables();
     Exponent used_variables=p.usedVariablesExp();
     Exponent e=p.leadExp();
     if (e.size()>4) std::cerr<<"too many variables for table"<<std::endl;
     
-    std::vector<char> ring_2_0123(BooleEnv::ring().nVariables());
+    std::vector<char> ring_2_0123(current_ring.nVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     unsigned int p_code=p2code_4(p, ring_2_0123);
@@ -1420,7 +1425,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     for(i=0;get_table_entry4(p_code,i)!=0;i++){
         unsigned int impl_code=get_table_entry4(p_code,i);
         if ((include_orig) ||(p_code!=impl_code)){
-            Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
+          Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
             if ((include_orig)||(e_i!=e)){
                 p_i=
@@ -1462,8 +1467,9 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     //Exponent used_variables=generatusedVariables;
 
     Exponent e=lm_exp;//generators[s].lmExp;
+    BoolePolyRing current_ring(p.ring());
 
-    std::vector<char> ring_2_0123(BooleEnv::ring().nVariables());
+    std::vector<char> ring_2_0123(current_ring.nVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
@@ -1482,7 +1488,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     for(i=0;get_table_entry4(p_code,i)!=0;i++){
         unsigned int impl_code=get_table_entry4(p_code,i);
         if ((include_orig) ||(p_code!=impl_code)){
-            Polynomial p_i=code_2_poly_4(impl_code, back_2_ring);
+          Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
 
             if ((include_orig) ||(e_i!=e)){
@@ -1638,7 +1644,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
     if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
     } else {
-        Monomial v;
+
         m=m.existAbstract(lm);
         mod=mod.existAbstract(lm);
         //mod=divide_monomial_divisors_out(mod,lm);

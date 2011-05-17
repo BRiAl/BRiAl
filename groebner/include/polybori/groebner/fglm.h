@@ -19,9 +19,10 @@ BEGIN_NAMESPACE_PBORIGB
 
 typedef std::vector<Polynomial> poly_vec;
 class FGLMStrategy{
+  FGLMStrategy(); /* Never use this! */
 public:
     typedef BooleEnv::ring_type ring_with_ordering_type;
-    FGLMStrategy(){}
+
     FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb);
  
     PolynomialVector main();

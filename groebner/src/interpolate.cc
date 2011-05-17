@@ -53,7 +53,9 @@ MonomialSet random_interpolation(const MonomialSet& as_set, const std::vector<Mo
 }
 MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial& variables){
     base_generator_type generator(static_cast<unsigned int>(std::time(0)));
-    std::vector<Monomial> points_vec(points.size());
+
+    std::vector<Monomial> points_vec(points.size(), points.ring());
+
     std::copy(points.begin(),points.end(),points_vec.begin());
     bool_gen_type bit_gen(generator,distribution_type(0,1));
     MonomialSet vars_div=variables.divisors();
