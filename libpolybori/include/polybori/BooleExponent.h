@@ -1,3 +1,4 @@
+
 // -*- c++ -*-
 //*****************************************************************************
 /** @file BooleExponent.h
@@ -201,9 +202,6 @@ class BooleExponent:
 //   /// Test for reducibility wrt. to a given variable
 //   bool_type reducibleBy(const var_type& rhs) const;
 
-  /// Compare with rhs monomial and return comparision code
-  comp_type compare(const self&) const;
-
   /// Degree of the least common multiple
   size_type LCMDeg(const self&) const;
 
@@ -260,36 +258,6 @@ inline BooleExponent
 operator-(const BooleExponent& lhs, const RHSType& rhs) {
   return lhs.divide(rhs);
 }
-
-
-/// Less than comparision
-inline BooleExponent::bool_type
-operator<(const BooleExponent& lhs, const BooleExponent& rhs) {
-
-  return (lhs.compare(rhs) == CTypes::less_than);
-}
-
-/// Greater than comparision
-inline BooleExponent::bool_type
-operator>(const BooleExponent& lhs, const BooleExponent& rhs) {
-
-  return (lhs.compare(rhs) == CTypes::greater_than);
-}
-
-/// Less or equal than comparision
-inline BooleExponent::bool_type
-operator<=(const BooleExponent& lhs, const BooleExponent& rhs) {
-
-  return (lhs.compare(rhs) <= CTypes::less_or_equal_max);
-}
-
-/// Greater or equal than comparision
-inline BooleExponent::bool_type
-operator>=(const BooleExponent& lhs, const BooleExponent& rhs) {
-
-  return (lhs.compare(rhs) >= CTypes::greater_or_equal_min);
-}
-
 
 /// Compute the greatest common divisor of two monomials
 inline BooleExponent

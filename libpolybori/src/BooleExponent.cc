@@ -1,3 +1,4 @@
+
 // -*- c++ -*-
 //*****************************************************************************
 /** @file BooleExponent.cc
@@ -285,15 +286,6 @@ BooleExponent::divide(const monom_type& rhs) const {
   exp_divide(*this, rhs, result.m_data);
 
   return result;
-}
-
-// Comparision
-BooleExponent::comp_type
-BooleExponent::compare(const self& rhs) const {
-
-  PBORI_TRACE_FUNC( "BooleExponent::compare(const self& rhs) const" );
-
-  return BooleEnv::ordering().compare(*this, rhs); // todo!!!!
 }
 
 // Degree of the lcm

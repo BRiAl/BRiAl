@@ -490,7 +490,7 @@ protected:
 class LMLessComparePS{
 public:
   bool operator() (const PolynomialSugar& p1, const PolynomialSugar& p2){
-    return p1.leadExp()<p2.leadExp();
+    return p1.lead()<p2.lead();
   }
 };
 
@@ -1825,6 +1825,21 @@ Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     return p2;
 }
 #if  defined(HAVE_M4RI) || defined(HAVE_NTL)
+
+
+
+class ExpGreater:
+  public CFactoryBase {
+public:
+  ExpGreater(const BoolePolyRing& ring): CFactoryBase(ring) {}
+
+  bool operator()(const BooleExponent& lhs,
+		  const BooleExponent& rhs) const {
+    return parent().ordering().compare(lhs,rhs)==CTypes::greater_than;
+  }
+};
+
+
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
     log("reduction by linear algebra\n");
@@ -1868,7 +1883,11 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
     #endif
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
-    std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
+
+    std::sort(terms_as_exp.begin(),terms_as_exp.end(),
+	      ExpGreater(polys[0].ring()));
+
+
     from_term_map_type from_term_map;
     //to_term_map_type to_term_map;
     for (i=0;i<terms_as_exp.size();i++){
@@ -1965,7 +1984,8 @@ void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_a
     terms_as_exp_lex.resize(n);
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
     terms_as_exp_lex=terms_as_exp;
-    std::sort(terms_as_exp.begin(),terms_as_exp.end(),std::greater<Exponent>());
+    std::sort(terms_as_exp.begin(),terms_as_exp.end(),
+	      ExpGreater(terms.ring()));
     ring_order2lex.resize(n);
     lex_order2ring.resize(n);
     int i;

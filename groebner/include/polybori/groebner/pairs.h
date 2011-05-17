@@ -210,13 +210,18 @@ public:
   }
 };
 
-class PairECompare{
+class PairECompare: 
+  public CFactoryBase {
 public:
+  PairECompare(const BoolePolyRing& ring):
+    CFactoryBase(ring) {}
+
   ///replaces less template
   bool operator() (const PairE& l, const PairE& r){
     if (l.sugar!=r.sugar) return l.sugar>r.sugar; //greater sugar, less importance
     if (l.wlen!=r.wlen) return l.wlen>r.wlen;
-    if (l.lm!=r.lm) return l.lm>r.lm;
+    if (l.lm!=r.lm) return parent().ordering().compare(l.lm, r.lm) 
+		      == CTypes::greater_than;
     
     ///@todo lm comparison
     return false;

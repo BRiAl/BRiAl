@@ -1,3 +1,4 @@
+
 // -*- c++ -*-
 //*****************************************************************************
 /** @file BooleExponentTest.cc
@@ -692,58 +693,6 @@ BOOST_AUTO_TEST_CASE(test_logical_operators) {
   BOOST_TEST_MESSAGE( "== and !=" );
   BOOST_CHECK_EQUAL(exp_type(), exp_type());
   BOOST_CHECK(!(exp_type() !=exp_type()));
-
-  BOOST_TEST_MESSAGE( "compare as method of one monomial" );
-
-  exp1 = exp_type();
-  exp2 = exp_type().get(x*y*z*v*w);
-  output << exp1.compare(exp2);
-  BOOST_CHECK(output.is_equal("-1"));
-
-  exp1 = exp_type().get(x);
-  exp2 = exp_type().get(x*y);
-  output << exp1.compare(exp2);
-  BOOST_CHECK(output.is_equal("-1"));
-
-  exp1 = exp_type().get(x*y*z);
-  exp2 = exp_type().get(x*z);
-  output << exp1.compare(exp2);
-  BOOST_CHECK(output.is_equal("1"));
-
-  exp1 = exp_type().get(x*y*z);
-  exp2 = exp_type().get(x*y*z);
-  output << exp1.compare(exp2);
-  BOOST_CHECK(output.is_equal("0"));
-
-  BOOST_TEST_MESSAGE( ">, <, >= and <=" );
-
-  exp1 = exp_type();
-  exp2 = exp_type().get(x*y*z*v*w);
-  BOOST_CHECK_EQUAL(exp1 < exp2, true);
-  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
-  BOOST_CHECK_EQUAL(exp1 > exp2, false);
-  BOOST_CHECK_EQUAL(exp1 >= exp2, false);
-
-  exp1 = exp_type().get(x);
-  exp2 = exp_type().get(x*y);
-  BOOST_CHECK_EQUAL(exp1 < exp2, true);
-  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
-  BOOST_CHECK_EQUAL(exp1 > exp2, false);
-  BOOST_CHECK_EQUAL(exp1 >= exp2, false);
-
-  exp1 = exp_type().get(x*y*z);
-  exp2 = exp_type().get(x*z);
-  BOOST_CHECK_EQUAL(exp1 < exp2, false);
-  BOOST_CHECK_EQUAL(exp1 <= exp2, false);
-  BOOST_CHECK_EQUAL(exp1 > exp2, true);
-  BOOST_CHECK_EQUAL(exp1 >= exp2, true);
-
-  exp1 = exp_type().get(x*y*z);
-  exp2 = exp_type().get(x*y*z);
-  BOOST_CHECK_EQUAL(exp1 < exp2, false);
-  BOOST_CHECK_EQUAL(exp1 <= exp2, true);
-  BOOST_CHECK_EQUAL(exp1 > exp2, false);
-  BOOST_CHECK_EQUAL(exp1 >= exp2, true);
 }
 
 BOOST_AUTO_TEST_CASE(test_reducible) {

@@ -1,3 +1,4 @@
+
 /*
  *  groebner_alg.h
  *  PolyBoRi
@@ -72,7 +73,8 @@ class PairManager{
 public:
   PairStatusSet status;
   GroebnerStrategy* strat;
-  PairManager(GroebnerStrategy & strat){
+  PairManager(GroebnerStrategy & strat, 
+	      const BoolePolyRing& ring): queue(ring)  {
     this->strat=&strat;
   }
 
@@ -199,7 +201,7 @@ public:
 
 
 	GroebnerStrategy(const BoolePolyRing& input_ring):
-          r(input_ring), pairs(*this), cache(new CacheManager()) {
+        r(input_ring), pairs(*this, input_ring), cache(new CacheManager()) {
 
         optDrawMatrices=false;
         optModifiedLinearAlgebra=false;
@@ -263,6 +265,8 @@ public:
       
       
 };
+
+
 MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs);
 void groebner(GroebnerStrategy& strat);
 Polynomial reduce_by_binom(const Polynomial& p, const Polynomial& binom);
