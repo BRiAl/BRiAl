@@ -133,8 +133,12 @@ def construct_map_by_indices(to_ring, idx_mapping):
   return v
 
 
-def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_noredsb, reduce_ll_system=False, prot=False):
-  from_ring=global_ring()
+def eliminate_ll_ranked(ll_system, to_reduce,
+                        reduction_function=ll_red_nf_noredsb,
+                        reduce_ll_system=False, prot=False):
+
+  assert(ll_system)
+  from_ring=ll_system[0].ring()
   
   ll_ranks=rank(ll_system)
   add_vars=set(used_vars_set(to_reduce).variables()).difference(ll_ranks.keys())
