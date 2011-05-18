@@ -101,7 +101,7 @@ def linear_algebra_heuristic(d):
             return False
         n_used_vars=None
         bound=None
-        if I[0].ring().has_degree_order():
+        if iter(I).next().ring().has_degree_order():
             new_bound=200
             n_used_vars=used_vars_set(I,bound=new_bound).deg()
             if n_used_vars<new_bound:
@@ -304,7 +304,7 @@ def other_ordering_pre(I,option_set,kwds):
     try:
         new_ring = old_ring.clone()
         new_ring.set()
-        change_ordering(options["switch_to"])
+        new_ring.change_ordering(options["switch_to"])
         #        new_ring=global_ring()
         kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
         kwds["redsb"]=True

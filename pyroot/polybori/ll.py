@@ -158,7 +158,7 @@ def eliminate_ll_ranked(ll_system, to_reduce, reduction_function=ll_red_nf_nored
       to_ring.set()
       for (i, v) in enumerate(sorted_vars):
         assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
-        set_variable_name(i, var_names[i] + "TO")
+        to_ring.set_variable_name(i, var_names[i] + "TO")
   finally:
       from_ring.set()
   try:

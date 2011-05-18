@@ -1,5 +1,5 @@
 from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy,\
-    get_order_code, dp_asc, global_ring, Monomial, Ring, change_ordering
+    get_order_code, dp_asc, global_ring, Monomial, Ring
 from polybori.blocks import declare_ring
 def fglm(I, from_ring, to_ring):
     """
@@ -7,10 +7,10 @@ def fglm(I, from_ring, to_ring):
     It acts independend of the global ring, which is restored at the end of the
     computation,
     >>> r=declare_ring(['x','y','z'],dict())
-    >>> (x,y,z)=[Variable(i) for i in xrange(3)]
-    >>> old_ring=global_ring()
-    >>> change_ordering(dp_asc)
-    >>> new_ring=global_ring()
+    >>> old_ring = r
+    >>> new_ring = old_ring.clone()
+    >>> new_ring.change_ordering(dp_asc)
+    >>> (x,y,z) = [new_ring.variable(i) for i in xrange(3)]
     >>> ideal=[x+z, y+z]# lp Groebner basis
     >>> list(fglm(ideal, old_ring, new_ring))
     [y + x, z + x]
@@ -39,7 +39,7 @@ def m_k_plus_one(completed_elements, variables):
     >>> variables=BooleSet([x(1),x(2),x(3)])
     >>> m_k_plus_one(s,variables)
     x(2)*x(3)
-    >>> change_ordering(dp_asc)
+    >>> r.change_ordering(dp_asc)
     >>> m_k_plus_one(s,variables)
     x(1)*x(3)
     """

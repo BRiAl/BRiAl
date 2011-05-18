@@ -101,7 +101,6 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   implicitly_convertible<int,BooleConstant>();
   implicitly_convertible<BoolePolynomial,BooleSet>();
   implicitly_convertible<BooleSet,BoolePolynomial>();
-  def("change_ordering",&BooleEnv::changeOrdering);
 
   export_poly();
   export_nav();
@@ -158,7 +157,8 @@ with inverted variable order\n\
 
     .def("has_degree_order", has_degree_order,
         "Determines, whether ring ordering is a degree ordering")
-    .def("set_variable_name",&BoolePolyRing::setVariableName);
+    .def("set_variable_name",&BoolePolyRing::setVariableName)
+    .def("change_ordering",&BoolePolyRing::changeOrdering);
   
   def("append_ring_block", &BooleEnv::appendBlock, 
       "Append integer, which marks the index of the start of the next block (for block orderings)");
