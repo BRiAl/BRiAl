@@ -23,7 +23,9 @@ def owns_one_constant(I):
     return False
 
 def want_interpolation_gb(G):
-    if get_order_code()!=OrderCode.lp:
+    if not G:
+        return False
+    if G[0].ring().get_order_code()!=OrderCode.lp:
         return False
     if len(G)!=1:
         return False
@@ -65,10 +67,12 @@ def change_order_heuristic(d):
     d_orig=d
     d=copy(d)
     I=d["I"]
+    if not I:
+       return d 
     switch_table={OrderCode.lp:OrderCode.dp_asc,OrderCode.dlex:OrderCode.dp_asc}
     if not "other_ordering_first" in d:
         #TODO after ll situation might look much different, so heuristic is on wrong place
-        code=get_order_code()
+        code=iter(I).next().ring().get_order_code()
         if code in switch_table:
             max_non_linear=len(I)/2
             non_linear=0
@@ -297,15 +301,19 @@ def variety_size_from_gb(I):
         2**(number_of_used_vars-number_of_used_vars_minimal_leads)
 
 def other_ordering_pre(I,option_set,kwds):
+    if not I:
+        return (I, None)
+
     main_kwds=kwds
     options=option_set
-    ocode=get_order_code()
-    old_ring=global_ring()
+
+    old_ring=I[0].ring()
+    ocode=old_ring.get_order_code()
     try:
         new_ring = old_ring.clone()
         new_ring.set()
         new_ring.change_ordering(options["switch_to"])
-        #        new_ring=global_ring()
+
         kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
         kwds["redsb"]=True
         I_orig=I
@@ -461,6 +469,9 @@ def groebner_basis(I, faugere=False,
        linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
        red_tail_deg_growth=True, modified_linear_algebra=True, preprocessor=None):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
+
+    if not I:
+        return I
     
     if full_prot:
         prot=True
@@ -468,10 +479,11 @@ def groebner_basis(I, faugere=False,
         print "number of passed generators:",len(I)
     if not convert_with_fglm_from_ring is None:
         from_ring=convert_with_fglm_from_ring
-        to_ring=global_ring()
+        to_ring=I[0].ring()
         return fglm(I, from_ring, to_ring)
+
     if interpolation_gb:
-        if len(I)!=1 or get_order_code()!=OrderCode.lp:
+        if len(I)!=1 or I[0].ring().get_order_code()!=OrderCode.lp:
             raise ValueError
         return lex_groebner_basis_for_polynomial_via_variety(I[0])
     if deg_bound is False:

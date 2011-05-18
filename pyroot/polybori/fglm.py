@@ -1,5 +1,5 @@
 from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy,\
-    get_order_code, dp_asc, global_ring, Monomial, Ring
+    dp_asc, Monomial, Ring
 from polybori.blocks import declare_ring
 def fglm(I, from_ring, to_ring):
     """

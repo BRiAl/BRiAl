@@ -83,6 +83,17 @@ bool has_degree_order(const BoolePolyRing& ring) {
   return ring.ordering().isDegreeOrder();
 }
 
+BoolePolyRing::ordercode_type
+get_order_code(const BoolePolyRing& ring) {
+  return ring.ordering().getOrderCode();
+} 
+
+void
+append_block(const BoolePolyRing& ring,
+             BoolePolyRing::idx_type next_block_start) {
+  return ring.ordering().appendBlock(next_block_start);
+} 
+
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -124,7 +135,6 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     dp_asc
   };
 };*/
-  def("get_order_code",&BooleEnv::getOrderCode);  
   def("print_ring_info", print_ring_info);
 
 
@@ -158,10 +168,11 @@ with inverted variable order\n\
     .def("has_degree_order", has_degree_order,
         "Determines, whether ring ordering is a degree ordering")
     .def("set_variable_name",&BoolePolyRing::setVariableName)
-    .def("change_ordering",&BoolePolyRing::changeOrdering);
-  
-  def("append_ring_block", &BooleEnv::appendBlock, 
+    .def("change_ordering",&BoolePolyRing::changeOrdering)
+    .def("get_order_code", get_order_code)
+    .def("append_block",append_block,
       "Append integer, which marks the index of the start of the next block (for block orderings)");
+  
 
   boost::python::class_<BooleConstant>("BooleConstant", 
                                        "Boolean constant value")
