@@ -97,9 +97,11 @@ def linear_algebra_heuristic(d):
     d=copy(d)
     I=d["I"]
     def want_la():
+        if not I:
+            return False
         n_used_vars=None
         bound=None
-        if have_degree_order():
+        if I[0].ring().has_degree_order():
             new_bound=200
             n_used_vars=used_vars_set(I,bound=new_bound).deg()
             if n_used_vars<new_bound:

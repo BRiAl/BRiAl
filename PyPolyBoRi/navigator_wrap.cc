@@ -45,8 +45,4 @@ navigate through ZDD-based data structures,"))
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("valid", &CCuddNavigator::isValid, 
        "If navigator is constant, this checks for terminal one");
-  def("one", &BooleEnv::one, "Constant one of the active ring");
-  def("zero", &BooleEnv::zero, "Constant zero of the active ring");
-  def("number_of_variables", &BooleEnv::nVariables, 
-      "Number of variables in the active ring");
 }

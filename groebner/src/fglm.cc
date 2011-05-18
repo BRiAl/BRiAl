@@ -790,7 +790,6 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
         }
         it++;
     }
-    //assert ((BooleEnv::ring()==from) ||(BooleEnv::ring()==to));
     
     Monomial monomial_one(from_ring);
     if (prot)

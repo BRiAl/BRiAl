@@ -204,7 +204,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             else:
                 ps=strat.some_spolys_in_next_degree(selection_size)
             
-            if have_degree_order() and len(ps)>0:
+            if ps and ps[0].ring().has_degree_order():
                 ps=[strat.reduction_strategy.cheap_reductions(p) for p in ps]
                 ps=[p for p in ps if not p.is_zero()]
                 if len(ps)>0:
@@ -256,7 +256,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 print "end reducing"
             
 
-            if len(res)>0 and have_degree_order():
+            if len(res)>0 and res[0].ring().has_degree_order():
                 res_min_deg=min([p.deg() for p in res])
                 new_res = []
                 for p in res:

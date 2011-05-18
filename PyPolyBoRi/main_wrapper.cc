@@ -47,11 +47,6 @@ void print_ring_info() {
   BooleEnv::print(std::cout);
 }
 
-bool have_degree_order(){
-  return BooleEnv::ordering().isDegreeOrder();
-}
-
-
 BoolePolynomial
 ring_var(const BoolePolyRing& ring, BooleVariable::idx_type idx) {
   return ring.variable(idx);
@@ -82,6 +77,10 @@ static BoolePolynomial::navigator nav(const BoolePolynomial& p){
 
 BoolePolynomial coerce(const BoolePolyRing& ring, const BoolePolynomial& poly){
   return ring.coerce(poly);
+}
+
+bool has_degree_order(const BoolePolyRing& ring) {
+  return ring.ordering().isDegreeOrder();
 }
 
 //EXPORT
@@ -152,13 +151,15 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
                 dp_asc: degree reverse lexicographical ordering \
 with inverted variable order\n\
                 block_dp_asc: Block ordering with blocks consisting of dp_asc\n\
-                block_dlex: Block ordering with blocks consisting of dlex\n") );
+                block_dlex: Block ordering with blocks consisting of dlex\n") )
+
+    .def("has_degree_order", has_degree_order,
+        "Determines, whether ring ordering is a degree ordering");
 
   
   def("append_ring_block", &BooleEnv::appendBlock, 
       "Append integer, which marks the index of the start of the next block (for block orderings)");
-  def("have_degree_order", have_degree_order, 
-      "Determines, whether ring ordering is a degree ordering");
+
   boost::python::class_<BooleConstant>("BooleConstant", 
                                        "Boolean constant value")
     .def(init<const BooleConstant &>())

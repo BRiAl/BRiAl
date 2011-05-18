@@ -9,7 +9,7 @@
 #ifndef fglm_header
 #define fglm_header
 
-#include <polybori/BooleEnv.h>
+#include <polybori/BoolePolyRing.h>
 #include "groebner_alg.h"
 extern "C" {
 #include <m4ri/m4ri.h>
@@ -21,7 +21,7 @@ typedef std::vector<Polynomial> poly_vec;
 class FGLMStrategy{
   FGLMStrategy(); /* Never use this! */
 public:
-    typedef BooleEnv::ring_type ring_with_ordering_type;
+    typedef BoolePolyRing ring_with_ordering_type;
 
     FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb);
  
