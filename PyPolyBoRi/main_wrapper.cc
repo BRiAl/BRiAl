@@ -127,7 +127,10 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
 };*/
   def("get_order_code",&BooleEnv::getOrderCode);  
   def("print_ring_info", print_ring_info);
-  
+
+
+  implicitly_convertible<CCheckedIdx::idx_type, CCheckedIdx>();
+
   boost::python::class_<BoolePolyRing>("Ring", "Boolean polynomial ring") 
     //.def(boost::python::init <>())
     .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables")
@@ -154,8 +157,8 @@ with inverted variable order\n\
                 block_dlex: Block ordering with blocks consisting of dlex\n") )
 
     .def("has_degree_order", has_degree_order,
-        "Determines, whether ring ordering is a degree ordering");
-
+        "Determines, whether ring ordering is a degree ordering")
+    .def("set_variable_name",&BoolePolyRing::setVariableName);
   
   def("append_ring_block", &BooleEnv::appendBlock, 
       "Append integer, which marks the index of the start of the next block (for block orderings)");

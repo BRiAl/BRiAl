@@ -3,7 +3,7 @@ if __name__=='__main__':
     import pathadjuster
 
 from polybori.PyPolyBoRi import Ring, VariableBlock, Polynomial
-from polybori.PyPolyBoRi import VariableFactory, MonomialFactory, set_variable_name
+from polybori.PyPolyBoRi import VariableFactory, MonomialFactory
 from itertools import chain,islice
 #class BlockEndException(object):
   #pass
@@ -11,15 +11,6 @@ from itertools import chain,islice
   # self.arg = arg
   # pass
   
-
-def set_names_decorator(method):
-  def method_new(self,start,context):
-    for (i,name) in enumerate(self):
-      set_variable_name(i+start,name)
-      method(self,start,context)
-  method_new.__name__=method.__name__
-  return method_new
-
 
 class Block(object):
   """The block class represents a block of variables <var_name>(start_index,...,start_index+size-1), it is the preferred block type for simple one-dimensional variable sets"""  
@@ -344,17 +335,18 @@ def declare_ring(blocks,context=None):
 def declare_block_scheme(blocks,context):
     start=0
     block_starts=[]
+    ring = context["r"]
     for b in blocks:
       if start!=0:
           block_starts.append(start)
       if isinstance(b,str):
         context[b] = context["Variable"](start)
-        set_variable_name(start,b)
+        ring.set_variable_name(start,b)
         start=start+1
       else:
         b.register(start,context)
         for (pos,name) in enumerate(b):
-            set_variable_name(start+pos,name)
+            ring.set_variable_name(start+pos,name)
         
         
         start=start+len(b)

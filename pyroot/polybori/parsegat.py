@@ -1,4 +1,8 @@
-import pathadjuster
+#import pathadjuster
+from sys import path as search_path
+from os import path as file_path
+search_path.append(file_path.join(file_path.dirname(__file__), '..'))
+
 from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
     ZeroOrMore,Forward,nums,alphas, Or, restOfLine,OneOrMore,restOfLine,alphanums
 
@@ -81,8 +85,9 @@ class DeterminingEquation(object):
 # for next state/output we directly generate mapped_to + value instead of introducing a variable and mapping it later
 class VariableManager(object):
     """docstring for VariableManager"""
-    def __init__(self,prefix="", initialize="noinit", **kwd):
+    def __init__(self,ring, prefix="", initialize="noinit", **kwd):
         super(VariableManager, self).__init__()
+        self.ring = ring
         self.output=[]
         self.input=[]
         self.state=[]
@@ -151,7 +156,8 @@ class VariableManager(object):
             my_sort(self.apply_map(i)) for i in
             (ideal_state,ideal_intermediate, ideal_next_state)]
     def set_variable_name(self, i, name):
-        set_variable_name(i, self.prefix+name)
+        self.ring.set_variable_name(i, self.prefix+name)
+        
     def parse_output_action(self,str,log,tokens):
         p = Polynomial(tokens[1])
         #self.output.append(p)
@@ -412,7 +418,7 @@ def generate_three_ideal_output(ideal_state, ideal_intermediate, ideal_next_stat
 if __name__=='__main__':
     (options, args) = parser.parse_args()
     kwd_args = dict()
-    declare_ring([
+    ring = declare_ring([
         "t",
         Block("x",gat_max, reverse=True),
         Block("xnext",next_max,reverse = True),
@@ -421,7 +427,7 @@ if __name__=='__main__':
         Block("xinput",input_max,reverse = True),
         Block("xstate",state_max,reverse = True)],kwd_args)
     
-    manager = VariableManager(include_outputs = options.include_outputs,
+    manager = VariableManager(ring = ring, include_outputs = options.include_outputs,
         initialize = options.initialize,
         **kwd_args
     )
