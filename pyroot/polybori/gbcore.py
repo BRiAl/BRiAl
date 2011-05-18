@@ -321,6 +321,7 @@ def other_ordering_pre(I,option_set,kwds):
         variety_size=variety_size_from_gb(I)
         if variety_size<50000:
             main_kwds["convert_with_fglm_from_ring"]=new_ring
+            main_kwds["convert_with_fglm_to_ring"]=old_ring        
         else:
             I = [old_ring.coerce(poly) for poly in I]
     finally:
@@ -467,6 +468,7 @@ def groebner_basis(I, faugere=False,
        llfirst= False, noro= False, implications= False,
        draw_matrices= False, llfirstonthefly= False,
        linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
+       convert_with_fglm_to_ring=None,
        red_tail_deg_growth=True, modified_linear_algebra=True, preprocessor=None):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
 
@@ -479,7 +481,7 @@ def groebner_basis(I, faugere=False,
         print "number of passed generators:",len(I)
     if not convert_with_fglm_from_ring is None:
         from_ring=convert_with_fglm_from_ring
-        to_ring=I[0].ring()
+        to_ring = convert_with_fglm_to_ring
         return fglm(I, from_ring, to_ring)
 
     if interpolation_gb:
