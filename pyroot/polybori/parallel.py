@@ -8,9 +8,10 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import if_then_else, Polynomial, global_ring, CCuddNavigator
+from polybori.PyPolyBoRi import if_then_else, Polynomial, CCuddNavigator
 from polybori.gbcore import groebner_basis
 
+    
 def to_fast_pickable(l):
     """
     to_fast_pickable(l) converts a list of polynomials into a builtin Python value, which is fast pickable and compact.
@@ -125,7 +126,9 @@ def from_fast_pickable(l,r=None):
         [x(0)*x(1), 0, 1, x(3)]
     """
     if r is None:
-        r=global_ring()
+        global _polybori_parallel_ring
+        r = _polybori_parallel_ring
+
     i2poly={0:r.zero(), 1:r.one()}
     (indices, terms)=l
 
@@ -144,7 +147,7 @@ def _calculate_gb_with_keywords(args):
 
 
 def unpickle_polynomial(self, code):
-    self.__init__(from_fast_pickable(code, global_ring())[0])
+    self.__init__(from_fast_pickable(code)[0])
 
     
 def pickle_polynomial(poly):
@@ -154,7 +157,9 @@ def pickle_polynomial(poly):
 Polynomial.__getstate__ = pickle_polynomial
 Polynomial.__setstate__ = unpickle_polynomial
 Polynomial.__safe_for_unpickling__ = True
-   
+
+
+
 def groebner_basis_first_finished(I, *l):
     """
     INPUT:
@@ -170,13 +175,17 @@ def groebner_basis_first_finished(I, *l):
         >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
         [x(1), x(2)]
     """
-    
+    if not I:
+        return []
     try:
         from multiprocessing import Pool
     except:
         from processing import Pool
 
-    pool = Pool(processes=len(l))            
+    global _polybori_parallel_ring
+    _polybori_parallel_ring = iter(I).next().ring()
+
+    pool = Pool(processes=len(l))
 
     it = pool.imap_unordered(_calculate_gb_with_keywords,
                              [(I, kwds) for kwds in l])

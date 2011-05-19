@@ -1,42 +1,45 @@
-from polybori.PyPolyBoRi import Monomial, global_ring, random_set, Polynomial, set_random_seed, Ring, ll_red_nf_redsb
+from polybori.PyPolyBoRi import Monomial, random_set, Polynomial, set_random_seed, Ring, ll_red_nf_redsb
 from polybori.ll import ll_encode
 from random import Random
 from pprint import pprint, pformat
 from polybori.blocks import declare_ring
+
 def gen_random_poly(l,deg,vars_set,seed=123):
+    if not vars_set:
+        return 0
+    ring = vars_set[0].ring()
     myrange=vars_set
     r=Random(seed)
     def helper(samples):
         if samples==0:
-            return Polynomial(0)
+            return Polynomial(ring.zero())
         if samples==1:
             d=r.randint(0,deg)
             variables=r.sample(myrange,d)
-            m=Monomial()
+            m=Monomial(ring)
             for v in sorted(set(variables),key=top_index,reverse=True):
                 m=m*v
             return Polynomial(m)
         assert samples>=2
         return helper(samples/2)+helper(samples-samples/2)
-    p=Polynomial(0)
+    p=Polynomial(ring.zero())
     while(len(p)<l):
         p=Polynomial(p.set().union(helper(l-len(p)).set()))
     return p
 
-def sparse_random_system(number_of_polynomials, variables_per_polynomial, degree, random_seed=None):
+def sparse_random_system(ring, number_of_polynomials, variables_per_polynomial, degree, random_seed=None):
     """
     generates a system, which is sparse in the sense, that each polynomial
     contains only a small subset of variables. In each variable that occurrs in a polynomial it is dense in the terms up to the given degree (every term occurs with probability 1/2).
     The system will be satisfiable by at least one solution.
     >>> from polybori import *
     >>> r=Ring(10)
-    >>> s=sparse_random_system(number_of_polynomials = 20, variables_per_polynomial = 3, degree=2, random_seed=123)
+    >>> s=sparse_random_system(r, number_of_polynomials = 20, variables_per_polynomial = 3, degree=2, random_seed=123)
     >>> [p.deg() for p in s]
     [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
     >>> groebner_basis(s)
     [x(0), x(3), x(4) + 1, x(5), x(7), x(9), x(6) + 1, x(2), x(1), x(8) + 1]
     """
-    ring = global_ring()
     if random_seed is not None:
         set_random_seed(random_seed)
     random_generator = Random(random_seed)
@@ -67,7 +70,7 @@ def sparse_random_system_data_file_content(
     """
     dummy_dict=dict()
     r=declare_ring(['x'+str(i) for i in xrange(number_of_variables)], dummy_dict)
-    polynomials = sparse_random_system(**kwds)
+    polynomials = sparse_random_system(r, **kwds)
     polynomials = pformat(polynomials)
     res="declare_ring(['x'+str(i) for in xrange(%s)])\nideal=\\\n%s\n\n" %(number_of_variables, polynomials)
     return res
