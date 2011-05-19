@@ -138,13 +138,23 @@ def from_fast_pickable(l,r=None):
 
     return [Polynomial(i2poly[i]) for i in indices]
 
-def _calculate_gb_with_keywords(x):
-    (I,kwds_as_single_arg)=x
-    I=from_fast_pickable(I)
-    res=groebner_basis(I,**kwds_as_single_arg)
-    res=to_fast_pickable(res)
-    return res
+def _calculate_gb_with_keywords(args):
+    (I, kwds_as_single_arg) = args
+    return groebner_basis(I, **kwds_as_single_arg)
 
+
+def unpickle_polynomial(self, code):
+    self.__init__(from_fast_pickable(code, global_ring())[0])
+
+    
+def pickle_polynomial(poly):
+    return to_fast_pickable([poly])
+
+
+Polynomial.__getstate__ = pickle_polynomial
+Polynomial.__setstate__ = unpickle_polynomial
+Polynomial.__safe_for_unpickling__ = True
+   
 def groebner_basis_first_finished(I, *l):
     """
     INPUT:
@@ -161,15 +171,18 @@ def groebner_basis_first_finished(I, *l):
         [x(1), x(2)]
     """
     
-    from processing import Pool
-    # Maybe one needs multiprocessing instead of processing?
-    #from multiprocessing import Pool
+    try:
+        from multiprocessing import Pool
+    except:
+        from processing import Pool
+
     pool = Pool(processes=len(l))            
-    I=to_fast_pickable(I)
-    it = pool.imap_unordered(_calculate_gb_with_keywords, [(I,kwds) for kwds in l])  
+
+    it = pool.imap_unordered(_calculate_gb_with_keywords,
+                             [(I, kwds) for kwds in l])
     res=it.next() 
     pool.terminate()
-    return from_fast_pickable(res)
+    return res
 
 def _test():
     import doctest
