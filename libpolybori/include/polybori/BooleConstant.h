@@ -30,7 +30,8 @@ BEGIN_NAMESPACE_PBORI
  * modulo 2 operation.
  **/
 
-class BooleConstant {
+class BooleConstant:
+  public CTypes {
 
 public:
   /// Default constructor
@@ -50,6 +51,9 @@ public:
 
   /// Negation operation
   BooleConstant operator!() const { return !m_value; }
+
+  /// Get constant degree
+  deg_type deg() const { return (m_value? 0: -1); }
 
 protected:
   /// Boolean value is stored as simple bool

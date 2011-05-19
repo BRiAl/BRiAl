@@ -60,7 +60,7 @@ def gauss(matrix):
     eqs = [ sum([matrix[row][col]*Variable(col) for col in xrange(ncols)])
             for row in xrange(nrows)]
     result = groebner_basis(eqs)
-    result = result + [Polynomial(0)]* (nrows - len(result))
+    result = result + [BooleConstant(0)]* (nrows - len(result))
     
     return [[get_num(idx, elt.set().vars()) for idx in xrange(ncols)]
             for elt in result]

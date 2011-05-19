@@ -20,7 +20,7 @@ def llredsb_Cudd_style(polys):
   if polys:
       reductors=Polynomial( polys[0].ring().one()).set()
   else:
-      reductors=Polynomial(1).set()
+      reductors=None
   
   linear_lead=sorted(polys,key=lead_index,reverse=True)
   assert len(set([p.lex_lead() for p in linear_lead]))==len(polys)
@@ -54,7 +54,7 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
   if polys:
       reductors=Polynomial( polys[0].ring().one()).set()
   else:
-      reductors=Polynomial(1).set()
+      reductors=None
   
   
   last=None

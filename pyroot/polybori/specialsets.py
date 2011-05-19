@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import BooleSet,Polynomial,mod_mon_set, if_then_else, Monomial, top_index
+from polybori.PyPolyBoRi import BooleSet,Polynomial,mod_mon_set, if_then_else, Monomial, top_index, BooleConstant
 
 #def all_monomials_of_degree_d(d,variables):
 #    res=all_monomials_of_degree_d_new(d, variables)
@@ -6,10 +6,12 @@ from polybori.PyPolyBoRi import BooleSet,Polynomial,mod_mon_set, if_then_else, M
 #    assert res==ref, (d, variables)
 #    return res
 def all_monomials_of_degree_d_old(d,variables):
+    
     if d==0:
-        return Polynomial(1).set()
-    if len(variables)==0:
-        return BooleSet()
+        return BooleConstant(1)
+    
+    if not variables:
+        return []
     variables=sorted(set(variables),reverse=True,key=top_index)
 
     m=variables[-1]
@@ -17,7 +19,7 @@ def all_monomials_of_degree_d_old(d,variables):
         m=v+m
     m=m.set()
     i=0
-    res=Polynomial(1).set()
+    res=Polynomial(variables[0].ring().one()).set()
     while(i<d):
         i=i+1
         res=res.cartesian_product(m).diff(res)
@@ -26,17 +28,19 @@ def all_monomials_of_degree_d_old(d,variables):
 def all_monomials_of_degree_d(d, variables):
     variables=Monomial(variables)
     variables=list(variables.variables())
-    if d>len(variables):
-        return Polynomial(0)
-    if d<0:
-        return Polynomial(1)
-    if len(variables)==0:
+    if not variables:
         assert d==0
-        return 1
+        return BooleConstant(1)
+    ring = variables[0].ring()
+    if d>len(variables):
+        return Polynomial(0, ring)
+    if d<0:
+        return Polynomial(1, ring)
+
     deg_variables=variables[-d:]
     #this ensures sorting by indices
     res=Monomial(deg_variables)
-    ring=Polynomial(variables[0]).ring()
+
     for i in xrange(1, len(variables)-d+1):
         deg_variables=variables[-d-i:-i]
         res=Polynomial(res)
@@ -45,7 +49,7 @@ def all_monomials_of_degree_d(d, variables):
         while not nav.constant():
             navs.append(BooleSet(nav,ring))
             nav=nav.then_branch()
-        acc=Polynomial(1)
+        acc=Polynomial(1, ring)
         for (nav, v) in reversed(zip(navs, deg_variables)):
             acc=if_then_else(v, acc, nav)
         res=acc
@@ -53,8 +57,10 @@ def all_monomials_of_degree_d(d, variables):
     
 
 def power_set(variables):
+    if not variables:
+        return BooleConstant(1)
     variables=sorted(set(variables),reverse=True,key=top_index)
-    res=Polynomial(1).set()
+    res=Polynomial(1, variables[0].ring()).set()
     for v in variables:
         res=if_then_else(v,res,res)
     return res

@@ -66,13 +66,15 @@ def gen_random_o_z(points,points_p):
         vec.append(p)
     ones=add_up_polynomials(vec)
     return interpolate_smallest_lex(points_p.set().diff(ones),ones)
+
 def variety_lex_leading_terms(points,variables):
-    standards=BooleSet()
+    ring = variables.ring()
+    standards=BooleSet(ring.zero())
     points_tuple=tuple(points)
     myvars_div=variables.divisors()
     myvars_iter=iter(myvars_div)
     if points!=myvars_div:
-        standards=BooleSet(Polynomial(1))
+        standards=BooleSet(ring.one())
     len_standards=len(standards)
     standards_old=standards
     while len_standards<len(points):
@@ -85,6 +87,7 @@ def variety_lex_leading_terms(points,variables):
 
     leading_terms=BooleSet(myvars_div.diff(standards)).minimal_elements()
     return leading_terms
+
 def lex_groebner_basis_points(points,variables):
     leads=variety_lex_leading_terms(points,variables)
     return [nf_lex_points(l,points)+l for l in leads]

@@ -104,7 +104,7 @@ class AdderBlock(AlternatingBlock):
     self.c=shift(context[self.carries],self.start_index)
     a=shift(a,self.start_index)
     b=shift(b,self.start_index)
-    carries=[Polynomial(0)]
+    carries=[Polynomial(a(0).ring().zero())]
     for i in xrange(self.adder_bits):
       #print i, ":"
       c=1+(1+a(i)*b(i))*(1+carries[-1]*a(i))*(1+carries[-1]*b(i))

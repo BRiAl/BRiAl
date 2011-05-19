@@ -164,8 +164,7 @@ def with_heuristic(heuristic_function):
         return wrapped
     return make_wrapper
 def clean_polys(I):
-    zero=Polynomial(0)
-    I=list(set((Polynomial(p) for p in I if p!=zero)))
+    I=list(set((Polynomial(p) for p in I if not p.is_zero())))
     return I
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
@@ -490,13 +489,12 @@ def groebner_basis(I, faugere=False,
         return lex_groebner_basis_for_polynomial_via_variety(I[0])
     if deg_bound is False:
         deg_bound=100000000L
-    zero=Polynomial(0)
-    I=[Polynomial(p) for p in I if p!=zero]
-    if unique_ideal_generator:
+    I=[Polynomial(p) for p in I if not p.is_zero()]
+    if unique_ideal_generator and I:
         prod=1
         for p in I:
             prod=(p+1)*prod
-        I=[prod+Polynomial(1)]
+        I=[prod + 1]
 
     import nf
     nf.print_matrices=draw_matrices

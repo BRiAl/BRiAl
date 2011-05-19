@@ -3,7 +3,7 @@ if __name__=='__main__':
     from os import path as file_path
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
     
-from polybori.PyPolyBoRi import Monomial, Polynomial, BooleSet
+from polybori.PyPolyBoRi import Monomial, Polynomial, BooleSet, BooleConstant
 from polybori.PyPolyBoRi import Variable as VariableType
 
 class IntegerPolynomial(object):
@@ -22,7 +22,7 @@ class IntegerPolynomial(object):
                 and_=2**i & other
                 if and_:
                     res.append(i)
-            return (self, IntegerPolynomial(dict([(i, Polynomial(1)) for i in res])))
+            return (self, IntegerPolynomial(dict([(i, BooleConstant(1)) for i in res])))
         if isinstance(other,  VariableType) or isinstance(other, Monomial):
             other=Polynomial(other)
         if isinstance(other, Polynomial):
@@ -51,7 +51,7 @@ class IntegerPolynomial(object):
             p=Polynomial(p)
             if p.is_zero():
                 return
-            res_p=Polynomial(res.get(i, Polynomial(0)))
+            res_p=Polynomial(res.get(i, Polynomial(0, p.ring())))
             res[i]=res_p+p
             if res[i].is_zero():
                 del res[i]

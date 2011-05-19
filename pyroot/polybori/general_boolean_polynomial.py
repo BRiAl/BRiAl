@@ -41,12 +41,13 @@ class GeneralBooleanPolynomial:
 		self.polys=[]
 		self.k = k
 		if isinstance(polynomial, int):
-			polynomial = Polynomial(polynomial)
+			polynomial = BooleConstant(polynomial)
+		self.ring = polynomial.ring()
 		for i in xrange(k):
 			if i in coeff:
 				self.polys.append(polynomial)
 			else:
-				self.polys.append(Polynomial(0))
+				self.polys.append(Polynomial(0, self.ring))
 	
 	def __len__(self):
 		"""
@@ -157,7 +158,8 @@ class GeneralBooleanPolynomial:
 		"""
 		Returns leading coefficient as constant GeneralBooleanPolynomial
 		"""
-		return GeneralBooleanPolynomial(self.k, self.lc_as_set() , Polynomial(1) )
+		return GeneralBooleanPolynomial(self.k, self.lc_as_set(),
+						Polynomial(1, self.ring) )
 	
 	def lc_as_set_array(self):
 		"""
@@ -251,12 +253,12 @@ class GeneralBooleanPolynomial:
 		"""
 		Constant part as GeneralBoolenPolynomial
 		"""
-		res = GeneralBooleanPolynomial(len(self), [], Polynomial(0))
+		res = GeneralBooleanPolynomial(len(self), [], Polynomial(0, self.ring))
 		for i in xrange(len(self)):
 			if self[i].has_constant_part():
-				res[i] = Polynomial(1)
+				res[i] = Polynomial(1, self.ring)
 			else:
-				res[i] = Polynomial(0)
+				res[i] = Polynomial(0, self.ring)
 		return res 
 
 	def to_expanded_polynomial_ring(self, new_variables):
@@ -299,9 +301,9 @@ class GeneralBooleanPolynomial:
 		"""
 		assert self.is_monomial()
 		for i in xrange(self.k):
-			if self.polys[i] != Polynomial(0):
+			if self.polys[i] != Polynomial(0, self.ring):
 				return self.polys[i].lead()
-		return Polynomial(0)
+		return Polynomial(0, self.ring)
 
 	def divides(self, other):
 		"""
@@ -383,7 +385,7 @@ def expanded_polynomial2general_polynomial(polynomial, new_variables ):
 	to the factors of F_2^k (by specialization of the additional variables)
 	"""
 	comps = [ projection_of_expanded_polynomial(polynomial, e, new_variables) for e in new_variables ]
-	sum2 = GeneralBooleanPolynomial(len(new_variables),[0]*len(new_variables) ,Polynomial(0))
+	sum2 = GeneralBooleanPolynomial(len(new_variables),[0]*len(new_variables) ,Polynomial(0, self.ring))
 	for i in xrange(len(new_variables)):
 		sum2[i] = comps[i]
 	return sum2
@@ -395,7 +397,7 @@ def reduce_general_boolean_polynomial(F, polynomial):
 	r = polynomial
 	s = len(F)
 	k = len(polynomial)
-	h = [GeneralBooleanPolynomial( len(polynomial), [0]*len(polynomial), Polynomial(0) )]*s
+	h = [GeneralBooleanPolynomial( len(polynomial), [0]*len(polynomial), Polynomial(0, self.ring) )]*s
 	
 	# Indices i where leading monomial of F[i] divided leading monomial of r
 
@@ -438,7 +440,7 @@ def reduce_general_boolean_polynomial(F, polynomial):
 			if lc_polynomial_binary[j]:
 				coeff[j][0] = 1
 
-		sum = GeneralBooleanPolynomial(k, [0]*k, Polynomial(0))
+		sum = GeneralBooleanPolynomial(k, [0]*k, Polynomial(0, self.ring))
 		for i in xrange(len(Is)):
 			c = [coeff[l][i] for l in xrange(k)]
 			c_set = [l for l in xrange(k) if coeff[l][i]==1 ] 
@@ -513,7 +515,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
 			print "A before proceeding", A
 
 		if p_gb.is_zero():
-			LMs.append(Polynomial(0))
+			LMs.append(Polynomial(0, self.ring))
 			A.append(p)
 			if debug>1:
 				print "Adding p that becomes zero"
@@ -544,7 +546,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
 		# Leading coefficients as GeneralBooleanPolynomial
 		lc_b_gb = b_gb.lc()
 		lc_r_gb = r_gb.lc()
-		unit = GeneralBooleanPolynomial( len(e_vars) , [o for o in xrange( len(e_vars) )], Polynomial(1))
+		unit = GeneralBooleanPolynomial( len(e_vars) , [o for o in xrange( len(e_vars) )], Polynomial(1,p.ring()))
 
 		b1_gb = b_gb*(unit+lc_r_gb) + r_gb
 		r2_gb = r_gb*(unit+lc_r_gb+lc_r_gb*lc_b_gb) + lc_r_gb * b_gb

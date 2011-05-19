@@ -1,4 +1,4 @@
-from polybori.PyPolyBoRi import Polynomial, BooleSet
+from polybori.PyPolyBoRi import Polynomial, BooleSet, BooleConstant
 from polybori.partial import PartialFunction
 from polybori.specialsets import all_monomials_of_degree_d, power_set
 from polybori.ll import ll_encode, ll_red_nf_redsb
@@ -110,7 +110,7 @@ def multiply_by_addition(word_a, word_b):
     word_b=list(word_b)
     summands=[]
     for (i, a) in enumerate(word_a):
-        summands.append(i*[Polynomial(0)]+[a*b for b in word_b])
+        summands.append(i*[BooleConstant(0)]+[a*b for b in word_b])
     return add_words(summands)
 
 def _test():

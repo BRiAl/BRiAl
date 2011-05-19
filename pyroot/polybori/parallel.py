@@ -36,9 +36,9 @@ def to_fast_pickable(l):
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
         >>> x=Variable = VariableFactory(r)
-        >>> to_fast_pickable([Polynomial(1)])
+        >>> to_fast_pickable([Polynomial(1, r)])
         [[1], []]
-        >>> to_fast_pickable([Polynomial(0)])
+        >>> to_fast_pickable([Polynomial(0, r)])
         [[0], []]
         >>> to_fast_pickable([x(0)])
         [[2], [(0, 1, 0)]]
@@ -57,7 +57,7 @@ def to_fast_pickable(l):
         >>> p=x(5)*x(23) + x(5)*x(24)*x(59) + x(5) + x(6)*x(23)*x(89) + x(6)*x(60)*x(89) + x(23) + x(24)*x(89) + x(24) + x(60)*x(89) + x(89) + 1
         >>> from_fast_pickable(to_fast_pickable([p]))==[p]
         True
-        >>> to_fast_pickable([x(0)*x(1), Polynomial(0), Polynomial(1), x(3)])
+        >>> to_fast_pickable([x(0)*x(1), Polynomial(0, r), Polynomial(1, r), x(3)])
         [[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]]
     """
     if len(l)==0:

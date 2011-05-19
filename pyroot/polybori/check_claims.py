@@ -10,7 +10,7 @@ import sys
 from optparse import OptionParser
 #if __name__ == "__main__":
 #    import pathadjuster
-from polybori.PyPolyBoRi import Polynomial, Monomial
+from polybori.PyPolyBoRi import Polynomial, Monomial, BooleConstant
 from polybori.gbrefs import my_import, load_data, clean_data,load_file
 from polybori.blocks import IfThen
 from copy import copy
@@ -49,10 +49,10 @@ parser.add_option("--method",
 
 def my_red_nf(p,strat):
   if p.is_zero():
-    return Polynomial(0)
+    return p
   hr=nf3(strat.reduction_strategy,p,p.lead())
   if hr.is_zero():
-    return Polynomial(0)
+    return hr
   return red_tail(strat,hr)
 def gen_strat(polys):
   polys=[Polynomial(p) for p in polys]
@@ -66,12 +66,13 @@ def gen_strat(polys):
   print "finished"
   return strat
 def logicaland(l):
-  res=Polynomial(0)
+  res=BooleConstant(0)
   for p in l:
     res=1+(res+1)*(p+1)
   return res
+
 def logicalor(l):
-  res=Polynomial(1)
+  res=BooleConstant(1)
   for p in l:
     res=res*p
   return res
