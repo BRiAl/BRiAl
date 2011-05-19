@@ -1,15 +1,16 @@
 from polybori.PyPolyBoRi import Monomial,Polynomial,top_index
 
 def used_vars(l, bound=None):
-    m=Monomial()
-    for p in l:
+    if not l:
+        return []
+    m = Monomial(Polynomial(iter(l).next()).vars_as_monomial())
+    for p in l[1:]:
         m=m*Polynomial(p).vars_as_monomial()
         if bound and len(m) > bound:
             return m
     return m
 
 def used_vars_set(l,bound=None):
-    m = Monomial()
     s=set()
     for p in l:
         s.update(Polynomial(p).vars_as_monomial().variables())

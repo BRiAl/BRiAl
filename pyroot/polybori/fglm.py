@@ -35,7 +35,7 @@ def m_k_plus_one(completed_elements, variables):
     It would be nice to be able to efficiently extract the smallest term of a polynomial
     >>> r=Ring(1000)
     >>> x = Variable = VariableFactory(r)
-    >>> s=BooleSet([x(1)*x(2),x(1),x(2),Monomial(),x(3)])
+    >>> s=BooleSet([x(1)*x(2),x(1),x(2),Monomial(r),x(3)])
     >>> variables=BooleSet([x(1),x(2),x(3)])
     >>> m_k_plus_one(s,variables)
     x(2)*x(3)

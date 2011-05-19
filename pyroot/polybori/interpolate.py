@@ -47,8 +47,8 @@ def gen_random_monomial():
     d=generator.randrange(min(6,v+1))
     variables=generator.sample(xrange(v),d)
     variables=sorted(variables,key=top_index,reverse=True)
-    m=Monomial()
-    for x in variables:
+    m=variables[0]
+    for x in variables[1:]:
         m=x*m
     return m
 def gen_random_polynomial(max_len=50):
@@ -94,7 +94,7 @@ def lex_groebner_basis_for_polynomial_via_variety(p):
     return lex_groebner_basis_points(p.zeros_in(variables.divisors()),variables)
 if __name__=='__main__':
     nvariables=100
-    declare_ring([Block("x",nvariables)])
+    r = declare_ring([Block("x",nvariables)])
     for number_of_points in (100,500,1000,2000,3000,4000,5000,10000,20000,50000,100000):
         print "----------"
         print "number_of_points:",number_of_points
@@ -102,7 +102,7 @@ if __name__=='__main__':
         points=gen_random_poly(number_of_points,nvariables,[Variable(i) for i in range(nvariables)])
         print "points generated"
         bench_interpolate(nvariables,nvariables,points)
-        vars_mon=Monomial()
+        vars_mon=Monomial(r)
         for i in reversed(range(nvariables)):
-            vars_mon=vars_mon*Variable(i)
+            vars_mon=vars_mon*Variable(i, r)
         print len(variety_lex_leading_terms(points,vars_mon)), "elements in groebner basis"

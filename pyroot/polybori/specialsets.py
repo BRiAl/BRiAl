@@ -82,10 +82,10 @@ if __name__=='__main__':
             all_monomials_of_degree_d(2,[Variable(i) for i in range(1000)])))
     print list(mod_mon_set(power_set([Variable(i) for i in range(50)]),all_monomials_of_degree_d(2,[Variable(i) for i in range(1000)])))
 
-def monomial_from_indices(indices):
+def monomial_from_indices(ring, indices):
     l=sorted(indices,reverse=True)
-    res=Monomial()
+    res=Monomial(ring)
     for i in l:
-        res=res*Variable(i)
+        res=res * ring.variable(i)
         
     return res
