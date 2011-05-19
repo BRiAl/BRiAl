@@ -1,31 +1,38 @@
-from __future__ import with_statement
-from polybori.PyPolyBoRi import Ring, global_ring
+if __name__=='__main__':
+    from sys import path as search_path
+    from os import path as file_path   
+    search_path.append(file_path.join(file_path.dirname(__file__), '..'))
+
+
+from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
+from polybori.PyPolyBoRi import Variable as VariableType
+import polybori
+
 def current_number_of_variables():
     return global_ring().n_variables()
+global Variable
 class RingContext(object):
-    def __init__(self, new_ring):
-        self.ring=new_ring
+    def __init__(self, ring):
+        self.context = (VariableFactory(ring), MonomialFactory(ring))
+
+
     def __enter__(self):
-        old_ring=Ring()
-        class ContextGuard(object):
-            def __exit__(self, type, value, traceback):
-                old_ring.set()
-                return False
-        return ContextGuard()
+        self.old_context = (polybori.Variable, polybori.Monomial)
+        (polybori.Variable, polybori.Monomial) = self.context
+        return self
+
+    def __exit__(self, type, value, traceback):
+        (polybori.Variable, polybori.Monomial) = self.old_context
+        return False
 
 if __name__=='__main__':
-    r=Ring(1000)
-    r.set()
-    assert current_number_of_variables()==1000, current_number_of_variables()
-    r2=Ring(1001)
-    assert current_number_of_variables()==1001
-    r.set()
-    assert current_number_of_variables()==1000
+    r = Ring(1000)
+    from polybori import Variable
+    print Variable
+    with RingContext(r) as rc:
+        print polybori.Variable(17)
+
     try:
-        with RingContext(r2) as rc:
-            assert current_number_of_variables()==1001
-            print "succ"
-            raise Exception
+        print polybori.Variable(17)
     except:
-        print "cought expected exception"
-    assert current_number_of_variables()==1000
+        print "caught expected exception"
