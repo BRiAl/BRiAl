@@ -8,9 +8,6 @@ from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
 from polybori.PyPolyBoRi import Variable as VariableType
 import polybori
 
-def current_number_of_variables():
-    return global_ring().n_variables()
-global Variable
 class RingContext(object):
     def __init__(self, ring):
         self.context = (VariableFactory(ring), MonomialFactory(ring))
