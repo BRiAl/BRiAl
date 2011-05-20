@@ -24,12 +24,13 @@ class LexBucket{
  //typedef CTypes::idx_type idx_type;
 public:
   static const int var_group_size=1;
-  LexBucket(){
+  BoolePolyRing ring;
+ LexBucket(const BoolePolyRing& input_ring): ring(input_ring) {
     ones=false;
     updateTailStart();
   }
   LexBucket& operator+=(const Polynomial& p);
-  LexBucket(const Polynomial& p){
+ LexBucket(const Polynomial& p): ring(p.ring()){
     ones=false;
     if (!(p.isConstant())){
     front=p;

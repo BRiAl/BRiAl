@@ -198,7 +198,7 @@ Polynomial FGLMStrategy::rowToPoly(mzd_t* row){
             vec.push_back(standardMonomialsFromVector[i]);
         }
     }
-    return add_up_monomials(vec);
+    return add_up_monomials(vec, to);
 }
 
 void FGLMStrategy::setupMultiplicationTables(){
@@ -572,7 +572,7 @@ PolynomialVector FGLMStrategy::main(){
         rowStartingWithIndex[i]=-1;
         rowIsStandardMonomialToWithIndex[i]=-1;
     }
-    MonomialSet b_set=Polynomial(1).diagram();
+    MonomialSet b_set=monomial_one.set();
     MonomialVector b;
     b.push_back(monomial_one);
     mzd_write_bit(v,0,0,1);
@@ -654,7 +654,7 @@ PolynomialVector FGLMStrategy::main(){
                     assert (lin_combination[i]<b.size());
                     p_vec.push_back(b[lin_combination[i]]);
                 }
-                Polynomial p=add_up_monomials(p_vec)+m;
+                Polynomial p=add_up_monomials(p_vec, to.zero())+m;
                 F.push_back(p);
 
                 

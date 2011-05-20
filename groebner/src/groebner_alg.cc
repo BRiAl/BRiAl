@@ -2566,7 +2566,8 @@ static int get_first_variable_index(const Polynomial& p){
 }
 
 
-Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
+Polynomial mult_fast_sim(const std::vector<Polynomial>& vec,
+			 const BoolePolyRing& ring){
     std::vector<Polynomial> new_vec;
     
     int i;
@@ -2591,7 +2592,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
     }
     
     
-    if (new_vec.size()==0) return Polynomial(1);
+    if (new_vec.size()==0) return Polynomial(1, ring);
     if (new_vec.size()==1) return new_vec[0];
     s=new_vec.size();
     std::vector<Polynomial> s0_vec(s);
@@ -2601,8 +2602,8 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec){
         s1_vec[i]=new_vec[i].diagram().subset1(index).Xor(new_vec[i].diagram().subset0(index));
     }
     
-    Polynomial s0=mult_fast_sim(s0_vec);
-    Polynomial s1=mult_fast_sim(s1_vec);
+    Polynomial s0=mult_fast_sim(s0_vec, ring);
+    Polynomial s1=mult_fast_sim(s1_vec, ring);
     
     return ((Monomial) Variable(index, s0.ring()))*(s1+s0)+s0;
 }

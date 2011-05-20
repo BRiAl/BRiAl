@@ -11,12 +11,12 @@
 BEGIN_NAMESPACE_PBORIGB
 
 static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, 
-                                 const int s){
+                                 const int s, const BoolePolyRing& ring){
   
-   if (s==0) return Polynomial(0);
+   if (s==0) return ring.zero();
    if (s==1) return *it;
    if (s==2) return (*it)+(*(it++));
-   return sum_up_buckets(it,s/2)+sum_up_buckets(it+s/2,s-s/2);
+   return sum_up_buckets(it,s/2, ring)+sum_up_buckets(it+s/2,s-s/2, ring);
    
 }
 Polynomial without_prior_part(Polynomial p,idx_type tail_start){
@@ -40,7 +40,7 @@ Exponent LexBucket::leadExp(){
 Polynomial LexBucket::value(){
   usualAssertions();
   Polynomial sum;
-  Polynomial bucket_value=sum_up_buckets(buckets.begin(), buckets.size());
+  Polynomial bucket_value=sum_up_buckets(buckets.begin(), buckets.size(), ring);
   sum=front+bucket_value+ones;
   
   //don't change order
@@ -97,7 +97,7 @@ void LexBucket::increaseTailStart(idx_type new_start){
       buckets.erase(buckets.begin()+i);
     }
   }
-  front+=sum_up_buckets(front_vec.begin(), front_vec.size());
+  front+=sum_up_buckets(front_vec.begin(), front_vec.size(), ring);
   
 }
 void LexBucket::updateTailStart(){

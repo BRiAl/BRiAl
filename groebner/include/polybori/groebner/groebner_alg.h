@@ -234,7 +234,7 @@ public:
 		else
 			optLazy=true;
 		reduceByTailReduced=false;
-        generators.llReductor=Polynomial(1).diagram(); // todo: is this unsafe?
+		generators.llReductor=BooleSet(input_ring.one());
 	}
 
     Polynomial nextSpoly(){
@@ -407,7 +407,8 @@ public:
 };
 
 
-Polynomial mult_fast_sim(const std::vector<Polynomial>& vec);
+Polynomial mult_fast_sim(const std::vector<Polynomial>& vec,
+			 const BoolePolyRing& ring);
 std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
 MonomialSet contained_variables_cudd_style(const MonomialSet& m);

@@ -1293,24 +1293,25 @@ static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_i
 }
 #endif
 
-Polynomial add_up_monomials(const std::vector<Monomial>& vec){
-  return add_up_generic(vec, (vec.empty()? Polynomial(0): 
-                              (Polynomial)vec[0].ring().zero()) );
+Polynomial add_up_monomials(const std::vector<Monomial>& vec,
+			    const Polynomial& init){
+  return add_up_generic(vec, init);
 
 }
-Polynomial add_up_polynomials(const std::vector<Polynomial>& vec){
-  return add_up_generic(vec, (vec.empty()? Polynomial(0): 
-                              (Polynomial)vec[0].ring().zero()) );
+Polynomial add_up_polynomials(const std::vector<Polynomial>& vec,
+			      const Polynomial& init){
+  return add_up_generic(vec, init);
 
 }
-Polynomial add_up_exponents(const BoolePolyRing& ring, 
-                            const std::vector<Exponent>& vec){
+Polynomial add_up_exponents(const std::vector<Exponent>& vec,
+			    const Polynomial& init){
     //return add_up_generic(vec);
     std::vector<Exponent> vec_sorted=vec;
     std::sort(vec_sorted.begin(),vec_sorted.end(),LexOrderGreaterComparer());
     
    
-    return add_up_lex_sorted_exponents(ring, vec_sorted,0,vec_sorted.size());
+    return add_up_lex_sorted_exponents(init.ring(),
+				       vec_sorted,0,vec_sorted.size());
 }
 
 
@@ -1472,7 +1473,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
   }
   
   //should use already added irr_p's
-  res=add_up_polynomials(res_vec);
+  res=add_up_polynomials(res_vec, p.ring().zero());
   return res;
 }
 
@@ -1577,7 +1578,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
   }
   
   //should use already added irr_p's
-  res=add_up_polynomials(res_vec);
+  res=add_up_polynomials(res_vec, p.ring().zero());
   return res;
 }
 
@@ -1660,7 +1661,7 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
 
     return dd_multiply<fast>(cache_mgr_type(p.ring()), 
                              p.navigation(), q.navigation(),
-                             BoolePolynomial());
+                             BoolePolynomial(p.ring()));
 }
 template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
 class LLReduction {
@@ -1675,7 +1676,7 @@ public:
     
     return dd_multiply<fast_multiplication>(cache_mgr_type(p.ring()), 
                                             p.navigation(), q.navigation(),
-                                            BoolePolynomial());
+                                            BoolePolynomial(p.ring()));
   }
 
   Polynomial operator()(const Polynomial& p, MonomialSet::navigator r_nav);
@@ -1940,7 +1941,7 @@ vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_sys
             }
         }
         assert(polys.size()!=0);
-        Polynomial from_mat=add_up_exponents(polys[0].ring(), p_t);
+        Polynomial from_mat=add_up_exponents(p_t,polys[0].ring().zero());
         if (UNLIKELY(from_mat.isOne())){
             polys.clear();
             polys.push_back(from_mat);
@@ -2110,7 +2111,7 @@ void translate_back(vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
             polys.push_back(add_up_lex_sorted_exponents(leads_from_strat.ring(),
-                                                        p_t,0,p_t.size()));
+							p_t,0,p_t.size()));
             assert(!(polys[polys.size()-1].isZero()));
         }
     }

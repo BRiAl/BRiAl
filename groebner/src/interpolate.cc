@@ -34,7 +34,8 @@ MonomialSet nf_lex_points(const Polynomial& f,const MonomialSet& p){
     MonomialSet z=zeros(f,p);
     return interpolate_smallest_lex(z,p.diff(z));
 }
-MonomialSet gen_random_subset(const std::vector<Monomial>& vec,bool_gen_type&
+MonomialSet gen_random_subset(const BoolePolyRing& ring,
+			      const std::vector<Monomial>& vec,bool_gen_type&
 bit_gen){
     std::vector<Monomial> chosen;
     std::vector<Monomial>::const_iterator it=vec.begin();
@@ -45,10 +46,10 @@ bit_gen){
         }
         ++it;
     }
-    return add_up_monomials(chosen).diagram();
+    return add_up_monomials(chosen, ring.zero()).diagram();
 }
 MonomialSet random_interpolation(const MonomialSet& as_set, const std::vector<Monomial>& as_vector, bool_gen_type& bit_gen){
-  MonomialSet s1=gen_random_subset(as_vector,bit_gen);
+  MonomialSet s1=gen_random_subset(as_set.ring(), as_vector,bit_gen);
     return interpolate_smallest_lex(as_set.diff(s1),s1);
 }
 MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial& variables){

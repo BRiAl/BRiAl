@@ -8,11 +8,11 @@ from time import clock
 
 generator=Random()
 
-def add_up_poly_list(l):
+def add_up_poly_list(l, init):
     v=BoolePolynomialVector()
     for p in l:
         v.append(p)
-    return add_up_polynomials(v)
+    return add_up_polynomials(v, init)
 def bench_interpolate(degree,nvariables,points):
     
     d=degree
@@ -20,7 +20,7 @@ def bench_interpolate(degree,nvariables,points):
     c=points
     h=len(points)/2
     part1=generator.sample(c,h)
-    part1=add_up_poly_list(part1)
+    part1=add_up_poly_list(part1, Polynomial(points_p.zero()))
     part2=c+part1
     p=part1
     q=part2
@@ -51,11 +51,11 @@ def gen_random_monomial():
     for x in variables[1:]:
         m=x*m
     return m
-def gen_random_polynomial(max_len=50):
+def gen_random_polynomial(ring, max_len=50):
     vec=BoolePolynomialVector()
     for i in xrange(max_len):
-        vec.append(gen_random_monomial())
-    return add_up_polynomials(vec)
+        vec.append(gen_random_monomial(ring))
+    return add_up_polynomials(vec, Polynomial(ring.zero()))
 
 
 def gen_random_o_z(points,points_p):
@@ -64,7 +64,7 @@ def gen_random_o_z(points,points_p):
     vec=BoolePolynomialVector()
     for p in ones:
         vec.append(p)
-    ones=add_up_polynomials(vec)
+    ones=add_up_polynomials(vec, Polynomial(points_p.ring().zero()))
     return interpolate_smallest_lex(points_p.set().diff(ones),ones)
 
 def variety_lex_leading_terms(points,variables):

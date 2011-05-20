@@ -62,11 +62,12 @@ def booleset_new_init(self,arg=None, second=None):
         except:
             s=set()
             v=BoolePolynomialVector()
-            for i in list(arg):
+            arglist = list(arg)
+            for i in arglist:
 		s.add(Monomial(i))
             for i in s:
                 v.append(i)
-            p=add_up_polynomials(v)
+            p=add_up_polynomials(v, Polynomial(arglist[0].ring().zero()))
             booleset_old_init(self,p.set())
 BooleSet.__init__=booleset_new_init
 
@@ -136,7 +137,7 @@ if compatibility_mode:
     GroebnerStrategy.__setattr__=_strategy_setattr
 
 _add_up_polynomials=add_up_polynomials
-def add_up_polynomials(polys):
+def add_up_polynomials(polys, init):
     """
     Adds up the polynomials in polys (which should be a BoolePolynomialVector or a sequence of ???
     """
@@ -145,4 +146,5 @@ def add_up_polynomials(polys):
         for p in polys:
             vec.append(p)
         polys=vec
-    return _add_up_polynomials(polys)
+
+    return _add_up_polynomials(polys, init)

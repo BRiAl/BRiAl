@@ -26,8 +26,10 @@ BEGIN_NAMESPACE_PBORIGB
 
 void drawmatrix(mzd_t* mat, const char* filename);
 
-Polynomial add_up_exponents(const BoolePolyRing&, const std::vector<Exponent>& vec);
-Polynomial add_up_monomials(const std::vector<Monomial>& res_vec);
+Polynomial add_up_exponents(const std::vector<Exponent>& vec,
+			    const Polynomial& init);
+Polynomial add_up_monomials(const std::vector<Monomial>& res_vec,
+			    const Polynomial& init);
 
 
 int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m);
@@ -65,7 +67,8 @@ template <int variant> void SlimgbReduction<variant>::addPolynomial(const Polyno
   }
 }
 template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
-  if (result.size()==0) return Polynomial();
+  if (result.size()==0) 
+    throw std::runtime_error("Empty result in SlimgbReduction.");
   Polynomial res=result.back();
   result.pop_back();
   return res;
@@ -79,7 +82,8 @@ Polynomial nf3_short(const ReductionStrategy& strat, Polynomial p);
 Polynomial ll_red_nf(const Polynomial& p,const BooleSet& reductors);
 
 Polynomial ll_red_nf_noredsb(const Polynomial& p,const BooleSet& reductors);
-Polynomial add_up_polynomials(const std::vector<Polynomial>& vec);
+Polynomial add_up_polynomials(const std::vector<Polynomial>& vec,
+			      const Polynomial& init);
 Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones);
 MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
 std::vector<Polynomial> gauss_on_polys(const std::vector<Polynomial>& orig_system);
