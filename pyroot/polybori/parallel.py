@@ -8,7 +8,7 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import if_then_else, Polynomial, CCuddNavigator
+from polybori.PyPolyBoRi import if_then_else, Polynomial, Ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
 
     
@@ -75,14 +75,12 @@ def to_fast_pickable(l):
             nodes.add(nav)
             find_navs(nav.then_branch())
             find_navs(nav.else_branch())
-
     for f in l:
         f_nav=f.set().navigation()
         find_navs(f_nav)
 
     nodes_sorted=sorted(nodes, key=CCuddNavigator.value)
     nodes2i={one:1,zero:0}
-
     for (i,n) in enumerate(nodes_sorted):
         nodes2i[n]=i+2
 
@@ -94,7 +92,8 @@ def to_fast_pickable(l):
 
     return [[nodes2i[f.set().navigation()] for f in  l], nodes_sorted]
 
-def from_fast_pickable(l,r=None):
+
+def from_fast_pickable(l,r):
     """from_fast_pickable(l) undoes the operation to_fast_pickable. The first argument is an object created by to_fast_pickable.
     For the specified format, see the documentation of to_fast_pickable.
     The second argument is ring, in which this polynomial should be created.
@@ -125,10 +124,6 @@ def from_fast_pickable(l,r=None):
         >>> from_fast_pickable([[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]])
         [x(0)*x(1), 0, 1, x(3)]
     """
-    if r is None:
-        global _polybori_parallel_ring
-        r = _polybori_parallel_ring
-
     i2poly={0:r.zero(), 1:r.one()}
     (indices, terms)=l
 
@@ -138,7 +133,6 @@ def from_fast_pickable(l,r=None):
         e=i2poly[e]
         terms[i]=if_then_else(v,t,e)
         i2poly[i+2]=terms[i]
-
     return [Polynomial(i2poly[i]) for i in indices]
 
 def _calculate_gb_with_keywords(args):
@@ -146,19 +140,69 @@ def _calculate_gb_with_keywords(args):
     return groebner_basis(I, **kwds_as_single_arg)
 
 
-def unpickle_polynomial(self, code):
-    self.__init__(from_fast_pickable(code)[0])
+def _unpickle_polynomial(self, code):
+    self.__init__(from_fast_pickable(code, self.ring())[0])
 
     
-def pickle_polynomial(poly):
+def _pickle_polynomial(poly):
     return to_fast_pickable([poly])
 
+def _initargs_polynomial(self):
+    return (self.ring(),)
 
-Polynomial.__getstate__ = pickle_polynomial
-Polynomial.__setstate__ = unpickle_polynomial
 Polynomial.__safe_for_unpickling__ = True
+Polynomial.__getinitargs__ = _initargs_polynomial
+Polynomial.__getstate__ = _pickle_polynomial
+Polynomial.__setstate__ = _unpickle_polynomial
 
+def _unpickle_ring(self, code):
+    (identifier, data, varnames, blocks) = code
 
+    global _polybori_parallel_rings
+    try:
+        _polybori_parallel_rings
+    except NameError:
+        _polybori_parallel_rings = dict()
+
+    if identifier in _polybori_parallel_rings:
+        ring = _polybori_parallel_rings[identifier][0]
+    else:
+        ring = Ring(*data)
+        for (elt, idx) in zip(varnames, xrange(len(varnames))):
+            ring.set_variable_name(idx, elt)
+
+        for elt in blocks:
+            ring.append_block(elt)
+
+        _polybori_parallel_rings[identifier] = _polybori_parallel_rings[ring.id()] = (ring, code) 
+
+    self.__init__(ring)
+    
+def _pickle_ring(ring):
+    identifier = ring.id()
+
+    global _polybori_parallel_rings
+    try:
+        _polybori_parallel_rings
+    except NameError:
+        _polybori_parallel_rings = dict()
+        
+    if identifier in _polybori_parallel_rings:
+        code = _polybori_parallel_rings[identifier][1]
+    else:
+        nvars = ring.n_variables()
+        data = (nvars, ring.get_order_code())
+        varnames = []
+        # varnames = [str(ring.variable(idx)) for idx in xrange(nvars)]
+        blocks = list(ring.blocks())
+        code = (identifier, data, varnames, blocks[:-1])
+        _polybori_parallel_rings[identifier] = (ring, code)
+
+    return code
+
+Ring.__safe_for_unpickling__ = True
+Ring.__getstate__ = _pickle_ring
+Ring.__setstate__ = _unpickle_ring
 
 def groebner_basis_first_finished(I, *l):
     """
@@ -171,7 +215,7 @@ def groebner_basis_first_finished(I, *l):
     EXAMPLES:    
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable = VariableFactory(r)
+        >>> x = VariableFactory(r)
         >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
         [x(1), x(2)]
     """
@@ -182,11 +226,7 @@ def groebner_basis_first_finished(I, *l):
     except:
         from processing import Pool
 
-    global _polybori_parallel_ring
-    _polybori_parallel_ring = iter(I).next().ring()
-
     pool = Pool(processes=len(l))
-
     it = pool.imap_unordered(_calculate_gb_with_keywords,
                              [(I, kwds) for kwds in l])
     res=it.next() 

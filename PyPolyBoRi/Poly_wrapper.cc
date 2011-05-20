@@ -53,29 +53,25 @@ static BooleSet poly_diagram_as_set(const Polynomial& p){
 }
 
 void export_poly(){
-  BoolePolyRing dummy_ring;
-  BooleVariable var(0, dummy_ring);
-  BooleMonomial monom(dummy_ring);
+  typedef BoolePolynomial::ring_type ring_type;
+  ring_type dummy_ring;
+  BoolePolynomial::var_type var(0, dummy_ring);
+  BoolePolynomial::monom_type monom(dummy_ring);
 
   BoolePolynomial::set_type  (BoolePolynomial::*set)(void) const =
     &BoolePolynomial::set;
 
-//  const BoolePolynomial::set_type&  (BoolePolynomial::*set)(void) const =
-//    &BoolePolynomial::set;
-
   boost::python::class_<BoolePolynomial>("Polynomial", 
-                                         "Construct a BoolePolynomial object\
-   in the given Boolean polynomial ring.")
-  .def(init<>())
+    "Construct a BoolePolynomial object in the given Boolean polynomial ring.",
+   boost::python::init <const ring_type &>())
+
   .def(init<const BoolePolynomial &>())
-  .def(init<const BoolePolynomial::navigator &, 
-       const BoolePolynomial::ring_type &>())
-  .def(boost::python::init <int, BoolePolyRing>())
+  .def(init<const BoolePolynomial::navigator &, const ring_type &>())
+  .def(init <bool, const ring_type &>())
+  .def(init <int, const ring_type &>())
   .def(init<const BooleSet &>())
   .def(init<const BooleVariable &>())
   .def(init<const BooleMonomial &>())
-  .def(boost::python::init<bool>())
-  .def(boost::python::init<int>())
   .def("__hash__", &BoolePolynomial::hash, "Fast hash code, based on the \
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("stable_hash", &BoolePolynomial::stableHash, "Reproducible hash code")
@@ -181,8 +177,9 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
        "Replace every variable x by x + 1")
   .def("zeros_in",zeros, 
   "Get BooleSet representing the zeros of the Polynomial")
-    .def("__cmp__", &BoolePolynomial::compare, "Comparison of Boolean polynomials");
-  //wrap usedVariables
+  .def("__cmp__", &BoolePolynomial::compare, "Comparison of Boolean polynomials");
+
+ //wrap usedVariables
   def("spoly",&spoly, "Compute s-Polynomial between two Polynomials");
   
   //implicitly_convertible<BooleVariable,BooleMonomial>();

@@ -94,6 +94,16 @@ append_block(const BoolePolyRing& ring,
   return ring.ordering().appendBlock(next_block_start);
 } 
 
+BoolePolyRing::order_type::block_iterator
+ring_block_begin(const BoolePolyRing& ring) {
+  return ring.ordering().blockBegin();
+}
+
+BoolePolyRing::order_type::block_iterator
+ring_block_end(const BoolePolyRing& ring) {
+  return ring.ordering().blockEnd();
+}
+
 //EXPORT
 BOOST_PYTHON_MODULE(PyPolyBoRi){
   
@@ -144,6 +154,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     //.def(boost::python::init <>())
     .def("n_variables", &BoolePolyRing::nVariables, "Number of ring variables")
     .def("__hash__", &BoolePolyRing::hash)
+    .def("id", &BoolePolyRing::id)
     .def("var", ring_var, "i-th ring Variable")
     .def("variable", &BoolePolyRing::variable, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
@@ -170,8 +181,9 @@ with inverted variable order\n\
     .def("set_variable_name",&BoolePolyRing::setVariableName)
     .def("change_ordering",&BoolePolyRing::changeOrdering)
     .def("get_order_code", get_order_code)
-    .def("append_block",append_block,
-      "Append integer, which marks the index of the start of the next block (for block orderings)");
+    .def("append_block", append_block,
+      "Append integer, which marks the index of the start of the next block (for block orderings)")
+    .def("blocks", range(ring_block_begin, ring_block_end));
   
 
   boost::python::class_<BooleConstant>("BooleConstant", 

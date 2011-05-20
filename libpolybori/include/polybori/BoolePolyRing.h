@@ -143,6 +143,11 @@ public:
                                   >(getManager())); 
   }
 
+  /// Get unique identifier for this ring
+  hash_type id() const { 
+    return static_cast<hash_type>(reinterpret_cast<std::ptrdiff_t>(p_core.operator->())); 
+  }
+
   /// Access ordering of *this
   order_reference ordering() const { return *(p_core->pOrder); }
 
