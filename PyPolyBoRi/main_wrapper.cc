@@ -179,9 +179,17 @@ with inverted variable order\n\
     .def(init<const BooleConstant &>())
     .def(init<int>("Convert integer to Boolean value"))
     .def(init<bool>("Convert bool to Boolean value"))
+    .def(self+self)
+    .def(self-self)
+    .def(self*self)
     .def("__str__", streamable_as_str<BooleConstant>)
     .def("__repr__", streamable_as_str<BooleConstant>)
-    .def("deg", &BooleConstant::deg);
+    .def("variables", range(&BooleConstant::variableBegin, &BooleConstant::variableEnd))
+    .def("deg", &BooleConstant::deg)
+    .def("is_one", &BooleConstant::isOne)
+    .def("is_zero", &BooleConstant::isZero)
+    .def("is_constant", &BooleConstant::isConstant)
+    .def("has_constant_part", &BooleConstant::hasConstantPart);
 
   boost::python::class_<BooleVariable>("Variable", "Boolean Variable", init<const BoolePolyRing&>())
   .def(init<const BooleVariable &>())

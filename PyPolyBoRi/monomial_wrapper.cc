@@ -62,6 +62,7 @@ void export_monomial(){
        init<const BoolePolyRing&>("Construct Boolean monomial from ring"))
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
+  .def("is_one", &BooleMonomial::isOne)
   .def("variables", range(&BooleMonomial::variableBegin, &BooleMonomial::variableEnd))
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash, "Fast hash code, based on the \

@@ -144,13 +144,8 @@ public:
 
   /// Degree of the monomial
   deg_type deg() const {
-    ///@todo optimal, if stored, else much too complicated, as it will probably use cache lookups
-    #if 0
-    return m_poly.nNodes(); 
-    #else
     return std::distance(m_poly.firstBegin(),m_poly.firstEnd());
-    #endif
-    }
+  }
 
   /// Size of the exponents
   size_type size() const { return (size_type)deg(); }  // always nonnegative
@@ -243,8 +238,6 @@ protected:
   /// Access to internal decision diagramm structure
   dd_type& internalDiagram() { return m_poly.internalDiagram(); }
 
-  /// Construct from decision diagram
-  //  BooleMonomial(const dd_type& rhs): m_poly(rhs) {}
   /// Construct from decision diagram
   BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {
     assert(!m_poly.isZero());
