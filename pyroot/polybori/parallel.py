@@ -193,7 +193,7 @@ def _pickle_ring(ring):
         nvars = ring.n_variables()
         data = (nvars, ring.get_order_code())
         varnames = []
-        # varnames = [str(ring.variable(idx)) for idx in xrange(nvars)]
+        varnames = [str(ring.variable(idx)) for idx in xrange(nvars)]
         blocks = list(ring.blocks())
         code = (identifier, data, varnames, blocks[:-1])
         _polybori_parallel_rings[identifier] = (ring, code)
