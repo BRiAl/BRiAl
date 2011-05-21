@@ -10,7 +10,7 @@
 
 from polybori.PyPolyBoRi import if_then_else, Polynomial, Ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
-
+from zlib import compress, decompress
     
 def to_fast_pickable(l):
     """
@@ -168,6 +168,7 @@ def _unpickle_ring(self, code):
         ring = _polybori_parallel_rings[identifier][0]
     else:
         ring = Ring(*data)
+        varnames = decompress(varnames).split('\n')
         for (elt, idx) in zip(varnames, xrange(len(varnames))):
             ring.set_variable_name(idx, elt)
 
@@ -192,10 +193,9 @@ def _pickle_ring(ring):
     else:
         nvars = ring.n_variables()
         data = (nvars, ring.get_order_code())
-        varnames = []
-        varnames = [str(ring.variable(idx)) for idx in xrange(nvars)]
+        varnames = '\n'.join([str(ring.variable(idx)) for idx in xrange(nvars)])
         blocks = list(ring.blocks())
-        code = (identifier, data, varnames, blocks[:-1])
+        code = (identifier, data, compress(varnames), blocks[:-1])
         _polybori_parallel_rings[identifier] = (ring, code)
 
     return code
