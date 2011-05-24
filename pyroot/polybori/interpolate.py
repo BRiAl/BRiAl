@@ -19,8 +19,9 @@ def bench_interpolate(degree,nvariables,points):
     v=nvariables
     c=points
     h=len(points)/2
-    part1=generator.sample(c,h)
-    part1=add_up_poly_list(part1, Polynomial(points_p.zero()))
+    terms = set(c.terms())
+    part1=generator.sample(terms,h)
+    part1=add_up_poly_list(part1, Polynomial(c.ring().zero()))
     part2=c+part1
     p=part1
     q=part2
@@ -70,7 +71,7 @@ def gen_random_o_z(points,points_p):
 def variety_lex_leading_terms(points,variables):
     ring = variables.ring()
     standards=BooleSet(ring.zero())
-    points_tuple=tuple(points)
+    points_tuple=tuple(points.terms())
     myvars_div=variables.divisors()
     myvars_iter=iter(myvars_div)
     if points!=myvars_div:

@@ -327,7 +327,7 @@ def declare_ring(blocks,context=None):
   #n=sum([len(b) for b in blocks])
   r=Ring(n)
   context["Variable"] = VariableFactory(r)
-  context["Monomial"] = MonomialFactory(r)
+#  context["Monomial"] = MonomialFactory(r)
   context["r"]=r
   declare_block_scheme(blocks,context)
   return r

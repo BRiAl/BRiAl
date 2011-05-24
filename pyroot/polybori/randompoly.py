@@ -1,13 +1,12 @@
-from polybori.PyPolyBoRi import Monomial, random_set, Polynomial, set_random_seed, Ring, ll_red_nf_redsb
+from polybori.PyPolyBoRi import Monomial, random_set, Polynomial,\
+set_random_seed, Ring, ll_red_nf_redsb, Variable
 from polybori.ll import ll_encode
 from random import Random
 from pprint import pprint, pformat
 from polybori.blocks import declare_ring
 
-def gen_random_poly(l,deg,vars_set,seed=123):
-    if not vars_set:
-        return 0
-    ring = vars_set[0].ring()
+def gen_random_poly(ring, l,deg,vars_set,seed=123):
+
     myrange=vars_set
     r=Random(seed)
     def helper(samples):
@@ -17,8 +16,8 @@ def gen_random_poly(l,deg,vars_set,seed=123):
             d=r.randint(0,deg)
             variables=r.sample(myrange,d)
             m=Monomial(ring)
-            for v in sorted(set(variables),key=top_index,reverse=True):
-                m=m*v
+            for v in sorted(set(variables),reverse=True):
+                m=m*Variable(v, ring)
             return Polynomial(m)
         assert samples>=2
         return helper(samples/2)+helper(samples-samples/2)
