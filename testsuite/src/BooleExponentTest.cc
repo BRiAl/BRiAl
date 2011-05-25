@@ -26,6 +26,7 @@ USING_NAMESPACE_PBORI
 
 struct Fexp {
   typedef BooleExponent exp_type;
+  typedef BooleMonomial monom_type;
   Fexp(const BoolePolyRing& input_ring = BoolePolyRing(5)):  
     ring(input_ring),
     x(0, input_ring), y(1, input_ring), z(2, input_ring),
@@ -91,9 +92,9 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   output_test_stream output;
 
   BOOST_TEST_MESSAGE( "divisors" );
-  output << exponent.divisors();
+  output << exponent.divisors(ring);
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,y}, {x,z}, {x}, {y,z}, {y}, {z}, {}}"));
-  output << empty.divisors();
+  output << empty.divisors(ring);
   BOOST_CHECK(output.is_equal("{{}}"));
 
   BOOST_TEST_MESSAGE( "divide" );
@@ -150,21 +151,38 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   output_test_stream output;
 
   BOOST_TEST_MESSAGE( "multiples" );
-  output << exponent.multiples(exp_type().get(z*v*w));
+  output << exponent.multiples(exp_type().get(z*v*w), ring);
   BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,v}, {x,y,z,w}, {x,y,z}}"));
-  output << exponent.multiples(exp_type().get(v));
+  output << exponent.multiples(exp_type().get(v), ring);
   BOOST_CHECK(output.is_equal("{{x,y,z,v}, {x,y,z}}"));
-  output << exponent.multiples(exp_type().get(x));
+  output << exponent.multiples(exp_type().get(x), ring);
   BOOST_CHECK(output.is_equal("{{x,y,z}}"));
-  output << exponent.multiples(exp_type());
+  output << exponent.multiples(exp_type(), ring);
   BOOST_CHECK(output.is_equal("{{x,y,z}}"));
-  output << empty.multiples(exp_type().get(z*v*w));
+  output << empty.multiples(exp_type().get(z*v*w), ring);
   BOOST_CHECK(output.is_equal("{{z,v,w}, {z,v}, {z,w}, {z}, {v,w}, {v}, {w}, {}}"));
-  output << empty.multiples(exp_type().get(v));
+  output << empty.multiples(exp_type().get(v), ring);
   BOOST_CHECK(output.is_equal("{{v}, {}}"));
-  output << empty.multiples(exp_type().get(x));
+  output << empty.multiples(exp_type().get(x), ring);
   BOOST_CHECK(output.is_equal("{{x}, {}}"));
-  output << empty.multiples(exp_type());
+  output << empty.multiples(exp_type(), ring);
+  BOOST_CHECK(output.is_equal("{{}}"));
+
+  output << exponent.multiples(z*v*w);
+  BOOST_CHECK(output.is_equal("{{x,y,z,v,w}, {x,y,z,v}, {x,y,z,w}, {x,y,z}}"));
+  output << exponent.multiples(v);
+  BOOST_CHECK(output.is_equal("{{x,y,z,v}, {x,y,z}}"));
+  output << exponent.multiples(x);
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << exponent.multiples(monom_type(ring));
+  BOOST_CHECK(output.is_equal("{{x,y,z}}"));
+  output << empty.multiples(z*v*w);
+  BOOST_CHECK(output.is_equal("{{z,v,w}, {z,v}, {z,w}, {z}, {v,w}, {v}, {w}, {}}"));
+  output << empty.multiples(v);
+  BOOST_CHECK(output.is_equal("{{v}, {}}"));
+  output << empty.multiples(x);
+  BOOST_CHECK(output.is_equal("{{x}, {}}"));
+  output << empty.multiples(monom_type(ring));
   BOOST_CHECK(output.is_equal("{{}}"));
 
   BOOST_TEST_MESSAGE( "multiply" );

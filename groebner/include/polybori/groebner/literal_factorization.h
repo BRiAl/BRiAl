@@ -21,10 +21,11 @@ std::vector<Polynomial> easy_linear_factors(const Polynomial &p);
 
 class LiteralFactorizationIterator;
 class LiteralFactorization{
+
 public:
-    typedef LiteralFactorizationIterator const_iterator;
+  typedef LiteralFactorizationIterator const_iterator;
   LiteralFactorization(const Polynomial&);
-  LiteralFactorization(){}
+
   typedef std::map<idx_type, int> map_type;
   map_type factors;
   Polynomial rest;

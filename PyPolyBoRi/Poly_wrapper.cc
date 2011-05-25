@@ -27,7 +27,7 @@ static BoolePolynomial multiply_fast(const BoolePolynomial& p, const BoolePolyno
 
     return dd_multiply<true>(cache_mgr_type(p.ring()), 
                              p.navigation(), q.navigation(),
-                             BoolePolynomial()); 
+                             BoolePolynomial(p.ring())); 
     
 }
 static BoolePolynomial multiply_traditionally(const BoolePolynomial& p, const BoolePolynomial& q){
@@ -36,7 +36,7 @@ static BoolePolynomial multiply_traditionally(const BoolePolynomial& p, const Bo
 
     return dd_multiply<false>(cache_mgr_type(p.ring()), 
                               p.navigation(), q.navigation(),
-                              BoolePolynomial() ); 
+                              BoolePolynomial(p.ring()) ); 
     
 }
 static BoolePolynomial poly_power(const BoolePolynomial& p, int n){

@@ -455,7 +455,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   if (UNLIKELY(pairSetEmpty())) return strat->r.zero();
   bool replaced_used=false;
   
-  Polynomial replaced;
+  Polynomial replaced(strat->r.zero());
   Pair act_pair(queue.top());
   queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
@@ -617,7 +617,7 @@ void PairManager::cleanTopByChainCriterion(){
       }
       const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
-      const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors());
+      const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors(this->strat->r));
       assert(lm==strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
       //assert(strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
       //should be set
@@ -681,7 +681,7 @@ PolyEntry::PolyEntry(const Polynomial &poly):
   p(poly), usedVariables(poly.usedVariablesExp()),
   deg(poly.deg()), length(poly.length()), minimal(true),
   // empty/zero default values to be filled below (TODO: use inheritance here)
-  lead(poly.ring()), leadExp(), leadDeg(),
+  lead(poly.ring()), leadExp(), leadDeg(), tail(poly.ring()), 
   weightedLength(), tailVariables(), gcdOfTerms(poly.ring()) {
 
   this->lead=p.boundedLead(deg);
@@ -936,7 +936,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
     for(i=0;i<s;i++){      
       if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
       //if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
-        Polynomial new_p;
+        Polynomial new_p(lm.ring());
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lead);
         } else {
@@ -997,7 +997,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
     int i=*nav;
     
     
-    if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true));
+    if (Polynomial(s).hasConstantPart()) return MonomialSet(Polynomial(true, s.ring()));
     int l=s.length();
     if (l<=1) {
         return s;
@@ -1015,7 +1015,7 @@ MonomialSet minimal_elements_internal(const MonomialSet& s){
     MonomialSet s0=minimal_elements_internal(s0_raw);
     MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
     if (!(s0.isZero())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
+      s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors(s.ring())));
         
     }
     return s0.unite(s1.change(i));
@@ -1082,7 +1082,7 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     MonomialSet s0=minimal_elements_internal2(s0_raw);
     MonomialSet s1=minimal_elements_internal2(s.subset1(i).diff(s0_raw));
     if (!(s0.isZero())){
-        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors()));
+        s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariables().divisors()));
         
     }
     return s0.unite(s1.change(i)).unite(result);
@@ -1700,7 +1700,7 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
 
   if (m.isZero()) return m;
   
-  if (m.ownsOne()) return ((Polynomial) 1).diagram();
+  if (m.ownsOne()) return Polynomial(1, m.ring()).diagram();
 
   MonomialSet::navigator m_nav=m.navigation();
   MonomialSet::navigator ms0=m_nav.elseBranch();
@@ -1738,7 +1738,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   if (m.isZero()) return m;
   if (mod.ownsOne())
     return MonomialSet();
-  if (m.ownsOne()) return ((Polynomial) 1).diagram();
+  if (m.ownsOne()) return Polynomial(1,m.ring()).diagram();
   MonomialSet mod_cv=contained_variables_cudd_style(mod);
   m=mod_var_set(m,mod_cv);
   mod=mod_var_set(mod,mod_cv);
@@ -2316,7 +2316,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
         i--;
     }
     generators.optRedTailDegGrowth=tail_growth_bak;
-    std::vector<Polynomial> result_r(result.size());
+    std::vector<Polynomial> result_r(result.size(), result[0].ring());
     std::copy(result.rbegin(),result.rend(),result_r.begin());
     return result_r;
     
@@ -2491,7 +2491,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
             ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
         this->addGeneratorDelayed(p);
     } else {
-        Polynomial pr;
+      Polynomial pr(p.ring());
         if (generators.optRedTail)
             pr=red_tail(this->generators,p);
         else 
@@ -2595,8 +2595,8 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec,
     if (new_vec.size()==0) return Polynomial(1, ring);
     if (new_vec.size()==1) return new_vec[0];
     s=new_vec.size();
-    std::vector<Polynomial> s0_vec(s);
-    std::vector<Polynomial> s1_vec(s);
+    std::vector<Polynomial> s0_vec(s, ring);
+    std::vector<Polynomial> s1_vec(s, ring);
     for(i=0;i<s;i++){
         s0_vec[i]=new_vec[i].diagram().subset0(index);
         s1_vec[i]=new_vec[i].diagram().subset1(index).Xor(new_vec[i].diagram().subset0(index));

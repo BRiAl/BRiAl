@@ -32,7 +32,7 @@ struct Fset {
   Fset(const BoolePolyRing& input_ring = BoolePolyRing(5)):  
     ring(input_ring),
     x(0, input_ring), y(1, input_ring), z(2, input_ring),
-    v(3, input_ring), w(4, input_ring) {
+    v(3, input_ring), w(4, input_ring), poly(input_ring) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
     ring.setVariableName(0, "x");

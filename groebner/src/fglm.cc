@@ -600,7 +600,7 @@ PolynomialVector FGLMStrategy::main(){
         C.erase(C.begin());
         
         assert(m!=monomial_one);
-        Polynomial divisors;
+        Polynomial divisors(to);
         assert(b_set.containsDivisorsOfDecDeg(m)==(Polynomial(b_set.divisorsOf(m)).gradedPart(m.deg()-1).length()==m.deg()));
         if (b_set.containsDivisorsOfDecDeg(m)/*varsM=Zm,Ecke oder Standard Monom*/) {
             Polynomial divisors=Polynomial(b_set.divisorsOf(m)).gradedPart(m.deg()-1);

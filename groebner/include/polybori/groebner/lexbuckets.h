@@ -25,15 +25,14 @@ class LexBucket{
 public:
   static const int var_group_size=1;
   BoolePolyRing ring;
- LexBucket(const BoolePolyRing& input_ring): ring(input_ring) {
+  LexBucket(const BoolePolyRing& input_ring): ring(input_ring), front(input_ring) {
     ones=false;
     updateTailStart();
   }
   LexBucket& operator+=(const Polynomial& p);
- LexBucket(const Polynomial& p): ring(p.ring()){
+  LexBucket(const Polynomial& p): ring(p.ring()), front(p) {
     ones=false;
     if (!(p.isConstant())){
-    front=p;
     updateTailStart();
     Polynomial back=without_prior_part(p, tail_start);
     if (!(back.isZero())){

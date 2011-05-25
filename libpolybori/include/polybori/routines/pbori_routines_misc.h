@@ -201,7 +201,7 @@ dd_multiply(const CacheType& cache_mgr,
   
   // Look up, whether operation was already used
   navigator cached = cache_mgr.find(firstNavi, secondNavi);
-  PolyType result;
+  PolyType result(cache_mgr.zero());
 
   if (cached.isValid()) {       // Cache lookup sucessful
     return cache_mgr.generate(cached);
@@ -230,7 +230,7 @@ dd_multiply(const CacheType& cache_mgr,
       bs1 = cache_mgr.zero().navigation();
     }
     PolyType result0 = dd_multiply<use_fast>(cache_mgr, as0, bs0, init);
-    PolyType result1;
+    PolyType result1(cache_mgr.zero());
 
     // use fast multiplication
     if (use_fast && (*firstNavi == *secondNavi)) {
@@ -370,7 +370,7 @@ dd_multiply_recursively_exp(const DDGenerator& ddgen,
   if (start == finish)
     return ddgen.generate(navi);
 
-  PolyType result;
+  PolyType result(ddgen.zero());
   if (navi.isConstant()) {
     if(navi.terminalValue()) {
 
@@ -720,7 +720,7 @@ dd_divide_recursively_exp(const DDGenerator& ddgen,
   idx_type index = *navi;
   idx_type monomIndex = *start;
 
-  PolyType result;
+  PolyType result(ddgen.zero());
   if (monomIndex == index) {    // Case: monom and poly start with same index
 
     // Increment navigators

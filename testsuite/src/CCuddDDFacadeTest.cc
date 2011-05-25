@@ -43,7 +43,7 @@ struct Fdd {
   Fdd(const BoolePolyRing& input_ring = BoolePolyRing(5)): 
     ring(input_ring),
     x(0, input_ring), y(1, input_ring), z(2, input_ring),
-    v(3, input_ring), w(4, input_ring) {
+    v(3, input_ring), w(4, input_ring), poly(input_ring) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
     ring.setVariableName(0, "x");
@@ -499,8 +499,8 @@ BOOST_AUTO_TEST_CASE(test_operators) {
   BOOST_CHECK(!diagram_small.implies(diagram_large));
 
   BOOST_TEST_MESSAGE( "==, !=" );
-  BoolePolynomial poly1(0);
-  BoolePolynomial poly2(0);
+  BoolePolynomial poly1(0, ring);
+  BoolePolynomial poly2(0, ring);
   dd_type diag1(poly1.set());
   dd_type diag2(poly2.set());
   BOOST_CHECK(diag1 == diag2);
@@ -603,7 +603,7 @@ BOOST_AUTO_TEST_CASE(test_size) {
   BOOST_CHECK_EQUAL(diagram.rootIndex(), 0);
   BOOST_CHECK_EQUAL(one.rootIndex(), CUDD_MAXINDEX);
 
-  BoolePolynomial pol(1);
+  BoolePolynomial pol(1,ring);
   diagram = dd_type(pol.set());
   BOOST_CHECK_EQUAL(diagram.nNodes(), 0);
   pol = 0;

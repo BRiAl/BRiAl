@@ -79,7 +79,7 @@ Polynomial do_is_rewriteable(const Polynomial& p, const MonomialSet& leading_ter
     assert (!(l_nav.isConstant()));
     Polynomial p0=cache_mgr.generate(p_nav.elseBranch());
     Polynomial p1=cache_mgr.generate(p_nav.thenBranch());
-    Polynomial res;
+    Polynomial res(p.ring());
     if (l_i>p_i){
         MonomialSet l_curr=cache_mgr.generate(l_nav);
         if (((do_is_rewriteable(p0,l_curr)).isOne())||(do_is_rewriteable(p1,l_curr).isOne())){

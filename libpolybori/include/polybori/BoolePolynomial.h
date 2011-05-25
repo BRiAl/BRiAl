@@ -203,16 +203,16 @@ public:
   //-------------------------------------------------------------------------
 
   /// Default constructor
-  BoolePolynomial();
+  //  BoolePolynomial();
 
   /// Construct polynomial from a constant value 0 or 1
-  explicit BoolePolynomial(constant_type);
+  //  explicit BoolePolynomial(constant_type);
 
   /// Construct zero polynomial
   BoolePolynomial(const ring_type& ring):
     m_dd(ring.zero() )  { }
 
-  /// Construct polynomial from a constant value 0 or 1
+  /// Construct polynomial in given @c ring  from a constant value 0 or 1
   BoolePolynomial(constant_type isOne, const ring_type& ring):
     m_dd(isOne? ring.one(): ring.zero() )  { }
 
@@ -243,7 +243,7 @@ public:
   // }
 
   self& operator=(constant_type rhs) { 
-    return (*this) = self(rhs);//rhs.generate(*this); 
+    return (*this) = self(rhs, ring());
   }
   /// @name Arithmetical operations
   //@{

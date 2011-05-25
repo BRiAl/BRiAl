@@ -46,11 +46,11 @@ BOOST_AUTO_TEST_CASE(test_termaccu) {
 
   BoolePolynomial poly = x*y +z +x*z +y*z;
   BoolePolynomial result = term_accumulate(poly.begin(), poly.end(),
-                                          BoolePolynomial());
+                                          BoolePolynomial(ring));
   BOOST_CHECK_EQUAL(poly, result);
   // Only meant to work for lexicographical ordering, so same result
   result = term_accumulate(poly.orderedBegin(), poly.orderedEnd(),
-                          BoolePolynomial());
+                          BoolePolynomial(ring));
   BOOST_CHECK_EQUAL(poly, result);
 
   // Sophisticated accumulation
@@ -58,11 +58,11 @@ BOOST_AUTO_TEST_CASE(test_termaccu) {
                                     start2(poly.orderedBegin());
   ++start;
   start2 = start;++start2; ++start2;
-  result = std::accumulate(start, start2, BoolePolynomial(0));
-  BoolePolynomial result2 = term_accumulate(start, start2, BoolePolynomial(0));
+  result = std::accumulate(start, start2, BoolePolynomial(0, ring));
+  BoolePolynomial result2 = term_accumulate(start, start2, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, result2);
   result2 = term_accumulate(start.begin(), start.end(), start.navigation(),
-                      start2.begin(), start2.end(), BoolePolynomial(0));
+                      start2.begin(), start2.end(), BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, result2);
 
   // Lower summing 1)
@@ -71,19 +71,19 @@ BOOST_AUTO_TEST_CASE(test_termaccu) {
   start2 = start;++start2;++start2;
 
   result = lower_term_accumulate(start.navigation(),
-                      start2.begin(), start2.end(), BoolePolynomial(0));
+                      start2.begin(), start2.end(), BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, x*z + x*w+ y*z);
-  result = term_accumulate(start, start2, BoolePolynomial(0));
+  result = term_accumulate(start, start2, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, x*w+ y*z);
 
   // Lower summing 2)
   poly = x*y +x*z +y*z + 1;
   start = poly.orderedBegin();++start;
   start2 = start;++start2;++start2;
-  result = term_accumulate(start, start2, BoolePolynomial(0));
+  result = term_accumulate(start, start2, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, x*z +y*z);
   ++start2;
-  result = term_accumulate(start, start2, BoolePolynomial(0));
+  result = term_accumulate(start, start2, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(result, x*z +y*z + 1);
 
 }

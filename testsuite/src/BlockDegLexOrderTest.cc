@@ -114,7 +114,7 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_EQUAL(order.leadExp(poly,1)  , BooleExponent(x*y*z*w));
   BOOST_CHECK_EQUAL(order.leadExp(poly,-1) , BooleExponent(x*y*z*w));
   BOOST_CHECK_EQUAL(order.leadFirst(poly)  , BoolePolynomial(x*y*z*w));
-  poly = BoolePolynomial();
+  poly = BoolePolynomial(ring);
   BOOST_CHECK_THROW(order.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.lead(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);
@@ -369,7 +369,7 @@ BOOST_AUTO_TEST_CASE(test_lead_blocks) {
   blockorder.appendBlock(2);
   blockorder.appendBlock(6);
 
-  BoolePolynomial poly = BoolePolynomial();
+  BoolePolynomial poly = BoolePolynomial(ring);
   output_test_stream output;
   BOOST_CHECK_THROW(blockorder.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(blockorder.lead(poly,1),PBoRiGenericError<CTypes::illegal_on_zero>);

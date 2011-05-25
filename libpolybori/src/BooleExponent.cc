@@ -385,30 +385,40 @@ BooleExponent::multiplyFirst(const set_type& rhs) const {
 
 // Multiples wrt. given monom
 BooleExponent::set_type
-BooleExponent::multiples(const self& multipliers) const {
+BooleExponent::multiples(const self& multipliers, const ring_type& ring) const {
 
-  PBORI_TRACE_FUNC( "BooleExponent::multiples(const self&) const" );
+  PBORI_TRACE_FUNC( "BooleExponent::multiples(const self&, const ring_type&) const" );
 
-
-  poly_type theZero(false);
-  set_type result = cudd_generate_multiples(theZero.ring(),
-
+  set_type result = cudd_generate_multiples(ring,
                                             m_data.rbegin(), m_data.rend(),
                                             multipliers.rbegin(),
-                                           multipliers.rend(),type_tag<set_type>());
+                                            multipliers.rend(),type_tag<set_type>());
 
 
    return result;
 }
+// Multiples wrt. given monom
+BooleExponent::set_type
+BooleExponent::multiples(const monom_type& mult) const {
+
+  PBORI_TRACE_FUNC( "BooleExponent::multiples(const monom_type&) const" );
+
+  self multipliers(mult);
+
+  set_type result = cudd_generate_multiples(mult.ring(),
+                                            m_data.rbegin(), m_data.rend(),
+                                            multipliers.rbegin(),
+                                            multipliers.rend(),type_tag<set_type>());
+  return result;
+}
 
 // Divisors
 BooleExponent::set_type
-BooleExponent::divisors() const {
+BooleExponent::divisors(const ring_type& ring) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::divisors() const" );
 
-  poly_type theZero(false);
-  set_type result = cudd_generate_divisors(theZero.ring(),
+  set_type result = cudd_generate_divisors(ring,
                                            m_data.rbegin(), m_data.rend() ,type_tag<set_type>());
   return result;
 }

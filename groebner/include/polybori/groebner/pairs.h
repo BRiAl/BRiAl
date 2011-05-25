@@ -76,9 +76,7 @@ public:
   Polynomial extract(const PolyEntryVector& v){
     return p;
   }
-  PolyPairData(const BoolePolynomial& p){
-    this->p=p;
-  }
+  PolyPairData(const BoolePolynomial& poly): p(poly) { }
 };
 
 class VariablePairData: public PairData{

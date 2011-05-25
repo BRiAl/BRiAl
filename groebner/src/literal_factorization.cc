@@ -209,7 +209,8 @@ static bool has_factor_x_plus_y(const MonomialSet& m, const Variable& x,const Va
     return do_has_factor_x_plus_y(m,x,y)==1;
 }
 #define ELEMENTAR_FACTORIZATION 1
-LiteralFactorization::LiteralFactorization(const Polynomial& p){
+LiteralFactorization::LiteralFactorization(const Polynomial& p):
+  rest(p.ring()) {
   assert(!(p.isZero()));
   Exponent lead_variables=p.leadExp();
   lmDeg=p.leadDeg();

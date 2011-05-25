@@ -39,16 +39,16 @@ Exponent LexBucket::leadExp(){
 }
 Polynomial LexBucket::value(){
   usualAssertions();
-  Polynomial sum;
+  Polynomial sum(0, ring);
   Polynomial bucket_value=sum_up_buckets(buckets.begin(), buckets.size(), ring);
   sum=front+bucket_value+ones;
   
   //don't change order
   if (bucket_value.isConstant()){
     if (bucket_value.isOne()) ones=(!(ones));
-    buckets.resize(0);
+    buckets.resize(0, ring);
   } else { 
-    buckets.resize(1);
+    buckets.resize(1, ring);
     buckets[0]=bucket_value;
   }
   return sum;

@@ -65,7 +65,7 @@ lower_term_accumulate(NaviType navi,
   
   assert(*lstart >= *navi);
 
-  ValueType result;
+  ValueType result(init.ring());
   if (*lstart > *navi) {
 
     ValueType reselse = 
@@ -145,7 +145,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
 
   assert(*lstart >= *navi);
 
-  ValueType result;
+  ValueType result(init.ring());
   if (*lstart > *navi) {
     ValueType resthen = 
       upper_term_accumulate(ustart, ufinish, navi.thenBranch(), init);
@@ -287,7 +287,7 @@ template <class PolyType, class MonomType>
 PolyType
 mapping(PolyType poly, MonomType fromVars, MonomType toVars) {
 
-  return apply_mapping(poly, generate_mapping(fromVars, toVars, PolyType()) );
+  return apply_mapping(poly, generate_mapping(fromVars, toVars, PolyType(poly.ring())) );
 }
 
 

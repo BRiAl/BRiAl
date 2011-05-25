@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(test_lead) {
   BOOST_CHECK_THROW(order.lead(poly, -1), PBoRiError);
 
   // Empty (zero) poly
-  poly = BoolePolynomial();
+  poly = BoolePolynomial(ring);
   BOOST_CHECK_THROW(order.lead(poly), PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.lead(poly,1), PBoRiGenericError<CTypes::illegal_on_zero>);
   BOOST_CHECK_THROW(order.lead(poly),PBoRiGenericError<CTypes::illegal_on_zero>);

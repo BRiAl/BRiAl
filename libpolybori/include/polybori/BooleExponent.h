@@ -61,13 +61,16 @@ class BooleExponent:
   typedef BoolePolynomial poly_type;
 
   /// Type of Boolean variables
-  typedef BooleVariable var_type;
+  typedef poly_type::ring_type ring_type;
 
   /// Type of Boolean variables
-  typedef BooleMonomial monom_type;
+  typedef poly_type::var_type var_type;
+
+  /// Type of Boolean variables
+  typedef poly_type::monom_type monom_type;
 
   /// Type of sets of Boolean variables
-  typedef BooleSet set_type;
+  typedef poly_type::set_type set_type;
 
   /// Type for index maps
   typedef generate_index_map<self>::type idx_map_type;
@@ -86,9 +89,6 @@ class BooleExponent:
   /// Construct from Boolean monomial
   self& get(const monom_type&);
   explicit BooleExponent(const monom_type& rhs);
-
-//   /// Construct from Boolean constant
-//   BooleExponent(bool_type);
 
   /// Destructor
   ~BooleExponent();
@@ -118,10 +118,13 @@ class BooleExponent:
   size_type deg() const { return size(); }
 
   /// Divisors of the monomial
-  set_type divisors() const;
+  set_type divisors(const ring_type&) const;
+
+  /// multiples of the monomial wrt. given monomial (both given as exponents)
+  set_type multiples(const self&, const ring_type&) const; 
 
   /// multiples of the monomial wrt. given monomial
-  set_type multiples(const self&) const; 
+  set_type multiples(const monom_type&) const; 
 
   /// Hash value for the exponent
   hash_type stableHash() const {

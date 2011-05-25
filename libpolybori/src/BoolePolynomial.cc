@@ -68,20 +68,6 @@ BEGIN_NAMESPACE_PBORI
 //------------------------------------------------------------------------
 
 
-// Default constructor
-BoolePolynomial::BoolePolynomial():
-  m_dd( BooleEnv::ring().zero() ) {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial()" );
-}
-
-// Construct polynomial from a constant value 0 or 1
-BoolePolynomial::BoolePolynomial(constant_type isOne):
-  m_dd(isOne? BooleEnv::ring().one(): BooleEnv::ring().zero() )  {
-
-  PBORI_TRACE_FUNC( "BoolePolynomial(constant_type)" );
-}
-
 // Constructor polynomial from exponent vector
 BoolePolynomial::BoolePolynomial(const exp_type& rhs, const ring_type& ring):
   m_dd( ring.one() )  {
@@ -124,7 +110,7 @@ BoolePolynomial::operator*=(const monom_type& rhs) {
   self result = 
     dd_multiply_recursively_monom(cache_mgr_type(ring()), 
                                   rhs.diagram().navigation(),
-                                  navigation(),  self());
+                                  navigation(),  self(ring()));
 
   return (*this = result);
 }
@@ -138,7 +124,7 @@ BoolePolynomial::operator*=(const exp_type& rhs) {
 
   self result = dd_multiply_recursively_exp(cache_mgr_type(ring()),
                                             rhs.begin(), rhs.end(),
-                                            navigation(), self() );
+                                            navigation(), self(ring()) );
 
   return (*this = result);;
 }
@@ -157,7 +143,7 @@ BoolePolynomial::operator*=(const self& rhs) {
 
   self result = dd_multiply_recursively(cache_mgr_type(ring()), 
                                         navigation(), rhs.navigation(),
-                                        self()); 
+                                        self(ring())); 
 
   return (*this = result);
 }
@@ -183,7 +169,7 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
   self result = dd_divide_recursively(cache_mgr_type(ring()), 
                                       navigation(),
                                       rhs.diagram().navigation(),
-                                      self());
+                                      self(ring()));
 
 //   m_dd.divideFirstAssign(rhs.diagram());
 //   assert(*this == result);
@@ -199,7 +185,7 @@ BoolePolynomial::operator/=(const exp_type& rhs) {
   return (*this = 
           dd_divide_recursively_exp(cache_mgr_type(ring()), 
                                     navigation(), rhs.begin(),rhs.end(),
-                                    self()));
+                                    self(ring())));
 }
 
 // Polynomial Division
@@ -391,7 +377,7 @@ BoolePolynomial::gradedPart(deg_type deg) const {
   PBORI_TRACE_FUNC( "BoolePolynomial::gradedPart(deg_type) const" );
   typedef CDegreeArgumentCache<CCacheTypes::graded_part, set_type> cache_type;
   return dd_graded_part(cache_type(ring()), 
-                        navigation(), deg, set_type());
+                        navigation(), deg, set_type(ring()));
 }
 
 

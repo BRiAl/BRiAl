@@ -97,21 +97,21 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_TEST_MESSAGE( "Assignments..." );
 
   BOOST_TEST_MESSAGE( "/" );
-  BOOST_CHECK_EQUAL(x / y, BoolePolynomial(0));
-  BOOST_CHECK_EQUAL((BoolePolynomial)x / (BoolePolynomial)y, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(x / y, BoolePolynomial(0, ring));
+  BOOST_CHECK_EQUAL((BoolePolynomial)x / (BoolePolynomial)y, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(BoolePolynomial(x*y) / x, BoolePolynomial(y));
-  BOOST_CHECK_EQUAL(BoolePolynomial(x) / y, BoolePolynomial(0));
-  BOOST_CHECK_EQUAL(BoolePolynomial(x) / x, BoolePolynomial(1));
+  BOOST_CHECK_EQUAL(BoolePolynomial(x) / y, BoolePolynomial(0, ring));
+  BOOST_CHECK_EQUAL(BoolePolynomial(x) / x, BoolePolynomial(1, ring));
 
   BOOST_CHECK_EQUAL((BoolePolynomial(x*y) /= x), BoolePolynomial(y));
-  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0));
-  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1));
+  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= y), BoolePolynomial(0, ring));
+  BOOST_CHECK_EQUAL((BoolePolynomial(x) /= x), BoolePolynomial(1, ring));
   BOOST_CHECK_EQUAL(BooleMonomial(x*y)/y, BooleMonomial(x));
   BOOST_CHECK_EQUAL(BooleMonomial(x)/x, BooleMonomial(ring));
   BOOST_CHECK_THROW(BooleMonomial(x)/y, PBoRiError);
-  BOOST_CHECK_EQUAL(x / x, BoolePolynomial(1));
-  BOOST_CHECK_EQUAL(var_type(ring) / x, BoolePolynomial(1));
-  BOOST_CHECK_EQUAL(var_type(ring) / var_type(ring), BoolePolynomial(1));
+  BOOST_CHECK_EQUAL(x / x, BoolePolynomial(1, ring));
+  BOOST_CHECK_EQUAL(var_type(ring) / x, BoolePolynomial(1, ring));
+  BOOST_CHECK_EQUAL(var_type(ring) / var_type(ring), BoolePolynomial(1, ring));
 
   BOOST_TEST_MESSAGE( "*" );
   BOOST_CHECK_EQUAL(x*y, BooleMonomial(x*y));
@@ -124,15 +124,15 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
   BOOST_CHECK_EQUAL(BooleMonomial(ring)*x, BooleMonomial(x));
   BOOST_CHECK_EQUAL(x*1, BoolePolynomial(x));
   BOOST_CHECK_EQUAL(1*x, BoolePolynomial(x));
-  BOOST_CHECK_EQUAL(0*1, BoolePolynomial());
-  BOOST_CHECK_EQUAL(1*0, BoolePolynomial(0));
+  BOOST_CHECK_EQUAL(0*1, BoolePolynomial(ring));
+  BOOST_CHECK_EQUAL(1*0, BoolePolynomial(0, ring));
   BOOST_CHECK_EQUAL(x*BoolePolynomial(y), BoolePolynomial(x*y));
   BOOST_CHECK_EQUAL(x*BoolePolynomial(x), BoolePolynomial(x*x));
-  BOOST_CHECK_EQUAL(x*BoolePolynomial(0), BoolePolynomial(0));
-  BOOST_CHECK_EQUAL(x*BoolePolynomial(1), BoolePolynomial(x));
+  BOOST_CHECK_EQUAL(x*BoolePolynomial(0, ring), BoolePolynomial(0, ring));
+  BOOST_CHECK_EQUAL(x*BoolePolynomial(1, ring), BoolePolynomial(x));
   BOOST_CHECK_EQUAL(BoolePolynomial(x)*x, BoolePolynomial(x*x));
-  BOOST_CHECK_EQUAL(BoolePolynomial(0)*x, BoolePolynomial(0));
-  BOOST_CHECK_EQUAL(BoolePolynomial(1)*x, BoolePolynomial(x));
+  BOOST_CHECK_EQUAL(BoolePolynomial(0, ring)*x, BoolePolynomial(0, ring));
+  BOOST_CHECK_EQUAL(BoolePolynomial(1, ring)*x, BoolePolynomial(x));
   BOOST_CHECK_EQUAL(BoolePolynomial(x)*y, BoolePolynomial(x*y));
   //BOOST_CHECK_EQUAL((BoolePolynomial(x)*=x), BoolePolynomial(x*x)); // Does not FIND correct operator
   //BOOST_CHECK_EQUAL((BoolePolynomial(0)*=x), BoolePolynomial(0)); // Does not FIND correct operator
@@ -141,16 +141,16 @@ BOOST_AUTO_TEST_CASE(test_assigning_operators) {
 
   BOOST_TEST_MESSAGE( "%" );
   BOOST_CHECK_EQUAL(BoolePolynomial(x)%y, BoolePolynomial(x));
-  BOOST_CHECK_EQUAL(BoolePolynomial(x*y)%y, BoolePolynomial());
-  BOOST_CHECK_EQUAL(BoolePolynomial()%y, BoolePolynomial());
+  BOOST_CHECK_EQUAL(BoolePolynomial(x*y)%y, BoolePolynomial(ring));
+  BOOST_CHECK_EQUAL(BoolePolynomial(ring)%y, BoolePolynomial(ring));
   //BOOST_CHECK_EQUAL((BoolePolynomial(x)%=y), BoolePolynomial(x)); // Does not FIND correct operator
   //BOOST_CHECK_EQUAL((BoolePolynomial(x*y)%=y), BoolePolynomial()); // Does not FIND correct operator
   //BOOST_CHECK_EQUAL((BoolePolynomial()%=y), BoolePolynomial()); // Does not FIND correct operator
   BOOST_CHECK_EQUAL(BooleMonomial(x)%y, BooleMonomial(x));
-  BOOST_CHECK_EQUAL(BooleMonomial(x*y)%y, BoolePolynomial());
+  BOOST_CHECK_EQUAL(BooleMonomial(x*y)%y, BoolePolynomial(ring));
   BOOST_CHECK_EQUAL(BooleMonomial(ring)%y, BooleMonomial(ring));
   BOOST_CHECK_EQUAL(x%y, BooleMonomial(x));
-  BOOST_CHECK_EQUAL((x*y)%y, BoolePolynomial());
+  BOOST_CHECK_EQUAL((x*y)%y, BoolePolynomial(ring));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

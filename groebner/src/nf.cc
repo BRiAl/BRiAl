@@ -390,8 +390,7 @@ template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
 
 class PolynomialSugar{
 public:
-  PolynomialSugar(const Polynomial& p): lm(p.ring()), exp() {
-    this->p=p;
+  PolynomialSugar(const Polynomial& poly): lm(poly.ring()), exp(), p(poly) {
     sugar=p.deg();
     if (!(p.isZero())){
       this->lm=p.boundedLead(sugar);
@@ -402,9 +401,9 @@ public:
 
     length=p.length();
   }
-  PolynomialSugar(const Polynomial& p, int sugar, len_type length):
-    lm(p.ring()), exp() {
-    this->p=p;
+  PolynomialSugar(const Polynomial& poly, int sugar, len_type length):
+    lm(poly.ring()), exp(), p(poly) {
+
     assert(length>=0);
     
     //sugar=p.deg();
@@ -599,7 +598,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     }
   }
   
-  Polynomial pivot;
+  Polynomial pivot(strat.r);
   if (pivot_el<strat.generators[index].weightedLength){
     
     pivot_el=curr[found].eliminationLength();
@@ -645,7 +644,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
 
 static void step_T_simple(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
   int s=curr.size();
-  Polynomial reductor;
+  Polynomial reductor(strat.r);
   int found;
   wlen_type pivot_el;
   found=0;
@@ -716,7 +715,7 @@ static void step_T_complex(std::vector<PolynomialSugar>& curr, std::vector<Polyn
   std::sort(curr.begin(), curr.end(), PSCompareByEl());
   const int max_cans=5;
   int s=curr.size();
-  Polynomial reductor;
+  Polynomial reductor(strat.r);
   int found;
   wlen_type pivot_el;
   
@@ -1198,7 +1197,7 @@ static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int s
     }
     
     //more than two monomial, lex sorted, so if first is  constant, all are constant
-    if (vec[start].isOne()) return Polynomial(end-start).diagram();
+    if (vec[start].isOne()) return Polynomial(end-start, vec[start].ring()).diagram();
     assert (!(vec[start].isOne()));
     idx_type idx=*vec[start].begin();
     int limes=end;
@@ -1236,7 +1235,7 @@ add_up_lex_sorted_exponents(const BoolePolyRing& ring,
     }
     
     //more than two monomial, lex sorted, so if first is  constant, all are constant
-    if (vec[start].deg()==0) return Polynomial(end-start).diagram();
+    if (vec[start].deg()==0) return Polynomial(end-start, ring).diagram();
     assert (!(vec[start].deg()==0));
     idx_type idx=*vec[start].begin();
     int limes=end;
@@ -1442,7 +1441,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
     
     if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
-    Polynomial irr_p;
+    Polynomial irr_p(p.ring());
     if LIKELY(it!=end) {
       irr_p=add_up_generic(irr, p.ring().zero());
         rest_lead=*it;
@@ -1478,7 +1477,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
 }
 
 Polynomial cheap_reductions(const ReductionStrategy& strat, Polynomial p){
-    Polynomial p_bak;
+  Polynomial p_bak(p.ring());
     while(!(p.isZero())){
         p_bak=p;
       //res+=lm;
@@ -1557,7 +1556,7 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
     
     if UNLIKELY((!(changed))&& (it==end)) return orig_p;
     //@todo: if it==end irr_p=p, p=Polnomial(0)
-    Polynomial irr_p;
+    Polynomial irr_p(p.ring());
     if LIKELY((it!=end) &&(!(rest_is_irreducible))) {
       irr_p=Helper::sum_range(irr,it_orig,it, p.ring().zero());//add_up_monomials(irr);
         rest_lead=*it;
@@ -1641,7 +1640,7 @@ Polynomial red_tail(const ReductionStrategy& strat, Polynomial p){
 }
 #endif
 Polynomial red_tail_short(const ReductionStrategy& strat, Polynomial p){
-  Polynomial res;
+  Polynomial res(p.ring());
   while(!(p.isZero())){
     Polynomial lm=p.lead();
     res+=lm;
@@ -1815,9 +1814,7 @@ Polynomial plug_1_top(const Polynomial& p, const MonomialSet& m_plus_ones){
     return irr+do_plug_1(red,m_plus_ones);
 }
 Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
-    Polynomial p1,p2;
-    p1=p;
-    p2=plug_1_top(p1,m_plus_ones);
+  Polynomial p1(p),p2(plug_1_top(p1,m_plus_ones));
     while(p1!=p2){
         Polynomial h=p2;
         p2=plug_1_top(p1,m_plus_ones);
@@ -2218,7 +2215,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     Monomial        last(current_ring);
     if UNLIKELY(polys_lm[0].second.deg() == 0) {
         assert(polys_lm[0].first.isOne());
-        polys.resize(1);
+        polys.resize(1, terms.ring());
         polys[0] = 1;
 
         return;
@@ -2487,12 +2484,16 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
 
 vector<Polynomial> gauss_on_polys(const vector<Polynomial>& orig_system){
-    Polynomial init(0);//from current ring
-    MonomialSet terms=unite_polynomials(orig_system, init);
-    MonomialSet from_strat;//no strat
-    vector<Polynomial> polys(orig_system);
-    linalg_step(polys, terms, from_strat, false);
-    return polys;
+
+  if (orig_system.empty())
+    return orig_system;
+
+  Polynomial init(0, orig_system[0].ring());
+  MonomialSet terms=unite_polynomials(orig_system, init);
+  MonomialSet from_strat;//no strat
+  vector<Polynomial> polys(orig_system);
+  linalg_step(polys, terms, from_strat, false);
+  return polys;
 }
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
     vector<Polynomial> polys;
@@ -2528,7 +2529,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
     if UNLIKELY(p.isZero()) return p;
     
-    Polynomial res;
+    Polynomial res(p.ring());
     if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
     else res=nf3(*this,p,p.lead());
     if ((res.isZero())) return res;
@@ -2538,7 +2539,7 @@ Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
 Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
     if UNLIKELY(p.isZero()) return p;
     
-    Polynomial res;
+    Polynomial res(p.ring());
     if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
     else res=nf3(*this,p,p.lead());
     return res;
