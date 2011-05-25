@@ -71,7 +71,8 @@ def gen_random_o_z(points,points_p):
 def variety_lex_leading_terms(points,variables):
     ring = variables.ring()
     standards=BooleSet(ring.zero())
-    points_tuple=tuple(points.terms())
+    assert type(points) == BooleSet, "Points needs to be a BooleSet"
+    points_tuple=tuple(points)
     myvars_div=variables.divisors()
     myvars_iter=iter(myvars_div)
     if points!=myvars_div:
