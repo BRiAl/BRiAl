@@ -33,7 +33,8 @@ struct Fmonom {
     ring(input_ring),
     bexp(BooleExponent().change(1)),
     x(0, input_ring), y(1, input_ring), z(2, input_ring),
-    v(3, input_ring), w(4, input_ring) {
+    v(3, input_ring), w(4, input_ring),
+    bset(1, ring.one(), ring.zero()) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
     bset = BooleSet(1, ring.one(), ring.zero()); // something non-trivial

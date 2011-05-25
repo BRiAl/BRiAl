@@ -1180,14 +1180,15 @@ public:
         return o.compare(m1,m2)==BoolePolyRing::greater_than;
     }
 };
-static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int start, int end){
+static MonomialSet add_up_lex_sorted_monomials(const BoolePolyRing& ring,
+					       std::vector<Monomial>& vec, int start, int end){
     assert(end<=vec.size());
     assert(start>=0);
     int d=end-start;
     assert(d>=0);
     if (d<=2){
         switch(d){
-            case 0:return MonomialSet();
+            case 0:return MonomialSet(ring);
             case 1:return vec[start].diagram();
             case 2: 
               return (vec[start]+vec[start+1]).diagram();
@@ -1211,7 +1212,7 @@ static MonomialSet add_up_lex_sorted_monomials(std::vector<Monomial>& vec, int s
             //vec[limes].changeAssign(idx);
     }
     
-    return MonomialSet(idx,add_up_lex_sorted_monomials(vec,start,limes),add_up_lex_sorted_monomials(vec,limes,end));
+    return MonomialSet(idx,add_up_lex_sorted_monomials(ring, vec,start,limes),add_up_lex_sorted_monomials(ring,vec,limes,end));
 }
 
 static MonomialSet
@@ -1256,14 +1257,15 @@ add_up_lex_sorted_exponents(const BoolePolyRing& ring,
 /// @note This function is deactivated, because it always uses the active manager!
 /// @todo activate and make save, when used
 #if 0
-static MonomialSet add_up_lex_sorted_monomial_navs(std::vector<Monomial::const_iterator>& vec, int start, int end){
+static MonomialSet add_up_lex_sorted_monomial_navs(const BoolePolyRing& ring,
+  std::vector<Monomial::const_iterator>& vec, int start, int end){
     assert(end<=vec.size());
     assert(start>=0);
     int d=end-start;
     assert(d>=0);
     if (d<=2){
         switch(d){
-            case 0:return MonomialSet();
+            case 0:return MonomialSet(const BoolePolyRing& ring,);
             case 1:return MonomialSet(vec[start]);
             case 2: 
               Polynomial res=Polynomial(vec[start])+Polynomial(vec[start+1]);
@@ -2022,8 +2024,8 @@ public:
 };
 
 static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> extendable_system, vector<Polynomial>& res1,MonomialSet& res_terms,MonomialSet& leads_from_strat){
-    leads_from_strat=MonomialSet();
-    res_terms=MonomialSet();
+    leads_from_strat=MonomialSet(res_terms.ring());
+    res_terms=MonomialSet(res_terms.ring());
     int i;
         for(i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
@@ -2522,7 +2524,7 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
      cache_mgr_type;
  cache_mgr_type cache_mgr(as.ring());
  return dd_modulo_monomials(cache_mgr, as.navigation(), vs.navigation(),
-                         MonomialSet());
+			    MonomialSet(as.ring()));
 }
 
 

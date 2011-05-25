@@ -93,7 +93,7 @@ public:
 
     return monom(  dd_block_degree_lead(cache_mgr, blockDegCache, 
                                         poly.navigation(), m_indices.begin(),
-                                        set_type(), descending) );
+                                        set_type(poly.ring()), descending) );
   }
 
   /// Leading monomial with bound (just the ordinary leading monomial)

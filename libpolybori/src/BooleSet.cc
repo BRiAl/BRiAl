@@ -208,7 +208,7 @@ BooleSet::minimalElements() const {
 
   return dd_minimal_elements(cache_mgr_type(ring()),
                              modmon_mgr_type(ring()),
-                             base::navigation(), self());
+                             base::navigation(), self(ring()));
 }
 
 

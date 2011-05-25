@@ -1737,7 +1737,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   Polynomial p_mod=mod;
   if (m.isZero()) return m;
   if (mod.ownsOne())
-    return MonomialSet();
+    return MonomialSet(mod.ring());
   if (m.ownsOne()) return Polynomial(1,m.ring()).diagram();
   MonomialSet mod_cv=contained_variables_cudd_style(mod);
   m=mod_var_set(m,mod_cv);
@@ -1826,7 +1826,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
     return cv.unite(result);
 }
 MonomialSet minimal_elements_cudd_style(MonomialSet m){
-  return do_minimal_elements_cudd_style(m, MonomialSet());
+  return do_minimal_elements_cudd_style(m, MonomialSet(m.ring()));
 }
 void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){
     PolyEntry e=generators[s];

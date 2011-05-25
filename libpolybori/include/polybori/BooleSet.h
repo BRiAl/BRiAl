@@ -85,8 +85,10 @@ public:
   typedef CReverseIter<LexOrder, navigator, term_type> const_reverse_iterator;
 
   /// Default constructor
+private:
+public:
   BooleSet();
-
+public:
   /// Copy constructor
   BooleSet(const self& rhs): base(rhs) {}
 

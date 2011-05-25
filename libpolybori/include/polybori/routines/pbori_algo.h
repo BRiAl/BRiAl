@@ -350,7 +350,7 @@ dd_modulo_monomials(const CacheMgr& cache_mgr,
     return cache_mgr.generate(cached);
 
   // Actual computations
-  SetType result;
+  SetType result(cache_mgr.zero());
   if (index == *rhs){
 
     NaviType rhselse = rhs.elseBranch();
@@ -841,7 +841,7 @@ template <class SizeType, class IdxType, class SetType>
 SizeType&
 count_index(SizeType& size, IdxType idx, const SetType& bset) {
 
-  return count_index(size, idx, bset.navigation(), SetType());
+  return count_index(size, idx, bset.navigation(), SetType(bset.ring()));
 }
 
 

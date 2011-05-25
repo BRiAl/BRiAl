@@ -29,14 +29,14 @@ struct Fvar {
   typedef BooleVariable var_type;
   Fvar(const BoolePolyRing& input_ring = BoolePolyRing(3)):
     ring(input_ring), 
-    x(0, input_ring), y(1, input_ring), z(2, input_ring) {
+    x(0, input_ring), y(1, input_ring), z(2, input_ring),
+    bset(1, input_ring.one(), input_ring.zero()) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
     ring.setVariableName(0, "x");
     ring.setVariableName(1, "y");
     ring.setVariableName(2, "z");
-    bset = BooleSet(1, ring.one(), ring.zero());
-  }
+   }
 
   ~Fvar() { BOOST_TEST_MESSAGE( "teardown fixture" ); }
   

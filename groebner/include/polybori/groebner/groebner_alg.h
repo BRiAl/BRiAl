@@ -1,4 +1,3 @@
-
 /*
  *  groebner_alg.h
  *  PolyBoRi
@@ -118,7 +117,7 @@ public:
     idx_type reducibleUntil;
     void setupSetsForLastElement();
 
-    ReductionStrategy(){ set_defaults(); }
+    // ReductionStrategy(){ set_defaults(); }
 
     ReductionStrategy(const BoolePolyRing& theRing):
       leadingTerms(theRing.zero()), minimalLeadingTerms(theRing.zero()),
@@ -201,6 +200,7 @@ public:
 
 
 	GroebnerStrategy(const BoolePolyRing& input_ring):
+  generators(input_ring),
         r(input_ring), pairs(*this, input_ring), cache(new CacheManager()) {
 
         optDrawMatrices=false;

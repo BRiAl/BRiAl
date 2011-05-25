@@ -85,10 +85,10 @@ MonomialSet zeros(Polynomial p, MonomialSet candidates){
     MonomialSet result;
     MonomialSet::navigator p_nav=s.navigation();
     if (candidates.isZero()) return candidates;
-    if (p.isOne()) return MonomialSet();
+    if (p.isOne()) return MonomialSet(p.ring());
     if (p.isZero()) return candidates;
     if (Polynomial(candidates).isOne()){
-        if (p.hasConstantPart()) return MonomialSet();
+      if (p.hasConstantPart()) return MonomialSet(p.ring());
         else return candidates;
     }
     MonomialSet::navigator can_nav=candidates.navigation();
