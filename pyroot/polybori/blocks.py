@@ -68,13 +68,15 @@ class AlternatingBlock(object):
     def gen_var_func(var_pos):
 
       class var_factory(object):
-          def __init__(self, ring):
+          def __init__(self, ring, index2pos, size):
               self.ring = ring
-          def __call__(idx):
-              return self.ring.variable(self.index2pos[i]*len(self.var_names) +
+              self.index2pos = index2pos
+              self.size = size
+          def __call__(self, idx):
+              return self.ring.variable(self.index2pos[idx]*self.size +
                                         var_pos+start)
               
-      return var_factory(context["r"])
+      return var_factory(context["r"], self.index2pos, len(self.var_names))
 
     for (var_pos,n) in enumerate(self.var_names):
       var_func=gen_var_func(var_pos)
