@@ -9,6 +9,20 @@ from polybori.PyPolyBoRi import Variable as VariableType
 import polybori
 
 class RingContext(object):
+    """
+    >>> r = Ring(1000)
+    >>> from polybori import Variable
+    >>> print Variable
+    <class 'polybori.dynamic.PyPolyBoRi.Variable'>
+    >>> with RingContext(r) as rc:
+    ...     print polybori.Variable(17)
+    x(17)
+    >>> try:
+    ...     print polybori.Variable(17)
+    ... except:
+    ...     print "caught expected exception"
+    caught expected exception
+    """
     def __init__(self, ring):
         self.context = (VariableFactory(ring), MonomialFactory(ring))
 
@@ -23,13 +37,6 @@ class RingContext(object):
         return False
 
 if __name__=='__main__':
-    r = Ring(1000)
-    from polybori import Variable
-    print Variable
-    with RingContext(r) as rc:
-        print polybori.Variable(17)
+    import doctest
+    doctest.testmod()
 
-    try:
-        print polybori.Variable(17)
-    except:
-        print "caught expected exception"
