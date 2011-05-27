@@ -102,6 +102,7 @@ class BooleEnv:
 
   typedef COrderingBase order_type;
 
+private:
 #ifdef PBORI_ENV_RING_NOTINLINED
   static ring_type& ring();
 #else
@@ -113,6 +114,8 @@ class BooleEnv:
 #endif
   //  static manager_type& manager();
   static order_type& ordering();
+public:
+
   /// Set name of variable with index idx
   static void setVariableName(idx_type idx, vartext_type varname);
 

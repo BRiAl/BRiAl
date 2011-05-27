@@ -204,7 +204,8 @@ public:
 
   /// Construct from initial navigator
   CTermStackBase(navigator navi): BaseType(), m_stack() {
-    push(navi);
+    if (navi.isValid())
+      push(navi);
   }
 
   /// default Copy Constructor
@@ -384,13 +385,17 @@ public:
   CTermStack(navigator navi, const Dummy&): base(navi) { }
 
   void init() {
-    followThen();
-    terminate();
+    if (!base::empty()){
+      followThen();
+      terminate();
+    }
   }
 
   void initLast() {
-    followElse();
-    terminate();
+    if (!base::empty()){
+      followElse();
+      terminate();
+    }
   }
 
   void incrementElse() {
@@ -553,7 +558,7 @@ public:
   typedef NavigatorType navigator;
   typedef typename cached_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), getDeg(manager_type()) {}
+  //  CDegStackCore(): base(), getDeg(manager_type()) {}
 
   CDegStackCore(navigator navi, const manager_type& mgr):
     base(navi), getDeg(mgr) {}
@@ -581,7 +586,7 @@ public:
   typedef typename base::size_type size_type;
   typedef typename cached_block_deg<navigator>::manager_type manager_type;
 
-  CDegStackCore(): base(), block(manager_type()) {}
+  //  CDegStackCore(): base(), block(manager_type()) {}
   CDegStackCore(navigator navi, const manager_type& mgr): 
     base(navi), block(mgr) {}
 
@@ -665,7 +670,7 @@ public:
   typedef std::greater<size_type> size_comparer;
   typedef typename base::manager_type manager_type;
 
-  CDegStackBase(): base() {}
+  //  CDegStackBase(): base() {}
   CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
 
   integral_constant<bool, false> takeLast;
@@ -694,7 +699,7 @@ public:
   typedef std::greater_equal<size_type> size_comparer;
   typedef typename base::manager_type manager_type;
 
-  CDegStackBase(): base() {}
+  //  CDegStackBase(): base() {}
   CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
 
   integral_constant<bool, true> takeLast;
@@ -723,13 +728,15 @@ public:
   typedef typename navigator::deg_type deg_type;
   typedef typename base::manager_type manager_type;
 
-  CDegTermStack(): base(), m_start() {}
+  //  CDegTermStack(): base(), m_start() {}
   CDegTermStack(navigator navi, const manager_type& mgr):
     base(navi, mgr), m_start(navi) {}
 
-  void init() {
-    followDeg();
-    base::terminate();    
+  void init() {  
+    if (!base::empty()) {
+      followDeg();
+      base::terminate();    
+    }
   }
   void followDeg() {
     assert(!base::empty());
@@ -849,13 +856,14 @@ public:
     base(navi, mgr) { }
 
   /// Default Constructor
-  CBlockTermStack(): base() {}
+                 //  CBlockTermStack(): base() {}
 
 
   void init() {
-    assert(!base::empty());
-    followDeg();
-    base::terminate();
+    if (!base::empty()) {
+      followDeg();
+      base::terminate();
+    }
   }
 
   void increment() {

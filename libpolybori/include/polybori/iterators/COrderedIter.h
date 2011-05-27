@@ -64,7 +64,7 @@ public:
     base(navi, mgr) {
     base::init();
   }
-  CWrappedStack(): base() {}
+  //  CWrappedStack(): base() {}
   CWrappedStack(const self& rhs): base(rhs) {}
 
 
@@ -217,8 +217,8 @@ public:
   template <class MgrType>
   CGenericOrderedIter(NavigatorType navi, const MgrType& gen): 
     base( core_pointer(new ordered_iter_type(navi, gen) ), gen) {}
-  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
-                               term_generator() ) {}
+//   CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
+//                                term_generator() ) {}
 
   CGenericOrderedIter(const CGenericOrderedIter& rhs): base(rhs) {}
 };
@@ -243,8 +243,8 @@ public:
     base( core_pointer(new ordered_iter_type(navi, mgr)),
                        term_generator() ) {}
 
-  CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
-                              term_generator() ) {}
+//   CGenericOrderedIter(): base( core_pointer(new ordered_iter_type()),
+//                               term_generator() ) {}
 
   CGenericOrderedIter(const CGenericOrderedIter& rhs): base(rhs) {}
 };

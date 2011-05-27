@@ -66,8 +66,10 @@ def booleset_new_init(self,arg=None, second=None):
                 v.append(i)
             p=add_up_polynomials(v, Polynomial(arglist[0].ring().zero()))
             booleset_old_init(self,p.set())
+
 BooleSet.__init__=booleset_new_init
 
+ 
 for k in OrderCode.values:
     globals()[str(OrderCode.values[k])]=OrderCode.values[k]
 
@@ -145,3 +147,4 @@ def add_up_polynomials(polys, init):
         polys=vec
 
     return _add_up_polynomials(polys, init)
+

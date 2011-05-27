@@ -54,7 +54,7 @@ static BooleSet poly_diagram_as_set(const Polynomial& p){
 
 void export_poly(){
   typedef BoolePolynomial::ring_type ring_type;
-  ring_type dummy_ring;
+  ring_type dummy_ring(1);
   BoolePolynomial::var_type var(0, dummy_ring);
   BoolePolynomial::monom_type monom(dummy_ring);
 

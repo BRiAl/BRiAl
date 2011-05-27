@@ -45,8 +45,8 @@ void export_misc(){
   def("set_random_seed",set_random_seed);
   def("variety_lex_leading_terms",variety_lex_leading_terms);
   def("variety_lex_groebner_basis",variety_lex_groebner_basis);
-  def("global_ring",&BooleEnv::ring, 
-      return_value_policy<copy_non_const_reference>());
+//   def("global_ring",&BooleEnv::ring, 
+//       return_value_policy<copy_non_const_reference>());
   def("top_index",top_index);
   def("gauss_on_polys", gauss_on_polys);
   

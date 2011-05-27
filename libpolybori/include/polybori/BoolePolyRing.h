@@ -100,9 +100,6 @@ protected:
   BoolePolyRing(const core_ptr& rhs):  p_core(rhs) {}
 
 public:
-  /// Default constructor
-  BoolePolyRing();
-
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 
                          ordercode_type order = lp,

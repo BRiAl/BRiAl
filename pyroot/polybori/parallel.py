@@ -155,6 +155,18 @@ Polynomial.__getinitargs__ = _initargs_polynomial
 Polynomial.__getstate__ = _pickle_polynomial
 Polynomial.__setstate__ = _unpickle_polynomial
 
+
+ring_old_init=Ring.__init__
+
+def ring_new_init(self, first, *args):
+    if first == None:
+        pass #Dangerours hack?
+    else:
+        ring_old_init(self, first, *args)
+
+Ring.__init__ = ring_new_init
+
+
 def _unpickle_ring(self, code):
     (identifier, data, varnames, blocks) = code
 
@@ -200,9 +212,13 @@ def _pickle_ring(ring):
 
     return code
 
+def _initargs_ring(self):
+    return (None,)
+
 Ring.__safe_for_unpickling__ = True
 Ring.__getstate__ = _pickle_ring
 Ring.__setstate__ = _unpickle_ring
+Ring.__getinitargs__ = _initargs_ring
 
 def groebner_basis_first_finished(I, *l):
     """
@@ -230,7 +246,9 @@ def groebner_basis_first_finished(I, *l):
     it = pool.imap_unordered(_calculate_gb_with_keywords,
                              [(I, kwds) for kwds in l])
     res=it.next() 
+
     pool.terminate()
+
     return res
 
 def _test():

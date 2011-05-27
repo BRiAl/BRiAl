@@ -136,7 +136,7 @@ BOOST_AUTO_TEST_CASE(test_lead_iter) {
   BoolePolynomial poly = x*x + x*y + y*z*v*w + 1;
 
   BOOST_TEST_MESSAGE( "leadIteratorBegin" );
-  order_type::ordered_iterator start(order.leadIteratorBegin(poly)), finish(order.leadIteratorEnd());
+  order_type::ordered_iterator start(order.leadIteratorBegin(poly)), finish(order.leadIteratorEnd(poly));
   start.increment();
 }
 

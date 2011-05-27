@@ -45,7 +45,7 @@ public:
 
   template <class MgrType>
   CGenericIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
-  CGenericIter(): base() {}
+  //  CGenericIter(): base() {}
 };
 
 #if 0
@@ -60,7 +60,7 @@ public:
   template <class MgrType>
   CGenericIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
 
-  CGenericIter(): base() {}
+  //  CGenericIter(): base() {}
 };
 #endif
 
@@ -85,7 +85,7 @@ public:
   template <class MgrType>
   CReverseIter(NaviType navi, const MgrType& mgr): base(navi, mgr) {}
 
-  CReverseIter(): base() {}
+  //  CReverseIter(): base() {}
 };
 
 

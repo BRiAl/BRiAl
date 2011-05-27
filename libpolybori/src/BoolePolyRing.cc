@@ -62,12 +62,6 @@ BoolePolyRing::variableDiagram(checked_idx_type nvar) const {
 
 
 
-/// Active Ring
-BoolePolyRing::BoolePolyRing() : 
-  p_core(BooleEnv::ring().core()) {
-  PBORI_TRACE_FUNC( "BoolePolyRing()" );
-}
-
 // interface with cudd's variable management
 BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
                              bool_type make_active) : 

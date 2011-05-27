@@ -180,7 +180,7 @@ public:
 
   CTermGenerator(const data_type& data): base(data) {}
   CTermGenerator(const CTermGenerator& rhs): base(rhs) {}
-  CTermGenerator(): base() {}
+  //  CTermGenerator(): base() {}
 };
 
 END_NAMESPACE_PBORI

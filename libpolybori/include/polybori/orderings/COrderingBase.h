@@ -129,13 +129,13 @@ public:
   virtual ordered_iterator leadIteratorBegin(const poly_type&) const = 0;
 
   /// End marker for iterator corresponding to leading term
-  virtual ordered_iterator leadIteratorEnd() const = 0;
+  virtual ordered_iterator leadIteratorEnd(const poly_type&) const = 0;
 
   /// Initialize exponent iterator corresponding to leading term
   virtual ordered_exp_iterator leadExpIteratorBegin(const poly_type&) const = 0;
 
   /// End marker for exponent iterator corresponding to leading term
-  virtual ordered_exp_iterator leadExpIteratorEnd() const = 0;
+  virtual ordered_exp_iterator leadExpIteratorEnd(const poly_type&) const = 0;
 
   /// Get numerical code for ordering
   virtual ordercode_type getOrderCode() const = 0;

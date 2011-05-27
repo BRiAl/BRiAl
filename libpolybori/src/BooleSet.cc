@@ -78,7 +78,7 @@ BooleSet::const_iterator
 BooleSet::end() const {
 
   PBORI_TRACE_FUNC( "BooleSet::end() const" );
-  return const_iterator();
+  return const_iterator(navigator(), ring());
 }
 // Start of iteration over monomials
 BooleSet::const_reverse_iterator 
@@ -93,7 +93,7 @@ BooleSet::const_reverse_iterator
 BooleSet::rend() const {
 
   PBORI_TRACE_FUNC( "BooleSet::rend() const" );
-  return const_reverse_iterator();
+  return const_reverse_iterator(navigator(), ring());
 }
 
 // Start of iteration over exponent vectors
@@ -109,7 +109,7 @@ BooleSet::exp_iterator
 BooleSet::expEnd() const {
 
   PBORI_TRACE_FUNC( "BooleSet::exp_end() const" );
-  return exp_iterator();
+  return exp_iterator(navigator(), ring());
 }
 
 

@@ -80,26 +80,26 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 BOOST_AUTO_TEST_CASE(test_ordering) {
 
   BOOST_TEST_MESSAGE( "ordering, getOrderCode, getBaseOrderCode, changeOrdering" );
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), ring.ordering().getOrderCode());
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), ring.ordering().getOrderCode());
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   BOOST_CHECK_EQUAL(BooleEnv::getBaseOrderCode(), ring.ordering().getBaseOrderCode());
   BooleEnv::changeOrdering(COrderEnums::dlex);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::dlex);
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::dlex);
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   ring.changeOrdering(COrderEnums::dp_asc);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::dp_asc);
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::dp_asc);
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   BooleEnv::changeOrdering(COrderEnums::block_dlex);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::block_dlex);
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::block_dlex);
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   ring.changeOrdering(COrderEnums::block_dp_asc);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::block_dp_asc);
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::block_dp_asc);
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   BooleEnv::changeOrdering(-1);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::lp);//default is lp
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
   BooleEnv::changeOrdering(5);
-  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::lp);//default is lp
+  //  BOOST_CHECK_EQUAL(BooleEnv::ordering().getOrderCode(), COrderEnums::lp);//default is lp
   BOOST_CHECK_EQUAL(BooleEnv::getOrderCode(), ring.ordering().getOrderCode());
 }
 
@@ -108,18 +108,18 @@ BOOST_AUTO_TEST_CASE(test_ring) {
   BoolePolyRing notempty(3, 1, false);
   BoolePolyRing empty(0,2,false);
 
-  BOOST_TEST_MESSAGE( "ring, set" );
-  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
-  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
-  BooleEnv::set(notempty);
-  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), notempty.ordering().getOrderCode());
-  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), notempty.nVariables());
-  BooleEnv::set(empty);
-  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), empty.ordering().getOrderCode());
-  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), empty.nVariables());
-  BooleEnv::set(ring);
-  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
-  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
+//   BOOST_TEST_MESSAGE( "ring, set" );
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
+//   BooleEnv::set(notempty);
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), notempty.ordering().getOrderCode());
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), notempty.nVariables());
+//   BooleEnv::set(empty);
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), empty.ordering().getOrderCode());
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), empty.nVariables());
+//   BooleEnv::set(ring);
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), ring.ordering().getOrderCode());
+//   BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), ring.nVariables());
 }
 
 BOOST_AUTO_TEST_CASE(test_blocks) {

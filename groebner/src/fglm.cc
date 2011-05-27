@@ -736,7 +736,7 @@ void FGLMStrategy::testMultiplicationTables(){
             Polynomial product=reducedNormalFormInFromRing(m*v);
 
             MonomialSet product_set=product.diagram();
-            Polynomial sum;
+            Polynomial sum(0, product.ring());
             for(k=0;k<varietySize;k++){
                 Monomial m2=standardMonomialsFromVector[k];
                 

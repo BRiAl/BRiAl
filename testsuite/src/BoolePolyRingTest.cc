@@ -49,63 +49,39 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   ring_type ring1(0,COrderEnums::lp,false);
   BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
   BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
-  ring_type defaultr;
-  BOOST_CHECK_NE(ring1.hash(),defaultr.hash());
+
   ring_type ring2(1,COrderEnums::dlex,false);
   BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
   BOOST_CHECK_EQUAL(ring2.ordering().getOrderCode(), COrderEnums::dlex);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring2.hash(),defaultr.hash());
   ring_type ring3(2,COrderEnums::dp_asc,true);
   BOOST_CHECK_EQUAL(ring3.nVariables(), 2);
   BOOST_CHECK_EQUAL(ring3.ordering().getOrderCode(), COrderEnums::dp_asc);
-  defaultr = ring_type();
-  BOOST_CHECK_EQUAL(ring3.hash(),defaultr.hash());
   ring_type ring4(3,COrderEnums::block_dlex,false);
   BOOST_CHECK_EQUAL(ring4.nVariables(), 3);
   BOOST_CHECK_EQUAL(ring4.ordering().getOrderCode(), COrderEnums::block_dlex);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring4.hash(),defaultr.hash());
   ring_type ring5(4,COrderEnums::block_dp_asc,false);
   BOOST_CHECK_EQUAL(ring5.nVariables(), 4);
   BOOST_CHECK_EQUAL(ring5.ordering().getOrderCode(), COrderEnums::block_dp_asc);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring5.hash(),defaultr.hash());
   ring5.activate();
-  defaultr = ring_type();
-  BOOST_CHECK_EQUAL(ring5.hash(),defaultr.hash());
   
   ring_type ring11(0, get_ordering(COrderEnums::lp)); 
   BOOST_CHECK_EQUAL(ring11.nVariables(), 0);
   BOOST_CHECK_EQUAL(ring11.ordering().getOrderCode(), COrderEnums::lp);
 
-  defaultr = ring_type();
-
-  BOOST_CHECK_NE(ring11.hash(),defaultr.hash());
   ring_type ring12(1,get_ordering(COrderEnums::dlex));
   BOOST_CHECK_EQUAL(ring12.nVariables(), 1);
   BOOST_CHECK_EQUAL(ring12.ordering().getOrderCode(), COrderEnums::dlex);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring12.hash(),defaultr.hash());
 
   ring_type ring13(2,get_ordering(COrderEnums::dp_asc));
   BOOST_CHECK_EQUAL(ring13.nVariables(), 2);
   BOOST_CHECK_EQUAL(ring13.ordering().getOrderCode(), COrderEnums::dp_asc);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring13.hash(),defaultr.hash());
   ring_type ring14(3,get_ordering(COrderEnums::block_dlex));
   BOOST_CHECK_EQUAL(ring14.nVariables(), 3);
   BOOST_CHECK_EQUAL(ring14.ordering().getOrderCode(), COrderEnums::block_dlex);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring14.hash(),defaultr.hash());
   ring_type ring15(4,get_ordering(COrderEnums::block_dp_asc));
   BOOST_CHECK_EQUAL(ring15.nVariables(), 4);
   BOOST_CHECK_EQUAL(ring15.ordering().getOrderCode(), COrderEnums::block_dp_asc);
-  defaultr = ring_type();
-  BOOST_CHECK_NE(ring15.hash(),defaultr.hash());
   ring15.activate();
-  defaultr = ring_type();
-  BOOST_CHECK_EQUAL(ring15.hash(),defaultr.hash());
 
   // Mainly vor coverage
   InheritedFromRing alsoring(1, 2, true);
@@ -119,7 +95,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   ring_type ring(3, 0, false);
   ring_type empty(0);
   ring.activate();
-  ring_type defaultr;
+  ring_type defaultr(ring);
 
   BOOST_TEST_MESSAGE( "nVariables, getVariableName, setVariableName" );
 
@@ -198,7 +174,7 @@ BOOST_AUTO_TEST_CASE(test_ordering) {
   ring_type ring(3, 0, false);
   ring_type empty(0);
   ring.activate();
-  ring_type defaultr;
+  ring_type defaultr(ring);
 
   BOOST_TEST_MESSAGE( "ordering, changeOrdering" );
 
@@ -285,7 +261,7 @@ BOOST_AUTO_TEST_CASE(test_dd_type) {
   ring_type ring(3, 0, false);
   ring_type empty(0);
   ring.activate();
-  ring_type defaultr;
+  ring_type defaultr(ring);
   ring.setVariableName(0, "x");
   ring.setVariableName(1, "y");
   ring.setVariableName(2, "z");
@@ -371,7 +347,7 @@ BOOST_AUTO_TEST_CASE(test_coerce) {
   ring_type small(2,0,false);
   ring_type ring(4, 0, false);
   ring.activate();
-  ring_type defaultr;
+  ring_type defaultr(ring);
   ring.setVariableName(0, "*");
   ring.setVariableName(1, "ö");
   ring.setVariableName(2, "-");
@@ -432,10 +408,10 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   ring_type ring2(3, 0, false);
   BOOST_CHECK_NE(ring1.hash(), ring2.hash()); // Not equal because different
                                               // instances (but of likewise rings)
-  ring_type defaultr;
+  ring_type defaultr(ring2);
   BOOST_CHECK_NE(ring1.hash(), defaultr.hash());
-  ring1.activate();
-  defaultr = ring_type();
+  defaultr = ring1;
+
   BOOST_CHECK_EQUAL(ring1.hash(), defaultr.hash());
   ring_type empty1(0, 0, false);
   ring_type empty2(0, 0, false);

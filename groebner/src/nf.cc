@@ -2380,9 +2380,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
         Polynomial p_r=polys_rest[i];
         Polynomial p_t=p_r.diagram().intersect(terms_step2);
         Polynomial p_u=p_r.diagram().diff(p_t.diagram());
-        Polynomial::exp_iterator it, end;
-        it=p_u.expBegin();
-        end=p_u.expEnd();
+        Polynomial::exp_iterator it(p_u.expBegin()), end(p_u.expEnd());
         
         while(it!=end){
             Exponent e=*it; 

@@ -163,8 +163,8 @@ public:
   }
 
   ordered_iterator
-  leadIteratorEnd() const {
-    return CGenericOrderedIter<order_type, navigator, monom_type>();
+  leadIteratorEnd(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator, monom_type>(navigator(), poly.ring());
   }
 
   // Initialize iterator corresponding to leading term
@@ -174,8 +174,8 @@ public:
   }
 
   ordered_exp_iterator
-  leadExpIteratorEnd() const {
-    return CGenericOrderedIter<order_type, navigator, exp_type>();
+  leadExpIteratorEnd(const poly_type& poly) const {
+    return CGenericOrderedIter<order_type, navigator, exp_type>(navigator(), poly.ring());
   }
 
 protected:

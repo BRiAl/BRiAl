@@ -1854,7 +1854,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
               Exponent t=t_divided+e.leadExp;
   #endif
               //MonomialSet lm_d=t_divided.divisors();
-              assert((other_terms.intersect(t_divided.divisors()).isZero()));
+              assert((other_terms.intersect(t_divided.divisors(lm.ring())).isZero()));
               if (true){
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=generators.leadingTerms.intersect(t.divisors());

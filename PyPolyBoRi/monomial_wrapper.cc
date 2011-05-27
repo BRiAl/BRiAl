@@ -50,7 +50,7 @@ static BoolePolynomial::navigator nav(const BoolePolynomial& p){
 BOOST_PYTHON_FUNCTION_OVERLOADS(red_overloads, &BooleMonomial::reducibleBy, 1, 1)
 
 void export_monomial(){
-  BoolePolyRing dummy_ring;
+  BoolePolyRing dummy_ring(1);
   BooleVariable var(0, dummy_ring);
 
   BooleMonomial::set_type  (BooleMonomial::*set)(void) const = &BooleMonomial::set;

@@ -90,8 +90,6 @@ public:
     base::m_getTerm.append(base::begin(), base::end()); 
   }
   
-  /// Default Constructor
-  CExpIter(): base() {}
 
   /// Incrementation operation core
   void increment() { 

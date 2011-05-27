@@ -574,15 +574,15 @@ BOOST_AUTO_TEST_CASE(test_getters) {
 
   dd_type diagram(poly.set());
   BoolePolyRing other(3, 1, false);
-  BoolePolyRing orig = BooleEnv::ring();
+  BoolePolyRing orig = ring;
   output_test_stream output;
 
   BOOST_TEST_MESSAGE( "ring" );
-  BOOST_CHECK_EQUAL(BooleEnv::ring().ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
-  BOOST_CHECK_EQUAL(BooleEnv::ring().nVariables(), diagram.ring().nVariables());
+  BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
+  BOOST_CHECK_EQUAL(ring.nVariables(), diagram.ring().nVariables());
   BooleEnv::set(other);
-  BOOST_CHECK_NE(BooleEnv::ring().ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
-  BOOST_CHECK_NE(BooleEnv::ring().nVariables(), diagram.ring().nVariables());
+  BOOST_CHECK_NE(ring.ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
+  BOOST_CHECK_NE(ring.nVariables(), diagram.ring().nVariables());
   BooleEnv::set(orig);
 }
 

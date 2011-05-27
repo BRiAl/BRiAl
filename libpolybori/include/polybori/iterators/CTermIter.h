@@ -91,9 +91,6 @@ public:
     m_stack.init(); 
   }
 
-  ///  Default constructor   
-  CTermIter():  m_getTerm(), m_stack() {}
-
   /// Destructor
   ~CTermIter() {}
 
