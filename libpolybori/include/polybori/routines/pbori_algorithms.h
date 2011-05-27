@@ -263,7 +263,7 @@ apply_mapping(const PolyType& poly, const MapType& map) {
     cache(poly.ring());
 
   return dd_mapping(cache, poly.navigation(), map.navigation(), 
-                    typename PolyType::set_type()); 
+                    typename PolyType::set_type(poly.ring())); 
 }
 
 

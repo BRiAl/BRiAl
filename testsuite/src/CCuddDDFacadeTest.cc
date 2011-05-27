@@ -117,8 +117,8 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 BOOST_AUTO_TEST_CASE(test_properties) {
 
   dd_type diagram(poly.set());
-  set_type one_set;
-  one_set = one_set.add(BooleMonomial(ring));
+  set_type empty_set(poly.ring());
+  set_type one_set = empty_set.add(BooleMonomial(ring));
   dd_type one(one_set);
 
   BOOST_TEST_MESSAGE( "isZero, isOne, isConstant" );
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
 BOOST_AUTO_TEST_CASE(test_indices) {
 
   dd_type diagram(poly.set());
-  set_type one_set;
+  set_type one_set(poly.ring());
   one_set = one_set.add(BooleMonomial(ring));
   dd_type one(one_set);
   output_test_stream output;
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(test_divide) {
   BoolePolynomial poly_small = x;
   dd_type diagram_large(poly_large.set());
   dd_type diagram_small(poly_small.set());
-  set_type one_set;
+  set_type one_set(poly.ring());
   one_set = one_set.add(BooleMonomial(ring));
   dd_type one(one_set);
   output_test_stream output;
@@ -589,7 +589,7 @@ BOOST_AUTO_TEST_CASE(test_getters) {
 BOOST_AUTO_TEST_CASE(test_size) {
 
   dd_type diagram(poly.set());
-  set_type one_set;
+  set_type one_set(poly.ring());
   one_set = one_set.add(BooleMonomial(ring));
   dd_type one(one_set);
 

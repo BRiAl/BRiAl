@@ -110,7 +110,7 @@ LexOrder::lead(const poly_type& poly) const {
   PBORI_TRACE_FUNC( "LexOrder::lead(const poly_type& poly) const" );
   CacheManager<CCacheTypes::lex_lead> cache(poly.ring());
 
-  return monom(dd_lex_lead(cache, poly.navigation(), set_type()));
+  return monom(dd_lex_lead(cache, poly.navigation(), set_type(poly.ring())));
 }
 
 // maybe common template here

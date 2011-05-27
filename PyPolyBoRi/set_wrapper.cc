@@ -41,11 +41,11 @@ void export_bset(){
 
   typedef bool (BooleSet::*owns_func_type)(const BooleSet::term_type &) const;
   typedef BooleSet (BooleSet::*divisors_func_type)(const BooleSet::term_type &) const;
-  boost::python::class_<BooleSet>("BooleSet", "Represents set of Boolean terms")
+  boost::python::class_<BooleSet>("BooleSet", "Represents set of Boolean terms",
+                                  init <const BooleSet::ring_type&>() )
     .def(boost::python::init <const BooleSet&>())
     .def(boost::python::init <const BooleSet::navigator&,
          const BooleSet::ring_type&>())
-    .def(boost::python::init <>())
     .def(self==self)
     .def("__repr__", streamable_as_str<BooleSet>)
     .def("__str__", streamable_as_str<BooleSet>)

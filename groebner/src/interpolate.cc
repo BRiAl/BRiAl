@@ -60,7 +60,7 @@ MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial&
     std::copy(points.begin(),points.end(),points_vec.begin());
     bool_gen_type bit_gen(generator,distribution_type(0,1));
     MonomialSet vars_div=variables.divisors();
-    MonomialSet standards;
+    MonomialSet standards(points.ring());
     if (points!=vars_div){
       standards = points.ring().one();
     }
@@ -82,7 +82,7 @@ MonomialSet variety_lex_leading_terms(const MonomialSet& points, const Monomial&
 }
 MonomialSet zeros(Polynomial p, MonomialSet candidates){
     MonomialSet s=p.diagram();
-    MonomialSet result;
+    MonomialSet result(s.ring());
     MonomialSet::navigator p_nav=s.navigation();
     if (candidates.isZero()) return candidates;
     if (p.isOne()) return MonomialSet(p.ring());
@@ -204,7 +204,7 @@ Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
     MonomialSet to_zerou=to_zero1.unite(to_zero0);
     MonomialSet to_oneu=to_one1.unite(to_one0);
     
-    MonomialSet result;
+    MonomialSet result(to_zero.ring());
     if (to_zerou.intersect(to_oneu).isZero()){
         //std::cout<<"then branch"<<std::endl;
         result=interpolate_smallest_lex(to_zerou,to_oneu);

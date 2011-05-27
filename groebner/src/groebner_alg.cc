@@ -150,7 +150,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
     
   assert(a_index==m_index);
   int index=m_index;
-  MonomialSet result;
+  MonomialSet result(cache_mgr.zero());
   if (m_index==n_index){
     result=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(), 
                                   m_nav.thenBranch(), n_nav.thenBranch());
@@ -228,7 +228,7 @@ MonomialSet mod_var_set(const CacheMgr& cache_mgr,
     MonomialSet::navigator a_t=a.thenBranch();
     MonomialSet a0=mod_var_set(cache_mgr, a_e, v);
     MonomialSet a1=mod_var_set(cache_mgr, a_t, v);
-    MonomialSet result;
+    MonomialSet result(a0.ring());
     if (a1.isZero()) result=a0;
     else {
       if ((a1.navigation()==a_t)&&(a0.navigation()==a_e))
@@ -273,7 +273,7 @@ MonomialSet mod_deg2_set(const CacheMgr& cache_mgr,
     cache_mgr.find(a, v);
   if (cached.isValid()) return cache_mgr.generate(cached);
 
-  MonomialSet result;
+  MonomialSet result(cache_mgr.zero());
   if (a_index==v_index){
     MonomialSet tmp = mod_var_set(cache_mgr.generate(a.thenBranch()), 
                                   cache_mgr.generate(v.thenBranch()));
@@ -1031,14 +1031,14 @@ MonomialSet minimal_elements_internal2(MonomialSet s){
     
     if (Polynomial(s).hasConstantPart()) 
       return MonomialSet(Polynomial(true, s.ring()));
-    MonomialSet result;
+    MonomialSet result(s.ring());
     std::vector<idx_type> cv=contained_variables(s);
     if ((cv.size()>0) && (s.length()==cv.size())){
         return s;
     } else {
     
         int z;
-        MonomialSet cv_set;
+        MonomialSet cv_set(s.ring());
         for(z=cv.size()-1;z>=0;z--){
             Monomial mv=Variable(cv[z], s.ring());
             cv_set=cv_set.unite(mv.diagram());
@@ -1724,7 +1724,7 @@ MonomialSet minimal_elements_cudd_style_unary(MonomialSet m){
   
   MonomialSet minimal_else=minimal_elements_cudd_style_unary(cache_mgr.generate(ms0));
   MonomialSet minimal_then=minimal_elements_cudd_style_unary(mod_mon_set(cache_mgr.generate(ms1),minimal_else));
-  MonomialSet result;
+  MonomialSet result(m.ring());
   if ((minimal_else.navigation()==ms0) &&(minimal_then.navigation()==ms1)) result=m;
   else
     result= MonomialSet(*m_nav,minimal_then,minimal_else);//result0.unite(result1.change(index));
@@ -1754,7 +1754,7 @@ MonomialSet do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   if (m.isZero()) return cv;
   bool cv_empty=cv.isZero();
   
-  MonomialSet result;
+  MonomialSet result(m.ring());
   int index=*m.navigation();
   
   
@@ -2022,9 +2022,9 @@ void ReductionStrategy::setupSetsForLastElement(){
 
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){
 
-    Polynomial p=p_arg;
-
-  MonomialSet ext_prod_terms;
+  Polynomial p=p_arg;
+  Polynomial::ring_type ring(p_arg.ring());
+  MonomialSet ext_prod_terms(ring);
   PolyEntry e(p);
   Monomial lm=e.lead;
 
@@ -2038,11 +2038,11 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   Monomial::const_iterator it=e.lead.begin();
   Monomial::const_iterator end=e.lead.end();
   BooleSet other_terms=this->generators.leadingTerms;
-  MonomialSet intersecting_terms;
+  MonomialSet intersecting_terms(ring);
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
-  MonomialSet critical_terms_base;
-  MonomialSet ot2;
+  MonomialSet critical_terms_base(ring);
+  MonomialSet ot2(ring);
   if (!((is00 && (generators.leadingTerms==generators.leadingTerms00))||(is11 && (generators.leadingTerms==generators.leadingTerms11)))){
     
     if (is11)

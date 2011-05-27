@@ -53,14 +53,14 @@ struct Fset {
 BOOST_FIXTURE_TEST_SUITE(BooleSetTestSuite, Fset )
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
-  set_type set;
+  set_type set(ring);
   output_test_stream output;
   output << set;
   BOOST_CHECK(output.is_equal("{}"));
   set = set.add(x);
-  set_type set2;
+  set_type set2(ring);
   BOOST_CHECK_THROW(set_type(0,set,set2), PBoRiGenericError<CTypes::invalid_ite>);
-  set_type set1;
+  set_type set1(ring);
   set1 = set1.add(y);
   set_type set3 = set_type(0,set1,set2);
   output << set3;
@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
   output_test_stream output;
   set_type set = poly.set();
-  set_type empty;
+  set_type empty(ring);
 
   BOOST_TEST_MESSAGE( "usedVariables, usedVariablesExp" ); // BooleMonomial is used as a BooleVariable set here
   BOOST_CHECK_EQUAL(set.usedVariables(),x*y*z*v);
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(test_variables) {
   BOOST_CHECK(!empty.containsDivisorsOfDecDeg(BooleExponent(x*y*z)));
   BOOST_CHECK(empty.containsDivisorsOfDecDeg(BooleExponent()));
 
-  set_type set1;
+  set_type set1(ring);
   set1 = set1.add(x*y*z);
   set1 = set1.add(x*y);
   set1 = set1.add(x*z);
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(!set.isSingletonOrPair());
   BOOST_CHECK(!set.isPair());
 
-  set_type empty;
+  set_type empty(ring);
   BOOST_CHECK(empty.isSingleton());
   BOOST_CHECK(empty.isSingletonOrPair());
   BOOST_CHECK(!empty.isPair());
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(empty.isSingletonOrPair());
   BOOST_CHECK(!empty.isPair());
 
-  set_type single;
+  set_type single(ring);
   single = single.add(x);
   BOOST_CHECK(single.isSingleton());
   BOOST_CHECK(single.isSingletonOrPair());
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
   BOOST_CHECK(single.isSingletonOrPair());
   BOOST_CHECK(single.isPair());
 
-  set_type pair;
+  set_type pair(ring);
   pair = pair.add(x);
   pair = pair.add(y);
   BOOST_CHECK(!pair.isSingleton());
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(test_properties) {
 BOOST_AUTO_TEST_CASE(test_add_own) {
 
   set_type set = poly.set();
-  set_type empty;
+  set_type empty(ring);
   BOOST_CHECK(set.owns(x*y*z));
   BOOST_CHECK(set.owns(v*z));
   BOOST_CHECK(set.owns(x*v));
@@ -407,7 +407,7 @@ BOOST_AUTO_TEST_CASE(test_add_own) {
   BOOST_CHECK(!addedset.owns(BooleExponent(v)));
   BOOST_CHECK(!addedset.owns(BooleExponent(w)));
 
-  set_type empty2;
+  set_type empty2(ring);
   empty2 = empty2.add(x);
   BOOST_CHECK(empty2.owns(x));
   BOOST_CHECK(empty2.owns(BooleExponent(x)));
@@ -492,7 +492,7 @@ BOOST_AUTO_TEST_CASE(test_division) {
   result = set.divide(BooleMonomial(ring));
   output << result;
   BOOST_CHECK(output.is_equal("{{x,y,z}, {x,v}, {y}, {z,v}}"));
-  set_type empty;
+  set_type empty(ring);
   result = empty.divide(x*v*y);
   output << result;
   BOOST_CHECK(output.is_equal("{}"));
@@ -514,8 +514,8 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
   set = set.add(x);
   set = set.add(x*y);
 
-  set_type empty;
-  set_type almost_empty;
+  set_type empty(ring);
+  set_type almost_empty(ring);
   almost_empty = almost_empty.add(BooleMonomial(ring));
 
   BOOST_TEST_MESSAGE( "size" );
@@ -542,7 +542,7 @@ BOOST_AUTO_TEST_CASE(test_size_values) {
 BOOST_AUTO_TEST_CASE(test_compute) {
 
   set_type set = poly.set();
-  set_type empty;
+  set_type empty(ring);
   output_test_stream output;
 
   BOOST_TEST_MESSAGE( "multiplesOf" );
@@ -617,10 +617,10 @@ BOOST_AUTO_TEST_CASE(test_compute) {
   BOOST_CHECK(output.is_equal("{}"));
 
   BOOST_TEST_MESSAGE( "cartesianProduct" );
-  set_type set1;
+  set_type set1(ring);
   set1 = set1.add(x);
   set1 = set1.add(y);
-  set_type set2;
+  set_type set2(ring);
   set2 = set2.add(v);
   set2 = set2.add(w);
   output << set1.cartesianProduct(set2);
@@ -636,14 +636,14 @@ BOOST_AUTO_TEST_CASE(test_compute) {
 BOOST_AUTO_TEST_CASE(test_hash) {
 
   set_type set = poly.set();
-  set_type set2;
+  set_type set2(ring);
   set2 = set2.add(x*y*z);
   set2 = set2.add(x*v);
   set2 = set2.add(y);
   set2 = set2.add(z*v);
   set_type set2cpy = set2;
-  set_type empty;
-  set_type empty2;
+  set_type empty(ring);
+  set_type empty2(ring);
   set_type empty2cpy = empty2;
   output_test_stream output;
 
@@ -700,7 +700,7 @@ BOOST_AUTO_TEST_CASE(test_change) {
   set = set.change(3);
   output << set;
   BOOST_CHECK(output.is_equal("{{x,y,w}, {x,z,v,w}, {y,z,w}, {v,w}}"));
-  set_type empty;
+  set_type empty(ring);
   BOOST_CHECK_THROW(empty.change(-1), PBoRiError);
   BOOST_CHECK_THROW(empty.change(5), PBoRiError);
   empty = empty.change(0);
@@ -718,10 +718,10 @@ BOOST_AUTO_TEST_CASE(test_change) {
 
 BOOST_AUTO_TEST_CASE(test_iter) {
 
-  set_type set;
+  set_type set(ring);
   set = set.add(x*z);
   set = set.add(y);
-  set_type empty;
+  set_type empty(ring);
   output_test_stream output;
 
   BOOST_TEST_MESSAGE( "iterators" );

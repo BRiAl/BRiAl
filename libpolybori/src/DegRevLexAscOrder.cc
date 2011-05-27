@@ -115,7 +115,7 @@ DegRevLexAscOrder::lead(const poly_type& poly, deg_type bound) const {
   poly_type::navigator navi(poly.navigation());
   deg_type deg(dd_cached_degree(deg_mgr, navi, bound));
 
-  return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, set_type(), deg,
+  return monom( dd_recursive_degree_lead(cache_mgr, deg_mgr, navi, set_type(poly.ring()), deg,
                                          descending_property()) );
 
 }

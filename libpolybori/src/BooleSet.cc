@@ -41,18 +41,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-//-------------------------------------------------------------------------
-// Constructors and destructor
-//------------------------------------------------------------------------
-
-// Default constructor
-BooleSet::BooleSet():
-  base( BooleEnv::zero() )  {
-
-  PBORI_TRACE_FUNC( "BooleSet()" );
-
-}
-
 // Add given monomial to sets
 BooleSet
 BooleSet::add(const term_type& rhs) const {
@@ -145,7 +133,7 @@ BooleSet::firstDivisorsOf(const self& rhs) const {
   typedef CCacheManagement<ring_type, CCacheTypes::divisorsof> cache_type;
   return dd_first_divisors_of( cache_type(ring()), 
                                navigation(), rhs.navigation(), 
-                               self() );
+                               self(ring()) );
 }
 
 // compute intersection with divisors of rhs
@@ -171,7 +159,7 @@ BooleSet BooleSet::multiplesOf(const term_type& rhs) const{
 
   return 
     dd_first_multiples_of( cache_type(ring()), navigation(),
-                           rhs.diagram().navigation(), self() );
+                           rhs.diagram().navigation(), self(ring()) );
 }
 
 // check whether the intersection with divisors of rhs is non-empty
@@ -248,7 +236,7 @@ BooleSet::existAbstract(const term_type& rhs) const {
   return 
     dd_existential_abstraction(cache_mgr_type(ring()), 
                                rhs.diagram().navigation(), base::navigation(),
-                               self());
+                               self(ring()));
 }
 
 

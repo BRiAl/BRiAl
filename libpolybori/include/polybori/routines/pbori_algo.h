@@ -405,7 +405,7 @@ dd_minimal_elements(const CacheMgr& cache_mgr, const ModMonCacheMgr& modmon_mgr,
                                             minimal_else.navigation(),
                                             init).navigation(),
                      init);
-  SetType result;
+  SetType result(cache_mgr.zero());
   if ( (minimal_else.navigation() == ms0) 
        && (minimal_then.navigation() == ms1) )
     result = cache_mgr.generate(navi);

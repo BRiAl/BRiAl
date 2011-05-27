@@ -235,7 +235,7 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   BOOST_CHECK(output.is_equal("()"));
 
   BOOST_TEST_MESSAGE( "multiplyFirst" );
-  BooleSet set;
+  BooleSet set(ring);
   output << exponent.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
   set = set.add(BooleMonomial(ring));
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(test_multiply) {
   set = set.add(x);
   output << exponent.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("(0, 1, 2)"));
-  set = BooleSet();
+  set = BooleSet(ring);
   output << empty.multiplyFirst(set);
   BOOST_CHECK(output.is_equal("()"));
   set = set.add(BooleMonomial(ring));

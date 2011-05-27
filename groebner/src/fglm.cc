@@ -773,8 +773,12 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
 }
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
   :to(to_ring), from(from_ring), gbFrom(from_ring),
-   vars(from_ring)
-{
+   vars(from_ring), 
+   standardMonomialsFrom(from_ring),
+   leadingTermsFrom(from_ring),
+   varsSet(from_ring),
+   edgesUnitedVerticesFrom(from_ring) {
+
     prot=false;
     transposed=false;
 

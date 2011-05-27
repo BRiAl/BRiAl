@@ -1790,7 +1790,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     MonomialSet::navigator cached =
       cache_mgr.find(p_nav,m_nav);
     if (cached.isValid()) return cache_mgr.generate(cached);
-    MonomialSet res;
+    MonomialSet res(p.ring());
     if (p_index==*m_nav){  
       MonomialSet m1(cache_mgr.generate(m_nav.thenBranch()));
       MonomialSet m0(cache_mgr.generate(m_nav.elseBranch()));
@@ -1842,12 +1842,16 @@ public:
 
 using std::vector;
 vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
+
+    if (orig_system.empty())
+      return orig_system;
+
     log("reduction by linear algebra\n");
     static int round=0;
     round++;
     vector<Polynomial> polys;
     int i;
-    MonomialSet terms;
+    MonomialSet terms(orig_system[0].ring());
     
     for(i=0;i<orig_system.size();i++){
         Polynomial p=orig_system[i];
@@ -2005,9 +2009,9 @@ void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_a
 class MatrixMonomialOrderTables{
         
 public:
-        MatrixMonomialOrderTables(MonomialSet terms){
-                this->terms=terms;
-                setup_order_tables(
+  MatrixMonomialOrderTables(MonomialSet input_terms):
+    terms(input_terms) {
+                  setup_order_tables(
                     terms_as_exp,
                     terms_as_exp_lex,
                     ring_order2lex,
@@ -2492,18 +2496,20 @@ vector<Polynomial> gauss_on_polys(const vector<Polynomial>& orig_system){
 
   Polynomial init(0, orig_system[0].ring());
   MonomialSet terms=unite_polynomials(orig_system, init);
-  MonomialSet from_strat;//no strat
+  MonomialSet from_strat(init.ring());//no strat
   vector<Polynomial> polys(orig_system);
   linalg_step(polys, terms, from_strat, false);
   return polys;
 }
 vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& orig_system){
+  if (orig_system.empty())
+    return orig_system;
     vector<Polynomial> polys;
     //vector<Monomial> leads_from_strat_vec;
 
     int i;
-    MonomialSet terms;
-    MonomialSet leads_from_strat;
+    MonomialSet terms(orig_system[0].ring());
+    MonomialSet leads_from_strat(terms.ring());
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
     if (optModifiedLinearAlgebra){
     linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());

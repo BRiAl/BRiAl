@@ -23,7 +23,8 @@ replace_init_proc(BoolePolynomialVector)
 replace_init_proc(IntVector)
 
 monomial_old_init=Monomial.__init__
-def monomial_new_init(self,arg=None):
+
+def monomial_new_init(self, arg=None):
     """
     Constructor of the class Monomial
     Constructs a Monomial from
@@ -31,18 +32,16 @@ def monomial_new_init(self,arg=None):
       - Variable
       - sequence of variables
     """
-    if not arg:
-        raise ValueError, "no ring given!"
-    else:
-        try:
-            monomial_old_init(self,arg)
-        except:
-            items=sorted((x for x in arg),reverse=True, key=top_index)
-            prototype=Monomial(items[0])
-            for x in items[1:]:
-                prototype*=x
-            monomial_old_init(self,prototype)
+    try:
+        monomial_old_init(self,arg)
+    except:
+        items=sorted((x for x in arg),reverse=True, key=top_index)
+        prototype=Monomial(items[0])
+        for x in items[1:]:
+            prototype*=x
 
+        monomial_old_init(self,prototype)
+            
 Monomial.__init__=monomial_new_init
 
 booleset_old_init=BooleSet.__init__
@@ -52,9 +51,7 @@ def booleset_new_init(self,arg=None, second=None):
        arg    : of type polybori.dynamic.PyPolyBoRi.CCuddNavigator
        second : of type polybori.dynamic.PyPolyBoRi.BooleRing 
     """
-    if arg==None:
-        booleset_old_init(self)
-    elif second != None:
+    if second != None:
         booleset_old_init(self, arg, second)
     else:
         try:
