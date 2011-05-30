@@ -35,7 +35,7 @@
 // include boost's indirect iterator facilities
 #include <boost/iterator/indirect_iterator.hpp>
 
-
+#include <polybori/BoolePolyRing.h>
 #include <polybori/BooleEnv.h>
 #include <polybori/cache/CDegreeCache.h>
 #include "CBidirectTermIter.h"
@@ -279,7 +279,8 @@ public:
   }
 
   void invalidate() {
-    push(BooleEnv::zero().navigation());
+    static BoolePolyRing dummy(1);  // @todo FIXME HACK
+    push(dummy.zero().navigation());
   }
 
   void restart(navigator navi) {

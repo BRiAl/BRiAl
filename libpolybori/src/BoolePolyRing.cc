@@ -85,7 +85,7 @@ void
 BoolePolyRing::activate() {
 
   PBORI_TRACE_FUNC( "BoolePolyRing::activate()" );
-  BooleEnv::set(*this);
+  //  BooleEnv::set(*this);
 }
 
 /// Map polynomial to this ring, if possible
