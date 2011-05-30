@@ -144,24 +144,31 @@ def _calculate_gb_with_keywords(args):
         raise ValueError, traceback.format_exc()
 
 
-def _unpickle_polynomial(self, code):
-    self.__init__(from_fast_pickable(code, self.ring())[0])
-
+def _decode_polynomial(code):
+    return from_fast_pickable(*code)[0]
     
-def _pickle_polynomial(poly):
-    return to_fast_pickable([poly])
+def _encode_polynomial(poly):
+    return (to_fast_pickable([poly]), poly.ring())
+
+poly_old_init = Polynomial.__init__
+
+def poly_new_init(self, *args):
+    try:
+        poly_old_init(self, *args)
+    except:
+        (first, code) = args
+        poly_old_init(self, first(code))
+
+Polynomial.__init__ = poly_new_init
 
 def _initargs_polynomial(self):
-    return (self.ring(),)
+    return (_decode_polynomial, _encode_polynomial(self))
 
 Polynomial.__safe_for_unpickling__ = True
 Polynomial.__getinitargs__ = _initargs_polynomial
-Polynomial.__getstate__ = _pickle_polynomial
-Polynomial.__setstate__ = _unpickle_polynomial
 
 
-
-def _recreate_ring(code):
+def _decode_ring(code):
     import os
     (identifier, data, varnames, blocks) = code
 
@@ -188,7 +195,7 @@ def _recreate_ring(code):
 
     return ring
     
-def _pickle_ring(ring):
+def _encode_ring(ring):
     import os
     identifier = (ring.id(), os.getpid())
 
@@ -212,24 +219,20 @@ def _pickle_ring(ring):
 
 ring_old_init = Ring.__init__
 
-def ring_new_init(self, first, *args):
+def ring_new_init(self, *args):
 
     try:
-        ring_old_init(self, first, *args)
+        ring_old_init(self, *args)
     except:
-        ring_old_init(self, first(*args))
+        (first, code) = args
+        ring_old_init(self, first(code))
 
 Ring.__init__ = ring_new_init
 
 def _initargs_ring(self):
-    return (_recreate_ring, _pickle_ring(self))
-
-def _unpickle_ring(self, code):
-    pass
+    return (_decode_ring, _encode_ring(self))
 
 Ring.__safe_for_unpickling__ = True
-Ring.__getstate__ = _pickle_ring
-Ring.__setstate__ = _unpickle_ring
 Ring.__getinitargs__ = _initargs_ring
 
 
