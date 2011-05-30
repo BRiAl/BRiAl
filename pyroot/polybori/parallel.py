@@ -137,7 +137,11 @@ def from_fast_pickable(l,r):
 
 def _calculate_gb_with_keywords(args):
     (I, kwds_as_single_arg) = args
-    return groebner_basis(I, **kwds_as_single_arg)
+    import traceback
+    try:
+        return groebner_basis(I, **kwds_as_single_arg)
+    except:
+        raise ValueError, traceback.format_exc()
 
 
 def _unpickle_polynomial(self, code):
