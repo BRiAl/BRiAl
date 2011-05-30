@@ -160,18 +160,8 @@ Polynomial.__getstate__ = _pickle_polynomial
 Polynomial.__setstate__ = _unpickle_polynomial
 
 
-ring_old_init=Ring.__init__
 
-def ring_new_init(self, first, *args):
-    if first == None:
-        pass #Dangerours hack?
-    else:
-        ring_old_init(self, first, *args)
-
-Ring.__init__ = ring_new_init
-
-
-def _unpickle_ring(self, code):
+def _recreate_ring(code):
     import os
     (identifier, data, varnames, blocks) = code
 
@@ -192,9 +182,11 @@ def _unpickle_ring(self, code):
         for elt in blocks:
             ring.append_block(elt)
 
-        _polybori_parallel_rings[identifier] = _polybori_parallel_rings[(ring.id(), os.getpid())] = (ring, code) 
+        storage_data = (ring, code)
+        _polybori_parallel_rings[identifier] = storage_data
+        _polybori_parallel_rings[(ring.id(), os.getpid())] = storage_data
 
-    self.__init__(ring)
+    return ring
     
 def _pickle_ring(ring):
     import os
@@ -218,13 +210,28 @@ def _pickle_ring(ring):
 
     return code
 
+ring_old_init = Ring.__init__
+
+def ring_new_init(self, first, *args):
+
+    try:
+        ring_old_init(self, first, *args)
+    except:
+        ring_old_init(self, first(*args))
+
+Ring.__init__ = ring_new_init
+
 def _initargs_ring(self):
-    return (None,)
+    return (_recreate_ring, _pickle_ring(self))
+
+def _unpickle_ring(self, code):
+    pass
 
 Ring.__safe_for_unpickling__ = True
 Ring.__getstate__ = _pickle_ring
 Ring.__setstate__ = _unpickle_ring
 Ring.__getinitargs__ = _initargs_ring
+
 
 def groebner_basis_first_finished(I, *l):
     """
