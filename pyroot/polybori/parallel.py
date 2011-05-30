@@ -11,7 +11,8 @@
 from polybori.PyPolyBoRi import if_then_else, Polynomial, Ring, CCuddNavigator
 from polybori.gbcore import groebner_basis
 from zlib import compress, decompress
-    
+import copy_reg    
+
 def to_fast_pickable(l):
     """
     to_fast_pickable(l) converts a list of polynomials into a builtin Python value, which is fast pickable and compact.
@@ -150,22 +151,10 @@ def _decode_polynomial(code):
 def _encode_polynomial(poly):
     return (to_fast_pickable([poly]), poly.ring())
 
-poly_old_init = Polynomial.__init__
+def pickle_polynomial(self):
+    return (_decode_polynomial, (_encode_polynomial(self),))
 
-def poly_new_init(self, *args):
-    try:
-        poly_old_init(self, *args)
-    except:
-        (first, code) = args
-        poly_old_init(self, first(code))
-
-Polynomial.__init__ = poly_new_init
-
-def _initargs_polynomial(self):
-    return (_decode_polynomial, _encode_polynomial(self))
-
-Polynomial.__safe_for_unpickling__ = True
-Polynomial.__getinitargs__ = _initargs_polynomial
+copy_reg.pickle(Polynomial, pickle_polynomial)
 
 
 def _decode_ring(code):
@@ -217,24 +206,10 @@ def _encode_ring(ring):
 
     return code
 
-ring_old_init = Ring.__init__
+def pickle_ring(self):
+    return (_decode_ring, (_encode_ring(self),))
 
-def ring_new_init(self, *args):
-
-    try:
-        ring_old_init(self, *args)
-    except:
-        (first, code) = args
-        ring_old_init(self, first(code))
-
-Ring.__init__ = ring_new_init
-
-def _initargs_ring(self):
-    return (_decode_ring, _encode_ring(self))
-
-Ring.__safe_for_unpickling__ = True
-Ring.__getinitargs__ = _initargs_ring
-
+copy_reg.pickle(Ring, pickle_ring)
 
 def groebner_basis_first_finished(I, *l):
     """
