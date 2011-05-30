@@ -172,6 +172,7 @@ Ring.__init__ = ring_new_init
 
 
 def _unpickle_ring(self, code):
+    import os
     (identifier, data, varnames, blocks) = code
 
     global _polybori_parallel_rings
@@ -191,12 +192,13 @@ def _unpickle_ring(self, code):
         for elt in blocks:
             ring.append_block(elt)
 
-        _polybori_parallel_rings[identifier] = _polybori_parallel_rings[ring.id()] = (ring, code) 
+        _polybori_parallel_rings[identifier] = _polybori_parallel_rings[(ring.id(), os.getpid())] = (ring, code) 
 
     self.__init__(ring)
     
 def _pickle_ring(ring):
-    identifier = ring.id()
+    import os
+    identifier = (ring.id(), os.getpid())
 
     global _polybori_parallel_rings
     try:
