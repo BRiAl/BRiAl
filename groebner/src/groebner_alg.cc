@@ -9,6 +9,7 @@
 
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/interpolate.h>
 #include <algorithm>
 #include <set>
 
@@ -1665,33 +1666,44 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 #endif
 
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
-  std::vector<Polynomial> impl;
   PolyEntry& e=generators[s];
   if ((have_ordering_for_tables(this->r))||
       ((have_base_ordering_for_tables(this->r))&&
        (polynomial_in_one_block(generators[s].p)))) { 
     int uv=e.usedVariables.deg();
     if (uv<=4){
-      impl=add4ImplDelayed(e.p,e.leadExp,e.usedVariables,s,false);
+      return add4ImplDelayed(e.p,e.leadExp,e.usedVariables,s,false);
     } else {
 
       int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
       ////should also be proofable for var2var factors
       assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
       if (uv_opt<=4){
-        impl=addHigherImplDelayedUsing4(s, e.literal_factors,false);
-      } else {
-        addVariablePairs(s);
+        return addHigherImplDelayedUsing4(s, e.literal_factors,false);
       }
     }
   }
 
-  else {
 
-    addVariablePairs(s);
+  std::vector<Polynomial> empty;
+  
+  Polynomial rest=e.literal_factors.rest;
+  
+  int rest_lm_deg=rest.leadDeg();
+  Monomial rest_uv=rest.usedVariables();
+  if ((rest_uv.deg()>1) && (rest_uv.deg()<12)){
+      MonomialSet my_ones=zeros(rest+1, rest_uv.divisors());
+      if ((my_ones.size()<<rest.leadDeg())==(1<<rest_uv.deg()))
+          return empty;
   }
 
-  return impl;
+  addVariablePairs(s);
+  
+  
+
+  
+  
+  return empty;
 }
 
 
