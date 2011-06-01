@@ -189,7 +189,7 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
             old_len=len(strat)
             strat.add_as_you_wish(p)
             new_len=len(strat)
-            if new_len>old_len:
+            if new_len==1+old_len:
                 high_probability_polynomials_trick(p, strat)
                 
 
