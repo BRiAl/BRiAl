@@ -2221,7 +2221,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     Monomial        last(current_ring);
     if UNLIKELY(polys_lm[0].second.deg() == 0) {
         assert(polys_lm[0].first.isOne());
-        polys.resize(1, terms.ring());
+        polys.resize(1, current_ring);
         polys[0] = 1;
 
         return;
@@ -2238,7 +2238,10 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
             if LIKELY(it->second != last) {
                 last = it->second;
                 polys_triangular.push_back(it->first);
+		
+
         assert(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
+
                 terms_unique_vec.push_back(it->second);
                 terms_step1=terms_step1.unite(it->first.diagram());
             } else
@@ -2248,7 +2251,7 @@ vector < pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
     }
     polys.clear();
     std::reverse(polys_triangular.begin(), polys_triangular.end());
-    terms_unique = add_up_generic(terms_unique_vec, terms.ring().zero());
+    terms_unique = add_up_generic(terms_unique_vec, current_ring.zero());
     assert(terms_step1.diff(terms).isZero());
     assert(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;
