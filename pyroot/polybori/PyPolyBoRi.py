@@ -148,3 +148,9 @@ def add_up_polynomials(polys, init):
 
     return _add_up_polynomials(polys, init)
 
+old_ring_var=Ring.var
+def ring_var(self, i):
+    warnings.warn('Ring.var is deprectated')
+    return old_ring_var(self, i)
+
+Ring.var=ring_var
