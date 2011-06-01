@@ -200,12 +200,18 @@ public:
   typedef typename stack_type::value_type top_type;
 
   /// Default constructor
-  CTermStackBase(): BaseType(), m_stack() { }
+  CTermStackBase(): BaseType(), m_stack(), m_zero() { }
 
   /// Construct from initial navigator
-  CTermStackBase(navigator navi): BaseType(), m_stack() {
-    if (navi.isValid())
+  CTermStackBase(navigator navi): BaseType(), m_stack(), m_zero(navi) {
+    if (navi.isValid()) {
       push(navi);
+      
+      while(!m_zero.isConstant())
+	m_zero.incrementElse();
+      if (m_zero.terminalValue()) // @todo FIXME still a hack
+	m_zero = navigator((m_zero.operator->() + (SIZEOF_VOID_P * 4)));
+    }
   }
 
   /// default Copy Constructor
@@ -279,8 +285,7 @@ public:
   }
 
   void invalidate() {
-    static BoolePolyRing dummy(1);  // @todo FIXME HACK
-    push(dummy.zero().navigation());
+    push(m_zero);
   }
 
   void restart(navigator navi) {
@@ -342,6 +347,8 @@ protected:
 
 private:
   stack_type m_stack;
+
+  navigator m_zero;
 };
 
 
