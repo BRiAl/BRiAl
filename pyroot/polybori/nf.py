@@ -133,6 +133,36 @@ def build_and_print_matrices_deg_colored(v,strat):
     
     print "MATRIX_SIZE:", rows,"x",cols   
 
+def high_probability_polynomials_trick(p, strat):
+    lead_deg=p.lead_deg()
+    if lead_deg<=4:
+        return
+    uv=p.vars_as_monomial()
+    candidates=[]
+    if not uv.deg()<=lead_deg+0:
+        return
+
+    space=uv.divisors()
+    
+    lead=p.lead()
+    for v in lead.variables():
+        variable_selection=lead/v
+        vars_reversed=reversed(list(variable_selection.variables()))
+        #it's just a way to loop over the cartesian product
+        for assignment in variable_selection.divisors():
+            c_p=assignment
+            for v in vars_reversed:
+                if not assignment.reducible_by(v):
+                    c_p=(v+1) * c_p
+                    
+            points=(c_p+1).zeros_in(space)
+            if p.zeros_in(points).empty():
+                candidates.append(c_p)
+        #there many more combinations depending on plugged in values
+    for c in candidates:
+        strat.add_as_you_wish(c)
+    
+        
 def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=False,
     use_noro=False,opt_lazy=True,opt_red_tail=True,
     max_growth=2.0, step_factor=1.0,
@@ -156,8 +186,13 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
                 lin=easy_linear_polynomials_func(p)
                 for q in lin:
                     strat.add_generator_delayed(q)
+            old_len=len(strat)
             strat.add_as_you_wish(p)
-            
+            new_len=len(strat)
+            if new_len>old_len:
+                high_probability_polynomials_trick(p, strat)
+                
+
             if prot:
                 print "#Generators:", len(strat)
     

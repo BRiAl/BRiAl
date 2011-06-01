@@ -201,6 +201,72 @@ static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
 
+
+class CountCriterion{
+public:
+  GroebnerStrategy* strat;
+  int j;
+  CountCriterion(GroebnerStrategy& strat, int j){
+    this->strat=&strat;
+    this->j=j;
+  }
+  bool operator() (int i){
+      PolyEntry & e1=strat->generators[i];
+      PolyEntry & e2=strat->generators[j];
+      const int USED_VARIABLES_BOUND=6;
+      if ((e1.usedVariables.deg()>USED_VARIABLES_BOUND)||
+          (e2.usedVariables.deg()>USED_VARIABLES_BOUND)||
+          (e1.usedVariables.LCMDeg(e2.usedVariables)>USED_VARIABLES_BOUND)
+          
+          
+          ||(e1.p.set().nNodes()>30)||(e2.p.set().nNodes()>30))
+          return false;
+
+      Exponent uv_exp=e1.usedVariables.LCM(e2.usedVariables);
+
+      MonomialSet space=uv_exp.divisors(strat->r);
+      
+      Monomial lead_lcm=e1.lead.LCM(e2.lead);
+      //I am sure, there exists combinatorial formulas
+      MonomialSet common_lead_space=lead_lcm.divisors();
+      Monomial gcd=e1.lead.GCD(e2.lead);
+      int gcd_deg = gcd_deg;
+      int standard_monomials_in_common_lead=
+      // common_lead_space.diff(
+      //     common_lead_space.multiplesOf(e1.lead)).diff(
+      //         common_lead_space.multiplesOf(e2.lead)).size();
+      (1<<gcd_deg)*((1<<(e1.leadDeg-gcd_deg))-1+(1<<(e1.leadDeg-gcd_deg)
+      )-1)
+      +((1<<gcd_deg)-1)*((1<<(e1.leadDeg-gcd_deg))+(1<<(e2.leadDeg-gcd_deg)));
+
+      int standard_monomials= (standard_monomials_in_common_lead <<(uv_exp.size()-lead_lcm.deg()));
+      
+      MonomialSet zeros1=zeros(e1.p, space);
+      MonomialSet zeros2=zeros(e2.p, space);
+      
+      MonomialSet my_zeros=zeros1.intersect(zeros2);
+      
+      
+      // MonomialSet my_zeros=zeros(e1.p, space).intersect(zeros(e2.p, space));
+      
+      
+      if (UNLIKELY(standard_monomials==my_zeros.size()))
+      {
+          strat->pairs.status.setToHasTRep(i,j);
+          return true;
+
+      }
+      else
+          return false;
+  }
+  bool operator() (const Exponent &m){
+    int i;
+    i=strat->generators.exp2Index[m];
+    return (*this)(i);
+  }
+
+
+};
 //Variant for navigaor
 template <class CacheMgr>
 MonomialSet mod_var_set(const CacheMgr& cache_mgr,
@@ -467,6 +533,9 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
     
     replacePair(i,j);
     if ((i!=ij->i)||(ij->j!=j)){
+        
+        
+
       replaced=spoly(strat->generators[i].p,strat->generators[j].p);
       replaced_used=true;
       this->status.setToHasTRep(i,j);
@@ -632,6 +701,14 @@ void PairManager::cleanTopByChainCriterion(){
         strat->chainCriterions++;
         continue;
       } else {
+          
+          // CountCriterion c(*(this->strat), i);
+          // if (UNLIKELY(c(j))) {
+          //      this->queue.pop();
+          //         strat->pairs.status.setToHasTRep(i,j);
+          // 
+          //         continue;
+          // }
         return;
       }
     }else {
@@ -920,6 +997,8 @@ public:
   }
 
 };
+
+
 
 
 bool should_propagate(const PolyEntry& e){
@@ -1884,6 +1963,9 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
                       //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
                       continue;
                   }
+                  // if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),CountCriterion(*this,s))!=act_l_terms.expEnd()){
+                  //       continue;
+                  //   }
                   //chosen=chosen.unite(t_divided.diagram());
                   #ifndef EXP_FOR_PAIRS
 
