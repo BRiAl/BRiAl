@@ -2193,7 +2193,16 @@ static void
 linalg_step_modified(vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
 {
     BoolePolyRing current_ring(terms.ring());
+    assert(current_ring.id() ==  leads_from_strat.ring().id());
+#ifndef NDEBUG
+    vector < Polynomial >::const_iterator start(polys.begin()),
+      finish(polys.end());
 
+    while (start != finish) {
+      assert(current_ring.id() == start->ring().id());
+      ++start;
+    }
+#endif
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
     if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
