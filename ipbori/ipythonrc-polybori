@@ -64,4 +64,4 @@ execute def declare_ring(arg1, arg2=None): return _decring(arg1,arg2,globals())
 
 # Here come the defaults
 execute r = Ring(10000)
-execute x = Variable = VariableFactory(r)
+execute x = VariableFactory(r)
