@@ -166,6 +166,8 @@ def high_probability_polynomials_trick(p, strat):
     if lead_deg<=3:
         return
     
+    if lead_deg>9:
+        return
     uv=p.vars_as_monomial()
         
     candidates=[]
@@ -175,7 +177,7 @@ def high_probability_polynomials_trick(p, strat):
     
     if not uv.deg()<=lead_deg+1:
         return
-
+        
     space=uv.divisors()
     
     lead=p.lead()
