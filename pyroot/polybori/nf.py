@@ -1,6 +1,7 @@
 from polybori.PyPolyBoRi import *
 from polybori.easy_polynomials import easy_linear_polynomials as easy_linear_polynomials_func
 from polybori.statistics import used_vars_set
+from polybori.context import RingContext
 from random import Random
 from warnings import warn
 import copy
@@ -78,8 +79,26 @@ def build_and_print_matrices(v,strat):
 
     print "MATRIX_SIZE:", rows,"x",cols
     
-   
-
+def multiply_polynomials(l, ring):
+    """
+    >>> r=Ring(1000)
+    >>> x=r.variable
+    >>> multiply_polynomials([x(3), x(2)+x(5)*x(6), x(0), x(0)+1], r)
+    0
+    """
+    l=[Polynomial(p) for p in l]
+    def sort_key(p):
+        return p.navigation().value()
+    l=sorted(l, key=sort_key)
+    with RingContext(ring) as rc:
+        res=ring.one()
+        for p in l:
+            res=p*res
+    return res
+    
+        
+    
+    
 def build_and_print_matrices_deg_colored(v,strat):
     """old PIL solution using a different color for each degree"""
     if len(v)==0:
@@ -137,10 +156,24 @@ def high_probability_polynomials_trick(p, strat):
     lead_deg=p.lead_deg()
     if lead_deg<=4:
         return
+    
+    ring =p.ring()
+    factor=multiply_polynomials(easy_linear_factors(p), ring)
+    p=p/factor
+    
+    #again, do it twice, it's cheap
+    lead_deg=p.lead_deg()
+    if lead_deg<=3:
+        return
+    
     uv=p.vars_as_monomial()
         
     candidates=[]
-    if not uv.deg()<=lead_deg+0:
+    
+    if uv.deg()<=4:
+        return
+    
+    if not uv.deg()<=lead_deg+1:
         return
 
     space=uv.divisors()
@@ -158,7 +191,7 @@ def high_probability_polynomials_trick(p, strat):
                     
             points=(c_p+1).zeros_in(space)
             if p.zeros_in(points).empty():
-                candidates.append(c_p)
+                candidates.append(c_p*factor)
         #there many more combinations depending on plugged in values
     for c in candidates:
         strat.add_as_you_wish(c)
@@ -596,7 +629,8 @@ def normal_form(poly, ideal, reduced=True):
     >>> normal_form(x+y,[x,y])
     0
     """
-    strat = ReductionStrategy()
+    ring=poly.ring()
+    strat = ReductionStrategy(ring)
     strat.opt_red_tail=reduced
     ideal=[Polynomial(p) for p in ideal if p!=0]
     ideal= sorted(ideal, key=Polynomial.lead)
