@@ -163,11 +163,14 @@ def with_heuristic(heuristic_function):
         wrapped.__name__=f.__name__
         return wrapped
     return make_wrapper
+
 def clean_polys(I):
     I=list(set((Polynomial(p) for p in I if not p.is_zero())))
     return I
+
 def clean_polys_pre(I):
     return (clean_polys(I),None) 
+
 def gb_with_pre_post_option(
     option,pre=None,
     post=None,if_not_option=tuple(),
@@ -212,6 +215,7 @@ def gb_with_pre_post_option(
         wrapper.options[option]=default
         return wrapper
     return make_wrapper
+
 def redsb_post(I,state):
     if I==[]:
         return []
