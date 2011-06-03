@@ -163,12 +163,16 @@ def high_probability_polynomials_trick(p, strat):
     
     #again, do it twice, it's cheap
     lead_deg=p.lead_deg()
-    if lead_deg<=4:
+    if lead_deg<=3:
         return
     
     uv=p.vars_as_monomial()
         
     candidates=[]
+    
+    if uv.deg()<=4:
+        return
+    
     if not uv.deg()<=lead_deg+1:
         return
 
