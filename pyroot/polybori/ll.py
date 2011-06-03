@@ -128,7 +128,7 @@ def eliminate(polys, on_the_fly=False,prot=False, reduction_function=None, optim
 def construct_map_by_indices(to_ring, idx_mapping):
   v=BoolePolynomialVector((max(idx_mapping.keys())+1)*[to_ring.zero()])
   for (from_idx, to_idx) in idx_mapping.iteritems():
-      val = to_ring.var(to_idx)
+      val = to_ring.variable(to_idx)
       v[from_idx]= val
   return v
 

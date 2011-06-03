@@ -151,7 +151,7 @@ def plot(p, filename, colored=True,format="png",
             else:
                 return "0"
         else:
-            return str(r.var(n.value()))
+            return str(r.variable(n.value()))
     def shape(n):
         if n.constant():
             return "box"
