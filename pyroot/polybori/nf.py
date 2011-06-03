@@ -90,10 +90,9 @@ def multiply_polynomials(l, ring):
     def sort_key(p):
         return p.navigation().value()
     l=sorted(l, key=sort_key)
-    with RingContext(ring) as rc:
-        res=ring.one()
-        for p in l:
-            res=p*res
+    res=Polynomial(ring.one())
+    for p in l:
+        res=p*res
     return res
     
         
