@@ -200,18 +200,12 @@ public:
   typedef typename stack_type::value_type top_type;
 
   /// Default constructor
-  CTermStackBase(): BaseType(), m_stack(), m_zero() { }
+  CTermStackBase(): BaseType(), m_stack() { }
 
   /// Construct from initial navigator
-  CTermStackBase(navigator navi): BaseType(), m_stack(), m_zero(navi) {
-    if (navi.isValid()) {
+  CTermStackBase(navigator navi): BaseType(), m_stack() {
+    if (navi.isValid())
       push(navi);
-      
-      while(!m_zero.isConstant())
-	m_zero.incrementElse();
-      if (m_zero.terminalValue()) // @todo FIXME still a hack
-	m_zero = navigator((m_zero.operator->() + (SIZEOF_VOID_P * 4)));
-    }
   }
 
   /// default Copy Constructor
@@ -282,10 +276,6 @@ public:
 
   deg_type deg() const {
     return (markedOne()? 0: (deg_type)size());
-  }
-
-  void invalidate() {
-    push(m_zero);
   }
 
   void restart(navigator navi) {
@@ -387,7 +377,7 @@ public:
   /// Construct from initial navigator
   CTermStack(navigator navi): base(navi) { }
 
-  /// Construct from initial navigator, second argument is just for having the
+  /// Construct from initial navigator, third argument is just for having the
   /// same interface with block and degree-stacks
   template <class Dummy>
   CTermStack(navigator navi, const Dummy&): base(navi) { }
@@ -738,7 +728,7 @@ public:
 
   //  CDegTermStack(): base(), m_start() {}
   CDegTermStack(navigator navi, const manager_type& mgr):
-    base(navi, mgr), m_start(navi) {}
+    base(navi, mgr), m_start(navi), m_zero(mgr.zero().navigation()) {}
 
   void init() {  
     if (!base::empty()) {
@@ -834,13 +824,20 @@ public:
     base::append(max_elt);
 
     if(max_elt.empty())
-      base::invalidate();
+      invalidate();
   }
 
   void restart() { base::restart(m_start); }
 
+  void invalidate() {
+    assert(m_zero.isValid());
+    assert(m_zero.isEmpty());
+
+    push(m_zero);
+  }
+
 private:
-  navigator m_start;
+  navigator m_start, m_zero;
 };
 
 
