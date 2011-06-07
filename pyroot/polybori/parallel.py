@@ -240,6 +240,10 @@ def groebner_basis_first_finished(I, *l):
 
     pool.terminate()
 
+    # workaround removed cached ring, todo better more generic (fixme)
+    global _polybori_parallel_rings
+    del _polybori_parallel_rings
+
     return res
 
 def _test():
