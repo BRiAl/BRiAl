@@ -1464,7 +1464,7 @@ Polynomial red_tail_general(const ReductionStrategy& strat, Polynomial p){
     //res_vec.push_back(lm);
     
     
-    //p=Polynomial(p.diagram().diff(lm.diagram()));
+    //p=Polynomial(p.().diff(lm.diagram()));
     if (!(p.ring().ordering().isDegreeOrder()))
         p=nf3(strat,p, rest_lead);
     else{
@@ -2520,6 +2520,19 @@ vector<Polynomial> GroebnerStrategy::faugereStepDense(const vector<Polynomial>& 
     int i;
     MonomialSet terms(orig_system[0].ring());
     MonomialSet leads_from_strat(terms.ring());
+    assert(orig_system[0].ring().id() ==  terms.ring().id());
+
+#ifndef NDEBUG
+    {
+      vector < Polynomial >::const_iterator start(orig_system.begin()),
+	finish(orig_system.end());
+      
+      while (start != finish) {
+	assert(terms.ring().id() == start->ring().id());
+	++start;
+      }
+    }
+#endif
     fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
     if (optModifiedLinearAlgebra){
     linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
