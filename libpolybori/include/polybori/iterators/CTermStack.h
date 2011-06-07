@@ -208,8 +208,9 @@ public:
       push(navi);
   }
 
-  /// default Copy Constructor
-
+  /// Copy constructor
+  CTermStackBase(const CTermStackBase& rhs):
+    BaseType(rhs), m_stack(rhs.m_stack) { }
 
   /// Equality test (assume iterators from same instance)
   bool_type equal(const self& rhs) const {
@@ -377,6 +378,9 @@ public:
   /// Construct from initial navigator
   CTermStack(navigator navi): base(navi) { }
 
+  /// Copy constructor
+  CTermStack(const CTermStack& rhs):  base(rhs) { }
+
   /// Construct from initial navigator, third argument is just for having the
   /// same interface with block and degree-stacks
   template <class Dummy>
@@ -531,6 +535,9 @@ public:
   /// Construct from initial navigator
   CReverseTermStack(navigator navi): base(navi) {  }
 
+  /// Copy constructor
+  CReverseTermStack(const CReverseTermStack& rhs):  base(rhs) { }
+
   /// Construct from initial navigator, second argument is just for having the
   /// same interface with block and degree-stacks
   template <class Dummy>
@@ -561,6 +568,8 @@ public:
   CDegStackCore(navigator navi, const manager_type& mgr):
     base(navi), getDeg(mgr) {}
 
+  CDegStackCore(const CDegStackCore& rhs):
+    base(rhs), getDeg(rhs.getDeg) {}
 
   void gotoEnd()  {
      assert(!base::empty());
@@ -587,6 +596,9 @@ public:
   //  CDegStackCore(): base(), block(manager_type()) {}
   CDegStackCore(navigator navi, const manager_type& mgr): 
     base(navi), block(mgr) {}
+
+  CDegStackCore(const CDegStackCore& rhs):
+    base(rhs), block(rhs.block) {}
 
   size_type getDeg(navigator navi) const { return block(navi); }
 
@@ -671,6 +683,8 @@ public:
   //  CDegStackBase(): base() {}
   CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
 
+  CDegStackBase(const CDegStackBase& rhs):  base(rhs) {}
+
   integral_constant<bool, false> takeLast;
 
   void proximate() { base::next(); }
@@ -699,6 +713,7 @@ public:
 
   //  CDegStackBase(): base() {}
   CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
+  CDegStackBase(const CDegStackBase& rhs):  base(rhs) {}
 
   integral_constant<bool, true> takeLast;
 
@@ -729,6 +744,9 @@ public:
   //  CDegTermStack(): base(), m_start() {}
   CDegTermStack(navigator navi, const manager_type& mgr):
     base(navi, mgr), m_start(navi), m_zero(mgr.zero().navigation()) {}
+
+  CDegTermStack(const CDegTermStack& rhs):
+    base(rhs), m_start(rhs.m_start), m_zero(rhs.m_zero) {}
 
   void init() {  
     if (!base::empty()) {
@@ -862,7 +880,7 @@ public:
 
   /// Default Constructor
                  //  CBlockTermStack(): base() {}
-
+  CBlockTermStack(const CBlockTermStack& rhs):  base(rhs) { }
 
   void init() {
     if (!base::empty()) {
