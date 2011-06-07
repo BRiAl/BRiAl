@@ -379,7 +379,8 @@ public:
   CTermStack(navigator navi): base(navi) { }
 
   /// Copy constructor
-  CTermStack(const CTermStack& rhs):  base(rhs) { }
+  CTermStack(const CTermStack& rhs):
+    base(rhs), handleElse(rhs.handleElse) { }
 
   /// Construct from initial navigator, third argument is just for having the
   /// same interface with block and degree-stacks
@@ -713,6 +714,7 @@ public:
 
   //  CDegStackBase(): base() {}
   CDegStackBase(NavigatorType navi, const manager_type& mgr): base(navi, mgr) {}
+
   CDegStackBase(const CDegStackBase& rhs):  base(rhs) {}
 
   integral_constant<bool, true> takeLast;
@@ -878,8 +880,7 @@ public:
   CBlockTermStack(navigator navi, const manager_type& mgr):
     base(navi, mgr) { }
 
-  /// Default Constructor
-                 //  CBlockTermStack(): base() {}
+  /// Copy constructor
   CBlockTermStack(const CBlockTermStack& rhs):  base(rhs) { }
 
   void init() {
