@@ -273,6 +273,12 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
   e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=spoly(strat.generators[i].p,p);
   strat.generators[i]=e;
+
+  assert(p.ring().id() == strat.r.id());
+  assert(e.lead.ring().id() == strat.r.id());
+  assert(e.p.ring().id() == strat.r.id());
+
+
   return res;
 }
 
