@@ -2468,7 +2468,7 @@ class ShorterEliminationLengthModified{
 
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
 
-  assert(p.ring().id() == this->r.ring());
+  assert(p.ring().id() == this->r.id());
   std::vector<Polynomial> impl;
   int way=0;
   if ((have_ordering_for_tables(this->r)) ||
