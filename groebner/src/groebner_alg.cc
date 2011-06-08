@@ -1681,8 +1681,8 @@ static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial
 }
 #else
 #if 0
-static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm){
-    std::vector<Exponent> result;
+static void minimal_elements_divided(MonomialSet m, Monomial lm, std::vector<Exponent>& result){
+
     Exponent exp;//=lm.exp();
     if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
@@ -1700,8 +1700,8 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
 #else
 //#define MIN_ELEMENTS_BINARY 1
 #ifdef MIN_ELEMENTS_BINARY
-static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
-    std::vector<Exponent> result;
+static void minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
+
     Exponent exp;//=lm.exp();
     if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
@@ -1715,12 +1715,11 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
         //return minimal_elements_internal3(m);
         
     }
-    return result;
 }
 #else
 
-static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
-    std::vector<Exponent> result;
+static void minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
+
     Exponent exp;//=lm.exp();
     if (!(m.divisorsOf(lm).isZero())){
         result.push_back(exp);
@@ -1736,7 +1735,7 @@ static std::vector<Exponent> minimal_elements_divided(MonomialSet m, Monomial lm
  
         
     }
-    return result;
+
 }
 #endif
 
@@ -1931,7 +1930,8 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
           //MonomialSet already_used;
           std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(generators.minimalLeadingTerms), lm);
   #else
-          std::vector<Exponent> mt_vec=minimal_elements_divided(intersecting_terms.intersect(generators.minimalLeadingTerms), lm,ext_prod_terms);
+          std::vector<Exponent> mt_vec;
+	  minimal_elements_divided(intersecting_terms.intersect(generators.minimalLeadingTerms), lm,ext_prod_terms,mt_vec);
   #endif
 
           int mt_i;
