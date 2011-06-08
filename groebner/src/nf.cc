@@ -284,6 +284,7 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
 
 static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const Polynomial & p){
   assert(p.lead()==strat.generators[i].lead);
+  assert(p.ring().id() == strat.r.id());
   //PolyEntry e(p);
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
   bool minimal=strat.generators[i].minimal;
