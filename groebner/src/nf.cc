@@ -2060,6 +2060,9 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
+			assert(current_ring.id() ==  p.ring().id());
+			assert(current_ring.id() ==  strat.generators[index].ring().id());
+			assert(current_ring.id() ==  m2.ring().id());
 			assert(current_ring.id() ==  p2.ring().id());
                 }
                 ++it;
