@@ -2118,6 +2118,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
 
   Polynomial p=p_arg;
   Polynomial::ring_type ring(p_arg.ring());
+  assert(ring.id() == this->r.ring());
   MonomialSet ext_prod_terms(ring);
   PolyEntry e(p);
   Monomial lm=e.lead;
