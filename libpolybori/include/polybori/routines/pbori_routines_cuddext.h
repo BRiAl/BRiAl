@@ -48,10 +48,19 @@ dd_long_count_step(MapType& cache, NaviType navi) {
 /// Function template for generically computing number of terms
 template <class IntType, class NaviType>
 inline IntType
-dd_long_count(NaviType navi) {
+dd_long_count_orig(NaviType navi) {
 
   std::map<NaviType, IntType> local_cache;
   return dd_long_count_step(local_cache, navi);
+}
+template <class IntType, class NaviType>
+inline IntType
+dd_long_count(NaviType navi) {
+  if(navi.isConstant())
+    return navi.terminalValue();
+
+  return  dd_long_count<IntType, NaviType>(navi.thenBranch()) +
+    dd_long_count<IntType, NaviType>(navi.elseBranch());
 }
 
 END_NAMESPACE_PBORI
