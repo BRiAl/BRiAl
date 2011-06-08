@@ -365,7 +365,7 @@ def GPS(G,vars_start, vars_end):
         print "npairs", strat.npairs()
         strat=GroebnerStrategy(strat)
         print "npairs", strat.npairs()
-        strat.add_generator_delayed(Polynomial(Monomial(Variable(var))+val))
+        strat.add_generator_delayed(Polynomial(Monomial(Variable(var, strat.r))+val))
         strat=symmGB_F2_python(strat,prot=True,deg_bound=2, over_deg_bound=10)
         if var<=vars_start:
             strat=symmGB_F2_python(strat, prot=True, opt_lazy=False, redTail=False)
