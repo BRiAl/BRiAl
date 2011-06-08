@@ -2372,6 +2372,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   }
 }
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
+  assert(p.ring().id() == this->r.ring());
   this->pairs.introducePair(Pair(p));
 }
 
@@ -2466,6 +2467,8 @@ class ShorterEliminationLengthModified{
 };
 
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
+
+  assert(p.ring().id() == this->r.ring());
   std::vector<Polynomial> impl;
   int way=0;
   if ((have_ordering_for_tables(this->r)) ||
