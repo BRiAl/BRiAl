@@ -2028,12 +2028,15 @@ public:
 };
 
 static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> extendable_system, vector<Polynomial>& res1,MonomialSet& res_terms,MonomialSet& leads_from_strat){
-    leads_from_strat=MonomialSet(res_terms.ring());
-    res_terms=MonomialSet(res_terms.ring());
+
+    BoolePolyRing current_ring(res_terms.ring());
+    leads_from_strat=MonomialSet(current_ring);
+    res_terms=MonomialSet(current_ring);
+
     int i;
         for(i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
-
+	    assert(p.ring().id() == current_ring.id());
 
             if UNLIKELY(p.isZero()) continue;
             
@@ -2057,6 +2060,7 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
+			assert(current_ring.id() ==  p2.ring().id());
                 }
                 ++it;
             }
