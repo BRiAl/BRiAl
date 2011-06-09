@@ -16,8 +16,10 @@ def fglm(I, from_ring, to_ring):
     [y + x, z + x]
     """
     vec=BoolePolynomialVector(I)
-    return FGLMStrategy(from_ring,to_ring,vec).main()
-
+    res= FGLMStrategy(from_ring,to_ring,vec).main()
+    res = [to_ring.coerce(p) for p in res]
+    return res
+    
 def vars_real_divisors(monomial, monomial_set):
     """
     returns all elements of of monomial_set, which result multiplied by a variable in monomial.
