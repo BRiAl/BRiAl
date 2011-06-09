@@ -709,11 +709,17 @@ PolynomialVector FGLMStrategy::main(){
     mzd_free(v);
 
     for(i=0;i<addTheseLater.size();i++){
-        F.push_back(addTheseLater[i]);
+        F.push_back(to.coerce(addTheseLater[i]));
     }
     
     mzd_free(acc1);
     mzd_free(acc2);
+
+#ifndef NDEBUG
+    for (long idx = 0; idx < F.size(); ++idx) {
+      assert(to.id() == F[idx].ring().id());
+    }
+#endif
     
     return F;
 }
