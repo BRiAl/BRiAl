@@ -156,6 +156,12 @@ public:
   //x*poly, poly, i,j
   pair_data_ptr data;
   Exponent lm; //must not be the real lm, can be lm of syzygy or something else
+
+ PairE(const PairE& rhs):
+  type(rhs.getType()), wlen(rhs.wlen), sugar(rhs.sugar), 
+    data(rhs.data), lm(rhs.lm) {}
+
+
   Polynomial extract(const PolyEntryVector& v){
     return data->extract(v);
   }

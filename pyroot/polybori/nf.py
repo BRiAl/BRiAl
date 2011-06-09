@@ -235,7 +235,19 @@ def symmGB_F2_python(G,deg_bound=1000000000000,over_deg_bound=0, use_faugere=Fal
         if len(G)==0:
             return []
         G=[Polynomial(g) for g in G]  
-        strat=GroebnerStrategy(G[0].ring())
+        current_ring = G[0].ring()
+
+        # todo: workaround, catches wrong order somewhere
+        def clean_ring(elt):
+            import warnings
+            if elt.ring().id() != current_ring.id():
+                warnings.warn("Caught wrong ring, Trying changing ordering...")
+                return current_ring.coerce(elt)
+            return elt
+
+        G = [clean_ring(elt) for elt in G]
+            
+        strat=GroebnerStrategy(current_ring)
         strat.reduction_strategy.opt_red_tail=opt_red_tail
         strat.opt_lazy=opt_lazy
         strat.opt_exchange=opt_exchange
@@ -365,7 +377,7 @@ def GPS(G,vars_start, vars_end):
         print "npairs", strat.npairs()
         strat=GroebnerStrategy(strat)
         print "npairs", strat.npairs()
-        strat.add_generator_delayed(Polynomial(Monomial(Variable(var))+val))
+        strat.add_generator_delayed(Polynomial(Monomial(Variable(var, strat.r))+val))
         strat=symmGB_F2_python(strat,prot=True,deg_bound=2, over_deg_bound=10)
         if var<=vars_start:
             strat=symmGB_F2_python(strat, prot=True, opt_lazy=False, redTail=False)

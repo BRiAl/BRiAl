@@ -273,11 +273,18 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
   e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=spoly(strat.generators[i].p,p);
   strat.generators[i]=e;
+
+  assert(p.ring().id() == strat.r.id());
+  assert(e.lead.ring().id() == strat.r.id());
+  assert(e.p.ring().id() == strat.r.id());
+
+
   return res;
 }
 
 static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const Polynomial & p){
   assert(p.lead()==strat.generators[i].lead);
+  assert(p.ring().id() == strat.r.id());
   //PolyEntry e(p);
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
   bool minimal=strat.generators[i].minimal;
@@ -2028,12 +2035,15 @@ public:
 };
 
 static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> extendable_system, vector<Polynomial>& res1,MonomialSet& res_terms,MonomialSet& leads_from_strat){
-    leads_from_strat=MonomialSet(res_terms.ring());
-    res_terms=MonomialSet(res_terms.ring());
+
+    BoolePolyRing current_ring(res_terms.ring());
+    leads_from_strat=MonomialSet(current_ring);
+    res_terms=MonomialSet(current_ring);
+
     int i;
         for(i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
-
+	    assert(p.ring().id() == current_ring.id());
 
             if UNLIKELY(p.isZero()) continue;
             
@@ -2057,6 +2067,11 @@ static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> e
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
+			assert(current_ring.id() ==  strat.generators[index].lead.ring().id());
+			assert(current_ring.id() ==  strat.generators[index].p.ring().id());
+			assert(current_ring.id() ==  m.ring().id());
+			assert(current_ring.id() ==  m2.ring().id());
+			assert(current_ring.id() ==  p2.ring().id());
                 }
                 ++it;
             }
