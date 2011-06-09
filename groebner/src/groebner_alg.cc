@@ -2372,6 +2372,10 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   }
 }
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
+#ifndef NDEBUG
+  if (p.ring().id() != this->r.id())
+      throw std::runtime_error("addGeneratorDelayed failed");
+#endif
   assert(p.ring().id() == this->r.id());
   this->pairs.introducePair(Pair(p));
 }
