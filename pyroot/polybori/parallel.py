@@ -168,6 +168,10 @@ def _decode_ring(code):
     except NameError:
         _polybori_parallel_rings = dict()
 
+    for key in [key for key in _polybori_parallel_rings 
+                if not _polybori_parallel_rings[key][0]()]:
+        del _polybori_parallel_rings[key]
+
     if identifier in _polybori_parallel_rings:
         ring = _polybori_parallel_rings[identifier][0]()
     else:
@@ -197,7 +201,11 @@ def _encode_ring(ring):
         _polybori_parallel_rings
     except NameError:
         _polybori_parallel_rings = dict()
-        
+
+    for key in [key for key in _polybori_parallel_rings 
+                if not _polybori_parallel_rings[key][0]()]:
+        del _polybori_parallel_rings[key]
+
     if identifier in _polybori_parallel_rings:
         code = _polybori_parallel_rings[identifier][1]
     else:
@@ -243,10 +251,6 @@ def groebner_basis_first_finished(I, *l):
     res=it.next() 
 
     pool.terminate()
-
-    # workaround removed cached ring, todo better more generic (fixme)
-    global _polybori_parallel_rings
-    del _polybori_parallel_rings
 
     return res
 
