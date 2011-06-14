@@ -691,7 +691,8 @@ env.Clean(DocPath('c++'), docutarget)
 
 testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade DegRevLexAscOrder DegLexOrder
 BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder 
-CFactoryBase MonomialFactory PolynomialFactory VariableFactory SetFactory""")
+CFactoryBase MonomialFactory PolynomialFactory VariableFactory SetFactory
+CWeakPtrFacade """)
 testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
              testclasses])
 testmain = env.Object([TestsPath('src', "unittests.cc")],
