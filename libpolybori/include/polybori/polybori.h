@@ -23,6 +23,8 @@
 #include "BooleMonomial.h"
 #include "BooleVariable.h"
 #include "BooleExponent.h"
+#include "WeakRingPtr.h"
+
 #include "except/PBoRiError.h"
 #include "except/PBoRiGenericError.h"
 

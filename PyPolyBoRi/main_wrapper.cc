@@ -241,6 +241,15 @@ with inverted variable order\n\
   .def("ring", &BooleVariable::ring,
        return_internal_reference<>(),
        "Get corresponding ring");
+
+  boost::python::class_<WeakRingPtr>("WeakRingRef",
+				     "Weak reference to Boolean polynomial ring",
+				     boost::python::init <const BoolePolyRing&>()) 
+    .def("deref", &WeakRingPtr::operator*, "Get strong reference")
+    .def("is_valid", &WeakRingPtr::operator bool,
+	 "Check whether pointer is not dead");
+
+
   boost::python::register_exception_translator<PBoRiError>(translator_pborierror);
   typedef PBoRiGenericError<CTypes::division_by_zero> pbori_div_by_zero;
   boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);

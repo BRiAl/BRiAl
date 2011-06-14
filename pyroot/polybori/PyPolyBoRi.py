@@ -154,3 +154,11 @@ def ring_var(self, i):
     return old_ring_var(self, i)
 
 Ring.var=ring_var
+
+
+def weakringref_call(self):
+    if self.is_valid():
+        return self.deref()
+    return None
+
+WeakRingRef.__call__ = weakringref_call
