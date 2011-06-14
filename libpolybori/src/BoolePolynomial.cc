@@ -668,7 +668,7 @@ BoolePolynomial::dlex_exp_iterator
 BoolePolynomial::genericExpEnd(dlex_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericExpEnd(dlex_tag) const" );
-  return dlex_exp_iterator(navigation(), ring());
+  return dlex_exp_iterator(navigator(), ring());
 }
 
 // Start of iteration over monomials in ascending deg-rev-lex ordering
@@ -676,7 +676,7 @@ BoolePolynomial::dp_asc_exp_iterator
 BoolePolynomial::genericExpBegin(dp_asc_tag) const {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::genericExpBegin(sd_asc_tag) const" );
-  return dp_asc_exp_iterator(navigator(), ring());
+  return dp_asc_exp_iterator(navigation(), ring());
 }
 
 // Finish of iteration over monomials in ascending deg-rev-lex ordering
