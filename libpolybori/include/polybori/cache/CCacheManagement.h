@@ -454,14 +454,15 @@ template <class ManagerType, class CacheType,
           unsigned ArgumentLength = CacheType::nargs>
 class CCacheManagement: 
   public CCacheManBase<ManagerType,
-                       CacheType, ArgumentLength>,
-  public CAuxTypes {
+                       CacheType, ArgumentLength> {
 public:
 
   /// @name Get template parameters and global types
   //@{
   typedef ManagerType manager_type;
-  typedef CTypes::idx_type idx_type;
+  typedef typename manager_type::deg_type deg_type;
+  typedef typename manager_type::size_type size_type;
+  typedef typename manager_type::idx_type idx_type;
   typedef CacheType cache_type;
   enum { nargs = ArgumentLength };
   //@}
