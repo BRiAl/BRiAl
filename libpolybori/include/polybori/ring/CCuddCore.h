@@ -48,7 +48,8 @@ class COrderingBase;
  * CCuddZDD, and CCuddInterface.
  **/
 class CCuddCore:
-  public CTypes::orderenums_type, public CAuxTypes {
+  public CTypes::orderenums_type, public CAuxTypes,
+  public CWeakPtrFacade<CCuddCore> {
 
 public:
 

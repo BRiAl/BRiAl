@@ -34,6 +34,7 @@
 #include <cstdio> // just for tmpfile()
 
 #include <polybori/BooleSet.h>
+#include <polybori/WeakRingPtr.h>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -149,8 +150,6 @@ BoolePolyRing::print(ostream_type& os) const {
 
   return os;
 }
-
-
 
 END_NAMESPACE_PBORI
 

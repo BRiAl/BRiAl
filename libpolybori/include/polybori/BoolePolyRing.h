@@ -25,12 +25,12 @@
 #include "except/PBoRiError.h"
 #include "common/CCheckedIdx.h"
 #include <boost/intrusive_ptr.hpp>
-
+#include "common/CWeakPtr.h"
 #include <list>
 
 BEGIN_NAMESPACE_PBORI
 
-
+class WeakRingPtr;		// forward declaration
 
 /** @class BoolePolyRing
  * @brief This class reinterprets decicion diagram managers as Boolean
@@ -45,6 +45,10 @@ class BoolePolyRing:
   typedef BoolePolyRing self;
 
  public:
+
+  /// The weak pointer needs access to data structure
+  friend class WeakRingPtr;
+
   /// define exponent type
   typedef class BooleExponent exp_type;
 
@@ -99,6 +103,10 @@ protected:
   /// @note May generate invalid ring, hence @c protected 
   BoolePolyRing(const core_ptr& rhs):  p_core(rhs) {}
 
+  /// Get strong reference from weak pointer (used by @c WeakRingPtr)
+  explicit BoolePolyRing(const CWeakPtr<core_type>& rhs):
+    p_core(rhs.operator->()) { assert(p_core != NULL); }
+
 public:
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 
@@ -152,7 +160,7 @@ public:
   mgr_type* getManager() const {  return p_core->m_mgr.getManager(); }
 
   /// Construct ring with similiar properties (deep copy)
-  self clone() const {  return self(new core_type(*p_core)); }
+  self clone() const {  return self(core_ptr(new core_type(*p_core))); }
 
   /// Make @c *this global
   void activate();
@@ -186,7 +194,7 @@ public:
 
 protected:
   /// Access to actual data (via ->)
-  core_ptr core() const {return p_core;};
+  core_ptr core() const { return p_core; };
 
   /// Smart pointer to actual data
   core_ptr p_core;

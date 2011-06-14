@@ -39,6 +39,8 @@
 #include <stdexcept>
 #include <algorithm>
 
+#include <polybori/common/CWeakPtrFacade.h>
+
 // get cudd error texts
 inline const char* error_text(DdManager* mgr) {
     switch (Cudd_ReadErrorCode(mgr)) {
