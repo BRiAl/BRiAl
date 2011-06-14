@@ -580,10 +580,10 @@ BOOST_AUTO_TEST_CASE(test_getters) {
   BOOST_TEST_MESSAGE( "ring" );
   BOOST_CHECK_EQUAL(ring.ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
   BOOST_CHECK_EQUAL(ring.nVariables(), diagram.ring().nVariables());
-  //  BooleEnv::set(other);
+  ring = other;
   BOOST_CHECK_NE(ring.ordering().getOrderCode(), diagram.ring().ordering().getOrderCode());
   BOOST_CHECK_NE(ring.nVariables(), diagram.ring().nVariables());
-  //  BooleEnv::set(orig);
+  ring = orig;
 }
 
 BOOST_AUTO_TEST_CASE(test_size) {
