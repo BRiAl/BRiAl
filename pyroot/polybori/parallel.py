@@ -8,7 +8,8 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import if_then_else, Polynomial, Ring, CCuddNavigator
+from polybori.PyPolyBoRi import if_then_else, CCuddNavigator
+from polybori.PyPolyBoRi import Polynomial, Ring, WeakRingRef
 from polybori.gbcore import groebner_basis
 from zlib import compress, decompress
 import copy_reg    
@@ -168,8 +169,11 @@ def _decode_ring(code):
         _polybori_parallel_rings = dict()
 
     if identifier in _polybori_parallel_rings:
-        ring = _polybori_parallel_rings[identifier][0]
+        ring = _polybori_parallel_rings[identifier][0]()
     else:
+        ring = None
+
+    if not ring:
         ring = Ring(*data)
         varnames = decompress(varnames).split('\n')
         for (elt, idx) in zip(varnames, xrange(len(varnames))):
@@ -178,7 +182,7 @@ def _decode_ring(code):
         for elt in blocks:
             ring.append_block(elt)
 
-        storage_data = (ring, code)
+        storage_data = (WeakRingRef(ring), code)
         _polybori_parallel_rings[identifier] = storage_data
         _polybori_parallel_rings[(ring.id(), os.getpid())] = storage_data
 
@@ -202,7 +206,7 @@ def _encode_ring(ring):
         varnames = '\n'.join([str(ring.variable(idx)) for idx in xrange(nvars)])
         blocks = list(ring.blocks())
         code = (identifier, data, compress(varnames), blocks[:-1])
-        _polybori_parallel_rings[identifier] = (ring, code)
+        _polybori_parallel_rings[identifier] = (WeakRingRef(ring), code)
 
     return code
 
