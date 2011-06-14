@@ -195,7 +195,11 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
 
   */
 
-  assert(result == std::accumulate(first, last, init) ); 
+  // test for non-lex more complicated (see testsuite)
+  assert((init.ring().ordering().isLexicographical()?
+          result == std::accumulate(first, last, init):
+          true) ); 
+
 
   return result;
 
@@ -213,8 +217,11 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
     result += upper_term_accumulate(last.begin(), last.end(), 
                                     last.navigation(), init);
 
-  assert(result == std::accumulate(first, last, init) ); 
-
+  // test for non-lex more complicated (see testsuite)
+  assert((init.ring().ordering().isLexicographical()?
+          result == std::accumulate(first, last, init):
+          true) ); 
+  
   return result;
 #endif
 }
