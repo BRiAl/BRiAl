@@ -207,6 +207,8 @@ opts.Add('PYINSTALLPREFIX',
 
 opts.Add('DEVEL_PREFIX',
          'development version installation directory','$PREFIX' )
+opts.Add('DEVEL_INCLUDE_PREFIX',
+         'development version header installation directory','$DEVEL_PREFIX/include' )
 
 opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
@@ -919,15 +921,15 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
     
     PBInclPath = PathJoiner(PBPath('include/polybori'))
-    DevelInstInclPath = PathJoiner(DevelInstPath('include/polybori'))
+    DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
     
     SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
 
-    for elt in Split(""".. . cache diagram except iterators literals
+    for elt in Split(""".. . cache common diagram except factories iterators literals
     orderings ring routines"""):
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 
-    env.Install(DevelInstPath('include/polybori/groebner'),
+    env.Install(DevelInstInclPath('groebner'),
                 glob(GBPath('include/polybori/groebner/*.h')))
 
     env.Install(DevelInstPath('include/cudd'), cudd_headers)
