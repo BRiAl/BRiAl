@@ -5,7 +5,7 @@ if __name__=='__main__':
 
 
 from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
-#from polybori.PyPolyBoRi import PolynomialFactory, SetFactory
+from polybori.PyPolyBoRi import PolynomialFactory, SetFactory
 from polybori.PyPolyBoRi import Variable, Monomial, Polynomial, BooleSet
 import polybori
 
@@ -56,8 +56,8 @@ class RingContext(object):
     >>> print Variable(17, r)
     x(17)
     >>> with RingContext(r):
-    ...     print Variable(17)
-    x(17)
+    ...     print Variable(17), Monomial(), Polynomial(0), BooleSet()
+    x(17) 1 0 {}
     >>> try:
     ...     print Variable(17)
     ... except:
@@ -66,7 +66,9 @@ class RingContext(object):
     """
     def __init__(self, ring):
         self.contexts = (FactoryContext(Variable, VariableFactory(ring)),
-                         FactoryContext(Monomial, MonomialFactory(ring)))
+                         FactoryContext(Monomial, MonomialFactory(ring)),
+                         FactoryContext(Polynomial, PolynomialFactory(ring)),
+                         FactoryContext(BooleSet, SetFactory(ring)))
 
     def __enter__(self):
         for elt in self.contexts:

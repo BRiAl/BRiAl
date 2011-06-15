@@ -179,10 +179,39 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   "Get BooleSet representing the zeros of the Polynomial")
   .def("__cmp__", &BoolePolynomial::compare, "Comparison of Boolean polynomials");
 
- //wrap usedVariables
   def("spoly",&spoly, "Compute s-Polynomial between two Polynomials");
   
-  //implicitly_convertible<BooleVariable,BooleMonomial>();
-  //implicitly_convertible<BooleVariable,BoolePolynomial>();
+  boost::python::class_<PolynomialFactory>("PolynomialFactory", 
+    "Constructing BoolePolynomial objects in a predefined ring.",
+   boost::python::init <const ring_type &>())
+
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)() const)
+         (&PolynomialFactory::operator()))
+
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(const Polynomial&) const)
+         (&PolynomialFactory::operator()))
   
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(const Variable&) const)
+         (&PolynomialFactory::operator()))
+  
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(const Monomial&) const)
+         (&PolynomialFactory::operator()))
+
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(const BooleExponent&) const)
+         (&PolynomialFactory::operator()))
+
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(BooleConstant) const)
+         (&PolynomialFactory::operator()))
+
+    .def("__call__",
+         (Polynomial(PolynomialFactory::*)(const Polynomial::navigator&) const)
+         (&PolynomialFactory::operator()));
+
+
 }

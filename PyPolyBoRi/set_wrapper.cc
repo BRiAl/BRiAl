@@ -22,7 +22,6 @@ USING_NAMESPACE_PBORIGB
 
 #include "set_wrapper.h"
 
-
 static BooleSet if_then_else(idx_type i,const BooleSet& a, const BooleSet& b){
   return BooleSet(i,a,b);
 }
@@ -93,4 +92,32 @@ corresponding to Variables of given index is replaced by its else-branch")
     .def("intersect", &BooleSet::intersect, "Set intersection");
   def("if_then_else",if_then_else, "if-then else operator");
   def("if_then_else",if_then_else_var, "if-then else operator");
+
+
+  boost::python::class_<SetFactory>("SetFactory", 
+    "Constructing BooleSet objects in a predefined ring.",
+   boost::python::init <const BoolePolyRing &>())
+
+    .def("__call__",
+         (BooleSet(SetFactory::*)() const)
+         (&SetFactory::operator()))
+
+    .def("__call__",
+         (BooleSet(SetFactory::*)(const BooleSet&) const)
+         (&SetFactory::operator()))
+  
+    .def("__call__",
+         (BooleSet(SetFactory::*)(BooleSet::idx_type,
+				  const BooleSet&, const BooleSet&) const)
+         (&SetFactory::operator()))
+  
+    .def("__call__",
+         (BooleSet(SetFactory::*)(BooleSet::idx_type,
+				  BooleSet::navigator,
+				  BooleSet::navigator) const)
+         (&SetFactory::operator()))
+
+    .def("__call__",
+         (BooleSet(SetFactory::*)(BooleSet::navigator) const)
+         (&SetFactory::operator()));
 }
