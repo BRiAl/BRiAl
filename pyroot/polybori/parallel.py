@@ -8,8 +8,8 @@
 #  Copyright 2008 The PolyBoRi Team
 # 
 
-from polybori.PyPolyBoRi import if_then_else, CCuddNavigator
-from polybori.PyPolyBoRi import Polynomial, Ring, WeakRingRef
+from polybori.PyPolyBoRi import if_then_else, CCuddNavigator, BooleSet
+from polybori.PyPolyBoRi import Polynomial, Ring, WeakRingRef, Monomial, Variable
 from polybori.gbcore import groebner_basis
 from zlib import compress, decompress
 import copy_reg    
@@ -148,7 +148,7 @@ def _calculate_gb_with_keywords(args):
 
 def _decode_polynomial(code):
     return from_fast_pickable(*code)[0]
-    
+
 def _encode_polynomial(poly):
     return (to_fast_pickable([poly]), poly.ring())
 
@@ -157,6 +157,23 @@ def pickle_polynomial(self):
 
 copy_reg.pickle(Polynomial, pickle_polynomial)
 
+def _decode_bset(code):
+    return BooleSet(from_fast_pickable(*code)[0])
+    
+def pickle_bset(self):
+    return (_decode_bset, (_encode_polynomial(self),))
+
+copy_reg.pickle(BooleSet, pickle_bset)
+
+def pickle_monom(self):
+    return (Monomial, ([var for var in self.variables()],))
+
+copy_reg.pickle(Monomial, pickle_monom)
+
+def pickle_var(self):
+    return (Variable, (self.index(), self.ring()))
+
+copy_reg.pickle(Variable, pickle_var)
 
 def _decode_ring(code):
     import os
