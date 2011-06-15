@@ -308,9 +308,6 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
-# get explicit user settings
-customsettings = dict([(key, env[key]) for key in opts.keys() if key in env])
-
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
 
