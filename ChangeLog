@@ -1,10 +1,13 @@
 Release Name: 0.8.0
-* Renamed subdirectory polybori to libpolybori
-* new directory structure in libpolybori/include
+* improved standard-conformity, multiprocessing safety, and usability
+* renamed subdirectory polybori to libpolybori
+* new directory structure in libpolybori/include and groebner/include
 * libgroebner renamed libpolybori_groebner
 * using only part of CUDD (linked into libpolybori)
-* Officially introducing VariableBlock
-* Added factories to replace active ring
+* officially introducing VariableBlock
+* removed all global settings and BooleEnv itself
+* added factories and RingContext to replace active/global ring
+* improved multiprocessing and pickling
 	
 Release Name: 0.7.1:
 * Fixed building on Solaris with gcc 4.6.0 (broken default flags)
