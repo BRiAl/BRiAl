@@ -168,6 +168,10 @@ opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
 opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
+
+opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace separated)',
+         '$CPPPATH', converter = SplitColonSep)
+
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
@@ -303,6 +307,9 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
+
+# get explicit user settings
+customsettings = dict([(key, env[key]) for key in opts.keys() if key in env])
 
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
@@ -695,15 +702,21 @@ testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral Boo
 BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder 
 CFactoryBase MonomialFactory PolynomialFactory VariableFactory SetFactory
 weak_pointers """)
+
+# Note: use custom TEST_CPPPATH settings for testing header installation, if any
+testCPPPATH = env['TEST_CPPPATH']
+if not testCPPPATH:
+    testCPPPATH = CPPPATH
+
 testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
-             testclasses])
-testmain = env.Object([TestsPath('src', "unittests.cc")],
+             testclasses], CPPPATH=testCPPPATH)
+testmain = env.Object([TestsPath('src', "unittests.cc")],CPPPATH=testCPPPATH,
                       CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
 
 def test_building(target, sources, env):
-    env.Program(target, sources + testmain + [libpb, gb], 
-                CPPPATH=CPPPATH, 
-                LIBS = env['LIBS'] + ["boost_unit_test_framework"],
+    env.Program(target, sources + testmain, 
+                CPPPATH=testCPPPATH,
+                LIBS = env['LIBS'] + ["boost_unit_test_framework"] + [libpb, gb],
                 CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
 test_building(TestsPath("unittests"), testfiles, env)
@@ -925,8 +938,8 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
 
-    for elt in Split(""".. . cache common diagram except factories iterators literals
-    orderings ring routines"""):
+    for elt in ['..', '.'] + [path.basename(elt)
+                              for elt in glob(PBInclPath('*')) if path.isdir(elt)]:
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 
     env.Install(DevelInstInclPath('groebner'),
