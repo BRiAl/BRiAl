@@ -157,11 +157,8 @@ def pickle_polynomial(self):
 
 copy_reg.pickle(Polynomial, pickle_polynomial)
 
-def _decode_bset(code):
-    return BooleSet(from_fast_pickable(*code)[0])
-    
 def pickle_bset(self):
-    return (_decode_bset, (_encode_polynomial(self),))
+    return (BooleSet, (Polynomial(self),))
 
 copy_reg.pickle(BooleSet, pickle_bset)
 
