@@ -5,36 +5,80 @@ if __name__=='__main__':
 
 
 from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
-from polybori.PyPolyBoRi import Variable as VariableType
+#from polybori.PyPolyBoRi import PolynomialFactory, SetFactory
+from polybori.PyPolyBoRi import Variable, Monomial, Polynomial, BooleSet
 import polybori
 
-class RingContext(object):
-    """
+class FactoryContext(object):
+    """Temporarily exchange the constructor of a given type with a compatible
+    callable object. It is useful together with the with statement.
+
+    Example:
     >>> r = Ring(1000)
     >>> from polybori import Variable
-    >>> print Variable
-    <class 'polybori.dynamic.PyPolyBoRi.Variable'>
-    >>> with RingContext(r) as rc:
-    ...     print polybori.Variable(17)
+    >>> def var(idx): return Variable(idx, r)
+    >>> with FactoryContext(Variable, var):
+    ...     print Variable(17)
     x(17)
     >>> try:
-    ...     print polybori.Variable(17)
+    ...     print Variable(17)
+    ... except:
+    ...     print "caught expected exception"
+    caught expected exception
+    """
+    def __init__(self, original, factory):
+        self.original = original
+        self.factory = factory
+
+    def __enter__(self):
+        self.fallback = self.original.__init__
+        def func(orig, *args):
+            try:
+                self.fallback(orig, self.factory(*args))
+            except:
+                self.fallback(orig, *args)
+
+        self.original.__init__ = func
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.original.__init__ = self.fallback
+        return False       
+
+class RingContext(object):
+    """Temporarily fix the ring for constructors of some ring-dependent types
+    like Variable and Monomial to a given ring. It is useful together with
+    the with statement.
+
+    Example:
+    >>> r = Ring(1000)
+    >>> from polybori import Variable
+    >>> print Variable(17, r)
+    x(17)
+    >>> with RingContext(r):
+    ...     print Variable(17)
+    x(17)
+    >>> try:
+    ...     print Variable(17)
     ... except:
     ...     print "caught expected exception"
     caught expected exception
     """
     def __init__(self, ring):
-        self.context = (VariableFactory(ring), MonomialFactory(ring))
-
+        self.contexts = (FactoryContext(Variable, VariableFactory(ring)),
+                         FactoryContext(Monomial, MonomialFactory(ring)))
 
     def __enter__(self):
-        self.old_context = (polybori.Variable, polybori.Monomial)
-        (polybori.Variable, polybori.Monomial) = self.context
+        for elt in self.contexts:
+            elt.__enter__()
         return self
 
     def __exit__(self, type, value, traceback):
-        (polybori.Variable, polybori.Monomial) = self.old_context
-        return False
+        result = False
+        for elt in reversed(self.contexts):
+            result = result or elt.__exit__(type, value, traceback)
+        return result
+
 
 if __name__=='__main__':
     import doctest
