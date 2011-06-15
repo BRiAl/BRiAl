@@ -19,9 +19,6 @@
 using boost::test_tools::output_test_stream;
 
 #include <polybori/pbori_defs.h>
-#include <polybori/common/CWeakPtrFacade.h>
-#include <polybori/common/CWeakPtr.h>
-#include <polybori/WeakRingPtr.h>
 #include <polybori.h>
 
 USING_NAMESPACE_PBORI
