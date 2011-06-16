@@ -120,6 +120,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
   implicitly_convertible<BooleVariable,BoolePolynomial>();
   implicitly_convertible<BooleMonomial,BoolePolynomial>();
   implicitly_convertible<int,BooleConstant>();
+  implicitly_convertible<BooleConstant,int>();
   implicitly_convertible<BoolePolynomial,BooleSet>();
   implicitly_convertible<BooleSet,BoolePolynomial>();
 

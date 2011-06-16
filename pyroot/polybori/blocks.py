@@ -35,8 +35,13 @@ class Block(object):
   def register(self, start, context):
       #def var_func(i):
       #  return Variable(self.index2pos[i]+start)
-      
-      var_func=VariableBlock(self.size,self.start_index,start,self.reverse, context["r"])
+      ring_context = context
+      while isinstance(ring_context, PrefixedDictProxy):
+          ring_context = ring_context.wrapped
+      ring = ring_context['r']
+
+      var_func=VariableBlock(self.size,self.start_index,start,self.reverse,
+                             ring)
       var_func.__name__=self.var_name
       context[self.var_name]=var_func
 
@@ -75,8 +80,12 @@ class AlternatingBlock(object):
           def __call__(self, idx):
               return self.ring.variable(self.index2pos[idx]*self.size +
                                         var_pos+start)
-              
-      return var_factory(context["r"], self.index2pos, len(self.var_names))
+      ring_context = context
+      while isinstance(ring_context, PrefixedDictProxy):
+          ring_context = ring_context.wrapped
+      ring = ring_context['r']
+
+      return var_factory(ring, self.index2pos, len(self.var_names))
 
     for (var_pos,n) in enumerate(self.var_names):
       var_func=gen_var_func(var_pos)

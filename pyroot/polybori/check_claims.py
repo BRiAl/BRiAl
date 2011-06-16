@@ -10,11 +10,12 @@ import sys
 from optparse import OptionParser
 #if __name__ == "__main__":
 #    import pathadjuster
-from polybori.PyPolyBoRi import Polynomial, Monomial, BooleConstant
+from polybori.PyPolyBoRi import Polynomial, Monomial, BooleConstant, BooleSet
+from polybori.PyPolyBoRi import recursively_insert
 from polybori.gbrefs import my_import, load_data, clean_data,load_file
 from polybori.blocks import IfThen
 from copy import copy
-from polybori.ll import ll_encode
+from polybori.ll import ll_encode, ll_red_nf_noredsb, ll_red_nf_redsb
 
 def find_one(p,res=None):
     def zero_nav(n):
@@ -127,7 +128,7 @@ def proofll(ifthen,reductors,redsb=True,prot=True):
   for c in it:
     if prot:
         print "proofing part:",c
-    c=logicalor([1+ip,c])
+    c=logicalor([BooleConstant(1)+ip,c])
 
     if c.is_zero():
       if prot:
