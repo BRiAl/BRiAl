@@ -170,7 +170,7 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
          [], converter = SplitColonSep)
 
 opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace separated)',
-         '$CPPPATH', converter = SplitColonSep)
+         None, converter = SplitColonSep)
 
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
@@ -701,9 +701,14 @@ CFactoryBase MonomialFactory PolynomialFactory VariableFactory SetFactory
 weak_pointers """)
 
 # Note: use custom TEST_CPPPATH settings for testing header installation, if any
-testCPPPATH = env['TEST_CPPPATH']
+try:
+    testCPPPATH = env['TEST_CPPPATH']
+except:
+    testCPPPATH = None
 if not testCPPPATH:
     testCPPPATH = CPPPATH
+
+
 
 testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
              testclasses], CPPPATH=testCPPPATH)
