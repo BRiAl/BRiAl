@@ -248,7 +248,7 @@ def ll_constants_pre(I):
         for p in I:
             if p.lex_lead_deg()==1:
                 l=p.lead()
-                if not (l in leads) and len(p)<=2:
+                if not (l in leads) and p.is_singleton_or_pair():
                     tail=p+l
                     if tail.deg()<=0:
                         ll.append(p)

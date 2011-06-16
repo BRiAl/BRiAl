@@ -9,7 +9,10 @@ def dense_system(I):
         if p.deg()==1:
             continue
         else:
-            if len(p)>2**d+5:
+            try:
+                if len(p)>2**d+5:
+                    return True
+            except OverflowError:
                 return True
     return False
 
