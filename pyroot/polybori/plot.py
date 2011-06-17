@@ -68,7 +68,10 @@ def render_genshi(data_dict):
     return str(stream)
 
 def render_jinja(data_dict):
-    from jinja import Environment
+    try:
+        from jinja2 import Environment
+    except:
+        from jinja import Environment        
     env = Environment()
     tmpl = env.from_string(graph_template_jinja)
     return tmpl.render(**data_dict)
