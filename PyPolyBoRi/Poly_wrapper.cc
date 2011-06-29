@@ -119,6 +119,8 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(int()-self)
   .def(self+int())
   .def(self-int())
+  .def(int()*self)
+  .def(self*int())
   //.def(self+=int())
   //.def(self-=int())
   //.def(self* var)
@@ -136,6 +138,15 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("translate_indices", translate_indices)
   .def("is_zero", &BoolePolynomial::isZero, "Test if Polynomial is zero")
   .def("is_one", &BoolePolynomial::isOne, "Test if Polynomial one")
+
+  .def("is_constant", &BoolePolynomial::isConstant,
+       "Test whether Polynomials is one or zero")
+  .def("is_singleton", &BoolePolynomial::isSingleton,
+       "Test whether we have one term only")
+  .def("is_singleton_or_pair", &BoolePolynomial::isSingletonOrPair,
+       "Test whether we have one or two terms only")
+  .def("is_pair", &BoolePolynomial::isPair,
+       "Test whether we have two terms only")
 
   .def("deg", &BoolePolynomial::deg, "Polynomial degree")
   .def("lead_divisors", &BoolePolynomial::leadDivisors, "Divisors of leading term")
