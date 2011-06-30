@@ -39,7 +39,6 @@
 BEGIN_NAMESPACE_PBORIGB
 
 #define LL_RED_FOR_GROEBNER 1
-MonomialSet minimal_elements(const MonomialSet& s);
 Polynomial map_every_x_to_x_plus_one(Polynomial p);
 
 MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs);
@@ -56,10 +55,7 @@ Polynomial mult_fast_sim(const std::vector<Polynomial>& vec,
 			 const BoolePolyRing& ring);
 std::vector<Polynomial> full_implication_gb(const Polynomial & p,CacheManager& cache,GroebnerStrategy& strat);
 Polynomial reduce_complete(const Polynomial &p, const PolyEntry& reductor, wlen_type &len);
-MonomialSet contained_variables_cudd_style(const MonomialSet& m);
-MonomialSet minimal_elements_cudd_style(MonomialSet m);
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset);
-MonomialSet minimal_elements_cudd_style_unary(MonomialSet m);
 
 
 

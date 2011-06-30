@@ -19,7 +19,9 @@
 #include <polybori/groebner/HasTRepOrExtendedProductCriterion.h>
 #include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
+#include <polybori/groebner/ExpGreater.h>
 
+#include <polybori/groebner/minimal_elements.h>
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
@@ -27,33 +29,9 @@
 #include <polybori/groebner/GroebnerStrategy.h>
 
 
+
 BEGIN_NAMESPACE_PBORIGB
 
-
-
-static Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, Polynomial p){
-    LiteralFactorization::map_type::const_iterator it=lf.factors.begin();
-    LiteralFactorization::map_type::const_iterator end=lf.factors.end();
-    LiteralFactorization::var2var_map_type::const_iterator it_v=lf.var2var_map.begin();
-    LiteralFactorization::var2var_map_type::const_iterator end_v=lf.var2var_map.end();
-    while(it!=end){
-        idx_type var=it->first;
-        int val=it->second;
-        if (val==0){
-            p=p.diagram().change(var);
-        } else {
-            p=p.diagram().change(var).unite(p.diagram());
-        }
-        it++;
-    }
-    while(it_v!=end_v){
-        idx_type var=it_v->first;
-        idx_type var2=it_v->second;
-        p=p.diagram().change(var).unite(p.diagram().change(var2));
-        it_v++;
-    }
-    return p;
-}
 
 bool polynomial_in_one_block(const Polynomial p){
     if (p.isConstant()) return true;
@@ -61,102 +39,6 @@ bool polynomial_in_one_block(const Polynomial p){
     
     return p.ring().ordering().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
 }
-
-
-
-#define EXP_FOR_PAIRS
-#ifndef EXP_FOR_PAIRS
-static std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
-  
-  
-    std::vector<Monomial> result;
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(lm);
-    } else {
-        Monomial v;
-        //lm austeilen
-        m=divide_monomial_divisors_out(m,lm);
-        
-        //std::vector<idx_type> cv=contained_variables(m);
-        //int i;
-        /*for(i=0;i<cv.size();i++){
-            result.push_back(((Monomial)Variable(cv[i]))*lm);
-            m=m.subset0(cv[i]);
-        }*/
-        m=minimal_elements(m);
-        if (!(m.isZero())){
-            m=m.unateProduct(lm.diagram());
-            result.insert(result.end(), m.begin(), m.end());
-        }
-        
-        
-    }
-    return result;
-
-}
-#else
-#if 0
-static void minimal_elements_divided(MonomialSet m, Monomial lm, std::vector<Exponent>& result){
-
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
-        Monomial v;
-        
-        m=divide_monomial_divisors_out(m,lm);
-        
-        
-        return minimal_elements_internal3(m);
-        
-    }
-    return result;
-}
-#else
-//#define MIN_ELEMENTS_BINARY 1
-#ifdef MIN_ELEMENTS_BINARY
-static void minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
-
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
-        Monomial v;
-        m=divide_monomial_divisors_out(m,lm);
-        //mod=divide_monomial_divisors_out(mod,lm);
-        m=do_minimal_elements_cudd_style(m,mod);
-        result.resize(m.length());
-        std::copy(m.expBegin(),m.expEnd(),result.begin());
-        //return minimal_elements_internal3(m);
-        
-    }
-}
-#else
-
-static void minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
-
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
-
-        m=m.existAbstract(lm);
-        mod=mod.existAbstract(lm);
-        //mod=divide_monomial_divisors_out(mod,lm);
-        m=mod_mon_set(m,mod);
-        m=minimal_elements_cudd_style_unary(m);
-        result.resize(m.length());
-        std::copy(m.expBegin(),m.expEnd(),result.begin());
- 
-        
-    }
-
-}
-#endif
-
-
-#endif
-#endif
 
 
 
@@ -1188,4 +1070,128 @@ int GroebnerStrategy::suggestPluginVariable(){
     }
     return result;
 }
+
+
+Polynomial GroebnerStrategy::nf(Polynomial p) const{
+    return generators.nf(p);
+}
+#if  defined(HAVE_M4RI) || defined(HAVE_NTL)
+std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>& orig_system){
+
+    if (orig_system.empty())
+      return orig_system;
+
+    log("reduction by linear algebra\n");
+    static int round=0;
+    round++;
+    std::vector<Polynomial> polys;
+    int i;
+    MonomialSet terms(orig_system[0].ring());
+    
+    for(i=0;i<orig_system.size();i++){
+        Polynomial p=orig_system[i];
+        if LIKELY(!(p.isZero())){
+            p=ll_red_nf(p,generators.llReductor);
+            if LIKELY(!(p.isZero())){
+                p=generators.reducedNormalForm(p);
+                if LIKELY(!(p.isZero())){
+                    if (UNLIKELY(p.isOne())){
+                        polys.clear();
+                        polys.push_back(p);
+                        return polys;
+                    }
+                    terms=terms.unite(p.diagram());
+                    polys.push_back(p);
+                }
+            }
+        }
+    }
+    if UNLIKELY(polys.size()==0) return std::vector<Polynomial>();
+    typedef std::map<int,Exponent> to_term_map_type;
+    typedef Exponent::idx_map_type from_term_map_type;
+    
+    int rows=polys.size();
+    int cols=terms.size();
+    if UNLIKELY(this->enabledLog){
+        std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
+    }
+    #ifndef HAVE_M4RI
+    mat_GF2 mat(INIT_SIZE,rows,cols);
+    #else
+    mzd_t* mat=mzd_init(rows,cols);
+    #endif
+    std::vector<Exponent> terms_as_exp(terms.size());
+    std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
+
+    std::sort(terms_as_exp.begin(),terms_as_exp.end(),
+	      ExpGreater(polys[0].ring()));
+
+
+    from_term_map_type from_term_map;
+    //to_term_map_type to_term_map;
+    for (i=0;i<terms_as_exp.size();i++){
+        from_term_map[terms_as_exp[i]]=i;
+        //to_term_map[i]=terms_as_exp[i]);
+    }
+    for(i=0;i<polys.size();i++){
+        Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
+        Polynomial::exp_iterator end=polys[i].expEnd();
+        while(it!=end){
+            #ifndef HAVE_M4RI
+            mat[i][from_term_map[*it]]=1;
+            #else
+            mzd_write_bit(mat,i,from_term_map[*it],1);
+            #endif
+            it++;
+        }
+    }
+    polys.clear();
+    #ifndef HAVE_M4RI
+
+    int rank=gauss(mat);
+    #else
+    {        
+       if UNLIKELY(optDrawMatrices){
+            char matname[255];
+            snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
+
+            drawmatrix(mat,matname);
+        }
+    }
+    int rank;
+    if ((mat->nrows>0) && (mat->ncols>0))
+            rank=
+            mzd_echelonize_m4ri(mat,TRUE,0);
+            //mzd_echelonize_pluq(mat,TRUE);
+    else
+            rank=0;
+    #endif
+    for(i=rank-1;i>=0;i--){
+        int j;
+        std::vector<Exponent> p_t;
+        for(j=0;j<cols;j++){
+            #ifndef HAVE_M4RI
+            if (mat[i][j]==1){
+            #else
+            if (mzd_read_bit(mat,i,j)){
+            #endif
+                p_t.push_back(terms_as_exp[j]);
+            }
+        }
+        assert(polys.size()!=0);
+        Polynomial from_mat=add_up_exponents(p_t,polys[0].ring().zero());
+        if (UNLIKELY(from_mat.isOne())){
+            polys.clear();
+            polys.push_back(from_mat);
+            return polys;
+        }
+        polys.push_back(from_mat);//,0,p_t.size()));
+    }
+    #ifdef HAVE_M4RI
+    mzd_free(mat);
+    #endif
+    return polys;
+}
+#endif
+
 END_NAMESPACE_PBORIGB

@@ -11,6 +11,7 @@
 #include <iostream>
 #include <vector>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/contained_variables.h>
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/literal_factorization.h>
 #include <polybori/BoolePolyRing.h>

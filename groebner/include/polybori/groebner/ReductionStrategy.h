@@ -87,6 +87,17 @@ public:
     }
 };
 
+
+inline bool
+irreducible_lead(Monomial lm, const ReductionStrategy& strat){
+
+  return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
+  //        strat.generators.minimalLeadingTerms.intersect(lm.divisors()).isZero();
+}
+
+
+
+
 END_NAMESPACE_PBORIGB
 
 #endif /* polybori_ReductionStrategy_h_ */

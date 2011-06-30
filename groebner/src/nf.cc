@@ -6,6 +6,23 @@
  *  Copyright 2006 The PolyBoRi Team. See LICENSE file.
  *
  */
+
+#include <polybori/groebner/PolynomialSugar.h>
+#include <polybori/groebner/LMLessComparePS.h>
+#include <polybori/groebner/PSCompareByEl.h>
+#include <polybori/groebner/IsEcart0Predicate.h>
+
+#include <polybori/groebner/LexHelper.h>
+#include <polybori/groebner/DegOrderHelper.h>
+#include <polybori/groebner/BlockOrderHelper.h>
+#include <polybori/groebner/LexOrderGreaterComparer.h>
+#include <polybori/groebner/LLReduction.h>
+#include <polybori/groebner/ExpGreater.h>
+#include <polybori/groebner/PolyMonomialPairComparerLexLess.h>
+#include <polybori/groebner/PolyMonomialPairComparerLess.h>
+#include <polybori/groebner/MatrixMonomialOrderTables.h>
+
+
 #ifdef HAVE_GD
 #define DRAW_MATRICES
 #endif
@@ -78,14 +95,6 @@ static int optimal_k_for_gauss(int m, int n, const GroebnerStrategy& strat){
     if UNLIKELY(strat.enabledLog)
         std::cout<<"optimal k for gauss:"<<res<<std::endl;
     return res;
-}
-template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec,
-                                             Polynomial init);
-
-static bool irreducible_lead(Monomial lm, const ReductionStrategy& strat){
-
-  return (!(strat.minimalLeadingTerms.hasTermOfVariables(lm)));//
-  //        strat.generators.minimalLeadingTerms.intersect(lm.divisors()).isZero();
 }
 
 
@@ -395,110 +404,6 @@ template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
 
 
 
-class PolynomialSugar{
-public:
-  PolynomialSugar(const Polynomial& poly): lm(poly.ring()), exp(), p(poly) {
-    sugar=p.deg();
-    if (!(p.isZero())){
-      this->lm=p.boundedLead(sugar);
-      this->exp=lm.exp();
-      assert(lm==p.lead());
-      assert(exp==p.leadExp());
-    }
-
-    length=p.length();
-  }
-  PolynomialSugar(const Polynomial& poly, int sugar, len_type length):
-    lm(poly.ring()), exp(), p(poly) {
-
-    assert(length>=0);
-    
-    //sugar=p.deg();
-    this->sugar=sugar;
-    this->length=length;
-    assert(sugar>=p.deg());
-    assert(length>=p.length());
-    if (!(p.isZero())){
-      this->lm=p.boundedLead(sugar);
-      this->exp=lm.exp();
-      assert(lm==p.lead());
-      assert(exp==p.leadExp());
-    }
-  }
-  const BooleMonomial& lead() const{
-    return this->lm;
-  }
-  const Exponent& leadExp() const{
-    return this->exp;
-  }
-  deg_type getSugar() const{
-    return sugar;
-  }
-  wlen_type getLengthEstimation() const {
-    return length;
-  }
-  bool isZero() const{
-    return p.isZero();
-  }
-  void add(const Polynomial p2, deg_type sugar2, wlen_type length){
-    assert(p2.leadExp()==exp);
-    assert(length>=0);
-    assert(length>=p2.length());
-    this->p=p+p2;
-    this->sugar=std::max(sugar2,this->sugar);
-
-    if (!(p.isZero())){
-      this->lm=this->p.boundedLead(sugar);
-      this->exp=this->lm.exp();
-    } else {
-      lm=Monomial(p2.ring());
-      exp=Exponent();
-    }
-    this->length+=length;
-    this->length-=2;
-    if (p2.ring().ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
-    
-    assert((p.isZero())|| (lm==p.lead()));
-    assert((p.isZero())||(exp==p.leadExp()));
-  }
-  void adjustSugar(){
-    sugar=p.deg();
-  }
-  bool isOne(){
-    return p.isOne();
-  }
-  Polynomial value() const{
-    return p;
-  }
-  wlen_type eliminationLength() const{
-    ///@todo optimize that using length optimization
-    wlen_type res=1;
-    if (isZero()) return 0;
-    res=res+(sugar-exp.deg()+1)*(length-1);
-    assert(res>=p.eliminationLengthWithDegBound(sugar));
-    return res;
-    //return p.eliminationLengthWithDegBound(sugar);
-  }
-  void adjustLm(){
-    this->lm=this->p.lead();
-    exp=lm.exp();
-    assert(lm==p.lead());
-    assert(exp==p.leadExp());
-  }
-protected:
-  Monomial lm;
-  len_type length;
-  deg_type sugar;
-  Polynomial p;
-  Exponent exp;
-};
-
-class LMLessComparePS{
-public:
-  bool operator() (const PolynomialSugar& p1, const PolynomialSugar& p2){
-    return p1.lead()<p2.lead();
-  }
-};
 
 
 static void step_S(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result, const BooleMonomial& lm, int index, GroebnerStrategy& strat){
@@ -693,12 +598,6 @@ static void step_T_simple(std::vector<PolynomialSugar>& curr, std::vector<Polyno
 }
 
 
-class PSCompareByEl{
-public:
-  bool operator() (const PolynomialSugar& p1, const PolynomialSugar& p2){
-    return ((p1.getSugar()<p2.getSugar()) ||((p1.getSugar()<=p2.getSugar()) && (p1.eliminationLength()<p2.eliminationLength())));
-  }
-};
 
 int sum_size(const MonomialSet& s1, const MonomialSet& s2){
   MonomialSet m1=s1;
@@ -991,118 +890,14 @@ int select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
       return strat.exp2Index.find(min)->second;
     }
 }
-class IsEcart0Predicate{
-public:
-IsEcart0Predicate(const ReductionStrategy& strat){
-    this->strat=&strat;
-}
-bool operator() (const Exponent& e){
-    return (*strat)[strat->exp2Index.find(e)->second].ecart()==0;
-}
-
-
-private:
-    const ReductionStrategy* strat;
-};
-
-
-
-class LexHelper{
-    public:
-    static bool irreducible_lead(const Monomial& m, const ReductionStrategy& strat){
-        if (strat.optRedTailDegGrowth) return PBORINAME::groebner::irreducible_lead(m,strat);
-        else{
-            BooleSet ms=strat.leadingTerms.intersect(m.divisors());
-            if (ms.isZero())
-                return true;
-            else {
-                return std::find_if(ms.expBegin(),ms.expEnd(),IsEcart0Predicate(strat))==ms.expEnd();
-            }
-        }
-        
-    }
-    static Polynomial::const_iterator begin(const Polynomial & p){
-        return p.begin();
-    }
-    static Polynomial::const_iterator end(const Polynomial & p){
-        return p.end();
-    }
-    static Polynomial nf(const ReductionStrategy& strat, const Polynomial& p, const Monomial& m){
-        //return nf3_lexbuckets(strat,p,m);
-        if (strat.optRedTailDegGrowth) return nf3(strat,p,m);
-        else return nf3_no_deg_growth(strat,p,m);
-    }
-    typedef Polynomial::const_iterator iterator_type;
-    const static bool isDegreeOrder=false;
-    const static bool isLexicographicalOrder=true;
-    static bool knowRestIsIrreducible(const iterator_type& it, const ReductionStrategy & strat){
-      if ( (it.deg()>0) && (it.firstIndex()>strat.reducibleUntil))
-        return true;
-      else return false;
-      
-    }
-  static Polynomial sum_range(std::vector<Monomial>& vec,const iterator_type&
-  it, const iterator_type& end, Polynomial init){
-        if (vec.size()==1) return vec[0];
-        if (it!=end)
-          return term_accumulate(it,end, init);
-        else return init;
-    }
-};
 
 
 
 
 
-class DegOrderHelper{
-    public:
-    static bool irreducible_lead(const Monomial& m, const ReductionStrategy& strat){
-      return PBORINAME::groebner::irreducible_lead(m,strat);
-          }
-    static Polynomial::ordered_iterator begin(const Polynomial & p){
-        return p.orderedBegin();
-    }
-    static Polynomial::ordered_iterator end(const Polynomial & p){
-        return p.orderedEnd();
-    }
-    static Polynomial nf(const ReductionStrategy& strat, const Polynomial& p, const Monomial& m){
-        return nf3_degree_order(strat,p,m);
-    }
-    typedef Polynomial::ordered_iterator iterator_type;
-    const static bool isDegreeOrder=true;
-    const static bool isLexicographicalOrder=false;
-    static bool knowRestIsIrreducible(const iterator_type& it, const ReductionStrategy & strat){
-      return false;
-    }
-    static Polynomial sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end, Polynomial init){
-      return add_up_generic(vec, init);
-      }
-    
-};
-class BlockOrderHelper{
-    public:
-    static bool irreducible_lead(const Monomial& m, const ReductionStrategy& strat){
-      return PBORINAME::groebner::irreducible_lead(m,strat);
-          }
-    static Polynomial::ordered_iterator begin(const Polynomial & p){
-        return p.orderedBegin();
-    }
-    static Polynomial::ordered_iterator end(const Polynomial & p){
-        return p.orderedEnd();
-    }
-    static Polynomial nf(const ReductionStrategy& strat, const Polynomial& p, const Monomial& m){
-        return nf3(strat,p,m);
-    }
-    typedef Polynomial::ordered_iterator iterator_type;
-    const static bool isDegreeOrder=false;
-    const static bool isLexicographicalOrder=false;
-    static bool knowRestIsIrreducible(const iterator_type& it, const ReductionStrategy & strat){
-      return false;
-    }
-    static Polynomial  sum_range(std::vector<Monomial>& vec,iterator_type it, iterator_type end, Polynomial init){
-      return add_up_generic(vec, init);
-        }
-};
+
+
+
 int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m){
   MonomialSet ms=strat.leadingTerms.divisorsOf(m);
   if (ms.isZero())
@@ -1155,38 +950,7 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   
 }
 
-template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec, int
-start, int end, Polynomial init){
-    //we assume the polynomials to be pairwise different
-    int s=end-start;
-    if (s==0) return init;
-    if (s==1) return Polynomial(res_vec[start]);
-    int h=s/2;
-    return add_up_generic(res_vec,start,start+h,init) +
-      add_up_generic(res_vec,start+h,end, init);
-}
-template <class T> Polynomial add_up_generic(const std::vector<T>& res_vec,
-                                             Polynomial init){
-    //we assume the polynomials to be pairwise different
-    int s=res_vec.size();
-    if (s==0) return init;
-    if (s==1) return (Polynomial) res_vec[0];
-    int h=s/2;
-    
-    return add_up_generic(res_vec,0,h, init) + 
-      add_up_generic(res_vec,h,s, init);
-}
 
-class LexOrderGreaterComparer{
-    LexOrder o;
-public:
-    bool operator() (const Monomial& m1, const Monomial& m2){
-        return o.compare(m1,m2)==BoolePolyRing::greater_than;
-    }
-    bool operator() (const Exponent& m1, const Exponent& m2){
-        return o.compare(m1,m2)==BoolePolyRing::greater_than;
-    }
-};
 static MonomialSet add_up_lex_sorted_monomials(const BoolePolyRing& ring,
 					       std::vector<Monomial>& vec, int start, int end){
     assert(end<=vec.size());
@@ -1591,52 +1355,6 @@ template <class Helper> Polynomial red_tail_generic(const ReductionStrategy& str
 }
 
 
-/*
-class LexHelper{
-    public:
-    static bool irreducible_lead(const Monomial& m, const GroebnerStrategy& strat){
-        if (strat.optRedTailDegGrowth) return PBORINAME::groebner::irreducible_lead(m,strat);
-        else{
-            BooleSet ms=strat.generators.leadingTerms.intersect(m.divisors());
-            if (ms.isZero())
-                return true;
-            else {
-                return std::find_if(ms.expBegin(),ms.expEnd(),IsEcart0Predicate(strat))==ms.expEnd();
-            }
-        }
-        
-    }
-    static Polynomial::const_iterator begin(const Polynomial & p){
-        return p.begin();
-    }
-    static Polynomial::const_iterator end(const Polynomial & p){
-        return p.end();
-    }
-    static Polynomial nf(const GroebnerStrategy& strat, const Polynomial& p, const Monomial& m){
-        if (strat.optRedTailDegGrowth) return nf3(strat.generators,p,m);
-        else return nf3_no_deg_growth(strat,p,m);
-    }
-    typedef Polynomial::const_iterator iterator_type;
-    const static bool isDegreeOrder=false;
-};
-
-class DegOrderHelper{
-    public:
-    static bool irreducible_lead(const Monomial& m, const GroebnerStrategy& strat){
-      return PBORINAME::groebner::irreducible_lead(m,strat);
-          }
-    static Polynomial::ordered_iterator begin(const Polynomial & p){
-        return p.orderedBegin();
-    }
-    static Polynomial::ordered_iterator end(const Polynomial & p){
-        return p.orderedEnd();
-    }
-    static Polynomial nf(const GroebnerStrategy& strat, const Polynomial& p, const Monomial& m){
-        return nf3_degree_order(strat,p,m);
-    }
-    typedef Polynomial::ordered_iterator iterator_type;
-    const static bool isDegreeOrder=true;
-};*/
 
 Polynomial red_tail(const ReductionStrategy& strat, Polynomial p){
   if (p.ring().ordering().isLexicographical())
@@ -1670,84 +1388,6 @@ template  <bool fast> Polynomial multiply(const Polynomial &p, const Polynomial&
     return dd_multiply<fast>(cache_mgr_type(p.ring()), 
                              p.navigation(), q.navigation(),
                              BoolePolynomial(p.ring()));
-}
-template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
-class LLReduction {
-public:
-
-  template<class RingType>
-  LLReduction(const RingType& ring): cache_mgr(ring) {}
-
-  Polynomial multiply(const Polynomial &p, const Polynomial& q){
-    typedef CommutativeCacheManager<CCacheTypes::multiply_recursive>
-      cache_mgr_type;
-    
-    return dd_multiply<fast_multiplication>(cache_mgr_type(p.ring()), 
-                                            p.navigation(), q.navigation(),
-                                            BoolePolynomial(p.ring()));
-  }
-
-  Polynomial operator()(const Polynomial& p, MonomialSet::navigator r_nav);
-
-protected:
-  typedef PBORI::CacheManager<CCacheTypes::ll_red_nf> cache_mgr_type;
-  cache_mgr_type cache_mgr;
-};
-
-template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
-Polynomial
-LLReduction<have_redsb, single_call_for_noredsb,
-            fast_multiplication>::operator() (const Polynomial& p,
-                                              MonomialSet::navigator r_nav) {     
-
-  if UNLIKELY(p.isConstant()) return p;
-    
-  MonomialSet::navigator p_nav=p.navigation();
-  idx_type p_index=*p_nav;
-  
-  while((*r_nav)<p_index) {
-    r_nav.incrementThen();
-  }
-  
-  if UNLIKELY(r_nav.isConstant())
-    return p;
-
-  MonomialSet::navigator cached = cache_mgr.find(p_nav, r_nav);
-
-  if LIKELY(cached.isValid()) 
-    return MonomialSet(cache_mgr.generate(cached));
-
-  Polynomial res(0, p.ring());
-
-  Polynomial p_nav_else(cache_mgr.generate(p_nav.elseBranch()));
-  Polynomial p_nav_then(cache_mgr.generate(p_nav.thenBranch()));
-
-  if ((*r_nav) == p_index){
-    Polynomial r_nav_else(cache_mgr.generate(r_nav.elseBranch()));
-
-    if ((!have_redsb) && single_call_for_noredsb) { 
-      res = operator()(p_nav_else + multiply(r_nav_else, p_nav_then), 
-                       r_nav.thenBranch());
-    }
-    else {
-      Polynomial tmp1 = operator()(p_nav_else, r_nav.thenBranch());
-      Polynomial tmp2 = operator()(p_nav_then, r_nav.thenBranch());
-
-      Polynomial tmp( have_redsb? r_nav_else:
-                      operator()(r_nav_else, r_nav.thenBranch()) );
-      res = tmp1 + multiply(tmp, tmp2);
-    }
-  } 
-  else{
-    assert((*r_nav)>p_index);
-    res = MonomialSet( p_index,
-                       operator()(p_nav_then, r_nav).diagram(),
-                       operator()(p_nav_else, r_nav).diagram());
-      
-  }
-
-  cache_mgr.insert(p_nav, r_nav, res.navigation());
-  return res;
 }
 
 template <bool have_redsb, bool single_call_for_noredsb, bool fast_multiplication>
@@ -1831,208 +1471,22 @@ Polynomial plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
     }
     return p2;
 }
-#if  defined(HAVE_M4RI) || defined(HAVE_NTL)
 
 
 
-class ExpGreater:
-  public CFactoryBase {
-public:
-  ExpGreater(const BoolePolyRing& ring): CFactoryBase(ring) {}
 
-  bool operator()(const BooleExponent& lhs,
-		  const BooleExponent& rhs) const {
-    return parent().ordering().compare(lhs,rhs)==CTypes::greater_than;
-  }
-};
 
 
 using std::vector;
-vector<Polynomial> GroebnerStrategy::noroStep(const vector<Polynomial>& orig_system){
-
-    if (orig_system.empty())
-      return orig_system;
-
-    log("reduction by linear algebra\n");
-    static int round=0;
-    round++;
-    vector<Polynomial> polys;
-    int i;
-    MonomialSet terms(orig_system[0].ring());
-    
-    for(i=0;i<orig_system.size();i++){
-        Polynomial p=orig_system[i];
-        if LIKELY(!(p.isZero())){
-            p=ll_red_nf(p,generators.llReductor);
-            if LIKELY(!(p.isZero())){
-                p=generators.reducedNormalForm(p);
-                if LIKELY(!(p.isZero())){
-                    if (UNLIKELY(p.isOne())){
-                        polys.clear();
-                        polys.push_back(p);
-                        return polys;
-                    }
-                    terms=terms.unite(p.diagram());
-                    polys.push_back(p);
-                }
-            }
-        }
-    }
-    if UNLIKELY(polys.size()==0) return vector<Polynomial>();
-    typedef std::map<int,Exponent> to_term_map_type;
-    typedef Exponent::idx_map_type from_term_map_type;
-    
-    int rows=polys.size();
-    int cols=terms.size();
-    if UNLIKELY(this->enabledLog){
-        std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
-    }
-    #ifndef HAVE_M4RI
-    mat_GF2 mat(INIT_SIZE,rows,cols);
-    #else
-    mzd_t* mat=mzd_init(rows,cols);
-    #endif
-    std::vector<Exponent> terms_as_exp(terms.size());
-    std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
-
-    std::sort(terms_as_exp.begin(),terms_as_exp.end(),
-	      ExpGreater(polys[0].ring()));
-
-
-    from_term_map_type from_term_map;
-    //to_term_map_type to_term_map;
-    for (i=0;i<terms_as_exp.size();i++){
-        from_term_map[terms_as_exp[i]]=i;
-        //to_term_map[i]=terms_as_exp[i]);
-    }
-    for(i=0;i<polys.size();i++){
-        Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
-        Polynomial::exp_iterator end=polys[i].expEnd();
-        while(it!=end){
-            #ifndef HAVE_M4RI
-            mat[i][from_term_map[*it]]=1;
-            #else
-            mzd_write_bit(mat,i,from_term_map[*it],1);
-            #endif
-            it++;
-        }
-    }
-    polys.clear();
-    #ifndef HAVE_M4RI
-
-    int rank=gauss(mat);
-    #else
-    {        
-       if UNLIKELY(optDrawMatrices){
-            char matname[255];
-            snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
-
-            drawmatrix(mat,matname);
-        }
-    }
-    int rank;
-    if ((mat->nrows>0) && (mat->ncols>0))
-            rank=
-            mzd_echelonize_m4ri(mat,TRUE,0);
-            //mzd_echelonize_pluq(mat,TRUE);
-    else
-            rank=0;
-    #endif
-    for(i=rank-1;i>=0;i--){
-        int j;
-        vector<Exponent> p_t;
-        for(j=0;j<cols;j++){
-            #ifndef HAVE_M4RI
-            if (mat[i][j]==1){
-            #else
-            if (mzd_read_bit(mat,i,j)){
-            #endif
-                p_t.push_back(terms_as_exp[j]);
-            }
-        }
-        assert(polys.size()!=0);
-        Polynomial from_mat=add_up_exponents(p_t,polys[0].ring().zero());
-        if (UNLIKELY(from_mat.isOne())){
-            polys.clear();
-            polys.push_back(from_mat);
-            return polys;
-        }
-        polys.push_back(from_mat);//,0,p_t.size()));
-    }
-    #ifdef HAVE_M4RI
-    mzd_free(mat);
-    #endif
-    return polys;
-}
-#endif
 #if  defined(HAVE_NTL) || defined(HAVE_M4RI)
 using std::vector;
 using std::pair;
-class PolyMonomialPairComparerLexLess{
-public:
-    LexOrder o;
-    bool operator() (const pair<Polynomial,Monomial>& a,const pair<Polynomial, Monomial>& b){
-        return o.compare(a.second,b.second)==BoolePolyRing::less_than;
-        
-    }
-};
 
-class PolyMonomialPairComparerLess{
-public:
-    bool operator() (const pair<Polynomial,Monomial>& a,const pair<Polynomial, Monomial>& b){
-        return a.second < b.second;
-        
-    }
-};
 
 //typedef std::map<int,Monomial> to_term_map_type;
 typedef Exponent::idx_map_type from_term_map_type;
 
 
-void setup_order_tables(vector<Exponent>& terms_as_exp,vector<Exponent>& terms_as_exp_lex,std::vector<int>& ring_order2lex,vector<int>& lex_order2ring,from_term_map_type& from_term_map, const MonomialSet& terms){
-    int n=terms.size();
-    terms_as_exp.resize(n);
-    terms_as_exp_lex.resize(n);
-    std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
-    terms_as_exp_lex=terms_as_exp;
-    std::sort(terms_as_exp.begin(),terms_as_exp.end(),
-	      ExpGreater(terms.ring()));
-    ring_order2lex.resize(n);
-    lex_order2ring.resize(n);
-    int i;
-    for (i=0;i<n;i++){
-        from_term_map[terms_as_exp[i]]=i;
-        //to_term_map[i]=Monomial(terms_as_exp[i]);
-    }
-    for (i=0;i<n;i++){
-        int ring_pos=from_term_map[terms_as_exp_lex[i]];
-        ring_order2lex[ring_pos]=i;
-        lex_order2ring[i]=ring_pos;
-        //to_term_map[i]=Monomial(terms_as_exp[i]);
-    }
-}
-
-
-class MatrixMonomialOrderTables{
-        
-public:
-  MatrixMonomialOrderTables(MonomialSet input_terms):
-    terms(input_terms) {
-                  setup_order_tables(
-                    terms_as_exp,
-                    terms_as_exp_lex,
-                    ring_order2lex,
-                    lex_order2ring,
-                    from_term_map,
-                    this->terms);
-        }
-        vector<Exponent> terms_as_exp;
-        vector<Exponent> terms_as_exp_lex;
-        vector<int> ring_order2lex;
-        vector<int> lex_order2ring;
-        from_term_map_type from_term_map;
-        MonomialSet terms;
-};
 
 static void fix_point_iterate(const GroebnerStrategy& strat,vector<Polynomial> extendable_system, vector<Polynomial>& res1,MonomialSet& res_terms,MonomialSet& leads_from_strat){
 
@@ -2151,13 +1605,9 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     #else
     mzd_t* mat=mzd_init(rows,cols);
     #endif
-    vector<Exponent> terms_as_exp;
-    vector<Exponent> terms_as_exp_lex;
-    vector<int> ring_order2lex;
-    vector<int> lex_order2ring;
-    from_term_map_type from_term_map;
-    setup_order_tables(terms_as_exp,terms_as_exp_lex,ring_order2lex,lex_order2ring,from_term_map, terms);
-    fill_matrix(mat,polys,from_term_map);
+    MatrixMonomialOrderTables  tabs(terms);
+
+    fill_matrix(mat,polys,tabs.from_term_map);
 
     polys.clear();
     #ifndef HAVE_M4RI
@@ -2175,7 +1625,7 @@ static void linalg_step(vector<Polynomial>& polys, MonomialSet terms,MonomialSet
     if UNLIKELY(log){
         std::cout<<"finished gauss"<<std::endl;
     }
-    translate_back(polys, leads_from_strat, mat,ring_order2lex, terms_as_exp,terms_as_exp_lex,rank);
+    translate_back(polys, leads_from_strat, mat,tabs.ring_order2lex, tabs.terms_as_exp,tabs.terms_as_exp_lex,rank);
     
     #ifdef HAVE_M4RI
     mzd_free(mat);
@@ -2594,7 +2044,5 @@ Polynomial ReductionStrategy::nf(Polynomial p) const{
     if (optRedTail) return reducedNormalForm(p);
     else return headNormalForm(p);
 }
-Polynomial GroebnerStrategy::nf(Polynomial p) const{
-    return generators.nf(p);
-}
+
 END_NAMESPACE_PBORIGB

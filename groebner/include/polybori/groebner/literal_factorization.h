@@ -82,5 +82,9 @@ private:
     BoolePolyRing m_ring;
 };
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b);
+
+Polynomial 
+multiply_with_literal_factors(const LiteralFactorization& lf, Polynomial p);
+
 END_NAMESPACE_PBORIGB
 #endif

@@ -440,4 +440,28 @@ Polynomial LiteralFactorizationIterator::operator*() const{
   return m_ring.zero();
 }
 
+Polynomial multiply_with_literal_factors(const LiteralFactorization& lf, Polynomial p){
+    LiteralFactorization::map_type::const_iterator it=lf.factors.begin();
+    LiteralFactorization::map_type::const_iterator end=lf.factors.end();
+    LiteralFactorization::var2var_map_type::const_iterator it_v=lf.var2var_map.begin();
+    LiteralFactorization::var2var_map_type::const_iterator end_v=lf.var2var_map.end();
+    while(it!=end){
+        idx_type var=it->first;
+        int val=it->second;
+        if (val==0){
+            p=p.diagram().change(var);
+        } else {
+            p=p.diagram().change(var).unite(p.diagram());
+        }
+        it++;
+    }
+    while(it_v!=end_v){
+        idx_type var=it_v->first;
+        idx_type var2=it_v->second;
+        p=p.diagram().change(var).unite(p.diagram().change(var2));
+        it_v++;
+    }
+    return p;
+}
+
 END_NAMESPACE_PBORIGB
