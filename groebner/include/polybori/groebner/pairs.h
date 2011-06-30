@@ -6,231 +6,37 @@
  *  Copyright 2006 The PolyBoRi Team. See LICENSE file.
  *
  */
+
+#ifndef PB_PAIR_H
+#define PB_PAIR_H
+
+#include "PolyEntry.h"
+#include "PairData.h"
+#include "IJPairData.h"
+#include "PolyPairData.h"
+#include "VariablePairData.h"
+#include "PairLS.h"
+#include "PairE.h"
+#include "PairLSCompare.h"
+#include "PairECompare.h"
+
 #include <functional>
 #include "groebner_defs.h"
-#include "literal_factorization.h"
+
 #include <boost/shared_ptr.hpp>
 #include <queue>
 #include <algorithm>
 #include <utility>
 #include <set>
 
-#ifndef PB_PAIR_H
-#define PB_PAIR_H
+BEGIN_NAMESPACE_PBORIGB
 
- BEGIN_NAMESPACE_PBORIGB
-
-class PolyEntry{
-   PolyEntry();                 /* never use this one! */
-public:
-  PolyEntry(const Polynomial &p);
-
-  bool operator==(const PolyEntry& other) const{
-      return p==other.p;
-  }
-  LiteralFactorization literal_factors;
-  Polynomial p;
-  Monomial lead;
-  wlen_type weightedLength;
-  len_type length;
-  deg_type deg;
-  deg_type leadDeg;
-  Exponent leadExp;
-  Monomial gcdOfTerms;
-  Exponent usedVariables;
-  Exponent tailVariables;
-  Polynomial tail;
-  ///set of variables with which pair was calculated
-  std::set<idx_type> vPairCalculated; 
-  deg_type ecart() const{
-    return deg-leadDeg;
-  }
-  bool minimal;
-  void recomputeInformation();
-};
 //using std::less;
-typedef std::vector<PolyEntry> PolyEntryVector;
-
-class PairData{
-public:
-  //gives back encoded
-  virtual ~PairData()=0;
-  //we don't demand that the pair is in a consistent state later
-  virtual Polynomial extract(const PolyEntryVector& v)=0;
-};
-class IJPairData: public PairData{
-public:
-  int i;
-  int j;
-  Polynomial extract(const PolyEntryVector& v){
-    return spoly(v[i].p,v[j].p);
-  }
-  IJPairData(int i, int j){
-    this->i=i;
-    this->j=j;
-  }
-};
-class PolyPairData: public PairData{
-public:
-  Polynomial p;
-  Polynomial extract(const PolyEntryVector& v){
-    return p;
-  }
-  PolyPairData(const BoolePolynomial& poly): p(poly) { }
-};
-
-class VariablePairData: public PairData{
-public:
-  int i;
-  idx_type v;
-  Polynomial extract(const PolyEntryVector& gen){
-    return Monomial(Variable(v, gen[i].p.ring()))*gen[i].p;
-  }
-  VariablePairData(int i, idx_type v){
-    this->v=v;
-    this->i=i;
-  }
-};
-typedef boost::shared_ptr<PairData> pair_data_ptr;
-enum {
-  VARIABLE_PAIR,
-  IJ_PAIR,
-  DELAYED_PAIR
-};
-
-class PairLS{
-private:
-  int type;
-public:
-  int getType() const{
-    return type;
-  }
-  wlen_type wlen;
-  deg_type sugar;
-  //three sorts of pairs
-  //x*poly, poly, i,j
-  pair_data_ptr data;
-  Monomial lm; //must not be the real lm, can be lm of syzygy or something else
-  Polynomial extract(const PolyEntryVector& v){
-    return data->extract(v);
-  }
-  PairLS(int i, int j, const PolyEntryVector &v):
-    data(new IJPairData(i,j)),
-    lm(v[i].lead*v[j].lead),
-    wlen(v[i].weightedLength+v[j].weightedLength-2)
-  {
-    type=IJ_PAIR;
-    sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
-  }
-  PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
-    data(new VariablePairData(i,v)),
-    sugar(gen[i].deg+1),
-   // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
-    wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].lead)
-  
-  {
-    assert(type==VARIABLE_PAIR);
-    this->type=type;
-  }
-  
-  PairLS(const Polynomial& delayed):
-    data(new PolyPairData(delayed)),
-    lm(delayed.lead()), 
-    sugar(delayed.deg()), wlen(delayed.eliminationLength()){
-      this->type=DELAYED_PAIR;
-  }
-  
-};
-
-class PairE{
-private:
-  int type;
-public:
-  int getType() const{
-    return type;
-  }
-  wlen_type wlen;
-  deg_type sugar;
-  //three sorts of pairs
-  //x*poly, poly, i,j
-  pair_data_ptr data;
-  Exponent lm; //must not be the real lm, can be lm of syzygy or something else
-
- PairE(const PairE& rhs):
-  type(rhs.getType()), wlen(rhs.wlen), sugar(rhs.sugar), 
-    data(rhs.data), lm(rhs.lm) {}
-
-
-  Polynomial extract(const PolyEntryVector& v){
-    return data->extract(v);
-  }
-  PairE(int i, int j, const PolyEntryVector &v):
-    data(new IJPairData(i,j)),
-    lm(v[i].leadExp+v[j].leadExp),
-    wlen(v[i].weightedLength+v[j].weightedLength-2)
-  {
-    type=IJ_PAIR;
-    sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
-  }
-  PairE(int i, idx_type v, const PolyEntryVector &gen,int type):
-    data(new VariablePairData(i,v)),
-    sugar(gen[i].deg+1),
-   // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
-    wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].leadExp)
-  
-  {
-    assert(type==VARIABLE_PAIR);
-    this->type=type;
-    if (gen[i].leadExp==gen[i].usedVariables)
-        sugar=gen[i].deg;
-    if (gen[i].tailVariables.deg()<gen[i].deg)
-        sugar=gen[i].deg;
-  }
-  
-  PairE(const Polynomial& delayed):
-    data(new PolyPairData(delayed)),
-    //lm(delayed.lead()),
-    lm(delayed.leadExp()),
-    sugar(delayed.deg()), wlen(delayed.eliminationLength()){
-      this->type=DELAYED_PAIR;
-  }
-  
-};
 
 
 
-class PairLSCompare{
-public:
-  ///replaces less template
-  bool operator() (const PairLS& l, const PairLS& r){
-    if (l.sugar!=r.sugar) return l.sugar>r.sugar; //greater sugar, less importance
-    if (l.wlen!=r.wlen) return l.wlen>r.wlen;
-    if (l.lm!=r.lm) return l.lm>r.lm;
-    
-    ///@todo lm comparison
-    return false;
-  }
-};
 
-class PairECompare: 
-  public CFactoryBase {
-public:
-  PairECompare(const BoolePolyRing& ring):
-    CFactoryBase(ring) {}
 
-  ///replaces less template
-  bool operator() (const PairE& l, const PairE& r){
-    if (l.sugar!=r.sugar) return l.sugar>r.sugar; //greater sugar, less importance
-    if (l.wlen!=r.wlen) return l.wlen>r.wlen;
-    if (l.lm!=r.lm) return parent().ordering().compare(l.lm, r.lm) 
-		      == CTypes::greater_than;
-    
-    ///@todo lm comparison
-    return false;
-  }
-};
 typedef PairE Pair;
 
  END_NAMESPACE_PBORIGB
