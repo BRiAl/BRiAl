@@ -7,7 +7,7 @@
 // 
 
 #include <boost/python.hpp>
-#include <polybori/groebner/fglm.h>
+#include <polybori/groebner/FGLMStrategy.h>
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 void export_fglm(){

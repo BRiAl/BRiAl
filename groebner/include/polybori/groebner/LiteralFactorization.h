@@ -1,5 +1,5 @@
 /*
- *  literal_factorization.h
+ *  LiteralFactorization.h
  *  PolyBoRi
  *
  *  Created by Michael Brickenstein on 29.05.06.

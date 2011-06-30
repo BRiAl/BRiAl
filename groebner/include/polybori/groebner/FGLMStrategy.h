@@ -1,5 +1,5 @@
 // 
-//  fglm.h
+//  FGLMStrategy.h
 //  PolyBoRi
 //  
 //  Created by Michael Brickenstein on 2008-11-13.

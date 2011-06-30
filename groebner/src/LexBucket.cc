@@ -1,5 +1,5 @@
 /*
- *  pairs.cc
+ *  LexBucket.cc
  *  PolyBoRi
  *
  *  Created by Michael Brickenstein on 19.04.06.
@@ -7,7 +7,8 @@
  *
  */
 
-#include <polybori/groebner/lexbuckets.h>
+#include <polybori/groebner/LexBucket.h>
+
 BEGIN_NAMESPACE_PBORIGB
 
 static Polynomial sum_up_buckets(std::vector<Polynomial>::iterator it, 

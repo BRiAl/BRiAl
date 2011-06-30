@@ -1,5 +1,5 @@
 /*
- *  literal_factorization.cc
+ *  LiteralFactorization.cc
  *  PolyBoRi
  *
  *  Created by Michael Brickenstein on 29.05.06.
@@ -7,7 +7,7 @@
  *
  */
 
-#include <polybori/groebner/literal_factorization.h>
+#include <polybori/groebner/LiteralFactorization.h>
 #include <polybori/cache/CCacheManagement.h>
 #include <iostream>
 #include <exception>

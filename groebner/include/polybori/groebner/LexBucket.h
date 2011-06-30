@@ -8,18 +8,21 @@
  */
 #include <functional>
 #include "groebner_defs.h"
-#include "literal_factorization.h"
+
+#include "LiteralFactorization.h"
 #include <boost/shared_ptr.hpp>
 #include <queue>
 #include <algorithm>
 #include <utility>
 #include <set>
 #include <vector>
+
 #ifndef PB_LEXBUCKETS_H
 #define PB_LEXBUCKETS_H
 
- BEGIN_NAMESPACE_PBORIGB
+BEGIN_NAMESPACE_PBORIGB
 Polynomial without_prior_part(Polynomial p, idx_type tail_start);
+
 class LexBucket{
  //typedef CTypes::idx_type idx_type;
 public:

@@ -32,7 +32,7 @@
 #endif
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/polynomial_properties.h>
-#include <polybori/groebner/lexbuckets.h>
+#include <polybori/groebner/LexBucket.h>
 #include <polybori/LexOrder.h>
 #include <iostream>
 #include <polybori/iterators/COrderedIter.h>

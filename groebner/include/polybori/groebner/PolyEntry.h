@@ -19,7 +19,7 @@
 // include basic definitions
 #include "groebner_defs.h"
 
-#include "literal_factorization.h"
+#include "LiteralFactorization.h"
 
 BEGIN_NAMESPACE_PBORIGB
 

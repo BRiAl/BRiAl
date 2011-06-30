@@ -13,7 +13,7 @@
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/contained_variables.h>
 #include <polybori/groebner/groebner_alg.h>
-#include <polybori/groebner/literal_factorization.h>
+#include <polybori/groebner/LiteralFactorization.h>
 #include <polybori/BoolePolyRing.h>
 #include "slimgb_wrapper.h"
 #include <polybori/groebner/interpolate.h>
