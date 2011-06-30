@@ -60,6 +60,58 @@ MonomialSet contained_variables_cudd_style(const MonomialSet& m);
 MonomialSet minimal_elements_cudd_style(MonomialSet m);
 MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialSet mset);
 MonomialSet minimal_elements_cudd_style_unary(MonomialSet m);
+
+
+
+
+inline Polynomial
+cancel_monomial_in_tail(const Polynomial& p, const Monomial & m){
+  Monomial lm=p.lead();
+  
+  Polynomial res=reduce_by_monom(p,m);
+  if ((!res.isZero()) && (res.lead()==lm)){
+    return res;
+  } else {
+    return res+lm;
+  }
+  /*Polynomial tail=p-lm;
+  Monomial used_var=tail.usedVariables();
+  
+  if (used_var.reducibleBy(m)){
+    tail=Polynomial(BooleSet(tail).diff(m.multiples(used_var)));
+    
+  }
+  return tail+lm;*/
+}
+
+inline Polynomial
+reduce_by_binom(const Polynomial& p, const Polynomial& binom){
+  assert(binom.length()==2);
+  
+  Monomial bin_lead=binom.lead();
+  Monomial bin_last=*(++(binom.orderedBegin()));
+  
+  MonomialSet dividing_terms=((MonomialSet)p).multiplesOf(bin_lead);
+  
+  Monomial b_p_gcd=bin_last.GCD(bin_lead);
+  
+  Monomial divide_by=bin_lead/b_p_gcd;
+  Monomial multiply_by=bin_last/b_p_gcd;
+  
+  Polynomial rewritten=((Polynomial) dividing_terms)/divide_by;
+  return p-dividing_terms+rewritten*multiply_by;
+  
+}
+
+
+inline Polynomial
+reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
+  assert(binom.length()==2);
+  Monomial lm=p.lead();
+  return lm+reduce_by_binom(p-lm,binom);
+}
+
+
 END_NAMESPACE_PBORIGB
 
 #endif

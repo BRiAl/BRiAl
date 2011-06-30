@@ -56,6 +56,13 @@ public:
   void recomputeInformation();
 };
 
+
+inline bool
+should_propagate(const PolyEntry& e){
+ return ((((e.length==1) && (e.deg>0) && (e.deg<4)))||((e.length==2)&&(e.ecart()==0) &&(e.deg<3)));
+
+}
+
 END_NAMESPACE_PBORIGB
 
 #endif /* polybori_PolyEntry_h_ */
