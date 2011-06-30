@@ -9,7 +9,12 @@
 #include <algorithm>
 #include <vector>
 #include <queue>
+
+#include "SlimgbReduction.h"
+#include "LMLessCompare.h"
 #include "groebner_alg.h"
+
+
 #if HAVE_M4RI
 extern "C"{
 #include <m4ri/m4ri.h>
@@ -37,42 +42,6 @@ int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m);
 
 
 
-class LMLessCompare{
-public:
-  bool operator() (const Polynomial& p1, const Polynomial& p2){
-    return p1.lead()<p2.lead();
-  }
-};
-
-const int SLIMGB_SIMPLEST=0;
-template<int variant> class SlimgbReduction{
-private:
-  GroebnerStrategy* strat;
-  std::priority_queue<Polynomial, std::vector<Polynomial>, LMLessCompare> to_reduce;
-  public:
-  std::vector<Polynomial> result;
-
-  SlimgbReduction(GroebnerStrategy& strat){
-    this->strat=&strat;
-  }
-  SlimgbReduction(){}
-  void addPolynomial(const Polynomial& p);
-  void reduce();
-  //return zero at the end
-  Polynomial nextResult();
-};
-template <int variant> void SlimgbReduction<variant>::addPolynomial(const Polynomial& p){
-  if (!(p.isZero())){
-    to_reduce.push(p);
-  }
-}
-template <int variant> Polynomial SlimgbReduction<variant>::nextResult(){
-  if (result.size()==0) 
-    throw std::runtime_error("Empty result in SlimgbReduction.");
-  Polynomial res=result.back();
-  result.pop_back();
-  return res;
-}
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps, double delay_f);
 Polynomial red_tail(const ReductionStrategy& strat, Polynomial p);

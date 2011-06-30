@@ -16,8 +16,15 @@
 
 // include basic definitions
 #include <polybori/groebner/ReductionStrategy.h>
+#include <polybori/groebner/LessWeightedLengthInStrat.h>
+#include <polybori/groebner/LessWeightedLengthInStratModified.h>
+#include <polybori/groebner/nf.h>
 
 BEGIN_NAMESPACE_PBORIGB
+
+
+void addPolynomialToReductor(Polynomial& p, MonomialSet& m); // groebner_alg.cc
+
 
 void ReductionStrategy::setupSetsForLastElement(){
     const int s=size()-1;
@@ -82,4 +89,96 @@ void ReductionStrategy::setupSetsForLastElement(){
     }
     #endif
 }
+
+
+ 
+int ReductionStrategy::select_short(const Polynomial& p) const{
+  MonomialSet ms=leadingTerms.intersect(p.leadDivisors());
+  //Polynomial workaround =Polynomial(ms);
+  
+  if (ms.isZero())
+    return -1;
+  else {
+    
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
+    
+    int res=lm2Index.find(min)->second;
+    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
+    else return -1;
+  }
+  
+}
+
+int ReductionStrategy::select_short(const Monomial& m) const{
+  MonomialSet ms=leadingTerms.intersect(m.divisors());
+  if (ms.isZero())
+    return -1;
+  else {
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
+    int res=lm2Index.find(min)->second;
+    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
+    else return -1;
+
+  }
+}
+
+typedef LessWeightedLengthInStratModified StratComparerForSelect;
+
+int ReductionStrategy::select1( const Polynomial& p) const{
+  MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.leadDivisors());
+  //Polynomial workaround =Polynomial(ms);
+  
+  if (ms.isZero())
+    return -1;
+  else {
+#ifdef LEX_LEAD_RED_STRAT
+    if (p.ring().ordering().isLexicographical()){
+      Exponent min=*(ms.expBegin());
+      return exp2Index.find(min)->second;
+    }
+#endif
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
+
+    return exp2Index.find(min)->second;
+     
+  }
+  
+}
+int ReductionStrategy::select1(const Monomial& m) const {
+  MonomialSet ms=leadingTerms.divisorsOf(m);
+  if (ms.isZero())
+    return -1;
+  else {
+    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
+    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
+    return exp2Index.find(min)->second;
+  }
+}
+
+Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
+    if UNLIKELY(p.isZero()) return p;
+    
+    Polynomial res(p.ring());
+    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
+    else res=nf3(*this,p,p.lead());
+    if ((res.isZero())) return res;
+    res=red_tail(*this,res);
+    return res;
+}
+Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
+    if UNLIKELY(p.isZero()) return p;
+    
+    Polynomial res(p.ring());
+    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
+    else res=nf3(*this,p,p.lead());
+    return res;
+}
+Polynomial ReductionStrategy::nf(Polynomial p) const{
+    if (optRedTail) return reducedNormalForm(p);
+    else return headNormalForm(p);
+}
+
 END_NAMESPACE_PBORIGB

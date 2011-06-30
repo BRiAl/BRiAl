@@ -31,7 +31,7 @@ typedef std::vector<PolyEntry> PolyEntryVector;
 class PairData{
 public:
   //gives back encoded
-  virtual ~PairData()=0;
+  virtual ~PairData() {}
   //we don't demand that the pair is in a consistent state later
   virtual Polynomial extract(const PolyEntryVector& v)=0;
 };

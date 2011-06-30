@@ -346,63 +346,6 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
 // }
 
 
-template <> void SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
-  while (!(to_reduce.empty())){
-    //cout<<"looping"<<endl;
-    std::vector<Polynomial> curr;
-    curr.push_back(to_reduce.top());
-    to_reduce.pop();
-    //cout<<curr[0];
-    Monomial lm=curr[0].lead();
-    while ((!(to_reduce.empty())) && (to_reduce.top().lead()==lm)){
-      curr.push_back(to_reduce.top());
-      to_reduce.pop();
-      //cout<<"same"<<endl;
-      //cout.flush();
-    }
-    //cout<<lm;
-    //cout.flush();
-    int index=strat->generators.select1(lm);
-    if (index>=0){
-      Polynomial p_high=(lm/strat->generators[index].lead)*strat->generators[index].p;
-      int i,s;
-      s=curr.size();
-      assert(p_high.lead()==lm);
-      for(i=0;i<s;i++){
-        curr[i]+=p_high;
-        if (!(curr[i].isZero())){
-          to_reduce.push(curr[i]);
-        }
-      }
-    } else {
-      //simly take the first, not so clever
-      Polynomial reductor=curr.back();
-      curr.pop_back();
-      int i,s;
-      s=curr.size();
-      if (s>0){
-        for(i=0;i<s;i++){
-          curr[i]+=reductor;
-          if (!(curr[i].isZero())){
-            assert(curr[i].lead()<lm);
-            to_reduce.push(curr[i]);
-          }
-          
-        }
-        assert(!(reductor.isZero()));
-        result.push_back(reductor);
-      } else{
-        assert(s==0);
-        assert(!(curr[0].isZero()));
-        result.push_back(curr[0]);
-      }
-    }
-  
-  }
-  
-}
-
-
 
 
 
@@ -811,74 +754,10 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
   return result;
   
 }
-typedef LessWeightedLengthInStratModified StratComparerForSelect;
+
 
 // Doxygen problems with the following syntax, so skip during docs generation
 
- 
-int ReductionStrategy::select_short(const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.intersect(p.leadDivisors());
-  //Polynomial workaround =Polynomial(ms);
-  
-  if (ms.isZero())
-    return -1;
-  else {
-    
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
-    
-    int res=lm2Index.find(min)->second;
-    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
-    else return -1;
-  }
-  
-}
-
-int ReductionStrategy::select_short(const Monomial& m) const{
-  MonomialSet ms=leadingTerms.intersect(m.divisors());
-  if (ms.isZero())
-    return -1;
-  else {
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
-    int res=lm2Index.find(min)->second;
-    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
-    else return -1;
-
-  }
-}
-
-int ReductionStrategy::select1( const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.leadDivisors());
-  //Polynomial workaround =Polynomial(ms);
-  
-  if (ms.isZero())
-    return -1;
-  else {
-#ifdef LEX_LEAD_RED_STRAT
-    if (p.ring().ordering().isLexicographical()){
-      Exponent min=*(ms.expBegin());
-      return exp2Index.find(min)->second;
-    }
-#endif
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
-
-    return exp2Index.find(min)->second;
-     
-  }
-  
-}
-int ReductionStrategy::select1(const Monomial& m) const {
-  MonomialSet ms=leadingTerms.divisorsOf(m);
-  if (ms.isZero())
-    return -1;
-  else {
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
-    return exp2Index.find(min)->second;
-  }
-}
 
 int select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
     MonomialSet ms=strat.leadingTerms.divisorsOf(m);
@@ -2022,27 +1901,5 @@ MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs){
 }
 
 
-Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
-    if UNLIKELY(p.isZero()) return p;
-    
-    Polynomial res(p.ring());
-    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
-    else res=nf3(*this,p,p.lead());
-    if ((res.isZero())) return res;
-    res=red_tail(*this,res);
-    return res;
-}
-Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
-    if UNLIKELY(p.isZero()) return p;
-    
-    Polynomial res(p.ring());
-    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
-    else res=nf3(*this,p,p.lead());
-    return res;
-}
-Polynomial ReductionStrategy::nf(Polynomial p) const{
-    if (optRedTail) return reducedNormalForm(p);
-    else return headNormalForm(p);
-}
 
 END_NAMESPACE_PBORIGB
