@@ -15,16 +15,16 @@
 
 
 // include definitions
+
+#include <polybori/groebner/HasTRepOrExtendedProductCriterion.h>
+#include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
-#include <polybori/groebner/GroebnerStrategy.h>
+
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
 
-
-#include <polybori/groebner/HasTRepOrExtendedProductCriterion.h>
-#include <polybori/groebner/ShorterEliminationLengthModified.h>
-
+#include <polybori/groebner/GroebnerStrategy.h>
 
 
 BEGIN_NAMESPACE_PBORIGB

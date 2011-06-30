@@ -2,7 +2,7 @@
 //*****************************************************************************
 /** @file tables.h 
  *
- * @author Michael Brickenstein, Alexander Dreyer
+ * @author Michael Brickenstein
  * @date 2011-06-30
  *
  * This file some functions for managing precomputed Groebner tables.
@@ -18,6 +18,7 @@
 
 // include basic definitions
 #include "groebner_defs.h"
+#include <stdexcept>
 #include <polybori/groebner/ZeroFunction.h>
 #include <polybori/groebner/SetBitUInt.h>
 
@@ -75,30 +76,7 @@ p2code(Polynomial p, const std::vector<char> & ring_2_0123, int max_vars){
 
 inline unsigned int
 p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
-    return p2code<unsigned int, ZeroFunction, SetBitUInt>(p,ring_2_0123, 4);
-    /*Polynomial::exp_iterator it_p=p.expBegin();
-    Polynomial::exp_iterator end_p=p.expEnd();
-    unsigned int p_code=0;
-    while(it_p!=end_p){
-        Exponent curr_exp=*it_p;
-        Exponent::const_iterator it_v=curr_exp.begin();
-        Exponent::const_iterator end_v=curr_exp.end();
-        unsigned int exp_code=0;
-        //exp code is int between 0 and 15
-        while(it_v!=end_v){
-            //cout<<"table value:"<<(int)ring_2_0123[(*it_v)]<<endl;
-            exp_code|=(1<<ring_2_0123[(*it_v)]);
-            //cout<<"exp_code:"<<exp_code<<endl;
-            it_v++;
-        }
-        //cout<<"exp_code final:"<<exp_code<<endl;
-        p_code|=(1<<exp_code);
-        //so p code is 16-bit unsigned int
-        //int is fastest
-        it_p++;
-    }
-    return p_code;
-    */
+  return p2code<unsigned int, ZeroFunction, SetBitUInt>(p,ring_2_0123, 4);
 }
 
 inline int
@@ -117,7 +95,7 @@ get_table_entry4(const BoolePolyRing& ring, int p_code, int pos){
             return dp_asc4var_data[p_code][pos];
         #endif
         default:
-          std::cerr<<"using tables with forbidden order"<<std::endl;
+          throw std::runtime_error("Groebner tables used with forbidden order");
     }
     return 0;
 }
@@ -125,70 +103,56 @@ get_table_entry4(const BoolePolyRing& ring, int p_code, int pos){
 
 inline Monomial
 code_2_m_4(const BoolePolyRing& ring, 
-                           unsigned int code, std::vector<idx_type> back_2_ring){
-    int i;
-    Monomial res(ring);
-    //cout<<"m_code:"<<code<<endl;
-    for(i=3;i>=0;i--){
-        if ((code & (1<<i))!=0){
-          res*=Variable(back_2_ring[i], res.ring());
-            //res=res.diagram().change(back_2_ring[i]);
-        }
+           unsigned int code, const std::vector<idx_type>& back_2_ring){
+
+    Monomial result(ring);
+    for(int idx = 3; idx >= 0; --idx){
+      if ((code & (1<<idx)) != 0){
+        result *= ring.variable(back_2_ring[idx]);
+      }
     }
-    //cout<<"m:"<<res<<endl;           
-    return res;
+    return result;
 }
 
 
 inline Polynomial
 code_2_poly_4(const BoolePolyRing& ring,
-                                unsigned int code, std::vector<idx_type> back_2_ring){
-   int i;
-    Polynomial p(ring);
-    //unsigned int m_code;
-    for(i=15;i>=0;i--){
-        if ((code & (1<<i))!=0){
-          Monomial m=code_2_m_4(ring, i,back_2_ring);
-            p+=m;
-        }
+              unsigned int code, const std::vector<idx_type>& back_2_ring){
+
+  Polynomial result(ring);
+  for(int idx = 15; idx >= 0; --idx){
+    if ((code & (1<<idx)) != 0){
+      result += code_2_m_4(ring, idx, back_2_ring);
     }
-    //cout<<"p input code"<<code<<"p out:"<<p<<endl;
-    return p;
+  }
+  return result;
+}
+
+inline bool 
+have_ordering_for_tables(const int order_code) {
+    #ifdef HAVE_DLEX4_DATA
+        if (order_code==COrderEnums::dlex)
+           return true;
+    #endif
+    #ifdef HAVE_LP4_DATA
+        if (order_code==COrderEnums::lp)
+           return true;
+    #endif
+    #ifdef HAVE_DP_ASC4_DATA
+        if (order_code==COrderEnums::dp_asc)
+           return true;
+    #endif
+    return false;
 }
 
 inline bool 
 have_ordering_for_tables(const BoolePolyRing& ring){  
-  const int order_code=ring.ordering().getOrderCode();
-    #ifdef HAVE_DLEX4_DATA
-        if (order_code==COrderEnums::dlex)
-           return true;
-    #endif
-    #ifdef HAVE_LP4_DATA
-        if (order_code==COrderEnums::lp)
-           return true;
-    #endif
-    #ifdef HAVE_DP_ASC4_DATA
-        if (order_code==COrderEnums::dp_asc)
-           return true;
-    #endif
-    return false;
+  return have_ordering_for_tables(ring.ordering().getOrderCode());
 }
+
 inline bool
 have_base_ordering_for_tables(const BoolePolyRing& ring){  
-  const int order_code=ring.ordering().getBaseOrderCode();
-    #ifdef HAVE_DLEX4_DATA
-        if (order_code==COrderEnums::dlex)
-           return true;
-    #endif
-    #ifdef HAVE_LP4_DATA
-        if (order_code==COrderEnums::lp)
-           return true;
-    #endif
-    #ifdef HAVE_DP_ASC4_DATA
-        if (order_code==COrderEnums::dp_asc)
-           return true;
-    #endif
-    return false;
+  return have_ordering_for_tables(ring.ordering().getBaseOrderCode());
 }
 
 
