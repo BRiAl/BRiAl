@@ -10,6 +10,7 @@
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/add_up.h>
 #include <polybori/groebner/interpolate.h>
+#include <polybori/groebner/draw_matrix.h>
 
 extern "C" {
 #include <m4ri/m4ri.h>
@@ -337,7 +338,7 @@ void FGLMStrategy::setupMultiplicationTables(){
             char matname[255];
             sprintf(matname,"mult_table%d.png",i);
 
-            drawmatrix(multiplicationTables[i],matname);
+            draw_matrix(multiplicationTables[i],matname);
         }
         #endif
     }
@@ -450,7 +451,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
             char matname[255];
             sprintf(matname,"row_combined%d.png",round);
 
-            drawmatrix(row_combined,matname);
+            draw_matrix(row_combined,matname);
         #endif
     }
     mzd_t* col_combined=mzd_transpose(NULL, row_combined);
@@ -462,7 +463,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
             char matname[255];
             sprintf(matname,"col_reduced%d.png",round);
 
-            drawmatrix(col_combined,matname);
+            draw_matrix(col_combined,matname);
         #endif
     }
     const int cols=col_combined->ncols;

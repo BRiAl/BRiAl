@@ -11,13 +11,15 @@
 
 #include <polybori/BoolePolyRing.h>
 #include "groebner_alg.h"
+
 extern "C" {
 #include <m4ri/m4ri.h>
 }
+
 BEGIN_NAMESPACE_PBORIGB
 
-
 typedef std::vector<Polynomial> poly_vec;
+
 class FGLMStrategy{
   FGLMStrategy(); /* Never use this! */
 public:

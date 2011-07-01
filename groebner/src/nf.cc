@@ -20,13 +20,7 @@
 #include <polybori/groebner/PolyMonomialPairComparerLess.h>
 
 
-#ifdef HAVE_GD
-#define DRAW_MATRICES
-#endif
-#ifdef DRAW_MATRICES
-#include <stdio.h>
-#include <gd.h>
-#endif
+
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/red_tail.h>
@@ -45,33 +39,6 @@ using std::endl;
 BEGIN_NAMESPACE_PBORIGB
 
 
-
-void drawmatrix(mzd_t* mat, const char* filename){
-    #ifdef DRAW_MATRICES
-    int i,r,c,j;
-    c=mat->ncols;
-    r=mat->nrows;
-    gdImagePtr im = gdImageCreate(c, r) ;
-     FILE * out = fopen(filename, "wb") ;
- int black = gdImageColorAllocate(im, 0, 0, 0) ;
- int white = gdImageColorAllocate(im, 255, 255, 255); 
- gdImageFilledRectangle(im, 0, 0, c-1, r-1, white) ;
- 
- for(i=0;i<r;i++){
-     for(j=0;j<c;j++){
-         if (mzd_read_bit(mat, i, j))
-             gdImageSetPixel(im, j, i, black );
-     }
- }
-  
-
- gdImagePng(im, out);
- gdImageDestroy(im);
- fclose(out);
- #else
- std::cerr<<"warning: for drawing matrices compile with GD";
- #endif
-}
 
 static int log2_floor(int n){
     int i;

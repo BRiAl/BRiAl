@@ -20,6 +20,7 @@
 #include "groebner_defs.h"
 #include "add_up.h"
 #include "nf.h"
+#include "draw_matrix.h"
 
 #include "GroebnerStrategy.h"
 #include "MatrixMonomialOrderTables.h"
@@ -194,7 +195,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
          ++round;
          snprintf(matname,255,"%s%d.png", matrixPrefix, round);
          
-         drawmatrix(mat,matname);
+         draw_matrix(mat,matname);
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
@@ -338,7 +339,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         char matname[255];
         snprintf(matname,255, "%s%d_step1.png", matrixPrefix, round);
         
-        drawmatrix(mat_step1,matname);
+        draw_matrix(mat_step1,matname);
         }
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri
@@ -476,9 +477,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     
     char matname[255];
     snprintf(matname,255, "%s%d_mult_A.png", matrixPrefix, round);
-    drawmatrix(mat_step2_factor,matname);
+    draw_matrix(mat_step2_factor,matname);
     snprintf(matname,255, "%s%d_mult_B.png", matrixPrefix, round);
-    drawmatrix(mat_step1,matname);
+    draw_matrix(mat_step1,matname);
     }
     if UNLIKELY(log){
         std::cout<<"start mult"<<std::endl;
@@ -520,7 +521,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     {
         char matname[255];
         snprintf(matname,255, "%s%d_step2.png", matrixPrefix, round);
-        drawmatrix(mat_step2,matname);
+        draw_matrix(mat_step2,matname);
     }
 
 

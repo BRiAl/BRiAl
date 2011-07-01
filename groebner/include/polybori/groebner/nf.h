@@ -28,15 +28,10 @@ extern "C"{
 BEGIN_NAMESPACE_PBORIGB
 
 
-void drawmatrix(mzd_t* mat, const char* filename);
-
-
 int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m);
 
-
-
-
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
+
 std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStrategy& strat, int average_steps, double delay_f);
 
 Polynomial nf3(const ReductionStrategy& strat, Polynomial p, Monomial rest_lead);

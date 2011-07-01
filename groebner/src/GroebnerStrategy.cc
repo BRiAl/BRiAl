@@ -982,7 +982,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
             char matname[255];
             snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
 
-            drawmatrix(mat,matname);
+            draw_matrix(mat,matname);
         }
     }
     int rank;
