@@ -9,6 +9,8 @@
 #include <ctime> 
 #include <set>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/ExpLexLess.h>
+
 BEGIN_NAMESPACE_PBORIGB
 static base_generator_type generator(static_cast<unsigned int>(std::time(0)));
 
@@ -16,12 +18,7 @@ void set_random_seed(unsigned int seed){
     generator=base_generator_type(seed);
 }
 
-class ExpLexLess {
-public:
-  bool operator()(const Exponent&lhs, const Exponent& rhs) const {
-    return LexOrder().compare(lhs, rhs)==CTypes::less_than;
-  }
-};
+
 MonomialSet random_set_using_generator(const Monomial& variables, unsigned int len, bool_gen_type& bit_gen){
     Exponent var_exp=variables.exp();
 
