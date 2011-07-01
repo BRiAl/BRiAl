@@ -25,8 +25,8 @@
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
-#include <polybori/groebner/reduce_tail.h>
-#include <polybori/groebner/reduce_ll.h>
+#include <polybori/groebner/red_tail.h>
+#include <polybori/groebner/ll_red_nf.h>
 #include <polybori/groebner/add_up.h>
 #include <polybori/groebner/fixed_path_divisors.h>
 #include <polybori/groebner/linear_algebra_step.h>

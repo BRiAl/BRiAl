@@ -1,11 +1,11 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file reduce_tail.h 
+/** @file red_tail.h 
  *
  * @author Michael Brickenstein
  * @date 2011-07-01
  *
- * This file includes the definition of the @c reduce_tail functions.
+ * This file includes the definition of the @c red_tail functions.
  *
  * @par Copyright:
  *   (c) 2006-2011 by The PolyBoRi Team
@@ -13,8 +13,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_groebner_reduce_tail_h_
-#define polybori_groebner_reduce_tail_h_
+#ifndef polybori_groebner_red_tail_h_
+#define polybori_groebner_red_tail_h_
 
 // include basic definitions
 #include "groebner_defs.h"
@@ -275,4 +275,4 @@ red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
 
 END_NAMESPACE_PBORIGB
 
-#endif /* polybori_groebner_reduce_tail_h_ */
+#endif /* polybori_groebner_red_tail_h_ */

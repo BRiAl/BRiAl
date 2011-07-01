@@ -1,11 +1,11 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file reduce_ll.h 
+/** @file ll_red_nf.h 
  *
  * @author Michael Brickenstein
  * @date 2011-07-01
  *
- * This file includes the definition of the function @c reduce_ll.
+ * This file includes the definition of the function @c ll_red_nf.
  *
  * @par Copyright:
  *   (c) 2006-2011 by The PolyBoRi Team
@@ -13,8 +13,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_groebner_reduce_ll_h_
-#define polybori_groebner_reduce_ll_h_
+#ifndef polybori_groebner_ll_red_nf_h_
+#define polybori_groebner_ll_red_nf_h_
 
 // include basic definitions
 #include "groebner_defs.h"
@@ -79,4 +79,4 @@ ll_red_nf_noredsb_single_recursive_call(const Polynomial& p,
 
 END_NAMESPACE_PBORIGB
 
-#endif /* polybori_groebner_reduce_ll_h_ */
+#endif /* polybori_groebner_ll_red_nf_h_ */

@@ -21,7 +21,7 @@
 
 
 #include <polybori/groebner/groebner_alg.h>
-#include <polybori/groebner/reduce_ll.h>
+#include <polybori/groebner/ll_red_nf.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
 #include <algorithm>
