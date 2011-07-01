@@ -1023,13 +1023,57 @@ BOOST_AUTO_TEST_CASE(test_incompatible) {
 
   BOOST_TEST_MESSAGE( "Incompatible operands..." ); 
   BoolePolyRing other_ring(5, CTypes::lp, false);
-
   BoolePolynomial other_poly = other_ring.variable(2);
 
   BOOST_CHECK_THROW((x*y + z) +other_poly, std::exception);
 
 }
 
+
+
+BOOST_AUTO_TEST_CASE(test_inSingleBlock) {
+
+  BOOST_TEST_MESSAGE( "Testing inSingleBlock..." ); 
+  BoolePolynomial poly = x + y + z + v + w;
+  BoolePolynomial zero(ring);
+  BoolePolynomial one(zero + 1);
+
+  BOOST_CHECK(poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+  ring.changeOrdering(CTypes::block_dlex);
+  BOOST_CHECK(poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+  ring.ordering().appendBlock(3);
+  BOOST_CHECK(!poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+  ring.ordering().appendBlock(4);
+  BOOST_CHECK(!poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+
+  ring.changeOrdering(CTypes::block_dp_asc);
+  BOOST_CHECK(poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+  ring.ordering().appendBlock(3);
+  BOOST_CHECK(!poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+  ring.ordering().appendBlock(4);
+  BOOST_CHECK(!poly.inSingleBlock());
+  BOOST_CHECK(zero.inSingleBlock());
+  BOOST_CHECK(one.inSingleBlock());
+
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()

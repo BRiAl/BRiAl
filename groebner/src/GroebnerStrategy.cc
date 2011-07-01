@@ -33,15 +33,6 @@
 BEGIN_NAMESPACE_PBORIGB
 
 
-bool polynomial_in_one_block(const Polynomial p){
-    if (p.isConstant()) return true;
-    Monomial vars=p.usedVariables();
-    
-    return p.ring().ordering().lieInSameBlock(*vars.begin(),*std::max_element(vars.begin(),vars.end()));
-}
-
-
-
 
 #ifndef DANGEROUS_FIXED_PATH
   typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
@@ -180,16 +171,7 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 }
 
 
-// The following should also become memeber functions
-static void mark_all_variable_pairs_as_calculated(GroebnerStrategy& strat, int s){
-    BooleExponent::const_iterator it=strat.generators[s].leadExp.begin();
-    BooleExponent::const_iterator end=strat.generators[s].leadExp.end();
-     while(it!=end){
-          strat.generators[s].vPairCalculated.insert(*it);
-          it++;
-    } 
-}
-
+// The following should maybe also become member functions
 Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
     Polynomial::navigator nav=p.navigation();
     idx_type last=p.ring().ordering().lastBlockStart();
@@ -350,7 +332,7 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
         if(s>=0)
-            mark_all_variable_pairs_as_calculated(*this, s);
+          generators[s].markVariablePairsCalculated();
         return std::vector<Polynomial>();
     }
 
@@ -370,7 +352,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     if ((get_table_entry4(this->r, p_code,0)==p_code) &&
         (get_table_entry4(this->r, p_code,1)==0)){
         if (s>=0)
-            mark_all_variable_pairs_as_calculated(*this, s);
+          generators[s].markVariablePairsCalculated();
         return std::vector<Polynomial>();
     }
     
@@ -397,7 +379,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     
     
      if (s>=0)
-         mark_all_variable_pairs_as_calculated(*this, s);
+       generators[s].markVariablePairsCalculated();
      
       if (can_add_directly){
         return impl;
@@ -431,7 +413,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
 
     if ((get_table_entry4(this->r,p_code,0)==p_code) && (get_table_entry4(this->r,p_code,1)==0)){
         if(s>=0)
-            mark_all_variable_pairs_as_calculated(*this, s);
+          generators[s].markVariablePairsCalculated();
 
         return std::vector<Polynomial>();
     }
@@ -457,7 +439,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     
     
      if (s>=0)
-         mark_all_variable_pairs_as_calculated(*this, s);
+       generators[s].markVariablePairsCalculated();
     
     if (can_add_directly){
         return impl;
@@ -496,7 +478,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   PolyEntry& e=generators[s];
   if ((have_ordering_for_tables(this->r))||
       ((have_base_ordering_for_tables(this->r))&&
-       (polynomial_in_one_block(generators[s].p)))) { 
+       (generators[s].p.inSingleBlock()))) { 
     int uv=e.usedVariables.deg();
     if (uv<=4){
       return add4ImplDelayed(e.p,e.leadExp,e.usedVariables,s,false);
@@ -723,7 +705,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
       impl=treatVariablePairs(s);
     }
       else {
-        mark_all_variable_pairs_as_calculated(*this, s);
+        generators[s].markVariablePairsCalculated();
       }
 
     
@@ -886,7 +868,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
   int way=0;
   if ((have_ordering_for_tables(this->r)) ||
       ((have_base_ordering_for_tables(this->r)) &&
-       (polynomial_in_one_block(p)))) { 
+       (p.inSingleBlock()))) { 
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {

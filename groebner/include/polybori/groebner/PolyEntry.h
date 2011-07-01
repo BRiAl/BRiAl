@@ -54,6 +54,14 @@ public:
   }
   bool minimal;
   void recomputeInformation();
+
+  void markVariablePairsCalculated() {
+    Exponent::const_iterator it(leadExp.begin()), end(leadExp.end());
+    while(it != end){
+      vPairCalculated.insert(*it);
+      it++;
+    } 
+  }
 };
 
 

@@ -480,8 +480,10 @@ public:
   /// Compare with right-hand side and return comparision code
   comp_type compare(const self&) const;
 
-protected:
+  /// Check whether all variables are in one variable block
+  bool_type inSingleBlock() const;
 
+protected:
   /// Access to internal decision diagramm structure
   dd_type& internalDiagram() { return m_dd; }
 

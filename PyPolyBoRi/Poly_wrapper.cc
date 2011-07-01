@@ -188,6 +188,8 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
        "Replace every variable x by x + 1")
   .def("zeros_in",zeros, 
   "Get BooleSet representing the zeros of the Polynomial")
+  .def("in_single_block", &BoolePolynomial::inSingleBlock, 
+  "Check whether all occuring variables are in the same ordering block")
   .def("__cmp__", &BoolePolynomial::compare, "Comparison of Boolean polynomials");
 
   def("spoly",&spoly, "Compute s-Polynomial between two Polynomials");

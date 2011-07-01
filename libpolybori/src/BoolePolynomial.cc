@@ -864,4 +864,14 @@ BoolePolynomial::compare(const self& rhs) const {
   return (lhs_lead < rhs_lead? -1 : 1);
 }
 
+
+BoolePolynomial::bool_type
+BoolePolynomial::inSingleBlock() const{
+  if (isConstant()) return true;
+  monom_type vars(usedVariables());
+
+  return ring().ordering().lieInSameBlock(*vars.begin(),
+                                          *std::max_element(vars.begin(), vars.end()));
+}
+
 END_NAMESPACE_PBORI
