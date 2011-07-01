@@ -18,6 +18,7 @@
 
 // include basic definitions
 #include "groebner_defs.h"
+#include "IsEcart0Predicate.h"
 #include "ReductionStrategy.h"
 #include "nf.h"
 

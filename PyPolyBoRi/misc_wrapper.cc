@@ -13,6 +13,7 @@ using namespace std;
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/randomset.h>
 #include <polybori/groebner/interpolate.h>
+#include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/nf.h>
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB

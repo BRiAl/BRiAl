@@ -14,7 +14,8 @@
 #include <vector>
 
 #include <polybori/groebner/nf.h>
-
+#include <polybori/groebner/reduce_ll.h>
+#include <polybori/groebner/add_up.h>
 #include <polybori/groebner/groebner_alg.h>
 using namespace boost::python;
 USING_NAMESPACE_PBORI

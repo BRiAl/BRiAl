@@ -19,7 +19,7 @@
 // include basic definitions
 #include "groebner_defs.h"
 #include "ReductionStrategy.h"
-#include "nf.h"
+#include "add_up.h"
 
 BEGIN_NAMESPACE_PBORIGB
 

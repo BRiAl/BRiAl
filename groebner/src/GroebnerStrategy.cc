@@ -25,170 +25,21 @@
 #include <polybori/groebner/groebner_alg.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/interpolate.h>
-
+#include <polybori/groebner/reduce_tail.h>
+#include <polybori/groebner/reduce_ll.h>
+#include <polybori/groebner/add_up.h>
+#include <polybori/groebner/fixed_path_divisors.h>
+#include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/GroebnerStrategy.h>
 
 
 
 BEGIN_NAMESPACE_PBORIGB
 
-
-
-#ifndef DANGEROUS_FIXED_PATH
-  typedef PBORI::CacheManager<CCacheTypes::divisorsof_fixedpath>
-#else
-  typedef PBORI::CacheManager<CCacheTypes::divisorsof>
-#endif
-  fixed_divisors_cache_type;
-
-// Variant navigator
-static MonomialSet
-do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr, 
-                       MonomialSet::navigator a_nav,
-                       MonomialSet::navigator m_nav,
-                       MonomialSet::navigator n_nav){
-
-  if (n_nav.isTerminated()) return 
-    MonomialSet(cache_mgr.generate(a_nav)).firstDivisorsOf(cache_mgr.generate(m_nav));
-  assert(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
-
-  if (a_nav.isConstant()) return cache_mgr.generate(a_nav);
-
-  assert(!(n_nav.isConstant()));
-  assert(!(m_nav.isConstant()));
-  int m_index=*m_nav;
-  int n_index=*n_nav;
-  int a_index=*a_nav;
-   
-  assert(m_index<=n_index);
-  
-  
-  //here we rely on the fact, that in Cudd deref of constant nav. gives a bigger index than allow allowed real indices
-  while((a_index=*a_nav)!=(m_index=*m_nav)){
-     if (a_index<m_index) a_nav.incrementElse();
-     else{
-       n_index=*n_nav;
-       assert(n_index>=m_index);
-       if (m_index==n_index){
-         n_nav.incrementThen();
-         m_nav.incrementThen();
-       } else {
-         m_nav.incrementThen();
-       }
-     }
-   
-  }
-  n_index=*n_nav;
- 
-  if (a_nav.isConstant()){
-    return cache_mgr.generate(a_nav);
-  }
-  assert((*a_nav)==(*m_nav));
-
-  MonomialSet::navigator cached;
-  #ifndef DANGEROUS_FIXED_PATH
-  cached =
-    cache_mgr.find(a_nav, m_nav,n_nav);
-    if (cached.isValid() ){
-      return  cache_mgr.generate(cached);
-    }
-  #else
-  //MonomialSet::navigator cached =
-    //cache_mgr.find(a_nav, m_nav);
-  #endif
-
-    
-  // here it is theoretically possible to get answers which don't contain the
-  // fixed path n, but that doesn't matter in practice, 
-  // as it is optimization anyway
-  typedef PBORI::CacheManager<CCacheTypes::divisorsof>
-    cache_mgr_type2;
-
-  cache_mgr_type2 cache_mgr2(cache_mgr.manager());
-  
-  cached =
-    cache_mgr2.find(a_nav, m_nav);
-  
-  if (cached.isValid()){
-    return cache_mgr2.generate(cached);
-  }
-    
-  assert(a_index==m_index);
-  int index=m_index;
-  MonomialSet result(cache_mgr.zero());
-  if (m_index==n_index){
-    result=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(), 
-                                  m_nav.thenBranch(), n_nav.thenBranch());
-    if (!(result.isZero())) 
-      result = MonomialSet(index, result, cache_mgr.zero());
-  } else {
-    MonomialSet
-      then_path=do_fixed_path_divisors(cache_mgr, a_nav.thenBranch(),
-                                       m_nav.thenBranch(), n_nav);
-    MonomialSet
-      else_path=do_fixed_path_divisors(cache_mgr, a_nav.elseBranch(),
-                                       m_nav.thenBranch(), n_nav);
-    if (then_path.isZero()){
-      result=else_path;
-    } else {
-      result=MonomialSet(index,then_path,else_path);
-    }
-  }
-#ifndef DANGEROUS_FIXED_PATH
-  cache_mgr.insert(a_nav,m_nav,n_nav,result.navigation());
-#else
- cache_mgr2.insert(a_nav,m_nav,result.navigation());
-#endif
-  return result;
-}
-// end of variant for navigator
-
-// variant for MonomialSet
-static MonomialSet do_fixed_path_divisors(MonomialSet a, 
-                                          MonomialSet m, MonomialSet n){
-
-  //we assume that m is a multiple of n
-  MonomialSet::navigator m_nav=m.navigation();
-  MonomialSet::navigator n_nav=n.navigation();
-
-  MonomialSet::navigator a_nav=a.navigation();
-
-  typedef fixed_divisors_cache_type cache_mgr_type;
-  cache_mgr_type cache_mgr(a.ring());
-
-  return do_fixed_path_divisors(cache_mgr, a_nav, m_nav, n_nav);
-}
-
-
-static MonomialSet fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
-   assert(m.reducibleBy(n));
-   return do_fixed_path_divisors(a,m.diagram(),n.diagram());
-}
-
-
 static Polynomial opposite_logic_mapping(Polynomial p){
     return map_every_x_to_x_plus_one(p)+1;
 }
 
-
-// The following should maybe also become member functions
-Polynomial red_tail_in_last_block(const GroebnerStrategy& strat, Polynomial p){
-    Polynomial::navigator nav=p.navigation();
-    idx_type last=p.ring().ordering().lastBlockStart();
-    if ((*nav)>=last) //includes constant polynomials
-        return p;
-    while ((*nav)<last){
-        nav.incrementElse();
-    }
-    if (nav.isConstant()){
-        //we don't check for strat containing one at this point
-        return p;
-    }
-    Polynomial l1(nav, p.ring());
-    Polynomial l2=strat.nf(l1);
-    if (!(l2.isZero())) l2=red_tail(strat.generators,l2);
-    return p+(l1+l2);
-}
 
 static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
   std::vector<Polynomial> res;
@@ -206,13 +57,7 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
   
 }
 
-
-
-
-
 // class members
-
-
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
 :pairs(orig.pairs),
 generators(orig.generators),
@@ -1175,5 +1020,44 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     return polys;
 }
 #endif
+
+
+#if  defined(HAVE_NTL) || defined(HAVE_M4RI)
+std::vector<Polynomial>
+GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
+  if (orig_system.empty())
+    return orig_system;
+  std::vector<Polynomial> polys;
+    //std::vector<Monomial> leads_from_strat_vec;
+
+    int i;
+    MonomialSet terms(orig_system[0].ring());
+    MonomialSet leads_from_strat(terms.ring());
+    assert(orig_system[0].ring().id() ==  terms.ring().id());
+
+#ifndef NDEBUG
+    {
+      std::vector < Polynomial >::const_iterator start(orig_system.begin()),
+	finish(orig_system.end());
+      
+      while (start != finish) {
+	assert(terms.ring().id() == start->ring().id());
+	++start;
+      }
+    }
+#endif
+    fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
+    if (optModifiedLinearAlgebra){
+    linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
+    } else {
+        linalg_step(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
+    }
+    //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
+
+
+    return polys;
+}
+#endif
+
 
 END_NAMESPACE_PBORIGB

@@ -19,6 +19,7 @@
 #include <polybori/groebner/LessWeightedLengthInStrat.h>
 #include <polybori/groebner/LessWeightedLengthInStratModified.h>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/reduce_tail.h>
 
 BEGIN_NAMESPACE_PBORIGB
 

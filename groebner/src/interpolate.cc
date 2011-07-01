@@ -12,6 +12,8 @@
 #include <polybori/groebner/interpolate.h>
 #include <polybori/groebner/randomset.h>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/add_up.h>
+
 BEGIN_NAMESPACE_PBORIGB
 
 std::vector<Polynomial> variety_lex_groebner_basis(const MonomialSet& points,const Monomial & variables){

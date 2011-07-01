@@ -8,7 +8,9 @@
 #include <exception>
 #include <polybori/groebner/FGLMStrategy.h>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/add_up.h>
 #include <polybori/groebner/interpolate.h>
+
 extern "C" {
 #include <m4ri/m4ri.h>
 }

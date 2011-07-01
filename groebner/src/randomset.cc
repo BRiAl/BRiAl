@@ -9,6 +9,7 @@
 #include <ctime> 
 #include <set>
 #include <polybori/groebner/nf.h>
+#include <polybori/groebner/add_up.h>
 #include <polybori/groebner/ExpLexLess.h>
 
 BEGIN_NAMESPACE_PBORIGB
