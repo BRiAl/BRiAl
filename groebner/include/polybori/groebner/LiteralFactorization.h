@@ -13,13 +13,14 @@
 #include <set>
 #include <utility>
 #include "groebner_defs.h"
+
 #ifndef PBORI_GB_LF_H
 #define PBORI_GB_LF_H
 BEGIN_NAMESPACE_PBORIGB
 
 std::vector<Polynomial> easy_linear_factors(const Polynomial &p);
 
-class LiteralFactorizationIterator;
+class LiteralFactorizationIterator;  // forward declaration
 class LiteralFactorization{
 
 public:
@@ -40,47 +41,11 @@ public:
   //typedef std::set<var_pair_type> two_var_factors;
   typedef std::map<idx_type, idx_type> var2var_map_type;
   var2var_map_type var2var_map;
+
   const_iterator begin();
   const_iterator end();
-  protected:
-
 };
-class LiteralFactorizationIterator{
-public:
-    LiteralFactorizationIterator(
-        LiteralFactorization* literal_factorization,
-        LiteralFactorization::map_type::const_iterator
-            var2const_iter,
-        LiteralFactorization::var2var_map_type::const_iterator
-            var2var_iter
-            
-        ): m_ring(literal_factorization->rest.ring())
-      {
-        this->literal_factorization=literal_factorization;
-        this->var2const_iter=var2const_iter;
-        this->var2var_iter=var2var_iter;
-    }
-    typedef LiteralFactorizationIterator self;
-    LiteralFactorization::var2var_map_type::const_iterator var2var_iter;
-    LiteralFactorization::map_type::const_iterator var2const_iter;
-    self & operator++();
-    Polynomial operator*() const;
-    bool operator==(const self& other){
-           return ((literal_factorization==other.literal_factorization)
-           && (var2const_iter==other.var2const_iter) &&
-           (var2var_iter==other.var2var_iter)
-           );
 
-       }
-       bool operator!=(const self& other){
-           return !(*this==other);
-
-       }
-private: 
-    const LiteralFactorization* literal_factorization;
-   
-    BoolePolyRing m_ring;
-};
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b);
 
 Polynomial 
