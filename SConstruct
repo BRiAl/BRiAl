@@ -1359,7 +1359,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
     pyfile_srcs += [PyRootPath('polybori/dynamic/__init__.py') ]
-    if (float(pyconf.version) < '2.5'): # removing advanced functionality
+    if (float(pyconf.version) < 2.5): # removing advanced functionality
         pyfile_srcs.remove(PyRootPath('polybori/context.py'))
                        
     for instfile in pyfile_srcs :

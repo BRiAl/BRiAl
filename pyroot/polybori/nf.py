@@ -1,7 +1,6 @@
 from polybori.PyPolyBoRi import *
 from polybori.easy_polynomials import easy_linear_polynomials as easy_linear_polynomials_func
 from polybori.statistics import used_vars_set
-from polybori.context import RingContext
 from random import Random
 from warnings import warn
 import copy
