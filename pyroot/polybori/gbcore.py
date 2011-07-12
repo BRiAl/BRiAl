@@ -284,6 +284,8 @@ def variety_size_from_gb(I):
     3.0
     >>> variety_size_from_gb([x(1), x(1)*x(4), x(2)*x(3)])
     6.0
+    >>> variety_size_from_gb([x(1)*x(2), x(2)*x(3)])
+    5.0
     >>> mons = [Monomial([Variable(i) for i in xrange(100) if i!=j])\
         for j in xrange(100)]
     >>> variety_size_from_gb(mons)
@@ -293,15 +295,23 @@ def variety_size_from_gb(I):
     I=[p for p in I if not p.is_zero()]
     if len(I)==0:
         return 1
-    number_of_used_vars = used_vars_set(I).deg()
-    leads = set([p.lead() for p in I])
-    minimal_leads = BooleSet(leads).minimal_elements()
-    number_of_used_vars_minimal_leads =\
-        minimal_leads.vars().deg()
-    standard_monomials =\
-        minimal_leads.include_divisors().diff(minimal_leads)
-    return standard_monomials.size_double()*\
-        2**(number_of_used_vars-number_of_used_vars_minimal_leads)
+##     # TODO Here's something wrong! See the example with 5 solutions.
+##     # (reverting for now)
+##     number_of_used_vars = used_vars_set(I).deg()
+##     leads = set([p.lead() for p in I])
+##     minimal_leads = BooleSet(leads).minimal_elements()
+##     number_of_used_vars_minimal_leads =\
+##         minimal_leads.vars().deg()
+##     standard_monomials =\
+##         minimal_leads.include_divisors().diff(minimal_leads)
+##     return standard_monomials.size_double()*\
+##         2**(number_of_used_vars-number_of_used_vars_minimal_leads)
+
+    sm=Monomial(used_vars_set(I)).divisors()
+    for p in I:
+        m=p.lead()
+        sm=sm.diff(sm.multiples_of(m))
+    return sm.size_double()
 
 def other_ordering_pre(I,option_set,kwds):
     if not I:
