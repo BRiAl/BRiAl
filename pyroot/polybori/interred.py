@@ -9,12 +9,15 @@ def interred(l,completely=False):
     tail are not reducible by other polynomials.
     """
     l=[Polynomial(p) for p in l if not p==0]
+    if not l:
+        return []
+    ring = l[0].ring()
     l_old=None
     l=tuple(l)
     while l_old!=l:
         l_old=l
         l=sorted(l,key=Polynomial.lead)
-        g=ReductionStrategy()
+        g=ReductionStrategy(ring)
         if completely:
             g.opt_red_tail=True
         for p in l:
