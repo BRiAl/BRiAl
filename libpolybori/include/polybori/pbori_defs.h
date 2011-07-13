@@ -23,11 +23,10 @@
 
 #include <iostream>
 
-/// @note Usually bad style: the defines in config.h influence cudd.h.
-///  But Cudd comes without configuration. So we have to do it instead.
-#include "config.h"
+/// @note PolyBoRi comes with a special copy of Cudd
 #include <polybori/cudd/cudd.h>
 
+#include "config.h"
 
 #ifndef PBORI_UNIQUE_SLOTS
 #  define PBORI_UNIQUE_SLOTS CUDD_UNIQUE_SLOTS // initial size of subtables
