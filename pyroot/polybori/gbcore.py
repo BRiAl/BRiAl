@@ -324,7 +324,6 @@ def other_ordering_pre(I,option_set,kwds):
     ocode=old_ring.get_order_code()
     try:
         new_ring = old_ring.clone()
-        new_ring.set()
         new_ring.change_ordering(options["switch_to"])
 
         kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
@@ -338,7 +337,7 @@ def other_ordering_pre(I,option_set,kwds):
         else:
             I = [old_ring.coerce(poly) for poly in I]
     finally:
-        old_ring.set()
+        pass
 
     return (I,None)
 
