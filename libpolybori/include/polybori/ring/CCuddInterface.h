@@ -19,8 +19,8 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
-#include <cudd/cudd.h>
-#include <cudd/cuddInt.h>
+#include <polybori/cudd/cudd.h>
+#include <polybori/cudd/cuddInt.h>
 
 #include <polybori/routines/pbori_func.h>         // handle_error
 #include "CCallbackWrapper.h"

@@ -19,7 +19,7 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
-#include <cudd/cuddInt.h>
+#include <polybori/cudd/cuddInt.h>
 #include "CApplyNodeFacade.h"
 #include "CNodeCounter.h"
 

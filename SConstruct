@@ -553,8 +553,8 @@ symlinkbld = Builder(action = build_symlink)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld})
 
-def shared_object(o):
-    return env.SharedObject(o)
+def shared_object(o, **kwds):
+    return env.SharedObject(o, **kwds)
 
 ######################################################################
 # Stuff for building Cudd library
@@ -565,14 +565,12 @@ env.Append(CPPDEFINES=["HAVE_IEEE_754"])
 env.Append(LIBPATH=[CuddPath()])
 
 cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
-cuddInt cudd util""") ]
+cuddInt cudd""") ]
     
-env.Append( CPPPATH=[CuddPath()] )
-
 cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
 API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]
 
-cudd_shared = shared_object(cudd_resources)
+cudd_shared = shared_object(cudd_resources, CPPPATH = env['CPPPATH'] + [CuddPath()])
 
 #libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
 #DefaultBuild(libCudd)
@@ -944,14 +942,18 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
 
+    
+
     for elt in ['..', '.'] + [path.basename(elt)
-                              for elt in glob(PBInclPath('*')) if path.isdir(elt)]:
+                              for elt in glob(PBInclPath('*'))
+                              if path.isdir(elt) and path.basename(elt) != 'cudd' ]:
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 
     env.Install(DevelInstInclPath('groebner'),
                 glob(GBPath('include/polybori/groebner/*.h')))
 
-    env.Install(DevelInstPath('include/cudd'), cudd_headers)
+    # Install our own copy the cudd header to ensure correct (patched) version 
+    env.Install(DevelInstInclPath('cudd'), cudd_headers)
 
     if not(external_m4ri):
         env.Install(DevelInstPath('include/m4ri'), glob('M4RI/m4ri/*.h'))

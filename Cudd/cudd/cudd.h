@@ -64,7 +64,11 @@
 #ifdef CUDD_ORIG_INCLUSION
 #include "mtr.h"
 #include "epd.h"
+
+#else
+#include <polybori/config.h>
 #endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

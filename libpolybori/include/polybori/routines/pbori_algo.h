@@ -27,8 +27,8 @@
 #include <polybori/common/traits.h>
 
 // temporarily
-#include <cudd/cudd.h>
-#include <cudd/cuddInt.h>
+#include <polybori/cudd/cudd.h>
+#include <polybori/cudd/cuddInt.h>
 #include <polybori/ring/CCuddInterface.h>
 
 BEGIN_NAMESPACE_PBORI

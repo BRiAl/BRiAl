@@ -28,7 +28,7 @@
 #include <polybori/BooleExponent.h>
 #include <polybori/BooleMonomial.h>
 
-#include <cudd/cuddInt.h>
+#include <polybori/cudd/cuddInt.h>
 
 #include <climits> // LINE_MAX
 #include <cstdio> // just for tmpfile()

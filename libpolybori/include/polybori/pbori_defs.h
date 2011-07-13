@@ -26,7 +26,7 @@
 /// @note Usually bad style: the defines in config.h influence cudd.h.
 ///  But Cudd comes without configuration. So we have to do it instead.
 #include "config.h"
-#include <cudd/cudd.h>
+#include <polybori/cudd/cudd.h>
 
 
 #ifndef PBORI_UNIQUE_SLOTS
