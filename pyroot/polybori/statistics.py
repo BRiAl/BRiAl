@@ -2,7 +2,7 @@ from polybori.PyPolyBoRi import Monomial,Polynomial,top_index, BooleConstant
 
 def used_vars(l, bound=None):
     if not l:
-        BooleConstant(1)
+        return BooleConstant(1)
     m = Monomial(Polynomial(iter(l).next()).vars_as_monomial())
     for p in l[1:]:
         m=m*Polynomial(p).vars_as_monomial()
