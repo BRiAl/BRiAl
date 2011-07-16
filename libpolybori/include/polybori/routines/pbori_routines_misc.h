@@ -956,7 +956,7 @@ substitute_variables__(const RingType& ring, const MapType& idx2poly, NaviType n
   if (navi.isConstant())
     return ring.constant(navi.terminalValue());
 
-  typename MapType::const_reference var(idx2poly[*navi]);
+  //typename MapType::const_reference var(idx2poly[*navi]);
   //  assert(var.ring() == ring);
   return (idx2poly[*navi] * 
           substitute_variables__<PolyType>(ring, idx2poly, navi.thenBranch())) + 
