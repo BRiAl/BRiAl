@@ -607,17 +607,17 @@ def SymlinkReadableLibname(files):
 def VersionatedSharedLibrary(*args, **kwds):
 
     kwds['SHLIBSUFFIX'] = env.subst('$SHLIBVERSIONSUFFIX')
-    
-    return env.SharedLibrary(*args, **kwds)
+
+    if env['PLATFORM'] == "darwin":
+        sharedlib = env.LoadableModule
+    else:
+        sharedlib = env.SharedLibrary
+
+    return sharedlib(*args, **kwds)
 
 slib = env.SharedLibrary
 if env['SHLIBVERSIONING']:
     slib = VersionatedSharedLibrary
-#if env['PLATFORM']=="darwin":
-#    slib=env.LoadableModule
-
-
-#libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 
 
 ######################################################################
