@@ -150,11 +150,12 @@ def add_up_polynomials(polys, init):
 
 old_ring_var=Ring.var
 def ring_var(self, i):
-    warnings.warn('Ring.var is deprectated')
+    """Deprecated; use Ring.variable(...). """ 
+    warnings.warn('Ring.var is deprectated; use Ring.variable instead')
     return old_ring_var(self, i)
 
+ring_var.__doc__ += old_ring_var.__doc__
 Ring.var=ring_var
-
 
 def weakringref_call(self):
     if self.is_valid():
@@ -178,16 +179,23 @@ def _ring_settings(ring, names, blocks):
 
 
 def _ring_init(self, first, ordering=None, names=[], blocks=[]):
-
+    """Ring(n, ordering, names, block) generates a new Boolean 
+    polynomial ring with n variables, given  monomial ordering, variable
+    names and block ordering blocks, if given.
+    Further information/call patterns: """""" """
     if ordering is None:
         _cpp_ring_init(self, first)
     else:
         _cpp_ring_init(self, first, ordering)
     _ring_settings(self, names, blocks)
 
+_ring_init.__doc__ += _cpp_ring_init.__doc__
 Ring.__init__ = _ring_init
 
 def _ring_clone(self, ordering=None, names=[], blocks=[]):
+    """ring.clone(ordering=..., names=..., block=...) generates a shallow copy
+    of ring, but with different ordering, names or blocks if given.
+    Further information/call patterns: """
     ring = _cpp_ring_clone(self)
     if ordering:
         _cpp_change_ordering(ring, ordering)
@@ -196,27 +204,34 @@ def _ring_clone(self, ordering=None, names=[], blocks=[]):
 
     return ring
 
-
+_ring_clone.__doc__ += _cpp_ring_clone.__doc__
 Ring.clone = _ring_clone
 
 def _change_ordering(self, ordercode):
+    """ Deprecated; use Ring.clone(ordering=...). """
     warnings.warn('Ring.change_ordering is deprectated:\
     use Ring.clone(ordering=...) instead')
     return _cpp_change_ordering(self, ordercode)
+
+_change_ordering.__doc__ += _cpp_change_ordering.__doc__
 Ring.change_ordering = _change_ordering
 
 def _set_variable_name(self, idx, name):
+    """ Deprecated; use Ring.clone(names=...). """
     warnings.warn('Ring.set_variable_name is deprectated:\
     use Ring.clone(names=...) instead')
     return _cpp_set_variable_name(self, idx, name)    
 
+_set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
 Ring.set_variable_name = _set_variable_name
 
 def _append_block(self, next_block_start):
+    """Deprectated; use Ring.clone(blocks=...). """
     warnings.warn('Ring.append_block is deprectated:\
     use Ring.clone(blocks=...) instead')
     return _cpp_append_block(self, next_block_start)    
 
+_append_block.__doc__ += _cpp_append_block.__doc__
 Ring.append_block = _append_block
 
 
