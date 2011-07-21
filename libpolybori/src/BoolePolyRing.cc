@@ -64,13 +64,9 @@ BoolePolyRing::variableDiagram(checked_idx_type nvar) const {
 
 
 // interface with cudd's variable management
-BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order,
-                             bool_type make_active) : 
+BoolePolyRing::BoolePolyRing(size_type nvars, ordercode_type order) : 
   p_core(new core_type(nvars, get_ordering(order))) {
   PBORI_TRACE_FUNC( "BoolePolyRing(size_type)" );
-
-  if(make_active)
-    activate();
 }
 
 void
@@ -80,14 +76,6 @@ BoolePolyRing::changeOrdering(ordercode_type order) {
   p_core->change_ordering(get_ordering(order)); 
 }
 
-
-//  make this global ring
-void
-BoolePolyRing::activate() {
-
-  PBORI_TRACE_FUNC( "BoolePolyRing::activate()" );
-  //  BooleEnv::set(*this);
-}
 
 /// Map polynomial to this ring, if possible
 BoolePolyRing::poly_type BoolePolyRing::coerce(const poly_type& rhs) const {

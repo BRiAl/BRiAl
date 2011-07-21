@@ -156,7 +156,7 @@ class VariableManager(object):
             my_sort(self.apply_map(i)) for i in
             (ideal_state,ideal_intermediate, ideal_next_state)]
     def set_variable_name(self, i, name):
-        self.ring.set_variable_name(i, self.prefix+name)
+        _set_variable_name(self.ring, i, self.prefix+name)
         
     def parse_output_action(self,str,log,tokens):
         p = Polynomial(tokens[1])

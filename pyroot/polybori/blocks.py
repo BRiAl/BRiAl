@@ -328,16 +328,27 @@ def declare_ring(blocks,context=None):
   """
   if context is None:
       context = sys.modules['__main__'].__dict__
+
+  def canonicalize(blocks):
+      for elt in blocks:
+          if isinstance(elt, str):
+              yield elt
+          else:
+              for subelt in elt:
+                  yield subelt
+
   blocks=list(blocks)
   n=0
+
   for b in blocks:
       if isinstance(b,str):
           n=n+1
       else:
           n=n+len(b)
-  #n=sum([len(b) for b in blocks])
-  r=Ring(n)
-  context["Variable"] = VariableFactory(r)
+ 
+  r=Ring(n, names=canonicalize(blocks))
+
+  context["internalVariable"] = VariableFactory(r)
 #  context["Monomial"] = MonomialFactory(r)
   context["r"]=r
   declare_block_scheme(blocks,context)
@@ -351,15 +362,13 @@ def declare_block_scheme(blocks,context):
       if start!=0:
           block_starts.append(start)
       if isinstance(b,str):
-        context[b] = context["Variable"](start)
-        ring.set_variable_name(start,b)
+        context[b] = context["internalVariable"](start)
+        #_cpp_set_variable_name(ring, start, b)
         start=start+1
       else:
         b.register(start,context)
-        for (pos,name) in enumerate(b):
-            ring.set_variable_name(start+pos,name)
-        
-        
+        #for (pos,name) in enumerate(b):
+        #    _cpp_set_variable_name(ring, start+pos, name)
         start=start+len(b)
     context["block_start_hints"]=block_starts
     context["number_of_declared_vars"]=start

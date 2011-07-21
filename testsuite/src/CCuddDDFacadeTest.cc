@@ -573,7 +573,7 @@ BOOST_AUTO_TEST_CASE(test_refcount) {
 BOOST_AUTO_TEST_CASE(test_getters) {
 
   dd_type diagram(poly.set());
-  BoolePolyRing other(3, 1, false);
+  BoolePolyRing other(3, 1);
   BoolePolyRing orig = ring;
   output_test_stream output;
 

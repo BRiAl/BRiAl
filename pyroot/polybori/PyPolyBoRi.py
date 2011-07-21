@@ -162,3 +162,62 @@ def weakringref_call(self):
     return None
 
 WeakRingRef.__call__ = weakringref_call
+
+_cpp_ring_init = Ring.__init__
+_cpp_change_ordering = Ring.change_ordering
+_cpp_set_variable_name = Ring.set_variable_name
+_cpp_append_block = Ring.append_block
+_cpp_ring_clone = Ring.clone
+
+def _ring_settings(ring, names, blocks):
+    for (idx, elt) in enumerate(names):
+        _cpp_set_variable_name(ring, idx, elt)
+
+    for elt in blocks:
+        _cpp_append_block(ring, elt)
+
+
+def _ring_init(self, first, ordering=None, names=[], blocks=[]):
+
+    if ordering is None:
+        _cpp_ring_init(self, first)
+    else:
+        _cpp_ring_init(self, first, ordering)
+    _ring_settings(self, names, blocks)
+
+Ring.__init__ = _ring_init
+
+def _ring_clone(self, ordering=None, names=[], blocks=[]):
+    ring = _cpp_ring_clone(self)
+    if ordering:
+        _cpp_change_ordering(ring, ordering)
+
+    _ring_settings(ring, names, blocks)
+
+    return ring
+
+
+Ring.clone = _ring_clone
+
+def _change_ordering(self, ordercode):
+    warnings.warn('Ring.change_ordering is deprectated:\
+    use Ring.clone(ordering=...) instead')
+    return _cpp_change_ordering(self, ordercode)
+Ring.change_ordering = _change_ordering
+
+def _set_variable_name(self, idx, name):
+    warnings.warn('Ring.set_variable_name is deprectated:\
+    use Ring.clone(names=...) instead')
+    return _cpp_set_variable_name(self, idx, name)    
+
+Ring.set_variable_name = _set_variable_name
+
+def _append_block(self, next_block_start):
+    warnings.warn('Ring.append_block is deprectated:\
+    use Ring.clone(blocks=...) instead')
+    return _cpp_append_block(self, next_block_start)    
+
+Ring.append_block = _append_block
+
+
+

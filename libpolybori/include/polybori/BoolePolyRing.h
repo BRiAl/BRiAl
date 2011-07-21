@@ -110,8 +110,7 @@ protected:
 public:
   /// Constructor for @em nvars variables
   explicit BoolePolyRing(size_type nvars, 
-                         ordercode_type order = lp,
-                         bool_type make_active = true);
+                         ordercode_type order = lp);
 
    /// Constructor for @em nvars variables (and given pointer to ordering)
   BoolePolyRing(size_type nvars, const order_ptr& order):
@@ -161,9 +160,6 @@ public:
 
   /// Construct ring with similiar properties (deep copy)
   self clone() const {  return self(core_ptr(new core_type(*p_core))); }
-
-  /// Make @c *this global
-  void activate();
 
   /// Change order of current ring
   void changeOrdering(ordercode_type);

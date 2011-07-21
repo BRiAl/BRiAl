@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
 
 BOOST_AUTO_TEST_CASE(test_cover_constructors_and_destructors) {
   int order_code = CTypes::dp_asc;
-  BoolePolyRing block_ring(5, order_code, false);
+  BoolePolyRing block_ring(5, order_code);
 
   BOOST_CHECK_EQUAL(block_ring.ordering().getOrderCode(), order_code);
 

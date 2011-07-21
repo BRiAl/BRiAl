@@ -192,14 +192,8 @@ def _decode_ring(code):
         ring = None
 
     if not ring:
-        ring = Ring(*data)
         varnames = decompress(varnames).split('\n')
-        for (elt, idx) in zip(varnames, xrange(len(varnames))):
-            ring.set_variable_name(idx, elt)
-
-        for elt in blocks:
-            ring.append_block(elt)
-
+        ring = Ring(*data, names=varnames, blocks=blocks)
         storage_data = (WeakRingRef(ring), code)
         _polybori_parallel_rings[identifier] = storage_data
         _polybori_parallel_rings[(ring.id(), os.getpid())] = storage_data

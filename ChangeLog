@@ -10,7 +10,10 @@ Release Name: 0.8.0
 * improved multiprocessing and pickling
 * added inSingleBlock/in_single_block to polynomials
 * for avoiding name clashes Cudd's headers install into include/polybori/cudd 
-
+* python level: deprecated Ring changing routines change_ordering,
+  set_variable_names, append_block, use extended arguments of Ring.__init__() 
+  and Ring.clone().
+	
 Release Name: 0.7.1:
 * Fixed building on Solaris with gcc 4.6.0 (broken default flags)
 * Spec file for RPM updated (added PolyGUI, splitted doc and python

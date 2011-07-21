@@ -8,8 +8,7 @@ def fglm(I, from_ring, to_ring):
     computation,
     >>> r=declare_ring(['x','y','z'],dict())
     >>> old_ring = r
-    >>> new_ring = old_ring.clone()
-    >>> new_ring.change_ordering(dp_asc)
+    >>> new_ring = old_ring.clone(ordering=dp_asc)
     >>> (x,y,z) = [new_ring.variable(i) for i in xrange(3)]
     >>> ideal=[x+z, y+z]# lp Groebner basis
     >>> list(fglm(ideal, old_ring, new_ring))
@@ -39,8 +38,8 @@ def m_k_plus_one(completed_elements, variables):
     >>> variables=BooleSet([x(1),x(2),x(3)])
     >>> m_k_plus_one(s,variables)
     x(2)*x(3)
-    >>> r.change_ordering(dp_asc)
-    >>> m_k_plus_one(s,variables)
+    >>> r2 = r.clone(ordering=dp_asc)
+    >>> m_k_plus_one(r2.coerce(s).set(),r2.coerce(variables).set())
     x(1)*x(3)
     """
     return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]

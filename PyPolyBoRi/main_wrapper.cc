@@ -160,7 +160,6 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("variable", &BoolePolyRing::variable, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
-    .def("set",&BoolePolyRing::activate, "Activate current Ring")
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def("clone", &BoolePolyRing::clone, "copies also variable name vector in a \
     new one, so somewhat deeper copy function")

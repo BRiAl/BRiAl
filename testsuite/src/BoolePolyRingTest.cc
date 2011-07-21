@@ -38,31 +38,30 @@ struct Fring {
 class InheritedFromRing:
   public BoolePolyRing {
 public:
-  InheritedFromRing (size_type num, ordercode_type order, bool active):
-    BoolePolyRing(num, order, active) {}
+  InheritedFromRing (size_type num, ordercode_type order, bool):
+    BoolePolyRing(num, order) {}
 };
 BOOST_FIXTURE_TEST_SUITE(BoolePolyRingTestSuite, Fring )
 
 BOOST_AUTO_TEST_CASE(test_constructors) {
 
   BOOST_TEST_MESSAGE( "Constructors..." );
-  ring_type ring1(0,COrderEnums::lp,false);
+  ring_type ring1(0,COrderEnums::lp);
   BOOST_CHECK_EQUAL(ring1.nVariables(), 0);
   BOOST_CHECK_EQUAL(ring1.ordering().getOrderCode(), COrderEnums::lp);
 
-  ring_type ring2(1,COrderEnums::dlex,false);
+  ring_type ring2(1,COrderEnums::dlex);
   BOOST_CHECK_EQUAL(ring2.nVariables(), 1);
   BOOST_CHECK_EQUAL(ring2.ordering().getOrderCode(), COrderEnums::dlex);
-  ring_type ring3(2,COrderEnums::dp_asc,true);
+  ring_type ring3(2,COrderEnums::dp_asc);
   BOOST_CHECK_EQUAL(ring3.nVariables(), 2);
   BOOST_CHECK_EQUAL(ring3.ordering().getOrderCode(), COrderEnums::dp_asc);
-  ring_type ring4(3,COrderEnums::block_dlex,false);
+  ring_type ring4(3,COrderEnums::block_dlex);
   BOOST_CHECK_EQUAL(ring4.nVariables(), 3);
   BOOST_CHECK_EQUAL(ring4.ordering().getOrderCode(), COrderEnums::block_dlex);
-  ring_type ring5(4,COrderEnums::block_dp_asc,false);
+  ring_type ring5(4,COrderEnums::block_dp_asc);
   BOOST_CHECK_EQUAL(ring5.nVariables(), 4);
   BOOST_CHECK_EQUAL(ring5.ordering().getOrderCode(), COrderEnums::block_dp_asc);
-  ring5.activate();
   
   ring_type ring11(0, get_ordering(COrderEnums::lp)); 
   BOOST_CHECK_EQUAL(ring11.nVariables(), 0);
@@ -81,7 +80,6 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   ring_type ring15(4,get_ordering(COrderEnums::block_dp_asc));
   BOOST_CHECK_EQUAL(ring15.nVariables(), 4);
   BOOST_CHECK_EQUAL(ring15.ordering().getOrderCode(), COrderEnums::block_dp_asc);
-  ring15.activate();
 
   // Mainly vor coverage
   InheritedFromRing alsoring(1, 2, true);
@@ -92,9 +90,8 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
 
 BOOST_AUTO_TEST_CASE(test_variables) {
 
-  ring_type ring(3, 0, false);
+  ring_type ring(3, 0);
   ring_type empty(0);
-  ring.activate();
   ring_type defaultr(ring);
 
   BOOST_TEST_MESSAGE( "nVariables, getVariableName, setVariableName" );
@@ -171,9 +168,8 @@ BOOST_AUTO_TEST_CASE(test_variables) {
 
 BOOST_AUTO_TEST_CASE(test_ordering) {
 
-  ring_type ring(3, 0, false);
+  ring_type ring(3, 0);
   ring_type empty(0);
-  ring.activate();
   ring_type defaultr(ring);
 
   BOOST_TEST_MESSAGE( "ordering, changeOrdering" );
@@ -258,9 +254,8 @@ BOOST_AUTO_TEST_CASE(test_ordering) {
 
 BOOST_AUTO_TEST_CASE(test_dd_type) {
 
-  ring_type ring(3, 0, false);
+  ring_type ring(3, 0);
   ring_type empty(0);
-  ring.activate();
   ring_type defaultr(ring);
   ring.setVariableName(0, "x");
   ring.setVariableName(1, "y");
@@ -344,9 +339,8 @@ BOOST_AUTO_TEST_CASE(test_dd_type) {
 
 BOOST_AUTO_TEST_CASE(test_coerce) {
   ring_type empty(0);
-  ring_type small(2,0,false);
-  ring_type ring(4, 0, false);
-  ring.activate();
+  ring_type small(2,0);
+  ring_type ring(4, 0);
   ring_type defaultr(ring);
   ring.setVariableName(0, "*");
   ring.setVariableName(1, "ö");
@@ -404,8 +398,8 @@ BOOST_AUTO_TEST_CASE(test_coerce) {
 BOOST_AUTO_TEST_CASE(test_hash) {
 
   BOOST_TEST_MESSAGE( "hash" );
-  ring_type ring1(3, 0, false);
-  ring_type ring2(3, 0, false);
+  ring_type ring1(3, 0);
+  ring_type ring2(3, 0);
   BOOST_CHECK_NE(ring1.hash(), ring2.hash()); // Not equal because different
                                               // instances (but of likewise rings)
   ring_type defaultr(ring2);
@@ -413,15 +407,15 @@ BOOST_AUTO_TEST_CASE(test_hash) {
   defaultr = ring1;
 
   BOOST_CHECK_EQUAL(ring1.hash(), defaultr.hash());
-  ring_type empty1(0, 0, false);
-  ring_type empty2(0, 0, false);
+  ring_type empty1(0, 0);
+  ring_type empty2(0, 0);
   BOOST_CHECK_NE(empty1.hash(), empty2.hash());// Not equal because different
                                 // instances (but of likewise rings)
 }
 
 BOOST_AUTO_TEST_CASE(test_print) {
 
-  ring_type r(1, CTypes::lp, false);
+  ring_type r(1, CTypes::lp);
   output_test_stream output;
   output << r;
   BOOST_CHECK(!output.is_empty());

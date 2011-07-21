@@ -43,7 +43,7 @@ USING_NAMESPACE_PBORI
 struct Fpoly {
   typedef BoolePolynomial poly_type;
   Fpoly(const BoolePolyRing& input_ring =
-        BoolePolyRing(100, BoolePolyRing::lp, true)):
+        BoolePolyRing(100, BoolePolyRing::lp)):
     ring(input_ring), 
     bset(input_ring), 
     bexp(BooleExponent().change(1)),
@@ -505,7 +505,7 @@ template <int order>
 struct OrderGenFix {
   typedef BoolePolynomial poly_type;
   typedef poly_type::ring_type ring_type;
-  OrderGenFix(const ring_type& input_ring = ring_type(100, order, true)) :
+  OrderGenFix(const ring_type& input_ring = ring_type(100, order)) :
     ring(input_ring), 
     a(input_ring),b(input_ring),c(input_ring),d(input_ring),e(input_ring),f(input_ring),g(input_ring),h(input_ring), poly1(ring), poly2(ring)  {
 
@@ -1022,7 +1022,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
 BOOST_AUTO_TEST_CASE(test_incompatible) {
 
   BOOST_TEST_MESSAGE( "Incompatible operands..." ); 
-  BoolePolyRing other_ring(5, CTypes::lp, false);
+  BoolePolyRing other_ring(5, CTypes::lp);
   BoolePolynomial other_poly = other_ring.variable(2);
 
   BOOST_CHECK_THROW((x*y + z) +other_poly, std::exception);
@@ -1075,5 +1075,60 @@ BOOST_AUTO_TEST_CASE(test_inSingleBlock) {
 
 }
 
+
+class mymap:
+  public std::map<int, BoolePolynomial> {
+
+public:
+  mymap(const BoolePolynomial& zero): 
+     std::map<int, BoolePolynomial>(), m_zero(zero) {}
+
+  BoolePolynomial& operator[](const key_type& idx) {
+    iterator iter = find(idx);
+    if (iter == end())
+      iter = insert(value_type(idx, m_zero)).first;
+    return (*iter).second;
+  }
+
+  const BoolePolynomial& operator[](const key_type& idx) const {
+    const_iterator iter = find(idx);
+    if (iter == end())
+      return m_zero;
+    return (*iter).second;
+  }
+
+private:
+  BoolePolynomial m_zero;
+};
+
+BOOST_AUTO_TEST_CASE(test_exp) {
+
+  BoolePolyRing ring(17);
+  typedef std::map<int, BoolePolynomial> map_type;
+  map_type mapping;
+
+  mapping.insert(std::make_pair(3, ring.variable(5) + ring.variable(3)));
+
+  for (unsigned int idx = 0 ; idx <10; ++idx) {
+    map_type::iterator iter = mapping.find(idx);
+    BoolePolynomial result(iter == mapping.end()? 
+			   BoolePolynomial(0,ring): iter->second);
+    std::cerr << idx << ": "<< result <<std::endl;
+    std::cerr.flush();
+  }
+
+  // move convenient
+  mymap mymapping(ring.zero());
+  mymapping[3] = ring.variable(5) + ring.variable(7);
+
+  for (unsigned int idx = 0 ; idx <10; ++idx) {
+    std::cerr << idx << ": "<< mymapping[idx] <<std::endl;
+  }
+
+  std::cout << "subst" << 
+    substitute_variables(ring, mymapping, 
+			 ring.variable(3) + ring.variable(11) + 1) <<
+    std::endl;
+}
 
 BOOST_AUTO_TEST_SUITE_END()

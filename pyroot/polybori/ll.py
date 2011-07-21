@@ -159,17 +159,15 @@ def eliminate_ll_ranked(ll_system, to_reduce,
   #dict([(v,k) for (k,v) in enumerate(sorted_var_indices)])
   var_names=[str(v) for v in sorted_vars]
   try:
-      to_ring.set()
       for (i, v) in enumerate(sorted_vars):
         assert var_names[i]==str(v), (var_names[i], v, var_index(v), i)
-        to_ring.set_variable_name(i, var_names[i] + "TO")
+      #        _set_variable_name(to_ring, i, var_names[i] + "TO")
   finally:
-      from_ring.set()
+      pass
   try:
-      to_ring.set()
       map_from_vec=construct_map_by_indices(to_ring, map_from_indices)
   finally:
-      from_ring.set()
+      pass
   map_back_vec=construct_map_by_indices(from_ring, map_back_indices)
   def map_from(p):
       res=substitute_variables(to_ring, map_from_vec, p)
@@ -177,7 +175,6 @@ def eliminate_ll_ranked(ll_system, to_reduce,
       return res
   def map_back(p):
       return substitute_variables(from_ring, map_back_vec, p)
-  to_ring.set()
   try:
       ll_opt_encoded=ll_encode([map_from(p) for p in ll_system],
             prot=False,
@@ -187,5 +184,5 @@ def eliminate_ll_ranked(ll_system, to_reduce,
           return map_back(reduction_function(map_from(p), ll_opt_encoded))
       opt_eliminated=[llnf(p) for p in to_reduce]
   finally:
-      from_ring.set()
+      pass
   return (llnf, opt_eliminated)
