@@ -456,7 +456,7 @@ if not env.GetOption('clean'):
 
         env.Append(CPPPATH=[PBPath('include'), GBPath('include')])
         env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-        env.Append(LIBPATH=["polybori","groebner"])
+        env.Append(LIBPATH=["libpolybori","groebner"])
         env.Prepend(LIBS = ["m"])
 
 
@@ -519,7 +519,8 @@ else:
 
 # end of not cleaning
 
-env.Clean('.', glob('*.pyc') + ['config.log'] )
+env.Clean('.', glob('*.pyc') + Split("""config.log 
+.sconsign.dblite .sconf_temp""") )
 
 have_pydoc = env['HAVE_PYDOC']
 
@@ -1410,4 +1411,3 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
-
