@@ -676,7 +676,7 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(GBPath(libgb_name), list(gb_shared))
+libgbShared = slib(GBPath(libgb_name), list(gb_shared) + libpbShared)
 #DefaultBuild(libgbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('include')]
