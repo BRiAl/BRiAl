@@ -242,9 +242,11 @@ opts.Add(BoolVariable('SHLIBVERSIONING',
 opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', sonameprefix(defaultenv))
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
+
 opts.Add('SHLINKFLAGS',
          'Shared libraries link flags.', defaultenv['SHLINKFLAGS'] +
-         ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
+         ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'] +
+         ['${_dynmodule_flags(__env__)}'] )
 
 opts.Add('SHLIBVERSIONSUFFIX',
          'Shared libraries suffix for library versioning.',
@@ -340,6 +342,18 @@ def _sonamecmd(prefix, target, suffix, env = env):
         return ''
     
 env['_sonamecmd'] = _sonamecmd
+
+# dynamic module flags
+def _dynmodule_flags(env):
+    """Creates special flags for dynamic libraries, in particular on darwin."""
+    if env['PLATFORM'] == "darwin":
+        return "-Wl,-undefined -Wl,dynamic_lookup"
+    else:
+        return ""
+
+    
+env['_dynmodule_flags'] = _dynmodule_flags
+
 
 # config.h generator
 def config_h_build(target, source, env):
