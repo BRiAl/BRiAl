@@ -623,11 +623,7 @@ def VersionatedSharedLibrary(*args, **kwds):
 
     kwds['SHLIBSUFFIX'] = env.subst('$SHLIBVERSIONSUFFIX')
 
-    if env['PLATFORM'] == "darwin":
-        sharedlib = env.LoadableModule
-    else:
-        sharedlib = env.SharedLibrary
-
+    sharedlib = env.SharedLibrary
     return sharedlib(*args, **kwds)
 
 slib = env.SharedLibrary
