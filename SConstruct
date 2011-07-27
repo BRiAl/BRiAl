@@ -127,6 +127,7 @@ if distribute or rpm_generation or deb_generation:
         return arg
 
 defaultenv = Environment()
+
 if defaultenv['PLATFORM'] == "darwin":
     defaultenv['SHCCFLAGS'] += ["-fvisibility=hidden"]
     
@@ -140,9 +141,9 @@ def detect_linker(env):
     # Non-gnu linker or linux (could be Sun or Intel linker) will return 'posix'.
     return env['PLATFORM']
 
-def sonameprefix(env):
+def _sonameprefix(env):
     linker = detect_linker(env)
-    print linker, "linker detected!"
+    #print linker, "linker detected!"
     if env['PLATFORM']=="darwin":
         return "-Wl,-dylib_install_name -Wl,"
 
@@ -156,11 +157,17 @@ if 'dump_default' in COMMAND_LINE_TARGETS:
   print defaultenv.Dump()
 
 # Define option handle, may be changed from command line or custom.py
-opts.Add('CXX', 'C++ Compiler',  defaultenv['CXX'])
-opts.Add('CC', 'C Compiler', defaultenv['CC'])
+opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
+         repr(defaultenv['CXX']))
+opts.Add('CC', 'C Compiler (inherited from SCons with defaults:)' + \
+             repr(defaultenv['CC']))
 
-opts.Add('SHCXX', 'C++ Compiler (preparing shared libraries)', '$CXX')
-opts.Add('SHCC', 'C Compiler (preparing shared libraries)', '$CC')
+opts.Add('SHCXX', 
+         'C++ Compiler (preparing shared libraries); ' + \
+         'inherited with defaults: ' + repr(defaultenv['SHCXX']))
+opts.Add('SHCC', 
+         'C Compiler (preparing shared libraries); ' + \
+             'inherited with defaults: ' + repr(defaultenv['SHCC']))
 
 opts.Add('PYTHON', 'Python executable', "python$PROGSUFFIX")
 
@@ -194,7 +201,10 @@ else:
              "-std=c++98 -ftemplate-depth-100",
              converter = Split)
 
-opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
+opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
+             repr(defaultenv['LINKFLAGS']))
+opts.Add('STRIPLINKFLAGS', "Addtional linker flags", ['-s'])
+
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
@@ -239,14 +249,17 @@ opts.Add(BoolVariable('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
 opts.Add(BoolVariable('USE_TIMESTAMP', 'Use timestamp on distribution', True))
 opts.Add(BoolVariable('SHLIBVERSIONING',
                     'Use dlltool-style versionated shared library', True))
-opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', sonameprefix(defaultenv))
+opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', 
+         '${_sonameprefix(__env__)}')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
 
 opts.Add('SHLINKFLAGS',
-         'Shared libraries link flags.', defaultenv['SHLINKFLAGS'] +
-         ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'] +
-         ['${_dynmodule_flags(__env__)}'] )
+         'Shared libraries link flags.')
+
+opts.Add('SONAMEFLAGS',
+         'Shared libraries link flags.',
+         ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
 
 opts.Add('SHLIBVERSIONSUFFIX',
          'Shared libraries suffix for library versioning.',
@@ -279,16 +292,18 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         defaultenv = Environment(tools=tools)
 
 for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
-SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
     if defaultenv.has_key(var):
-        opts.Add(var, "inherited from SCons", defaultenv[var])
+        opts.Add(var, 
+                 "inherited from SCons with default: " + repr(defaultenv[var]))
     else:
         print "Variable", var, "not in default environment!"
 
 for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
     if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons",
-             defaultenv[flag], converter = Split)
+        opts.Add(flag, "flags inherited from SCons with default: " + \
+                     repr(defaultenv[flag]),
+                 converter = Split)
     else:
         print "Flags", flag, "not in default environment!"
 
@@ -342,6 +357,7 @@ def _sonamecmd(prefix, target, suffix, env = env):
         return ''
     
 env['_sonamecmd'] = _sonamecmd
+env['_sonameprefix'] = _sonameprefix
 
 # dynamic module flags
 def _dynmodule_flags(env):
@@ -570,6 +586,14 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 
 def shared_object(o, **kwds):
     return env.SharedObject(o, **kwds)
+
+######################################################################
+# Change some flags globally
+######################################################################
+
+env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
+env.Append(LINKFLAGS=['$STRIPLINKFLAGS'])
+
 
 ######################################################################
 # Stuff for building Cudd library
