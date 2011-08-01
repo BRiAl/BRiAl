@@ -128,10 +128,6 @@ if distribute or rpm_generation or deb_generation:
 
 defaultenv = Environment()
 
-if defaultenv['PLATFORM'] == "darwin":
-    defaultenv['SHCCFLAGS'] += ["-fvisibility=hidden"]
-    
-
 # See also: http://trac.sagemath.org/sage_trac/ticket/9872 and #6437
 def detect_linker(env):
     import re
@@ -274,9 +270,9 @@ def _shccflags(env):
         return ["-fvisibility=hidden"]
     return []
 
-opts.Add('CUSTOM_SHCCFLAGS',
-         'Additional shared libraries compile flags.',
-         ['${_shccflags(__env__)}'])
+opts.Add('MODULE_SHCCFLAGS',
+         'Additional dynamic module compile flags.',
+         ['${_shccflags(__env__)}'], converter = Split)
 
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
@@ -606,7 +602,7 @@ def shared_object(o, **kwds):
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
 env.Append(LINKFLAGS=['$STRIPLINKFLAGS'])
-env.Append(SHCCFLAGS=['$CUSTOM_SHCCFLAGS'])
+
 
 ######################################################################
 # Stuff for building Cudd library
@@ -816,6 +812,7 @@ if HAVE_PYTHON_EXTENSION:
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + python_absolute,
             LIBS = pyconf.libs + LIBS,LDMODULESUFFIX=".so",
+            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
     else:
         #print "l:", l
