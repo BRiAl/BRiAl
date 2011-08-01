@@ -156,6 +156,8 @@ def _sonameprefix(env):
 if 'dump_default' in COMMAND_LINE_TARGETS:
   print defaultenv.Dump()
 
+
+
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
          repr(defaultenv['CXX']))
@@ -266,6 +268,16 @@ opts.Add('SHLIBVERSIONSUFFIX',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
+
+def _shccflags(env):
+    if env['PLATFORM'] == "darwin":
+        return ["-fvisibility=hidden"]
+    return []
+
+opts.Add('CUSTOM_SHCCFLAGS',
+         'Additional shared libraries compile flags.',
+         ['${_shccflags(__env__)}'])
+
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
@@ -358,6 +370,7 @@ def _sonamecmd(prefix, target, suffix, env = env):
     
 env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
+env['_shccflags'] = _shccflags
 
 # dynamic module flags
 def _dynmodule_flags(env):
@@ -593,7 +606,7 @@ def shared_object(o, **kwds):
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
 env.Append(LINKFLAGS=['$STRIPLINKFLAGS'])
-
+env.Append(SHCCFLAGS=['$CUSTOM_SHCCFLAGS'])
 
 ######################################################################
 # Stuff for building Cudd library
