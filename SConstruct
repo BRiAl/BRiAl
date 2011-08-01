@@ -497,9 +497,9 @@ if not env.GetOption('clean'):
         env.Append(CPPPATH=[pyconf.incdir])
         env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
 
-        env.Append(CPPPATH=[PBPath('include'), GBPath('include')])
+        env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
         env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-        env.Append(LIBPATH=["libpolybori","groebner"])
+        env.Prepend(LIBPATH=["libpolybori","groebner"])
         env.Prepend(LIBS = ["m"])
 
 
