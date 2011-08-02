@@ -545,7 +545,7 @@ if not env.GetOption('clean'):
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
-       env['CPPPATH'] += ['M4RI']
+       env['CPPPATH'] = ['M4RI'] + env['CPPPATH']
 
     env = conf.Finish()
 
