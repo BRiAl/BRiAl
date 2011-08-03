@@ -307,7 +307,7 @@ SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
     else:
         print "Variable", var, "not in default environment!"
 
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
     if defaultenv.has_key(flag):
         opts.Add(flag, "flags inherited from SCons with default: " + \
                      repr(defaultenv[flag]),
