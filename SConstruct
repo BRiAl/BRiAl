@@ -1462,4 +1462,3 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
-env['FRAMEWORKSFLAGS']=[]
