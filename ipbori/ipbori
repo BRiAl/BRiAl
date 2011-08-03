@@ -65,5 +65,5 @@ cd ${OLDPWD}
 # installing the profile, but custom settings like IPYTHONDIR/ipythonrc are
 # still available. 
 # (For the latter, ipythonrc-polybori needs to import ipythonrc.)
-${IPYTHONPREFIX}ipython -rcfile ${IPBDIR}/ipythonrc-polybori  $@
+${IPYTHONPREFIX}ipython-2.7 -rcfile ${IPBDIR}/ipythonrc-polybori  $@
 

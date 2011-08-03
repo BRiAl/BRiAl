@@ -438,7 +438,14 @@ class PythonConfig(object):
                                          querycmd("get_config_vars()['LIBPL']"))
         self.libs = shell_output(self.python, "-c",
                                  querycmd("get_config_vars()['LIBS']"))
-        self.libs = self.libs.replace('-l','').split()
+
+        self.libs = self.libs.split()
+        if env['PLATFORM']=="darwin":
+            #workaround for -framework, CoreFoundation entries...
+            self.libs=[l for l in self.libs if l.startswith('-l')]
+        
+        self.libs=[l.replace('-l','') for l in self.libs]
+            
         self.libname = 'python' + str(self.version)
 
 pyconf = PythonConfig(env["PYTHON"])
@@ -1455,3 +1462,4 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 env.Alias('prepare-devel', devellibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
+env['FRAMEWORKSFLAGS']=[]
