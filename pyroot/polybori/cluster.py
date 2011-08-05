@@ -10,7 +10,7 @@ Copyright 2011 The PolyBoRi Team. See LICENSE file.
 import sys
 import os
 from statistics import used_vars, used_vars_set
-
+from polybori.PyPolyBoRi import Variable 
 
 def main():
     pass
@@ -31,20 +31,19 @@ class ClusterAlgorithm(object):
         
         self.number_of_used_variables_in_ideal = len(self.used_variables_ideal)
         self.used_variables_of_polynomial = dict(
-            [(p, set(p.vars_as_monomial().variables()))])
+            [(p, set(p.vars_as_monomial().variables())) for p in ideal])
         self.variables_introduction_mapping = dict()
         
-        def varset_to_tuple(s):
-            return tuple(sorted(s, key = Variable.index))
+
         
-        self.cluster = []
+        self.cluster = set()
         self.used_variables_cluster = set()
         self.build_variables_usage()
         self.initialize_variables_introduction_mapping()
 
     def build_variables_usage(self):
         self.variables_usage=dict()
-        for (p, variables) in self.used_variables_of_polynomial:
+        for (p, variables) in self.used_variables_of_polynomial.iteritems():
             for v in variables:
                 self.variables_usage.setdefault(v, []).append(p)
                 
@@ -52,25 +51,33 @@ class ClusterAlgorithm(object):
         self._build_variables_introduction_mapping()
         
     def _build_variables_introduction_mapping(self):
+        def var_set_to_tuple(s):
+            return tuple(sorted(s, key = Variable.index))
         self.variables_introduction_mapping.clear()
-        for (p, var_set) in self.used_variables_of_polynomial:
-            as_tuple = varset_to_tuple(var_set.difference(self.used_variables_cluster))
+        for (p, var_set) in self.used_variables_of_polynomial.iteritems():
+            if p in self.cluster:
+                continue
+            as_tuple = var_set_to_tuple(var_set.difference(self.used_variables_cluster))
             self.variables_introduction_mapping.setdefault(
                 as_tuple, []).append(p)
     def adjust_variables_introduction_mapping(self, introduced_variables):
         self._build_variables_introduction_mapping()
 
     def determined_enough(self):
-        return self.number_of_used_variables_in_cluster>=self.determination_modifier+len(self.cluster)
+        return self.number_of_used_variables_in_cluster+self.determination_modifier<=len(self.cluster)
 
     def find_cluster(self):
         p = self.initial_choice()
-        self.cluster = []
+        self.cluster = set()
         self.add_polynomial_to_cluster(p)
+        while not self.determined_enough():
+            self.increase_cluster()
+        return list(self.cluster)
+        
     
     def add_polynomial_to_cluster(self, p):
-        self.cluster.append(p)
-        self.used_variables_cluster = used_vars_set(cluster)
+        self.cluster.add(p)
+        self.used_variables_cluster = set(used_vars_set(self.cluster).variables())
         self.number_of_used_variables_in_cluster = len(self.used_variables_cluster)
         self.adjust_variables_introduction_mapping(self.used_variables_of_polynomial[p])
         
@@ -78,33 +85,24 @@ class ClusterAlgorithm(object):
         def max_key(entry):
             (entry_variable, entry_polynomials)=entry
             return len(entry_polynomials)
-        (variable, polynomials)=max(self.variables_usage, key=max_key)
+        (variable, polynomials)=max(self.variables_usage.iteritems(), key=max_key)
         def min_key(p):
             return len(self.used_variables_of_polynomial[p])
         return min(polynomials, key=min_key)
     def increase_cluster(self):
         introduced_variables_possibilities=self.variables_introduction_mapping.keys()
         introduced_variables=min(introduced_variables_possibilities, key=len)
-        polynomials=variables_introduction_mapping[introduced_variables]
+        polynomials=self.variables_introduction_mapping[introduced_variables]
         assert len(polynomials)>0
         for p in polynomials:
             self.add_polynomial_to_cluster(p)
+        if len(self.cluster)==len(self.ideal):
+            raise ClusterAlgorithmFailed
+        self.adjust_variables_introduction_mapping(introduced_variables)
 
 def find_cluster(ideal):
-    def initial_choice(ideal):
-        return ideal[0]
-
-    def increase_cluster():
-
-    
-    if len(ideal) == 0:
-        return None
-    ring = ideal[0].ring()
-
-    p = initial_choice(ideal)
-    cluster = [p]
-    while not determined_enough():
-        increase_cluster()
+    algorithm=ClusterAlgorithm(ideal)
+    return algorithm.find_cluster()
     
 
 if __name__ == '__main__':
