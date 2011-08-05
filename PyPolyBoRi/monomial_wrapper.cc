@@ -77,6 +77,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def(self*int())
   .def(self/self)
   .def(self/int())
+  .def("__floordiv__", (BooleMonomial (*)(const BooleMonomial&, const BooleMonomial&)  )operator/)
   .def("navigation", nav)
   .def("vars_as_monomial",&used_var, 
        "Variables occurring in Polynomial")
