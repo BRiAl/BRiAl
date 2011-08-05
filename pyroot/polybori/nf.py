@@ -43,7 +43,7 @@ def build_and_print_matrices(v,strat):
                 i=strat.select(m)
                 if i>=0:
                     p2=strat[i]
-                    p2=p2*(m/p2.lead())
+                    p2=p2*(m//p2.lead())
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
@@ -117,7 +117,7 @@ def build_and_print_matrices_deg_colored(v,strat):
                 i=strat.select(m)
                 if i>=0:
                     p2=strat[i]
-                    p2=p2*(m/p2.lead())
+                    p2=p2*(m//p2.lead())
                     v.append(p2)
         polys_in_mat.append(p)
         treated=treated.union(p.set())
@@ -180,7 +180,7 @@ def high_probability_polynomials_trick(p, strat):
     
     lead=p.lead()
     for v in lead.variables():
-        variable_selection=lead/v
+        variable_selection=lead//v
         vars_reversed=reversed(list(variable_selection.variables()))
         #it's just a way to loop over the cartesian product
         for assignment in variable_selection.divisors():
