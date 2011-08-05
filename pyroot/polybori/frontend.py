@@ -1,15 +1,7 @@
+# Import basic functionality
+from polybori import *
 from polybori.blocks import declare_ring as orig_declare_ring
-
-def ternary_declare_ring(blocks, context, global_context):
-    """This is just a wrapper fpr declare_ring, which selects context, if it is
-    not None and global_context otherwise."""
-    if context is None:
-        context = global_context
-        
-    return orig_declare_ring(blocks, context)
-
-
-
+from os import environ as env, path as os_path
 
 def block_scheme_names(blocks):
     """Helper for Singular interface."""
@@ -20,7 +12,9 @@ def block_scheme_names(blocks):
 
     return context.keys()
 
-def copyright():
+ipbname = 'ipbori' 
+
+def polybori_copyright():
     print """Copyright (c) 2007-2011 by The PolyBoRi Team.
   Michael Brickenstein (MFO)  brickenstein@mfo.de
   Alexander Dreyer (ITWM) alexander.dreyer@itwm.fraunhofer.de
@@ -36,7 +30,24 @@ PolyBoRi incorporates the following works:
   The M4RI Library - http://m4ri.sagemath.org
     Copyright (C) 2007-2010, Martin Albrecht, Gregory Bard, and The M4RI Team"""
 
-def license():
+def polybori_license():
     print """ipbori and the PolyBoRi framework are licensed under the terms of
 the GNU General Public License (GPL) version 2 or later.
 See http://www.gnu.org/licenses/ for details."""
+
+def polybori_start(global_context):
+    def declare_ring(blocks, context=None):
+        if context is None:
+            context = global_context
+        
+        return orig_declare_ring(blocks, context)
+    declare_ring.__doc__ = orig_declare_ring.__doc__
+    global_context["declare_ring"] = declare_ring
+
+    print ipbname + """ -- PolyBoRi's interactive command line tool
+Type "polybori_copyright()" or "polybori_license()" for more information."""
+
+# Here come the defaults
+r = Ring(10000)
+x = VariableFactory(r)
+

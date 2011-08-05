@@ -1365,7 +1365,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                                  env['PYINSTALLPREFIX'])
     
     for instfile in [ IPBPath('ipbori') ]:
-        FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
     for instfile in [ GUIPath('PolyGUI') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
@@ -1431,6 +1431,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
     env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
                                       env['PYINSTALLPREFIX'])       
+    env['PBORI_SITE'] = relpath(expand_repeated(InstPath(),env),
+                                      env['PYINSTALLPREFIX'])
 
     for instfile in [IPBPath('ipythonrc-polybori') ] :
         FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))

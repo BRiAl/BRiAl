@@ -21,20 +21,6 @@
 # PolyBoRi path (either set by wrapper or assumed to be the parent directory)
 # Note: change "execute pbdir = '..'", if you manually install this profile
 execute from os import environ as env
-execute from os import path as os_path
-execute pbdir = '..'
-execute if 'PBDIR' in env.keys(): pbdir = env['PBDIR']
-
-execute ipbdir = os_path.join(pbdir, 'ipbori')
-execute if 'IPBDIR' in env.keys(): ipbdir = env['IPBDIR']
-
-                              
-# Get program name and prompt something
-execute ipbname = 'ipbori'
-execute if 'IPBNAME' in env.keys(): ipbname = env['IPBNAME']
-execute print ipbname, "-- PolyBoRi's interactive command line tool"
-execute print 'Type "polybori_copyright()" or "polybori_license()"',
-execute print 'for more information.\n'
 
 # Uncomment, if we want to skip the banner 
 # banner 0
@@ -42,26 +28,7 @@ execute print 'for more information.\n'
 # Include base config from current IPYTHONDIR and only add some extras
 include ipythonrc
 
-# Append the PolyBoRi application directory to current search path
-execute from sys import path as search_path
-
-# The following string may be changed by install. If not installed, use default.
-execute relpyroot = '$RELATIVEPYPREFIX'
-execute if relpyroot[0] == '$': relpyroot = '../pyroot'
-execute pyroot = os_path.join(ipbdir, relpyroot)
-execute search_path.insert(0, pyroot)
-
-# Import basic functionality
-execute from polybori import *
-
-# Get special stuff for this user interface
-execute from polybori.frontend import ternary_declare_ring as _decring
-execute from polybori.frontend import copyright as polybori_copyright
-execute from polybori.frontend import license as polybori_license
-
-# Simplify ring declaration
-execute def declare_ring(arg1, arg2=None): return _decring(arg1,arg2,globals())
-
-# Here come the defaults
-execute r = Ring(10000)
-execute x = VariableFactory(r)
+# execute PolyBoRi settings
+execute from os import environ as env
+execute exec(env["IPBORI_INIT_CMDS"])
+execute print ''
