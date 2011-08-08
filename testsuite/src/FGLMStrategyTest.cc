@@ -69,6 +69,24 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("y + x, z + x, "));
 
 }
+BOOST_AUTO_TEST_CASE(test_copy_constructor) {
+  BoolePolyRing other(ring.clone());
+  other.changeOrdering(CTypes::dp_asc);
+
+  PolynomialVector ideal;
+  ideal.push_back(x+z);
+  ideal.push_back(y+z);
+
+  FGLMStrategy strat0(ring, other, ideal);
+  FGLMStrategy strat(strat0);
+  ideal = strat.main();
+
+  output_test_stream output;
+
+  std::copy(ideal.begin(), ideal.end(), 
+	    std::ostream_iterator<BoolePolynomial>(output, ", ") );
+  BOOST_CHECK(output.is_equal("y + x, z + x, "));
+}
 
 BOOST_AUTO_TEST_CASE(test_assign) {
   BoolePolyRing empty(1);
