@@ -48,6 +48,29 @@ public:
         }
     }
     typedef std::vector<idx_type> IndexVector;
+
+
+    FGLMStrategy(const FGLMStrategy& rhs): 
+      vars(rhs.vars), varietySize(rhs.varietySize), 
+      standardMonomialsFrom(rhs.standardMonomialsFrom),
+      standardMonomialsFromVector(rhs.standardMonomialsFromVector),
+      leadingTermsFrom(rhs.leadingTermsFrom), 
+      varsSet(rhs.varsSet), varsVector(rhs.varsVector), 
+      gbFrom(rhs.gbFrom), 
+      edgesUnitedVerticesFrom(rhs.edgesUnitedVerticesFrom),
+      from(rhs.from), to(rhs.to), 
+      ring2Index(rhs.ring2Index), index2Ring(rhs.index2Ring),
+      rowStartingWithIndex(rhs.rowStartingWithIndex),
+      nVariables(rhs.nVariables), transposed(rhs.transposed),
+      tableXRowYIsMonomialFromWithIndex(rhs.tableXRowYIsMonomialFromWithIndex),
+      standardMonomialsFrom2Index(rhs.standardMonomialsFrom2Index),
+      monomial2MultiplicationMatrix(rhs.monomial2MultiplicationMatrix), 
+      monomial2MultiplicationMatrixRowIndex(rhs.monomial2MultiplicationMatrixRowIndex), 
+      multiplicationTables(rhs.multiplicationTables),
+      addTheseLater(rhs.addTheseLater),
+      rowIsStandardMonomialToWithIndex(rhs.rowIsStandardMonomialToWithIndex), 
+      standardExponentsFrom2Index(rhs.standardExponentsFrom2Index) {}
+
 private:
     bool prot;
     Monomial vars;
