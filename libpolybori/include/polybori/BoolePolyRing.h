@@ -108,8 +108,8 @@ protected:
     p_core(rhs.operator->()) { assert(p_core != NULL); }
 
 public:
-  /// Constructor for @em nvars variables
-  explicit BoolePolyRing(size_type nvars, 
+  /// Constructor for @em nvars variables and order code
+  explicit BoolePolyRing(size_type nvars = 1, 
                          ordercode_type order = lp);
 
    /// Constructor for @em nvars variables (and given pointer to ordering)
