@@ -10,6 +10,7 @@ Release Name: 0.8.0
 * improved multiprocessing and pickling
 * added inSingleBlock/in_single_block to polynomials
 * for avoiding name clashes Cudd's headers install into include/polybori/cudd 
+* Introducing WeakRingPtr for managing weak references to rings on C++ level
 * python level: deprecated Ring changing routines change_ordering,
   set_variable_names, append_block, use extended arguments of Ring.__init__() 
   and Ring.clone().
