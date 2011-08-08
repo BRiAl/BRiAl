@@ -21,7 +21,7 @@ BEGIN_NAMESPACE_PBORIGB
 typedef std::vector<Polynomial> poly_vec;
 
 class FGLMStrategy{
-  FGLMStrategy(); /* Never use this! */
+
 public:
     typedef BoolePolyRing ring_with_ordering_type;
 
