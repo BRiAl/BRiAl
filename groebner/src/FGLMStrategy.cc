@@ -885,6 +885,7 @@ FGLMStrategy::operator=(const FGLMStrategy& rhs) {
   standardExponentsFrom2Index = rhs.standardExponentsFrom2Index;
   
   setupMultiplicationTables();
+  return *this;
 }
 
 
