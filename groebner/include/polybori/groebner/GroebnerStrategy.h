@@ -35,20 +35,74 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 class GroebnerStrategy{
 public:
-  bool containsOne() const{
-    return generators.leadingTerms.ownsOne();
-  }
-  
+  /// copy constructor
   GroebnerStrategy(const GroebnerStrategy& orig);
+
+  /// Construct from a ring
+  GroebnerStrategy(const BoolePolyRing& input_ring):
+    generators(input_ring), r(input_ring), pairs(*this, input_ring),
+    optRedTailInLastBlock(input_ring.ordering().isBlockOrder()),
+    optLazy(!input_ring.ordering().isDegreeOrder()),
+
+    cache(new CacheManager()), matrixPrefix("mat"),
+    chainCriterions(0), easyProductCriterions(0), extendedProductCriterions(0),
+
+    optDrawMatrices(false), optModifiedLinearAlgebra(false),
+    optDelayNonMinimals(true), enabledLog(false),
+    variableChainCriterions(0),  optExchange(true), optHFE(false),
+    optStepBounded(false), optAllowRecursion(true),
+    optLinearAlgebraInLastBlock(true),
+    reduceByTailReduced(false) {
+
+    generators.llReductor = BooleSet(input_ring.one());
+  }
+
+  bool containsOne() const { return generators.leadingTerms.ownsOne(); }
+  
   std::vector<Polynomial>  minimalizeAndTailReduce();
   std::vector<Polynomial>  minimalize();
-  int addGenerator(const BoolePolynomial& p, bool is_impl=false, std::vector<int>* impl_v=NULL);
+
+  int addGenerator(const BoolePolynomial& p, 
+                   bool is_impl=false, std::vector<int>* impl_v=NULL);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);  
   void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
+
   bool variableHasValue(idx_type i);
   void llReduceAll();
   void treat_m_p_1_case(const PolyEntry& e);
+
+  Polynomial nextSpoly(){ return pairs.nextSpoly(generators);  }
+  void addNonTrivialImplicationsDelayed(const PolyEntry& p);
+  void propagate(const PolyEntry& e); 
+  void propagate_step(const PolyEntry& e, std::set<int> others);
+
+  void log(const char* c){ if (enabledLog) std::cout<<c<<std::endl; }
+
+  Polynomial redTail(const Polynomial& p);
+  std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
+  std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
+
+  Polynomial nf(Polynomial p) const;
+  void symmGB_F2();
+  int suggestPluginVariable();
+  std::vector<Polynomial> allGenerators();
+
+protected:
+  std::vector<Polynomial> treatVariablePairs(int s);
+  void treatNormalPairs(int s,MonomialSet intersecting_terms,
+                        MonomialSet other_terms, MonomialSet ext_prod_terms);
+  void addVariablePairs(int s);
+  std::vector<Polynomial>
+  add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp,
+                  const Exponent& used_variables, int s, bool include_orig);
+  std::vector<Polynomial>
+  addHigherImplDelayedUsing4(int s,const LiteralFactorization& literal_factors,
+                             bool include_orig);
+      
+public:
+
+  /// @name public available parameters
   PairManager pairs;
   bool reduceByTailReduced;
   ReductionStrategy generators;
@@ -78,73 +132,6 @@ public:
   bool optStepBounded;
   bool optLinearAlgebraInLastBlock;
   bool optRedTailInLastBlock;
-
-
-	GroebnerStrategy(const BoolePolyRing& input_ring):
-  generators(input_ring),
-        r(input_ring), pairs(*this, input_ring), cache(new CacheManager()) {
-
-        optDrawMatrices=false;
-        optModifiedLinearAlgebra=false;
-        matrixPrefix="mat";
-	  optDelayNonMinimals=true;
-		
-		chainCriterions=0;
-		enabledLog=false;
-        
-        //if (this->r.ordering().isDegreeOrder())
-		//    optBrutalReductions=false;
-		//else
-        
-		variableChainCriterions=0;
-		extendedProductCriterions=0;
-		easyProductCriterions=0;
-		
-		optExchange=true;
-        optHFE=false;
-		optStepBounded=false;
-		optAllowRecursion=true;
-        optLinearAlgebraInLastBlock=true;
-        if (this->r.ordering().isBlockOrder())
-            optRedTailInLastBlock=true;
-        else 
-            optRedTailInLastBlock=false;
-
-		if (this->r.ordering().isDegreeOrder())
-			optLazy=false;
-		else
-			optLazy=true;
-		reduceByTailReduced=false;
-		generators.llReductor=BooleSet(input_ring.one());
-	}
-
-    Polynomial nextSpoly(){
-    return pairs.nextSpoly(generators);
-  }
-  void addNonTrivialImplicationsDelayed(const PolyEntry& p);
-  void propagate(const PolyEntry& e); 
-  void propagate_step(const PolyEntry& e, std::set<int> others);
-  void log(const char* c){
-      if (this->enabledLog)
-        std::cout<<c<<std::endl;
-  }
-
-  Polynomial redTail(const Polynomial& p);
-  std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
-  std::vector<Polynomial> faugereStepDense(const std::vector<Polynomial>&);
-  //std::vector<Polynomial> faugereStepDenseModified(const std::vector<Polynomial>&);
-  Polynomial nf(Polynomial p) const;
-  void symmGB_F2();
-  int suggestPluginVariable();
-  std::vector<Polynomial> allGenerators();
-  protected:
-      std::vector<Polynomial> treatVariablePairs(int s);
-      void treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms);
-      void addVariablePairs(int s);
-      std::vector<Polynomial> add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, const Exponent& used_variables,int s, bool include_orig);
-      std::vector<Polynomial> addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig);
-      
-      
 };
 
 END_NAMESPACE_PBORIGB
