@@ -16,7 +16,7 @@ void export_fglm(){
     const BooleEnv::ring_type& , const std::vector<Polynomial>&  >
     constructor_type;
 
-  boost::python::class_<FGLMStrategy > ("FGLMStrategy", "FGLM Strategy",
+  boost::python::class_<FGLMStrategy, boost::noncopyable > ("FGLMStrategy", "FGLM Strategy",
                                         constructor_type())
     .def("main", &FGLMStrategy::main);
 

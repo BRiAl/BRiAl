@@ -22,6 +22,14 @@ typedef std::vector<Polynomial> poly_vec;
 
 class FGLMStrategy{
 
+
+    /// Copy constructor (forbitten, cannot be copied, used smart pointer or
+    /// reference, if you need to return by value)
+    FGLMStrategy(const FGLMStrategy& rhs);
+
+    /// Assignment (forbitten, see above)
+    FGLMStrategy& operator=(const FGLMStrategy& rhs);
+
 public:
     typedef BoolePolyRing ring_with_ordering_type;
 
@@ -49,29 +57,6 @@ public:
     }
     typedef std::vector<idx_type> IndexVector;
 
-    /// Copy constructor
-    FGLMStrategy(const FGLMStrategy& rhs);
-
-    /// Assignment
-    FGLMStrategy& operator=(const FGLMStrategy& rhs);
-      standardMonomialsFrom(rhs.standardMonomialsFrom),
-      standardMonomialsFromVector(rhs.standardMonomialsFromVector),
-      leadingTermsFrom(rhs.leadingTermsFrom), 
-      varsSet(rhs.varsSet), varsVector(rhs.varsVector), 
-      gbFrom(rhs.gbFrom), 
-      edgesUnitedVerticesFrom(rhs.edgesUnitedVerticesFrom),
-      from(rhs.from), to(rhs.to), 
-      ring2Index(rhs.ring2Index), index2Ring(rhs.index2Ring),
-      rowStartingWithIndex(rhs.rowStartingWithIndex),
-      nVariables(rhs.nVariables), transposed(rhs.transposed),
-      tableXRowYIsMonomialFromWithIndex(rhs.tableXRowYIsMonomialFromWithIndex),
-      standardMonomialsFrom2Index(rhs.standardMonomialsFrom2Index),
-      monomial2MultiplicationMatrix(rhs.monomial2MultiplicationMatrix), 
-      monomial2MultiplicationMatrixRowIndex(rhs.monomial2MultiplicationMatrixRowIndex), 
-      multiplicationTables(rhs.multiplicationTables),
-      addTheseLater(rhs.addTheseLater),
-      rowIsStandardMonomialToWithIndex(rhs.rowIsStandardMonomialToWithIndex), 
-      standardExponentsFrom2Index(rhs.standardExponentsFrom2Index) {}
 
 private:
     bool prot;

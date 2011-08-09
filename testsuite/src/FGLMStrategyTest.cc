@@ -69,6 +69,9 @@ BOOST_AUTO_TEST_CASE(test_constructors) {
   BOOST_CHECK(output.is_equal("y + x, z + x, "));
 
 }
+
+/// @note It is intended, that the following two tests do not compile!
+#ifdef FGLMStrategyTest_compile_all_
 BOOST_AUTO_TEST_CASE(test_copy_constructor) {
   BoolePolyRing other(ring.clone());
   other.changeOrdering(CTypes::dp_asc);
@@ -109,5 +112,6 @@ BOOST_AUTO_TEST_CASE(test_assign) {
 	    std::ostream_iterator<BoolePolynomial>(output, ", ") );
   BOOST_CHECK(output.is_equal("y + x, z + x, "));
 }
+#endif
 
 BOOST_AUTO_TEST_SUITE_END()
