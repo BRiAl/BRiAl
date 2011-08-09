@@ -15,6 +15,7 @@ Release Name: 0.8.0
   set_variable_names, append_block, use extended arguments of Ring.__init__() 
   and Ring.clone().
 * ipython 0.11 compatibility established (Hint from the Fedora team. Thanks!)
+* distributed targed uses world-readable permissions
 * cluster.py: very experimental Python module for finding an overdetermined subset of equations
 	
 Release Name: 0.7.1:
