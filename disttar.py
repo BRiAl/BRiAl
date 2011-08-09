@@ -94,14 +94,45 @@ def DistTar(target, source, env):
 
    # open our tar file for writing
    sys.stderr.write("DistTar: Writing "+str(target[0]))
+   import time
+   mtime= time.time()
+
    tar = tarfile.open(str(target[0]), "w:%s" % (tar_format,))
+
+   default_info = tarfile.TarInfo()
 
    # write sources to our tar file
    for item in source:
       item = str(item)
       sys.stderr.write(".")
       #print "Adding to TAR file: %s/%s" % (dir_name,item)
-      tar.add(item,'%s/%s' % (dir_name,item))
+      file = open(item, "rb")
+      info = tar.gettarinfo(item,'%s/%s' % (dir_name,item))
+
+      if info is None:
+         sys.stderr.write("disttar: Unsupported type %r" % item)
+         return
+
+      if info.isdir():
+         sys.stderr.write("disttar: tar generation failed: directory occured in file list!")
+         return
+      
+      info.mtime=mtime
+      if os.access(item, os.X_OK):
+         info.mode = 0100755
+      else:
+         info.mode = 0100644
+      info.gname = default_info.gname
+      info.uname = default_info.uname
+      info.gid = default_info.gid
+      info.uid = default_info.uid
+
+      if info.isreg():
+         file = open(item, "rb")
+         tar.addfile(info, file)
+         file.close()
+      else:
+         tar.addfile(info)         
 
    # all done
    sys.stderr.write("\n") #print "Closing TAR file"
