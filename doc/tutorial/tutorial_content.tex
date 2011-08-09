@@ -32,25 +32,25 @@ Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 In [2]: r
 Out[2]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x18436f0>
 
-In [3]: [Variable(i) for i in xrange(r.n_variables())]
+In [3]: [r.variable(i) for i in xrange(r.n_variables())]
 Out[3]: [x(0), x(1), y(0), y(1), y(2)]
 
 In [4]: declare_ring([AlternatingBlock(["x","y"],2)])
 Out[4]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2370b70>
 
-In [5]: [Variable(i) for i in xrange(r.n_variables())]
+In [5]: [r.variable(i) for i in xrange(r.n_variables())]
 Out[5]: [x(0), y(0), x(1), y(1)]
 
 In [6]: declare_ring([HigherOrderBlock("x", (2, 3))])
 Out[6]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x26a86d8>
 
-In [7]: [Variable(i) for i in xrange(r.n_variables())]
+In [7]: [r.variable(i) for i in xrange(r.n_variables())]
 Out[7]: [x(0, 0), x(0, 1), x(0, 2), x(1, 0), x(1, 1), x(1, 2)]
 
 In [8]: declare_ring(["x","y","z"])
 Out[8]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x2eb4630>
 
-In [9]: [Variable(i) for i in xrange(r.n_variables())]
+In [9]: [r.variable(i) for i in xrange(r.n_variables())]
 Out[9]: [x, y, z]  
 \end{lstlisting}
 
@@ -71,52 +71,50 @@ Out[2]: True
 In [3]: x(0)>x(1)*x(2)
 Out[3]: True
 
-In [4]: change_ordering(dlex)
+In [4]: r = r.clone(ordering=dlex)
 
-In [5]: x(0)>x(1)
+In [5]: r(x(0)) > r(x(1))
 Out[5]: True
 
-In [6]: x(0)>x(1)*x(2)
+In [6]: r(x(0)) > r(x(1)*x(2))
 Out[6]: False
 
-In [7]: change_ordering(dp_asc)
+In [7]: r = r.clone(ordering=dp_asc)
 
-In [8]: x(0)>x(1)
+In [8]: r(x(0)) > r(x(1))
 Out[8]: False
 
-In [9]: x(0)>x(1)*x(2)
+In [9]: r(x(0)) > r(x(1)*x(2))
 Out[9]: False
 
-In [10]: change_ordering(block_dlex)
+In [10]: r = r.clone(ordering=block_dlex, blocks=[10])
 
-In [11]: append_ring_block(10)
+In [11]: r(x(0)) > r(x(1))
+Out[11]: True
 
-In [12]: x(0)>x(1)
-Out[12]: True
+In [12]: r(x(0)) > r(x(1)*x(2))
+Out[12]: False
 
-In [13]: x(0)>x(1)*x(2)
-Out[13]: False
+In [13]: r(x(0)) > r(y(0)*y(1)*y(2))
+Out[13]: True
 
-In [14]: x(0)>y(0)*y(1)*y(2)
-Out[14]: True
+In [14]: r = r.clone(ordering=block_dp_asc)
 
-In [15]: change_ordering(block_dp_asc)
+In [15]: r(x(0)) > r(x(1))
+Out[15]: False
 
-In [16]: x(0)>x(1)
+In [16]: r(x(0)) > r(y(0))
 Out[16]: False
 
-In [17]: x(0)>y(0)
+In [17]: r(x(0)) > r(x(1)*x(2))
 Out[17]: False
 
-In [18]: x(0)>x(1)*x(2)
-Out[18]: False
+In [18]: r = r.clone(ordering=block_dp_asc, blocks=[10])
 
-In [19]: append_ring_block(10)
-
-In [20]: x(0)>y(0)
+In [20]: r(x(0)) > r(y(0))
 Out[20]: True
 
-In [21]: x(0)>y(0)*y(1)
+In [21]: r(x(0)) > r(y(0)*y(1))
 Out[21]: True
 \end{lstlisting}
 In this example, we have an ordering composed of two blocks, the first with ten variables, the second contains the rest of variables $y(0), \ldots y(9)$ (per default indices start at 0).
@@ -133,13 +131,10 @@ In [1]: declare_ring([
    ...:    globals())
 Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
 
-In [2]: change_ordering(block_dp_asc)
+In [2]: r.clone(ordering=block_dp_asc, blocks=block_start_hints)
 
-In [3]: for b in block_start_hints:
-   ...:     append_ring_block(b)
-
-In [4]: block_start_hints
-Out[4]: [2, 5]
+In [3]: block_start_hints
+Out[3]: [2, 5]
 \end{lstlisting}
 
 
@@ -157,9 +152,9 @@ x(0)
 x(1)*x(2)
 x(2)
 
-In [4]: change_ordering(dp_asc)
+In [4]: r=r.clone(ordering=dp_asc)
 
-In [5]: for t in f.terms():
+In [5]: for t in r(f).terms():
     print t
 
 x(1)*x(2)
@@ -174,7 +169,7 @@ This is a nontrivial functionality, as the natural order of paths in ZDDs is lex
 Basic arithmetic is provided in the domain of Boolean polynomials. Boolean Polynomial polynomials are polynomials over $\Ztwo$ where the maximal degree per variable is one.
 If exponents bigger than one per variable appear reduction by the field ideal (polynomials of the form $x^2+x$) is done automatically.
 \begin{lstlisting}
-In [1]: Polynomial(1)+Polynomial(1)
+In [1]: Polynomial(1, r)+Polynomial(1, r)
 Out[1]: 0
 
 In [2]: x(1)*x(1)
@@ -226,43 +221,43 @@ of navigators. Navigators  provide an interface to diagram nodes, accessing
 their index as well as the corresponding then- and else-branches.
 
 \begin{lstlisting}
-In [1]:f=x(1)*x(2)+x(2)*x(3)*x(4)+x(2)*x(4)+x(3)+x(4)+1
+In [1]: f=x(1)*x(2)+x(2)*x(3)*x(4)+x(2)*x(4)+x(3)+x(4)+1
 
-In [2]:s=f.set()
+In [2]: s=f.set()
 
-In [3]:s
-Out[3]:{{x(1),x(2)}, {x(2),x(3),x(4)},
+In [3]: s
+Out[3]: {{x(1),x(2)}, {x(2),x(3),x(4)},
     {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
-In [4]:x(1).index()
-Out[4]:1
+In [4]: x(1).index()
+Out[4]: 1
 
-In [5]:s.subset1(1)
-Out[5]:{{x(2)}}
+In [5]: s.subset1(1)
+Out[5]: {{x(2)}}
 
-In [6]:s.subset0(1)
-Out[6]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+In [6]: s.subset0(1)
+Out[6]: {{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
-In [7]:nav=s.navigation()
+In [7]: nav=s.navigation()
 
-In [8]:BooleSet(nav,s.ring())
-Out[8]:{{x(1),x(2)}, {x(2),x(3),x(4)},
+In [8]: BooleSet(nav,s.ring())
+Out[8]: {{x(1),x(2)}, {x(2),x(3),x(4)},
     {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
-In [9]:nav.value()
-Out[9]:1
+In [9]: nav.value()
+Out[9]: 1
 
-In [10]:nav_else=nav.else_branch()
+In [10]: nav_else=nav.else_branch()
 
-In [11]:nav_else
-Out[11]:<polybori.dynamic.PyPolyBoRi.CCuddNavigator
+In [11]: nav_else
+Out[11]: <polybori.dynamic.PyPolyBoRi.CCuddNavigator
     object at 0xb6e1e7d4>
 
-In [12]:BooleSet(nav_else,s.ring())
-Out[12]:{{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
+In [12]: BooleSet(nav_else,s.ring())
+Out[12]: {{x(2),x(3),x(4)}, {x(2),x(4)}, {x(3)}, {x(4)}, {}}
 
-In [13]:nav_else.value()
-Out[13]:2
+In [13]: nav_else.value()
+Out[13]: 2
 \end{lstlisting}
 
 You should be very careful and always keep a reference to the original object, when dealing with navigators, as navigators contain only a raw pointer as data.
@@ -272,17 +267,17 @@ The opposite of navigation down a ZDD using navigators is to construct new ZDDs 
 
 \begin{lstlisting}
     
-In [1]:f0=x(2)*x(3)+x(3)
+In [1]: f0=x(2)*x(3)+x(3)
 
-In [2]:f1=x(4)
+In [2]: f1=x(4)
 
-In [3]:if_then_else(x(1),f0,f1)
-Out[3]:{{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
+In [3]: if_then_else(x(1),f0,f1)
+Out[3]: {{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
 
-In [4]:if_then_else(x(1).index(),f0,f1)
-Out[4]:{{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
+In [4]: if_then_else(x(1).index(),f0,f1)
+Out[4]: {{x(1),x(2),x(3)}, {x(1),x(3)}, {x(4)}}
 
-In [5]:if_then_else(x(5),f0,f1)
+In [5]: if_then_else(x(5),f0,f1)
 ------------------------------------------------
 <type 'exceptions.ValueError'>  Traceback (...) 
 
@@ -305,6 +300,7 @@ Out[2]: {{x(1),x(3)}, {x(2),x(3)}, {x(2)}, {x(4)}}
 In [3]: f.set().minimal_elements()
 Out[3]: {{x(1),x(3)}, {x(2)}, {x(4)}}
 \end{lstlisting}
+
 \subsection{\Groebner bases}
 \Groebner bases functionality is available using the function \functionname{groebner\_basis} from polybori.gbcore.
 It has quite a lot of options and a exchangeable heuristic.
@@ -431,15 +427,13 @@ This can be done as in the classical case despite the field equations using an e
 In [1]: declare_ring([Block("x",3),Block("y",3)])
 Out[1]: <polybori.dynamic.PyPolyBoRi.Ring object at 0x1848b10>
 
-In [2]: change_ordering(block_dp_asc)
-
-In [3]: for b in block_start_hints:
-   ...:     append_ring_block(b)
-     
-
 In [4]: G=[x(0)*x(2)*y(0)*y(1) + y(1)*y(2) + y(1),
    ...:  x(1)*x(2)*y(0)*y(2) + x(0)*x(1)*y(2) + y(1),
    ...:  x(0)*x(1)*x(2)*y(1) + x(1) + y(1)*y(2)]
+
+In [2]: r = r.clone(ordering=block_dp_asc, blocks=block_start_hints)
+
+In [4]: G=[r(poly) for poly in G]
 
 In [5]: H=groebner_basis(G)
 
@@ -511,11 +505,13 @@ The resulting ZDD however has only as many nodes as variables.
 In fact it can be constructed directly using the following function (from specialsets.py).
 \begin{lstlisting}
 def power_set(variables):
+    if not variables:
+        return BooleConstant(1)
     variables=sorted(set(variables),reverse=True,key=top_index)
-    res=Polynomial(1).set()
+    res=Polynomial(1, variables[0].ring()).set()
     for v in variables:
         res=if_then_else(v,res,res)
-    return res 
+    return res
 \end{lstlisting}
 Note, that we switched from polynomials to Boolean sets. We inverse the order of variable indices for iteration to make the computation compatible with the principles in \ref{low-level-friendly} (simple $\ite$ operators instead of complex operations in each step).
 
@@ -525,16 +521,18 @@ The following function constructs the complete homogeneous polynomial/BooleSet c
 \begin{lstlisting}
 def all_monomials_of_degree_d(d,variables):
     if d==0:
-        return Polynomial(1).set()
-    if len(variables)==0:
-        return BooleSet()
+        return BooleConstant(1)
+    
+    if not variables:
+        return []
     variables=sorted(set(variables),reverse=True,key=top_index)
+
     m=variables[-1]
     for v in variables[:-1]:
         m=v+m
     m=m.set()
     i=0
-    res=Polynomial(1).set()
+    res=Polynomial(variables[0].ring().one()).set()
     while(i<d):
         i=i+1
         res=res.cartesian_product(m).diff(res)
@@ -548,17 +546,19 @@ In the following, we construct the same polynomial as in \ref{all-monomials-set-
 def all_monomials_of_degree_d(d, variables):
     variables=Monomial(variables)
     variables=list(variables.variables())
-    if d>len(variables):
-        return Polynomial(0)
-    if d<0:
-        return Polynomial(1)
-    if len(variables)==0:
+    if not variables:
         assert d==0
-        return 1
+        return BooleConstant(1)
+    ring = variables[0].ring()
+    if d>len(variables):
+        return Polynomial(0, ring)
+    if d<0:
+        return Polynomial(1, ring)
+
     deg_variables=variables[-d:]
     #this ensures sorting by indices
     res=Monomial(deg_variables)
-    ring=Polynomial(variables[0]).ring()
+
     for i in xrange(1, len(variables)-d+1):
         deg_variables=variables[-d-i:-i]
         res=Polynomial(res)
@@ -567,7 +567,7 @@ def all_monomials_of_degree_d(d, variables):
         while not nav.constant():
             navs.append(BooleSet(nav,ring))
             nav=nav.then_branch()
-        acc=Polynomial(1)
+        acc=Polynomial(1, ring)
         for (nav, v) in reversed(zip(navs, deg_variables)):
             acc=if_then_else(v, acc, nav)
         res=acc
@@ -603,7 +603,7 @@ def highlevel_graded(f,d):
     return Polynomial(
         f.set().intersect(
             all_monomials_of_degree_d(
-                d,f.varsAsMonomial())))
+                d,f.vars_as_monomial())))
 \end{lstlisting}
 This solution build on the fast intersection algorithm and decomposes the task in just two set operations, which is very good.
 
@@ -619,10 +619,10 @@ def recursive_graded(f,d):
         if f.empty():
             return f
         if d==0:
-            if Monomial() in f:
-                return Polynomial(1).set()
+            if Monomial(f.ring()) in f:
+                return Polynomial(1, f.ring()).set()
             else:
-                return BooleSet()
+                return BooleSet(f.ring())
         else:
             nav=f.navigation()
             if nav.constant():
@@ -718,7 +718,7 @@ In fact, the problem can be tackled quite efficiently using set operations.
 \begin{lstlisting}
 def subst(f,x,c):
    i=x.index()
-   c=Polynomial(c)#if c was int is now converted mod 2, 
+   c=BooleConstant(c) # if c was int is now converted mod 2, 
    #so comparison to int(0) makes sense
    s=f.set()
    if c==0:
@@ -812,11 +812,11 @@ def evaluate(f,m):
        c=m[v]
        if c==0:
            #terms with x evaluate to zero
-           f=Polynomial(nav.then_branch())
+           f=Polynomial(nav.then_branch(), f.ring())
        else:
            #c==1
-           f=Polynomial(nav.then_branch())+
-              Polynomial(nav.else_branch())
+           f=Polynomial(nav.then_branch(), f.ring())+
+              Polynomial(nav.else_branch(), f.ring())
        return f   
 \end{lstlisting}
 For example, the call
@@ -949,17 +949,17 @@ Out[3]: [x(1) + x(3), x(0) + x(1)*x(2)]
 \label{reinterpretation-of-zdd}
 Let \pythonconstant{S} be a Boolean set. For example:
 \begin{lstlisting}
-In [1]:S=BooleSet([x(0),x(1)*x(2)])
+In [1]: S=BooleSet([x(0),x(1)*x(2)])
 
-In [2]:S
-Out[2]:{{x(1),x(2)}, {x(0)}}
+In [2]: S
+Out[2]: {{x(1),x(2)}, {x(0)}}
 \end{lstlisting}
 
 \pythonconstant{S} is a set of sets of variables.
 Our usual interpretation is to identify it with a polynomial with corresponding terms:
 \begin{lstlisting}
-In [3]:Polynomial(S)
-Out[3]:x(1)*x(2) + x(0)
+In [3]: Polynomial(S)
+Out[3]: x(1)*x(2) + x(0)
 \end{lstlisting}
 Another interpretation is to map a set of variables $m$ to a vector~$v$ in $\Ztwo^n$.
 The $i$-th entry of~$v$ is set to 1, if and only if the $i$-th variable occurs in $m$.
@@ -971,8 +971,8 @@ For this reason, some procedures interpreting Boolean sets as subsets of~$\Ztwo^
 The full vector space can be constructed by multiplying all needed variables and the set of divisors of the product.
 
 \begin{lstlisting}
-In [4]:(x(1)*x(2)*x(3)).divisors()
-Out[4]:{{x(1),x(2),x(3)}, {x(1),x(2)}, 
+In [4]: (x(1)*x(2)*x(3)).divisors()
+Out[4]: {{x(1),x(2),x(3)}, {x(1),x(2)}, 
         {x(1),x(3)}, {x(1)}, {x(2),x(3)}, {x(2)}, {x(3)}, {}}
 \end{lstlisting}
 
@@ -983,35 +983,35 @@ The first kind of procedures usually gets the ambient space itself, the second k
 
 \subsubsection{Examples}
 \begin{lstlisting}
-In [1]:f=x(0)+x(1)+x(2)
+In [1]: f=x(0)+x(1)+x(2)
 
-In [2]:ambient_space=(x(0)*x(1)*x(2)).divisors()
+In [2]: ambient_space=(x(0)*x(1)*x(2)).divisors()
 
-In [3]:ambient_space
-Out[3]:{{x(0),x(1),x(2)}, {x(0),x(1)}, 
+In [3]: ambient_space
+Out[3]: {{x(0),x(1),x(2)}, {x(0),x(1)}, 
         {x(0),x(2)}, {x(0)}, {x(1),x(2)}, {x(1)}, {x(2)}, {}}
 
-In [4]:f.zeros_in(ambient_space)
-Out[4]:{{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
+In [4]: f.zeros_in(ambient_space)
+Out[4]: {{x(0),x(1)}, {x(0),x(2)}, {x(1),x(2)}, {}}
 
-In [5]:S=BooleSet([x(0),x(1)*x(2)])
+In [5]: S=BooleSet([x(0),x(1)*x(2)])
 
-In [6]:f.zeros_in(S)
-Out[6]:{{x(1),x(2)}}
+In [6]: f.zeros_in(S)
+Out[6]: {{x(1),x(2)}}
 \end{lstlisting}
 
 A example of the second kind, where only the full ambient space can be considered count\\
 \lstinline|lex_groebner_basis_points|
 \begin{lstlisting}
-In [1]:S=BooleSet([x(0),x(1)*x(2)])
+In [1]: S=BooleSet([x(0),x(1)*x(2)])
 
-In [2]:from polybori.interpolate import *              
+In [2]: from polybori.interpolate import *              
 
-In [3]:lex_groebner_basis_points(S,x(0)*x(1)*x(2))
-Out[3]:[x(0) + x(2) + 1, x(1) + x(2)]
+In [3]: lex_groebner_basis_points(S,x(0)*x(1)*x(2))
+Out[3]: [x(0) + x(2) + 1, x(1) + x(2)]
 
-In [4]:lex_groebner_basis_points(S,x(0)*x(1)*x(2)*x(3))
-Out[4]:[x(0) + x(2) + 1, x(1) + x(2), x(3)]
+In [4]: lex_groebner_basis_points(S,x(0)*x(1)*x(2)*x(3))
+Out[4]: [x(0) + x(2) + 1, x(1) + x(2), x(3)]
 \end{lstlisting}
 
 This function calculates the reduced lexicographical \Groebner basis of the vanishing ideal of $S$.
@@ -1024,21 +1024,21 @@ Then we are interested in the normal form of $f$ against the vanishing ideal of 
 It turns out, that the computation of the normal form can be done by the computation of a minimal interpolation polynomial, which takes the same values as $f$ on $V$.
 
 \begin{lstlisting}
-In [1]:from polybori.interpolate import *
+In [1]: from polybori.interpolate import *
 
-In [2]:V=(x(0)+x(1)+x(2)+x(3)+1).set()
+In [2]: V=(x(0)+x(1)+x(2)+x(3)+1).set()
 \end{lstlisting}
 
 We take $V=\{e_0,e_1,e_2,e_3,0\}$, where $e_i$ describes the $i$-th unit vector. For our considerations it does not play any role, if we suppose $V$ to be embedded in $\Ztwo^4$ or a vector space of higher dimension.
 
 \begin{lstlisting}
-In [3]:V
-Out[3]:{{x(0)}, {x(1)}, {x(2)}, {x(3)}, {}}
+In [3]: V
+Out[3]: {{x(0)}, {x(1)}, {x(2)}, {x(3)}, {}}
 
-In [4]:f=x(0)*x(1)+x(1)+x(2)+1
+In [4]: f=x(0)*x(1)+x(1)+x(2)+1
 
-In [5]:nf_lex_points(f,V)
-Out[5]:x(1) + x(2) + 1
+In [5]: nf_lex_points(f,V)
+Out[5]: x(1) + x(2) + 1
 \end{lstlisting}
 
 In this case, the normal form of $f$ w.\,r.\,t. the vanishing ideal of $V$ consists of all terms of $f$ with degree smaller or equal to $1$.
@@ -1047,18 +1047,18 @@ It can be easily seen, that this polynomial forms the same function on $V$ as $f
 In fact, our computation is equivalent to the direct call of the interpolation function \lstinline|interpolate_smallest_lex|, which has two arguments: the set of interpolation points mapped to zero and the set of interpolation points mapped to one.
 
 \begin{lstlisting}
-In [6]:z=f.zeros_in(V)
+In [6]: z=f.zeros_in(V)
 
-In [7]:z
-Out[7]:{{x(1)}, {x(2)}}
+In [7]: z
+Out[7]: {{x(1)}, {x(2)}}
 
-In [8]:o=V.diff(z)
+In [8]: o=V.diff(z)
 
-In [9]:o
-Out[9]:{{x(0)}, {x(3)}, {}}
+In [9]: o
+Out[9]: {{x(0)}, {x(3)}, {}}
 
-In [11]:interpolate_smallest_lex(z,o)
-Out[11]:x(1) + x(2) + 1
+In [11]: interpolate_smallest_lex(z,o)
+Out[11]: x(1) + x(2) + 1
 \end{lstlisting}
 \subsection{Partial Boolean functions}
 A partial Boolean function $f$ is given by two disjoint set of points $O$, $Z$.
@@ -1074,7 +1074,7 @@ extensions of these functions.
 \begin{lstlisting}
 In [1]: from polybori.partial import PartialFunction
 
-In [2]: O=BooleSet([Monomial(),x(0)*x(1)])
+In [2]: O=BooleSet([Monomial(r),x(0)*x(1)])
 
 In [3]: Z=BooleSet([x(2),x(0)*x(2)])
 
@@ -1149,7 +1149,7 @@ It may not contain two generators with the same leading monomial.
 In this way generators can be accessed with both their index and their leading term.
 
 \begin{lstlisting}
-In [1]: g=GroebnerStrategy()
+In [1]: g=GroebnerStrategy(r)
 
 In [2]: g.add_generator(x(1))
 
@@ -1178,7 +1178,7 @@ Out[6]: x(1) + 1
 
 A alternative approach is to let PolyBoRi decide, if an generator is added to the system directly or not.
 \begin{lstlisting}
-In [1]: g=GroebnerStrategy()
+In [1]: g=GroebnerStrategy(r)
 
 In [2]: g.add_as_you_wish(x(1))
 \end{lstlisting}
@@ -1225,7 +1225,9 @@ def buchberger(l):
     #for making sure, that every polynomial has a 
         different leading term
     #needed for add_generator
-    g=GroebnerStrategy()
+    if not l:
+        return l
+    g=GroebnerStrategy(l[0].ring())
     for p in l:
         g.add_generator(p)
     while g.npairs()>0:
@@ -1256,8 +1258,11 @@ However, if there are more than $n$ solutions, the full \Groebner basis is compu
 \begin{lstlisting}
 def less_than_n_solutions(ideal,n):
     l=interred(ideal)
-    g=GroebnerStrategy()
-    all_monomials=Monomial([Variable(i) for i 
+    if not l:
+        return l
+    ring = l[0].ring()
+    g=GroebnerStrategy(ring)
+    all_monomials=Monomial([Variable(i, ring) for i 
         in xrange(number_of_variables())]).divisors()
     monomials_not_in_leading_ideal=all_monomials
     for p in l:

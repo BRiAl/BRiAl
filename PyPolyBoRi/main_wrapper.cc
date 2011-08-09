@@ -164,6 +164,7 @@ BOOST_PYTHON_MODULE(PyPolyBoRi){
     .def("clone", &BoolePolyRing::clone, "copies also variable name vector in a \
     new one, so somewhat deeper copy function")
     .def("coerce", coerce, "Map polynomial in this ring, if possible.")
+    .def("__call__", coerce, "Map polynomial in this ring, if possible.")
     .def(boost::python::init <BoolePolyRing::size_type, int>(
          "Construct a Boolean polynomial ring with the following parameters:\n\
             n -- number of variables (integer)\n\
