@@ -115,25 +115,24 @@ def DistTar(target, source, env):
          sys.stderr.write("disttar: Unsupported type %r" % item)
          return
 
-      info.mtime=mtime
-      if info.isreg():
-         if os.access(item, os.X_OK):
-            info.mode = 0100755
-         else:
-            info.mode = 0100644
-      elif info.isdir():
-         info.mode = 040755
-
+      info.mtime = mtime
       info.gname = default_info.gname
       info.uname = default_info.uname
       info.gid = default_info.gid
       info.uid = default_info.uid
 
       if info.isreg():
+         if os.access(item, os.X_OK):
+            info.mode = 0100755
+         else:
+            info.mode = 0100644
          file = open(item, "rb")
          tar.addfile(info, file)
          file.close()
+
       else:
+         if info.isdir():
+            info.mode = 040755
          tar.addfile(info)         
 
    # all done
