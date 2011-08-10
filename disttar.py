@@ -40,11 +40,14 @@ def DistTarEmitter(target,source,env):
             for patt in excludepattern:
                 ignoreglobs += glob(os.path.join(root, patt))
                   
-            # don't make directory dependences as that triggers full build
+            # Was: don't make directory dependences as that triggers full build
             # of that directory
+            # Now: not too bad, we generate a new file each time anyway,
+            # But adding the dir explicitely, we may fix permissions etc.
             if root in source:
                #print "Removing directory %s" % root
                source.remove(root)
+            source.append(env.Dir(root))
 
             # loop through files in a directory
             for name in files:
@@ -106,22 +109,21 @@ def DistTar(target, source, env):
       item = str(item)
       sys.stderr.write(".")
       #print "Adding to TAR file: %s/%s" % (dir_name,item)
-      file = open(item, "rb")
       info = tar.gettarinfo(item,'%s/%s' % (dir_name,item))
 
       if info is None:
          sys.stderr.write("disttar: Unsupported type %r" % item)
          return
 
-      if info.isdir():
-         sys.stderr.write("disttar: tar generation failed: directory occured in file list!")
-         return
-      
       info.mtime=mtime
-      if os.access(item, os.X_OK):
-         info.mode = 0100755
-      else:
-         info.mode = 0100644
+      if info.isreg():
+         if os.access(item, os.X_OK):
+            info.mode = 0100755
+         else:
+            info.mode = 0100644
+      elif info.isdir():
+         info.mode = 040755
+
       info.gname = default_info.gname
       info.uname = default_info.uname
       info.gid = default_info.gid
