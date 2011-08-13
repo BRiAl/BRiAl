@@ -37,7 +37,7 @@ const int M4RI_MAXKAY = 16;
 
 #include <vector>
 #include <utility>
-
+#include <sstream>
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -191,11 +191,10 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     int rank=gauss(mat);
     #else
     if UNLIKELY(optDrawMatrices){
-         char matname[255];
          ++round;
-         snprintf(matname,255,"%s%d.png", matrixPrefix, round);
-         
-         draw_matrix(mat,matname);
+	 std::ostringstream matname;
+	 matname << matrixPrefix << round << ".png";
+         draw_matrix(mat, matname.str().c_str());
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
@@ -336,10 +335,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         polys_triangular.clear();
         
         if UNLIKELY(optDrawMatrices) {
-        char matname[255];
-        snprintf(matname,255, "%s%d_step1.png", matrixPrefix, round);
-        
-        draw_matrix(mat_step1,matname);
+	    std::ostringstream matname;
+	    matname << matrixPrefix << round << "_step1.png";
+	    draw_matrix(mat_step1, matname.str().c_str());
         }
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri
@@ -474,12 +472,12 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
 
     if UNLIKELY(optDrawMatrices)
     {
-    
-    char matname[255];
-    snprintf(matname,255, "%s%d_mult_A.png", matrixPrefix, round);
-    draw_matrix(mat_step2_factor,matname);
-    snprintf(matname,255, "%s%d_mult_B.png", matrixPrefix, round);
-    draw_matrix(mat_step1,matname);
+      std::ostringstream matname;
+      matname << matrixPrefix << round << "_mult_A.png";
+      draw_matrix(mat_step2_factor, matname.str().c_str());
+      matname.clear();
+      matname << mat_step2_factor << round << "_mult_B.png";
+      draw_matrix(mat_step1,matname.str().c_str());
     }
     if UNLIKELY(log){
         std::cout<<"start mult"<<std::endl;
@@ -519,9 +517,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
     if UNLIKELY(optDrawMatrices)
     {
-        char matname[255];
-        snprintf(matname,255, "%s%d_step2.png", matrixPrefix, round);
-        draw_matrix(mat_step2,matname);
+      std::ostringstream matname;
+      matname << matrixPrefix << round << "_step2.png";
+      draw_matrix(mat_step2, matname.str().c_str());
     }
 
 
