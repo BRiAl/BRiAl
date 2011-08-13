@@ -204,6 +204,8 @@ opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
 opts.Add('STRIPLINKFLAGS', "Addtional linker flags", ['-s'])
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
+opts.Add('GD_LIBS', 'Library gb abd its dependencies (if needed)', ["gd"],
+         converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
 opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
@@ -458,6 +460,7 @@ Help(opts.GenerateHelpText(env))
 
 have_l2h = have_t4h = False
 external_m4ri = False
+GD_LIBS = []
 
 if not env.GetOption('clean'):
     def CheckSizeOfTypes(context):
@@ -478,11 +481,19 @@ if not env.GetOption('clean'):
         return result
 
     conf = Configure(env, custom_tests = {'CheckSizeOfTypes' : CheckSizeOfTypes})
-    conf.CheckSizeOfTypes()
-    
-    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
-        env.Append(LIBS=["gd"])
-        env.Append(CPPDEFINES=["HAVE_GD"])
+    if not conf.CheckSizeOfTypes():
+        print "Could not detect type sizes (maybe LIBS trouble)! Exiting."
+        Exit(1)
+
+    gdlibs = env["GD_LIBS"]
+    if gdlibs and conf.CheckCHeader("gd.h"):
+        store_libs = env["LIBS"]
+        env.Append(LIBS=gdlibs[1:])
+        if conf.CheckLib(gdlibs[0]):
+            env.Append(CPPDEFINES=["HAVE_GD"])
+            GD_LIBS = gdlibs
+        env["LIBS"] = store_libs
+
 
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
@@ -546,9 +557,6 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
     external_m4ri = conf.CheckLib('m4ri')
-    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
-        env.Append(LIBS=["gd"])
-        env.Append(CPPDEFINES=["HAVE_GD"])
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
@@ -771,7 +779,7 @@ testmain = env.Object([TestsPath('src', "unittests.cc")],CPPPATH=testCPPPATH,
 def test_building(target, sources, env):
     env.Program(target, sources + testmain, 
                 CPPPATH=testCPPPATH,
-                LIBS = env['LIBS'] + ["boost_unit_test_framework"] + [libpb, gb],
+                LIBS = env['LIBS'] + ["boost_unit_test_framework"] + [libpb, gb]+ GD_LIBS,
                 CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
 test_building(TestsPath("unittests"), testfiles, env)
@@ -818,14 +826,14 @@ if HAVE_PYTHON_EXTENSION:
         pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS,LDMODULESUFFIX=".so",
+            LIBS = pyconf.libs + LIBS + GD_LIBS, LDMODULESUFFIX=".so",
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS,
+            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
             CPPPATH=CPPPATH)
 
     DefaultBuild(pypb)
@@ -848,7 +856,7 @@ if HAVE_PYTHON_EXTENSION:
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs,
+            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
 
