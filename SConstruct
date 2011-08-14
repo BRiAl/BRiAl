@@ -231,8 +231,13 @@ opts.Add(BoolVariable('HAVE_DOXYGEN',
 opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
                     'Build python extension, if possible', True))
 
-opts.Add('BOOST_LIBRARY',
-         'Name of Boost library to link with', 'boost_python')
+opts.Add('BOOST_PYTHON',
+         'Name of Boost-python library to link with', 'boost_python')
+
+opts.Add('BOOST_TEST',
+         'Name of Boost unit test framework library to link with',
+         'boost_unit_test_framework')
+
 
 opts.Add(BoolVariable('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
@@ -461,6 +466,7 @@ Help(opts.GenerateHelpText(env))
 have_l2h = have_t4h = False
 external_m4ri = False
 GD_LIBS = []
+BOOST_TEST = env['BOOST_TEST']
 
 if not env.GetOption('clean'):
     def CheckSizeOfTypes(context):
@@ -535,12 +541,17 @@ if not env.GetOption('clean'):
             HAVE_PYTHON_EXTENSION = False
 
     if HAVE_PYTHON_EXTENSION:
-        if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
+        if not ( conf.CheckLibWithHeader([env['BOOST_PYTHON']],
                  path.join('boost', 'python.hpp'), 'c++') ):
             HAVE_PYTHON_EXTENSION = False
-            print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
+            print "Warning Boost/Python library (", env['BOOST_PYTHON'],
             print ") not available (needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
+
+    if not conf.CheckLib(BOOST_TEST):
+         print "Warning Boost/unit test framework library (",
+         print BOOST_TEST, ") not available. Skipping tests."
+         BOOST_TEST = None
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
@@ -734,7 +745,8 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(GBPath(libgb_name), list(gb_shared) + libpbShared)
+libgbShared = slib(GBPath(libgb_name), list(gb_shared) + libpbShared,
+                   LIBS = env['LIBS'] + GD_LIBS)
 #DefaultBuild(libgbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('include')]
@@ -770,28 +782,29 @@ if not testCPPPATH:
     testCPPPATH = CPPPATH
 
 
+if BOOST_TEST:
+    testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
+                           testclasses], CPPPATH=testCPPPATH)
+    testmain = env.Object([TestsPath('src', "unittests.cc")],
+                          CPPPATH=testCPPPATH,
+                          CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
 
-testfiles = env.Object([TestsPath('src', src + "Test.cc") for src in
-             testclasses], CPPPATH=testCPPPATH)
-testmain = env.Object([TestsPath('src', "unittests.cc")],CPPPATH=testCPPPATH,
-                      CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
+    def test_building(target, sources, env):
+        env.Program(target, sources + testmain, 
+                    CPPPATH=testCPPPATH,
+                    LIBS = env['LIBS'] + [BOOST_TEST, libpb, gb]+ GD_LIBS,
+                    CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
-def test_building(target, sources, env):
-    env.Program(target, sources + testmain, 
-                CPPPATH=testCPPPATH,
-                LIBS = env['LIBS'] + ["boost_unit_test_framework"] + [libpb, gb]+ GD_LIBS,
-                CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
+    test_building(TestsPath("unittests"), testfiles, env)
 
-test_building(TestsPath("unittests"), testfiles, env)
-
-for testfile in testfiles:
-    test_building(path.splitext(testfile.path)[0] + '.bin', [testfile], env)
+    for testfile in testfiles:
+        test_building(path.splitext(testfile.path)[0] + '.bin', [testfile], env)
 
 
 ######################################################################
 # python extension
 ######################################################################
-LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
+LIBS = env['LIBS']+[env['BOOST_PYTHON']]+USERLIBS
 
 LIBS_static = [libpb_name, libgb_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")

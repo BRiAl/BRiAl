@@ -32,7 +32,7 @@
 #include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/GroebnerStrategy.h>
 
-
+#include <sstream>
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -979,10 +979,9 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     #else
     {        
        if UNLIKELY(optDrawMatrices){
-            char matname[255];
-            snprintf(matname,255, "%s%d.png", matrixPrefix.data(), round);
-
-            draw_matrix(mat,matname);
+            std::ostringstream matname;   
+            matname << matrixPrefix.data() << round << ".png";
+            draw_matrix(mat, matname.str().c_str());
         }
     }
     int rank;
