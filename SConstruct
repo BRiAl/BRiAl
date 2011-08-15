@@ -952,18 +952,18 @@ if HAVE_SINGULAR_EXTENSION:
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
-           .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
+           .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp .exe
            .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej .bin"""),
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
            auxiliary"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
-           config.h coding.py """))
+           config.h coding.py unittests"""))
 
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
-disttar.py doxygen.py pkgs/rpm/PolyBoRi.spec.in""")
+disttar.py doxygen.py""")
     for dirname in Split("""groebner ipbori M4RI libpolybori 
-    PyPolyBoRi pyroot Singular pkgs/debian gui testsuite"""):
+    PyPolyBoRi pyroot Singular pkgs gui testsuite"""):
         allsrcs.append(env.Dir(dirname))
 
     # Cudd is not distributed completely (unused and unfree things removed)

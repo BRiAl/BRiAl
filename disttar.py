@@ -42,12 +42,15 @@ def DistTarEmitter(target,source,env):
                   
             # Was: don't make directory dependences as that triggers full build
             # of that directory
-            # Now: not too bad, we generate a new file each time anyway,
-            # But adding the dir explicitely, we may fix permissions etc.
+            # Since this is a recurring mistake:
+            # Indeed: adding directories to be dependencies will trigger build!
+            # But we want to stay in clean for distributing
+            #
+            # But - to fix permission - we will add the directory on the fly 
+            # (while taring)
             if root in source:
                #print "Removing directory %s" % root
                source.remove(root)
-            source.append(env.Dir(root))
 
             # loop through files in a directory
             for name in files:
@@ -105,7 +108,18 @@ def DistTar(target, source, env):
    default_info = tarfile.TarInfo()
 
    # write sources to our tar file
+   files = []
    for item in source:
+      itemdir=item.dir
+
+      visited = [item]
+      if itemdir not in files:
+         while str(itemdir) != "."  and not itemdir in files:
+            visited.insert(0, itemdir)
+            itemdir = itemdir.dir
+      files += visited
+
+   for item in files:
       item = str(item)
       sys.stderr.write(".")
       #print "Adding to TAR file: %s/%s" % (dir_name,item)
