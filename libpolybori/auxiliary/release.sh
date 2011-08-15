@@ -99,5 +99,6 @@ cp $BUILDDIR/$TARBALL $RELEASE_DIR/$tarresult
 cp `find pkgs -name "*.src.rpm" -o -name "*.spec"  -o -name "*.tar.*"` $RELEASE_DIR/ \
 || (echo "Copying results failed!" ; exit 1)
 
+hg parents
 hg tags |grep "$RELEASE_TAG" 
 rm -rf $TMPDIR
