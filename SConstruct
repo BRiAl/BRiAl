@@ -961,9 +961,9 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
 
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
-disttar.py doxygen.py""")
+disttar.py doxygen.py pkgs/rpm/PolyBoRi.spec.in""")
     for dirname in Split("""groebner ipbori M4RI libpolybori 
-    PyPolyBoRi pyroot Singular pkgs gui testsuite"""):
+    PyPolyBoRi pyroot Singular pkgs/debian gui testsuite"""):
         allsrcs.append(env.Dir(dirname))
 
     # Cudd is not distributed completely (unused and unfree things removed)
@@ -977,7 +977,7 @@ disttar.py doxygen.py""")
     tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
     man/ipbori.1 man/PolyGUI.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
-
+    
 
 if distribute:
     presrcdistri = env.DistTar(debname, allsrcs)
