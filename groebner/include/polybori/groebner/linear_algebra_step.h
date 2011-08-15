@@ -232,6 +232,17 @@ transposePackedMB(mzd_t* mat){
     return res;*/
 }
 
+inline mzd_t*
+pbori_transpose(mzd_t* mat) {
+
+  if UNLIKELY(mat->nrows == 0)
+    return mzd_init(mat->ncols, 0);
+
+  if UNLIKELY(mat->ncols == 0)
+    return mzd_init(0, mat->nrows);
+
+  return mzd_transpose(NULL,mat);
+}
 
 inline void 
 linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
@@ -247,8 +258,10 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
       ++start;
     }
 #endif
+
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
+
     if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
@@ -386,7 +399,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
 
         //delete columns
-        mzd_t* transposed_step1=mzd_transpose(NULL,mat_step1);
+        mzd_t* transposed_step1 = pbori_transpose(mat_step1);
         if UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
@@ -404,14 +417,13 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
 
         //cols, rows arguments are swapped, as matrix is transposed
-
         mzd_t* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
 
         if UNLIKELY(log){
             std::cout<<"finished submat"<<std::endl;
         }
         mzd_free(transposed_step1);
-        mat_step1=mzd_transpose(NULL,sub_step1);
+        mat_step1 = pbori_transpose(sub_step1);
         if UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
