@@ -14,7 +14,8 @@ Release Name: 0.8.0
 * python level: deprecated Ring changing routines change_ordering,
   set_variable_names, append_block, use extended arguments of Ring.__init__() 
   and Ring.clone().
-* ipython 0.11 compatibility established (Hint from the Fedora team. Thanks!)
+* ipython 0.11 compatibility established (hint from the Fedora team. Thanks!)
+* libM4RI compatibility re-established (hint from Martin Albrecht. Thanks!)
 * distributed targed uses world-readable permissions
 * cluster.py: very experimental Python module for finding an overdetermined subset of equations
 	
