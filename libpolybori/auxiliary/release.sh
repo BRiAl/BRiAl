@@ -66,7 +66,7 @@ fi
 
 echo "Releasing PolyBoRi release ${HG_TAG}"
 
-$EXEC hg tag $FORCE $HG_TAG || (echo "Release already tagged!"; exit 1)
+$EXEC hg tag $FORCED $HG_TAG || (echo "Release already tagged!"; exit 1)
 $EXEC hg push || (echo "Pushing to devel repo failed"; exit 1)
 # please set ssh site data in .ssh/config
 $EXEC hg push ssh://polybori/hgroot/polybori/ \
