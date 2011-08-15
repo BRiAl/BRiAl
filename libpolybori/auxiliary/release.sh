@@ -28,7 +28,7 @@ while [ "$VALUE" != "" ]; do
     FORCED="-f"
   fi
   if [ "$1" = "-n" -o "$1" = "--non-changing" ]; then
-    echo "Do not change repositories!"
+    echo "Note: not changing repositories!"
     EXEC="echo Skipping: "
   fi
   shift
@@ -83,11 +83,18 @@ scons distribute USE_TIMESTAMP=no $@
 scons prepare-rpm $@
 scons srpm $@
 
+TARBALL=`ls *tar.gz`
 rm -rf $RELEASE_DIR
 mkdir $RELEASE_DIR
-cp $BUILDDIR/*tar.gz $RELEASE_DIR
 
-cp `find . -name "*.src.rpm" -o -name "*.spec"  -o -name "*.tar.*"` $RELEASE_DIR \
+patt1=`echo $RELEASE_TAG| sed -e "s/v\([^.]*\.[^.]*\)\..*/\1/" `
+patt2=${HG_TAG/v/}
+
+tarresult=${TARBALL/$patt1/$patt2}
+
+cp $BUILDDIR/$TARBALL $RELEASE_DIR/$tarresult
+
+cp `find pkgs -name "*.src.rpm" -o -name "*.spec"  -o -name "*.tar.*"` $RELEASE_DIR/ \
 || (echo "Copying results failed!" ; exit 1)
 
 hg tags |grep "$RELEASE_TAG" 
