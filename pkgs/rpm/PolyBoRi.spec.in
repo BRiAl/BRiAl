@@ -16,11 +16,19 @@
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
 %define pbori_tmpdoc docs
+%define pbori_scons scons %{?jobs:-j%jobs} STRIPLINKFLAGS="-s"
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
 %define pbori_m4ri m4ri
 %define pbori_m4ri_devel m4ri-devel
+%endif
+
+#Note: boost of SLES10 is too old
+%if 0%{?suse_version}
+%define pbori_check %{suse_version} >= 1100
+%else
+%define pbori_check 1
 %endif
 
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel gd-devel 
@@ -113,13 +121,15 @@ Static libraries for %{name}.
 
 
 %build
-scons %{?jobs:-j%jobs} prepare-install prepare-devel
- 
+%{pbori_scons} prepare-install prepare-devel
+
+%if %{pbori_check}
 %check
-scons %{?jobs:-j%jobs} testsuite && testsuite/unittests
+%{pbori_scons} testsuite && testsuite/unittests
+%endif
 
 %install
-scons install devel-install \
+%{pbori_scons} install devel-install \
         EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
         DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
         DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
@@ -136,6 +146,8 @@ scons install devel-install \
 %clean
 rm -rf $RPM_BUILD_ROOT
 
+%post devel -p /sbin/ldconfig
+%postun devel -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
@@ -159,9 +171,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %files devel
+%defattr(-,root,root,-)
 %attr(755, root, root) %{_libdir}/libpolybori*.so*
-%attr(644, root, root) %{_includedir}/polybori
-%attr(644, root, root) %{_includedir}/polybori.h
+%{_includedir}/polybori
+%{_includedir}/polybori.h
 
 %files static
 %attr(644, root, root) %{_libdir}/libpolybori*.a
