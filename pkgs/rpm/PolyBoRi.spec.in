@@ -8,8 +8,23 @@
 #
 # norootforbuild
 
-BuildRequires: scons boost-devel gcc gcc-c++ python-devel
-BuildRequires: doxygen %{?fedora:tex4ht}
+
+%define pbori_pythonsearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
+%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%pbori_pythonsearch}
+%define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
+
+%define pbori_instdir %{_datadir}/%{name}
+%define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
+%define pbori_tmpdoc docs
+
+# Note: m4ri of official fc14 is too old
+%if 0%{?fedora_version} >= 15
+%define pbori_m4ri m4ri
+%define pbori_m4ri_devel m4ri-devel
+%endif
+
+BuildRequires: scons boost-devel gcc gcc-c++ python-devel gd-devel 
+BuildRequires: doxygen %{?fedora:tex4ht} %{?pbori_m4ri_devel}
 %if 0%{?suse_version} >= 1100
 BuildRequires: texlive-latex texlive-tex4ht
 %endif
@@ -26,19 +41,6 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires: python-%{name} = %{version}-%{release}
 Requires: IPython >= 0.6
 
-%define pbori_prefix %{_prefix}
-
-%define pbori_pythonsearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
-
-%define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%pbori_pythonsearch}
-
-%define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
-
-%define pbori_eprefix %{_bindir}
- 
-%define pbori_instdir %{_datadir}/%{name}
-%define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
-%define pbori_tmpdoc docs
 
 %description
 PolyBoRi is a special purpose computer algebra system for computations in
@@ -48,6 +50,8 @@ decision diagrams are used as internal storage type for polynomial
 structures. On top of this, we provide a Python interface for parsing of
 complex polynomial systems, as well as for sophisticated and extendable
 strategies for Groebner base computation.
+
+
  
 %package doc
 Summary: Documentation package for %{name}
@@ -57,33 +61,74 @@ Requires: %{name} = %{version}
 %description doc
 This package contains the documentation and tutorial of %{name}.
 
+
+
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Productivity/Scientific/Math
 %if %{defined suse_version}
-Requires: python-base = %{py_ver}
+Requires: python-base = %{py_ver} %{?pbori_m4ri}
 %endif
 
 %description -n python-%{name}
 This package contains the python core routines of %{name}.
 It incorporates code from CUDD and M4RI.
 
+
+
+%package        gui
+Summary:        Qt GUI for %{name}
+Group:          Productivity/Scientific/Math
+Requires:       %{name} = %{version}
+Requires:       PyQt4
+
+%description    gui
+Qt GUI for %{name}.
+
+
+
+%package        devel
+Summary:        Development files for %{name}
+Group:          Development/Libraries
+Requires:       %{name} = %{version}
+Requires:       boost-devel %{?pbori_m4ri_devel}
+
+%description    devel
+Development headers and libraries for %{name}.
+
+
+
+%package        static
+Summary:        Static libraries for %{name}
+Group:          Development/Libraries
+Requires:       %{name}-devel = %{version}
+
+%description    static
+Static libraries for %{name}.
+
+
+
 %prep
 %setup -q
- 
+
+
 %build
-scons %{?jobs:-j%jobs} prepare-install
+scons %{?jobs:-j%jobs} prepare-install prepare-devel
  
 %check
 scons %{?jobs:-j%jobs} testsuite && testsuite/unittests
 
 %install
-scons install EPREFIX=$RPM_BUILD_ROOT/%{pbori_eprefix} \
-              PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
-              INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-              PYTHON=%{__python} \
-              DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
-              MANDIR=$RPM_BUILD_ROOT/%{_mandir}
+scons install devel-install \
+        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
+        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
+        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
+        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
+        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
+        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
+        PYTHON=%{__python} \
+        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
+        MANDIR=$RPM_BUILD_ROOT/%{_mandir}
  
 # rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
 %__mv $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
@@ -94,10 +139,8 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%attr(755, root, root) %{pbori_eprefix}/ipbori
-%attr(755, root, root) %{pbori_eprefix}/PolyGUI
+%attr(755, root, root) %{_bindir}/ipbori
 %attr(644,root,man) %{_mandir}/man1/ipbori.1*
-%attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
 %{pbori_instdir}
 %doc README LICENSE ChangeLog
 
@@ -110,10 +153,27 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
 
+%files gui
+%attr(755, root, root) %{_bindir}/PolyGUI
+%attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
+
+
+%files devel
+%attr(755, root, root) %{_libdir}/libpolybori*.so*
+%attr(644, root, root) %{_includedir}/polybori
+%attr(644, root, root) %{_includedir}/polybori.h
+
+%files static
+%attr(644, root, root) %{_libdir}/libpolybori*.a
+
 
 %changelog
-* Tue Apr 26 2011 Alexander Dreyer <adreyer@gmx.de> - 
+* Wed Aug 17 2011 Alexander Dreyer <adreyer@gmx.de> - 
 - Latest sources (PolyBoRi $PBVERSION.$PBRELEASE-0).
+* Tue Aug 16 2011 Alexander Dreyer <adreyer@gmx.de> - 
+- Adding -devel, -gui-and -static packages.
+* Tue Apr 26 2011 Alexander Dreyer <adreyer@gmx.de> - 
+- Updating sources to PolyBoRi 0.7.1.
 * Wed Apr 20 2011 Alexander Dreyer <adreyer@gmx.de> - 
 - Updating SPEC file, added PolyGUI, splitted doc and python.
 * Fri Jan 29 2010 Alexander Dreyer <adreyer@gmx.de> - 

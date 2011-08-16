@@ -12,10 +12,6 @@
 #include <polybori/groebner/interpolate.h>
 #include <polybori/groebner/draw_matrix.h>
 
-extern "C" {
-#include <m4ri/m4ri.h>
-}
-
 using namespace std;
 BEGIN_NAMESPACE_PBORIGB
 

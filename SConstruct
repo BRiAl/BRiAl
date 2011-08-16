@@ -224,6 +224,8 @@ opts.Add('DEVEL_PREFIX',
          'development version installation directory','$PREFIX' )
 opts.Add('DEVEL_INCLUDE_PREFIX',
          'development version header installation directory','$DEVEL_PREFIX/include' )
+opts.Add('DEVEL_LIB_PREFIX',
+         'development version library installation directory','$DEVEL_PREFIX/lib' )
 
 opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
@@ -1013,8 +1015,9 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     
     PBInclPath = PathJoiner(PBPath('include/polybori'))
     DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
-    
-    SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
+    DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
+      
+    SymlinkReadableLibname(env.Install(DevelInstLibPath(), devellibs))
 
     
 
@@ -1030,11 +1033,12 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
     env.Install(DevelInstInclPath('cudd'), cudd_headers)
 
     if not(external_m4ri):
-        env.Install(DevelInstPath('include/m4ri'), glob('M4RI/m4ri/*.h'))
+        env.Install(DevelInstInclPath('m4ri'), glob('M4RI/m4ri/*.h'))
         
     env.Alias('devel-install', DevelInstPath())
-
-
+    env.Alias('devel-install', DevelInstInclPath())
+    env.Alias('devel-install', DevelInstLibPath())
+    
 env.Append(COPYALL_PATTERNS = ['*'])
 
 # Copy glob('*') from one directory to the other
