@@ -201,7 +201,8 @@ else:
 
 opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
              repr(defaultenv['LINKFLAGS']))
-opts.Add('STRIPLINKFLAGS', "Addtional linker flags", ['-s'])
+opts.Add('STRIPLINKFLAGS',
+         "Addtional linker flags for stripping libraries (usually '-s')", [])
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 opts.Add('GD_LIBS', 'Library gb abd its dependencies (if needed)', ["gd"],
