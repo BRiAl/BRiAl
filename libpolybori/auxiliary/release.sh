@@ -11,6 +11,7 @@ while [ "$VALUE" != "" ]; do
     echo "  -f, --force: tag  even if tag is already existing"
     echo "  -n, --non-changing: do not make changes on repos"
     echo "  -t, --tag: use the tag <arg1> (default is read from versionnumber)"
+    echo "  -a, --auto:  use content of file 'versionnumber' for tagging"
     echo "  -h, --help:  print this usage text and exit"
     exit 0
   fi
@@ -22,6 +23,10 @@ while [ "$VALUE" != "" ]; do
       shift
     fi
     HG_TAG="$1"
+  fi
+
+  if [ "$1" = "-a" -o "$1" = "--auto" ]; then
+    AUTO="True"
   fi
 
   if [ "$1" = "-f" -o "$1" = "--force" ]; then
@@ -59,9 +64,14 @@ cd $THIS_DIR/../../
 VERSION_NUMBER=`sed -e "s/-/./g" versionnumber`
 RELEASE_DIR="$OLDPWD/release-$VERSION_NUMBER"
 RELEASE_TAG="v${VERSION_NUMBER}"
+
 if [ "${HG_TAG}" = "" ]; then
-  echo "Using versionnnumber for tagging!"
-  HG_TAG="$RELEASE_TAG"
+  if [ "${AUTO}" = "" ]; then
+    echo "No tag given. Use -a|--auto for using versionnumber" 
+    exit 1
+  fi
+    echo "Using versionnnumber for tagging!"
+    HG_TAG="$RELEASE_TAG"
 fi
 
 echo "Releasing PolyBoRi release ${HG_TAG}"
