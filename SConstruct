@@ -137,6 +137,17 @@ def detect_linker(env):
     # Non-gnu linker or linux (could be Sun or Intel linker) will return 'posix'.
     return env['PLATFORM']
 
+# for gentoo-prefix on OS X
+def _fix_dynlib_namespace(env):
+
+    if env['PLATFORM']=="darwin":
+        return "-Wl,-flat_namespace"
+    return ""
+
+
+if 'dump_default' in COMMAND_LINE_TARGETS:
+  print defaultenv.Dump()
+
 def _sonameprefix(env):
     linker = detect_linker(env)
     #print linker, "linker detected!"
@@ -148,11 +159,6 @@ def _sonameprefix(env):
 
     else:
         return '-Wl,-soname,'
-
-if 'dump_default' in COMMAND_LINE_TARGETS:
-  print defaultenv.Dump()
-
-
 
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
@@ -180,9 +186,12 @@ opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace s
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-def oldstyle_flags():
+def scons_version():
     import SCons
-    return SCons.__version__.split('.') < ['0','97','0']
+    return SCons.__version__.split('.')
+
+def oldstyle_flags():
+    return scons_version() < ['0','97','0']
 
 if oldstyle_flags() :
     opts.Add('CCFLAGS', "C compiler flags", 
@@ -201,8 +210,12 @@ else:
 
 opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
              repr(defaultenv['LINKFLAGS']))
-opts.Add('STRIPLINKFLAGS',
-         "Addtional linker flags for stripping libraries (usually '-s')", [])
+
+opts.Add('CUSTOM_LINKFLAGS',
+         """Addtional linker flags (e.g. '-s' for stripping, and
+         '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
+         ["${_fix_dynlib_namespace(__env__)}"])
+
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
 opts.Add('GD_LIBS', 'Library gb abd its dependencies (if needed)', ["gd"],
@@ -376,6 +389,7 @@ def _sonamecmd(prefix, target, suffix, env = env):
     
 env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
+env['_fix_dynlib_namespace'] = _fix_dynlib_namespace
 env['_shccflags'] = _shccflags
 
 # dynamic module flags
@@ -579,16 +593,18 @@ if not env.GetOption('clean'):
     env = conf.Finish()
 
 
-else:
-    # Removing symlink M4RI/m4ri
-    if path.exists(m4ri_inc) and path.islink(m4ri_inc):
-        print "Removing symbolic link to ", m4ri_inc, "..."
-        os.remove(m4ri_inc)
-
+else: # when cleaning
+    # Work around bug in older SCons (didn't remove symlinks to files)
+    if scons_version() < ['1','3','0']:
+        for elt in glob(GBPath('*.so*')) + glob(PBPath('*.so*')):
+            if os.path.islink(elt):
+                os.remove(elt)
+ 
 # end of not cleaning
 
 env.Clean('.', glob('*.pyc') + Split("""config.log 
-.sconsign.dblite .sconf_temp""") )
+.sconsign.dblite .sconf_temp""") + glob(GBPath('*.so*')) + glob(PBPath('*.so*')))
+
 
 have_pydoc = env['HAVE_PYDOC']
 
@@ -630,8 +646,7 @@ def shared_object(o, **kwds):
 ######################################################################
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
-env.Append(LINKFLAGS=['$STRIPLINKFLAGS'])
-
+env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
 
 ######################################################################
 # Stuff for building Cudd library

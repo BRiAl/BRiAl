@@ -16,7 +16,7 @@
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
 %define pbori_tmpdoc docs
-%define pbori_scons scons %{?jobs:-j%jobs} STRIPLINKFLAGS="-s"
+%define pbori_scons scons %{?jobs:-j%jobs} CUSTOM_LINKFLAGS="-s"
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
