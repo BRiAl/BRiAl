@@ -1066,7 +1066,15 @@ def cp_all(target, source, env):
     target = target[0].path
 
     if not path.exists(target):
-        Execute(Mkdir(target))
+        try:
+            Execute(Mkdir(target))
+        except:
+            # Maybe just a race condition occured, because two processes trixy
+            # to generate the directory at the same time. (This I could ignore.)
+            if not path.exists(target):
+                print "Could not mkdir " + target
+                Exit(1)
+
     for patt in env['COPYALL_PATTERNS']:
         for file in glob(path.join(source, patt)):
             if not path.isdir(file):
