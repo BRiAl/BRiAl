@@ -356,6 +356,7 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
+
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
 
@@ -595,14 +596,16 @@ if not env.GetOption('clean'):
 else: # when cleaning
     # Work around bug in older SCons (didn't remove symlinks to files)
     if scons_version() < ['1','3','0']:
-        for elt in glob(GBPath('*.so*')) + glob(PBPath('*.so*')):
+        for elt in glob('*' + env['SHLIBSUFFIX'] + "*"):
             if os.path.islink(elt):
                 os.remove(elt)
  
 # end of not cleaning
 
-env.Clean('.', glob('*.pyc')  + glob(PBPath('*.a')) + Split("""config.log 
-.sconsign.dblite .sconf_temp""") + glob(GBPath('*.a')) + glob('*.so*'))
+env.Clean('.', Split("""config.log .sconsign.dblite .sconf_temp""") + \
+              glob(PBPath('*' + env['LIBSUFFIX'])) + \
+              glob(GBPath('*' + env['LIBSUFFIX'])) + \
+              glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
 
 
 have_pydoc = env['HAVE_PYDOC']
