@@ -602,7 +602,7 @@ else: # when cleaning
  
 # end of not cleaning
 
-env.Clean('.', glob('*.pyc') + Split("""config.log 
+env.Clean('.', glob('*.pyc')  + glob(GBPath('*.a')) + glob(PBPath('*.a')) + Split("""config.log 
 .sconsign.dblite .sconf_temp""") + glob(GBPath('*.so*')) + glob(PBPath('*.so*')))
 
 
@@ -721,7 +721,9 @@ pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
 pb_src=[PBPath('src', source) for source in pb_src]
 
 libpb_name = 'polybori'
-libpb=env.StaticLibrary(PBPath(libpb_name), pb_src + cudd_resources)
+libpb_name_static = libpb_name + "-static"
+
+libpb=env.StaticLibrary(PBPath(libpb_name_static), pb_src + cudd_resources)
 
 if isinstance(libpb,list):
     libpb=libpb[0]
@@ -751,7 +753,9 @@ if not(external_m4ri):
    gb_src += m4ri
 
 libgb_name = libpb_name + '_groebner'
-gb=env.StaticLibrary(GBPath(libgb_name), gb_src)
+libgb_name_static = libgb_name + "-static"
+
+gb=env.StaticLibrary(GBPath(libgb_name_static), gb_src)
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
@@ -765,7 +769,7 @@ shared_resources += gb_shared
 
 libgbShared = slib(GBPath(libgb_name), list(gb_shared),
                    LIBS = [libpb_name] + env['LIBS'] + GD_LIBS)
-#DefaultBuild(libgbShared)
+env.Depends(libgbShared, libpbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('include')]
 #print env['CCFLAGS']
