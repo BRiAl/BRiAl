@@ -536,7 +536,6 @@ if not env.GetOption('clean'):
 
         env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
         env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-        env.Prepend(LIBPATH=["libpolybori","groebner"])
         env.Prepend(LIBS = ["m"])
 
 
@@ -602,8 +601,8 @@ else: # when cleaning
  
 # end of not cleaning
 
-env.Clean('.', glob('*.pyc')  + glob(GBPath('*.a')) + glob(PBPath('*.a')) + Split("""config.log 
-.sconsign.dblite .sconf_temp""") + glob(GBPath('*.so*')) + glob(PBPath('*.so*')))
+env.Clean('.', glob('*.pyc')  + glob(PBPath('*.a')) + Split("""config.log 
+.sconsign.dblite .sconf_temp""") + glob(GBPath('*.a')) + glob('*.so*'))
 
 
 have_pydoc = env['HAVE_PYDOC']
@@ -616,22 +615,24 @@ shared_resources = []
 
 # Builder for symlinks
 def build_symlink(target, source, env):
-    targetdir = str(target[0].dir)
-    target = target[0].path
-    source = source[0].path
+
+    target = target[0]
+    targetdir = target.dir.abspath
+    targetpath = target.abspath
+    target = target.path
+    source = source[0].abspath
+
     if env['RELATIVE_SYMLINK'] :
         source = relpath(targetdir, source)
     if not source:
         source = '.'
-        
+
     print "Symlinking from", source, "to", target
-    
-    try:
-        if path.exists(target):
-            os.remove(target)
-        os.symlink(source, target)
-    except:
-        return True
+   
+    if path.exists(targetpath):
+        Remove(targetpath)
+    os.symlink(source, targetpath)
+
     return None
 
 symlinkbld = Builder(action = build_symlink)
@@ -654,7 +655,6 @@ env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
 
 env.Append(CPPDEFINES=["HAVE_IEEE_754"])
 
-env.Append(LIBPATH=[CuddPath()])
 
 cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
 cuddInt cudd""") ]
@@ -721,7 +721,7 @@ pb_src=Split("""BoolePolyRing.cc BooleEnv.cc BoolePolynomial.cc BooleVariable.cc
 pb_src=[PBPath('src', source) for source in pb_src]
 
 libpb_name = 'polybori'
-libpb_name_static = libpb_name + "-static"
+libpb_name_static = libpb_name
 
 libpb=env.StaticLibrary(PBPath(libpb_name_static), pb_src + cudd_resources)
 
@@ -733,8 +733,8 @@ DefaultBuild(libpb)
 pb_shared = shared_object(pb_src)
 shared_resources += pb_shared
 
-libpbShared = slib(PBPath(libpb_name), list(shared_resources))
-#DefaultBuild(libpbShared)
+libpbShared = slib(libpb_name, list(shared_resources))
+pb_symlinks = SymlinkReadableLibname(libpbShared)
 
 env.Clean([libpb] + pb_shared, config_h)
 
@@ -753,7 +753,7 @@ if not(external_m4ri):
    gb_src += m4ri
 
 libgb_name = libpb_name + '_groebner'
-libgb_name_static = libgb_name + "-static"
+libgb_name_static = libgb_name
 
 gb=env.StaticLibrary(GBPath(libgb_name_static), gb_src)
 
@@ -767,9 +767,13 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(GBPath(libgb_name), list(gb_shared),
+libgbShared = slib(libgb_name, list(gb_shared),
+                   LIBPATH = ['.'] + env['LIBPATH'],
                    LIBS = [libpb_name] + env['LIBS'] + GD_LIBS)
-env.Depends(libgbShared, libpbShared)
+
+
+env.Depends(libgbShared, libpbShared + pb_symlinks)
+gb_symlinks = SymlinkReadableLibname(libgbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('include')]
 #print env['CCFLAGS']
@@ -814,7 +818,9 @@ if BOOST_TEST:
     def test_building(target, sources, env):
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
-                    LIBS = env['LIBS'] + [BOOST_TEST, libpb, gb]+ GD_LIBS,
+                    LIBPATH=['libpolybori', 'groebner'] + env['LIBPATH'],
+                    LIBS = env['LIBS'] + [BOOST_TEST,
+                                          libpb_name, libgb_name] + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
     test_building(TestsPath("unittests"), testfiles, env)
@@ -1026,7 +1032,10 @@ if distribute:
     env.Alias('distribute', srcdistri)
     
 devellibs = [libpb,gb] + libpbShared + libgbShared
-readabledevellibs = SymlinkReadableLibname(devellibs)
+
+
+readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
+                                                                        gb])
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
