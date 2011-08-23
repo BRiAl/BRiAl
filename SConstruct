@@ -870,7 +870,7 @@ if HAVE_PYTHON_EXTENSION:
         pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
             LINKFLAGS="-bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS + GD_LIBS, LDMODULESUFFIX=".so",
+            LIBS = pyconf.libs + LIBS + GD_LIBS, LDMODULESUFFIX=".bundle",
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
     else:
