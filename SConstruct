@@ -821,7 +821,7 @@ if BOOST_TEST:
     def test_building(target, sources, env):
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
-                    LIBPATH=['libpolybori', 'groebner'] + env['LIBPATH'],
+                    LIBPATH=['.','libpolybori', 'groebner'] + env['LIBPATH'],
                     LIBS = env['LIBS'] + [BOOST_TEST,
                                           libpb_name, libgb_name] + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
@@ -860,19 +860,29 @@ dynamic_modules = []
 python_absolute = shell_output("which", env["PYTHON"])
 
 if HAVE_PYTHON_EXTENSION:
-    wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
-    fglm_wrapper.cc
+    wrapper_files=[ PyPBPath(f) for f in Split("""main_wrapper.cc
+    test_util.cc fglm_wrapper.cc
     Poly_wrapper.cc navigator_wrap.cc variable_block.cc
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
     slimgb_wrapper.cc""") ] 
     
     if env['PLATFORM']=="darwin":
-        pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
-            wrapper_files + shared_resources,
-            LINKFLAGS="-bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS + GD_LIBS, LDMODULESUFFIX=".bundle",
+        pypbsupp=env.SharedLibrary('PyPolyBoRi',
+            wrapper_files[1:],
+            LINKFLAGS="-L.",
+            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
+            CPPPATH=CPPPATH)
+        env.Depends(pypbsupp, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+
+        pypb=env.LoadableModule('PyPolyBoRi',
+            wrapper_files[0], # + shared_resources,
+            LINKFLAGS="-L. -bundle_loader " + python_absolute,
+            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, "PyPolyBoRi"], 
+            LDMODULESUFFIX=".bundle",
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
+        env.Depends(pypb, pypbsupp)
+        pypb = env.Install(PyPBPath(), pypb)
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
