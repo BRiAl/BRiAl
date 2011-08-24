@@ -1,5 +1,4 @@
-debian/tmp/usr/lib/python2.5 usr/lib
-debian/tmp/usr/lib/python2.4 usr/lib
+debian/tmp/usr/lib/python* usr/lib
 debian/tmp/usr/lib/polybori usr/lib
 debian/tmp/usr/bin /usr
 debian/tmp/usr/share/man /usr/share
