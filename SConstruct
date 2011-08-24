@@ -862,31 +862,33 @@ python_absolute = shell_output("which", env["PYTHON"])
 devellibs =[]
 
 if HAVE_PYTHON_EXTENSION:
-    wrapper_files=[ PyPBPath(f) for f in Split("""main_wrapper.cc
-    test_util.cc fglm_wrapper.cc
+    wrapper_files=[ PyPBPath(f) for f in Split("""pypb_module.cc
+    main_wrapper.cc test_util.cc fglm_wrapper.cc
     Poly_wrapper.cc navigator_wrap.cc variable_block.cc
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
     slimgb_wrapper.cc""") ] 
     
     if env['PLATFORM']=="darwin":
-        pypbsupp=env.SharedLibrary('PyPolyBoRi',
+        libpypb_name = libpb_name + "_python"
+        libpypb = slib(libpypb_name,
             wrapper_files[1:],
             LINKFLAGS="-L.",
             LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
             CPPPATH=CPPPATH)
-        env.Depends(pypbsupp, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+        pypb_symlinks = SymlinkReadableLibname(libpypb)
+        env.Depends(libpypb_name, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
-        devellibs += pypbsupp
-        dylibs += pypbsupp
+        devellibs += libpypb_name
+        dylibs += libpypb_name
 
         pypb=env.LoadableModule('PyPolyBoRi',
             wrapper_files[0], # + shared_resources,
             LINKFLAGS="-L. -bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, "PyPolyBoRi"], 
+            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
             LDMODULESUFFIX=".bundle",
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
-        env.Depends(pypb, pypbsupp)
+        env.Depends(pypb, libpypb + pypb_symlinks)
         dynamic_modules = env.SymLink(PyRootPath('polybori/dynamic',
                                                  str(pypb[0])),  pypb)
 
@@ -1444,11 +1446,11 @@ if 'install' in COMMAND_LINE_TARGETS:
         def fix_install_name(target, source, env):
             names = ' '.join([str(elt) for elt in dylibs])
             names = Split(shell_output('otool', '-D', names))[1::2]
-            print names
-            for elt in names:
-                newname = elt.replace("@loader_path", 
-                                      "@loader_path/../../../..")
-                print "install_name_tool -change %s %s %s"%(elt, newname, target[0])
+            for name in names:
+                newname = "@loader_path/" + \
+                  relpath(InstPyPath("polybori/dynamic"),
+                          expand_repeated(DevelInstLibPath(os.path.basename(name)),env)) 
+                Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
 
         env.AddPostAction(pypb_inst, fix_install_name)
 

@@ -104,8 +104,7 @@ ring_block_end(const BoolePolyRing& ring) {
   return ring.ordering().blockEnd();
 }
 
-//EXPORT
-BOOST_PYTHON_MODULE(PyPolyBoRi){
+void export_main() {
   
   BoolePolyRing r(10);
   BooleMonomial monom(r);
@@ -255,28 +254,4 @@ with inverted variable order\n\
   typedef PBoRiGenericError<CTypes::division_by_zero> pbori_div_by_zero;
   boost::python::register_exception_translator<pbori_div_by_zero>(translator_pboridivisionbyzero);
 
-  export_strategy();
-  export_fglm();
-  export_monomial();
-  export_bset();
-  export_variable_block();
-  export_misc();
-   }
-#ifdef PB_STATIC_PROFILING_VERSION
-int main(int argc,char* argv[]){
-  Py_Initialize();
-  initPyPolyBoRi();
-  PyRun_SimpleString("from sys import path");
-  PyRun_SimpleString("path.append('.')");
-  PyRun_SimpleString("path.append('../pyroot')");
-
-  PyRun_SimpleString("import toprofile");
-  Py_Finalize();
-  return 0;
 }
-#endif
-/*
-
-
-BDD PortToBdd() const;
-*/
