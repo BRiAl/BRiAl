@@ -1442,12 +1442,13 @@ if 'install' in COMMAND_LINE_TARGETS:
         so_pyfiles += pypb_inst
 
         def fix_install_name(target, source, env):
-            names = [elt.split(':')[1] for elt in
-                     Split(shell_output('otool', '-D', dylibs))]
+            names = ' '.join([str(elt) for elt in dylibs])
+            names = Split(shell_output('otool', '-D', names))[1::2]
+            print names
             for elt in names:
                 newname = elt.replace("@loader_path", 
                                       "@loader_path/../../../..")
-                print "install_name_tool -change %s %s)"%(elt, newname)
+                print "install_name_tool -change %s %s %s"%(elt, newname, target[0])
 
         env.AddPostAction(pypb_inst, fix_install_name)
 
