@@ -878,8 +878,8 @@ if HAVE_PYTHON_EXTENSION:
         pypb_symlinks = SymlinkReadableLibname(libpypb)
         env.Depends(libpypb_name, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
-        devellibs += libpypb_name
-        dylibs += libpypb_name
+        devellibs += libpypb
+        dylibs += libpypb
 
         pypb=env.LoadableModule('PyPolyBoRi',
             wrapper_files[0], # + shared_resources,
@@ -1057,16 +1057,15 @@ devellibs += [libpb,gb] + libpbShared + libgbShared
 readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
                                                                         gb])
 
+DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
+PBInclPath = PathJoiner(PBPath('include/polybori'))
+DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
+DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
+
+devellibs_inst = SymlinkReadableLibname(env.Install(DevelInstLibPath(), devellibs))
+
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
-    DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
-    
-    PBInclPath = PathJoiner(PBPath('include/polybori'))
-    DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
-    DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
-      
-    SymlinkReadableLibname(env.Install(DevelInstLibPath(), devellibs))
-
 
     for elt in ['..', '.'] + [path.basename(elt)
                               for elt in glob(PBInclPath('*'))
@@ -1441,9 +1440,12 @@ if 'install' in COMMAND_LINE_TARGETS:
     if env['PLATFORM']=="darwin":
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
+        env.Depends(pypb_inst, devellibs_inst)
+
         so_pyfiles += pypb_inst
 
         def fix_install_name(target, source, env):
+            print "dylibs ", dylibs
             names = ' '.join([str(elt) for elt in dylibs])
             names = Split(shell_output('otool', '-D', names))[1::2]
             for name in names:
