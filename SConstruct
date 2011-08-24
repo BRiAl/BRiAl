@@ -858,6 +858,7 @@ pydocu = []
 dynamic_modules = []
 
 python_absolute = shell_output("which", env["PYTHON"])
+devellibs =[]
 
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""main_wrapper.cc
@@ -873,6 +874,8 @@ if HAVE_PYTHON_EXTENSION:
             LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
             CPPPATH=CPPPATH)
         env.Depends(pypbsupp, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+
+        devellibs += pypbsupp
 
         pypb=env.LoadableModule('PyPolyBoRi',
             wrapper_files[0], # + shared_resources,
@@ -1044,7 +1047,7 @@ if distribute:
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
-devellibs = [libpb,gb] + libpbShared + libgbShared
+devellibs += [libpb,gb] + libpbShared + libgbShared
 
 
 readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
@@ -1060,7 +1063,6 @@ if 'devel-install' in COMMAND_LINE_TARGETS:
       
     SymlinkReadableLibname(env.Install(DevelInstLibPath(), devellibs))
 
-    
 
     for elt in ['..', '.'] + [path.basename(elt)
                               for elt in glob(PBInclPath('*'))
