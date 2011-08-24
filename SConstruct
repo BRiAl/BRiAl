@@ -152,7 +152,7 @@ def _sonameprefix(env):
     linker = detect_linker(env)
     #print linker, "linker detected!"
     if env['PLATFORM']=="darwin":
-        return "-Wl,-dylib_install_name -Wl,"
+        return "-Wl,-dylib_install_name -Wl,@loader_path/"
 
     elif (env['PLATFORM'] == "sunos") and (linker == 'sunos'):
         return '-Wl,-h'
@@ -485,6 +485,7 @@ have_l2h = have_t4h = False
 external_m4ri = False
 GD_LIBS = []
 BOOST_TEST = env['BOOST_TEST']
+dylibs = []
 
 if not env.GetOption('clean'):
     def CheckSizeOfTypes(context):
@@ -821,7 +822,7 @@ if BOOST_TEST:
     def test_building(target, sources, env):
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
-                    LIBPATH=['.','libpolybori', 'groebner'] + env['LIBPATH'],
+                    LIBPATH=['libpolybori', 'groebner'] + env['LIBPATH'],
                     LIBS = env['LIBS'] + [BOOST_TEST,
                                           libpb_name, libgb_name] + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
@@ -876,6 +877,7 @@ if HAVE_PYTHON_EXTENSION:
         env.Depends(pypbsupp, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
         devellibs += pypbsupp
+        dylibs += pypbsupp
 
         pypb=env.LoadableModule('PyPolyBoRi',
             wrapper_files[0], # + shared_resources,
@@ -885,18 +887,18 @@ if HAVE_PYTHON_EXTENSION:
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
         env.Depends(pypb, pypbsupp)
-        pypb = env.Install(PyPBPath(), pypb)
+        dynamic_modules = env.SymLink(PyRootPath('polybori/dynamic',
+                                                 str(pypb[0])),  pypb)
+
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
             CPPPATH=CPPPATH)
-
-    DefaultBuild(pypb)
+        dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
 
     # Define the dynamic python modules in pyroot
-    dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
     documentable_python_modules += dynamic_modules
    
     DefaultBuild(dynamic_modules)
@@ -906,7 +908,6 @@ if HAVE_PYTHON_EXTENSION:
     #DefaultBuild(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
         DefaultBuild(env.Install(polybori_modules, f))
-
 
     
     to_append_for_profile = [libpb, gb]
@@ -1047,6 +1048,7 @@ if distribute:
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
+dylibs += libpbShared + libgbShared
 devellibs += [libpb,gb] + libpbShared + libgbShared
 
 
@@ -1433,9 +1435,26 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     # Executables and shared libraries to be installed
     so_pyfiles = []
-    for instfile in dynamic_modules :
-        installedfile = InstPyPath(relpath(pyroot, instfile.path))
-        so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
+
+    if env['PLATFORM']=="darwin":
+        pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
+                                              pypb))
+        so_pyfiles += pypb_inst
+
+        def fix_install_name(target, source, env):
+            names = [elt.split(':')[1] for elt in
+                     Split(shell_output('otool', '-D', dylibs))]
+            for elt in names:
+                newname = elt.replace("@loader_path", 
+                                      "@loader_path/../../../..")
+                print "install_name_tool -change %s %s)"%(elt, newname)
+
+        env.AddPostAction(pypb_inst, fix_install_name)
+
+    else:
+        for instfile in dynamic_modules :
+            installedfile = InstPyPath(relpath(pyroot, instfile.path))
+            so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
     pyfiles = []
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
