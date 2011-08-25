@@ -386,6 +386,9 @@ def _sonamecmd(prefix, target, suffix, env = env):
     if len(soname) > 0:
         return prefix + soname[0] + suffix    
     else:
+        if env['PLATFORM']=="darwin":
+            return prefix + path.basename(target) + suffix
+
         return ''
     
 env['_sonamecmd'] = _sonamecmd
@@ -876,7 +879,7 @@ if HAVE_PYTHON_EXTENSION:
             LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
             CPPPATH=CPPPATH)
         pypb_symlinks = SymlinkReadableLibname(libpypb)
-        env.Depends(libpypb_name, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+        env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
         devellibs += libpypb
         dylibs += libpypb
