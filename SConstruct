@@ -274,9 +274,9 @@ opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.',
          '${_sonameprefix(__env__)}')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
-opts.Add(BoolVariable('ABSOLUTE_INSTALL_NAME',
-         'Force absolute paths for dylib install_name (darwin only)', 
-         False))
+opts.Add('INSTALL_NAME_DIR',
+         'Path to be used for dylib install_name (darwin only)',
+         '@loader_path')
 
 
 opts.Add('SHLINKFLAGS',
@@ -1451,10 +1451,12 @@ if 'install' in COMMAND_LINE_TARGETS:
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
         env.Depends(pypb_inst, devellibs_inst)
-        if env['ABSOLUTE_INSTALL_NAME']:
+        if env['INSTALL_NAME_DIR'] is not None:
+            name = os.path.join(env['INSTALL_NAME_DIR'], 
+                                "${TARGET.name}")
             for elt in dylibs_inst:
                 env.AddPostAction(elt, 
-                    "install_name_tool -id ${TARGET.abspath} $TARGET")
+                    "install_name_tool -id " + name + " $TARGET")
 
         so_pyfiles += pypb_inst
 
