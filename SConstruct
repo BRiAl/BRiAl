@@ -152,7 +152,7 @@ def _sonameprefix(env):
     linker = detect_linker(env)
     #print linker, "linker detected!"
     if env['PLATFORM']=="darwin":
-        return "-Wl,-dylib_install_name -Wl,@loader_path/"
+        return "-install_name @loader_path/"
 
     elif (env['PLATFORM'] == "sunos") and (linker == 'sunos'):
         return '-Wl,-h'
