@@ -1450,6 +1450,8 @@ if 'install' in COMMAND_LINE_TARGETS:
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
         env.Depends(pypb_inst, devellibs_inst)
+        print "Absolute? ", env['ABSOLUTE_INSTALL_NAME']
+        print devellibs_inst
         if env['ABSOLUTE_INSTALL_NAME']:
             for elt in devellibs_inst:
                 env.AddPostAction(elt, 
