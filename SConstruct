@@ -495,6 +495,7 @@ external_m4ri = False
 GD_LIBS = []
 BOOST_TEST = env['BOOST_TEST']
 dylibs = []
+stlibs = []
 
 if not env.GetOption('clean'):
     def CheckSizeOfTypes(context):
@@ -868,7 +869,6 @@ pydocu = []
 dynamic_modules = []
 
 python_absolute = shell_output("which", env["PYTHON"])
-devellibs =[]
 
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""pypb_module.cc
@@ -887,7 +887,6 @@ if HAVE_PYTHON_EXTENSION:
         pypb_symlinks = SymlinkReadableLibname(libpypb)
         env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
-        devellibs += libpypb
         dylibs += libpypb
 
         pypb=env.LoadableModule('PyPolyBoRi',
@@ -1060,8 +1059,7 @@ if distribute:
     env.Alias('distribute', srcdistri)
     
 dylibs += libpbShared + libgbShared
-devellibs += [libpb,gb] + libpbShared + libgbShared
-
+stlibs += [libpb, gb]
 
 readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
                                                                         gb])
@@ -1071,8 +1069,10 @@ PBInclPath = PathJoiner(PBPath('include/polybori'))
 DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
 DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
 
-devellibs_plain = env.Install(DevelInstLibPath(), devellibs)
-devellibs_inst = SymlinkReadableLibname(devellibs_plain)
+dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
+stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
+
+devellibs_inst = SymlinkReadableLibname(dylibs_inst) + dylibs_inst + stlibs_inst
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
@@ -1450,9 +1450,9 @@ if 'install' in COMMAND_LINE_TARGETS:
     if env['PLATFORM']=="darwin":
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
-        env.Depends(pypb_inst, devellibs_plain + devellibs_inst)
+        env.Depends(pypb_inst, devellibs_inst)
         if env['ABSOLUTE_INSTALL_NAME']:
-            for elt in devellibs_plain:
+            for elt in dylibs_inst:
                 env.AddPostAction(elt, 
                     "install_name_tool -id ${TARGET.abspath} $TARGET")
 
@@ -1576,5 +1576,5 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.Alias('install', conffile)
     
 
-env.Alias('prepare-devel', devellibs + readabledevellibs)
+env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
