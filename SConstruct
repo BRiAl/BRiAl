@@ -1071,7 +1071,8 @@ PBInclPath = PathJoiner(PBPath('include/polybori'))
 DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
 DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
 
-devellibs_inst = SymlinkReadableLibname(env.Install(DevelInstLibPath(), devellibs))
+devellibs_plain = env.Install(DevelInstLibPath(), devellibs)
+devellibs_inst = SymlinkReadableLibname(devellibs_plain)
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
@@ -1449,11 +1450,9 @@ if 'install' in COMMAND_LINE_TARGETS:
     if env['PLATFORM']=="darwin":
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
-        env.Depends(pypb_inst, devellibs_inst)
-        print "Absolute? ", env['ABSOLUTE_INSTALL_NAME']
-        print devellibs_inst
+        env.Depends(pypb_inst, devellibs_plain + devellibs_inst)
         if env['ABSOLUTE_INSTALL_NAME']:
-            for elt in devellibs_inst:
+            for elt in devellibs_plain:
                 env.AddPostAction(elt, 
                     "install_name_tool -id ${TARGET.abspath} $TARGET")
 
