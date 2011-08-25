@@ -466,6 +466,8 @@ class PythonConfig(object):
                                          querycmd("get_config_vars()['LIBPL']"))
         self.libs = shell_output(self.python, "-c",
                                  querycmd("get_config_vars()['LIBS']"))
+        self.module_suffix = shell_output(self.python, "-c",
+                                          querycmd("get_config_vars()['SO']"))
 
         self.libs = self.libs.split()
         if env['PLATFORM']=="darwin":
@@ -888,7 +890,7 @@ if HAVE_PYTHON_EXTENSION:
             wrapper_files[0], # + shared_resources,
             LINKFLAGS="-L. -bundle_loader " + python_absolute,
             LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
-            LDMODULESUFFIX=".bundle",
+            LDMODULESUFFIX=pyconf.module_suffix,
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
         env.Depends(pypb, libpypb + pypb_symlinks)
@@ -899,7 +901,7 @@ if HAVE_PYTHON_EXTENSION:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
+            LDMODULESUFFIX=pyconf.module_suffix,SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
             CPPPATH=CPPPATH)
         dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
 
