@@ -360,7 +360,6 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
-
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
 
@@ -510,15 +509,46 @@ if not env.GetOption('clean'):
         (result, values) = context.TryRun(test_src_sizeof, '.c')
         result = (result == 1)
         if result:
-            context.Message('got ' + values + '...')
+            context.Display('got ' + values + '...')
             env.Append(CPPDEFINES=Split(values))
         context.Result(result)
         return result
 
-    conf = Configure(env, custom_tests = {'CheckSizeOfTypes' : CheckSizeOfTypes})
+    def GuessM4RIFlags(context):
+        context.Message('Guessing m4ri compile flags... ')
+        test_src =  """
+        #include <m4ri/m4ri.h>
+        #include <stdio.h>
+        int main(int argc, char **argv) {
+          /* we test for some possible current and future configurations */
+          %s
+          return 0;
+        }
+        """  %  \
+        ''.join(["""
+        #if defined(__M4RI_HAVE_%(macro)s) || defined(HAVE_%(macro)s )
+          printf("-m%(option)s ");
+        #endif""" % \
+        dict(macro=opt.replace('.','_').upper(), option=opt) for opt in \
+            Split("sse sse2 sse3 sse4 sse4.1 sse4.2 sse4a ssse3 mmx 3dnow") ])
+
+        (result, values) = context.TryRun(test_src, '.c')
+        result = (result == 1)
+        if result:
+            context.Display(values)
+            env.Append(CCFLAGS=Split(values))
+            env.Append(CXXFLAGS=Split(values))
+        context.Result(result)
+        return result
+
+    conf = Configure(env, 
+                     custom_tests = {'CheckSizeOfTypes': CheckSizeOfTypes,
+                                     'GuessM4RIFlags': GuessM4RIFlags})
     if not conf.CheckSizeOfTypes():
-        print "Could not detect type sizes (maybe LIBS trouble)! Exiting."
+        print "Could not detect type sizes (maybe compile/link flags " + \
+            "trouble)! Exiting."
         Exit(1)
+
 
     gdlibs = env["GD_LIBS"]
     if gdlibs and conf.CheckCHeader("gd.h"):
@@ -600,6 +630,8 @@ if not env.GetOption('clean'):
        env['LIBS'] += ['m4ri']
     else:
        env['CPPPATH'] = ['M4RI'] + env['CPPPATH']
+
+    conf.GuessM4RIFlags()
 
     env = conf.Finish()
 
