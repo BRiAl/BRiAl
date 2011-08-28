@@ -208,6 +208,9 @@ else:
              "-std=c++98 -ftemplate-depth-100",
              converter = Split)
 
+
+opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split)
+
 opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
              repr(defaultenv['LINKFLAGS']))
 
@@ -538,8 +541,8 @@ if not env.GetOption('clean'):
         result = (result == 1)
         if result:
             context.Display(values)
-            env.Append(CCFLAGS=Split(values))
-            env.Append(CXXFLAGS=Split(values))
+            env.Append(M4RI_CFLAGS=Split(values))
+
         context.Result(result)
         return result
 
@@ -637,7 +640,6 @@ if not env.GetOption('clean'):
 
     env = conf.Finish()
 
-
 else: # when cleaning
     # Work around bug in older SCons (didn't remove symlinks to files)
     if scons_version() < ['1','3','0']:
@@ -696,6 +698,10 @@ def shared_object(o, **kwds):
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
 env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
+
+env.Append(CCFLAGS=["$M4RI_CFLAGS"])
+if oldstyle_flags() :
+    env.Append(CXXFLAGS=["$M4RI_CFLAGS"])
 
 ######################################################################
 # Stuff for building Cudd library
