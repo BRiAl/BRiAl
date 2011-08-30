@@ -209,7 +209,7 @@ else:
              converter = Split)
 
 
-opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split)
+opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
 
 opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
              repr(defaultenv['LINKFLAGS']))
@@ -636,6 +636,7 @@ if not env.GetOption('clean'):
     else:
        env['CPPPATH'] = ['M4RI'] + env['CPPPATH']
 
+
     conf.GuessM4RIFlags()
 
     env = conf.Finish()
@@ -692,6 +693,7 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 def shared_object(o, **kwds):
     return env.SharedObject(o, **kwds)
 
+
 ######################################################################
 # Change some flags globally
 ######################################################################
@@ -699,9 +701,10 @@ def shared_object(o, **kwds):
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
 env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
 
-env.Append(CCFLAGS=["$M4RI_CFLAGS"])
-if oldstyle_flags() :
-    env.Append(CXXFLAGS=["$M4RI_CFLAGS"])
+env.Append(CCFLAGS="$M4RI_CFLAGS")
+env.Append(CXXFLAGS="$M4RI_CFLAGS")
+env.Append(SHCCFLAGS="$M4RI_CFLAGS")
+env.Append(SHCXXFLAGS="$M4RI_CFLAGS")
 
 ######################################################################
 # Stuff for building Cudd library
