@@ -1163,6 +1163,16 @@ def cp_all(target, source, env):
 
     return None
 
+def CopyAll(targetdir, sourcedir, env):
+    targets = []
+    for patt in env['COPYALL_PATTERNS']:
+        for file in glob(path.join(sourcedir, patt)):
+            if not path.isdir(file):
+                result = str(path.join(targetdir, path.basename(file)))
+                targets += env.Install(targetdir, file)
+
+    return FinalizeNonExecs(targets)            
+
 # Copy python docu from one directory to the other and correct paths to modules
 def cp_pydoc(target, source, env):
 
@@ -1537,8 +1547,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     # Copy c++ documentation
     if HAVE_DOXYGEN:
-        cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
-                                 env.Dir(DocPath('c++/html'))) 
+        cxxdocinst = CopyAll(InstDocPath('c++'),
+                             DocPath('c++/html'), env) 
         env.Depends(cxxdocinst, cxxdocu)
         env.Clean(cxxdocinst, cxxdocinst)
 
@@ -1552,10 +1562,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Clean(pydocuinst, pydocuinst)
 
     # Copy Cudd documentation
-    env.CopyAll(env.Dir(InstDocPath('cudd')),
-                env.Dir('Cudd/cudd/doc') ) 
-    env.CopyAll(env.Dir(InstDocPath('cudd/icons')),
-                env.Dir('Cudd/cudd/doc/icons'))
+    CopyAll(InstDocPath('cudd'), 'Cudd/cudd/doc', env) 
+    CopyAll(InstDocPath('cudd/icons'), 'Cudd/cudd/doc/icons', env)
 
     # Copy Tutorial
     if have_l2h or have_t4h :
