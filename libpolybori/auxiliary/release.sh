@@ -107,7 +107,8 @@ TARBALL=`ls *tar.gz`
 rm -rf $RELEASE_DIR
 mkdir $RELEASE_DIR
 
-patt1=`echo $RELEASE_TAG| sed -e "s/v\([^.]*\.[^.]*\)\..*/\1/" `
+patt1=${RELEASE_TAG/v/}
+#`echo $RELEASE_TAG| sed -e "s/v\([^.]*\.[^.]*\)\..*/\1/" `
 patt2=${HG_TAG/v/}
 
 tarresult=${TARBALL/$patt1/$patt2}
