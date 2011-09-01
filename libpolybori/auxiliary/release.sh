@@ -124,9 +124,10 @@ mkdir $TMPDIR/debian
 cd $TMPDIR/debian
 
 patt3=${RELEASE_TAG/v/}
-tardebian=${TARBALL/-$patt1/_$patt3.orig}
+tardebian1=${TARBALL/-/_}
+tardebian=${tardebian1/tar.gz/orig.tar.gz}
 
-cp $BUILDDIR/$TARBALL $tardebian
+cp $BUILDDIR/$TARBALL ${tardebian}
 
 tar -xvzf $tardebian
 cd polybori-*
@@ -137,5 +138,7 @@ rm -rf .scon* *.pyc
 cd -
 dpkg-source -b polybori-*  $tardebian || exit 1
 
+cp -a . $RELEASE_DIR/debian
+tar -cvzf $RELEASE_DIR/polybori_${HG_TAG/v/}.debian.tar.gz polybori_*.*
 
 rm -rf $TMPDIR
