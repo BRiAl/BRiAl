@@ -10,6 +10,7 @@ while [ "$VALUE" != "" ]; do
     echo "<opts> may be a sequence of the following options:"
     echo "  -f, --force: tag  even if tag is already existing"
     echo "  -n, --non-changing: do not make changes on repos"
+    echo "  -s, --syn: do not make changes on repos but syncing"
     echo "  -t, --tag: use the tag <arg1> (default is read from versionnumber)"
     echo "  -a, --auto:  use content of file 'versionnumber' for tagging"
     echo "  -h, --help:  print this usage text and exit"
@@ -35,6 +36,12 @@ while [ "$VALUE" != "" ]; do
   if [ "$1" = "-n" -o "$1" = "--non-changing" ]; then
     echo "Note: not changing repositories!"
     EXEC="echo Skipping: "
+    EXECSYNC="echo Skipping: "
+  fi
+  if [ "$1" = "-s" -o "$1" = "--sync" ]; then
+    echo "Note: not tagging!"
+    EXEC="echo Skipping: "
+    EXECSYNC=""
   fi
   shift
   VALUE=`echo "_$1" | grep "^_-"`
@@ -62,7 +69,6 @@ cd ${OLDPWD}
 cd $THIS_DIR/../../
 
 VERSION_NUMBER=`sed -e "s/-/./g" versionnumber`
-RELEASE_DIR="$OLDPWD/release-$VERSION_NUMBER"
 RELEASE_TAG="v${VERSION_NUMBER}"
 
 if [ "${HG_TAG}" = "" ]; then
@@ -74,12 +80,14 @@ if [ "${HG_TAG}" = "" ]; then
     HG_TAG="$RELEASE_TAG"
 fi
 
+RELEASE_DIR="$OLDPWD/release-${HG_TAG/v/}"
+
 echo "Releasing PolyBoRi release ${HG_TAG}"
 
 $EXEC hg tag $FORCED $HG_TAG || (echo "Release already tagged!"; exit 1)
 $EXEC hg push || (echo "Pushing to devel repo failed"; exit 1)
 # please set ssh site data in .ssh/config
-$EXEC hg push ssh://polybori/hgroot/polybori/polybori/ \
+$EXECSYNC hg push ssh://polybori/hgroot/polybori/polybori/ \
   || (echo "Pushing to official Repo failed"; exit 1)
 
 rm -rf $TMPDIR
@@ -111,4 +119,23 @@ cp `find pkgs -name "*.src.rpm" -o -name "*.spec"  -o -name "*.tar.*"` $RELEASE_
 
 hg parents
 hg tags |grep "$RELEASE_TAG" 
+
+mkdir $TMPDIR/debian
+cd $TMPDIR/debian
+
+patt3=${RELEASE_TAG/v/}
+tardebian=${TARBALL/-$patt1/_$patt3.orig}
+
+cp $BUILDDIR/$TARBALL $tardebian
+
+tar -xvzf $tardebian
+cd polybori-*
+
+scons prepare-debian
+rm -rf .scon* *.pyc
+
+cd -
+dpkg-source -b polybori-*  $tardebian || exit 1
+
+
 rm -rf $TMPDIR
