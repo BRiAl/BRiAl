@@ -18,7 +18,7 @@ except:
 
 
 libraryversion = "0.0.0"
-debname = "polybori-" + pboriversion
+debname = "polybori-" + pboriversion + '.' + pborirelease
 
 import tarfile
 
