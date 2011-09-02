@@ -1500,7 +1500,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Executables and shared libraries to be installed
     so_pyfiles = []
 
-    if env['PLATFORM']=="darwin":
+    if env['PLATFORM']=="darwin" and HAVE_PYTHON_EXTENSION:
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
         env.Depends(pypb_inst, devellibs_inst)
