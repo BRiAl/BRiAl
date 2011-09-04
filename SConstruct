@@ -18,7 +18,7 @@ except:
 
 
 libraryversion = "0.0.0"
-debname = "polybori-" + pboriversion
+debname = "polybori-" + pboriversion + '.' + pborirelease
 
 import tarfile
 
@@ -118,9 +118,6 @@ if distribute or rpm_generation or deb_generation:
         return arg
 
 defaultenv = Environment()
-if defaultenv['PLATFORM'] == "darwin":
-    defaultenv['SHCCFLAGS'] += ["-fvisibility=hidden"]
-    
 
 # See also: http://trac.sagemath.org/sage_trac/ticket/9872 and #6437
 def detect_linker(env):
@@ -131,11 +128,22 @@ def detect_linker(env):
     # Non-gnu linker or linux (could be Sun or Intel linker) will return 'posix'.
     return env['PLATFORM']
 
-def sonameprefix(env):
-    linker = detect_linker(env)
-    print linker, "linker detected!"
+# for gentoo-prefix on OS X
+def _fix_dynlib_namespace(env):
+
     if env['PLATFORM']=="darwin":
-        return "-Wl,-dylib_install_name -Wl,"
+        return "-Wl,-flat_namespace"
+    return ""
+
+
+if 'dump_default' in COMMAND_LINE_TARGETS:
+  print defaultenv.Dump()
+
+def _sonameprefix(env):
+    linker = detect_linker(env)
+    #print linker, "linker detected!"
+    if env['PLATFORM']=="darwin":
+        return "-install_name @loader_path/"
 
     elif (env['PLATFORM'] == "sunos") and (linker == 'sunos'):
         return '-Wl,-h'
@@ -143,15 +151,18 @@ def sonameprefix(env):
     else:
         return '-Wl,-soname,'
 
-if 'dump_default' in COMMAND_LINE_TARGETS:
-  print defaultenv.Dump()
-
 # Define option handle, may be changed from command line or custom.py
-opts.Add('CXX', 'C++ Compiler',  defaultenv['CXX'])
-opts.Add('CC', 'C Compiler', defaultenv['CC'])
+opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
+         repr(defaultenv['CXX']))
+opts.Add('CC', 'C Compiler (inherited from SCons with defaults:)' + \
+             repr(defaultenv['CC']))
 
-opts.Add('SHCXX', 'C++ Compiler (preparing shared libraries)', '$CXX')
-opts.Add('SHCC', 'C Compiler (preparing shared libraries)', '$CC')
+opts.Add('SHCXX', 
+         'C++ Compiler (preparing shared libraries); ' + \
+         'inherited with defaults: ' + repr(defaultenv['SHCXX']))
+opts.Add('SHCC', 
+         'C Compiler (preparing shared libraries); ' + \
+             'inherited with defaults: ' + repr(defaultenv['SHCC']))
 
 opts.Add('PYTHON', 'Python executable', "python$PROGSUFFIX")
 
@@ -162,15 +173,47 @@ opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
          ['NDEBUG'], converter = Split)
 
-opts.Add('CCFLAGS', "C/C++ compiler flags", "-O3", converter = Split)
+def scons_version():
+    import SCons
+    return SCons.__version__.split('.')
+
+def oldstyle_flags():
+    return scons_version() < ['0','97','0']
 
 opts.Add('CFLAGS', "C compiler flags", "-std=c99",
          converter = Split)
 opts.Add('CXXFLAGS', "C++ compiler flags", "-std=c++98 -ftemplate-depth-100",
          converter = Split)
+if oldstyle_flags() :
+    opts.Add('CCFLAGS', "C compiler flags", 
+             "-O3 -std=c99", converter = Split)
+    opts.Add('CXXFLAGS', "C++ compiler flags", 
+             "-O3 -std=c++98 -ftemplate-depth-100",
+             converter = Split)
+else:
+    opts.Add('CCFLAGS', "C/C++ compiler flags", 
+             "-O3", converter = Split)
+    opts.Add('CFLAGS', "C compiler flags", "-std=c99",
+             converter = Split)
+    opts.Add('CXXFLAGS', "C++ compiler flags", 
+             "-std=c++98 -ftemplate-depth-100",
+             converter = Split)
 
-opts.Add('LINKFLAGS', "Linker flags", defaultenv['LINKFLAGS'] + ['-s'])
+
+opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
+
+opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
+             repr(defaultenv['LINKFLAGS']))
+
+opts.Add('CUSTOM_LINKFLAGS',
+         """Addtional linker flags (e.g. '-s' for stripping, and
+         '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
+         ["${_fix_dynlib_namespace(__env__)}"])
+
+
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
+opts.Add('GD_LIBS', 'Library gb abd its dependencies (if needed)', ["gd"],
+         converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
 opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
@@ -186,6 +229,10 @@ opts.Add('PYINSTALLPREFIX',
 
 opts.Add('DEVEL_PREFIX',
          'development version installation directory','$PREFIX' )
+opts.Add('DEVEL_INCLUDE_PREFIX',
+         'development version header installation directory','$DEVEL_PREFIX/include' )
+opts.Add('DEVEL_LIB_PREFIX',
+         'development version library installation directory','$DEVEL_PREFIX/lib' )
 
 opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
@@ -194,8 +241,13 @@ opts.Add(BoolVariable('HAVE_DOXYGEN',
 opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
                     'Build python extension, if possible', True))
 
-opts.Add('BOOST_LIBRARY',
-         'Name of Boost library to link with', 'boost_python')
+opts.Add('BOOST_PYTHON',
+         'Name of Boost-python library to link with', 'boost_python')
+
+opts.Add('BOOST_TEST',
+         'Name of Boost unit test framework library to link with',
+         'boost_unit_test_framework')
+
 
 opts.Add(BoolVariable('RELATIVE_SYMLINK',
                     'Use relative symbolic links on install', True))
@@ -212,17 +264,36 @@ opts.Add(BoolVariable('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
 opts.Add(BoolVariable('USE_TIMESTAMP', 'Use timestamp on distribution', True))
 opts.Add(BoolVariable('SHLIBVERSIONING',
                     'Use dlltool-style versionated shared library', True))
-opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', sonameprefix(defaultenv))
+opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', 
+         '${_sonameprefix(__env__)}')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
+opts.Add('INSTALL_NAME_DIR',
+         'Path to be used for dylib install_name (darwin only)',
+         '@loader_path')
+
+
 opts.Add('SHLINKFLAGS',
-         'Shared libraries link flags.', defaultenv['SHLINKFLAGS'] +
+         'Shared libraries link flags.')
+
+opts.Add('SONAMEFLAGS',
+         'Shared libraries link flags.',
          ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
 
 opts.Add('SHLIBVERSIONSUFFIX',
          'Shared libraries suffix for library versioning.',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
+
+
+def _shccflags(env):
+    if env['PLATFORM'] == "darwin":
+        return ["-fvisibility=hidden"]
+    return []
+
+opts.Add('MODULE_SHCCFLAGS',
+         'Additional dynamic module compile flags.',
+         ['${_shccflags(__env__)}'], converter = Split)
 
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
@@ -250,16 +321,18 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         defaultenv = Environment(tools=tools)
 
 for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
-SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
     if defaultenv.has_key(var):
-        opts.Add(var, "inherited from SCons", defaultenv[var])
+        opts.Add(var, 
+                 "inherited from SCons with default: " + repr(defaultenv[var]))
     else:
         print "Variable", var, "not in default environment!"
 
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS"""):
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
     if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons",
-             defaultenv[flag], converter = Split)
+        opts.Add(flag, "flags inherited from SCons with default: " + \
+                     repr(defaultenv[flag]),
+                 converter = Split)
     else:
         print "Flags", flag, "not in default environment!"
 
@@ -311,9 +384,27 @@ def _sonamecmd(prefix, target, suffix, env = env):
     if len(soname) > 0:
         return prefix + soname[0] + suffix    
     else:
+        if env['PLATFORM']=="darwin":
+            return prefix + path.basename(target) + suffix
+
         return ''
     
 env['_sonamecmd'] = _sonamecmd
+env['_sonameprefix'] = _sonameprefix
+env['_fix_dynlib_namespace'] = _fix_dynlib_namespace
+env['_shccflags'] = _shccflags
+
+# dynamic module flags
+def _dynmodule_flags(env):
+    """Creates special flags for dynamic libraries, in particular on darwin."""
+    if env['PLATFORM'] == "darwin":
+        return "-Wl,-undefined -Wl,dynamic_lookup"
+    else:
+        return ""
+
+    
+env['_dynmodule_flags'] = _dynmodule_flags
+
 
 cache_opts = PBPath('include/cacheopts.h')
 cache_opts_file = open(cache_opts, "w")
@@ -355,7 +446,16 @@ class PythonConfig(object):
                                          querycmd("get_config_vars()['LIBPL']"))
         self.libs = shell_output(self.python, "-c",
                                  querycmd("get_config_vars()['LIBS']"))
-        self.libs = self.libs.replace('-l','').split()
+        self.module_suffix = shell_output(self.python, "-c",
+                                          querycmd("get_config_vars()['SO']"))
+
+        self.libs = self.libs.split()
+        if env['PLATFORM']=="darwin":
+            #workaround for -framework, CoreFoundation entries...
+            self.libs=[l for l in self.libs if l.startswith('-l')]
+        
+        self.libs=[l.replace('-l','') for l in self.libs]
+            
         self.libname = 'python' + str(self.version)
 
 pyconf = PythonConfig(env["PYTHON"])
@@ -368,12 +468,74 @@ Help(opts.GenerateHelpText(env))
 
 have_l2h = have_t4h = False
 external_m4ri = False
+GD_LIBS = []
+BOOST_TEST = env['BOOST_TEST']
+dylibs = []
+stlibs = []
 
 if not env.GetOption('clean'):
-    conf = Configure(env)
-    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
-        env.Append(LIBS=["gd"])
-        env.Append(CPPDEFINES=["HAVE_GD"])
+    def CheckSizeOfTypes(context):
+        context.Message('Detecting type sizes... ')
+        test_src_sizeof =  """
+        #include <stdio.h>
+        int main(int argc, char **argv) {
+          printf("SIZEOF_VOID_P=%i SIZEOF_INT=%i SIZEOF_LONG=%i", sizeof(void*), sizeof(int), sizeof(long));
+          return 0;
+        }
+        """
+        (result, values) = context.TryRun(test_src_sizeof, '.c')
+        result = (result == 1)
+        if result:
+            context.Display('got ' + values + '...')
+            env.Append(CPPDEFINES=Split(values))
+        context.Result(result)
+        return result
+
+    def GuessM4RIFlags(context):
+        context.Message('Guessing m4ri compile flags... ')
+        test_src =  """
+        #include <m4ri/%s>
+        #include <stdio.h>
+        int main(int argc, char **argv) {
+          /* we test for some possible current and future configurations */
+          %s
+          return 0;
+        }
+        """  %  \
+        ("%s", ''.join(["""
+        #if defined(__M4RI_HAVE_%(macro)s) || defined(HAVE_%(macro)s )
+          printf("-m%(option)s ");
+        #endif""" % \
+        dict(macro=opt.replace('.','_').upper(), option=opt) for opt in \
+            Split("sse sse2 sse3 sse4 sse4.1 sse4.2 sse4a ssse3 mmx 3dnow") ]) )
+        (result, values) = context.TryRun(test_src % "m4ri_config.h", '.c')
+	if result != 1:
+            (result, values) = context.TryRun(test_src % "config.h", '.c')
+
+        result = (result == 1)
+        if result:
+            context.Display(values)
+            env.Append(M4RI_CFLAGS=Split(values))
+
+        context.Result(result)
+        return result
+
+    conf = Configure(env, custom_tests = {'CheckSizeOfTypes': CheckSizeOfTypes,
+                                          'GuessM4RIFlags': GuessM4RIFlags})
+    if not conf.CheckSizeOfTypes():
+        print "Could not detect type sizes (maybe compile/link flags " + \
+            "trouble)! Exiting."
+        Exit(1)
+
+    gdlibs = env["GD_LIBS"]
+    if gdlibs and conf.CheckCHeader("gd.h"):
+        store_libs = env["LIBS"]
+        env.Append(LIBS=gdlibs[1:])
+        if conf.CheckLib(gdlibs[0]):
+            env.Append(CPPDEFINES=["HAVE_GD"])
+            GD_LIBS = gdlibs
+        env["LIBS"] = store_libs
+
 
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
@@ -391,9 +553,8 @@ if not env.GetOption('clean'):
         env.Append(CPPPATH=[pyconf.incdir])
         env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
 
-        env.Append(CPPPATH=[PBPath('include')])
+        env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
         env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
-        env.Append(LIBPATH=["polybori","groebner"])
         env.Prepend(LIBS = ["m"])
 
 
@@ -413,12 +574,17 @@ if not env.GetOption('clean'):
             print "(needed for python extension)!"
             Exit(1)   
 
-        if not ( conf.CheckLibWithHeader([env['BOOST_LIBRARY']],
+        if not ( conf.CheckLibWithHeader([env['BOOST_PYTHON']],
                  path.join('boost', 'python.hpp'), 'c++') ):
             HAVE_PYTHON_EXTENSION = False
-            print "Warning Boost/Python library (", env['BOOST_LIBRARY'],
+            print "Warning Boost/Python library (", env['BOOST_PYTHON'],
             print ") not available (needed for python extension)!"
             Exit(1)
+
+    if not conf.CheckLib(BOOST_TEST):
+         print "Warning Boost/unit test framework library (",
+         print BOOST_TEST, ") not available. Skipping tests."
+         BOOST_TEST = None
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
@@ -435,31 +601,34 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
     external_m4ri = conf.CheckLib('m4ri')
-    if conf.CheckCHeader("gd.h") and conf.CheckLib("gd"):
-        env.Append(LIBS=["gd"])
-        env.Append(CPPDEFINES=["HAVE_GD"])
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
-       env['CPPPATH'] += ['M4RI']
+       env['CPPPATH'] = ['M4RI'] + env['CPPPATH']
 
        # generate M4RI/m4ri, to allow canonical #include <m4ri/m4ri.h>
        if not path.exists(m4ri_inc):
            print "Symlinking to", m4ri_inc, "..."
            os.symlink('.', m4ri_inc)
 
+    conf.GuessM4RIFlags()
+           
     env = conf.Finish()
 
-
-else:
-    # Removing symlink M4RI/m4ri
-    if path.exists(m4ri_inc) and path.islink(m4ri_inc):
-        print "Removing symbolic link to ", m4ri_inc, "..."
-        os.remove(m4ri_inc)
-
+else: # when cleaning
+    # Work around bug in older SCons (didn't remove symlinks to files)
+    if scons_version() < ['1','3','0']:
+        for elt in glob('*' + env['SHLIBSUFFIX'] + "*"):
+            if os.path.islink(elt):
+                os.remove(elt)
+ 
 # end of not cleaning
 
-env.Clean('.', glob('*.pyc') + ['config.log'] )
+env.Clean('.', Split("""config.log .sconsign.dblite .sconf_temp""") + \
+              glob(PBPath('*' + env['LIBSUFFIX'])) + \
+              glob(GBPath('*' + env['LIBSUFFIX'])) + \
+              glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
+
 
 have_pydoc = env['HAVE_PYDOC']
 
@@ -471,28 +640,45 @@ shared_resources = []
 
 # Builder for symlinks
 def build_symlink(target, source, env):
-    targetdir = str(target[0].dir)
-    target = target[0].path
-    source = source[0].path
+
+    target = target[0]
+    targetdir = target.dir.abspath
+    targetpath = target.abspath
+    target = target.path
+    source = source[0].abspath
+
     if env['RELATIVE_SYMLINK'] :
         source = relpath(targetdir, source)
     if not source:
         source = '.'
-        
+
     print "Symlinking from", source, "to", target
-    
-    try:
-        if path.exists(target):
-            os.remove(target)
-        os.symlink(source, target)
-    except:
-        return True
+   
+    if path.exists(targetpath):
+        Remove(targetpath)
+    os.symlink(source, targetpath)
+
     return None
 
 symlinkbld = Builder(action = build_symlink)
 
 env.Append(BUILDERS={'SymLink' : symlinkbld})
 
+def shared_object(o, **kwds):
+    return env.SharedObject(o, **kwds)
+
+
+######################################################################
+# Change some flags globally
+######################################################################
+
+env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
+env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
+
+env.Append(CCFLAGS="$M4RI_CFLAGS")
+env.Append(CXXFLAGS="$M4RI_CFLAGS")
+env.Append(SHCCFLAGS="$M4RI_CFLAGS")
+env.Append(SHCXXFLAGS="$M4RI_CFLAGS")
 ######################################################################
 # Stuff for building Cudd library
 ######################################################################
@@ -503,14 +689,12 @@ env.Append(CPPDEFINES=["HAVE_IEEE_754"])
 if not env['PLATFORM'] in ["darwin", "cygwin"] :
     env.Append(CPPDEFINES=["BSD"])
 
-env.Append(LIBPATH=[CuddPath()])
 
 cudd_resources = [CuddPath('obj/cuddObj.cc')]
 cudd_resources += glob(CuddPath('util/*.c'))
 
 cudd_headers = [ CuddPath(fname) for fname in ['obj/cuddObj.hh', 'util/util.h',
                                                'cudd/cuddInt.h'] ] 
-
 env.Append(CPPPATH = [ CuddPath(fdir) for fdir in ['obj', 'util'] ])
 
 def shared_object(o):
@@ -559,16 +743,13 @@ def SymlinkReadableLibname(files):
 def VersionatedSharedLibrary(*args, **kwds):
 
     kwds['SHLIBSUFFIX'] = env.subst('$SHLIBVERSIONSUFFIX')
-    
-    return env.SharedLibrary(*args, **kwds)
+
+    sharedlib = env.SharedLibrary
+    return sharedlib(*args, **kwds)
 
 slib = env.SharedLibrary
 if env['SHLIBVERSIONING']:
     slib = VersionatedSharedLibrary
-#if env['PLATFORM']=="darwin":
-#    slib=env.LoadableModule
-
-
 libCuddShared = slib(CuddPath(cudd_name), list(shared_resources))
 
 
@@ -585,6 +766,7 @@ pb_src=[PBPath('src', source) for source in pb_src]
 libpb=env.StaticLibrary(PBPath('polybori'), pb_src)
 #print "l:", l, dir(l)
 #sometimes l seems to be boxed by a list
+
 if isinstance(libpb,list):
     libpb=libpb[0]
 DefaultBuild(libpb)
@@ -594,7 +776,7 @@ pb_shared = shared_object(pb_src)#env.SharedObject(pb_src)
 shared_resources += pb_shared
 
 libpbShared = slib(PBPath('polybori'), list(shared_resources))
-#DefaultBuild(libpbShared)
+pb_symlinks = SymlinkReadableLibname(libpbShared)
 
 env.Clean([libpb] + pb_shared, cache_opts)
 
@@ -610,6 +792,7 @@ if not(external_m4ri):
 
 gb=env.StaticLibrary(GBPath('groebner'), gb_src)
 
+
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
@@ -620,7 +803,10 @@ gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
 libgbShared = slib(GBPath('groebner'), list(shared_resources))
-#DefaultBuild(libgbShared)
+
+
+env.Depends(libgbShared, libpbShared + pb_symlinks)
+gb_symlinks = SymlinkReadableLibname(libgbShared)
 
 tests_pb=["errorcodes","testring", "boolevars", "boolepoly", "cuddinterface", 
   "leadterm", "spoly", "zddnavi", "idxtypes", "monomial", "stringlit",
@@ -638,9 +824,9 @@ for t in tests_pb:
 
 for t in tests_gb:
     env.Program(TestsPath(t), 
-        [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd, 
-        CPPPATH=CPPPATH)
-
+                [TestsPath('src', t + ".cc"), libpb, gb]+ libCudd,
+                LIBS = env['LIBS'] + GD_LIBS,
+                CPPPATH=CPPPATH)
 for t in ['booleenv_test']:
     env.Program(TestsPath(t), 
                 [TestsPath('src', t + ".cc"), TestsPath('src', t + "_static.cc"), libpb]+ libCudd, 
@@ -650,6 +836,7 @@ testclasses = Split("""BooleEnv BooleSet BooleConstant BoolePolyRing
   BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade""")
 testfiles = [TestsPath('src', file + "Test.cc") for file in
              testclasses] + [TestsPath('src', "unittests.cc")]
+
 
 env.Program(TestsPath("unittests"),
             testfiles + [libpb, gb] + libCudd, 
@@ -668,7 +855,7 @@ env.Program(TestsPath("unittests_orderings"),
             CPPDEFINES = env['CPPDEFINES'] +
             ["BOOST_TEST_DYN_LINK"] )
 
-LIBS = env['LIBS']+[env['BOOST_LIBRARY']]+USERLIBS
+LIBS = env['LIBS']+[env['BOOST_PYTHON']]+USERLIBS
 
 LIBS_static = ["polybori", 'groebner', cudd_name] + LIBS
 #env["CPPDEFINES"].Append("Packed")
@@ -696,29 +883,44 @@ dynamic_modules = []
 python_absolute = shell_output("which", env["PYTHON"])
 
 if HAVE_PYTHON_EXTENSION:
-    wrapper_files=[ PyPBPath(f) for f in Split("""test_util.cc main_wrapper.cc
-    fglm_wrapper.cc
+    wrapper_files=[ PyPBPath(f) for f in Split("""pypb_module.cc
+    main_wrapper.cc test_util.cc fglm_wrapper.cc
     Poly_wrapper.cc navigator_wrap.cc variable_block.cc
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
     slimgb_wrapper.cc""") ] 
     
     if env['PLATFORM']=="darwin":
-        pypb=env.LoadableModule(PyPBPath('PyPolyBoRi'),
-            wrapper_files + shared_resources,
-            LINKFLAGS="-bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS,LDMODULESUFFIX=".so",
+        libpypb_name = libpb_name + "_python"
+        libpypb = slib(libpypb_name,
+            wrapper_files[1:],
+            LINKFLAGS="-L.",
+            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
             CPPPATH=CPPPATH)
+        pypb_symlinks = SymlinkReadableLibname(libpypb)
+        env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+
+        dylibs += libpypb
+
+        pypb=env.LoadableModule('PyPolyBoRi',
+            wrapper_files[0], # + shared_resources,
+            LINKFLAGS="-L. -bundle_loader " + python_absolute,
+            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
+            LDMODULESUFFIX=pyconf.module_suffix,
+            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
+            CPPPATH=CPPPATH)
+        env.Depends(pypb, libpypb + pypb_symlinks)
+        dynamic_modules = env.SymLink(PyRootPath('polybori/dynamic',
+                                                 str(pypb[0])),  pypb)
+
     else:
         #print "l:", l
         pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
             wrapper_files + shared_resources,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS = LIBS,
+            LDMODULESUFFIX=pyconf.module_suffix,SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
             CPPPATH=CPPPATH)
-
-    DefaultBuild(pypb)
+        dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
 
     # Define the dynamic python modules in pyroot
-    dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
     documentable_python_modules += dynamic_modules
    
     DefaultBuild(dynamic_modules)
@@ -729,13 +931,12 @@ if HAVE_PYTHON_EXTENSION:
     for (f,n) in installable_python_modules:
         DefaultBuild(env.Install(polybori_modules, f))
 
-
     
     to_append_for_profile = [libpb, gb] + libCudd
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
-            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs,
+            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
             CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
 
@@ -826,8 +1027,8 @@ if HAVE_SINGULAR_EXTENSION:
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
-           .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp
-           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej"""),
+           .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp .exe
+           .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej .bin"""),
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
            auxiliary"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
@@ -864,7 +1065,7 @@ disttar.py doxygen.py""")
     tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
     man/ipbori.1 man/PolyGUI.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
-
+    
 
 if distribute:
     presrcdistri = env.DistTar(debname, allsrcs)
@@ -891,24 +1092,36 @@ if distribute:
     env.Alias('distribute', srcdistri)
     
 devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
-readabledevellibs = SymlinkReadableLibname(devellibs)
+stlibs += [libpb, gb]
+
+readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
+                                                                        gb])
+
+DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
+PBInclPath = PathJoiner(PBPath('include/polybori'))
+DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
+DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
+
+dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
+stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
+
+devellibs_inst = SymlinkReadableLibname(dylibs_inst) + dylibs_inst + stlibs_inst
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
-    DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
-    
-    SymlinkReadableLibname(env.Install(DevelInstPath('lib'), devellibs))
     
     env.Install(DevelInstPath('include/polybori'), glob(PBPath('include/*.h')))
     env.Install(DevelInstPath('include/polybori/groebner'),
                 glob(GBPath('src/*.h')))
-    env.Install(DevelInstPath('include/cudd'), cudd_headers)
+    # Install our own copy the cudd header to ensure correct (patched) version 
+    env.Install(DevelInstInclPath('cudd'), cudd_headers)
     if not(external_m4ri):
-        env.Install(DevelInstPath('include/m4ri'), glob('M4RI/*.h'))
+        env.Install(DevelInstInclPath('m4ri'), glob('M4RI/m4ri/*.h'))
         
     env.Alias('devel-install', DevelInstPath())
-
-
+    env.Alias('devel-install', DevelInstInclPath())
+    env.Alias('devel-install', DevelInstLibPath())
+    
 env.Append(COPYALL_PATTERNS = ['*'])
 
 # Copy glob('*') from one directory to the other
@@ -917,7 +1130,15 @@ def cp_all(target, source, env):
     target = target[0].path
 
     if not path.exists(target):
-        Execute(Mkdir(target))
+        try:
+            Execute(Mkdir(target))
+        except:
+            # Maybe just a race condition occured, because two processes trixy
+            # to generate the directory at the same time. (This I could ignore.)
+            if not path.exists(target):
+                print "Could not mkdir " + target
+                Exit(1)
+
     for patt in env['COPYALL_PATTERNS']:
         for file in glob(path.join(source, patt)):
             if not path.isdir(file):
@@ -925,6 +1146,16 @@ def cp_all(target, source, env):
                 Execute([Copy(result, file), Chmod(result, 0644)])
 
     return None
+
+def CopyAll(targetdir, sourcedir, env):
+    targets = []
+    for patt in env['COPYALL_PATTERNS']:
+        for file in glob(path.join(sourcedir, patt)):
+            if not path.isdir(file):
+                result = str(path.join(targetdir, path.basename(file)))
+                targets += env.Install(targetdir, file)
+
+    return FinalizeNonExecs(targets)            
 
 # Copy python docu from one directory to the other and correct paths to modules
 def cp_pydoc(target, source, env):
@@ -1257,16 +1488,42 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     # Executables and shared libraries to be installed
     so_pyfiles = []
-    for instfile in dynamic_modules :
-        installedfile = InstPyPath(relpath(pyroot, instfile.path))
-        so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
+
+    if env['PLATFORM']=="darwin" and HAVE_PYTHON_EXTENSION:
+        pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
+                                              pypb))
+        env.Depends(pypb_inst, devellibs_inst)
+        if env['INSTALL_NAME_DIR'] is not None:
+            name = os.path.join(env['INSTALL_NAME_DIR'], 
+                                "${TARGET.name}")
+            for elt in dylibs_inst:
+                env.AddPostAction(elt, 
+                    "install_name_tool -id " + name + " $TARGET")
+
+        so_pyfiles += pypb_inst
+
+        def fix_install_name(target, source, env):
+            names = ' '.join([str(elt) for elt in dylibs])
+            names = Split(shell_output('otool', '-D', names))[1::2]
+            for name in names:
+                newname = "@loader_path/" + \
+                  relpath(InstPyPath("polybori/dynamic"),
+                          expand_repeated(DevelInstLibPath(os.path.basename(name)),env)) 
+                Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
+
+        env.AddPostAction(pypb_inst, fix_install_name)
+
+    else:
+        for instfile in dynamic_modules :
+            installedfile = InstPyPath(relpath(pyroot, instfile.path))
+            so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
 
     pyfiles = []
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
                                  env['PYINSTALLPREFIX'])
     
     for instfile in [ IPBPath('ipbori') ]:
-        FinalizeExecs(env.InstallAs(InstPath(instfile), instfile))
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
     for instfile in [ GUIPath('PolyGUI') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
@@ -1279,8 +1536,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     
     # Copy c++ documentation
     if HAVE_DOXYGEN:
-        cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
-                                 env.Dir(DocPath('c++/html'))) 
+        cxxdocinst = CopyAll(InstDocPath('c++'),
+                             DocPath('c++/html'), env) 
         env.Depends(cxxdocinst, cxxdocu)
         env.Clean(cxxdocinst, cxxdocinst)
 
@@ -1294,10 +1551,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     env.Clean(pydocuinst, pydocuinst)
 
     # Copy Cudd documentation
-    env.CopyAll(env.Dir(InstDocPath('cudd')),
-                env.Dir('Cudd/cudd/doc') ) 
-    env.CopyAll(env.Dir(InstDocPath('cudd/icons')),
-                env.Dir('Cudd/cudd/doc/icons'))
+    CopyAll(InstDocPath('cudd'), 'Cudd/cudd/doc', env) 
+    CopyAll(InstDocPath('cudd/icons'), 'Cudd/cudd/doc/icons', env)
 
     # Copy Tutorial
     if have_l2h or have_t4h :
@@ -1328,6 +1583,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
     env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
                                       env['PYINSTALLPREFIX'])       
+    env['PBORI_SITE'] = relpath(expand_repeated(InstPath(),env),
+                                      env['PYINSTALLPREFIX'])
 
     for instfile in [IPBPath('ipythonrc-polybori') ] :
         FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))
@@ -1360,6 +1617,5 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.Alias('install', conffile)
     
 
-env.Alias('prepare-devel', devellibs + readabledevellibs)
+env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
-
