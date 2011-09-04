@@ -890,11 +890,11 @@ if HAVE_PYTHON_EXTENSION:
     slimgb_wrapper.cc""") ] 
     
     if env['PLATFORM']=="darwin":
-        libpypb_name = libpb_name + "_python"
+        libpypb_name = 'polybori' + "_python"
         libpypb = slib(libpypb_name,
             wrapper_files[1:],
             LINKFLAGS="-L.",
-            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
+            LIBS = pyconf.libs + LIBS + GD_LIBS+['polybori', 'groebner'],
             CPPPATH=CPPPATH)
         pypb_symlinks = SymlinkReadableLibname(libpypb)
         env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
@@ -904,7 +904,7 @@ if HAVE_PYTHON_EXTENSION:
         pypb=env.LoadableModule('PyPolyBoRi',
             wrapper_files[0], # + shared_resources,
             LINKFLAGS="-L. -bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
+            LIBS = pyconf.libs + LIBS + GD_LIBS+['polybori', 'groebner', libpypb_name], 
             LDMODULESUFFIX=pyconf.module_suffix,
             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
             CPPPATH=CPPPATH)
