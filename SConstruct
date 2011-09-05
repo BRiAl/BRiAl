@@ -1084,8 +1084,8 @@ if distribute:
     srcdistrext += srcdistrext1
     pborisuffix = ''
 
-    if str(pborirelease) != "0" :
-        pborisuffix += "-" + str(pborirelease)
+    #if str(pborirelease) != "0" :
+    #    pborisuffix += "-" + str(pborirelease)
 
     if env['USE_TIMESTAMP']:
         from datetime import date
