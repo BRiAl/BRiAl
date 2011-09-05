@@ -1500,29 +1500,31 @@ if 'install' in COMMAND_LINE_TARGETS:
     # Executables and shared libraries to be installed
     so_pyfiles = []
 
-    if env['PLATFORM']=="darwin" and HAVE_PYTHON_EXTENSION:
-        pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
-                                              pypb))
-        env.Depends(pypb_inst, devellibs_inst)
+    if env['PLATFORM']=="darwin":
+
         if env['INSTALL_NAME_DIR'] is not None:
             name = os.path.join(env['INSTALL_NAME_DIR'], 
                                 "${TARGET.name}")
             for elt in dylibs_inst:
                 env.AddPostAction(elt, 
-                    "install_name_tool -id " + name + " $TARGET")
+                                  "install_name_tool -id " + name + " $TARGET")
 
-        so_pyfiles += pypb_inst
+        if HAVE_PYTHON_EXTENSION:
+            pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
+                                                  pypb))
+            env.Depends(pypb_inst, devellibs_inst)
+            so_pyfiles += pypb_inst
 
-        def fix_install_name(target, source, env):
-            names = ' '.join([str(elt) for elt in dylibs])
-            names = Split(shell_output('otool', '-D', names))[1::2]
-            for name in names:
-                newname = "@loader_path/" + \
-                  relpath(InstPyPath("polybori/dynamic"),
-                          expand_repeated(DevelInstLibPath(os.path.basename(name)),env)) 
-                Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
+            def fix_install_name(target, source, env):
+                names = ' '.join([str(elt) for elt in dylibs])
+                names = Split(shell_output('otool', '-D', names))[1::2]
+                for name in names:
+                    newname = "@loader_path/" + \
+                        relpath(InstPyPath("polybori/dynamic"),
+                                expand_repeated(DevelInstLibPath(os.path.basename(name)),env)) 
+                    Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
 
-        env.AddPostAction(pypb_inst, fix_install_name)
+            env.AddPostAction(pypb_inst, fix_install_name)
 
     else:
         for instfile in dynamic_modules :
