@@ -802,7 +802,7 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(GBPath('groebner'), list(shared_resources))
+libgbShared = slib('groebner', list(shared_resources))
 
 
 env.Depends(libgbShared, libpbShared + pb_symlinks)
@@ -1090,7 +1090,9 @@ if distribute:
                 
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
-    
+
+dylibs += libpbShared + libgbShared
+
 devellibs = [libpb,gb] + libCudd + libpbShared + libgbShared + libCuddShared
 stlibs += [libpb, gb]
 
