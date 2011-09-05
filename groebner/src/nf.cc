@@ -30,6 +30,11 @@ const int M4RI_MAXKAY = 16;
 using std::cout;
 using std::endl;
 
+#ifndef snprintf
+#define snprintf(name, nlen, format, prefix, round)	\
+  sprintf(name, format, prefix, round)
+#endif
+
 BEGIN_NAMESPACE_PBORIGB
 
 
