@@ -161,7 +161,7 @@ cuddInitCache(
     offset = (ptruint) mem & (sizeof(DdCache) - 1);
     mem += (sizeof(DdCache) - offset) / sizeof(DdNodePtr);
     unique->cache = (DdCache *) mem;
-    assert(((ptruint) unique->cache & (sizeof(DdCache) - 1)) == 0);
+    CUDD_ASSERT(((ptruint) unique->cache & (sizeof(DdCache) - 1)) == 0);
     unique->memused += (cacheSize+1) * sizeof(DdCache);
 #endif
     unique->cacheSlots = cacheSize;
@@ -940,7 +940,7 @@ cuddCacheResize(
     misalignment = (ptruint) mem & (sizeof(DdCache) - 1);
     mem += (sizeof(DdCache) - misalignment) / sizeof(DdNodePtr);
     table->cache = cache = (DdCache *) mem;
-    assert(((ptruint) table->cache & (sizeof(DdCache) - 1)) == 0);
+    CUDD_ASSERT(((ptruint) table->cache & (sizeof(DdCache) - 1)) == 0);
 #endif
     shift = --(table->cacheShift);
     table->memused += (slots - oldslots) * sizeof(DdCache);
@@ -1036,7 +1036,7 @@ cuddComputeFloorLog2(
 {
     int floorLog = 0;
 #ifdef DD_DEBUG
-    assert(value > 0);
+    CUDD_ASSERT(value > 0);
 #endif
     while (value > 1) {
 	floorLog++;

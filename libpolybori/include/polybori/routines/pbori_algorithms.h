@@ -54,7 +54,7 @@ ValueType
 lower_term_accumulate(NaviType navi, 
                       LowerIterator lstart, LowerIterator lfinish, 
                       ValueType init) {
-  assert(init.isZero());
+  PBORI_ASSERT(init.isZero());
   /// @todo Maybe recursive caching is efficient here.
   if (lstart == lfinish){
     return init;
@@ -63,7 +63,7 @@ lower_term_accumulate(NaviType navi,
   if (navi.isConstant())
     return (navi.terminalValue()? (ValueType)init.ring().one(): init);
   
-  assert(*lstart >= *navi);
+  PBORI_ASSERT(*lstart >= *navi);
 
   ValueType result(init.ring());
   if (*lstart > *navi) {
@@ -82,7 +82,7 @@ lower_term_accumulate(NaviType navi,
                       init.ring());
   }
   else  {
-    assert(*lstart == *navi);
+    PBORI_ASSERT(*lstart == *navi);
     ++lstart;
     BooleSet resthen = 
       lower_term_accumulate(navi.thenBranch(), lstart, lfinish, init).diagram();
@@ -143,7 +143,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
   if (navi.isConstant())
     return BooleSet(navi, init.ring());
 
-  assert(*lstart >= *navi);
+  PBORI_ASSERT(*lstart >= *navi);
 
   ValueType result(init.ring());
   if (*lstart > *navi) {
@@ -156,7 +156,7 @@ term_accumulate(UpperIterator ustart, UpperIterator ufinish, NaviType navi,
                       init.ring());
   }
   else  {
-    assert(*lstart == *navi);
+    PBORI_ASSERT(*lstart == *navi);
     ++lstart;
      BooleSet resthen = term_accumulate(ustart, ufinish,  navi.thenBranch(),
                                         lstart, lfinish, init).diagram();
@@ -196,7 +196,7 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
   */
 
   // test for non-lex more complicated (see testsuite)
-  assert((init.ring().ordering().isLexicographical()?
+  PBORI_ASSERT((init.ring().ordering().isLexicographical()?
           result == std::accumulate(first, last, init):
           true) ); 
 
@@ -218,7 +218,7 @@ term_accumulate(InputIterator first, InputIterator last, ValueType init) {
                                     last.navigation(), init);
 
   // test for non-lex more complicated (see testsuite)
-  assert((init.ring().ordering().isLexicographical()?
+  PBORI_ASSERT((init.ring().ordering().isLexicographical()?
           result == std::accumulate(first, last, init):
           true) ); 
   
@@ -236,11 +236,11 @@ dd_mapping(const CacheType& cache, NaviType navi, NaviType map, SetType init) {
     return cache.generate(navi);
 
   while (*map < *navi) {
-    assert(!map.isConstant());
+    PBORI_ASSERT(!map.isConstant());
     map.incrementThen();
   }
 
-  assert(*navi == *map);
+  PBORI_ASSERT(*navi == *map);
 
   NaviType cached = cache.find(navi, map);
 
@@ -279,7 +279,7 @@ PolyType
 generate_mapping(MonomType& fromVars, MonomType& toVars, PolyType init) {
 
   if(fromVars.isConstant()) {
-    assert(fromVars.isOne() && toVars.isOne());
+    PBORI_ASSERT(fromVars.isOne() && toVars.isOne());
     return fromVars;
   }
 

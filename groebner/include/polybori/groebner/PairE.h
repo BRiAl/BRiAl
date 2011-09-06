@@ -63,7 +63,7 @@ public:
   lm(gen[i].leadExp)
   
   {
-    assert(type==VARIABLE_PAIR);
+    PBORI_ASSERT(type==VARIABLE_PAIR);
     this->type=type;
     if (gen[i].leadExp==gen[i].usedVariables)
         sugar=gen[i].deg;

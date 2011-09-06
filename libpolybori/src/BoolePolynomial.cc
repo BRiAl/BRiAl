@@ -172,7 +172,7 @@ BoolePolynomial::operator/=(const monom_type& rhs) {
                                       self(ring()));
 
 //   m_dd.divideFirstAssign(rhs.diagram());
-//   assert(*this == result);
+//   PBORI_ASSERT(*this == result);
   return (*this = result);
 }
 // Division
@@ -830,7 +830,7 @@ BoolePolynomial::size_type
 BoolePolynomial::eliminationLengthWithDegBound(deg_type garantied_deg_bound)
   const {
 
-  assert(garantied_deg_bound>=this->deg());
+  PBORI_ASSERT(garantied_deg_bound>=this->deg());
 
   if (ring().ordering().isTotalDegreeOrder())
     return this->length();

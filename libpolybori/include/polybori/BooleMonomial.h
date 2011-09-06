@@ -217,7 +217,7 @@ public:
 
   /// Removes the first variables from monomial
   self& popFirst() { 
-    assert(!m_poly.isConstant());
+    PBORI_ASSERT(!m_poly.isConstant());
     return *this = set_type( dd_type(m_poly.ring(),
                                      m_poly.navigation().thenBranch()) ); 
   }
@@ -227,7 +227,7 @@ public:
 
   /// Get first index in monomial
   idx_type firstIndex() const {
-    assert(!m_poly.isConstant());
+    PBORI_ASSERT(!m_poly.isConstant());
     return *begin();
   }
 
@@ -240,7 +240,7 @@ protected:
 
   /// Construct from decision diagram
   BooleMonomial(const set_type& rhs): m_poly(rhs.diagram()) {
-    assert(!m_poly.isZero());
+    PBORI_ASSERT(!m_poly.isZero());
   }
 
 private:

@@ -24,10 +24,10 @@ BEGIN_NAMESPACE_PBORIGB
 inline MonomialSet
 add_up_lex_sorted_monomials(const BoolePolyRing& ring,
 					       std::vector<Monomial>& vec, int start, int end){
-    assert(end<=vec.size());
-    assert(start>=0);
+    PBORI_ASSERT(end<=vec.size());
+    PBORI_ASSERT(start>=0);
     int d=end-start;
-    assert(d>=0);
+    PBORI_ASSERT(d>=0);
     if (d<=2){
         switch(d){
             case 0:return MonomialSet(ring);
@@ -41,13 +41,13 @@ add_up_lex_sorted_monomials(const BoolePolyRing& ring,
     
     //more than two monomial, lex sorted, so if first is  constant, all are constant
     if (vec[start].isOne()) return Polynomial(end-start, vec[start].ring()).diagram();
-    assert (!(vec[start].isOne()));
+    PBORI_ASSERT (!(vec[start].isOne()));
     idx_type idx=*vec[start].begin();
     int limes=end;
     vec[start].popFirst();
     for(limes=start+1;limes<end;limes++){
         if (vec[limes].isOne()||(*vec[limes].begin()!=idx)){
-            assert((vec[limes].isOne())||(*vec[limes].begin()>idx));
+            PBORI_ASSERT((vec[limes].isOne())||(*vec[limes].begin()>idx));
             break;
         } else 
            vec[limes].popFirst();
@@ -60,10 +60,10 @@ add_up_lex_sorted_monomials(const BoolePolyRing& ring,
 inline MonomialSet
 add_up_lex_sorted_exponents(const BoolePolyRing& ring,
                             std::vector<Exponent>& vec, int start, int end){
-    assert(end<=vec.size());
-    assert(start>=0);
+    PBORI_ASSERT(end<=vec.size());
+    PBORI_ASSERT(start>=0);
     int d=end-start;
-    assert(d>=0);
+    PBORI_ASSERT(d>=0);
     if (d<=2){
         switch(d){
             case 0:return MonomialSet(ring);
@@ -79,13 +79,13 @@ add_up_lex_sorted_exponents(const BoolePolyRing& ring,
     
     //more than two monomial, lex sorted, so if first is  constant, all are constant
     if (vec[start].deg()==0) return Polynomial(end-start, ring).diagram();
-    assert (!(vec[start].deg()==0));
+    PBORI_ASSERT (!(vec[start].deg()==0));
     idx_type idx=*vec[start].begin();
     int limes=end;
     vec[start].popFirst();
     for(limes=start+1;limes<end;limes++){
         if (UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
-            assert((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
+            PBORI_ASSERT((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
             break;
         } else 
            vec[limes].popFirst();
@@ -101,10 +101,10 @@ add_up_lex_sorted_exponents(const BoolePolyRing& ring,
 #if 0
 inline MonomialSet add_up_lex_sorted_monomial_navs(const BoolePolyRing& ring,
   std::vector<Monomial::const_iterator>& vec, int start, int end){
-    assert(end<=vec.size());
-    assert(start>=0);
+    PBORI_ASSERT(end<=vec.size());
+    PBORI_ASSERT(start>=0);
     int d=end-start;
-    assert(d>=0);
+    PBORI_ASSERT(d>=0);
     if (d<=2){
         switch(d){
             case 0:return MonomialSet(const BoolePolyRing& ring,);
@@ -119,13 +119,13 @@ inline MonomialSet add_up_lex_sorted_monomial_navs(const BoolePolyRing& ring,
     
     //more than two monomial, lex sorted, so if first is  constant, all are constant
     if (vec[start].isConstant()) return Polynomial(end-start).diagram();
-    assert (!(vec[start].isConstant()));
+    PBORI_ASSERT (!(vec[start].isConstant()));
     idx_type idx=*vec[start];
     int limes=end;
     vec[start]++;
     for(limes=start+1;limes<end;limes++){
         if (vec[limes].isConstant()||(*vec[limes]!=idx)){
-            assert((vec[limes].isTerminated())||(*vec[limes]>idx));
+            PBORI_ASSERT((vec[limes].isTerminated())||(*vec[limes]>idx));
             break;
         } else 
            vec[limes]++;

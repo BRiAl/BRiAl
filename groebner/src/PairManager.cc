@@ -46,7 +46,7 @@ void PairManager::replacePair(int& i, int& j){
   }
     it++;
   }
-  assert(i_n!=j_n);
+  PBORI_ASSERT(i_n!=j_n);
   if (i_n!=j_n){
     i=i_n;
     j=j_n;
@@ -60,7 +60,7 @@ bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
-  //assert(!(pairSetEmpty()));
+  //PBORI_ASSERT(!(pairSetEmpty()));
   if (UNLIKELY(pairSetEmpty())) return strat->r.zero();
   bool replaced_used=false;
   
@@ -147,8 +147,8 @@ void PairManager::cleanTopByChainCriterion(){
       const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
       const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors(this->strat->r));
-      assert(lm==strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
-      //assert(strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
+      PBORI_ASSERT(lm==strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
+      //PBORI_ASSERT(strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
       //should be set
       //if (lms.length()>2)
         //cout<<"non empty"<<endl;

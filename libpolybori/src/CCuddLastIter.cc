@@ -71,7 +71,7 @@ CCuddLastIter::operator++() {
   if(isValid()) {
 
     // this node is done; go to next possible node
-    assert(!isConstant());
+    PBORI_ASSERT(!isConstant());
     incrementThen();
 
     if( !isConstant() ) {       // if still in interior of a path

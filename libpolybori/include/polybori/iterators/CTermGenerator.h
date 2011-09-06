@@ -110,10 +110,10 @@ public:
 
   template <class SequenceType>
   result_type operator()(const SequenceType& seq) const {
-    ///    assert(m_data != data_type()); // todo???
+    ///    PBORI_ASSERT(m_data != data_type()); // todo???
 
     // Do not dereference empty sequence (corresponds to end())
-    assert(!seq.isZero());
+    PBORI_ASSERT(!seq.isZero());
 
     // @todo: avoid using manager_base here
     typedef typename value_type::ring_type ring_type;
@@ -127,7 +127,7 @@ public:
 #ifndef PBORI_NO_TERMS_BY_TAIL
     typename BooleSet::navigator navi(result.diagram().navigation());
 
-    assert((start == finish) || !start->isConstant());
+    PBORI_ASSERT((start == finish) || !start->isConstant());
     while((start != finish) && 
           (start->elseBranch().isEmpty()) && (start->thenBranch() == navi)  ) {
       navi = *start;

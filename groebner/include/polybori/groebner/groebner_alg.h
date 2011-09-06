@@ -82,7 +82,7 @@ cancel_monomial_in_tail(const Polynomial& p, const Monomial & m){
 
 inline Polynomial
 reduce_by_binom(const Polynomial& p, const Polynomial& binom){
-  assert(binom.length()==2);
+  PBORI_ASSERT(binom.length()==2);
   
   Monomial bin_lead=binom.lead();
   Monomial bin_last=*(++(binom.orderedBegin()));
@@ -102,7 +102,7 @@ reduce_by_binom(const Polynomial& p, const Polynomial& binom){
 
 inline Polynomial
 reduce_by_binom_in_tail (const Polynomial& p, const Polynomial& binom){
-  assert(binom.length()==2);
+  PBORI_ASSERT(binom.length()==2);
   Monomial lm=p.lead();
   return lm+reduce_by_binom(p-lm,binom);
 }

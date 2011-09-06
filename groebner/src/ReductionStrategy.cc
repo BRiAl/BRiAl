@@ -36,13 +36,13 @@ void ReductionStrategy::setupSetsForLastElement(){
     if(divisors_from_minimal.isZero()){
        
         
-        assert(!(Polynomial(lm).isZero()));
+        PBORI_ASSERT(!(Polynomial(lm).isZero()));
         MonomialSet lm_multiples_min=minimalLeadingTerms.multiplesOf(lm);
         //generators.minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
         lm_multiples_min=lm_multiples_min.diff(lm.diagram());
         //(lm.diagram()).diff(lm.diagram());
     
-        assert(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).isZero());
+        PBORI_ASSERT(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).isZero());
 
         {
         
@@ -50,8 +50,8 @@ void ReductionStrategy::setupSetsForLastElement(){
             MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
             MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
             while(mfm_start!=mfm_end){
-                assert((*mfm_start)!=e.leadExp);
-                assert((*mfm_start).reducibleBy(e.leadExp));
+                PBORI_ASSERT((*mfm_start)!=e.leadExp);
+                PBORI_ASSERT((*mfm_start).reducibleBy(e.leadExp));
                 (*this)[exp2Index[*mfm_start]].minimal=false;
                 mfm_start++;
             }
@@ -63,7 +63,7 @@ void ReductionStrategy::setupSetsForLastElement(){
     } else 
     {
         //cerr<<"Warning:adding non minimal element to strategy"<<std::endl;
-        //assert(false);
+        //PBORI_ASSERT(false);
         if (!(divisors_from_minimal.diff(lm.diagram()).isZero()))
             (*this)[s].minimal=false;
     }
@@ -78,7 +78,7 @@ void ReductionStrategy::setupSetsForLastElement(){
 
     
     if (e.length==1){
-        assert(e.p.length()==1);
+        PBORI_ASSERT(e.p.length()==1);
         monomials=monomials.unite(e.p.diagram());
     } //else treat_m_p_1_case(e);
     #ifdef LL_RED_FOR_GROEBNER

@@ -92,7 +92,7 @@ SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
       Polynomial p_high=(lm/strat->generators[index].lead)*strat->generators[index].p;
       int i,s;
       s=curr.size();
-      assert(p_high.lead()==lm);
+      PBORI_ASSERT(p_high.lead()==lm);
       for(i=0;i<s;i++){
         curr[i]+=p_high;
         if (!(curr[i].isZero())){
@@ -109,16 +109,16 @@ SlimgbReduction<SLIMGB_SIMPLEST>::reduce(){
         for(i=0;i<s;i++){
           curr[i]+=reductor;
           if (!(curr[i].isZero())){
-            assert(curr[i].lead()<lm);
+            PBORI_ASSERT(curr[i].lead()<lm);
             to_reduce.push(curr[i]);
           }
           
         }
-        assert(!(reductor.isZero()));
+        PBORI_ASSERT(!(reductor.isZero()));
         result.push_back(reductor);
       } else{
-        assert(s==0);
-        assert(!(curr[0].isZero()));
+        PBORI_ASSERT(s==0);
+        PBORI_ASSERT(!(curr[0].isZero()));
         result.push_back(curr[0]);
       }
     }

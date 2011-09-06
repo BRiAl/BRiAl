@@ -55,7 +55,7 @@ Polynomial LexBucket::value(){
   return sum;
 }
 bool LexBucket::isZero(){
-  assert(!((front.isZero())&&(buckets.size()!=0)));
+  PBORI_ASSERT(!((front.isZero())&&(buckets.size()!=0)));
   return (front.isZero() &&(!(ones)));
 }
 //we assume that p has smaller/equal terms than the bucket, or the bucket is zero
@@ -82,7 +82,7 @@ LexBucket& LexBucket::operator+=(const Polynomial& p){
   
 }
 void LexBucket::increaseTailStart(idx_type new_start){
-  assert(new_start>=tail_start);
+  PBORI_ASSERT(new_start>=tail_start);
   tail_start=new_start;
   int i;
   std::vector<Polynomial> front_vec;

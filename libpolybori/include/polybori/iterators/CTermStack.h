@@ -86,7 +86,7 @@ public:
   }
 
   idx_type min() const {
-    assert(*m_current_block != 0); // assuming first element to be zero
+    PBORI_ASSERT(*m_current_block != 0); // assuming first element to be zero
     return *(m_current_block - 1);
   }
 
@@ -94,13 +94,13 @@ public:
     return *m_current_block;
   }
   self& operator++(){
-    assert(max() != CTypes::max_idx);
+    PBORI_ASSERT(max() != CTypes::max_idx);
     ++m_current_block;
     return *this;
   }
 
   self& operator--(){
-    assert(min() != 0);
+    PBORI_ASSERT(min() != 0);
     --m_current_block;
     return *this;
   }
@@ -177,7 +177,7 @@ protected:
 public:
   bool_type empty() const { return m_stack.empty(); }
   const_reference top() const { 
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     return m_stack.back();
   }
   idx_type index() const { return *top(); }
@@ -192,7 +192,7 @@ public:
 
   /// Get navigator of stack start
   navigator navigation() const {
-    assert(m_stack.begin() != m_stack.end());
+    PBORI_ASSERT(m_stack.begin() != m_stack.end());
     return *m_stack.begin();
   }
 
@@ -222,44 +222,44 @@ public:
   }
 
   void incrementThen() {
-    assert(!top().isConstant());
+    PBORI_ASSERT(!top().isConstant());
 
     push(top());
     m_stack.back().incrementThen();
   }
   void incrementElse() {
-    assert(!isConstant());
+    PBORI_ASSERT(!isConstant());
     m_stack.back().incrementElse();
   }
 
   void decrementNode() {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     pop();
   }
 
   bool_type isConstant() const {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     return top().isConstant();
   }
 
   bool_type isTerminated() const {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     return top().isTerminated();
   }
 
   bool_type isInvalid() const {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     return top().isEmpty();
   }
 
   void followThen() {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
     while(!isConstant())
       incrementThen();
   }
 
   void markOne() {
-    assert(empty());
+    PBORI_ASSERT(empty());
     push(navigator());
   }
 
@@ -272,7 +272,7 @@ public:
 
   void clearOne() {
     pop();
-    assert(empty());
+    PBORI_ASSERT(empty());
   } 
 
   deg_type deg() const {
@@ -280,7 +280,7 @@ public:
   }
 
   void restart(navigator navi) {
-    assert(empty());
+    PBORI_ASSERT(empty());
     push(navi);
   }
 
@@ -331,7 +331,7 @@ protected:
 
   template <class TermStack>
   void append(const TermStack& rhs) { 
-    assert(empty() || rhs.empty() || ((*rhs.begin()) > (*top())) );
+    PBORI_ASSERT(empty() || rhs.empty() || ((*rhs.begin()) > (*top())) );
     m_stack.insert(m_stack.end(), rhs.m_stack.begin(), rhs.m_stack.end());
   }
 
@@ -422,7 +422,7 @@ public:
 
 
   void increment() {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
     if UNLIKELY(base::markedOne()) {
       base::clearOne();
       return;
@@ -450,7 +450,7 @@ public:
   }
 
   void terminate() {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
 
     bool isZero = base::isInvalid();
     base::decrementNode();
@@ -465,7 +465,7 @@ public:
   }
   
   void incrementValidElse() {
-    assert(!base::empty() && !base::isConstant());
+    PBORI_ASSERT(!base::empty() && !base::isConstant());
     if(!base::top().elseBranch().isEmpty())
       incrementElse();          // go in direction of last term, if possible
     else
@@ -507,7 +507,7 @@ inline void CTermStack<NavigatorType, Category, BaseType>::previous(
   }
 
   navigator navi = handleElse.top();
-  assert(base::empty() || base::top().isValid());
+  PBORI_ASSERT(base::empty() || base::top().isValid());
 
   while(!base::empty() && (base::index() >= *navi) ) {
     base::decrementNode();
@@ -573,7 +573,7 @@ public:
     base(rhs), getDeg(rhs.getDeg) {}
 
   void gotoEnd()  {
-     assert(!base::empty());
+     PBORI_ASSERT(!base::empty());
      while(!base::isConstant()) {
        base::incrementElse();
      }
@@ -625,7 +625,7 @@ public:
 
     bool invalid = true;
     while (!atBegin() && invalid) {
-      assert(!base::isConstant());
+      PBORI_ASSERT(!base::isConstant());
       base::incrementElse();
       if (invalid = base::isInvalid())
         base::decrementNode();
@@ -639,7 +639,7 @@ public:
       return;
     }
     navigator navi =  base::handleElse.top();
-    assert(base::top().isValid());
+    PBORI_ASSERT(base::top().isValid());
 
     while(!atBegin() && (base::index() >= *navi) ) {
       base::decrementNode();
@@ -653,7 +653,7 @@ public:
   }
 
   void gotoEnd()  {
-     assert(!base::empty());
+     PBORI_ASSERT(!base::empty());
      while( (!base::isConstant()) && (base::index() < block.max()) ) {
        base::incrementElse();
      }
@@ -757,7 +757,7 @@ public:
     }
   }
   void followDeg() {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
     
     deg_type deg = base::getDeg(base::top());
 
@@ -774,7 +774,7 @@ public:
   }
 
   void increment() {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
     if (base::markedOne()) {
       base::clearOne();
       return;
@@ -796,10 +796,10 @@ public:
   void degTerm() {
     size_type size = base::size() + 1;
 
-    assert(!base::isConstant());
+    PBORI_ASSERT(!base::isConstant());
     bool doloop;
     do {
-      assert(!base::empty());
+      PBORI_ASSERT(!base::empty());
       base::proximate();
 
       if (base::atBegin()) 
@@ -821,7 +821,7 @@ public:
   void decrement() {}
 
   void findTerm(size_type upperbound) {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
 
     typename base::purestack_type max_elt, current(base::top());
     base::decrementNode();
@@ -850,8 +850,8 @@ public:
   void restart() { base::restart(m_start); }
 
   void invalidate() {
-    assert(m_zero.isValid());
-    assert(m_zero.isEmpty());
+    PBORI_ASSERT(m_zero.isValid());
+    PBORI_ASSERT(m_zero.isEmpty());
 
     push(m_zero);
   }
@@ -891,7 +891,7 @@ public:
   }
 
   void increment() {
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
 
     if (base::markedOne()) {
       base::clearOne();
@@ -911,14 +911,14 @@ public:
 
     followDeg();
 
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
     base::terminate();
   }
 
   void followBlockDeg() { base::followDeg(); }
 
   void followDeg() {
-    assert(base::top().isValid());
+    PBORI_ASSERT(base::top().isValid());
 
     if (!base::isConstant() ) 
       followBlockDeg();
@@ -931,7 +931,7 @@ public:
 
   void incrementBlock() {
 
-    assert(!base::empty());
+    PBORI_ASSERT(!base::empty());
     size_type size = base::size() + 1;
     
     if (base::index() < base::block.min()) {
@@ -946,14 +946,14 @@ public:
     if (base::empty())
       base::restart();
     else {
-      assert(base::index() < base::block.min());
+      PBORI_ASSERT(base::index() < base::block.min());
       base::incrementThen();
     }
     
     while (!base::isConstant() && (base::index() <  base::block.min()))
       base::incrementElse();
     
-    assert(size > base::size()); 
+    PBORI_ASSERT(size > base::size()); 
     
     base::findTerm(size - base::size());
     base::gotoEnd();

@@ -68,7 +68,7 @@ public:
   lm(gen[i].lead)
   
   {
-    assert(type==VARIABLE_PAIR);
+    PBORI_ASSERT(type==VARIABLE_PAIR);
     this->type=type;
   }
   

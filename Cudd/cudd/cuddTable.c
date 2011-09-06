@@ -303,7 +303,7 @@ cuddAllocNode(
 		** as 4 pointers.  */
 		offset = (ptruint) mem & (sizeof(DdNode) - 1);
 		mem += (sizeof(DdNode) - offset) / sizeof(DdNodePtr);
-		assert(((ptruint) mem & (sizeof(DdNode) - 1)) == 0);
+		CUDD_ASSERT(((ptruint) mem & (sizeof(DdNode) - 1)) == 0);
 		list = (DdNode *) mem;
 
 		i = 1;
@@ -1087,8 +1087,8 @@ cuddUniqueInter(
     subtable = &(unique->subtables[level]);
 
 #ifdef DD_DEBUG
-    assert(level < (unsigned) cuddI(unique,T->index));
-    assert(level < (unsigned) cuddI(unique,Cudd_Regular(E)->index));
+    CUDD_ASSERT(level < (unsigned) cuddI(unique,T->index));
+    CUDD_ASSERT(level < (unsigned) cuddI(unique,Cudd_Regular(E)->index));
 #endif
 
     pos = ddHash(T, E, subtable->shift);
@@ -1300,8 +1300,8 @@ cuddUniqueInterZdd(
     subtable = &(unique->subtableZ[level]);
 
 #ifdef DD_DEBUG
-    assert(level < (unsigned) cuddIZ(unique,T->index));
-    assert(level < (unsigned) cuddIZ(unique,Cudd_Regular(E)->index));
+    CUDD_ASSERT(level < (unsigned) cuddIZ(unique,T->index));
+    CUDD_ASSERT(level < (unsigned) cuddIZ(unique,Cudd_Regular(E)->index));
 #endif
 
     if UNLIKELY(subtable->keys > subtable->maxKeys) {
@@ -1746,7 +1746,7 @@ cuddInsertSubtables(
     DdNode *one, *zero;
 
 #ifdef DD_DEBUG
-    assert(n > 0 && level < unique->size);
+    CUDD_ASSERT(n > 0 && level < unique->size);
 #endif
 
     oldsize = unique->size;
@@ -2104,7 +2104,7 @@ cuddDestroySubtables(
 	level = unique->perm[index];
 	nodelist = subtables[level].nodelist;
 #ifdef DD_DEBUG
-	assert(subtables[level].keys == 0);
+	CUDD_ASSERT(subtables[level].keys == 0);
 #endif
 	FREE(nodelist);
 	unique->memused -= sizeof(DdNodePtr) * subtables[level].slots;
@@ -2380,7 +2380,7 @@ ddRehashZdd(
 	unique->gcFrac = DD_GC_FRAC_LO;
     }
 
-    assert(i != CUDD_MAXINDEX);
+    CUDD_ASSERT(i != CUDD_MAXINDEX);
     oldslots = unique->subtableZ[i].slots;
     oldshift = unique->subtableZ[i].shift;
     oldnodelist = unique->subtableZ[i].nodelist;

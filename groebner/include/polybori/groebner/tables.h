@@ -50,7 +50,7 @@ p2code(Polynomial p, const std::vector<char> & ring_2_0123, int max_vars){
     Polynomial::exp_iterator end_p=p.expEnd();
     initializer init;
     value_type p_code=init(max_vars);
-    assert(max_vars<sizeof(unsigned int)*8);
+    PBORI_ASSERT(max_vars<sizeof(unsigned int)*8);
     set_bit bit_setter;
     while(it_p!=end_p){
         Exponent curr_exp=*it_p;

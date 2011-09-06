@@ -70,7 +70,7 @@ intrusive_ptr_release(DdManager* ptr) {
   if (!(--(ptr->hooks))) {
     int retval = Cudd_CheckZeroRef(ptr);
     // Check for unexpected non-zero reference counts
-    assert(retval == 0);
+    PBORI_ASSERT(retval == 0);
 
     Cudd_Quit(ptr);
   }

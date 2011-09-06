@@ -88,13 +88,13 @@ static void printGenerators(GroebnerStrategy& strat){
 }
 static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
   vector<Polynomial> res;
-  assert(!(strat.pairs.pairSetEmpty()));
+  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   
   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg)){
     
-    assert(strat.pairs.queue.top().sugar==deg);
+    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
     strat.pairs.cleanTopByChainCriterion();
   }
@@ -104,13 +104,13 @@ static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
 
 static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   vector<Polynomial> res;
-  assert(!(strat.pairs.pairSetEmpty()));
+  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   
   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (res.size()<n)){
     
-    assert(strat.pairs.queue.top().sugar==deg);
+    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
     strat.pairs.cleanTopByChainCriterion();
   }
@@ -119,13 +119,13 @@ static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
 }
 static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
   vector<Polynomial> res;
-  assert(!(strat.pairs.pairSetEmpty()));
+  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   wlen_type wlen=strat.pairs.queue.top().wlen;
   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
     
-    assert(strat.pairs.queue.top().sugar==deg);
+    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
     strat.pairs.cleanTopByChainCriterion();
   }

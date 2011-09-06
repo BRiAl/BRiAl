@@ -235,7 +235,7 @@ public:
 
   /// Number of references pointing here
   size_type refCount() const { 
-    assert(getNode() != NULL);
+    PBORI_ASSERT(getNode() != NULL);
     return Cudd_Regular(getNode())->ref;
   }
 

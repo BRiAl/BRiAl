@@ -95,7 +95,7 @@ LLReduction<have_redsb, single_call_for_noredsb,
     }
   } 
   else{
-    assert((*r_nav)>p_index);
+    PBORI_ASSERT((*r_nav)>p_index);
     res = MonomialSet( p_index,
                        operator()(p_nav_then, r_nav).diagram(),
                        operator()(p_nav_else, r_nav).diagram());

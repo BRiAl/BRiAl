@@ -166,7 +166,7 @@ public:
   }
 
   self& operator++() {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
 
     // if upperbound was already found we're done
     // (should be optimized away for ascending variables)
@@ -213,7 +213,7 @@ protected:
   }
 
   void increment() {
-    assert(!empty());
+    PBORI_ASSERT(!empty());
 
     m_next = top();
     m_next.incrementElse();
@@ -245,7 +245,7 @@ protected:
   }
 
   void nextThen() {
-    assert(!m_next.isConstant());
+    PBORI_ASSERT(!m_next.isConstant());
     m_stack.push_back(m_next);
     m_next.incrementThen();
   }
@@ -472,7 +472,7 @@ block_deg_lex_idx_compare(IdxType lhs, IdxType rhs,
   else if UNLIKELY(lhsend == finish)
     result = CTypes::greater_than;
   else {
-    assert((lhsend != finish) && (rhsend != finish));
+    PBORI_ASSERT((lhsend != finish) && (rhsend != finish));
     result = generic_compare_3way( *lhsend, *rhsend, std::less<IdxType>() );
   }
 

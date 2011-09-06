@@ -111,6 +111,13 @@
 # define PBORI_TRACE_FUNC(text) 
 #endif
 
+// @todo force assertIon of PBORI_DEBUG
+#if defined(PBORI_NDEBUG) || defined(NDEBUG)
+#define PBORI_ASSERT(arg) do {} while (0)
+#else
+#define PBORI_ASSERT(arg) assert(arg)
+#endif
+
 /// Get output stream type
 #ifndef PBORI_NO_STDSTREAMS
 

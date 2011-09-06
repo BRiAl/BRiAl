@@ -93,7 +93,7 @@ public:
 
   /// Incrementation operation core
   void increment() { 
-    assert(!base::m_stack.empty());
+    PBORI_ASSERT(!base::m_stack.empty());
     if (base::m_stack.markedOne()) {
       base::m_stack.clearOne();
     }

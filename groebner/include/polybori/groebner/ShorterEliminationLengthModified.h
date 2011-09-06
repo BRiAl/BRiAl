@@ -38,8 +38,8 @@ class ShorterEliminationLengthModified{
     
   }
   bool operator() (const Exponent& e){
-    assert(strat->generators.exp2Index.find(e)!=strat->generators.exp2Index.end());
-    assert(e.deg()<=lm_deg);
+    PBORI_ASSERT(strat->generators.exp2Index.find(e)!=strat->generators.exp2Index.end());
+    PBORI_ASSERT(e.deg()<=lm_deg);
 
     const PolyEntry* p=&strat->generators[strat->generators.exp2Index.find(e)->second];
     return p->weightedLength<=el+(lm_deg-p->leadDeg)*p->length;

@@ -117,15 +117,15 @@ MonomialSet zeros(Polynomial p, MonomialSet candidates){
     MonomialSet z11=zeros(p1,c1);
     //MonomialSet then_branch=z01.intersect(z11).unite(c1.diff(z01.unite(z11)));
     MonomialSet then_branch=c1.diff(z01.Xor(z11));
-    assert (*then_branch.navigation()>index);
-    assert (*z00.navigation()>index);
+    PBORI_ASSERT (*then_branch.navigation()>index);
+    PBORI_ASSERT (*z00.navigation()>index);
     result=MonomialSet(index,then_branch,z00);
     cache_mgr.insert(p_nav,can_nav,result.navigation());
     return result;
 }
 Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one){
     //std::cout<<"to_one:"<<(Polynomial) to_one<<"to_zero:"<<(Polynomial) to_zero<<std::endl;
-    assert(to_zero.intersect(to_one).isZero());
+    PBORI_ASSERT(to_zero.intersect(to_one).isZero());
 
     typedef PBORI::CacheManager<CCacheTypes::interpolate>
       cache_mgr_type;
@@ -147,7 +147,7 @@ Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one){
     return result;
 }
 /*Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
-    assert(to_zero.intersect(to_one).isZero());
+    PBORI_ASSERT(to_zero.intersect(to_one).isZero());
 
     typedef PBORI::CacheManager<CCacheTypes::interpolate_smallest_lex>
       cache_mgr_type;
@@ -185,7 +185,7 @@ Polynomial interpolate(MonomialSet to_zero,MonomialSet to_one){
 */
 
 Polynomial interpolate_smallest_lex(MonomialSet to_zero,MonomialSet to_one){
-    assert(to_zero.intersect(to_one).isZero());
+    PBORI_ASSERT(to_zero.intersect(to_one).isZero());
 
     typedef PBORI::CacheManager<CCacheTypes::interpolate_smallest_lex>
       cache_mgr_type;

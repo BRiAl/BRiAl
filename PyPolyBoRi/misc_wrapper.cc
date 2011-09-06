@@ -26,7 +26,7 @@ void testvalidstrat(const GroebnerStrategy& strat){
     int s=strat.generators.size();
     int i;
     for(i=0;i<s;i++){
-        assert(strat.generators[i].p.navigation().isValid());
+        PBORI_ASSERT(strat.generators[i].p.navigation().isValid());
         cout<<i<<":"<<strat.generators[i].lead<<endl;
     }
 }

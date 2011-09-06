@@ -41,7 +41,7 @@ public:
 
   /// Construct from something, which supports weak pointers
   explicit CWeakPtr(const CWeakPtrFacade<ValueType>& val):
-    m_data(val.m_data) { assert(m_data);}
+    m_data(val.m_data) { PBORI_ASSERT(m_data);}
 
   /// Copy constructor
   CWeakPtr(const self& rhs): m_data(rhs.m_data) {}

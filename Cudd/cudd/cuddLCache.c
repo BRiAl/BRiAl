@@ -651,7 +651,7 @@ cuddHashTableInsert(
     unsigned int i;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize > 3);
+    CUDD_ASSERT(hash->keysize > 3);
 #endif
 
     if (hash->size > hash->maxsize) {
@@ -703,7 +703,7 @@ cuddHashTableLookup(
     unsigned int i, keysize;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize > 3);
+    CUDD_ASSERT(hash->keysize > 3);
 #endif
 
     posn = ddLCHash(key,hash->keysize,hash->shift);
@@ -769,7 +769,7 @@ cuddHashTableInsert1(
     DdHashItem *item;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 1);
+    CUDD_ASSERT(hash->keysize == 1);
 #endif
 
     if (hash->size > hash->maxsize) {
@@ -818,7 +818,7 @@ cuddHashTableLookup1(
     DdHashItem *item, *prev;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 1);
+    CUDD_ASSERT(hash->keysize == 1);
 #endif
 
     posn = ddLCHash2(f,f,hash->shift);
@@ -877,7 +877,7 @@ cuddHashTableInsert2(
     DdHashItem *item;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 2);
+    CUDD_ASSERT(hash->keysize == 2);
 #endif
 
     if (hash->size > hash->maxsize) {
@@ -928,7 +928,7 @@ cuddHashTableLookup2(
     DdHashItem *item, *prev;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 2);
+    CUDD_ASSERT(hash->keysize == 2);
 #endif
 
     posn = ddLCHash2(f,g,hash->shift);
@@ -988,7 +988,7 @@ cuddHashTableInsert3(
     DdHashItem *item;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 3);
+    CUDD_ASSERT(hash->keysize == 3);
 #endif
 
     if (hash->size > hash->maxsize) {
@@ -1041,7 +1041,7 @@ cuddHashTableLookup3(
     DdHashItem *item, *prev;
 
 #ifdef DD_DEBUG
-    assert(hash->keysize == 3);
+    CUDD_ASSERT(hash->keysize == 3);
 #endif
 
     posn = ddLCHash3(f,g,h,hash->shift);

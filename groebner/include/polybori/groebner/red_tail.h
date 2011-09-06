@@ -55,7 +55,7 @@ red_tail(const GroebnerStrategy& strat, Polynomial p){
     Polynomial irr_p=add_up_monomials(irr, p.ring().zero());
     int s,i;
     s=irr.size();
-    assert(s==irr_p.length());
+    PBORI_ASSERT(s==irr_p.length());
     //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
     for(i=0;i<s;i++){
         res_vec.push_back(irr[i]);
@@ -115,7 +115,7 @@ red_tail_general(const ReductionStrategy& strat, Polynomial p){
     else irr_p=p;
     int s,i;
     s=irr.size();
-    assert(s==irr_p.length());
+    PBORI_ASSERT(s==irr_p.length());
     //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
     //for(i=0;i<s;i++){
     //    res_vec.push_back(irr[i]);
@@ -212,7 +212,7 @@ red_tail_generic(const ReductionStrategy& strat, Polynomial p){
     int s,i;
     s=irr.size();
 
-    assert((s==irr_p.length())||(rest_is_irreducible));
+    PBORI_ASSERT((s==irr_p.length())||(rest_is_irreducible));
 
     res_vec.push_back(irr_p);
 

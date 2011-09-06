@@ -76,7 +76,7 @@ public:
 
   /// Construct from node pointer
   explicit CCuddNavigator(pointer_type ptr): pNode(ptr) {
-    assert(isValid());
+    PBORI_ASSERT(isValid());
   }
 
   /// Copy Constructor
@@ -139,15 +139,15 @@ public:
   //@}
 
   /// Force incrementation of reference count
-  void incRef() const {  assert(isValid()); Cudd_Ref(pNode); }
+  void incRef() const {  PBORI_ASSERT(isValid()); Cudd_Ref(pNode); }
 
   /// Force decrementation of reference count
-  void decRef() const {  assert(isValid()); Cudd_Deref(pNode); }
+  void decRef() const {  PBORI_ASSERT(isValid()); Cudd_Deref(pNode); }
 
   /// Force recursive decrementation of reference count
   template <class MgrType>
   void recursiveDecRef(const MgrType& mgr) const {
-    assert(isValid());
+    PBORI_ASSERT(isValid());
     Cudd_RecursiveDerefZdd(mgr, pNode); 
   }
 
@@ -163,7 +163,7 @@ inline CCuddNavigator::value_type
 CCuddNavigator::operator*() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::operator*() const" );
-  assert(isValid());
+  PBORI_ASSERT(isValid());
   return Cudd_Regular(pNode)->index;
 }
 
@@ -172,7 +172,7 @@ inline CCuddNavigator::bool_type
 CCuddNavigator::isConstant() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::isConstant() const" );
-  assert(isValid());
+  PBORI_ASSERT(isValid());
   return Cudd_IsConstant(pNode);
 }
 
@@ -181,7 +181,7 @@ inline CCuddNavigator::bool_type
 CCuddNavigator::terminalValue() const {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::terminalValue() const" );
-  assert(isConstant());
+  PBORI_ASSERT(isConstant());
   return Cudd_V(pNode);
 }
 
@@ -192,7 +192,7 @@ CCuddNavigator::incrementThen() {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::incrementThen()" );
 
-  assert(isValid());
+  PBORI_ASSERT(isValid());
   pNode = Cudd_T(pNode);
 
   return *this;
@@ -204,7 +204,7 @@ CCuddNavigator::incrementElse() {
 
   PBORI_TRACE_FUNC( "CCuddNavigator::incrementElse()" );
 
-  assert(isValid());
+  PBORI_ASSERT(isValid());
   pNode = Cudd_E(pNode);
 
   return *this;
@@ -213,7 +213,7 @@ CCuddNavigator::incrementElse() {
 inline CCuddNavigator
 explicit_navigator_cast(CCuddNavigator::pointer_type ptr) {
 
-#ifndef NDEBUG
+#ifndef PBORI_NDEBUG
   if (ptr == NULL)
     return CCuddNavigator();
   else

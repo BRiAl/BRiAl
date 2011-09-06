@@ -32,8 +32,8 @@ public:
     if (!(p.isZero())){
       this->lm=p.boundedLead(sugar);
       this->exp=lm.exp();
-      assert(lm==p.lead());
-      assert(exp==p.leadExp());
+      PBORI_ASSERT(lm==p.lead());
+      PBORI_ASSERT(exp==p.leadExp());
     }
 
     length=p.length();
@@ -41,18 +41,18 @@ public:
   PolynomialSugar(const Polynomial& poly, int sugar, len_type length):
     lm(poly.ring()), exp(), p(poly) {
 
-    assert(length>=0);
+    PBORI_ASSERT(length>=0);
     
     //sugar=p.deg();
     this->sugar=sugar;
     this->length=length;
-    assert(sugar>=p.deg());
-    assert(length>=p.length());
+    PBORI_ASSERT(sugar>=p.deg());
+    PBORI_ASSERT(length>=p.length());
     if (!(p.isZero())){
       this->lm=p.boundedLead(sugar);
       this->exp=lm.exp();
-      assert(lm==p.lead());
-      assert(exp==p.leadExp());
+      PBORI_ASSERT(lm==p.lead());
+      PBORI_ASSERT(exp==p.leadExp());
     }
   }
   const BooleMonomial& lead() const{
@@ -71,9 +71,9 @@ public:
     return p.isZero();
   }
   void add(const Polynomial p2, deg_type sugar2, wlen_type length){
-    assert(p2.leadExp()==exp);
-    assert(length>=0);
-    assert(length>=p2.length());
+    PBORI_ASSERT(p2.leadExp()==exp);
+    PBORI_ASSERT(length>=0);
+    PBORI_ASSERT(length>=p2.length());
     this->p=p+p2;
     this->sugar=std::max(sugar2,this->sugar);
 
@@ -88,8 +88,8 @@ public:
     this->length-=2;
     if (p2.ring().ordering().isTotalDegreeOrder()) this->sugar=this->lm.deg();
     
-    assert((p.isZero())|| (lm==p.lead()));
-    assert((p.isZero())||(exp==p.leadExp()));
+    PBORI_ASSERT((p.isZero())|| (lm==p.lead()));
+    PBORI_ASSERT((p.isZero())||(exp==p.leadExp()));
   }
   void adjustSugar(){
     sugar=p.deg();
@@ -105,15 +105,15 @@ public:
     wlen_type res=1;
     if (isZero()) return 0;
     res=res+(sugar-exp.deg()+1)*(length-1);
-    assert(res>=p.eliminationLengthWithDegBound(sugar));
+    PBORI_ASSERT(res>=p.eliminationLengthWithDegBound(sugar));
     return res;
     //return p.eliminationLengthWithDegBound(sugar);
   }
   void adjustLm(){
     this->lm=this->p.lead();
     exp=lm.exp();
-    assert(lm==p.lead());
-    assert(exp==p.leadExp());
+    PBORI_ASSERT(lm==p.lead());
+    PBORI_ASSERT(exp==p.leadExp());
   }
 protected:
   Monomial lm;

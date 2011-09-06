@@ -165,7 +165,7 @@ Cudd_RecursiveDeref(
 
     do {
 #ifdef DD_DEBUG
-	assert(N->ref != 0);
+	CUDD_ASSERT(N->ref != 0);
 #endif
 
 	if (N->ref == 1) {
@@ -228,7 +228,7 @@ Cudd_IterDerefBdd(
 
     do {
 #ifdef DD_DEBUG
-	assert(N->ref != 0);
+	CUDD_ASSERT(N->ref != 0);
 #endif
 
 	if (N->ref == 1) {
@@ -283,7 +283,7 @@ Cudd_DelayedDerefBdd(
 
     n = Cudd_Regular(n);
 #ifdef DD_DEBUG
-    assert(n->ref != 0);
+    CUDD_ASSERT(n->ref != 0);
 #endif
 
 #ifdef DD_NO_DEATH_ROW
@@ -291,7 +291,7 @@ Cudd_DelayedDerefBdd(
 #else
     if (cuddIsConstant(n) || n->ref > 1) {
 #ifdef DD_DEBUG
-	assert(n->ref != 1 && (!cuddIsConstant(n) || n == DD_ONE(table)));
+	CUDD_ASSERT(n->ref != 1 && (!cuddIsConstant(n) || n == DD_ONE(table)));
 #endif
 	cuddSatDec(n->ref);
 	return;
@@ -302,13 +302,13 @@ Cudd_DelayedDerefBdd(
     if (N != NULL) {
 #endif
 #ifdef DD_DEBUG
-	assert(!Cudd_IsComplement(N));
+	CUDD_ASSERT(!Cudd_IsComplement(N));
 #endif
 	stack = table->stack;
 	SP = 1;
 	do {
 #ifdef DD_DEBUG
-	    assert(N->ref != 0);
+	    CUDD_ASSERT(N->ref != 0);
 #endif
 	    if (N->ref == 1) {
 		N->ref = 0;
@@ -391,7 +391,7 @@ Cudd_RecursiveDerefZdd(
 
     do {
 #ifdef DD_DEBUG
-	assert(N->ref != 0);
+	CUDD_ASSERT(N->ref != 0);
 #endif
 
 	cuddSatDec(N->ref);
@@ -402,7 +402,7 @@ Cudd_RecursiveDerefZdd(
 	    table->nodesDropped++;
 #endif
 #ifdef DD_DEBUG
-	    assert(!cuddIsConstant(N));
+	    CUDD_ASSERT(!cuddIsConstant(N));
 #endif
 	    ord = table->permZ[N->index];
 	    stack[SP++] = cuddE(N);
@@ -590,7 +590,7 @@ cuddReclaim(
     N = Cudd_Regular(n);
 
 #ifdef DD_DEBUG
-    assert(N->ref == 0);
+    CUDD_ASSERT(N->ref == 0);
 #endif
 
     do {
@@ -643,7 +643,7 @@ cuddReclaimZdd(
     N = n;
 
 #ifdef DD_DEBUG
-    assert(N->ref == 0);
+    CUDD_ASSERT(N->ref == 0);
 #endif
 
     do {
@@ -653,7 +653,7 @@ cuddReclaimZdd(
 	    table->deadZ--;
 	    table->reclaimed++;
 #ifdef DD_DEBUG
-	    assert(!cuddIsConstant(N));
+	    CUDD_ASSERT(!cuddIsConstant(N));
 #endif
 	    ord = table->permZ[N->index];
 	    stack[SP++] = cuddE(N);
@@ -732,7 +732,7 @@ cuddClearDeathRow(
     }
 #ifdef DD_DEBUG
     for (; i < table->deathRowDepth; i++) {
-	assert(table->deathRow[i] == NULL);
+	CUDD_ASSERT(table->deathRow[i] == NULL);
     }
 #endif
     table->nextDead = 0;

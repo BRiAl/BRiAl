@@ -43,13 +43,13 @@ static Polynomial opposite_logic_mapping(Polynomial p){
 
 static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
   std::vector<Polynomial> res;
-  assert(!(strat.pairs.pairSetEmpty()));
+  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   wlen_type wlen=strat.pairs.queue.top().wlen;
   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
     
-    assert(strat.pairs.queue.top().sugar==deg);
+    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
     strat.pairs.cleanTopByChainCriterion();
   }
@@ -99,11 +99,11 @@ r(orig.r)
 
 void GroebnerStrategy::treat_m_p_1_case(const PolyEntry& e){
     if (e.length==2){
-        assert(e.p.length()==2);
+        PBORI_ASSERT(e.p.length()==2);
         Polynomial::const_iterator it=e.p.begin();
-        assert(it!=e.p.end());
+        PBORI_ASSERT(it!=e.p.end());
         it++;
-        assert(it!=e.p.end());
+        PBORI_ASSERT(it!=e.p.end());
         if (it->deg()==0){
             generators.monomials_plus_one=generators.monomials_plus_one.unite(e.lead.diagram());
         }
@@ -143,7 +143,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         if (e.length==1){
           new_p=cancel_monomial_in_tail(this->generators[i].p,e.lead);
         } else {
-          assert(e.length==2);
+          PBORI_ASSERT(e.length==2);
           new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
         }
         if (generators[i].p!=new_p){
@@ -331,7 +331,7 @@ std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
 
       int uv_opt=uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
       ////should also be proofable for var2var factors
-      assert(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
+      PBORI_ASSERT(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
       if (uv_opt<=4){
         return addHigherImplDelayedUsing4(s, e.literal_factors,false);
       }
@@ -380,13 +380,13 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
   #ifndef EXP_FOR_PAIRS
               Monomial t=mt_vec[mt_i];
               Monomial t_divided=t/lm;
-              assert(t.reducibleBy(lm));
+              PBORI_ASSERT(t.reducibleBy(lm));
   #else
               Exponent t_divided=mt_vec[mt_i];
               Exponent t=t_divided+e.leadExp;
   #endif
               //MonomialSet lm_d=t_divided.divisors();
-              assert((other_terms.intersect(t_divided.divisors(lm.ring())).isZero()));
+              PBORI_ASSERT((other_terms.intersect(t_divided.divisors(lm.ring())).isZero()));
               if (true){
              // #ifndef EXP_FOR_PAIRS
              //     MonomialSet act_l_terms=generators.leadingTerms.intersect(t.divisors());
@@ -436,7 +436,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
 
   Polynomial p=p_arg;
   Polynomial::ring_type ring(p_arg.ring());
-  assert(ring.id() == this->r.id());
+  PBORI_ASSERT(ring.id() == this->r.id());
   MonomialSet ext_prod_terms(ring);
   PolyEntry e(p);
   Monomial lm=e.lead;
@@ -491,7 +491,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     //diff suffices if we start from minimal leads
     intersecting_terms=this->generators.leadingTerms.diff(other_terms);
     intersecting_terms=intersecting_terms.diff(ot2);//mod_mon_set(intersecting_terms,ot2);
-    assert (!((!(p.isOne())) && is00 && is11));
+    PBORI_ASSERT (!((!(p.isOne())) && is00 && is11));
   }
           
   critical_terms_base=mod_mon_set(intersecting_terms.intersect(generators.minimalLeadingTerms),ot2);
@@ -525,7 +525,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     is_it++;
   }
   if (impl_v!=NULL){
-    assert(is_impl);
+    PBORI_ASSERT(is_impl);
     int impl_v_size=impl_v->size();
     int j;
     for (j=0;j<impl_v_size;j++){
@@ -648,11 +648,11 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   }
 }
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
-#ifndef NDEBUG
+#ifndef PBORI_NDEBUG
   if (p.ring().id() != this->r.id())
       throw std::runtime_error("addGeneratorDelayed failed");
 #endif
-  assert(p.ring().id() == this->r.id());
+  PBORI_ASSERT(p.ring().id() == this->r.id());
   this->pairs.introducePair(Pair(p));
 }
 bool GroebnerStrategy::variableHasValue(idx_type v){
@@ -708,7 +708,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalize(){
 }
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
 
-  assert(p.ring().id() == this->r.id());
+  PBORI_ASSERT(p.ring().id() == this->r.id());
   std::vector<Polynomial> impl;
   int way=0;
   if ((have_ordering_for_tables(this->r)) ||
@@ -769,23 +769,23 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
     int i;
     std::vector<int> implication_indices;
     for(i=0;i<s;i++){
-      assert(!(impl[i].isZero()));
+      PBORI_ASSERT(!(impl[i].isZero()));
       if (generators.minimalLeadingTerms.divisorsOf(impl[i].leadExp()).isZero()){
 
         
         Polynomial p_impl=impl[i];
         if(generators.optRedTail) p_impl=red_tail(this->generators,p_impl);
-        assert(!(p_impl.isZero()));
+        PBORI_ASSERT(!(p_impl.isZero()));
         implication_indices.push_back(
           addGenerator(p_impl,true,&implication_indices));
       }
       else {
         addGeneratorDelayed(impl[i]);
-                //assert(impl[i]!=)
+                //PBORI_ASSERT(impl[i]!=)
       }
 
     }
-    assert(!(generators.leadingTerms.divisorsOf(p.leadExp()).isZero()));
+    PBORI_ASSERT(!(generators.leadingTerms.divisorsOf(p.leadExp()).isZero()));
   }
 }
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
@@ -1004,7 +1004,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
                 p_t.push_back(terms_as_exp[j]);
             }
         }
-        assert(polys.size()!=0);
+        PBORI_ASSERT(polys.size()!=0);
         Polynomial from_mat=add_up_exponents(p_t,polys[0].ring().zero());
         if (UNLIKELY(from_mat.isOne())){
             polys.clear();
@@ -1032,15 +1032,15 @@ GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
     int i;
     MonomialSet terms(orig_system[0].ring());
     MonomialSet leads_from_strat(terms.ring());
-    assert(orig_system[0].ring().id() ==  terms.ring().id());
+    PBORI_ASSERT(orig_system[0].ring().id() ==  terms.ring().id());
 
-#ifndef NDEBUG
+#ifndef PBORI_NDEBUG
     {
       std::vector < Polynomial >::const_iterator start(orig_system.begin()),
 	finish(orig_system.end());
       
       while (start != finish) {
-	assert(terms.ring().id() == start->ring().id());
+	PBORI_ASSERT(terms.ring().id() == start->ring().id());
 	++start;
       }
     }

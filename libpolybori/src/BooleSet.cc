@@ -177,7 +177,7 @@ BooleSet::hasTermOfVariables(const term_type& rhs) const {
   bool_type result = dd_owns_term_of_indices(navigation(),
                                              rhs.begin(), rhs.end());
 
-  assert(result == !divisorsOf(rhs).isZero());
+  PBORI_ASSERT(result == !divisorsOf(rhs).isZero());
 
 #endif
   

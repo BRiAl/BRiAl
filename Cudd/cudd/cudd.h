@@ -64,9 +64,22 @@
 #ifdef CUDD_ORIG_INCLUSION
 #include "mtr.h"
 #include "epd.h"
+#ifndef CUDD_ASSERT
+#define CUDD_ASSERT assert
+#endif
 
 #else
 #include <polybori/config.h>
+#ifndef CUDD_ASSERT
+
+#if defined(PBORI_NDEBUG) || defined(NDEBUG)
+#define CUDD_ASSERT(arg) do {} while (0)
+#else
+#define CUDD_ASSERT(arg) assert(arg)
+#endif
+
+#endif
+
 #endif
 
 #ifdef __cplusplus

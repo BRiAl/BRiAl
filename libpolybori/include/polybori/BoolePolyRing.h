@@ -105,7 +105,7 @@ protected:
 
   /// Get strong reference from weak pointer (used by @c WeakRingPtr)
   explicit BoolePolyRing(const CWeakPtr<core_type>& rhs):
-    p_core(rhs.operator->()) { assert(p_core != NULL); }
+    p_core(rhs.operator->()) { PBORI_ASSERT(p_core != NULL); }
 
 public:
   /// Constructor for @em nvars variables and order code

@@ -76,7 +76,7 @@ public:
   }
 private:
   void usualAssertions(){
-      assert((buckets.size()==0)||(!(front.isZero())));
+      PBORI_ASSERT((buckets.size()==0)||(!(front.isZero())));
   }
   std::vector<Polynomial> buckets;
   Polynomial front;

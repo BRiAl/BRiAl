@@ -41,11 +41,11 @@ static Polynomial do_has_factor_x(const MonomialSet& m,const Variable& x){
     if (m_idx==x_idx){
       return Polynomial(nav.elseBranch().isEmpty(), m.ring());
     } else {
-        assert(!(nav.isEmpty()));
+        PBORI_ASSERT(!(nav.isEmpty()));
         if (m_idx>x_idx){
           return m.ring().zero();//False
         } else {
-            assert (*nav<x_idx);
+            PBORI_ASSERT (*nav<x_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x>
                  cache_mgr_type;
             
@@ -86,10 +86,10 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
       return Polynomial((nav_r.thenBranch()==nav_l) &&
                         (nav_r.elseBranch().isEmpty()), left.ring());
     } else {
-        assert(!(nav_r.isEmpty()));
-        assert(*nav_r<x_idx);
+        PBORI_ASSERT(!(nav_r.isEmpty()));
+        PBORI_ASSERT(*nav_r<x_idx);
     
-            assert (*nav_r<x_idx);
+            PBORI_ASSERT (*nav_r<x_idx);
             if (*nav_r!=*nav_l) return left.ring().zero();
             
             
@@ -112,7 +112,7 @@ static Polynomial do_left_equals_right_x_branch_and_r_has_fac_x(const MonomialSe
 
 static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,const Variable& y){
     if (m.isZero()) return m.ring().one();
-    assert(!(x==y));
+    PBORI_ASSERT(!(x==y));
     MonomialSet::navigator nav=m.navigation();
     idx_type min_idx=std::min(x.index(),y.index());
     
@@ -131,11 +131,11 @@ static Polynomial do_has_factor_x_plus_y(const MonomialSet& m,const Variable& x,
               MonomialSet::dd_type(m.ring(), nav.elseBranch()), 
               other).isOne(), m.ring());
     } else {
-        assert(!(nav.isEmpty()));
+        PBORI_ASSERT(!(nav.isEmpty()));
         if (m_idx>min_idx){
           return m.ring().zero();//False
         } else {
-            assert (*nav<min_idx);
+            PBORI_ASSERT (*nav<min_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_y>
                  cache_mgr_type;
             
@@ -174,11 +174,11 @@ static Polynomial do_has_factor_x_plus_one(const MonomialSet& m,const Variable& 
     if (m_idx==x_idx){
       return Polynomial(nav.elseBranch()==nav.thenBranch(), m.ring());
     } else {
-        assert(!(nav.isEmpty()));
+        PBORI_ASSERT(!(nav.isEmpty()));
         if (m_idx>x_idx){
           return m.ring().zero();//False
         } else {
-            assert (*nav<x_idx);
+            PBORI_ASSERT (*nav<x_idx);
             typedef PBORI::CacheManager<CCacheTypes::has_factor_x_plus_one>
                  cache_mgr_type;
             
@@ -213,7 +213,7 @@ static bool has_factor_x_plus_y(const MonomialSet& m, const Variable& x,const Va
 #define ELEMENTAR_FACTORIZATION 1
 LiteralFactorization::LiteralFactorization(const Polynomial& p):
   rest(p.ring()) {
-  assert(!(p.isZero()));
+  PBORI_ASSERT(!(p.isZero()));
   Exponent lead_variables=p.leadExp();
   lmDeg=p.leadDeg();
   Exponent other_variables=p.usedVariablesExp()-lead_variables;
@@ -227,18 +227,18 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p):
   
   
   while(it!=end){
-    assert(len_r==r.length());
+    PBORI_ASSERT(len_r==r.length());
     idx_type v=*it;
     #ifndef ELEMENTAR_FACTORIZATION
     BooleSet s0=r.subset0(v);
-    assert (s0.isZero()==has_factor_x(r,Variable(v, s0.ring())));
+    PBORI_ASSERT (s0.isZero()==has_factor_x(r,Variable(v, s0.ring())));
     if (s0.isZero()){
     #else
       Variable v_var(v, p.ring());
       if (has_factor_x(r,Variable(v_var))){
     #endif
       factors[v]=0;// var(v) is factor
-      assert(r.change(v)==r.subset1(v));
+      PBORI_ASSERT(r.change(v)==r.subset1(v));
       r=r.change(v);//equivalently subset(1)
       //cout<<"found factor0"<<endl;
     } else {
@@ -250,7 +250,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p):
     #endif
     #ifndef ELEMENTAR_FACTORIZATION
         BooleSet s1=r.subset1(v);
-        assert((s1==s0)==has_factor_x_plus_one(r,Variable(v, s1.ring())));
+        PBORI_ASSERT((s1==s0)==has_factor_x_plus_one(r,Variable(v, s1.ring())));
             if (s1==s0){
     #else
        if (has_factor_x_plus_one(r,v_var)){
@@ -280,19 +280,19 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p):
                     #endif
                     //cout<<"testing var"<<v2<<endl;
                     //v occurs in the lead, v2 not
-                    assert(v2!=v);
+                    PBORI_ASSERT(v2!=v);
                     #ifndef ELEMENTAR_FACTORIZATION
-                    assert((r.subset1(v2)==s1)==has_factor_x_plus_y(r,Variable(v,r.ring()),Variable(v2, r.ring())));
+                    PBORI_ASSERT((r.subset1(v2)==s1)==has_factor_x_plus_y(r,Variable(v,r.ring()),Variable(v2, r.ring())));
                     if (r.subset1(v2)==s1){
                     #else
                       if (has_factor_x_plus_y(r,Variable(v, r.ring()),v2_var)){
                     #endif
                     
-                        assert(p.ring().ordering().compare(v, v2)==BoolePolyRing::greater_than);
+                        PBORI_ASSERT(p.ring().ordering().compare(v, v2)==BoolePolyRing::greater_than);
                         var2var_map[v]=v2;
-                        assert(r.subset1(v2).change(v2)==r.subset0(v));
-                        assert(r.subset1(v2).subset1(v).isZero());
-                        assert(r.subset0(v).subset0(v2).isZero());
+                        PBORI_ASSERT(r.subset1(v2).change(v2)==r.subset0(v));
+                        PBORI_ASSERT(r.subset1(v2).subset1(v).isZero());
+                        PBORI_ASSERT(r.subset0(v).subset0(v2).isZero());
                     #ifndef ELEMENTAR_FACTORIZATION
                         r=s1;
                     #else
@@ -314,7 +314,7 @@ LiteralFactorization::LiteralFactorization(const Polynomial& p):
     it++;
   }
   rest=r;
-  assert((!(rest.isZero())));
+  PBORI_ASSERT((!(rest.isZero())));
 }
 deg_type common_literal_factors_deg(const LiteralFactorization& a, const LiteralFactorization& b){
   deg_type res=0;

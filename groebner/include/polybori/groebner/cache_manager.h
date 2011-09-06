@@ -44,7 +44,7 @@ class CacheManager{
             std::vector<idx_type> back_2_ring(used_exp.size());
             std::vector<idx_type> ring_2_0123(nv);
             
-            //assert(nv<255);
+            //PBORI_ASSERT(nv<255);
             set_up_translation_vectors(ring_2_0123,back_2_ring, used_exp);
             Polynomial p_t=translate_indices(p,ring_2_0123);
             impl_iterator_type it=impl.find(p_t);

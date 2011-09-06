@@ -48,7 +48,7 @@ public:
   const navigator_type& top() const { return base::back(); };
 
   void append(const handle_else& rhs) {
-    assert(base::empty() || rhs.empty() || ((**rhs.begin()) > (*top())) );
+    PBORI_ASSERT(base::empty() || rhs.empty() || ((**rhs.begin()) > (*top())) );
     base::insert(base::end(), rhs.begin(), rhs.end());
   }
 };

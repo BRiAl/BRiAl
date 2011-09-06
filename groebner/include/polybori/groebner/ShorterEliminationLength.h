@@ -35,7 +35,7 @@ class ShorterEliminationLength{
     this->strat=&strat;
     }
     bool operator() (const Exponent& e){
-        assert(strat->generators.exp2Index.find(e)!=strat->generators.exp2Index.end());
+        PBORI_ASSERT(strat->generators.exp2Index.find(e)!=strat->generators.exp2Index.end());
         return (strat->generators[strat->generators.exp2Index.find(e)->second].weightedLength<=el);
     }
 };

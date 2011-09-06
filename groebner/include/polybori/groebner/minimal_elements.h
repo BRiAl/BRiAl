@@ -91,7 +91,7 @@ minimal_elements_internal2(MonomialSet s){
     }
     
     if (s.isZero()) return result;
-    assert(!(Polynomial(s).hasConstantPart()));
+    PBORI_ASSERT(!(Polynomial(s).hasConstantPart()));
     
     
     
@@ -365,7 +365,7 @@ do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
         else
           {result= MonomialSet(index,result1,result0);}
       } else {
-      assert(index==*mod_nav);
+      PBORI_ASSERT(index==*mod_nav);
       MonomialSet::navigator mod0=mod_nav.elseBranch();
       MonomialSet::navigator mod1=mod_nav.thenBranch();
       MonomialSet

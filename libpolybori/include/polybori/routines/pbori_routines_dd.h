@@ -38,7 +38,7 @@ dd_last_lexicographical_term(const DDType& dd, type_tag<OutputType>) {
 
   term_type result(dd.ring());
 
-  assert(!dd.isZero());
+  PBORI_ASSERT(!dd.isZero());
 
   size_type nlen = std::distance(dd.lastBegin(), dd.lastEnd());
 

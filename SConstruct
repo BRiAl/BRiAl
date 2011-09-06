@@ -184,7 +184,7 @@ opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace s
          None, converter = SplitColonSep)
 
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
-         ['NDEBUG'], converter = Split)
+         ['PBORI_NDEBUG'], converter = Split)
 
 def scons_version():
     import SCons

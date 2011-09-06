@@ -41,7 +41,7 @@ PolyEntry::PolyEntry(const Polynomial &poly):
 }
 
 void PolyEntry::recomputeInformation(){
-  assert(this->lead==p.lead());
+  PBORI_ASSERT(this->lead==p.lead());
   if (!(this->p.ring().ordering().isDegreeOrder()))
       this->deg=p.deg();
   //so also lmExp keeps constant
@@ -56,6 +56,6 @@ void PolyEntry::recomputeInformation(){
   this->tailVariables=tail.usedVariablesExp();
   this->literal_factors=LiteralFactorization(p);
   //minimal keeps constant
-  assert(this->leadDeg==p.leadDeg());
+  PBORI_ASSERT(this->leadDeg==p.leadDeg());
 }
 END_NAMESPACE_PBORIGB

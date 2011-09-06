@@ -37,17 +37,17 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
 
   if (n_nav.isTerminated()) return 
     MonomialSet(cache_mgr.generate(a_nav)).firstDivisorsOf(cache_mgr.generate(m_nav));
-  assert(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
+  PBORI_ASSERT(!(n_nav.isConstant()&&(!(n_nav.terminalValue()))));
 
   if (a_nav.isConstant()) return cache_mgr.generate(a_nav);
 
-  assert(!(n_nav.isConstant()));
-  assert(!(m_nav.isConstant()));
+  PBORI_ASSERT(!(n_nav.isConstant()));
+  PBORI_ASSERT(!(m_nav.isConstant()));
   int m_index=*m_nav;
   int n_index=*n_nav;
   int a_index=*a_nav;
    
-  assert(m_index<=n_index);
+  PBORI_ASSERT(m_index<=n_index);
   
   
   //here we rely on the fact, that in Cudd deref of constant nav. gives a bigger index than allow allowed real indices
@@ -55,7 +55,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
      if (a_index<m_index) a_nav.incrementElse();
      else{
        n_index=*n_nav;
-       assert(n_index>=m_index);
+       PBORI_ASSERT(n_index>=m_index);
        if (m_index==n_index){
          n_nav.incrementThen();
          m_nav.incrementThen();
@@ -70,7 +70,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
   if (a_nav.isConstant()){
     return cache_mgr.generate(a_nav);
   }
-  assert((*a_nav)==(*m_nav));
+  PBORI_ASSERT((*a_nav)==(*m_nav));
 
   MonomialSet::navigator cached;
   #ifndef DANGEROUS_FIXED_PATH
@@ -100,7 +100,7 @@ do_fixed_path_divisors(const fixed_divisors_cache_type & cache_mgr,
     return cache_mgr2.generate(cached);
   }
     
-  assert(a_index==m_index);
+  PBORI_ASSERT(a_index==m_index);
   int index=m_index;
   MonomialSet result(cache_mgr.zero());
   if (m_index==n_index){
@@ -150,7 +150,7 @@ do_fixed_path_divisors(MonomialSet a,
 
 inline MonomialSet
 fixed_path_divisors(MonomialSet a, Monomial m, Monomial n){
-   assert(m.reducibleBy(n));
+   PBORI_ASSERT(m.reducibleBy(n));
    return do_fixed_path_divisors(a,m.diagram(),n.diagram());
 }
 

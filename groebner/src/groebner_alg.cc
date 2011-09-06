@@ -122,7 +122,7 @@ MonomialSet mod_deg2_set(const CacheMgr& cache_mgr,
                        );
     
   } else {
-    assert(v_index>a_index);
+    PBORI_ASSERT(v_index>a_index);
     result=MonomialSet(a_index,
                        mod_deg2_set(cache_mgr, a.thenBranch(), v),
                        mod_deg2_set(cache_mgr, a.elseBranch(), v) );
@@ -358,7 +358,7 @@ MonomialSet recursively_insert(const MgrType& mgr,
                          MonomialSet( m.elseBranch(), 
                                       MonomialSet::ring_type(mgr)));
     } else{
-        assert(idx<*m);
+        PBORI_ASSERT(idx<*m);
         return MonomialSet(idx, m, p, MonomialSet::ring_type(mgr));
     }
 }
@@ -370,15 +370,15 @@ MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialS
 
 void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
     Monomial lm=p.lead();
-    assert (!(m.isZero()));
+    PBORI_ASSERT (!(m.isZero()));
     idx_type lead_index=*(lm.begin());
     Exponent red_lead=*m.expBegin();
     if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
         //this->log("linear lead reductor\n");
         p=ll_red_nf(p,m);
-        assert(p.lead()==lm);
+        PBORI_ASSERT(p.lead()==lm);
         m=ll_red_nf(m,MonomialSet(p.diagram())).diagram();
-        //assert(ll_red_nf(m+m.lead(),m)==m+m.lead());
+        //PBORI_ASSERT(ll_red_nf(m+m.lead(),m)==m+m.lead());
         m=recursively_insert(p.navigation().elseBranch(),
                              lead_index, m);
     }

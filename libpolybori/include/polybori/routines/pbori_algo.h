@@ -367,7 +367,7 @@ dd_modulo_monomials(const CacheMgr& cache_mgr,
     
   } 
   else {
-    assert(*rhs > index);
+    PBORI_ASSERT(*rhs > index);
     result = 
       SetType(index,
               dd_modulo_monomials(cache_mgr, navi.thenBranch(), rhs, init),

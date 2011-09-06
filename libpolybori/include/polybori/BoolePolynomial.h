@@ -228,7 +228,7 @@ public:
   /// Construct polynomial from navigator
   BoolePolynomial(const navigator& rhs, const ring_type& ring):
     m_dd(ring, rhs)  {
-    assert(rhs.isValid());
+    PBORI_ASSERT(rhs.isValid());
   }
 
   /// Destructor

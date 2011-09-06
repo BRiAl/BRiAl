@@ -84,19 +84,19 @@ public:
 
   /// Constant dereferencing
   const value_type & operator*() const {
-    assert(p_ptr != NULL);
+    PBORI_ASSERT(p_ptr != NULL);
     return *p_ptr;
   }
 
   /// Nonconstant dereference
   value_type & operator*() {
-    assert(p_ptr != NULL);
+    PBORI_ASSERT(p_ptr != NULL);
     return *p_ptr;
   }
   
   /// Pointer operator
   value_type* operator->() const {
-    assert(p_ptr != NULL);
+    PBORI_ASSERT(p_ptr != NULL);
     return p_ptr;
   }
 

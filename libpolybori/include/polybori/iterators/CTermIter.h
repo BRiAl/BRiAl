@@ -136,7 +136,7 @@ public:
 
   /// Get first index of current term 
   idx_type firstIndex() const { 
-    assert(!m_stack.empty()); 
+    PBORI_ASSERT(!m_stack.empty()); 
     return *begin(); 
   }
 

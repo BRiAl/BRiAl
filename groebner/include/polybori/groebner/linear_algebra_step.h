@@ -70,7 +70,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
     int i;
         for(i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
-	    assert(p.ring().id() == current_ring.id());
+	    PBORI_ASSERT(p.ring().id() == current_ring.id());
 
             if UNLIKELY(p.isZero()) continue;
             
@@ -94,11 +94,11 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
-			assert(current_ring.id() ==  strat.generators[index].lead.ring().id());
-			assert(current_ring.id() ==  strat.generators[index].p.ring().id());
-			assert(current_ring.id() ==  m.ring().id());
-			assert(current_ring.id() ==  m2.ring().id());
-			assert(current_ring.id() ==  p2.ring().id());
+			PBORI_ASSERT(current_ring.id() ==  strat.generators[index].lead.ring().id());
+			PBORI_ASSERT(current_ring.id() ==  strat.generators[index].p.ring().id());
+			PBORI_ASSERT(current_ring.id() ==  m.ring().id());
+			PBORI_ASSERT(current_ring.id() ==  m2.ring().id());
+			PBORI_ASSERT(current_ring.id() ==  p2.ring().id());
                 }
                 ++it;
             }
@@ -119,7 +119,7 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
             mat[i][from_term_map[*it]]=1;
             #else
             from_term_map_type::const_iterator from_it=from_term_map.find(*it);
-            assert(from_it!=from_term_map.end());
+            PBORI_ASSERT(from_it!=from_term_map.end());
             mzd_write_bit(mat,i,from_it->second,1);
             #endif
             it++;
@@ -160,7 +160,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
             }
             polys.push_back(add_up_lex_sorted_exponents(leads_from_strat.ring(),
 							p_t,0,p_t.size()));
-            assert(!(polys[polys.size()-1].isZero()));
+            PBORI_ASSERT(!(polys[polys.size()-1].isZero()));
         }
     }
 }
@@ -248,13 +248,13 @@ inline void
 linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
 {
     BoolePolyRing current_ring(terms.ring());
-    assert(current_ring.id() ==  leads_from_strat.ring().id());
-#ifndef NDEBUG
+    PBORI_ASSERT(current_ring.id() ==  leads_from_strat.ring().id());
+#ifndef PBORI_NDEBUG
     std::vector < Polynomial >::const_iterator start(polys.begin()),
       finish(polys.end());
 
     while (start != finish) {
-      assert(current_ring.id() == start->ring().id());
+      PBORI_ASSERT(current_ring.id() == start->ring().id());
       ++start;
     }
 #endif
@@ -286,7 +286,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         return;
     Monomial        last(current_ring);
     if UNLIKELY(polys_lm[0].second.deg() == 0) {
-        assert(polys_lm[0].first.isOne());
+        PBORI_ASSERT(polys_lm[0].first.isOne());
         polys.resize(1, current_ring);
         polys[0] = 1;
 
@@ -306,7 +306,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
                 polys_triangular.push_back(it->first);
 		
 
-        assert(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
+        PBORI_ASSERT(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
 
                 terms_unique_vec.push_back(it->second);
                 terms_step1=terms_step1.unite(it->first.diagram());
@@ -318,8 +318,8 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     polys.clear();
     std::reverse(polys_triangular.begin(), polys_triangular.end());
     terms_unique = add_up_generic(terms_unique_vec, current_ring.zero());
-    assert(terms_step1.diff(terms).isZero());
-    assert(polys_triangular.size()!=0);
+    PBORI_ASSERT(terms_step1.diff(terms).isZero());
+    PBORI_ASSERT(polys_triangular.size()!=0);
     from_term_map_type eliminated2row_number;
     int remaining_cols;
     mzd_t* mat_step1;
@@ -364,7 +364,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         //sort rows
         int pivot_row=0;
         row_start.resize(rows);
-        assert(cols>=rows);
+        PBORI_ASSERT(cols>=rows);
         remaining_cols=cols-rows;
         compactified_columns2old_columns.resize(remaining_cols);
         for(i=0;i<cols;i++){
@@ -382,7 +382,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
                 }
             }
             if UNLIKELY(j==rows){
-                assert(i>=pivot_row);
+                PBORI_ASSERT(i>=pivot_row);
                 compactified_columns2old_columns[i-pivot_row]=i;
             }
             
@@ -390,7 +390,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         if UNLIKELY(log){
             std::cout<<"finished sort"<<std::endl;
         }
-        assert(pivot_row==rows);
+        PBORI_ASSERT(pivot_row==rows);
 
         translate_back(polys, leads_from_strat, mat_step1,step1.ring_order2lex, step1.terms_as_exp,step1.terms_as_exp_lex,rank);
         
@@ -407,8 +407,8 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
 
         for(i=0;i<remaining_cols;i++){
             int source=compactified_columns2old_columns[i];
-            assert(i<=source);
-            assert(source<=transposed_step1->nrows);
+            PBORI_ASSERT(i<=source);
+            PBORI_ASSERT(source<=transposed_step1->nrows);
             if LIKELY(i!=source) mzd_row_swap(transposed_step1,source,i);
             
         }
@@ -452,8 +452,8 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         while(it!=end){
             Exponent e=*it; 
                 from_term_map_type::const_iterator from_it=eliminated2row_number.find(e);
-                assert(step1.terms_as_exp[row_start[from_it->second]]==e);
-                assert(from_it!=eliminated2row_number.end());
+                PBORI_ASSERT(step1.terms_as_exp[row_start[from_it->second]]==e);
+                PBORI_ASSERT(from_it!=eliminated2row_number.end());
                 int index=from_it->second;//...translate e->line number;
                 mzd_write_bit(mat_step2_factor,i,index,1);
             it++;
@@ -463,7 +463,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         while(it!=end){
             Exponent e=*it;
                 from_term_map_type::const_iterator from_it=step2.from_term_map.find(e);
-                assert(from_it!=step2.from_term_map.end());
+                PBORI_ASSERT(from_it!=step2.from_term_map.end());
                 int index=from_it->second;
                 mzd_write_bit(mat_step2,i,index,1);
             it++;       
@@ -478,9 +478,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     for(i=0;i<remaining_cols;i++){
         remaining_col2new_col[i]=step2.from_term_map[step1.terms_as_exp[compactified_columns2old_columns[i]]];
     }
-    assert(mat_step2_factor->ncols==mat_step1->nrows);
-    assert(mat_step1->nrows==terms_unique.size());
-    assert(mat_step1->ncols==remaining_cols);
+    PBORI_ASSERT(mat_step2_factor->ncols==mat_step1->nrows);
+    PBORI_ASSERT(mat_step1->nrows==terms_unique.size());
+    PBORI_ASSERT(mat_step1->ncols==remaining_cols);
 
     if UNLIKELY(optDrawMatrices)
     {
@@ -506,14 +506,14 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         std::cout<<"end mult"<<std::endl;
     }
     mzd_free(mat_step1);
-    assert(polys_rest.size()==eliminated->nrows);
-    assert(mat_step2->nrows==eliminated->nrows);
+    PBORI_ASSERT(polys_rest.size()==eliminated->nrows);
+    PBORI_ASSERT(mat_step2->nrows==eliminated->nrows);
     for(i=0;i<polys_rest.size();i++){
         int j;
-        assert(remaining_cols==eliminated->ncols);
+        PBORI_ASSERT(remaining_cols==eliminated->ncols);
         for(j=0;j<remaining_cols;j++){
             if UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
-                assert(step2.terms_as_exp[remaining_col2new_col[j]]==step1.terms_as_exp[compactified_columns2old_columns[j]]);
+                PBORI_ASSERT(step2.terms_as_exp[remaining_col2new_col[j]]==step1.terms_as_exp[compactified_columns2old_columns[j]]);
                 
                 if UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
                     mzd_write_bit(mat_step2,i,remaining_col2new_col[j],0);

@@ -111,7 +111,7 @@ dd_cached_degree(const DegreeCacher& cache, NaviType navi, SizeType bound) {
 
   // Write result to cache
   if (deg >= 0) {
-    assert(bound >= 0);
+    PBORI_ASSERT(bound >= 0);
     cache.insert(navi, bound, deg);
   }
 
@@ -300,7 +300,7 @@ dd_multiply_recursively_monom(const CacheType& cache_mgr,
       return cache_mgr.zero();
   }
 
-  assert(monomNavi.elseBranch().isEmpty());
+  PBORI_ASSERT(monomNavi.elseBranch().isEmpty());
 
   if (navi.isConstant()) {
     if(navi.terminalValue())
@@ -645,11 +645,11 @@ dd_divide_recursively(const CacheType& cache_mgr,
   typedef typename PolyType::dd_type dd_type;
 
   if (monomNavi.isConstant()) {
-    assert(monomNavi.terminalValue() == true);
+    PBORI_ASSERT(monomNavi.terminalValue() == true);
     return cache_mgr.generate(navi);
   }
 
-  assert(monomNavi.elseBranch().isEmpty());
+  PBORI_ASSERT(monomNavi.elseBranch().isEmpty());
 
   if (navi.isConstant()) 
     return cache_mgr.zero();
@@ -894,7 +894,7 @@ dd_first_divisors_of(CacheManager cache_mgr, NaviType navi,
   if (result.isValid())       // Cache lookup sucessful
     return  cache_mgr.generate(result);
   
-  assert(*rhsNavi == *navi);
+  PBORI_ASSERT(*rhsNavi == *navi);
    
   // Compute new result
   init = dd_type(*rhsNavi,  
@@ -916,7 +916,7 @@ dd_first_multiples_of(const CacheType& cache_mgr,
   typedef typename SetType::dd_type dd_type;
 
   if(rhsNavi.isConstant()) {
-    assert(rhsNavi.terminalValue() == true);
+    PBORI_ASSERT(rhsNavi.terminalValue() == true);
     return cache_mgr.generate(navi);
   }
 
@@ -957,7 +957,7 @@ substitute_variables__(const RingType& ring, const MapType& idx2poly, NaviType n
     return ring.constant(navi.terminalValue());
 
   //typename MapType::const_reference var(idx2poly[*navi]);
-  //  assert(var.ring() == ring);
+  //  PBORI_ASSERT(var.ring() == ring);
   return (idx2poly[*navi] * 
           substitute_variables__<PolyType>(ring, idx2poly, navi.thenBranch())) + 
     substitute_variables__<PolyType>(ring, idx2poly, navi.elseBranch());
