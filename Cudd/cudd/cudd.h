@@ -72,8 +72,8 @@
 #include <polybori/config.h>
 #ifndef CUDD_ASSERT
 
-#if defined(PBORI_NDEBUG) || defined(NDEBUG)
-#define CUDD_ASSERT(arg) do {} while (0)
+#if defined(PBORI_NDEBUG)
+#define CUDD_ASSERT(arg) ((void)(0))
 #else
 #define CUDD_ASSERT(arg) assert(arg)
 #endif

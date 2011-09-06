@@ -112,8 +112,8 @@
 #endif
 
 // @todo force assertIon of PBORI_DEBUG
-#if defined(PBORI_NDEBUG) || defined(NDEBUG)
-#define PBORI_ASSERT(arg) do {} while (0)
+#if defined(PBORI_NDEBUG)
+#define PBORI_ASSERT(arg) (static_cast<void>(0))
 #else
 #define PBORI_ASSERT(arg) assert(arg)
 #endif
