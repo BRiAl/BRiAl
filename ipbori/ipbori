@@ -1,74 +1,52 @@
-#!/bin/bash
+#!/usr/bin/env python
 # 
 # @author Alexander Dreyer
 # @date 2007-10-19
-#
-# This file is a wrapper which enables the use of the PolyBoRi profile for
-# IPython without the need of installing the profile and setting the PolyBoRi
-# directory.
-#
-# @par Copyright:
-#   (c) 2007-2011 by The PolyBoRi Team
-#
+# Copyright: (c) 2007-2011 by The PolyBoRi Team
+"""ipbori -- An interactive shell for the PolyBoRi framework
 
-if [ "$1" = "-ipythonprefix" ]; then
-    IPYTHONPREFIX=$2
-    shift
-    shift
-fi
+This starts an interactive python-based shell -- IPython where available --
+which imports the PolyBoRi framework.
 
-OLDPWD=${PWD}
-# First determine the directory of this script 
-THIS="$0"
+"""
 
-# Follow all symbolic links to get the real file name and directory
-while [ -L ${THIS} ]; do
-    THIS_DIR=`dirname "${THIS}"`
-    # emulating readlink, which is not available everywhere
-    ls_l=`LC_ALL=C ls -l "${THIS}" 2> /dev/null`
-    THIS="${ls_l/* -> }"
-    cd "${THIS_DIR}"
-done
-THIS_DIR=`dirname "${THIS}"`
+from optparse import OptionParser
+parser = OptionParser()
 
-
-# Assuming parent directory is PolyBoRi directory
-export PBDIR=`cd "${THIS_DIR}/.."; pwd`
-
-# Get program name
-export IPBNAME=`basename $THIS`
-
-# Get directory of ipython profile (assuming it is in same directory)
-IPBDIR="${PBDIR}/ipbori"
-
-cd ${OLDPWD}
-
-# Calling ipython with PolyBoRi profile
-#
-# Note: directly calling the profile as rcfile saves us the trouble of
-# installing the profile, but custom settings like IPYTHONDIR/ipythonrc are
-# still available. 
-# (For the latter, ipythonrc-polybori needs to import ipythonrc.)
-
-
-#${IPYTHONPREFIX}ipython -rcfile ${IPBDIR}/ipythonrc-polybori  $@
-
-export PBORI_SITE="pyroot/"
+(opts, args) = parser.parse_args()
+polybori_site = "$RELATIVEPYPREFIX"
 
 # Note: $PBORI_SITE is replaced on installation with relative path 
 # to the PolyBoRi python site
-export IPBORI_INIT_CMDS="import sys; sys.path.insert(0, '$PBDIR/$PBORI_SITE');\
-from polybori.frontend import *; polybori_start(globals())"
+if polybori_site.startswith('$'):
+  polybori_site = "../pyroot"
 
-IPYTHON=${IPYTHONPREFIX}ipython
+import os, sys
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                polybori_site))
 
-# RCfiles are supported up to ipython 0.11
-if [[ `$IPYTHON  --c="import IPython; \
-  ([eval(elt) for elt in IPython.__version__.split('.')[:2] ]< [0, 11]) "\
-  -quick` =~ "True" ]]
-then
-${IPYTHON} -rcfile ${IPBDIR}/ipythonrc-polybori  $@
-else
-${IPYTHON} --c="print'';$IPBORI_INIT_CMDS" --i
-fi
+from polybori.frontend import *
+polybori_start(globals())
+
+def ipbori_shell(context):
+  try:
+    try:
+      from IPython.frontend.terminal.interactiveshell import \
+          TerminalInteractiveShell
+      return TerminalInteractiveShell(user_global_ns = context,
+                                      display_banner = True)
+    except ImportError:
+      import IPython.Shell
+      return IPython.Shell.start(context)
+      
+  except:
+    # Fallback to plain interactive python
+    import code
+    sys.ps1 = "In: "
+    result = code.InteractiveConsole(context)
+    result.mainloop = result.interact
+    return result
+
+# Call the available shell
+ipbori_shell(globals()).mainloop()
 

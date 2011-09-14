@@ -1,3 +1,7 @@
+Release Name: 0.8.1
+* ipbori is now an all-python script with fallback to plain python if
+  IPython is not available
+
 Release Name: 0.8.0
 * improved standard-conformity, multiprocessing safety, and usability
 * renamed subdirectory polybori to libpolybori

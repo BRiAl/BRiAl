@@ -45,7 +45,8 @@ def polybori_start(global_context):
     global_context["declare_ring"] = declare_ring
 
     print ipbname + """ -- PolyBoRi's interactive command line tool
-Type "polybori_copyright()" or "polybori_license()" for more information."""
+Type "polybori_copyright()" or "polybori_license()" for more information.
+"""
 
 # Here come the defaults
 r = Ring(10000)

@@ -1600,16 +1600,11 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
     env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
                                       env['PYINSTALLPREFIX'])       
-    env['PBORI_SITE'] = relpath(expand_repeated(InstPath(),env),
-                                      env['PYINSTALLPREFIX'])
-
-    for instfile in [IPBPath('ipythonrc-polybori') ] :
-        FinalizeNonExecs(env.SubstInstallAs(InstPath(instfile), instfile))
-      
 
     # Symlink from executable into bin directory
     ipboribin = env.SymLink(InstExecPath('ipbori'),
                             InstPath(IPBPath('ipbori')))
+
 
     guibin = env.SymLink(InstExecPath('PolyGUI'),
                          InstPath(GUIPath('PolyGUI')))
