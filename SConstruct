@@ -988,7 +988,7 @@ if HAVE_PYTHON_EXTENSION:
     libpypb_name = libpb_name + "_python"
     libpypb = slib(BuildLibPath(libpypb_name),
                    wrapper_files[1:],
-                   LIBPATH=[BuildLibPath()],
+                   LIBPATH=[BuildLibPath()] + env['LIBPATH'],
                    LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
                    CPPPATH=CPPPATH)
     pypb_symlinks = SymlinkReadableLibname(libpypb)
