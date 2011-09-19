@@ -35,6 +35,30 @@ m4ri=[path.join("M4RI/m4ri", m) for m in m4ri]
 m4ri_inc = 'M4RI/m4ri'
 
 
+def pathsplit(p, rest=[]):
+    (h,t) = os.path.split(p)
+    if len(h) < 1: return [t]+rest
+    if len(t) < 1: return [h]+rest
+    return pathsplit(h,[t]+rest)
+
+def commonpath(l1, l2, common=[]):
+    if len(l1) < 1: return (common, l1, l2)
+    if len(l2) < 1: return (common, l1, l2)
+    if l1[0] != l2[0]: return (common, l1, l2)
+    return commonpath(l1[1:], l2[1:], common+[l1[0]])
+
+def relpath(p1, p2):
+    (common,l1,l2) = commonpath(pathsplit(p1), pathsplit(p2))
+    p = []
+    if len(l1) > 0:
+        p = [ ('..' + sep) * len(l1) ]
+    p = p + l2
+
+    if len(p) == 0:
+        return ''
+    return os.path.join( *p )
+
+
 def preprocessed_substitute(target, source, env):
     def preprocess_at(page):
         import re
@@ -63,8 +87,10 @@ class PathJoiner(object):
     def validpath(self, *args):
         return [str(elt).replace('/', sep) for elt in args]
 
-[TestsPath, PyPBPath, CuddPath, GBPath, PBPath, DocPath] = [ PathJoiner(fdir)
-    for fdir in Split("""testsuite PyPolyBoRi Cudd groebner libpolybori doc""") ]
+[TestsPath, PyPBPath, CuddPath, GBPath, PBPath, DocPath, BuildPath] = \
+    [ PathJoiner(fdir)
+      for fdir in Split("""testsuite PyPolyBoRi Cudd groebner libpolybori doc
+ build""") ]
 
 DataPath = PathJoiner(TestsPath('py/data'))
 
@@ -144,7 +170,6 @@ def _fix_dynlib_namespace(env):
         return "-Wl,-flat_namespace"
     return ""
 
-
 if 'dump_default' in COMMAND_LINE_TARGETS:
   print defaultenv.Dump()
 
@@ -159,6 +184,8 @@ def _sonameprefix(env):
 
     else:
         return '-Wl,-soname,'
+
+
 
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
@@ -217,7 +244,8 @@ opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
          '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
-         ["${_fix_dynlib_namespace(__env__)}"])
+         "${_fix_dynlib_namespace(__env__)} -z origin",
+         converter = Split)
 
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
@@ -308,7 +336,8 @@ opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
 
-opts.Add('RPATH', "rpath setting", [], converter = Split)
+opts.Add('RPATH', "rpath setting", ['${_relative_rpath(__env__)}'], converter = Split)
+
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
 for m in pbori_cache_macros:
@@ -363,8 +392,12 @@ for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
 
 env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
 
+env['RPATH'] = env.Literal('\\$$ORIGIN/')
+
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
+
+env.Alias('dump', 'SConstruct')
 
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
@@ -397,6 +430,15 @@ def _sonamecmd(prefix, target, suffix, env = env):
 
         return ''
     
+def _relative_rpath(env):
+    print "HUHU"
+    return  [env.Literal('$ORIGIN/../../../../')]
+#    return env.Literal(os.path.join('$ORIGIN', 
+#                                    relpath(BuildPyPBPath(), BuildLibPath())))
+
+env['_relative_rpath'] = _sonamecmd# _relative_rpath
+
+
 env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
 env['_fix_dynlib_namespace'] = _fix_dynlib_namespace
@@ -644,9 +686,15 @@ if not env.GetOption('clean'):
 else: # when cleaning
     # Work around bug in older SCons (didn't remove symlinks to files)
     if scons_version() < ['1','3','0']:
-        for elt in glob('*' + env['SHLIBSUFFIX'] + "*"):
+        for elt in glob('*' + env['SHLIBSUFFIX'] + "*") + \
+                [PyRootPath('polybori/dynamic')]:
             if os.path.islink(elt):
                 os.remove(elt)
+
+    # things not handled by builders
+    for elt in [PyRootPath('polybori/dynamic')]:
+        if os.path.exists(elt) and os.path.islink(elt):
+            os.remove(elt)
  
 # end of not cleaning
 
@@ -681,7 +729,7 @@ def build_symlink(target, source, env):
     print "Symlinking from", source, "to", target
    
     if path.exists(targetpath):
-        Remove(targetpath)
+        os.remove(targetpath)
     os.symlink(source, targetpath)
 
     return None
@@ -692,6 +740,22 @@ env.Append(BUILDERS={'SymLink' : symlinkbld})
 
 def shared_object(o, **kwds):
     return env.SharedObject(o, **kwds)
+
+######################################################################
+# Paths
+######################################################################
+
+InstPyPath = PathJoiner(env['PYINSTALLPREFIX'])
+
+DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
+PBInclPath = PathJoiner(PBPath('include/polybori'))
+DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
+DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
+
+BuildLibPath = PathJoiner(BuildPath(DevelInstLibPath().lstrip(sep)))
+BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep)))
+
+
 
 
 ######################################################################
@@ -790,7 +854,7 @@ DefaultBuild(libpb)
 pb_shared = shared_object(pb_src)
 shared_resources += pb_shared
 
-libpbShared = slib(libpb_name, list(shared_resources))
+libpbShared = slib(BuildLibPath(libpb_name), list(shared_resources))
 pb_symlinks = SymlinkReadableLibname(libpbShared)
 
 env.Clean([libpb] + pb_shared, config_h)
@@ -824,8 +888,8 @@ DefaultBuild(gb)
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
-libgbShared = slib(libgb_name, list(gb_shared),
-                   LIBPATH = ['.'] + env['LIBPATH'],
+libgbShared = slib(BuildLibPath(libgb_name), list(gb_shared),
+                   LIBPATH = [BuildLibPath()] + env['LIBPATH'],
                    LIBS = [libpb_name] + env['LIBS'] + GD_LIBS)
 
 
@@ -920,36 +984,64 @@ if HAVE_PYTHON_EXTENSION:
     monomial_wrapper.cc misc_wrapper.cc strategy_wrapper.cc set_wrapper.cc
     slimgb_wrapper.cc""") ] 
     
+
+    libpypb_name = libpb_name + "_python"
+    libpypb = slib(BuildLibPath(libpypb_name),
+                   wrapper_files[1:],
+                   LIBPATH=[BuildLibPath()],
+                   LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
+                   CPPPATH=CPPPATH)
+    pypb_symlinks = SymlinkReadableLibname(libpypb)
+    env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
+
+    dylibs += libpypb
     if env['PLATFORM']=="darwin":
-        libpypb_name = libpb_name + "_python"
-        libpypb = slib(libpypb_name,
-            wrapper_files[1:],
-            LINKFLAGS="-L.",
-            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
-            CPPPATH=CPPPATH)
-        pypb_symlinks = SymlinkReadableLibname(libpypb)
-        env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
-
-        dylibs += libpypb
-
-        pypb=env.LoadableModule('PyPolyBoRi',
-            wrapper_files[0], # + shared_resources,
-            LINKFLAGS="-L. -bundle_loader " + python_absolute,
-            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
-            LDMODULESUFFIX=pyconf.module_suffix,
-            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
-            CPPPATH=CPPPATH)
-        env.Depends(pypb, libpypb + pypb_symlinks)
-        dynamic_modules = env.SymLink(PyRootPath('polybori/dynamic',
-                                                 str(pypb[0])),  pypb)
-
+        module_linkflags = ["-bundle_loader", python_absolute]
     else:
-        #print "l:", l
-        pypb=env.SharedLibrary(PyPBPath('PyPolyBoRi'),
-            wrapper_files + shared_resources,
-            LDMODULESUFFIX=pyconf.module_suffix,SHLIBPREFIX="", LIBS = LIBS + GD_LIBS,
-            CPPPATH=CPPPATH)
-        dynamic_modules = env.Install(PyRootPath('polybori/dynamic'), pypb)
+        module_linkflags = []
+
+
+    pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
+                            wrapper_files[0],
+                            LINKFLAGS = env['LINKFLAGS'] + module_linkflags,
+                            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
+                            LDMODULESUFFIX=pyconf.module_suffix,
+                            LDMODULEPREFIX = "",
+                            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
+                            CPPPATH=CPPPATH, LIBPATH=[BuildLibPath()],
+                            RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
+
+                            )
+
+# __init__.py generator
+    def init_build(target, source, env):
+        """__init__.py building..."""
+
+        init_py_in = """# File: %(target)s
+# Automatically generated by PolyBoRi
+# This file is just for developing, it should be be installed.
+import imp
+imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
+"""
+
+        init_py = file(target[0].path, "w")
+        init_py.write(init_py_in  % dict(target = target[0].path, 
+                                   source = source[0].abspath))
+        init_py.close()
+        
+    def init_message(*args):
+        return init_build.__doc__
+        
+    dynamic_init_py = env.Command(PyRootPath('polybori/dynamic/__init__.py'), 
+                                  pypb, 
+                                  action = env.Action(init_build, init_message))
+
+
+    pypb_init_py = env.Command(BuildPyPBPath('__init__.py'), pypb, 
+                               [Touch("$TARGET")])
+
+    env.Depends(pypb, libpypb + pypb_symlinks)
+
 
     # Define the dynamic python modules in pyroot
     documentable_python_modules += dynamic_modules
@@ -981,8 +1073,8 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
     def pypb_emitter(target,source,env):
 
         TargetPath = PathJoiner(target[0].dir)
-        for file in source:
-            (fname, fext) = path.splitext(str(file).replace(pyroot,''))
+        for filename in source:
+            (fname, fext) = path.splitext(str(filename).replace(pyroot,''))
 
             if not fname.split(sep)[-1] == "__init__" :
                 if fext in ['.so', '.py'] :
@@ -1107,11 +1199,6 @@ stlibs += [libpb, gb]
 readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
                                                                         gb])
 
-DevelInstPath = PathJoiner(env['DEVEL_PREFIX'])
-PBInclPath = PathJoiner(PBPath('include/polybori'))
-DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
-DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
-
 dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
 stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
 
@@ -1156,20 +1243,20 @@ def cp_all(target, source, env):
                 Exit(1)
 
     for patt in env['COPYALL_PATTERNS']:
-        for file in glob(path.join(source, patt)):
-            if not path.isdir(file):
-                result = str(path.join(target, path.basename(file)))
-                Execute([Copy(result, file), Chmod(result, 0644)])
+        for filename in glob(path.join(source, patt)):
+            if not path.isdir(filename):
+                result = str(path.join(target, path.basename(filename)))
+                Execute([Copy(result, filename), Chmod(result, 0644)])
 
     return None
 
 def CopyAll(targetdir, sourcedir, env):
     targets = []
     for patt in env['COPYALL_PATTERNS']:
-        for file in glob(path.join(sourcedir, patt)):
-            if not path.isdir(file):
-                result = str(path.join(targetdir, path.basename(file)))
-                targets += env.Install(targetdir, file)
+        for filename in glob(path.join(sourcedir, patt)):
+            if not path.isdir(filename):
+                result = str(path.join(targetdir, path.basename(filename)))
+                targets += env.Install(targetdir, filename)
 
     return FinalizeNonExecs(targets)            
 
@@ -1188,12 +1275,12 @@ def cp_pydoc(target, source, env):
 
     if showpath != '' and showpath[-1] != '/':
          showpath += '/'
-    for file in glob(path.join(source, '*.html')):
-        if not path.isdir(file):
-            fcontent = open(file).read()
+    for filename in glob(path.join(source, '*.html')):
+        if not path.isdir(filename):
+            fcontent = open(filename).read()
             fcontent = patt.sub(r''+showpath, fcontent)
 
-            result = str(path.join(target, path.basename(file)))
+            result = str(path.join(target, path.basename(filename)))
             open(result, "w").write(fcontent)
 
     return None
@@ -1233,32 +1320,6 @@ if have_t4h :
 
     tex_to_ht_bld = Builder(generator = t4h_action, emitter = t4h_emitter)
     env.Append(BUILDERS={'TeXToHt' : tex_to_ht_bld})
-
-
-
-def pathsplit(p, rest=[]):
-    (h,t) = os.path.split(p)
-    if len(h) < 1: return [t]+rest
-    if len(t) < 1: return [h]+rest
-    return pathsplit(h,[t]+rest)
-
-def commonpath(l1, l2, common=[]):
-    if len(l1) < 1: return (common, l1, l2)
-    if len(l2) < 1: return (common, l1, l2)
-    if l1[0] != l2[0]: return (common, l1, l2)
-    return commonpath(l1[1:], l2[1:], common+[l1[0]])
-
-def relpath(p1, p2):
-    (common,l1,l2) = commonpath(pathsplit(p1), pathsplit(p2))
-    p = []
-    if len(l1) > 0:
-        p = [ ('..' + sep) * len(l1) ]
-    p = p + l2
-
-    if len(p) == 0:
-        return ''
-    return os.path.join( *p )
-
 
 
 # substition function 
@@ -1488,7 +1549,6 @@ if 'install' in COMMAND_LINE_TARGETS:
     InstPath = PathJoiner(env['INSTALLDIR'])
     InstExecPath = PathJoiner(env['EPREFIX'])
     InstDocPath = PathJoiner(env['DOCDIR'])
-    InstPyPath = PathJoiner(env['PYINSTALLPREFIX'])
     InstManPath = PathJoiner(env['MANDIR'])
     
     for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
@@ -1512,7 +1572,7 @@ if 'install' in COMMAND_LINE_TARGETS:
         if HAVE_PYTHON_EXTENSION:
             pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                                   pypb))
-            env.Depends(pypb_inst, devellibs_inst)
+            env.Depends(pypb_inst, dylibs_inst)
             so_pyfiles += pypb_inst
 
             def fix_install_name(target, source, env):
@@ -1527,9 +1587,10 @@ if 'install' in COMMAND_LINE_TARGETS:
             env.AddPostAction(pypb_inst, fix_install_name)
 
     else:
-        for instfile in dynamic_modules :
-            installedfile = InstPyPath(relpath(pyroot, instfile.path))
-            so_pyfiles += FinalizeExecs(env.InstallAs(installedfile, instfile))
+        pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
+                                              pypb))
+        env.Depends(pypb_inst, devellibs_inst)
+        so_pyfiles += FinalizeExecs(pypb_inst)
 
     pyfiles = []
     env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
@@ -1581,13 +1642,16 @@ if 'install' in COMMAND_LINE_TARGETS:
 
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
-    pyfile_srcs += [PyRootPath('polybori/dynamic/__init__.py') ]
+
     if (float(pyconf.version) < 2.5): # removing advanced functionality
         pyfile_srcs.remove(PyRootPath('polybori/context.py'))
                        
     for instfile in pyfile_srcs :
         targetfile = InstPyPath(relpath(PyRootPath(), instfile))
         pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
+
+    pyfiles +=  FinalizeNonExecs(env.Install(InstPyPath("polybori/dynamic"),
+                                             pypb_init_py))
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         cmdline = """$PYTHON -c "import compileall; compileall.compile_dir('"""
