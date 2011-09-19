@@ -1008,7 +1008,7 @@ if HAVE_PYTHON_EXTENSION:
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
-                            CPPPATH=CPPPATH, LIBPATH=[BuildLibPath()],
+                            CPPPATH=CPPPATH, LIBPATH=[BuildLibPath()] + env['LIBPATH'],
                             RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
 
                             )
