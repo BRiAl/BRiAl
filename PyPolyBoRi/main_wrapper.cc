@@ -159,6 +159,7 @@ void export_main() {
     .def("variable", &BoolePolyRing::variable, "i-th ring Variable")
     .def("one", ring_one, "Polynomial one")
     .def("zero", ring_zero, "Polynomial zero")
+    .def(boost::python::init <int>())
     .def(boost::python::init <BoolePolyRing::size_type>())
     .def("clone", &BoolePolyRing::clone, "copies also variable name vector in a \
     new one, so somewhat deeper copy function")
