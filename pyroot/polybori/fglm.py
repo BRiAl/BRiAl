@@ -1,6 +1,13 @@
 from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy,\
-    dp_asc, Monomial, Ring
+    OrderCode, Monomial, Ring
 from polybori.blocks import declare_ring
+
+lp=OrderCode.lp
+dlex=OrderCode.dlex
+dp_asc=OrderCode.dp_asc
+block_dp_asc=OrderCode.block_dp_asc
+block_dlex=OrderCode.block_dlex
+
 def fglm(I, from_ring, to_ring):
     """
     converts *reduced* Groebner Basis in from_ring to a GroebnerBasis in to_ring.
