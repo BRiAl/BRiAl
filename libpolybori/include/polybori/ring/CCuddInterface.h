@@ -44,15 +44,15 @@
 // get cudd error texts
 inline const char* error_text(DdManager* mgr) {
     switch (Cudd_ReadErrorCode(mgr)) {
-    CUDD_MEMORY_OUT:
+    case CUDD_MEMORY_OUT:
       return("Out of memory.");
-    CUDD_TOO_MANY_NODES:
+    case CUDD_TOO_MANY_NODES:
       return("To many nodes.");
-    CUDD_MAX_MEM_EXCEEDED:
+    case CUDD_MAX_MEM_EXCEEDED:
       return("Maximum memory exceeded.");
-    CUDD_INVALID_ARG:
+    case CUDD_INVALID_ARG:
       return("Invalid argument.");
-    CUDD_INTERNAL_ERROR:
+    case CUDD_INTERNAL_ERROR:
       return("Internal error.");
     }
     return("Unexpected error.");

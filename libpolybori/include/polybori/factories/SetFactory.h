@@ -6,7 +6,7 @@
  * @date 2011-05-056
  *
  * This file defines the base class SetFactory which is used for
- * @i currying the constructors of @c BooleSet with a BoolePolyRing.
+ * @em currying the constructors of @c BooleSet with a BoolePolyRing.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -25,8 +25,8 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class SetFactory
- * @brief This base class SetFactory is used for @i currying
- * monimial constructors with a BoolePolyRing.
+ * @brief This base class SetFactory is used for @em currying
+ * set constructors with a BoolePolyRing.
  *
  **/
 

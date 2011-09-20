@@ -36,7 +36,7 @@ struct dlex_tag {};
  **/
 struct dp_asc_tag {};
 
-/**@class block_tag<Tag>
+/**@class block_tag
  * @brief Marker for block orderings.
  **/
 template <class TagType>

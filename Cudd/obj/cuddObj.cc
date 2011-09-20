@@ -115,21 +115,21 @@ DD::checkReturnValue(
 	DdManager *mgr = ddMgr->p->manager;
 	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
 	switch (errType) {
-	CUDD_MEMORY_OUT:
+	case CUDD_MEMORY_OUT:
 	    ddMgr->p->errorHandler("Out of memory.");
 	    break;
-	CUDD_TOO_MANY_NODES:
+	case CUDD_TOO_MANY_NODES:
 	    break;
-	CUDD_MAX_MEM_EXCEEDED:
+	case CUDD_MAX_MEM_EXCEEDED:
 	    ddMgr->p->errorHandler("Maximum memory exceeded.");
 	    break;
-	CUDD_INVALID_ARG:
+	case CUDD_INVALID_ARG:
 	    ddMgr->p->errorHandler("Invalid argument.");
 	    break;
-	CUDD_INTERNAL_ERROR:
+	case CUDD_INTERNAL_ERROR:
 	    ddMgr->p->errorHandler("Internal error.");
 	    break;
-	CUDD_NO_ERROR:
+	case CUDD_NO_ERROR:
 	default:
 	    ddMgr->p->errorHandler("Unexpected error.");
 	    break;
@@ -148,21 +148,21 @@ DD::checkReturnValue(
 	DdManager *mgr = ddMgr->p->manager;
 	Cudd_ErrorType errType = Cudd_ReadErrorCode(mgr);
 	switch (errType) {
-	CUDD_MEMORY_OUT:
+	case CUDD_MEMORY_OUT:
 	    ddMgr->p->errorHandler("Out of memory.");
 	    break;
-	CUDD_TOO_MANY_NODES:
+	case CUDD_TOO_MANY_NODES:
 	    break;
-	CUDD_MAX_MEM_EXCEEDED:
+	case CUDD_MAX_MEM_EXCEEDED:
 	    ddMgr->p->errorHandler("Maximum memory exceeded.");
 	    break;
-	CUDD_INVALID_ARG:
+	case CUDD_INVALID_ARG:
 	    ddMgr->p->errorHandler("Invalid argument.");
 	    break;
-	CUDD_INTERNAL_ERROR:
+	case CUDD_INTERNAL_ERROR:
 	    ddMgr->p->errorHandler("Internal error.");
 	    break;
-	CUDD_NO_ERROR:
+	case CUDD_NO_ERROR:
 	default:
 	    ddMgr->p->errorHandler("Unexpected error.");
 	    break;

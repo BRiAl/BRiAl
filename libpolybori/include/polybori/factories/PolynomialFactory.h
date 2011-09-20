@@ -6,7 +6,7 @@
  * @date 2011-05-056
  *
  * This file defines the base class PolynomialFactory which is used for
- * @i currying the constructors of @c BoolePolynomial with a BoolePolyRing.
+ * @em currying the constructors of @c BoolePolynomial with a BoolePolyRing.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -25,8 +25,8 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class PolynomialFactory
- * @brief This base class PolynomialFactory is used for @i currying
- * monimial constructors with a BoolePolyRing.
+ * @brief This base class PolynomialFactory is used for @em currying
+ * polynomial constructors with a BoolePolyRing.
  *
  **/
 

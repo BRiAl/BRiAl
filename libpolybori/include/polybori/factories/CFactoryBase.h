@@ -5,7 +5,7 @@
  * @author Alexander Dreyer
  * @date 2011-05-05
  *
- * This file defines the base class CFactoryBase which is used for @i currying
+ * This file defines the base class CFactoryBase which is used for @em currying
  * other constructors with a BoolePolyRing.
  *
  * @par Copyright:
@@ -25,10 +25,10 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class CFactoryBase
- * @brief This base class CFactoryBase is used for @i currying
+ * @brief This base class CFactoryBase is used for @em currying
  * other constructors with a BoolePolyRing.
  *
- * We generate psuedo constructors that a ring to be provided, because the
+ * We generate pseudo constructors that a ring to be provided, because the
  * latter is stored in the factory.
  **/
 

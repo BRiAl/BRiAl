@@ -6,7 +6,7 @@
  * @date 2011-05-05
  *
  * This file defines the base class VariableFactory which is used for
- * @i currying the constructors of @c BooleVariable with a BoolePolyRing.
+ * @em currying the constructors of @c BooleVariable with a BoolePolyRing.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -25,8 +25,8 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class VariableFactory
- * @brief This base class VariableFactory is used for @i currying
- * monimial constructors with a BoolePolyRing.
+ * @brief This base class VariableFactory is used for @em currying
+ * variable constructors with a BoolePolyRing.
  *
  **/
 

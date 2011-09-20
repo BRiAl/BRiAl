@@ -126,7 +126,7 @@ void export_main() {
   export_poly();
   export_nav();
   export_test_util();
-  #ifdef HANVE_NTL
+  #ifdef HAVE_NTL
   export_ntl();
   #endif
   enum_<COrderEnums::ordercodes>("OrderCode")

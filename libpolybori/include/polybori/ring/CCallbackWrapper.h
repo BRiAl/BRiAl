@@ -30,7 +30,7 @@ BEGIN_NAMESPACE_PBORI
  * If applies a stored member function pointer (together with a stored object
  * reference) to the argument of operator().
  *
- * It is to be used as a face of @Type, e. g. for @c CCallbackWrapper below.
+ * It is to be used as a face of @c Type, e. g. for @c CCallbackWrapper below.
  *
  * @note Specialized variant to void member functions
  * @attention Currently, the class supports unary functions only.

@@ -6,7 +6,7 @@
  * @date 2011-05-05
  *
  * This file defines the base class MonomialFactory which is used for
- * @i currying the constructors of @c BooleMonomial with a BoolePolyRing.
+ * @em currying the constructors of @c BooleMonomial with a BoolePolyRing.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -25,8 +25,8 @@
 BEGIN_NAMESPACE_PBORI
 
 /** @class MonomialFactory
- * @brief This base class MonomialFactory is used for @i currying
- * monimial constructors with a BoolePolyRing.
+ * @brief This base class MonomialFactory is used for @em currying
+ * monomial constructors with a BoolePolyRing.
  *
  **/
 
