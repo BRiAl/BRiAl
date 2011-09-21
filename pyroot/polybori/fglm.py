@@ -5,6 +5,13 @@ if __name__ == "__main__":
     from polybori.PyPolyBoRi import OrderCode
     dp_asc = OrderCode.dp_asc
 
+    def _test():
+        from polybori.PyPolyBoRi import OrderCode
+        dp_asc = OrderCode.dp_asc
+        import doctest
+        doctest.testmod()
+
+
 from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector,\
     FGLMStrategy, Monomial, Ring
 
@@ -53,10 +60,6 @@ def m_k_plus_one(completed_elements, variables):
     """
     return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]
 
-
-def _test():
-    import doctest
-    doctest.testmod()
 
 if __name__ == "__main__":
     _test()
