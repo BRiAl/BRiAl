@@ -1,12 +1,14 @@
-from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, FGLMStrategy,\
-    OrderCode, Monomial, Ring
-from polybori.blocks import declare_ring
+if __name__ == "__main__":
+    import os, sys
+    sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir))
 
-lp=OrderCode.lp
-dlex=OrderCode.dlex
-dp_asc=OrderCode.dp_asc
-block_dp_asc=OrderCode.block_dp_asc
-block_dlex=OrderCode.block_dlex
+    from polybori.PyPolyBoRi import OrderCode
+    dp_asc = OrderCode.dp_asc
+
+from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector,\
+    FGLMStrategy, Monomial, Ring
+
+from polybori.blocks import declare_ring
 
 def fglm(I, from_ring, to_ring):
     """
@@ -16,7 +18,7 @@ def fglm(I, from_ring, to_ring):
     >>> r=declare_ring(['x','y','z'],dict())
     >>> old_ring = r
     >>> new_ring = old_ring.clone(ordering=dp_asc)
-    >>> (x,y,z) = [new_ring.variable(i) for i in xrange(3)]
+    >>> (x,y,z) = [old_ring.variable(i) for i in xrange(3)]
     >>> ideal=[x+z, y+z]# lp Groebner basis
     >>> list(fglm(ideal, old_ring, new_ring))
     [y + x, z + x]
@@ -29,7 +31,7 @@ def vars_real_divisors(monomial, monomial_set):
     returns all elements of of monomial_set, which result multiplied by a variable in monomial.
     >>> from polybori.PyPolyBoRi import Ring
     >>> r=Ring(1000)
-    >>> x = Variable = VariableFactory(r)
+    >>> x = r.variable
     >>> b=BooleSet([x(1)*x(2),x(2)])
     >>> vars_real_divisors(x(1)*x(2)*x(3),b)
     {{x(1),x(2)}}
@@ -40,7 +42,7 @@ def m_k_plus_one(completed_elements, variables):
     """ calculates $m_{k+1}$ from the FGLM algorithm as described in Wichmanns diploma thesis
     It would be nice to be able to efficiently extract the smallest term of a polynomial
     >>> r=Ring(1000)
-    >>> x = Variable = VariableFactory(r)
+    >>> x = r.variable
     >>> s=BooleSet([x(1)*x(2),x(1),x(2),Monomial(r),x(3)])
     >>> variables=BooleSet([x(1),x(2),x(3)])
     >>> m_k_plus_one(s,variables)
@@ -50,6 +52,8 @@ def m_k_plus_one(completed_elements, variables):
     x(1)*x(3)
     """
     return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]
+
+
 def _test():
     import doctest
     doctest.testmod()
