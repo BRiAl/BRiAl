@@ -47,8 +47,11 @@ URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires: python-%{name} = %{version}-%{release}
+%if 0%{?fedora_version} >= 16
+Requires: ipython >= 0.6
+%else
 Requires: IPython >= 0.6
-
+%endif
 
 %description
 PolyBoRi is a special purpose computer algebra system for computations in
