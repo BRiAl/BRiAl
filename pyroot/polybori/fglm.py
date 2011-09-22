@@ -1,13 +1,8 @@
 if __name__ == "__main__":
     import os, sys
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir))
-
-    from polybori.PyPolyBoRi import OrderCode
-    dp_asc = OrderCode.dp_asc
-
+    
     def _test():
-        from polybori.PyPolyBoRi import OrderCode
-        dp_asc = OrderCode.dp_asc
         import doctest
         doctest.testmod()
 
@@ -22,6 +17,8 @@ def fglm(I, from_ring, to_ring):
     converts *reduced* Groebner Basis in from_ring to a GroebnerBasis in to_ring.
     It acts independend of the global ring, which is restored at the end of the
     computation,
+    >>> from polybori.PyPolyBoRi import OrderCode
+    >>> dp_asc = OrderCode.dp_asc
     >>> r=declare_ring(['x','y','z'],dict())
     >>> old_ring = r
     >>> new_ring = old_ring.clone(ordering=dp_asc)
@@ -36,6 +33,8 @@ def fglm(I, from_ring, to_ring):
 def vars_real_divisors(monomial, monomial_set):
     """
     returns all elements of of monomial_set, which result multiplied by a variable in monomial.
+    >>> from polybori.PyPolyBoRi import OrderCode
+    >>> dp_asc = OrderCode.dp_asc
     >>> from polybori.PyPolyBoRi import Ring
     >>> r=Ring(1000)
     >>> x = r.variable
@@ -48,6 +47,8 @@ def vars_real_divisors(monomial, monomial_set):
 def m_k_plus_one(completed_elements, variables):
     """ calculates $m_{k+1}$ from the FGLM algorithm as described in Wichmanns diploma thesis
     It would be nice to be able to efficiently extract the smallest term of a polynomial
+    >>> from polybori.PyPolyBoRi import OrderCode
+    >>> dp_asc = OrderCode.dp_asc
     >>> r=Ring(1000)
     >>> x = r.variable
     >>> s=BooleSet([x(1)*x(2),x(1),x(2),Monomial(r),x(3)])
