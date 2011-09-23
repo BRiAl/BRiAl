@@ -164,11 +164,14 @@ def detect_linker(env):
     return env['PLATFORM']
 
 # for gentoo-prefix on OS X
-def _fix_dynlib_namespace(env):
+def _fix_dynlib_flags(env):
 
     if env['PLATFORM']=="darwin":
         return "-Wl,-flat_namespace"
-    return ""
+    return "-z origin"
+
+
+
 
 if 'dump_default' in COMMAND_LINE_TARGETS:
   print defaultenv.Dump()
@@ -239,13 +242,12 @@ else:
 opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
 
 opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
-             repr(defaultenv['LINKFLAGS']))
+             repr(defaultenv['LINKFLAGS']), converter = Split)
 
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
          '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
-         "${_fix_dynlib_namespace(__env__)} -z origin",
-         converter = Split)
+         "${_fix_dynlib_flags(__env__)}", converter = Split)
 
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
@@ -430,18 +432,11 @@ def _sonamecmd(prefix, target, suffix, env = env):
 
         return ''
     
-def _relative_rpath(env):
-    print "HUHU"
-    return  [env.Literal('$ORIGIN/../../../../')]
-#    return env.Literal(os.path.join('$ORIGIN', 
-#                                    relpath(BuildPyPBPath(), BuildLibPath())))
-
-env['_relative_rpath'] = _sonamecmd# _relative_rpath
 
 
 env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
-env['_fix_dynlib_namespace'] = _fix_dynlib_namespace
+env['_fix_dynlib_flags'] = _fix_dynlib_flags
 env['_shccflags'] = _shccflags
 
 # dynamic module flags
