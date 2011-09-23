@@ -565,8 +565,14 @@ if not env.GetOption('clean'):
         #include <m4ri/%s>
         #include <stdio.h>
         int main(int argc, char **argv) {
-          /* we test for some possible current and future configurations */
+        #ifdef __M4RI_CFLAGS
+          /* get compile flags of M4RI */
+          printf(__M4RI_CFLAGS);
+          printf(" ");
+        #else
+          /* alternative: test for possible current and future configurations */
           %s
+        #endif
           return 0;
         }
         """  %  \
