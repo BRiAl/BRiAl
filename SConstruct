@@ -247,7 +247,7 @@ opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
          '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
-         "${_fix_dynlib_flags(__env__)}", converter = Split)
+         ["${_fix_dynlib_flags(__env__)}"])
 
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
@@ -766,7 +766,6 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
 env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
-
 env.Append(CCFLAGS="$M4RI_CFLAGS")
 env.Append(CXXFLAGS="$M4RI_CFLAGS")
 env.Append(SHCCFLAGS="$M4RI_CFLAGS")
@@ -1009,7 +1008,7 @@ if HAVE_PYTHON_EXTENSION:
                             LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
-                            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'],
+                            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
                             CPPPATH=CPPPATH, LIBPATH=[BuildLibPath()] + env['LIBPATH'],
                             RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
 
