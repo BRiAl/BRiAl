@@ -1013,6 +1013,17 @@ if HAVE_PYTHON_EXTENSION:
                             RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
 
                             )
+    if env['PLATFORM']=="darwin":
+            def fix_install_name(target, source, env):
+                names = ' '.join([str(elt) for elt in dylibs])
+                names = Split(shell_output('otool', '-D', names))[1::2]
+                for name in names:
+                    newname = "@loader_path/" + \
+                        relpath(InstPyPath("polybori/dynamic"),
+                                expand_repeated(DevelInstLibPath(os.path.basename(name)),env))
+                    Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
+
+            env.AddPostAction(pypb, fix_install_name)
 
 # __init__.py generator
     def init_build(target, source, env):
@@ -1202,8 +1213,10 @@ readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
 
 dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
 stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
+dylibs_readable_inst = SymlinkReadableLibname(dylibs_inst)
 
-devellibs_inst = SymlinkReadableLibname(dylibs_inst) + dylibs_inst + stlibs_inst
+devellibs_inst = dylibs_readable_inst + dylibs_inst + stlibs_inst
+
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS:
@@ -1573,19 +1586,8 @@ if 'install' in COMMAND_LINE_TARGETS:
         if HAVE_PYTHON_EXTENSION:
             pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                                   pypb))
-            env.Depends(pypb_inst, dylibs_inst)
+            env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
             so_pyfiles += pypb_inst
-
-            def fix_install_name(target, source, env):
-                names = ' '.join([str(elt) for elt in dylibs])
-                names = Split(shell_output('otool', '-D', names))[1::2]
-                for name in names:
-                    newname = "@loader_path/" + \
-                        relpath(InstPyPath("polybori/dynamic"),
-                                expand_repeated(DevelInstLibPath(os.path.basename(name)),env)) 
-                    Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
-
-            env.AddPostAction(pypb_inst, fix_install_name)
 
     else:
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
