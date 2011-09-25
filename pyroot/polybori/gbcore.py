@@ -165,7 +165,7 @@ def with_heuristic(heuristic_function):
     return make_wrapper
 
 def clean_polys(I):
-    I=list(set((Polynomial(p) for p in I if not p.is_zero())))
+    I=list(set((Polynomial(p) for p in I if not Polynomial(p).is_zero())))
     return I
 
 def clean_polys_pre(I):
