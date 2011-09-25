@@ -492,23 +492,18 @@ env.AlwaysBuild(config_h)
 class PythonConfig(object):
     def __init__(self, python_executable):
         def querycmd(arg):
-            return '"from distutils.sysconfig import *; print ' + arg + '"'
+            return shell_output(self.python, "-c",
+                                '"from distutils.sysconfig import *; \
+                                  print ' + arg + '"')
         
         self.python = python_executable
-        self.version = shell_output(self.python, "-c",
-                                    querycmd("get_python_version()"))
-        self.sitedir = shell_output(self.python, "-c",
-                                    querycmd("get_python_lib()"))
-        self.libdir = shell_output(self.python, "-c",
-                                   querycmd("get_config_vars()['LIBDIR']"))
-        self.incdir = shell_output(self.python, "-c",
-                                   querycmd("get_python_inc()"))
-        self.staticlibdir = shell_output(self.python, "-c",
-                                         querycmd("get_config_vars()['LIBPL']"))
-        self.libs = shell_output(self.python, "-c",
-                                 querycmd("get_config_vars()['LIBS']"))
-        self.module_suffix = shell_output(self.python, "-c",
-                                          querycmd("get_config_vars()['SO']"))
+        self.version = querycmd("get_python_version()")
+        self.sitedir = querycmd("get_python_lib()")
+        self.libdir = querycmd("get_config_vars()['LIBDIR']")
+        self.incdir = querycmd("get_python_inc()")
+        self.staticlibdir = querycmd("get_config_vars()['LIBPL']")
+        self.libs = querycmd("get_config_vars()['LIBS']")
+        self.module_suffix = querycmd("get_config_vars()['SO']")
 
         self.libs = self.libs.split()
         if env['PLATFORM']=="darwin":
@@ -516,7 +511,6 @@ class PythonConfig(object):
             self.libs=[l for l in self.libs if l.startswith('-l')]
         
         self.libs=[l.replace('-l','') for l in self.libs]
-            
         self.libname = 'python' + str(self.version)
 
 pyconf = PythonConfig(env["PYTHON"])
@@ -888,7 +882,6 @@ gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
 libgbShared = slib(BuildLibPath(libgb_name), list(gb_shared),
-                   LIBPATH = [BuildLibPath()] + env['LIBPATH'],
                    LIBS = libpbShared + env['LIBS'] + GD_LIBS)
 
 
@@ -937,7 +930,6 @@ if BOOST_TEST:
     def test_building(target, sources, env):
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
-                    LIBPATH=['libpolybori', 'groebner'] + env['LIBPATH'],
                     LIBS = env['LIBS'] + \
                         [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
@@ -983,9 +975,7 @@ if HAVE_PYTHON_EXTENSION:
     libpypb_name = libpb_name + "_python"
     libpypb = slib(BuildLibPath(libpypb_name),
                    wrapper_files[1:],
-                   LIBPATH=[BuildLibPath()] + env['LIBPATH'],
-                   LIBS = pyconf.libs + LIBS + GD_LIBS + libpbShared + libgbShared,
-                   CPPPATH=CPPPATH)
+                   LIBS = pyconf.libs + LIBS + GD_LIBS + libpbShared + libgbShared)
     pypb_symlinks = SymlinkReadableLibname(libpypb)
 
     dylibs += libpypb
@@ -1003,10 +993,11 @@ if HAVE_PYTHON_EXTENSION:
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
-                            CPPPATH=CPPPATH, LIBPATH=[BuildLibPath()] + env['LIBPATH'],
                             RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
 
                             )
+    env.Depends(pypb, pb_symlinks + gb_symlinks + pypb_symlinks)
+    
     if env['PLATFORM']=="darwin":
             def fix_install_name(target, source, env):
                 names = ' '.join([str(elt) for elt in dylibs])
@@ -1066,7 +1057,7 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
             LDMODULESUFFIX=".so",SHLIBPREFIX="", 
             LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
-            CPPPATH=CPPPATH, CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
+            CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
 
   
@@ -1162,11 +1153,10 @@ if distribute:
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
-dylibs += libpbShared + libgbShared
+dylibs += libpbShared + libgbShared + libpypb
 stlibs += [libpb, gb]
 
-readabledevellibs = pb_symlinks + gb_symlinks + SymlinkReadableLibname([libpb,
-                                                                        gb])
+readabledevellibs = pb_symlinks + gb_symlinks + pypb_symlinks
 
 dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
 stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
@@ -1549,7 +1539,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     else:
         pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
                                               pypb))
-        env.Depends(pypb_inst, devellibs_inst)
+        env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
         so_pyfiles += FinalizeExecs(pypb_inst)
 
     pyfiles = []
