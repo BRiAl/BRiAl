@@ -273,7 +273,6 @@ opts.Add('DEVEL_INCLUDE_PREFIX',
 opts.Add('DEVEL_LIB_PREFIX',
          'development version library installation directory','$DEVEL_PREFIX/lib' )
 
-opts.Add('SINGULAR_HOME', 'directory of Singular development version', '')
          
 opts.Add(BoolVariable('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
@@ -405,7 +404,6 @@ env.Alias('dump', 'SConstruct')
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
 
-SINGULAR_HOME = env['SINGULAR_HOME']
 USERLIBS = env['LIBS']
 
 # Skipping doxygen-based docu, if no doxygen is found.
@@ -891,10 +889,9 @@ shared_resources += gb_shared
 
 libgbShared = slib(BuildLibPath(libgb_name), list(gb_shared),
                    LIBPATH = [BuildLibPath()] + env['LIBPATH'],
-                   LIBS = [libpb_name] + env['LIBS'] + GD_LIBS)
+                   LIBS = libpbShared + env['LIBS'] + GD_LIBS)
 
 
-env.Depends(libgbShared, libpbShared + pb_symlinks)
 gb_symlinks = SymlinkReadableLibname(libgbShared)
 
 CPPPATH=env['CPPPATH']+[GBPath('include')]
@@ -941,8 +938,8 @@ if BOOST_TEST:
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
                     LIBPATH=['libpolybori', 'groebner'] + env['LIBPATH'],
-                    LIBS = env['LIBS'] + [BOOST_TEST,
-                                          libpb_name, libgb_name] + GD_LIBS,
+                    LIBS = env['LIBS'] + \
+                        [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
     test_building(TestsPath("unittests"), testfiles, env)
@@ -955,9 +952,6 @@ if BOOST_TEST:
 # python extension
 ######################################################################
 LIBS = env['LIBS']+[env['BOOST_PYTHON']]+USERLIBS
-
-LIBS_static = [libpb_name, libgb_name] + LIBS
-#env["CPPDEFINES"].Append("Packed")
 
 
 documentable_python_modules = [PyRootPath('polybori', f)
@@ -990,10 +984,9 @@ if HAVE_PYTHON_EXTENSION:
     libpypb = slib(BuildLibPath(libpypb_name),
                    wrapper_files[1:],
                    LIBPATH=[BuildLibPath()] + env['LIBPATH'],
-                   LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name],
+                   LIBS = pyconf.libs + LIBS + GD_LIBS + libpbShared + libgbShared,
                    CPPPATH=CPPPATH)
     pypb_symlinks = SymlinkReadableLibname(libpypb)
-    env.Depends(libpypb, libpbShared + libgbShared + pb_symlinks + gb_symlinks)
 
     dylibs += libpypb
     if env['PLATFORM']=="darwin":
@@ -1005,7 +998,8 @@ if HAVE_PYTHON_EXTENSION:
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
                             wrapper_files[0],
                             LINKFLAGS = env['LINKFLAGS'] + module_linkflags,
-                            LIBS = pyconf.libs + LIBS + GD_LIBS+[libpb_name, libgb_name, libpypb_name], 
+                            LIBS = pyconf.libs + LIBS + \
+                                GD_LIBS + libpbShared + libgbShared + libpypb, 
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
@@ -1114,43 +1108,6 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
     #bld=Builder("cd")
 
     
-HAVE_SINGULAR_EXTENSION=True
-
-import subprocess
-#import re
-if SINGULAR_HOME:
-  HAVE_SINGULAR_EXTENSION=True
-else:
-  HAVE_SINGULAR_EXTENSION=False
-
-if HAVE_SINGULAR_EXTENSION:
-
-    SINGULAR_LIBS = env['LIBS'] + [libgb_name, libpb_name]
-    
-    SING_ARCH= subprocess.Popen(["sh", SINGULAR_HOME+"/singuname.sh"], stdout=subprocess.PIPE).communicate()[0]
-    SING_ARCH=SING_ARCH.replace("\n","")
-    SING_INCLUDES=[SINGULAR_HOME+"/"+SING_ARCH+"/include",SINGULAR_HOME+"/kernel",SINGULAR_HOME+"/Singular"]
-
-    sing_pb_if = env.SharedLibrary('Singular/polybori_interface',
-                                   ["Singular/pb_if.cc"],
-                                   SHLIBPREFIX="", LDMODULESUFFIX=".so",
-                                   LIBS=SINGULAR_LIBS, CPPPATH = SING_INCLUDES + CPPPATH)
-    DefaultBuild(sing_pb_if)
-    
-    wrapper_files=["Singular/" + f  for f in ["pb.cc"]]
-    if env['PLATFORM']=="darwin":
-        singpb=env.LoadableModule('Singular/polybori_module', wrapper_files,
-            LINKFLAGS="-bundle_loader " + SINGULAR_HOME+"Singular/Singular",
-            LIBS=SINGULAR_LIBS,LDMODULESUFFIX=".so",
-            CPPPATH = SING_INCLUDES + CPPPATH)
-    else:
-        #print "l:", l
-        singpb=env.SharedLibrary('Singular/polybori_module', wrapper_files,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", LIBS=SINGULAR_LIBS,
-            CPPPATH=SING_INCLUDES+CPPPATH)
-    DefaultBuild(singpb)
-    
-
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
@@ -1165,7 +1122,7 @@ if distribute or rpm_generation or deb_generation:
     allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
 disttar.py doxygen.py""")
     for dirname in Split("""groebner ipbori M4RI libpolybori 
-    PyPolyBoRi pyroot Singular pkgs gui testsuite"""):
+    PyPolyBoRi pyroot pkgs gui testsuite"""):
         allsrcs.append(env.Dir(dirname))
 
     # Cudd is not distributed completely (unused and unfree things removed)
