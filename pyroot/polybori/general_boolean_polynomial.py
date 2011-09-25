@@ -37,11 +37,9 @@ class GeneralBooleanPolynomial:
 		"""
 		#print "type of polynomials", type(polynomial)
 		#print "polynomials is int?", isinstance(polynomial, int)
-		assert isinstance(polynomial, Polynomial) or isinstance(polynomial, Monomial) or isinstance(polynomial, PyPolyBoRi.Variable) or isinstance(polynomial, int)
+		assert isinstance(polynomial, Polynomial) or isinstance(polynomial, Monomial) or isinstance(polynomial, Variable) or isinstance(polynomial, int)
 		self.polys=[]
 		self.k = k
-		if isinstance(polynomial, int):
-			polynomial = BooleConstant(polynomial)
 		self.ring = polynomial.ring()
 		for i in xrange(k):
 			if i in coeff:
@@ -92,7 +90,7 @@ class GeneralBooleanPolynomial:
 		terms = set([])
 		for i in xrange(self.k):
 			if not isinstance(self.polys[i], Polynomial):
-				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i],  PyPolyBoRi.Variable) 
+				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i], Variable) 
 				self[i] = Polynomial(self[i])
 			terms = terms.union( set( self[i].terms() ) )
 		# Sort the terms
@@ -121,7 +119,7 @@ class GeneralBooleanPolynomial:
 			print "Len(self)=",len(self)
 			print "Len(other)=",len(other)
 			assert len(self) == len(other)
-		sum = GeneralBooleanPolynomial(self.k, [], 0)
+		sum = GeneralBooleanPolynomial(self.k, [], Polynomial(0, self.ring))
 		for i in xrange(self.k):
 			sum[i] = self[i] + other[i]
 		return sum
@@ -135,7 +133,7 @@ class GeneralBooleanPolynomial:
 			print "Len(self)=",len(self)
 			print "Len(other)=",len(other)
 			assert len(self) == len(other)
-		prod = GeneralBooleanPolynomial(self.k, [], 0)
+		prod = GeneralBooleanPolynomial(self.k, [], Polynomial(0, self.ring))
 		for i in xrange(self.k):
 			prod[i] = Polynomial(self[i]) * Polynomial(other[i])
 		return prod
@@ -149,7 +147,7 @@ class GeneralBooleanPolynomial:
 			print "Len(self)=",len(self)
 			print "Len(other)=",len(other)
 			assert len(self) == len(other)
-		sub = GeneralBooleanPolynomial(self.k, [], 1)
+		sub = GeneralBooleanPolynomial(self.k, [], Polynomial(1,self.ring))
 		for i in xrange(self.k):
 			sub[i] = self[i] - other[i]
 		return sub
@@ -278,7 +276,7 @@ class GeneralBooleanPolynomial:
 		terms = set([])
 		for i in xrange(self.k):
 			if not isinstance(self.polys[i], Polynomial):
-				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i],  PyPolyBoRi.Variable) 
+				assert isinstance(self.polys[i], Monomial) or isinstance(self.polys[i], Variable) 
 				self[i] = Polynomial(self[i])
 			terms = terms.union( set( self[i].terms() ) )
 		if len(terms)>1:
@@ -377,15 +375,15 @@ def projection_of_expanded_polynomial(f,e,e_vars):
 			f = Polynomial(f.set().subset0(v.index()))
 	return f
 			
-def expanded_polynomial2general_polynomial(polynomial, new_variables ):
+def expanded_polynomial2general_polynomial(polynomial, new_variables, ring ):
 	"""
-	Returns a GeneralBooleanPolynomial to a Polynomial (polynomial) in
+	Returns a GeneralBooleanPolynomial associated to a Polynomial (polynomial) in
 	additional variables (new_variables), where the
 	GeneralBooleanPolynomial in obtained from the projections of polynomial
 	to the factors of F_2^k (by specialization of the additional variables)
 	"""
 	comps = [ projection_of_expanded_polynomial(polynomial, e, new_variables) for e in new_variables ]
-	sum2 = GeneralBooleanPolynomial(len(new_variables),[0]*len(new_variables) ,Polynomial(0, self.ring))
+	sum2 = GeneralBooleanPolynomial(len(new_variables),[0]*len(new_variables) ,Polynomial(0, ring))
 	for i in xrange(len(new_variables)):
 		sum2[i] = comps[i]
 	return sum2
