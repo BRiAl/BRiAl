@@ -147,10 +147,6 @@ generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
 prepare_rpm = 'prepare-rpm' in COMMAND_LINE_TARGETS
 rpm_generation = generate_rpm or generate_srpm or prepare_rpm
 
-DefaultBuild = Default
-if distribute or rpm_generation or deb_generation:
-    def DefaultBuild(arg):
-        return arg
 
 defaultenv = Environment()
 
@@ -779,7 +775,6 @@ API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]
 cudd_shared = shared_object(cudd_resources, CPPPATH = env['CPPPATH'] + [CuddPath()])
 
 #libCudd = env.StaticLibrary(CuddPath(cudd_name), cudd_resources)
-#DefaultBuild(libCudd)
 
 shared_resources += cudd_shared
 
@@ -842,7 +837,6 @@ libpb=env.StaticLibrary(PBPath(libpb_name_static), pb_src + cudd_resources)
 if isinstance(libpb,list):
     libpb=libpb[0]
 
-DefaultBuild(libpb)
 
 pb_shared = shared_object(pb_src)
 shared_resources += pb_shared
@@ -875,8 +869,6 @@ gb=env.StaticLibrary(GBPath(libgb_name_static), gb_src)
 #sometimes l seems to be boxed by a list
 if isinstance(gb,list):
     gb=gb[0]
-
-DefaultBuild(gb)
 
 gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
@@ -1029,14 +1021,14 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
                                    source = source[0].abspath))
         init_py.close()
         
-    def init_message(*args):
-        return init_build.__doc__
+    def init_message(target, *args):
+        return target[0].path + " building..."
         
     dynamic_init_py = env.Command(PyRootPath('polybori/dynamic/__init__.py'), 
                                   pypb, 
                                   action = env.Action(init_build, init_message))
 
-    env.Alias('build', dynamic_init_py) # Developers also need this
+    env.Alias(BuildPath(), dynamic_init_py) # Developers also need this
 
     pypb_init_py = env.Command(BuildPyPBPath('__init__.py'), pypb, 
                                [Touch("$TARGET")])
@@ -1047,13 +1039,11 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
     # Define the dynamic python modules in pyroot
     documentable_python_modules += dynamic_modules
    
-    DefaultBuild(dynamic_modules)
-    
     
     polybori_modules = PyRootPath("polybori")
     #DefaultBuild(env.Install(polybori_modules, pypb))
     for (f,n) in installable_python_modules:
-        DefaultBuild(env.Install(polybori_modules, f))
+        env.Install(polybori_modules, f)
 
     
     to_append_for_profile = [libpb, gb]
@@ -1646,3 +1636,6 @@ if 'install' in COMMAND_LINE_TARGETS:
 
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
+
+
+Default(BuildPath())
