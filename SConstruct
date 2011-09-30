@@ -616,10 +616,10 @@ if not env.GetOption('clean'):
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         env.Append(CPPPATH=[pyconf.incdir])
         env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
-
-        env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
-        env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
         env.Prepend(LIBS = ["m"])
+
+    env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
+    env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 
 
     from re import search
@@ -961,8 +961,11 @@ installable_python_modules = []
 
 pydocu = []
 dynamic_modules = []
+libpypb = []
+pypb_symlinks = []
 
 python_absolute = shell_output("which", env["PYTHON"])
+
 
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""pypb_module.cc
@@ -1033,6 +1036,7 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
                                   pypb, 
                                   action = env.Action(init_build, init_message))
 
+    env.Alias('build', dynamic_init_py) # Developers also need this
 
     pypb_init_py = env.Command(BuildPyPBPath('__init__.py'), pypb, 
                                [Touch("$TARGET")])
