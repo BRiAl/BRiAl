@@ -189,20 +189,26 @@ def gb_with_pre_post_option(
                     option_set=default
             kwds=dict(((o,kwds[o]) for o in kwds if o!=option))
             state=None
+
             if option_set:
                if pre:
                    pre_args=getargspec(pre)[0]
                    if prot:
                        print "preprocessing for option:", option
-                   
-                   (I,state)=pre(**dict([(k,v) for (k,v) in locals().iteritems() if k in pre_args]))
+
+                   local_symbols = copy(locals())
+                   (I, state) = pre(**dict([(k,v) for (k,v) in \
+                                   local_symbols.iteritems() if k in pre_args]))
             I=f(I,**kwds)
             if option_set:
                 if post:
                     post_args=getargspec(post)[0]
                     if prot:
                         print "postprocessing for option:", option
-                    I=post(**dict([(k,v) for (k,v) in locals().iteritems() if k in post_args]))
+                    local_symbols = copy(locals())
+                    I = post(**dict([(k,v) for (k,v) \
+                            in local_symbols.iteritems() if k in post_args]))
+
             return I
         wrapper.__name__=f.__name__
         wrapper.__doc__=f.__doc__
