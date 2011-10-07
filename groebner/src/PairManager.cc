@@ -102,7 +102,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
       
       if (!(res.isZero())){
         Monomial lm=res.lead();
-      
+        //uses p itself as reductor has a great potential of extinguishing many terms
         if (lm==this->strat->generators[i].lead)
           res+=this->strat->generators[i].p;
       }
