@@ -148,7 +148,7 @@ prepare_rpm = 'prepare-rpm' in COMMAND_LINE_TARGETS
 rpm_generation = generate_rpm or generate_srpm or prepare_rpm
 
 
-defaultenv = Environment()
+defaultenv = Environment(ENV = os.environ)
 
 # See also: http://trac.sagemath.org/sage_trac/ticket/9872 and #6437
 def detect_linker(env):
@@ -344,7 +344,7 @@ tools =  ["default"]
 
 if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
     def is_gcc():
-        compilerenv = Environment(options = opts)
+        compilerenv = Environment(ENV = os.environ, options = opts)
         return compilerenv['CC']  == 'gcc'
     
     if is_gcc():
@@ -353,7 +353,7 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
             if arg in tools:
                 tools.remove(arg)
         tools +=  [ 'gcc', 'g++', 'ar']
-        defaultenv = Environment(tools=tools)
+        defaultenv = Environment(ENV = os.environ, tools=tools)
 
 for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
 SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
@@ -377,17 +377,12 @@ opts.Add('CONFFILE', "Dump settings to file, if given", '')
 
 tools +=  ["disttar", "doxygen"]
 
-# Get paths an related things from current environment
-# note: we cannot avoid those due to non-standard system setups
-getenv = dict()
-for key in ['PATH', 'HOME', 'LD_LIBRARY_PATH'] :
-    try:
-        getenv[key] = os.environ[key]
-    except KeyError:
-        pass
+# Get paths and related things from current environment os.environ
+# note: We cannot avoid those due to non-standard system setups,
+#       also we do not know which variables are used in general
 
-
-env = Environment(ENV = getenv, options = opts, tools = tools, toolpath = '.')
+env = Environment(ENV = os.environ, options = opts, tools = tools, 
+                  toolpath = '.')
 
 env['RPATH'] = env.Literal('\\$$ORIGIN/')
 
@@ -1001,7 +996,7 @@ if HAVE_PYTHON_EXTENSION:
                     newname = "@loader_path/" + \
                         relpath(InstPyPath("polybori/dynamic"),
                                 expand_repeated(DevelInstLibPath(os.path.basename(name)),env))
-                    Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
+                    env.Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
 
             env.AddPostAction(pypb, fix_install_name)
 
@@ -1189,7 +1184,7 @@ def cp_all(target, source, env):
 
     if not path.exists(target):
         try:
-            Execute(Mkdir(target))
+            env.Execute(Mkdir(target))
         except:
             # Maybe just a race condition occured, because two processes trixy
             # to generate the directory at the same time. (This I could ignore.)
@@ -1201,7 +1196,7 @@ def cp_all(target, source, env):
         for filename in glob(path.join(source, patt)):
             if not path.isdir(filename):
                 result = str(path.join(target, path.basename(filename)))
-                Execute([Copy(result, filename), Chmod(result, 0644)])
+                env.Execute([Copy(result, filename), Chmod(result, 0644)])
 
     return None
 
@@ -1224,7 +1219,7 @@ def cp_pydoc(target, source, env):
     patt = re.compile('(file:|)/[^\" ]*' + pyroot, re.VERBOSE)
 
     if not path.exists(target):
-        Execute(Mkdir(target))
+        env.Execute(Mkdir(target))
     showpath = relpath(env.Dir(target).abspath,
                        env.Dir(env['PYINSTALLPREFIX']).abspath)
 
@@ -1438,7 +1433,7 @@ if rpm_generation:
 
     def provide_builddir(target, source, env):
         if not path.exists(RPMPath('BUILD')):
-            Execute(Mkdir(RPMPath('BUILD')))
+            env.Execute(Mkdir(RPMPath('BUILD')))
     
     env.AddPreAction(pbrpm, provide_builddir)
     env.AlwaysBuild(pbrpm)
@@ -1639,3 +1634,5 @@ env.Alias('prepare-install', [pyroot, DocPath()])
 
 
 Default(BuildPath())
+
+#env.Execute("set")
