@@ -58,6 +58,10 @@ def relpath(p1, p2):
         return ''
     return os.path.join( *p )
 
+def env_relpath(env, path, versus):
+    return relpath(env.subst(path), env.subst(versus))
+
+Environment.relpath = env_relpath
 
 def preprocessed_substitute(target, source, env):
     def preprocess_at(page):
@@ -67,14 +71,6 @@ def preprocessed_substitute(target, source, env):
         
     substitute_install(target, source, env, preprocess=preprocess_at)
     
-def expand_repeated(val, env):
-    from string import Template
-    newval = Template(val).safe_substitute(env)
-    while (val != newval):
-        val = newval
-        newval = Template(val).safe_substitute(env)
-
-    return val
 
 # Fix some paths and names
 class PathJoiner(object):
@@ -333,7 +329,7 @@ opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
 
-opts.Add('RPATH', "rpath setting", ['${_relative_rpath(__env__)}'], converter = Split)
+opts.Add('RPATH', "rpath setting",  converter = Split)
 
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
@@ -384,7 +380,8 @@ tools +=  ["disttar", "doxygen"]
 env = Environment(ENV = os.environ, options = opts, tools = tools, 
                   toolpath = '.')
 
-env['RPATH'] = env.Literal('\\$$ORIGIN/')
+USER_RPATH = list(env.get('RPATH', []))
+env.Append(RPATH = env.Literal('\\$$ORIGIN/'))
 
 if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
@@ -395,7 +392,7 @@ env.Alias('dump', 'SConstruct')
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
 
-USERLIBS = env['LIBS']
+USERLIBS = list(env.get('LIBS', []))
 
 # Skipping doxygen-based docu, if no doxygen is found.
 if HAVE_DOXYGEN:
@@ -707,7 +704,7 @@ def build_symlink(target, source, env):
     source = source[0].abspath
 
     if env['RELATIVE_SYMLINK'] :
-        source = relpath(targetdir, source)
+        source = env.relpath(targetdir, source)
     if not source:
         source = '.'
 
@@ -742,6 +739,10 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 
 
 
+
+def relative_rpath(targetdir, env):
+    return [env.Literal(os.path.join('\\$$ORIGIN/',
+                                     env.relpath(targetdir, BuildLibPath())))]
 
 ######################################################################
 # Change some flags globally
@@ -974,7 +975,6 @@ if HAVE_PYTHON_EXTENSION:
     else:
         module_linkflags = []
 
-
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
                             wrapper_files[0],
                             LINKFLAGS = env['LINKFLAGS'] + module_linkflags,
@@ -983,8 +983,7 @@ if HAVE_PYTHON_EXTENSION:
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
-                            RPATH = env.Literal('\\$$ORIGIN/'+ relpath(expand_repeated(BuildPyPBPath(),env),expand_repeated( BuildLibPath(),env)))
-
+                            RPATH = USER_RPATH + relative_rpath(BuildPyPBPath(), env)
                             )
     env.Depends(pypb, pb_symlinks + gb_symlinks + pypb_symlinks)
     
@@ -994,8 +993,8 @@ if HAVE_PYTHON_EXTENSION:
                 names = Split(shell_output('otool', '-D', names))[1::2]
                 for name in names:
                     newname = "@loader_path/" + \
-                        relpath(InstPyPath("polybori/dynamic"),
-                                expand_repeated(DevelInstLibPath(os.path.basename(name)),env))
+                        env.relpath(InstPyPath("polybori/dynamic"),
+                                    DevelInstLibPath(os.path.basename(name)))
                     env.Execute("install_name_tool -change %s %s %s"%(name, newname, target[0]))
 
             env.AddPostAction(pypb, fix_install_name)
@@ -1220,8 +1219,8 @@ def cp_pydoc(target, source, env):
 
     if not path.exists(target):
         env.Execute(Mkdir(target))
-    showpath = relpath(env.Dir(target).abspath,
-                       env.Dir(env['PYINSTALLPREFIX']).abspath)
+    showpath = env.relpath(env.Dir(target).abspath,
+                           env.Dir(env['PYINSTALLPREFIX']).abspath)
 
     if showpath != '' and showpath[-1] != '/':
          showpath += '/'
@@ -1532,8 +1531,8 @@ if 'install' in COMMAND_LINE_TARGETS:
         so_pyfiles += FinalizeExecs(pypb_inst)
 
     pyfiles = []
-    env['GUIPYPREFIX'] = relpath(expand_repeated(InstPath(GUIPath()), env),
-                                 env['PYINSTALLPREFIX'])
+    env['GUIPYPREFIX'] = env.relpath(InstPath(GUIPath()),
+                                     '$PYINSTALLPREFIX')
     
     for instfile in [ IPBPath('ipbori') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
@@ -1586,7 +1585,7 @@ if 'install' in COMMAND_LINE_TARGETS:
         pyfile_srcs.remove(PyRootPath('polybori/context.py'))
                        
     for instfile in pyfile_srcs :
-        targetfile = InstPyPath(relpath(PyRootPath(), instfile))
+        targetfile = InstPyPath(env.relpath(PyRootPath(), instfile))
         pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
 
     pyfiles +=  FinalizeNonExecs(env.Install(InstPyPath("polybori/dynamic"),
@@ -1600,9 +1599,9 @@ if 'install' in COMMAND_LINE_TARGETS:
         FinalizeNonExecs(env.Command([file1.path + 'c' for file1 in pyfiles],
                                      pyfiles, cmdline))
 
-    env['PYINSTALLPREFIX'] = expand_repeated(env['PYINSTALLPREFIX'], env)
-    env['RELATIVEPYPREFIX'] = relpath(expand_repeated(InstPath(IPBPath()),env),
-                                      env['PYINSTALLPREFIX'])       
+    env['PYINSTALLPREFIX'] = env.subst('$PYINSTALLPREFIX')
+    env['RELATIVEPYPREFIX'] = env.relpath(InstPath(IPBPath()),
+                                          '$PYINSTALLPREFIX')       
 
     # Symlink from executable into bin directory
     ipboribin = env.SymLink(InstExecPath('ipbori'),
