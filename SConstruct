@@ -160,13 +160,8 @@ def _fix_dynlib_flags(env):
 
     if env['PLATFORM']=="darwin":
         return "-Wl,-flat_namespace"
-    return "-z origin"
+    return ''
 
-
-
-
-if 'dump_default' in COMMAND_LINE_TARGETS:
-  print defaultenv.Dump()
 
 def _sonameprefix(env):
     linker = detect_linker(env)
@@ -180,6 +175,23 @@ def _sonameprefix(env):
     else:
         return '-Wl,-soname,'
 
+# dynamic module flags
+def _dynmodule_flags(env):
+    """Creates special flags for dynamic libraries, in particular on darwin."""
+    if env['PLATFORM'] == "darwin":
+        return "-Wl,-undefined -Wl,dynamic_lookup"
+    else:
+        return ""
+
+def _relative_rpath(target, env):
+    if not target or env['PLATFORM']=="darwin":
+        return ''
+
+    targetdir = os.path.dirname(env.subst(str(target)))
+    libdir = BuildPath(env['DEVEL_LIB_PREFIX'].lstrip(sep))
+    relative_path = '\\$$ORIGIN/' + env.relpath(targetdir, libdir)
+    return [env['RPATHPREFIX'] + relative_path + env['RPATHSUFFIX'],
+            '-z', 'origin']
 
 
 # Define option handle, may be changed from command line or custom.py
@@ -239,7 +251,8 @@ opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
          '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
-         ["${_fix_dynlib_flags(__env__)}"])
+         ['${_fix_dynlib_flags(__env__)}', 
+          '${_relative_rpath(TARGET, __env__)}'])
 
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
@@ -380,14 +393,6 @@ tools +=  ["disttar", "doxygen"]
 env = Environment(ENV = os.environ, options = opts, tools = tools, 
                   toolpath = '.')
 
-USER_RPATH = list(env.get('RPATH', []))
-env.Append(RPATH = env.Literal('\\$$ORIGIN/'))
-
-if 'dump' in COMMAND_LINE_TARGETS:
-  print env.Dump()
-
-env.Alias('dump', 'SConstruct')
-
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
 HAVE_PYTHON_EXTENSION = env['HAVE_PYTHON_EXTENSION']
@@ -424,16 +429,7 @@ env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
 env['_fix_dynlib_flags'] = _fix_dynlib_flags
 env['_shccflags'] = _shccflags
-
-# dynamic module flags
-def _dynmodule_flags(env):
-    """Creates special flags for dynamic libraries, in particular on darwin."""
-    if env['PLATFORM'] == "darwin":
-        return "-Wl,-undefined -Wl,dynamic_lookup"
-    else:
-        return ""
-
-    
+env['_relative_rpath'] = _relative_rpath  
 env['_dynmodule_flags'] = _dynmodule_flags
 
 
@@ -739,11 +735,6 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 
 
 
-
-def relative_rpath(targetdir, env):
-    return [env.Literal(os.path.join('\\$$ORIGIN/',
-                                     env.relpath(targetdir, BuildLibPath())))]
-
 ######################################################################
 # Change some flags globally
 ######################################################################
@@ -983,8 +974,8 @@ if HAVE_PYTHON_EXTENSION:
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
-                            RPATH = USER_RPATH + relative_rpath(BuildPyPBPath(), env)
                             )
+
     env.Depends(pypb, pb_symlinks + gb_symlinks + pypb_symlinks)
     
     if env['PLATFORM']=="darwin":
@@ -1634,4 +1625,10 @@ env.Alias('prepare-install', [pyroot, DocPath()])
 
 Default(BuildPath())
 
-#env.Execute("set")
+if 'dump_default' in COMMAND_LINE_TARGETS:
+  print defaultenv.Dump()
+
+if 'dump' in COMMAND_LINE_TARGETS:
+  print env.Dump()
+
+env.Alias('dump', 'SConstruct')
