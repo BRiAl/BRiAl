@@ -256,7 +256,7 @@ opts.Add('CUSTOM_LINKFLAGS',
 
 
 opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
-opts.Add('GD_LIBS', 'Library gb abd its dependencies (if needed)', ["gd"],
+opts.Add('GD_LIBS', 'Library gb and its dependencies (if needed)', ["gd"],
          converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
@@ -500,10 +500,6 @@ class PythonConfig(object):
 pyconf = PythonConfig(env["PYTHON"])
 
 env.AppendUnique(PYTHONSITE = pyconf.sitedir)
-
-# Generate usage for scons -h here
-# (PYTHONSITE is already evaluated, but not python-specific paths)
-Help(opts.GenerateHelpText(env))
 
 have_l2h = have_t4h = False
 external_m4ri = False
@@ -1625,6 +1621,10 @@ env.Alias('prepare-install', [pyroot, DocPath()])
 
 Default(BuildPath())
 
+# Generate usage for scons -h here
+# (PYTHONSITE is already evaluated, but not python-specific paths)
+Help(opts.GenerateHelpText(env))
+
 if 'dump_default' in COMMAND_LINE_TARGETS:
   print defaultenv.Dump()
 
@@ -1632,3 +1632,4 @@ if 'dump' in COMMAND_LINE_TARGETS:
   print env.Dump()
 
 env.Alias('dump', 'SConstruct')
+env.Alias('dump_default', 'SConstruct')
