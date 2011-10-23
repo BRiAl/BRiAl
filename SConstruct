@@ -183,6 +183,13 @@ def _dynmodule_flags(env):
     else:
         return ""
 
+def _moduleflags(env):
+    if env['PLATFORM']=="darwin":
+        python_absolute = shell_output("which", env["PYTHON"])
+        return ["-fvisibility=hidden", "-bundle_loader", python_absolute]
+
+    return []
+
 def _relative_rpath(target, env):
     if not target or env['PLATFORM']=="darwin":
         return ''
@@ -229,17 +236,17 @@ def oldstyle_flags():
 
 if oldstyle_flags() :
     opts.Add('CCFLAGS', "C compiler flags", 
-             "-O3 -std=c99", converter = Split)
+             Split("-O3 -std=c99"), converter = Split)
     opts.Add('CXXFLAGS', "C++ compiler flags", 
-             "-O3 -std=c++98 -ftemplate-depth-100",
+             Split("-O3 -std=c++98 -ftemplate-depth-100"),
              converter = Split)
 else:
     opts.Add('CCFLAGS', "C/C++ compiler flags", 
-             "-O3", converter = Split)
-    opts.Add('CFLAGS', "C compiler flags", "-std=c99",
+             ["-O3"], converter = Split)
+    opts.Add('CFLAGS', "C compiler flags", ["-std=c99"],
              converter = Split)
     opts.Add('CXXFLAGS', "C++ compiler flags", 
-             "-std=c++98 -ftemplate-depth-100",
+             ["-std=c++98", "-ftemplate-depth-100"],
              converter = Split)
 
 
@@ -328,15 +335,9 @@ opts.Add('SHLIBVERSIONSUFFIX',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
-
-def _shccflags(env):
-    if env['PLATFORM'] == "darwin":
-        return ["-fvisibility=hidden"]
-    return []
-
-opts.Add('MODULE_SHCCFLAGS',
+opts.Add('MODULEFLAGS',
          'Additional dynamic module compile flags.',
-         ['${_shccflags(__env__)}'], converter = Split)
+         ['${_moduleflags(__env__)}'])
 
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
@@ -372,7 +373,7 @@ SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
     else:
         print "Variable", var, "not in default environment!"
 
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS LDMODULEFLAGS"""):
     if defaultenv.has_key(flag):
         opts.Add(flag, "flags inherited from SCons with default: " + \
                      repr(defaultenv[flag]),
@@ -428,7 +429,7 @@ def _sonamecmd(prefix, target, suffix, env = env):
 env['_sonamecmd'] = _sonamecmd
 env['_sonameprefix'] = _sonameprefix
 env['_fix_dynlib_flags'] = _fix_dynlib_flags
-env['_shccflags'] = _shccflags
+env['_moduleflags'] = _moduleflags
 env['_relative_rpath'] = _relative_rpath  
 env['_dynmodule_flags'] = _dynmodule_flags
 
@@ -602,12 +603,6 @@ if not env.GetOption('clean'):
     env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
 
 
-    from re import search
-    for variable in os.environ:
-        if search("SAGE",variable):
-            env['ENV'][variable]=os.environ[variable]
-
-
     if HAVE_PYTHON_EXTENSION:
         if not (conf.CheckLib(pyconf.libname)):
             print "Python library not available (needed for python extension)!"
@@ -741,6 +736,7 @@ env.Append(CCFLAGS="$M4RI_CFLAGS")
 env.Append(CXXFLAGS="$M4RI_CFLAGS")
 env.Append(SHCCFLAGS="$M4RI_CFLAGS")
 env.Append(SHCXXFLAGS="$M4RI_CFLAGS")
+env.Append(LDMODULEFLAGS='$MODULEFLAGS')
 
 ######################################################################
 # Stuff for building Cudd library
@@ -939,8 +935,6 @@ dynamic_modules = []
 libpypb = []
 pypb_symlinks = []
 
-python_absolute = shell_output("which", env["PYTHON"])
-
 
 if HAVE_PYTHON_EXTENSION:
     wrapper_files=[ PyPBPath(f) for f in Split("""pypb_module.cc
@@ -957,19 +951,13 @@ if HAVE_PYTHON_EXTENSION:
     pypb_symlinks = SymlinkReadableLibname(libpypb)
 
     dylibs += libpypb
-    if env['PLATFORM']=="darwin":
-        module_linkflags = ["-bundle_loader", python_absolute]
-    else:
-        module_linkflags = []
 
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
                             wrapper_files[0],
-                            LINKFLAGS = env['LINKFLAGS'] + module_linkflags,
                             LIBS = pyconf.libs + LIBS + \
                                 GD_LIBS + libpbShared + libgbShared + libpypb, 
-                            LDMODULESUFFIX=pyconf.module_suffix,
+                            LDMODULESUFFIX = pyconf.module_suffix,
                             LDMODULEPREFIX = "",
-                            SHCCFLAGS=env['SHCCFLAGS'] + env['MODULE_SHCCFLAGS'] + ['$CUSTOM_LINKFLAGS'],
                             )
 
     env.Depends(pypb, pb_symlinks + gb_symlinks + pypb_symlinks)
