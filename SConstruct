@@ -143,7 +143,6 @@ generate_srpm = 'srpm' in COMMAND_LINE_TARGETS
 prepare_rpm = 'prepare-rpm' in COMMAND_LINE_TARGETS
 rpm_generation = generate_rpm or generate_srpm or prepare_rpm
 
-
 defaultenv = Environment(ENV = os.environ)
 
 # See also: http://trac.sagemath.org/sage_trac/ticket/9872 and #6437
@@ -202,30 +201,30 @@ def _relative_rpath(target, env):
 
 
 # Define option handle, may be changed from command line or custom.py
-opts.Add('CXX', 'C++ Compiler (inherited from SCons with defaults:)' + \
-         repr(defaultenv['CXX']))
-opts.Add('CC', 'C Compiler (inherited from SCons with defaults:)' + \
-             repr(defaultenv['CC']))
+opts.Add('CXX', 'C++ Compiler (inherited from SCons)',
+         defaultenv['CXX'])
+opts.Add('CC', 'C Compiler (inherited from SCons)',
+         defaultenv['CC'])
 
 opts.Add('SHCXX', 
-         'C++ Compiler (preparing shared libraries); ' + \
-         'inherited with defaults: ' + repr(defaultenv['SHCXX']))
+         'C++ Compiler (preparing shared libraries; inherited from SCons)',
+         defaultenv['SHCXX'])
 opts.Add('SHCC', 
-         'C Compiler (preparing shared libraries); ' + \
-             'inherited with defaults: ' + repr(defaultenv['SHCC']))
+         'C Compiler (preparing shared libraries; inherited from SCons)',
+         defaultenv['SHCC'])
 
 opts.Add('PYTHON', 'Python executable', "python$PROGSUFFIX")
 
 opts.Add('LIBPATH', 'list of library paths (colon or whitespace separated)',
-         [], converter = SplitColonSep)
+         defaultenv.get('LIBPATH', []), converter = SplitColonSep)
 opts.Add('CPPPATH', 'list of include paths (colon or whitespace separated)',
-         [], converter = SplitColonSep)
+         defaultenv.get('CPPPATH', []), converter = SplitColonSep)
 
 opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace separated)',
          None, converter = SplitColonSep)
 
 opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
-         ['PBORI_NDEBUG'], converter = Split)
+         defaultenv.get('CPPDEFINES',[]) + ['PBORI_NDEBUG'], converter = Split)
 
 def scons_version():
     import SCons
@@ -235,25 +234,25 @@ def oldstyle_flags():
     return scons_version() < ['0','97','0']
 
 if oldstyle_flags() :
-    opts.Add('CCFLAGS', "C compiler flags", 
-             Split("-O3 -std=c99"), converter = Split)
-    opts.Add('CXXFLAGS', "C++ compiler flags", 
-             Split("-O3 -std=c++98 -ftemplate-depth-100"),
-             converter = Split)
-else:
-    opts.Add('CCFLAGS', "C/C++ compiler flags", 
-             ["-O3"], converter = Split)
-    opts.Add('CFLAGS', "C compiler flags", ["-std=c99"],
-             converter = Split)
-    opts.Add('CXXFLAGS', "C++ compiler flags", 
-             ["-std=c++98", "-ftemplate-depth-100"],
-             converter = Split)
+    defaultenv.Append(CCFLAGS=["-O3", "-std=c99", "$M4RI_CFLAGS"])
+    defaultenv.Append(CXXFLAGS=["-O3", "-std=c++98", "$M4RI_CFLAGS", 
+                                "-ftemplate-depth-100"])
+    opts.Add('CCFLAGS', "C compiler flags", defaultenv['CCFLAGS'])
+    opts.Add('CXXFLAGS', "C++ compiler flags", defaultenv['CXXFLAGS'])
 
+else:
+    defaultenv.Append(CCFLAGS=["-O3", "$M4RI_CFLAGS"])
+    defaultenv.Append(CFLAGS=["-std=c99"])
+    defaultenv.Append(CXXFLAGS=["-std=c++98", "-ftemplate-depth-100"])
+    opts.Add('CCFLAGS', "C/C++ compiler flags", defaultenv['CCFLAGS'])
+    opts.Add('CFLAGS', "C compiler flags", defaultenv['CFLAGS'])
+    opts.Add('CXXFLAGS', "C++ compiler flags", defaultenv['CXXFLAGS'])
 
 opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
 
-opts.Add('LINKFLAGS', "Linker flags (inherited from SCons with defaults:)" + \
-             repr(defaultenv['LINKFLAGS']), converter = Split)
+defaultenv.Append(LINKFLAGS=['$CUSTOM_LINKFLAGS'])
+opts.Add('LINKFLAGS', "Linker flags (inherited from SCons)", 
+         defaultenv['LINKFLAGS'])
 
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
@@ -261,10 +260,10 @@ opts.Add('CUSTOM_LINKFLAGS',
          ['${_fix_dynlib_flags(__env__)}', 
           '${_relative_rpath(TARGET, __env__)}'])
 
-
-opts.Add('LIBS', 'custom libraries needed for build', [], converter = Split)
-opts.Add('GD_LIBS', 'Library gb and its dependencies (if needed)', ["gd"],
-         converter = Split)
+opts.Add('LIBS', 'custom libraries needed for build', 
+         defaultenv.get('LIBS', []), converter = Split)
+opts.Add('GD_LIBS', 'Library gb and its dependencies (if needed)', 
+         ["gd"], converter = Split)
 
 opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
 opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
@@ -281,9 +280,11 @@ opts.Add('PYINSTALLPREFIX',
 opts.Add('DEVEL_PREFIX',
          'development version installation directory','$PREFIX' )
 opts.Add('DEVEL_INCLUDE_PREFIX',
-         'development version header installation directory','$DEVEL_PREFIX/include' )
+         'development version header installation directory',
+         '$DEVEL_PREFIX/include' )
 opts.Add('DEVEL_LIB_PREFIX',
-         'development version library installation directory','$DEVEL_PREFIX/lib' )
+         'development version library installation directory',
+         '$DEVEL_PREFIX/lib' )
 
          
 opts.Add(BoolVariable('HAVE_DOXYGEN',
@@ -300,50 +301,56 @@ opts.Add('BOOST_TEST',
 
 
 opts.Add(BoolVariable('RELATIVE_SYMLINK',
-                    'Use relative symbolic links on install', True))
+                      'Use relative symbolic links on install', True))
 
-opts.Add(BoolVariable('HAVE_L2H', 'Switch latex2html on/off (deprecated)', False))
+opts.Add(BoolVariable('HAVE_L2H', 'Switch latex2html on/off (deprecated)', 
+                      False))
 opts.Add(BoolVariable('HAVE_HEVEA', 'Switch hevea on/off (deprecated)', False))
 opts.Add(BoolVariable('HAVE_TEX4HT', 'Switch tex4ht on/off', True))
 
 
-opts.Add(BoolVariable('HAVE_PYDOC', 'Switch python doc generation on/off', True))
+opts.Add(BoolVariable('HAVE_PYDOC', 'Switch python doc generation on/off',
+                      True))
 opts.Add(BoolVariable('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
-                    False))
+                      False))
 
 opts.Add(BoolVariable('USE_TIMESTAMP', 'Use timestamp on distribution', True))
 opts.Add(BoolVariable('SHLIBVERSIONING',
-                    'Use dlltool-style versionated shared library', True))
+                      'Use libtool-style versionated shared library', True))
 opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', 
          '${_sonameprefix(__env__)}')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
 
-opts.Add('INSTALL_NAME_DIR',
-         'Path to be used for dylib install_name (darwin only)',
-         '@loader_path')
-
-
-opts.Add('SHLINKFLAGS',
-         'Shared libraries link flags.')
-
 opts.Add('SONAMEFLAGS',
          'Shared libraries link flags.',
          ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
+
+defaultenv.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
+opts.Add('SHLINKFLAGS', 'Shared libraries link flags.',
+         defaultenv['SHLINKFLAGS'])
+
+opts.Add('INSTALL_NAME_DIR',
+         'Path to be used for dylib install_name (darwin only)',
+         '@loader_path')
 
 opts.Add('SHLIBVERSIONSUFFIX',
          'Shared libraries suffix for library versioning.',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
-opts.Add('MODULEFLAGS',
-         'Additional dynamic module compile flags.',
-         ['${_moduleflags(__env__)}'])
+opts.Add('PYMODULEFLAGS',
+         'Additional dynamic module compile flags for compiled python module',
+         '${_moduleflags(__env__)}')
+
+defaultenv.Append(LDMODULEFLAGS=['$PYMODULEFLAGS'])
+opts.Add('LDMODULEFLAGS',
+         'Dynamic module compile flags.', defaultenv['LDMODULEFLAGS'])
 
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
 "unordered_map)", False))
 
-opts.Add('RPATH', "rpath setting",  converter = Split)
+opts.Add('RPATH', "rpath setting",  converter = SplitColonSep)
 
 
 pbori_cache_macros=["PBORI_UNIQUE_SLOTS","PBORI_CACHE_SLOTS","PBORI_MAX_MEMORY"]
@@ -366,18 +373,17 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         defaultenv = Environment(ENV = os.environ, tools=tools)
 
 for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
-SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX PLATFORM"""):
+SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
     if defaultenv.has_key(var):
         opts.Add(var, 
-                 "inherited from SCons with default: " + repr(defaultenv[var]))
-    else:
+                 "inherited from SCons", defaultenv[var])
+else:
         print "Variable", var, "not in default environment!"
 
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS LDMODULEFLAGS"""):
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
     if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons with default: " + \
-                     repr(defaultenv[flag]),
-                 converter = Split)
+        opts.Add(flag, "flags inherited from SCons",
+                 defaultenv[flag], converter = Split)
     else:
         print "Flags", flag, "not in default environment!"
 
@@ -731,12 +737,9 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 ######################################################################
 
 env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
-env.Append(SHLINKFLAGS=['$CUSTOM_LINKFLAGS'])
-env.Append(CCFLAGS="$M4RI_CFLAGS")
-env.Append(CXXFLAGS="$M4RI_CFLAGS")
 env.Append(SHCCFLAGS="$M4RI_CFLAGS")
 env.Append(SHCXXFLAGS="$M4RI_CFLAGS")
-env.Append(LDMODULEFLAGS='$MODULEFLAGS')
+
 
 ######################################################################
 # Stuff for building Cudd library
