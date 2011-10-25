@@ -12,7 +12,7 @@ from easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
-from polybori.fglm import fglm
+from polybori.fglm import _fglm
 
 
 def owns_one_constant(I):
@@ -499,7 +499,7 @@ def groebner_basis(I, faugere=False,
     if not convert_with_fglm_from_ring is None:
         from_ring=convert_with_fglm_from_ring
         to_ring = convert_with_fglm_to_ring
-        return fglm(I, from_ring, to_ring)
+        return _fglm(I, from_ring, to_ring)
 
     if interpolation_gb:
         if len(I)!=1 or I[0].ring().get_order_code()!=OrderCode.lp:

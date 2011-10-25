@@ -12,6 +12,11 @@ from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector,\
 
 from polybori.blocks import declare_ring
 
+def _fglm(I, from_ring, to_ring):
+    """Unchecked variant of fglm"""
+    vec=BoolePolynomialVector(I)
+    return FGLMStrategy(from_ring,to_ring,vec).main()
+
 def fglm(I, from_ring, to_ring):
     """
     converts *reduced* Groebner Basis in from_ring to a GroebnerBasis in to_ring.
@@ -27,8 +32,10 @@ def fglm(I, from_ring, to_ring):
     >>> list(fglm(ideal, old_ring, new_ring))
     [y + x, z + x]
     """
-    vec=BoolePolynomialVector(I)
-    return FGLMStrategy(from_ring,to_ring,vec).main()
+    for poly in I:
+        if poly.ring().id() != from_ring:
+            raise ValueError, "Ideal I must be from the first ring argument"
+    return _fglm(from_ring, to_ring, I)
     
 def vars_real_divisors(monomial, monomial_set):
     """
