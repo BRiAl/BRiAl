@@ -197,7 +197,7 @@ def _ring_clone(self, ordering=None, names=[], blocks=[]):
     of ring, but with different ordering, names or blocks if given.
     Further information/call patterns: """
     ring = _cpp_ring_clone(self)
-    if ordering:
+    if ordering is not None:
         _cpp_change_ordering(ring, ordering)
 
     _ring_settings(ring, names, blocks)
