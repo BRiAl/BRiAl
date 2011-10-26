@@ -50,10 +50,16 @@ If might also be useful to add some custom setting to the file 'custom.py' in
 the build directory, see the following example.
 
 --- custom.py ---
+# User variables
 CFLAGS = ""
 CCFLAGS = "-g -O3  -ansi --pedantic -Wno-long-long -pg"
 CXXFLAGS = "$CCFLAGS -ftemplate-depth-100"
 LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg" 
+
+# DEFAULT_<flags> will be appended by default. State the default flags
+# explicitely, if you want to append flags afterwards, e.g.
+LINKFLAGS='-Ddef1 $$DEFAULT_LINKFLAGS -Ddef2'
+
 # See also SHCFLAGS, SHCCFLAGS, SHCXXFLAGS, and SHLINKFLAGS
 
 LIBS=["util"]
