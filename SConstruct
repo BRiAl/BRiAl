@@ -199,6 +199,18 @@ def _relative_rpath(target, env):
     return [env['RPATHPREFIX'] + relative_path + env['RPATHSUFFIX'],
             '-z', 'origin']
 
+class ExtendedVariables():
+    def __init__(self, vars, defaults):
+        vars.AddWithDefaults = self
+        self.vars = vars
+        self.defaults = defaults
+    def __call__(self, varname, *args, **kwds):   
+        self.vars.Add(varname, *args, **kwds)
+        self.vars.Add('DEFAULT_' + varname, 
+                      "defaults appended to " + repr(varname),
+                      self.defaults[varname])
+
+ExtendedVariables(opts, defaultenv)
 
 # Define option handle, may be changed from command line or custom.py
 opts.Add('CXX', 'C++ Compiler (inherited from SCons)',
@@ -251,8 +263,8 @@ else:
 opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
 
 defaultenv.Append(LINKFLAGS=['$CUSTOM_LINKFLAGS'])
-opts.Add('LINKFLAGS', "Linker flags (inherited from SCons)", 
-         defaultenv['LINKFLAGS'])
+
+opts.AddWithDefaults('LINKFLAGS', "Custom linker flags", converter=Split)
 
 opts.Add('CUSTOM_LINKFLAGS',
          """Addtional linker flags (e.g. '-s' for stripping, and
@@ -399,6 +411,12 @@ tools +=  ["disttar", "doxygen"]
 
 env = Environment(ENV = os.environ, options = opts, tools = tools, 
                   toolpath = '.')
+
+# Ensure that necessary flags are appended 
+# (explicitely set DEFAULT_<flags>="" if defaults should be removed)
+for key in env.Dictionary().keys():
+    if key.startswith('DEFAULT_'):
+        env.AppendUnique(**{key.replace('DEFAULT_',''): ['$' + key]})
 
 # Extract some option values
 HAVE_DOXYGEN = env['HAVE_DOXYGEN'] and ("doxygen" in tools)
