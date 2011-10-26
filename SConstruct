@@ -201,8 +201,9 @@ def _relative_rpath(target, env):
 
 class ExtendedVariables():
     def __init__(self, vars, defaults):
+        from weakref import proxy
         vars.AddWithDefaults = self
-        self.vars = vars
+        self.vars = proxy(vars)
         self.defaults = defaults
     def __call__(self, varname, *args, **kwds):   
         self.vars.Add(varname, *args, **kwds)
