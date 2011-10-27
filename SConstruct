@@ -250,19 +250,19 @@ if oldstyle_flags() :
     defaultenv.Append(CCFLAGS=["-std=c99", "$M4RI_CFLAGS"])
     defaultenv.Append(CXXFLAGS=["-std=c++98", "$M4RI_CFLAGS", 
                                 "-ftemplate-depth-100"])
-    for args in [('CCFLAGS', "C compiler flags", ["-O3"]),
-                 ('CXXFLAGS', "C++ compiler flags", ["-O3"])]:
-        opts.AddWithDefaults(*args, converter=Split)
+    for (var, help, default) in [('CCFLAGS', "C compiler flags", ["-O3"]),
+                                 ('CXXFLAGS', "C++ compiler flags", ["-O3"])]:
+        opts.AddWithDefaults(var, help, default, converter=Split)
 
 else:
     defaultenv.Append(CCFLAGS=["$M4RI_CFLAGS"])
     defaultenv.Append(CFLAGS=["-std=c99"])
     defaultenv.Append(CXXFLAGS=["-std=c++98", "-ftemplate-depth-100"])
 
-    for args in [('CCFLAGS', "C/C++ compiler flags", ["-O3"]),
-                 ('CFLAGS', "C compiler flags", []),
-                 ('CXXFLAGS', "C++ compiler flags", [])]:
-        opts.AddWithDefaults(*args, converter=Split)
+    for (var, help, default) in [('CCFLAGS', "C/C++ compiler flags", ["-O3"]),
+                                 ('CFLAGS', "C compiler flags", []),
+                                 ('CXXFLAGS', "C++ compiler flags", [])]:
+        opts.AddWithDefaults(var, help, default, converter=Split)
 
 
 opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
