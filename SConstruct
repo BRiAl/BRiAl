@@ -199,7 +199,7 @@ def _relative_rpath(target, env):
     return [env['RPATHPREFIX'] + relative_path + env['RPATHSUFFIX'],
             '-z', 'origin']
 
-class ExtendedVariables():
+class ExtendedVariables:
     def __init__(self, vars, defaults):
         from weakref import proxy
         vars.AddWithDefaults = self
@@ -247,34 +247,53 @@ def oldstyle_flags():
     return scons_version() < ['0','97','0']
 
 if oldstyle_flags() :
-    defaultenv.Append(CCFLAGS=["-O3", "-std=c99", "$M4RI_CFLAGS"])
-    defaultenv.Append(CXXFLAGS=["-O3", "-std=c++98", "$M4RI_CFLAGS", 
+    defaultenv.Append(CCFLAGS=["-std=c99", "$M4RI_CFLAGS"])
+    defaultenv.Append(CXXFLAGS=["-std=c++98", "$M4RI_CFLAGS", 
                                 "-ftemplate-depth-100"])
-    opts.Add('CCFLAGS', "C compiler flags", defaultenv['CCFLAGS'])
-    opts.Add('CXXFLAGS', "C++ compiler flags", defaultenv['CXXFLAGS'])
+    for args in [('CCFLAGS', "C compiler flags", ["-O3"]),
+                 ('CXXFLAGS', "C++ compiler flags", ["-O3"])]:
+        opts.AddWithDefaults(*args, converter=Split)
 
 else:
-    defaultenv.Append(CCFLAGS=["-O3", "$M4RI_CFLAGS"])
+    defaultenv.Append(CCFLAGS=["$M4RI_CFLAGS"])
     defaultenv.Append(CFLAGS=["-std=c99"])
     defaultenv.Append(CXXFLAGS=["-std=c++98", "-ftemplate-depth-100"])
-    opts.Add('CCFLAGS', "C/C++ compiler flags", defaultenv['CCFLAGS'])
-    opts.Add('CFLAGS', "C compiler flags", defaultenv['CFLAGS'])
-    opts.Add('CXXFLAGS', "C++ compiler flags", defaultenv['CXXFLAGS'])
+
+    for args in [('CCFLAGS', "C/C++ compiler flags", ["-O3"]),
+                 ('CFLAGS', "C compiler flags", []),
+                 ('CXXFLAGS', "C++ compiler flags", [])]:
+        opts.AddWithDefaults(*args, converter=Split)
+
 
 opts.Add('M4RI_CFLAGS', "C compiler flags for M4RI", converter = Split) 
 
-defaultenv.Append(LINKFLAGS=['$CUSTOM_LINKFLAGS'])
 
-opts.AddWithDefaults('LINKFLAGS', "Custom linker flags", converter=Split)
+defaultenv.Append(LINKFLAGS=['${_fix_dynlib_flags(__env__)}', 
+                             '${_relative_rpath(TARGET, __env__)}'])
+defaultenv.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
+defaultenv.Append(LDMODULEFLAGS=['${_moduleflags(__env__)}'])
+defaultenv.Append(LIBS=[])
 
-opts.Add('CUSTOM_LINKFLAGS',
-         """Addtional linker flags (e.g. '-s' for stripping, and
-         '-Wl,-flat_namespace,') for fixing install_name issue on Darwin""",
-         ['${_fix_dynlib_flags(__env__)}', 
-          '${_relative_rpath(TARGET, __env__)}'])
+opts.AddWithDefaults('LINKFLAGS', 
+                     "Custom linker flags (e.g. '-s' for stripping)", [],
+                     converter=Split)
 
-opts.Add('LIBS', 'custom libraries needed for build', 
-         defaultenv.get('LIBS', []), converter = Split)
+opts.AddWithDefaults('SHLINKFLAGS', 'Shared libraries link flags.', [],
+                     converter=Split)
+
+opts.AddWithDefaults('LDMODULEFLAGS',
+                     'Dynamic module compile flags', [], converter=Split)
+
+for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
+    if defaultenv.has_key(flag):
+        opts.AddWithDefaults(flag, "flags inherited from SCons",
+                             [], converter=Split)
+    else:
+        print "Flags", flag, "not in default environment!"
+
+
+opts.AddWithDefaults('LIBS', 'custom libraries needed for build', [],
+                     converter = Split)
 opts.Add('GD_LIBS', 'Library gb and its dependencies (if needed)', 
          ["gd"], converter = Split)
 
@@ -330,6 +349,7 @@ opts.Add(BoolVariable('EXTERNAL_PYTHON_EXTENSION', 'External python interface',
 opts.Add(BoolVariable('USE_TIMESTAMP', 'Use timestamp on distribution', True))
 opts.Add(BoolVariable('SHLIBVERSIONING',
                       'Use libtool-style versionated shared library', True))
+
 opts.Add('SONAMEPREFIX', 'Prefix for compiler soname command.', 
          '${_sonameprefix(__env__)}')
 opts.Add('SONAMESUFFIX','Suffix for compiler soname command.', '')
@@ -338,9 +358,6 @@ opts.Add('SONAMEFLAGS',
          'Shared libraries link flags.',
          ['${_sonamecmd(SONAMEPREFIX, TARGET, SONAMESUFFIX, __env__)}'])
 
-defaultenv.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
-opts.Add('SHLINKFLAGS', 'Shared libraries link flags.',
-         defaultenv['SHLINKFLAGS'])
 
 opts.Add('INSTALL_NAME_DIR',
          'Path to be used for dylib install_name (darwin only)',
@@ -351,13 +368,7 @@ opts.Add('SHLIBVERSIONSUFFIX',
          '-' + pboriversion +'.' + pborirelease +
          defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
 
-opts.Add('PYMODULEFLAGS',
-         'Additional dynamic module compile flags for compiled python module',
-         '${_moduleflags(__env__)}')
 
-defaultenv.Append(LDMODULEFLAGS=['$PYMODULEFLAGS'])
-opts.Add('LDMODULEFLAGS',
-         'Dynamic module compile flags.', defaultenv['LDMODULEFLAGS'])
 
 opts.Add(BoolVariable('FORCE_HASH_MAP', "Force the use of gcc's deprecated " +
 "hash_map extension, even if unordered_map is available (avoiding of buggy " +
@@ -392,14 +403,6 @@ SHLIBPREFIX LIBPREFIX SHLIBSUFFIX LIBSUFFIX"""):
                  "inherited from SCons", defaultenv[var])
 else:
         print "Variable", var, "not in default environment!"
-
-for flag in Split("""SHCCFLAGS SHCFLAGS SHCXXFLAGS FRAMEWORKS"""):
-    if defaultenv.has_key(flag):
-        opts.Add(flag, "flags inherited from SCons",
-                 defaultenv[flag], converter = Split)
-    else:
-        print "Flags", flag, "not in default environment!"
-
 
 opts.Add('CONFFILE', "Dump settings to file, if given", '')
 
@@ -748,16 +751,6 @@ DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
 
 BuildLibPath = PathJoiner(BuildPath(DevelInstLibPath().lstrip(sep)))
 BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep)))
-
-
-
-######################################################################
-# Change some flags globally
-######################################################################
-
-env.Append(SHLINKFLAGS=['$SONAMEFLAGS'])
-env.Append(SHCCFLAGS="$M4RI_CFLAGS")
-env.Append(SHCXXFLAGS="$M4RI_CFLAGS")
 
 
 ######################################################################
