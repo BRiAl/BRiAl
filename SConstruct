@@ -122,9 +122,19 @@ except:
 	pass
 import os
 
-def FinalizePermissions(targets, perm):
+def FinalizePermissions(targets, perm=None):
     for src in targets:
-        env.AddPostAction(src, Chmod(str(src), perm))
+        path = str(src)
+        if not os.path.islink(path):
+            if perm is None:
+                if os.path.isdir(path):
+                    perm = 040755
+                else:
+                    if os.access(path, os.X_OK):
+                        perm = 0755
+                    else:
+                        perm = 0644
+            env.AddPostAction(src, Chmod(path, perm))
     return targets
 
 def FinalizeExecs(targets):
@@ -132,6 +142,7 @@ def FinalizeExecs(targets):
 
 def FinalizeNonExecs(targets):
     return FinalizePermissions(targets, 0644)
+
 
 distribute = 'distribute' in COMMAND_LINE_TARGETS
 
@@ -416,7 +427,24 @@ tools +=  ["disttar", "doxygen"]
 env = Environment(ENV = os.environ, options = opts, tools = tools, 
                   toolpath = '.')
 
-# Ensure that necessary flags are appended 
+# Monkey patching Install/InstallAs to fix permissions on install
+_env_install = env.Install
+_env_installas = env.InstallAs
+
+def _env_install_final(env, *args):
+    return FinalizePermissions(_env_install(env, *args))
+
+def _env_installas_final(env, *args):
+    return FinalizePermissions(_env_installas(env, *args))
+
+_env_install_final.__doc__ = env.Install.__doc__
+_env_installas_final.__doc__ = env.InstallAs.__doc__
+
+env.Install = _env_install_final
+env.InstallAs = _env_installas_final
+
+
+# Another monkey patch: Ensure that necessary flags are appended 
 # (explicitely set DEFAULT_<flags>="" if defaults should be removed)
 for key in env.Dictionary().keys():
     if key.startswith('DEFAULT_'):
@@ -1033,7 +1061,6 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
     to_append_for_profile = [libpb, gb]
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
-            LDMODULESUFFIX=".so",SHLIBPREFIX="", 
             LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
             CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
@@ -1493,8 +1520,8 @@ if 'install' in COMMAND_LINE_TARGETS:
     for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
                       InstManPath()]:
         env.Alias('install', inst_path)
-    FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/ipbori.1')))
-    FinalizeNonExecs(env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1')))
+    env.Install(InstManPath('man1'), DocPath('man/ipbori.1'))
+    env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1'))
     
     # Executables and shared libraries to be installed
     so_pyfiles = []
@@ -1509,32 +1536,30 @@ if 'install' in COMMAND_LINE_TARGETS:
                                   "install_name_tool -id " + name + " $TARGET")
 
         if HAVE_PYTHON_EXTENSION:
-            pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
-                                                  pypb))
+            pypb_inst = env.Install(InstPyPath("polybori/dynamic"), pypb)
             env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
             so_pyfiles += pypb_inst
 
     else:
-        pypb_inst = FinalizeExecs(env.Install(InstPyPath("polybori/dynamic"),
-                                              pypb))
+        pypb_inst = env.Install(InstPyPath("polybori/dynamic"), pypb)
         env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
-        so_pyfiles += FinalizeExecs(pypb_inst)
+        so_pyfiles += pypb_inst
 
     pyfiles = []
     env['GUIPYPREFIX'] = env.relpath(InstPath(GUIPath()),
                                      '$PYINSTALLPREFIX')
     
     for instfile in [ IPBPath('ipbori') ]:
-        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
+        env.SubstInstallAs(InstPath(instfile), instfile)
 
     for instfile in [ GUIPath('PolyGUI') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
         
     for instfile in [GUIPath('cnf2ideal.py')]:
-        pyfiles += FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+        pyfiles += env.InstallAs(InstPath(instfile), instfile)
         
     for instfile in [ GUIPath('polybori.png') ]:
-        FinalizeNonExecs(env.InstallAs(InstPath(instfile), instfile))
+        env.InstallAs(InstPath(instfile), instfile)
     
     # Copy c++ documentation
     if HAVE_DOXYGEN:
@@ -1576,10 +1601,9 @@ if 'install' in COMMAND_LINE_TARGETS:
                        
     for instfile in pyfile_srcs :
         targetfile = InstPyPath(env.relpath(PyRootPath(), instfile))
-        pyfiles += FinalizeNonExecs(env.InstallAs(targetfile, instfile))
+        pyfiles += env.InstallAs(targetfile, instfile)
 
-    pyfiles +=  FinalizeNonExecs(env.Install(InstPyPath("polybori/dynamic"),
-                                             pypb_init_py))
+    pyfiles +=  env.Install(InstPyPath("polybori/dynamic"), pypb_init_py)
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         cmdline = """$PYTHON -c "import compileall; compileall.compile_dir('"""
