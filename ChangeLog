@@ -1,7 +1,13 @@
 Release Name: 0.8.1
 * ipbori is now an all-python script with fallback to plain python if
   IPython is not available
-
+* Python interface utilizes shared libraries
+* PolyBoRi's shared libraries are found via relative rpath 
+  (relative install-name on Darwin)
+* introducing DEFAULT_*FLAGS
+* Install/InstallAs fixes permissions
+	
+	
 Release Name: 0.8.0
 * improved standard-conformity, multiprocessing safety, and usability
 * renamed subdirectory polybori to libpolybori
