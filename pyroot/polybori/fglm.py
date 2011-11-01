@@ -33,9 +33,9 @@ def fglm(I, from_ring, to_ring):
     [y + x, z + x]
     """
     for poly in I:
-        if poly.ring().id() != from_ring:
+        if poly.ring().id() != from_ring.id():
             raise ValueError, "Ideal I must be from the first ring argument"
-    return _fglm(from_ring, to_ring, I)
+    return _fglm(I, from_ring, to_ring)
     
 def vars_real_divisors(monomial, monomial_set):
     """
