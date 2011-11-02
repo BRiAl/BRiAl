@@ -44,32 +44,35 @@ def monomial_new_init(self, arg=None):
             
 Monomial.__init__=monomial_new_init
 
-booleset_old_init=BooleSet.__init__
-def booleset_new_init(self,arg=None, second=None):
-    """
-    Constructor of the class BooleSet (constructs a BooleSet from a CCuddNavigator
-       arg    : of type polybori.dynamic.PyPolyBoRi.CCuddNavigator
-       second : of type polybori.dynamic.PyPolyBoRi.BooleRing 
-    """
-    if second != None:
-        booleset_old_init(self, arg, second)
-    else:
-        try:
-            booleset_old_init(self,arg)
-        except:
-            s=set()
-            v=BoolePolynomialVector()
-            arglist = list(arg)
-            for i in arglist:
-		s.add(Monomial(i))
-            for i in s:
-                v.append(i)
-            p=add_up_polynomials(v, Polynomial(arglist[0].ring().zero()))
-            booleset_old_init(self,p.set())
+def fix_booleset(set_type):
+    booleset_old_init=set_type.__init__
+    def booleset_new_init(self,arg=None, second=None):
+        """
+        Constructor of the class BooleSet (constructs a BooleSet from a CCuddNavigator
+        arg    : of type polybori.dynamic.PyPolyBoRi.CCuddNavigator
+        second : of type polybori.dynamic.PyPolyBoRi.BooleRing 
+        """
+        if second != None:
+            booleset_old_init(self, arg, second)
+        else:
+            try:
+                booleset_old_init(self,arg)
+            except:
+                s=set()
+                v=BoolePolynomialVector()
+                arglist = list(arg)
+                for i in arglist:
+                    s.add(Monomial(i))
+                for i in s:
+                    v.append(i)
+                p=add_up_polynomials(v, Polynomial(arglist[0].ring().zero()))
+                booleset_old_init(self,p.set())
 
-BooleSet.__init__=booleset_new_init
+    set_type.__init__ = booleset_new_init
 
  
+fix_booleset(BooleSet)
+
 for k in OrderCode.values:
     globals()[str(OrderCode.values[k])]=OrderCode.values[k]
 
@@ -148,15 +151,6 @@ def add_up_polynomials(polys, init):
 
     return _add_up_polynomials(polys, init)
 
-old_ring_var=Ring.var
-def ring_var(self, i):
-    """Deprecated; use Ring.variable(...). """ 
-    warnings.warn('Ring.var is deprectated; use Ring.variable instead')
-    return old_ring_var(self, i)
-
-ring_var.__doc__ += old_ring_var.__doc__
-Ring.var=ring_var
-
 def weakringref_call(self):
     if self.is_valid():
         return self.deref()
@@ -164,75 +158,99 @@ def weakringref_call(self):
 
 WeakRingRef.__call__ = weakringref_call
 
-_cpp_ring_init = Ring.__init__
-_cpp_change_ordering = Ring.change_ordering
-_cpp_set_variable_name = Ring.set_variable_name
-_cpp_append_block = Ring.append_block
-_cpp_ring_clone = Ring.clone
 
-def _ring_settings(ring, names, blocks):
-    for (idx, elt) in enumerate(names):
-        _cpp_set_variable_name(ring, idx, elt)
+def fix_ring_init():
+    try:
+        _cpp_ring_init = Ring._libpolybori_init
+        return
+    except:
+        _cpp_ring_init = Ring._libpolybori_init = Ring.__init__
 
-    for elt in blocks:
-        _cpp_append_block(ring, elt)
+    old_ring_var=Ring.var
+    _cpp_set_variable_name = Ring.set_variable_name
+    _cpp_append_block = Ring.append_block
+    _cpp_change_ordering = Ring.change_ordering
+    _cpp_set_variable_name = Ring.set_variable_name
+    _cpp_append_block = Ring.append_block
+    _cpp_ring_clone = Ring.clone
+
+    def ring_var(self, i):
+        """Deprecated; use Ring.variable(...). """ 
+        warnings.warn('Ring.var is deprectated; use Ring.variable instead')
+        return old_ring_var(self, i)
 
 
-def _ring_init(self, first, ordering=None, names=[], blocks=[]):
-    """Ring(n, ordering, names, block) generates a new Boolean 
-    polynomial ring with n variables, given  monomial ordering, variable
-    names and block ordering blocks, if given.
-    Further information/call patterns: """""" """
-    if ordering is None:
-        _cpp_ring_init(self, first)
-    else:
-        _cpp_ring_init(self, first, ordering)
-    _ring_settings(self, names, blocks)
+    def _ring_settings(ring, names, blocks):
+        pass
+        for (idx, elt) in enumerate(names):
+            _cpp_set_variable_name(ring, idx, elt)
+            
+            for elt in blocks:
+                _cpp_append_block(ring, elt)
+                
 
-_ring_init.__doc__ += _cpp_ring_init.__doc__
-Ring.__init__ = _ring_init
+    def _ring_init(self, first, ordering=None, names=[], blocks=[]):
+        """Ring(n, ordering, names, block) generates a new Boolean 
+        polynomial ring with n variables, given  monomial ordering, variable
+        names and block ordering blocks, if given.
+        Further information/call patterns: """""" """
+        if ordering is None:
+            _cpp_ring_init(self, first)
+        else:
+            _cpp_ring_init(self, first, ordering)
+        _ring_settings(self, names, blocks)
 
-def _ring_clone(self, ordering=None, names=[], blocks=[]):
-    """ring.clone(ordering=..., names=..., block=...) generates a shallow copy
-    of ring, but with different ordering, names or blocks if given.
-    Further information/call patterns: """
-    ring = _cpp_ring_clone(self)
-    if ordering is not None:
-        _cpp_change_ordering(ring, ordering)
 
-    _ring_settings(ring, names, blocks)
-
-    return ring
-
-_ring_clone.__doc__ += _cpp_ring_clone.__doc__
-Ring.clone = _ring_clone
-
-def _change_ordering(self, ordercode):
-    """ Deprecated; use Ring.clone(ordering=...). """
-    warnings.warn('Ring.change_ordering is deprectated:\
-    use Ring.clone(ordering=...) instead')
-    return _cpp_change_ordering(self, ordercode)
-
-_change_ordering.__doc__ += _cpp_change_ordering.__doc__
-Ring.change_ordering = _change_ordering
-
-def _set_variable_name(self, idx, name):
-    """ Deprecated; use Ring.clone(names=...). """
-    warnings.warn('Ring.set_variable_name is deprectated:\
+    def _set_variable_name(self, idx, name):
+        """ Deprecated; use Ring.clone(names=...). """
+        warnings.warn('Ring.set_variable_name is deprectated:\
     use Ring.clone(names=...) instead')
-    return _cpp_set_variable_name(self, idx, name)    
-
-_set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
-Ring.set_variable_name = _set_variable_name
-
-def _append_block(self, next_block_start):
-    """Deprectated; use Ring.clone(blocks=...). """
-    warnings.warn('Ring.append_block is deprectated:\
-    use Ring.clone(blocks=...) instead')
-    return _cpp_append_block(self, next_block_start)    
-
-_append_block.__doc__ += _cpp_append_block.__doc__
-Ring.append_block = _append_block
+        return _cpp_set_variable_name(self, idx, name)    
 
 
 
+    def ring_var(self, i):
+        """Deprecated; use Ring.variable(...). """ 
+        warnings.warn('Ring.var is deprectated; use Ring.variable instead')
+        return old_ring_var(self, i)
+
+    def _ring_clone(self, ordering=None, names=[], blocks=[]):
+        """ring.clone(ordering=..., names=..., block=...) generates a shallow copy
+        of ring, but with different ordering, names or blocks if given.
+        Further information/call patterns: """
+        ring = _cpp_ring_clone(self)
+        if ordering is not None:
+            _cpp_change_ordering(ring, ordering)
+
+        _ring_settings(ring, names, blocks)
+
+        return ring
+
+    def _change_ordering(self, ordercode):
+        """ Deprecated; use Ring.clone(ordering=...). """
+        warnings.warn('Ring.change_ordering is deprectated:\
+        use Ring.clone(ordering=...) instead')
+        return _cpp_change_ordering(self, ordercode)
+
+    def _append_block(self, next_block_start):
+        """Deprectated; use Ring.clone(blocks=...). """
+        warnings.warn('Ring.append_block is deprecated:\
+        use Ring.clone(blocks=...) instead')
+        return _cpp_append_block(self, next_block_start)    
+
+    _append_block.__doc__ += _cpp_append_block.__doc__
+    _change_ordering.__doc__ += _cpp_change_ordering.__doc__
+    _ring_clone.__doc__ += _cpp_ring_clone.__doc__
+    ring_var.__doc__ += old_ring_var.__doc__
+    _set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
+
+    Ring.__init__ = _ring_init
+    Ring.var=ring_var
+    Ring.set_variable_name = _set_variable_name
+    Ring.clone = _ring_clone
+    Ring.change_ordering = _change_ordering
+    Ring.append_block = _append_block
+
+
+fix_ring_init()
+del fix_ring_init

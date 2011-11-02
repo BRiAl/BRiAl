@@ -13,17 +13,68 @@ which imports the PolyBoRi framework.
 from optparse import OptionParser
 parser = OptionParser()
 
+parser.add_option("-t", "--test", 
+                  action="store_true", dest="test", default=False,
+                  help="Run doctests")
+
+parser.add_option("-v", "--verbose", 
+                  action="store_true", dest="verbose", default=False,
+                  help="Be eloquent")
+
 (opts, args) = parser.parse_args()
+
+import os, sys
+
 polybori_site = "$RELATIVEPYPREFIX"
 
 # Note: $PBORI_SITE is replaced on installation with relative path 
 # to the PolyBoRi python site
 if polybori_site.startswith('$'):
-  polybori_site = "../pyroot"
+  polybori_site = os.path.join(os.pardir, "pyroot")
 
+polybori_dir = \
+    os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                  polybori_site))
+
+
+def _test():
+
+  from glob import glob
+  from imp import new_module
+  import doctest
+
+  import_header="""
 import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                polybori_site))
+sys.path.insert(0, "%s")
+""" % polybori_dir
+  sys.path.insert(0, polybori_dir)
+  #import polybori
+  #import polybori.PyPolyBoRi
+  
+  for file in glob(os.path.join(polybori_dir, 'polybori/*.py')):
+
+    modname = os.path.splitext(os.path.basename(file))[0]
+    
+    def func(modname, file, import_header):
+      module = new_module(modname)
+      content = open(file).read()
+      exec import_header + """
+from polybori.%s import *
+
+""" % modname + content in module.__dict__
+      doctest.testmod(module, verbose=opts.verbose)
+    try:
+      func(modname, file, import_header)
+    except:
+      print "Exception while doctesting"
+
+
+
+if opts.test:
+  _test()
+  exit(0)
+
+sys.path.insert(0, polybori_dir)
 
 from polybori.frontend import *
 polybori_start(globals())
