@@ -9,7 +9,7 @@ Copyright 2011 The PolyBoRi Team. See LICENSE file.
 
 import sys
 import os
-from statistics import used_vars, used_vars_set
+from polybori.statistics import used_vars, used_vars_set
 from polybori.PyPolyBoRi import Variable 
 
 def main():

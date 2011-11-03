@@ -103,7 +103,7 @@ def plot(p, filename, colored=True,format="png",
     EXAMPLES:
 
     >>> r=Ring(1000)
-    >>> x = Variable = VariableFactory(r)
+    >>> x = r.variable
     >>> plot(x(1)+x(0),"/dev/null", colored=True)
     >>> plot(x(1)+x(0),"/dev/null", colored=False)
     """

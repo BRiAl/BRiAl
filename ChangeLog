@@ -6,7 +6,7 @@ Release Name: 0.8.1
   (relative install-name on Darwin)
 * introducing DEFAULT_*FLAGS
 * Install/InstallAs fixes permissions
-	
+* ipbori -t runs PolyBoRi's doctests	
 	
 Release Name: 0.8.0
 * improved standard-conformity, multiprocessing safety, and usability

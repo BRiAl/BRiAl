@@ -18,6 +18,7 @@ def intersect(i,j,**gb_opts):
     >>> from polybori.frontend import declare_ring
     >>> from polybori import Block
     >>> r=declare_ring(Block("x", 1000), globals())
+    >>> x = r.variable
     >>> intersect([x(1),x(2)+1],[x(1),x(2)])
     [x(1)]
     """
@@ -25,7 +26,7 @@ def intersect(i,j,**gb_opts):
         return []
     
     uv=used_vars_set(i)*used_vars_set(j)
-    t = i.ring().variable(0)
+    t = iter(i).next().ring().variable(0)
     if uv.reducible_by(t):
         raise ValueError, "First ring variable has to be reserved as helper variable t"
     if not t>uv:

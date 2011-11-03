@@ -36,45 +36,35 @@ polybori_dir = \
     os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   polybori_site))
 
+sys.path.insert(0, polybori_dir)
 
-def _test():
-
+def _test(args):
   from glob import glob
-  from imp import new_module
   import doctest
 
-  import_header="""
-import os, sys
-sys.path.insert(0, "%s")
-""" % polybori_dir
-  sys.path.insert(0, polybori_dir)
-  #import polybori
-  #import polybori.PyPolyBoRi
-  
-  for file in glob(os.path.join(polybori_dir, 'polybori/*.py')):
+  if args:
+    files = args
+  else:
+    files = glob(os.path.join(polybori_dir, 'polybori/*.py'))
 
-    modname = os.path.splitext(os.path.basename(file))[0]
-    
-    def func(modname, file, import_header):
-      module = new_module(modname)
-      content = open(file).read()
-      exec import_header + """
-from polybori.%s import *
+  for file in files:
+    modname = 'polybori.' + os.path.splitext(os.path.basename(file))[0]
 
-""" % modname + content in module.__dict__
-      doctest.testmod(module, verbose=opts.verbose)
-    try:
-      func(modname, file, import_header)
-    except:
-      print "Exception while doctesting"
+    if modname == 'polybori.parsegat':
+      try:
+        import pyparsing
+      except:
+        if opts.verbose: print "Skipping", modname, '...'
+        continue
 
+    __import__(modname)
+    module = sys.modules[modname]
+    doctest.testmod(module, verbose=opts.verbose)
 
 
 if opts.test:
-  _test()
+  _test(args)
   exit(0)
-
-sys.path.insert(0, polybori_dir)
 
 from polybori.frontend import *
 polybori_start(globals())

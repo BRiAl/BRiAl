@@ -6,9 +6,9 @@ def add_bits_old(bits):
     """Adds n bits
     >>> from polybori import *
     >>> r=Ring(10)
-    >>> add_bits_old([Variable(i) for i in xrange(3)])
+    >>> add_bits_old([r.variable(i) for i in xrange(3)])
     [x(0) + x(1) + x(2), x(0)*x(1) + x(0)*x(2) + x(1)*x(2)]
-    >>> add_bits_old([Variable(i) for i in xrange(4)])
+    >>> add_bits_old([r.variable(i) for i in xrange(4)])
     [x(0) + x(1) + x(2) + x(3), x(0)*x(1) + x(0)*x(2) + x(0)*x(3) + x(1)*x(2) + x(1)*x(3) + x(2)*x(3)]
     """
     bits=list(bits)
@@ -30,11 +30,11 @@ def add_bits(bits):
     """Adds n bit variables, by Lucas theorem
     >>> from polybori import *
     >>> r=Ring(10)
-    >>> add_bits([Variable(i) for i in xrange(3)])
+    >>> add_bits([r.variable(i) for i in xrange(3)])
     [x(0) + x(1) + x(2), x(0)*x(1) + x(0)*x(2) + x(1)*x(2)]
-    >>> add_bits([Variable(i) for i in xrange(4)])
+    >>> add_bits([r.variable(i) for i in xrange(4)])
     [x(0) + x(1) + x(2) + x(3), x(0)*x(1) + x(0)*x(2) + x(0)*x(3) + x(1)*x(2) + x(1)*x(3) + x(2)*x(3), x(0)*x(1)*x(2)*x(3)]
-    >>> add_bits([Variable(0)])
+    >>> add_bits([r.variable(0)])
     [x(0)]
     """
     bits=list(bits)
@@ -50,21 +50,24 @@ def add_bits(bits):
     return bits_expr
 
 def add_bit_expressions(bit_expressions):
-    """Adds n bits, which can be arbitrary expressions, the first n variables of the ring
-    are reversed for usage in this function.
+    """Adds n bits, which can be arbitrary expressions, the first n variables of the ring    are reversed for usage in this function.
+
     >>> from polybori import *
     >>> r=Ring(20)
-    >>> add_bit_expressions([Variable(i) for i in xrange(10,13)])
+    >>> add_bit_expressions([r.variable(i) for i in xrange(10,13)])
     [x(10) + x(11) + x(12), x(10)*x(11) + x(10)*x(12) + x(11)*x(12)]
-    >>> add_bit_expressions([Variable(i) for i in xrange(10,13)])
+    >>> add_bit_expressions([r.variable(i) for i in xrange(10,13)])
     [x(10) + x(11) + x(12), x(10)*x(11) + x(10)*x(12) + x(11)*x(12)]
-    >>> add_bit_expressions([Variable(11), Variable(11)])
+    >>> add_bit_expressions([r.variable(11), r.variable(11)])
     [0, x(11)]
-    >>> add_bit_expressions([Variable(11),Variable(12),Variable(13)])
+    >>> add_bit_expressions([r.variable(11),r.variable(12),r.variable(13)])
     [x(11) + x(12) + x(13), x(11)*x(12) + x(11)*x(13) + x(12)*x(13)]
     """
-    
-    bit_variables=[Variable(i) for i in xrange(len(bit_expressions))]
+
+    bit_variables = []
+    if bit_expressions:
+        ring = bit_expressions[0].ring()
+        bit_variables=[ring.variable(i) for i in xrange(len(bit_expressions))]
     for expr in bit_expressions:
         assert BooleSet(expr).navigation().value()>=len(bit_variables)
     mapping=ll_encode([b+expr for (b, expr) in zip(bit_variables, bit_expressions)])
@@ -74,9 +77,9 @@ def add_words(words):
     """def adds n words, this words are supposed to consists of list of their bits.
     >>> from polybori import *
     >>> r=Ring(1000)
-    >>> add_words([[Variable(100+i*3+j) for i in xrange(2)] for j in xrange(3)])
+    >>> add_words([[r.variable(100+i*3+j) for i in xrange(2)] for j in xrange(3)])
     [x(100) + x(101) + x(102), x(100)*x(101) + x(100)*x(102) + x(101)*x(102) + x(103) + x(104) + x(105), x(100)*x(101)*x(103) + x(100)*x(101)*x(104) + x(100)*x(101)*x(105) + x(100)*x(102)*x(103) + x(100)*x(102)*x(104) + x(100)*x(102)*x(105) + x(101)*x(102)*x(103) + x(101)*x(102)*x(104) + x(101)*x(102)*x(105) + x(103)*x(104) + x(103)*x(105) + x(104)*x(105), x(100)*x(101)*x(103)*x(104)*x(105) + x(100)*x(102)*x(103)*x(104)*x(105) + x(101)*x(102)*x(103)*x(104)*x(105)]
-    >>> res=add_words([[Variable(100+i*9+j) for i in xrange(4)] for j in xrange(9)])
+    >>> res=add_words([[r.variable(100+i*9+j) for i in xrange(4)] for j in xrange(9)])
     >>> [len(p) for p in res]
     [9, 45, 495, 12870, 735462, 70285482, 1891358892, 6435]
     >>> [p.deg() for p in res]
@@ -100,17 +103,25 @@ def multiply_by_addition(word_a, word_b):
     """Multiply two words
     >>> from polybori import Ring
     >>> r=Ring(1000)
-    >>> x = Variable = VariableFactory(r)
-    >>> n=9
+    >>> x = r.variable
+    >>> n=7
     >>> res=multiply_by_addition([x(200+2*i)  for i in xrange(n)], [x(200+2*i+1)  for i in xrange(n)])
     >>> [p.n_nodes() for p in res]
-    [2, 4, 7, 17, 38, 85, 222, 632, 1952, 6367, 15764, 21610, 23017, 22080, 19317, 14564, 7746, 1577, 0]
+    [2, 4, 7, 17, 38, 85, 222, 630, 1358, 1702, 1713, 1430, 875, 214, 0]
     """
     word_a=list(word_a)
     word_b=list(word_b)
     summands=[]
+    if word_a:
+        zero = word_a[0] * 0
+    elif word_b:
+        zero = word_b[0] * 0
+    else:
+        zero = BooleConstant(0)
+
     for (i, a) in enumerate(word_a):
-        summands.append(i*[BooleConstant(0)]+[a*b for b in word_b])
+        summands.append(i*[zero]+[a*b for b in word_b])
+
     return add_words(summands)
 
 def _test():

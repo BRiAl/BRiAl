@@ -1,7 +1,8 @@
 #import pathadjuster
-from sys import path as search_path
-from os import path as file_path
-search_path.append(file_path.join(file_path.dirname(__file__), '..'))
+if __name__=='__main__':
+    from sys import path as search_path
+    from os import path as file_path
+    search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
 from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
     ZeroOrMore,Forward,nums,alphas, Or, restOfLine,OneOrMore,restOfLine,alphanums

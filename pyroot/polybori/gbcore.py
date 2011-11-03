@@ -6,9 +6,9 @@ from time import time
 from copy import copy
 from itertools import chain
 from inspect import getargspec
-from statistics import used_vars, used_vars_set
-from heuristics import dense_system,gauss_on_linear
-from easy_polynomials import easy_linear_polynomials
+from polybori.statistics import used_vars, used_vars_set
+from polybori.heuristics import dense_system,gauss_on_linear
+from polybori.easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
@@ -275,12 +275,12 @@ def ll_constants_pre(I):
 def variety_size_from_gb(I):
     """
     >>> r=Ring(100)
-    >>> x = Variable = VariableFactory(r)
+    >>> x = r.variable
     >>> variety_size_from_gb([])
     1
-    >>> variety_size_from_gb([0])
+    >>> variety_size_from_gb([Polynomial(0, r)])
     1
-    >>> variety_size_from_gb([1])
+    >>> variety_size_from_gb([Polynomial(1, r)])
     0.0
     >>> variety_size_from_gb([x(1)])
     1.0
@@ -292,7 +292,7 @@ def variety_size_from_gb(I):
     6.0
     >>> variety_size_from_gb([x(1)*x(2), x(2)*x(3)])
     5.0
-    >>> mons = [Monomial([Variable(i) for i in xrange(100) if i!=j])\
+    >>> mons = [Monomial([r.variable(i) for i in xrange(100) if i!=j])\
         for j in xrange(100)]
     >>> variety_size_from_gb(mons)
     1.2676506002282294e+30

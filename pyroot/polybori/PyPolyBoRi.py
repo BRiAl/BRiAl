@@ -24,25 +24,33 @@ replace_init_proc(IntVector)
 
 monomial_old_init=Monomial.__init__
 
-def monomial_new_init(self, arg=None):
-    """
-    Constructor of the class Monomial
-    Constructs a Monomial from
-      - Monomial
-      - Variable
-      - sequence of variables
-    """
+def fix_monomials():
     try:
-        monomial_old_init(self,arg)
+        monomial_old_init = Monomial._libpolybori_init
+        return
     except:
-        items=sorted((x for x in arg),reverse=True, key=top_index)
-        prototype=Monomial(items[0])
-        for x in items[1:]:
-            prototype*=x
+        monomial_old_init = Monomial._libpolybori_init = Monomial.__init__
 
-        monomial_old_init(self,prototype)
-            
-Monomial.__init__=monomial_new_init
+    def monomial_new_init(self, arg=None):
+        """
+        Constructor of the class Monomial
+        Constructs a Monomial from
+          - Monomial
+          - Variable
+          - sequence of variables
+        """
+        try:
+            monomial_old_init(self,arg)
+        except:
+            items=sorted((x for x in arg),reverse=True, key=top_index)
+            prototype=Monomial(items[0])
+            for x in items[1:]:
+                prototype*=x
+
+            monomial_old_init(self,prototype)
+
+    Monomial.__init__=monomial_new_init
+
 
 def fix_booleset(set_type):
     booleset_old_init=set_type.__init__
@@ -159,7 +167,7 @@ def weakringref_call(self):
 WeakRingRef.__call__ = weakringref_call
 
 
-def fix_ring_init():
+def fix_ring():
     try:
         _cpp_ring_init = Ring._libpolybori_init
         return
@@ -251,6 +259,6 @@ def fix_ring_init():
     Ring.change_ordering = _change_ordering
     Ring.append_block = _append_block
 
-
-fix_ring_init()
-del fix_ring_init
+fix_monomials()
+fix_ring()
+del fix_monomials, fix_ring

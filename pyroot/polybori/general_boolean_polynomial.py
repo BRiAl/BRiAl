@@ -1,5 +1,4 @@
 # -*- python -*-
-import pathadjuster
 import sys
 import resource
 from polybori.gbcore import *

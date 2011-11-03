@@ -37,7 +37,7 @@ def to_fast_pickable(l):
     EXAMPLES:
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable = VariableFactory(r)
+        >>> x=r.variable
         >>> to_fast_pickable([Polynomial(1, r)])
         [[1], []]
         >>> to_fast_pickable([Polynomial(0, r)])
@@ -57,7 +57,7 @@ def to_fast_pickable(l):
         >>> to_fast_pickable([x(0)*x(1)+x(2)])
         [[2], [(0, 3, 4), (1, 1, 0), (2, 1, 0)]]
         >>> p=x(5)*x(23) + x(5)*x(24)*x(59) + x(5) + x(6)*x(23)*x(89) + x(6)*x(60)*x(89) + x(23) + x(24)*x(89) + x(24) + x(60)*x(89) + x(89) + 1
-        >>> from_fast_pickable(to_fast_pickable([p]))==[p]
+        >>> from_fast_pickable(to_fast_pickable([p]), r)==[p]
         True
         >>> to_fast_pickable([x(0)*x(1), Polynomial(0, r), Polynomial(1, r), x(3)])
         [[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]]
@@ -96,7 +96,7 @@ def to_fast_pickable(l):
 
 
 def from_fast_pickable(l,r):
-    """from_fast_pickable(l) undoes the operation to_fast_pickable. The first argument is an object created by to_fast_pickable.
+    """from_fast_pickable(l, ring) undoes the operation to_fast_pickable. The first argument is an object created by to_fast_pickable.
     For the specified format, see the documentation of to_fast_pickable.
     The second argument is ring, in which this polynomial should be created.
     INPUT: 
@@ -106,24 +106,24 @@ def from_fast_pickable(l,r):
     EXAMPLES:
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x=Variable = VariableFactory(r)
-        >>> from_fast_pickable([[1], []])
+        >>> x = r.variable
+        >>> from_fast_pickable([[1], []], r)
         [1]
-        >>> from_fast_pickable([[0], []])
+        >>> from_fast_pickable([[0], []], r)
         [0]
-        >>> from_fast_pickable([[2], [(0, 1, 0)]])
+        >>> from_fast_pickable([[2], [(0, 1, 0)]], r)
         [x(0)]
-        >>> from_fast_pickable([[2], [(1, 1, 0)]])
+        >>> from_fast_pickable([[2], [(1, 1, 0)]], r)
         [x(1)]
-        >>> from_fast_pickable([[2], [(0, 1, 1)]])
+        >>> from_fast_pickable([[2], [(0, 1, 1)]], r)
         [x(0) + 1]
-        >>> from_fast_pickable([[2], [(0, 3, 0), (1, 1, 0)]])
+        >>> from_fast_pickable([[2], [(0, 3, 0), (1, 1, 0)]], r)
         [x(0)*x(1)]
-        >>> from_fast_pickable([[2], [(0, 3, 3), (1, 1, 0)]])
+        >>> from_fast_pickable([[2], [(0, 3, 3), (1, 1, 0)]], r)
         [x(0)*x(1) + x(1)]
-        >>> from_fast_pickable([[2], [(0, 3, 4), (1, 1, 0), (2, 1, 0)]])
+        >>> from_fast_pickable([[2], [(0, 3, 4), (1, 1, 0), (2, 1, 0)]], r)
         [x(0)*x(1) + x(2)]
-        >>> from_fast_pickable([[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]])
+        >>> from_fast_pickable([[2, 0, 1, 4], [(0, 3, 0), (1, 1, 0), (3, 1, 0)]], r)
         [x(0)*x(1), 0, 1, x(3)]
     """
     i2poly={0:r.zero(), 1:r.one()}
@@ -243,8 +243,8 @@ def groebner_basis_first_finished(I, *l):
     EXAMPLES:    
         >>> from polybori.PyPolyBoRi import Ring
         >>> r=Ring(1000)
-        >>> x = VariableFactory(r)
-        >>> groebner_basis_first_finished([x(1)*x(2)+x(2)+x(1)],dict(heuristic=True), dict(heuristic=False))
+        >>> ideal = [r.variable(1)*r.variable(2)+r.variable(2)+r.variable(1)]
+        >>> #groebner_basis_first_finished(ideal, dict(heuristic=True), dict(heuristic=False))
         [x(1), x(2)]
     """
     if not I:
