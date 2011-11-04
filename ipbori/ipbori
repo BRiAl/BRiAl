@@ -3,7 +3,7 @@
 # @author Alexander Dreyer
 # @date 2007-10-19
 # Copyright: (c) 2007-2011 by The PolyBoRi Team
-"""ipbori -- An interactive shell for the PolyBoRi framework
+"""ipbori -- An interactive shell for PolyBoRi $PBVERSION.$PBRELEASE
 
 This starts an interactive python-based shell -- IPython where available --
 which imports the PolyBoRi framework.
@@ -26,11 +26,15 @@ parser.add_option("-v", "--verbose",
 import os, sys
 
 polybori_site = "$RELATIVEPYPREFIX"
+polybori_version = "$PBVERSION.$PBRELEASE"
 
 # Note: $PBORI_SITE is replaced on installation with relative path 
 # to the PolyBoRi python site
 if polybori_site.startswith('$'):
   polybori_site = os.path.join(os.pardir, "pyroot")
+
+if polybori_version.startswith('$'):
+  polybori_version = ''
 
 polybori_dir = \
     os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),

@@ -1550,7 +1550,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                                      '$PYINSTALLPREFIX')
     
     for instfile in [ IPBPath('ipbori') ]:
-        env.SubstInstallAs(InstPath(instfile), instfile)
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
     for instfile in [ GUIPath('PolyGUI') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
