@@ -34,7 +34,10 @@ if polybori_site.startswith('$'):
   polybori_site = os.path.join(os.pardir, "pyroot")
 
 if polybori_version.startswith('$'):
-  polybori_version = ''
+  polybori_version = \
+      open(os.path.realpath(os.path.join(os.path.dirname(__file__),
+                                         os.pardir,'versionnumber')), 
+           'r').read().replace('-','.')
 
 polybori_dir = \
     os.path.normpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),
