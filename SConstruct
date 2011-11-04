@@ -975,7 +975,6 @@ installable_python_modules = []
 
 pydocu = []
 dynamic_modules = []
-libpypb = []
 pypb_symlinks = []
 
 
@@ -987,23 +986,15 @@ if HAVE_PYTHON_EXTENSION:
     slimgb_wrapper.cc""") ] 
     
 
-    libpypb_name = libpb_name + "_python"
-    libpypb = slib(BuildLibPath(libpypb_name),
-                   wrapper_files[1:],
-                   LIBS = pyconf.libs + LIBS + GD_LIBS + libpbShared + libgbShared)
-    pypb_symlinks = SymlinkReadableLibname(libpypb)
-
-    dylibs += libpypb
-
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
-                            wrapper_files[0],
+                            wrapper_files,
                             LIBS = pyconf.libs + LIBS + \
-                                GD_LIBS + libpbShared + libgbShared + libpypb, 
+                                GD_LIBS + libpbShared + libgbShared,
                             LDMODULESUFFIX = pyconf.module_suffix,
                             LDMODULEPREFIX = "",
                             )
 
-    env.Depends(pypb, pb_symlinks + gb_symlinks + pypb_symlinks)
+    env.Depends(pypb, pb_symlinks + gb_symlinks)
     
     if env['PLATFORM']=="darwin":
             def fix_install_name(target, source, env):
@@ -1044,8 +1035,6 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
 
     pypb_init_py = env.Command(BuildPyPBPath('__init__.py'), pypb, 
                                [Touch("$TARGET")])
-
-    env.Depends(pypb, libpypb + pypb_symlinks)
 
 
     # Define the dynamic python modules in pyroot
@@ -1158,7 +1147,7 @@ if distribute:
     env.AlwaysBuild(srcdistri)
     env.Alias('distribute', srcdistri)
     
-dylibs += libpbShared + libgbShared + libpypb
+dylibs += libpbShared + libgbShared 
 stlibs += [libpb, gb]
 
 readabledevellibs = pb_symlinks + gb_symlinks + pypb_symlinks
