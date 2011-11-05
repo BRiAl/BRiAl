@@ -1,4 +1,33 @@
 # Import basic functionality
+r"""
+This module defines an initial ring, and patches the declare_ring to use 
+a given context. 
+
+
+>>> x(0)
+x(0)
+>>> x(0)*x(0)
+x(0)
+>>> x(0) + x(0)
+0
+>>> x(9999)
+x(9999)
+>>> x(9999)*x(9999)
+x(9999)
+>>> x(9999) + x(9999)
+0
+
+>>> from polybori.frontend import *
+>>> context = dict(globals())
+>>> polybori_start(context) # doctest: +ELLIPSIS 
+ipbori...
+>>> r = context['declare_ring']('abc')
+>>> context['a']
+a
+>>> r.variable(0)
+a
+"""
+
 from polybori import *
 from polybori.blocks import declare_ring as orig_declare_ring
 from os import environ as env, path as os_path
@@ -46,7 +75,7 @@ def polybori_start(global_context):
 
     print ipbname + """ -- The interactive command line tool of PolyBoRi %s
 Type "polybori_copyright()" or "polybori_license()" for more information.
-""" % global_context["polybori_version"]
+""" % global_context.get("polybori_version", '')
 
 # Here come the defaults
 r = Ring(10000)
