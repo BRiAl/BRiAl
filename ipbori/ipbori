@@ -46,7 +46,7 @@ polybori_dir = \
 sys.path.insert(0, polybori_dir)
 
 def _test(args):
-  print "Testing...", 
+  print "Testing..."
   from glob import glob
   from imp import new_module
   from os.path import basename, dirname, splitext
@@ -65,17 +65,17 @@ def _test(args):
       try:
         import pyparsing
       except:
-        if opts.verbose: print "Skipping", modname, '...'
+        if opts.verbose: print "Skipping", file, '...'
         continue
-    print modname,
+    print sys.argv[0], '-t', file
 
-    module = new_module('testing_' + modname)
+    module = new_module(file.replace('.','_'))
     content = open(file).read()
     exec content in module.__dict__ 
       
     failed += doctest.testmod(module, verbose=opts.verbose).failed
 
-  print '.'
+  if not failed: print 'OK'
   return failed
 
 
