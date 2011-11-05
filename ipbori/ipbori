@@ -59,14 +59,24 @@ def _test(args):
 
   failed = 0
   for file in files:
+    # Some PolyBoRi modules do have optional dependencies
     modname = splitext(basename(file))[0]
-
     if modname == 'parsegat':
       try:
         import pyparsing
       except:
         if opts.verbose: print "Skipping", file, '...'
         continue
+    if modname == 'plot':
+      try:
+        import jinja2
+      except:
+        try:
+          import jinja
+        except:
+          if opts.verbose: print "Skipping", file, '...'
+          continue
+
     print sys.argv[0], '-t', file
 
     module = new_module(file.replace('.','_'))
