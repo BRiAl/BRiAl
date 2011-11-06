@@ -59,30 +59,20 @@ def _test(args):
 
   failed = 0
   for file in files:
-    # Some PolyBoRi modules do have optional dependencies
-    modname = splitext(basename(file))[0]
-    if modname == 'parsegat':
-      try:
-        import pyparsing
-      except:
-        if opts.verbose: print "Skipping", file, '...'
-        continue
-    if modname == 'plot':
-      try:
-        import jinja2
-      except:
-        try:
-          import jinja
-        except:
-          if opts.verbose: print "Skipping", file, '...'
-          continue
+    try:
+      module = new_module(file.replace('.','_'))
+      content = open(file).read()
+      exec content in module.__dict__ 
+
+    except ImportError:
+      # Some PolyBoRi modules do have optional dependencies
+      print "# Could not import", file, "Skipping."
+      if opts.verbose:
+        import traceback
+        traceback.print_exc(file=sys.stdout)
+      continue
 
     print sys.argv[0], '-t', file
-
-    module = new_module(file.replace('.','_'))
-    content = open(file).read()
-    exec content in module.__dict__ 
-      
     failed += doctest.testmod(module, verbose=opts.verbose).failed
 
   if not failed: print 'OK'
