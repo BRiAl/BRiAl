@@ -73,14 +73,15 @@ def _test(args):
       continue
 
     print sys.argv[0], '-t', file
-    failed += doctest.testmod(module, verbose=opts.verbose).failed
-
+    (failure_count, test_count) = doctest.testmod(module, verbose=opts.verbose)
+    failed += failure_count
+  
   if not failed: print 'OK'
   return failed
 
 
 if opts.test:
-  exit(_test(args))
+  sys.exit(_test(args))
 
 
 from polybori.frontend import *
