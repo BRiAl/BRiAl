@@ -58,14 +58,20 @@ def _test(args):
     files = glob(os.path.join(polybori_dir, 'polybori/*.py'))
 
   failed = 0
+  prereqs = { 'plot': """try: import jinja2
+except: import jinja """ }
+
   for file in files:
     try:
+      # Some PolyBoRi modules do have optional (possibly hidden) dependencies, 
+      # call them explicitely to trigger ImportError now
+      exec prereqs.get(splitext(basename(file))[0],'')
+
       module = new_module(file.replace('.','_'))
       content = open(file).read()
       exec content in module.__dict__ 
 
     except ImportError:
-      # Some PolyBoRi modules do have optional dependencies
       print "# Could not import", file, "Skipping."
       if opts.verbose:
         import traceback
