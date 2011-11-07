@@ -61,7 +61,8 @@ def _test(args):
   prereqs = { 'plot': """try: import jinja2
 except: import jinja """,
               'context': """from distutils.sysconfig import get_python_version
-if get_python_version() < 2.6: raise ImportError, "Python < 2.5" """ }
+if float(get_python_version()) < 2.5: raise ImportError, "Python < 2.5" """ }
+
 
   for file in files:
     try:
