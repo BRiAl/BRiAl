@@ -9,16 +9,6 @@ Copyright (c) 2008 The PolyBoRi Team.
 
 """
 
-def _prereq():
-    """
-    >>> try:
-        import jinja2
-    except:
-        import jinja 
-    """
-    pass
-
-
 import sys
 import os
 from polybori.PyPolyBoRi import Ring, Polynomial, BooleSet
