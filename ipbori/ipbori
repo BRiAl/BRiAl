@@ -35,7 +35,7 @@ if polybori_site.startswith('$'):
 
 if polybori_version.startswith('$'):
   polybori_version = \
-      open(os.path.realpath(os.path.join(os.path.dirname(__file__),
+      open(os.path.realpath(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                          os.pardir,'versionnumber')), 
            'r').read().replace('-','.')
 

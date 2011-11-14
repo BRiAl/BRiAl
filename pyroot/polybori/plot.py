@@ -5,7 +5,19 @@ plot.py
 
 Created by Michael Brickenstein on 2008-10-17.
 Copyright (c) 2008 The PolyBoRi Team. 
+
+
 """
+
+def _prereq():
+    """
+    >>> try:
+        import jinja2
+    except:
+        import jinja 
+    """
+    pass
+
 
 import sys
 import os
