@@ -130,6 +130,7 @@ Static libraries for %{name}.
 %check
 %{pbori_scons} testsuite && testsuite/unittests
 ipbori/ipbori -t
+%endif
 
 %install
 %{pbori_scons} install devel-install \
