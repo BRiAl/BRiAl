@@ -4,10 +4,10 @@ if __name__=='__main__':
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
 
-def _prereq():
+def _exists():
     """PolyBoRi convention: checking optional components for prerequisites here
 
-    >>> _prereq()
+    >>> _exists()
     True
     """
     from distutils.sysconfig import get_python_version

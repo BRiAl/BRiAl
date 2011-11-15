@@ -4,10 +4,10 @@ if __name__=='__main__':
     from os import path as file_path
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
-def _prereq():
+def _exists():
     """PolyBoRi convention: checking optional components for prerequisites here
 
-    >>> _prereq()
+    >>> _exists()
     True
     """
     try:

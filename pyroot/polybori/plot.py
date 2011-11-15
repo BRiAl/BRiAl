@@ -9,10 +9,10 @@ Copyright (c) 2008 The PolyBoRi Team.
 
 """
 
-def _prereq():
+def _exists():
     """PolyBoRi convention: checking optional components for prerequisites here
 
-    >>> _prereq()
+    >>> _exists()
     True
     """
     try:

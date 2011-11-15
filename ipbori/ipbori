@@ -66,8 +66,8 @@ def _test(args):
       exec content in module.__dict__ 
 
       # Some PolyBoRi modules do have optional (possibly hidden) dependencies
-      if '_prereq' in dir(module):
-        if not module._prereq():
+      if '_exists' in dir(module):
+        if not module._exists():
           print "# Prerequisites for optional file", file, "missing. Skipping."
           continue
 
