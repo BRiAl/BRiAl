@@ -4,6 +4,15 @@ if __name__=='__main__':
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
 
+def _prereq():
+    """PolyBoRi convention: checking optional components for prerequisites here
+
+    >>> _prereq()
+    True
+    """
+    from distutils.sysconfig import get_python_version
+    return float(get_python_version()) > 2.4
+
 from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
 from polybori.PyPolyBoRi import PolynomialFactory, SetFactory
 from polybori.PyPolyBoRi import Variable, Monomial, Polynomial, BooleSet

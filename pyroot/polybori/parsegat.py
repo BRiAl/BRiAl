@@ -4,8 +4,20 @@ if __name__=='__main__':
     from os import path as file_path
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
-from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
-    ZeroOrMore,Forward,nums,alphas, Or, restOfLine,OneOrMore,restOfLine,alphanums
+def _prereq():
+    """PolyBoRi convention: checking optional components for prerequisites here
+
+    >>> _prereq()
+    True
+    """
+    try:
+        import pyparsing
+    except ImportError:
+        return False
+
+    return True
+
+
 
 #from polybori.gbrefs import declare_ring
 from polybori import *
@@ -345,6 +357,11 @@ class VariableManager(object):
         
 
 def generate_gat_bnf(manager):
+
+    from pyparsing import Literal,CaselessLiteral,Word,Combine,Group,Optional,\
+        ZeroOrMore,Forward,nums,alphas, Or, restOfLine,OneOrMore,restOfLine,\
+        alphanums
+
     identifier = Word(nums).setParseAction(parse_identifier)
     symbolic_name=(Word(alphanums+"_-[]/",alphanums+"_-[]/")).setParseAction(fix_symbol_name)
     meta = ZeroOrMore(

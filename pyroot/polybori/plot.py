@@ -9,6 +9,22 @@ Copyright (c) 2008 The PolyBoRi Team.
 
 """
 
+def _prereq():
+    """PolyBoRi convention: checking optional components for prerequisites here
+
+    >>> _prereq()
+    True
+    """
+    try:
+        import jinja2
+    except ImportError:
+        try:
+            import jinja
+        except ImportError:
+            return False
+    return True
+
+
 import sys
 import os
 from polybori.PyPolyBoRi import Ring, Polynomial, BooleSet

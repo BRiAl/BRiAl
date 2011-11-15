@@ -63,19 +63,26 @@ except: import jinja """,
               'context': """from distutils.sysconfig import get_python_version
 if float(get_python_version()) < 2.5: raise ImportError, "Python < 2.5" """ }
 
-
+  finder = doctest.DocTestFinder()
+  runner = doctest.DocTestRunner()
   for file in files:
     try:
       # Some PolyBoRi modules do have optional (possibly hidden) dependencies, 
       # call them explicitely to trigger ImportError now
-      exec prereqs.get(splitext(basename(file))[0],'')
+      #exec prereqs.get(splitext(basename(file))[0],'')
 
       module = new_module(file.replace('.','_'))
       content = open(file).read()
       exec content in module.__dict__ 
 
+      if '_prereq' in dir(module):
+        if not module._prereq():
+          print "# Prerequisites for optional file", file, "missing. Skipping."
+          continue
+
+
     except ImportError:
-      print "# Could not import", file, "Skipping."
+      print "# Error importing", file
       if opts.verbose:
         import traceback
         traceback.print_exc(file=sys.stdout)
