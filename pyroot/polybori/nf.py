@@ -640,7 +640,7 @@ def normal_form(poly, ideal, reduced=True):
         if p.lead()!=last:
             strat.add_generator(p)
         else:
-            warn("%s will not used for reductions", p )
+            warn("%s will not used for reductions"% p )
         last=p.lead()
     return strat.nf(poly)
 
