@@ -635,12 +635,14 @@ if not env.GetOption('clean'):
         if conf.CheckLib(gdlibs[0]):
             env["LIBS"] = store_libs
             env.Append(LIBS=gdlibs)
-            if conf.CheckFunc("Testing_PNGs",
-                              "#include<gd.h>\n#define Testing_PNGs() gdImagePng(NULL,NULL) "):
+            if conf.CheckFunc("testing_PNGs",
+                              "#include<gd.h>\n#define testing_PNGs() gdImagePng(NULL,NULL) "):
                 env.Append(CPPDEFINES=["HAVE_GD"])
                 GD_LIBS = gdlibs
             else:
-                print "libgd is available, but could not generat png file - dependencies missing?"             
+                print "libgd is available, but could not generate png file -",\
+                  "dependencies in GD_LIBS missing? -", \
+                  "Skipping gd-based optional features."
         env["LIBS"] = store_libs
 
 
