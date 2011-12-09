@@ -45,7 +45,7 @@ public:
     
     bool optLL;
 
-    Polynomial nf(Polynomial p) const;
+    Polynomial nf(const Polynomial& p) const;
     bool optRedTailDegGrowth;
     bool optRedTail;
     idx_type reducibleUntil;
@@ -73,12 +73,19 @@ public:
 
     int select_short(const Polynomial& p) const;
     int select_short(const Monomial& m) const;
-    Polynomial headNormalForm(Polynomial p) const;
+    Polynomial headNormalForm(const Polynomial& p) const;
     
-    Polynomial reducedNormalForm(Polynomial p) const;
+    Polynomial reducedNormalForm(const Polynomial& p) const;
 
- protected:
-    void set_defaults(){
+protected:
+  int select_short_by_terms(const MonomialSet&) const;
+
+  template <class CompareType>
+  int min_element_index(const MonomialSet&, const CompareType&) const;
+
+  int min_element_index_lex(const MonomialSet&) const;
+
+  void set_defaults(){
         optLL=false;
         reducibleUntil=-1;
         optBrutalReductions=true;

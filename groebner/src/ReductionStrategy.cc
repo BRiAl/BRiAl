@@ -91,95 +91,90 @@ void ReductionStrategy::setupSetsForLastElement(){
     #endif
 }
 
-
- 
-int ReductionStrategy::select_short(const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.intersect(p.leadDivisors());
-  //Polynomial workaround =Polynomial(ms);
+template <class CompareType>
+Exponent
+min_exponent(const MonomialSet& ms, const CompareType& comp) {
   
-  if (ms.isZero())
-    return -1;
-  else {
-    
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
-    
-    int res=lm2Index.find(min)->second;
-    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
-    else return -1;
-  }
-  
+  return *(std::min_element(ms.expBegin(), ms.expEnd(), comp));
 }
 
-int ReductionStrategy::select_short(const Monomial& m) const{
-  MonomialSet ms=leadingTerms.intersect(m.divisors());
+template <>
+Exponent
+min_exponent(const MonomialSet& ms, const lex_tag&) {
+
+  return *ms.expBegin();
+}
+
+template <class CompareType>
+int
+ReductionStrategy::min_element_index(const MonomialSet& ms,
+				     const CompareType& comp) const {
   if (ms.isZero())
     return -1;
-  else {
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(*this)));
-    int res=lm2Index.find(min)->second;
-    if (((*this)[res].weightedLength<=2)/*||(strat.generators[res].ecart()==0)*/) return res;
-    else return -1;
 
-  }
+  return exp2Index.find(min_exponent(ms, comp))->second;
+}
+
+int
+ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
+
+  int res = min_element_index(leadingTerms.intersect(terms),
+			      LessWeightedLengthInStrat(*this));
+
+  if (res == -1 || (*this)[res].weightedLength<=2)
+    return res;
+
+  return -1;
+}
+ 
+int
+ReductionStrategy::select_short(const Polynomial& p) const {
+  return select_short_by_terms(p.leadDivisors());
+}
+
+int
+ReductionStrategy::select_short(const Monomial& m) const {
+  return select_short_by_terms(m.divisors());
 }
 
 typedef LessWeightedLengthInStratModified StratComparerForSelect;
 
-int ReductionStrategy::select1( const Polynomial& p) const{
-  MonomialSet ms=leadingTerms.divisorsOf(p.lead());//strat.leadingTerms.intersect(p.leadDivisors());
-  //Polynomial workaround =Polynomial(ms);
-  
-  if (ms.isZero())
-    return -1;
-  else {
+int
+ReductionStrategy::select1(const Polynomial& p) const {
+
 #ifdef LEX_LEAD_RED_STRAT
-    if (p.ring().ordering().isLexicographical()){
-      Exponent min=*(ms.expBegin());
-      return exp2Index.find(min)->second;
-    }
+  if (p.ring().ordering().isLexicographical())
+    return min_element_index(leadingTerms.divisorsOf(p.lexLead()), lex_tag());
 #endif
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
 
-    return exp2Index.find(min)->second;
-     
-  }
+  return select1(p.lead());
+}
+
+int
+ReductionStrategy::select1(const Monomial& m) const {
+
+  return min_element_index(leadingTerms.divisorsOf(m),
+			   StratComparerForSelect(*this));
+}
+
+Polynomial
+ReductionStrategy::reducedNormalForm(const Polynomial& p) const {
   
-}
-int ReductionStrategy::select1(const Monomial& m) const {
-  MonomialSet ms=leadingTerms.divisorsOf(m);
-  if (ms.isZero())
-    return -1;
-  else {
-    //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
-    Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), StratComparerForSelect(*this)));
-    return exp2Index.find(min)->second;
-  }
+  Polynomial res(headNormalForm(p));  
+  return (res.isZero()? res: red_tail(*this, res));
 }
 
-Polynomial ReductionStrategy::reducedNormalForm(Polynomial p) const{
-    if UNLIKELY(p.isZero()) return p;
+Polynomial
+ReductionStrategy::headNormalForm(const Polynomial& p) const {
+  if UNLIKELY(p.isZero()) return p;
     
-    Polynomial res(p.ring());
-    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
-    else res=nf3(*this,p,p.lead());
-    if ((res.isZero())) return res;
-    res=red_tail(*this,res);
-    return res;
+  return (p.ring().ordering().isDegreeOrder()?
+	  nf3_degree_order(*this, p, p.lead()): nf3(*this, p, p.lead()));
 }
-Polynomial ReductionStrategy::headNormalForm(Polynomial p) const{
-    if UNLIKELY(p.isZero()) return p;
-    
-    Polynomial res(p.ring());
-    if (p.ring().ordering().isDegreeOrder()) res=nf3_degree_order(*this,p,p.lead());
-    else res=nf3(*this,p,p.lead());
-    return res;
-}
-Polynomial ReductionStrategy::nf(Polynomial p) const{
-    if (optRedTail) return reducedNormalForm(p);
-    else return headNormalForm(p);
+
+Polynomial
+ReductionStrategy::nf(const Polynomial& p) const {
+  return (optRedTail? reducedNormalForm(p): headNormalForm(p));
 }
 
 END_NAMESPACE_PBORIGB
