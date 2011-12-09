@@ -160,8 +160,7 @@ ReductionStrategy::select1(const Monomial& m) const {
 Polynomial
 ReductionStrategy::reducedNormalForm(const Polynomial& p) const {
   
-  Polynomial res(headNormalForm(p));  
-  return (res.isZero()? res: red_tail(*this, res));
+  return red_tail(*this, headNormalForm(p));
 }
 
 Polynomial
