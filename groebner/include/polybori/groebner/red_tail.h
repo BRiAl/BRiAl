@@ -103,6 +103,7 @@ red_tail_generic(const ReductionStrategy& strat, Polynomial p){
   Polynomial orig_p=p;
   bool changed=false;
 
+  // assuming non-zero
   Monomial lm = p.lead();
   res_vec.push_back(lm);
   p = Polynomial(p.diagram().diff(lm.diagram()));

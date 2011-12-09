@@ -83,7 +83,6 @@ protected:
   template <class CompareType>
   int min_element_index(const MonomialSet&, const CompareType&) const;
 
-  int min_element_index_lex(const MonomialSet&) const;
 
   void set_defaults(){
         optLL=false;
