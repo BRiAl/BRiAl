@@ -104,10 +104,33 @@ min_exponent(const MonomialSet& ms, const lex_tag&) {
 
   return *ms.expBegin();
 }
+template <class CompareType>
+Monomial
+min_monomial(const MonomialSet& ms, const CompareType& comp) {
+  
+  return *(std::min_element(ms.begin(), ms.end(), comp));
+}
+
+template <>
+Monomial
+min_monomial(const MonomialSet& ms, const lex_tag&) {
+
+  return *ms.begin();
+}
 
 template <class CompareType>
 int
-ReductionStrategy::min_element_index(const MonomialSet& ms,
+ReductionStrategy::min_lm_index(const MonomialSet& ms,
+				const CompareType& comp) const {
+  if (ms.isZero())
+    return -1;
+
+  return lm2Index.find(min_monomial(ms, comp))->second;
+}
+
+template <class CompareType>
+int
+ReductionStrategy::min_exp_index(const MonomialSet& ms,
 				     const CompareType& comp) const {
   if (ms.isZero())
     return -1;
@@ -118,8 +141,8 @@ ReductionStrategy::min_element_index(const MonomialSet& ms,
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
 
-  int res = min_element_index(leadingTerms.intersect(terms),
-			      LessWeightedLengthInStrat(*this));
+  int res = min_lm_index(leadingTerms.intersect(terms),
+			 LessWeightedLengthInStrat(*this));
 
   if (res == -1 || (*this)[res].weightedLength<=2)
     return res;
@@ -144,7 +167,7 @@ ReductionStrategy::select1(const Polynomial& p) const {
 
 #ifdef LEX_LEAD_RED_STRAT
   if (p.ring().ordering().isLexicographical())
-    return min_element_index(leadingTerms.divisorsOf(p.lexLead()), lex_tag());
+    return min_exp_index(leadingTerms.divisorsOf(p.lexLead()), lex_tag());
 #endif
 
   return select1(p.lead());
@@ -153,7 +176,7 @@ ReductionStrategy::select1(const Polynomial& p) const {
 int
 ReductionStrategy::select1(const Monomial& m) const {
 
-  return min_element_index(leadingTerms.divisorsOf(m),
+  return min_exp_index(leadingTerms.divisorsOf(m),
 			   StratComparerForSelect(*this));
 }
 
