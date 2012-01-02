@@ -23,14 +23,34 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-typedef Monomial::idx_map_type lm2Index_map_type;
-typedef Exponent::idx_map_type exp2Index_map_type;
+/** @class ReductionOptions
+ * @brief This class defines options for ReductionStrategy.
+ *
+ **/
+class ReductionOptions {
+public:
+  ReductionOptions():
+    reducibleUntil(-1),
+    optLL(false), optBrutalReductions(true),
+    optRedTail(true), optRedTailDegGrowth(true) {}
+
+  bool optBrutalReductions;
+  bool optLL;
+  bool optRedTailDegGrowth;
+  bool optRedTail;
+  idx_type reducibleUntil;
+};
+
+
+
 
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.
  *
  **/
-class ReductionStrategy:public PolyEntryVector{
+class ReductionStrategy:
+  public PolyEntryVector, public ReductionOptions {
+
 public:
     MonomialSet leadingTerms;
     MonomialSet minimalLeadingTerms;
@@ -39,59 +59,47 @@ public:
     MonomialSet llReductor;
     MonomialSet monomials;
     MonomialSet monomials_plus_one;
-    lm2Index_map_type lm2Index;
-    exp2Index_map_type exp2Index;
-    bool optBrutalReductions;
-    
-    bool optLL;
 
-    Polynomial nf(const Polynomial& p) const;
-    bool optRedTailDegGrowth;
-    bool optRedTail;
-    idx_type reducibleUntil;
+    ReductionStrategy(const BoolePolyRing& ring):
+      PolyEntryVector(), ReductionOptions(),
+
+      leadingTerms(ring), minimalLeadingTerms(ring),
+      leadingTerms11(ring), leadingTerms00(ring),
+      llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
+
+    Polynomial nf(const Polynomial& p) const {
+      return (optRedTail? reducedNormalForm(p): headNormalForm(p));
+    }
+
     void setupSetsForLastElement();
 
-    // ReductionStrategy(){ set_defaults(); }
 
-    ReductionStrategy(const BoolePolyRing& theRing):
-      leadingTerms(theRing.zero()), minimalLeadingTerms(theRing.zero()),
-      leadingTerms11(theRing.zero()), leadingTerms00(theRing.zero()), llReductor(theRing.zero()),
-      monomials(theRing.zero()), monomials_plus_one(theRing.zero()), lm2Index(),
-      exp2Index() {
-      set_defaults(); 
-    }
 
-    bool canRewrite(const Polynomial& p) const{
-        return is_rewriteable(p,minimalLeadingTerms);
+    bool canRewrite(const Polynomial& p) const {
+      return is_rewriteable(p, minimalLeadingTerms);
     }
-    void addGenerator(const Polynomial& p){
+  
+    void addGenerator(const Polynomial& p) {
         push_back(p);
         setupSetsForLastElement();
     }
+
     int select1(const Polynomial& p) const;
     int select1(const Monomial& m) const;
 
-    int select_short(const Polynomial& p) const;
-    int select_short(const Monomial& m) const;
+    int select_short(const Polynomial& p) const {
+      return select_short_by_terms(p.leadDivisors());
+    }
+    int select_short(const Monomial& m) const {
+      return select_short_by_terms(m.divisors());
+    }
+
     Polynomial headNormalForm(const Polynomial& p) const;
-    
     Polynomial reducedNormalForm(const Polynomial& p) const;
 
 protected:
   int select_short_by_terms(const MonomialSet&) const;
 
-  template <class CompareType>
-  int min_lm_index(const MonomialSet&, const CompareType&) const;
-  template <class CompareType>
-  int min_exp_index(const MonomialSet&, const CompareType&) const;
-
-  void set_defaults(){
-        optLL=false;
-        reducibleUntil=-1;
-        optBrutalReductions=true;
-        optRedTail=true;
-        optRedTailDegGrowth=true;
-    }
 
   template <class Iterator>
   void unmarkNonminimalLeadingTerms(const MonomialSet&, Iterator, Iterator);

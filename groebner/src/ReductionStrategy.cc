@@ -114,53 +114,6 @@ void ReductionStrategy::setupSetsForLastElement(){
 }
 
 
-template <class CompareType>
-Exponent
-min_exponent(const MonomialSet& ms, const CompareType& comp) {
-  
-  return *(std::min_element(ms.expBegin(), ms.expEnd(), comp));
-}
-
-template <>
-Exponent
-min_exponent(const MonomialSet& ms, const lex_tag&) {
-
-  return *ms.expBegin();
-}
-template <class CompareType>
-Monomial
-min_monomial(const MonomialSet& ms, const CompareType& comp) {
-  
-  return *(std::min_element(ms.begin(), ms.end(), comp));
-}
-
-template <>
-Monomial
-min_monomial(const MonomialSet& ms, const lex_tag&) {
-
-  return *ms.begin();
-}
-
-template <class CompareType>
-int
-ReductionStrategy::min_lm_index(const MonomialSet& ms,
-				const CompareType& comp) const {
-  if (ms.isZero())
-    return -1;
-
-  return lm2Index.find(min_monomial(ms, comp))->second;
-}
-
-template <class CompareType>
-int
-ReductionStrategy::min_exp_index(const MonomialSet& ms,
-				     const CompareType& comp) const {
-  if (ms.isZero())
-    return -1;
-
-  return exp2Index.find(min_exponent(ms, comp))->second;
-}
-
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
 
@@ -173,15 +126,6 @@ ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
   return -1;
 }
  
-int
-ReductionStrategy::select_short(const Polynomial& p) const {
-  return select_short_by_terms(p.leadDivisors());
-}
-
-int
-ReductionStrategy::select_short(const Monomial& m) const {
-  return select_short_by_terms(m.divisors());
-}
 
 typedef LessWeightedLengthInStratModified StratComparerForSelect;
 
@@ -217,9 +161,6 @@ ReductionStrategy::headNormalForm(const Polynomial& p) const {
 	  nf3_degree_order(*this, p, p.lead()): nf3(*this, p, p.lead()));
 }
 
-Polynomial
-ReductionStrategy::nf(const Polynomial& p) const {
-  return (optRedTail? reducedNormalForm(p): headNormalForm(p));
-}
+
 
 END_NAMESPACE_PBORIGB
