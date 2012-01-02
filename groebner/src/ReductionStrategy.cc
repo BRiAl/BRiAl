@@ -26,70 +26,93 @@ BEGIN_NAMESPACE_PBORIGB
 
 void addPolynomialToReductor(Polynomial& p, MonomialSet& m); // groebner_alg.cc
 
+template <class Iterator>
+inline void 
+ReductionStrategy::unmarkNonminimalLeadingTerms(const MonomialSet& lm,
+                                                Iterator mfm_start, Iterator mfm_end) {
+  while (mfm_start != mfm_end){
+    PBORI_ASSERT((*mfm_start) != *lm.expBegin());
+    PBORI_ASSERT((*mfm_start).reducibleBy(*lm.expBegin()));
+
+    (*this)[exp2Index[*mfm_start]].minimal=false;
+    ++mfm_start;
+  }
+}
+
+inline void 
+ReductionStrategy::removeNonminimalLeadingTerms(const MonomialSet& lm,
+                                                MonomialSet lm_multiples_min) {
+  lm_multiples_min = lm_multiples_min.diff(lm);
+  PBORI_ASSERT(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm).isZero());
+
+  unmarkNonminimalLeadingTerms(lm, lm_multiples_min.expBegin(), lm_multiples_min.expEnd());
+  minimalLeadingTerms = minimalLeadingTerms.diff(lm_multiples_min).unite(lm);
+}
+
+
+inline void 
+ReductionStrategy::updateLeadingTerms(const PolyEntry& entry) {
+
+  const MonomialSet& terms = entry.lead.set();
+  leadingTerms = leadingTerms.unite(terms);
+
+  //doesn't need to be undone on simplification
+  if (entry.literal_factors.is11Factorization())
+    leadingTerms11 = leadingTerms11.unite(terms);
+  
+  if (entry.literal_factors.is00Factorization())
+    leadingTerms00 = leadingTerms00.unite(terms);
+}
+
+inline void
+ReductionStrategy::updateMinimalLeadingTerms(PolyEntry& entry) {
+
+  const Monomial& lm = entry.lead;
+  MonomialSet divisors = minimalLeadingTerms.divisorsOf(lm);
+  if(divisors.isZero())
+    removeNonminimalLeadingTerms(lm.set(), minimalLeadingTerms.multiplesOf(lm));
+  else if (!(divisors.diff(lm.set()).isZero()))
+    entry.minimal = false;
+}
+inline void
+ReductionStrategy::updateMonomials(const PolyEntry& entry) {
+
+  if (entry.length == 1){
+    PBORI_ASSERT(entry.p.length() == 1);
+    monomials = monomials.unite(entry.p);
+  }
+}
+
+inline void
+ReductionStrategy::updateLLReductor(PolyEntry& entry) {
+  if (optLL){
+    if ( (entry.leadDeg == 1) && 
+         (*(entry.p.navigation()) == entry.lead.firstIndex() ) ) {
+      addPolynomialToReductor(entry.p, llReductor);
+    }
+  }
+}
+
+void ReductionStrategy::setupSetsForElement(PolyEntry& entry, const int index) {
+
+    PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
+
+    updateMinimalLeadingTerms(entry);
+    updateLeadingTerms(entry);
+    updateMonomials(entry);
+
+    #ifdef LL_RED_FOR_GROEBNER
+    updateLLReductor(entry);
+    #endif
+
+    lm2Index[entry.lead] = index;
+    exp2Index[entry.leadExp] = index;
+}
 
 void ReductionStrategy::setupSetsForLastElement(){
-    const int s=size()-1;
-    PolyEntry e=(*this)[s];
-    Monomial lm=e.lead;
-    MonomialSet divisors_from_minimal=minimalLeadingTerms.divisorsOf(lm);//intersect(lm.divisors());
-
-    if(divisors_from_minimal.isZero()){
-       
-        
-        PBORI_ASSERT(!(Polynomial(lm).isZero()));
-        MonomialSet lm_multiples_min=minimalLeadingTerms.multiplesOf(lm);
-        //generators.minimalLeadingTerms.intersect(lm.multiples(minimalLeadingTerms.usedVariables()));
-        lm_multiples_min=lm_multiples_min.diff(lm.diagram());
-        //(lm.diagram()).diff(lm.diagram());
-    
-        PBORI_ASSERT(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm.diagram()).isZero());
-
-        {
-        
-        
-            MonomialSet::exp_iterator mfm_start=lm_multiples_min.expBegin();
-            MonomialSet::exp_iterator mfm_end=lm_multiples_min.expEnd();
-            while(mfm_start!=mfm_end){
-                PBORI_ASSERT((*mfm_start)!=e.leadExp);
-                PBORI_ASSERT((*mfm_start).reducibleBy(e.leadExp));
-                (*this)[exp2Index[*mfm_start]].minimal=false;
-                mfm_start++;
-            }
-        }
-        minimalLeadingTerms = minimalLeadingTerms.diff(lm_multiples_min).unite(lm.diagram());
-        
-
-        
-    } else 
-    {
-        //cerr<<"Warning:adding non minimal element to strategy"<<std::endl;
-        //PBORI_ASSERT(false);
-        if (!(divisors_from_minimal.diff(lm.diagram()).isZero()))
-            (*this)[s].minimal=false;
-    }
-    leadingTerms = leadingTerms.unite(Polynomial(lm).diagram());
-    if ((*this)[s].literal_factors.is11Factorization())
-        leadingTerms11 = leadingTerms11.unite(Polynomial(lm).diagram());
-    //doesn't need to be undone on simplification
-    if ((*this)[s].literal_factors.is00Factorization())
-        leadingTerms00 = leadingTerms00.unite(Polynomial(lm).diagram());
-    lm2Index[(*this)[s].lead]=s;
-    exp2Index[(*this)[s].leadExp]=s;
-
-    
-    if (e.length==1){
-        PBORI_ASSERT(e.p.length()==1);
-        monomials=monomials.unite(e.p.diagram());
-    } //else treat_m_p_1_case(e);
-    #ifdef LL_RED_FOR_GROEBNER
-    if (optLL){
-
-            if (((*this)[s].leadDeg==1) &&(*((*this)[s].p.navigation())==*((*this)[s].lead.diagram().navigation()))){
-                addPolynomialToReductor((*this)[s].p,llReductor);
-            }
-    }
-    #endif
+  setupSetsForElement( back(), size()-1);
 }
+
 
 template <class CompareType>
 Exponent

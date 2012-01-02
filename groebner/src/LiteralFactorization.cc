@@ -397,7 +397,7 @@ bool maps_to_one( const std::pair<const polybori::groebner::idx_type, int> v){
 bool maps_to_zero( const std::pair<const polybori::groebner::idx_type, int>  v){
     return (v.second==0);
 }
-bool LiteralFactorization::is11Factorization(){
+bool LiteralFactorization::is11Factorization() const {
     if (this->factors.size()==lmDeg){
         if (find_if(factors.begin(),factors.end(), maps_to_zero)==factors.end()){
             return true;
@@ -405,7 +405,7 @@ bool LiteralFactorization::is11Factorization(){
     }
     return false;
 }
-bool LiteralFactorization::is00Factorization(){
+bool LiteralFactorization::is00Factorization() const {
     if (this->factors.size()==lmDeg){
         if (find_if(factors.begin(),factors.end(), maps_to_one)==factors.end()){
             return true;

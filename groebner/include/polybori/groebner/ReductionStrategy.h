@@ -92,6 +92,16 @@ protected:
         optRedTail=true;
         optRedTailDegGrowth=true;
     }
+
+  template <class Iterator>
+  void unmarkNonminimalLeadingTerms(const MonomialSet&, Iterator, Iterator);
+  void removeNonminimalLeadingTerms(const MonomialSet&, MonomialSet);
+
+  void updateMonomials(const PolyEntry&);
+  void updateLeadingTerms(const PolyEntry&);
+  void updateMinimalLeadingTerms(PolyEntry&);
+  void updateLLReductor(PolyEntry&);
+  void setupSetsForElement(PolyEntry& entry, const int index);
 };
 
 

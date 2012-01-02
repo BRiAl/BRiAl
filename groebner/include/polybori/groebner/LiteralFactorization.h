@@ -33,8 +33,8 @@ public:
   deg_type lmDeg;
   bool occursAsLeadOfFactor(idx_type v) const;
   bool trivial() const;
-  bool is11Factorization();
-  bool is00Factorization();
+  bool is11Factorization() const;
+  bool is00Factorization() const;
   //Theorem: f BoolePolynomial with factor (x+b), b in 0, 1 (considered in the usual Polynomial Ring)
   //then f/(x+b) does not involve the variable x
   //typedef std::pair<idx_type,idx_type> var_pair_type;
