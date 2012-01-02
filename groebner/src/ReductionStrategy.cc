@@ -85,12 +85,9 @@ ReductionStrategy::updateMonomials(const PolyEntry& entry) {
 
 inline void
 ReductionStrategy::updateLLReductor(PolyEntry& entry) {
-  if (optLL){
-    if ( (entry.leadDeg == 1) && 
-         (*(entry.p.navigation()) == entry.lead.firstIndex() ) ) {
-      addPolynomialToReductor(entry.p, llReductor);
-    }
-  }
+  if ( (entry.leadDeg == 1) && 
+       (*(entry.p.navigation()) == entry.lead.firstIndex() ) )
+    addPolynomialToReductor(entry.p, llReductor);
 }
 
 void ReductionStrategy::setupSetsForElement(PolyEntry& entry, const int index) {
@@ -102,7 +99,8 @@ void ReductionStrategy::setupSetsForElement(PolyEntry& entry, const int index) {
     updateMonomials(entry);
 
     #ifdef LL_RED_FOR_GROEBNER
-    updateLLReductor(entry);
+    if (optLL)
+      updateLLReductor(entry);
     #endif
 
     lm2Index[entry.lead] = index;
