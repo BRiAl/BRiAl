@@ -17,9 +17,13 @@
 #define polybori_groebner_PairData_h_
 
 // include basic definitions
-#include <stdexcept>
+
 #include "groebner_defs.h"
 #include "PolyEntry.h"
+
+#include <stdexcept>
+#include <boost/python.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -56,33 +60,23 @@ typedef Exponent::idx_map_type exp2Index_map_type;
 
 class PolyEntryIndexException { };
 
-class PolyEntryVector:
-  public std::vector<PolyEntry> {
+class PolyEntryVector {
 
-  typedef std::vector<PolyEntry> base;
+  typedef std::vector<PolyEntry> data_type;
 public:
+  typedef data_type::size_type size_type;
+  typedef data_type::value_type value_type;
+  typedef data_type::const_iterator const_iterator;
+  typedef data_type::const_reference const_reference;
 
-  //friend class CountCriterion;  // temporarily
-  //  friend class ChainCriterion;  // temporarily
-  // friend class ChainVariableCriterion;  // temporarily
-  //  friend class HasTRepOrExtendedProductCriterion; // temporarily
-  //  friend class GroebnerStrategy; // temporarily
-
+  size_type size() const { return m_data.size(); }
+  const_iterator begin() const { return m_data.begin(); }
+  const_iterator end() const { return m_data.end(); }
+  const_reference front() const { return m_data.front(); }
+  const_reference back() const { return m_data.back(); }
+  data_type::reference back()  { return m_data.back(); } // TODO remove
   PolyEntryVector():
-    base(), lm2Index(), exp2Index() {}
-
-  template <class Iterator>
-  PolyEntryVector(Iterator start, Iterator finish):
-    base(start, finish), lm2Index(), exp2Index() {
-
-    const_iterator iter(begin()), iend(end());
-    size_type idx(0);
-    while (iter !=iend) {
-      lm2Index[iter->lead] = exp2Index[iter->leadExp] = idx;
-      ++start; ++idx;
-    }
-
-  }
+    m_data(), lm2Index(), exp2Index() {}
 
   template <class CompareType>
   inline int min_lm_index(const MonomialSet& ms,
@@ -105,58 +99,50 @@ public:
   /// Consistently insert element
   template <class ElementType>
   void push_back(const ElementType& element) {
-    base::push_back(element);
+    m_data.push_back(element);
     exp2Index[back().leadExp] = lm2Index[back().lead] = size() - 1;
   }
 
-
-  base::const_reference operator[](const Monomial& rhs) const {
-    return base::operator[](index(rhs));
+  template <class KeyType>
+  const_reference operator[](const KeyType& rhs) const {
+    return m_data[index(rhs)];
   }
 
-  base::reference operator[](const Monomial& rhs) {
-    return base::operator[](index(rhs));
+  template <class KeyType>	// TODO: remove
+  data_type::reference operator[](const KeyType& rhs) {
+    return m_data[index(rhs)];
   }
 
-  base::const_reference operator[](const Exponent& rhs) const {
-    return base::operator[](index(rhs));
-  }
 
-  base::reference operator[](const Exponent& rhs) {
-    return base::operator[](index(rhs));
-  }
-
-  using base::operator[];
-
-  const base::size_type& index(const base::size_type& rhs) const {
+  const size_type& index(const size_type& rhs) const {
     return rhs;
   }
 
-  base::size_type index(const Monomial& rhs) const {
+  size_type index(const Monomial& rhs) const {
     return get_index(lm2Index, rhs);
   }
 
-  base::size_type index(const Exponent& rhs) const {
+  size_type index(const Exponent& rhs) const {
     return get_index(exp2Index, rhs);
   }
 
-  base::size_type save_index(const Monomial& rhs) const {
+  size_type save_index(const Monomial& rhs) const {
     return get_save_index(lm2Index, rhs);
   }
 
-  base::size_type save_index(const Exponent& rhs) const {
+  size_type save_index(const Exponent& rhs) const {
     return get_save_index(exp2Index, rhs);
   }
 
   template <class KeyType>
-  base::const_reference get(const KeyType& rhs) const {
-    return base::operator[](save_index(rhs));
+  const_reference get(const KeyType& rhs) const {
+    return m_data[save_index(rhs)];
   }
 
 protected:
 
   template <class MapType, class KeyType>
-  base::size_type get_index(const MapType& map, const KeyType& key) const {
+  size_type get_index(const MapType& map, const KeyType& key) const {
 
     typename MapType::const_iterator result(map.find(key));
     PBORI_ASSERT(result != map.end());
@@ -164,7 +150,7 @@ protected:
   }
 
   template <class MapType, class KeyType>
-  base::size_type get_save_index(const MapType& map, const KeyType& key) const {
+  size_type get_save_index(const MapType& map, const KeyType& key) const {
 
     typename MapType::const_iterator result(map.find(key));
     if (result != map.end())
@@ -174,7 +160,7 @@ protected:
   }
 
 private:
-
+  data_type m_data;
   lm2Index_map_type lm2Index;
   exp2Index_map_type exp2Index;
 };

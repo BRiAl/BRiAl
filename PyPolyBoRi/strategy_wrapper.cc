@@ -212,11 +212,9 @@ void export_strategy(){
   .def("recompute_information",&PolyEntry::recomputeInformation);
   
  
-  boost::python::class_<PolyEntryVector > ("PolyEntryVector")
-      .def(vector_indexing_suite<PolyEntryVector >());
- 
-  boost::python::class_<ReductionStrategy,boost::python::bases<PolyEntryVector > > ("ReductionStrategy", "ReductionStrategy",
-         init<const BoolePolyRing&>())
+  boost::python::class_<ReductionStrategy> ("ReductionStrategy",
+					    "ReductionStrategy",
+					    init<const BoolePolyRing&>())
         .def_readwrite("opt_brutal_reductions",&ReductionStrategy::optBrutalReductions)
         .def("add_generator", &ReductionStrategy::addGenerator)
         .def_readonly("leading_terms",&ReductionStrategy::leadingTerms)
