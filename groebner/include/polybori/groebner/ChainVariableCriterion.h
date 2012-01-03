@@ -38,7 +38,7 @@ public:
     this->v=v;
   }
   bool operator() (const Exponent& lmExp){
-    int index=strat->generators.exp2Index.find(lmExp)->second;
+    int index=strat->generators.index(lmExp);
     //we know such an entry exists
     if (index!=i){
       //would be still true for i, but how should that happen

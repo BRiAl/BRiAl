@@ -415,7 +415,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 
                   Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(this->generators)));
                   #endif
-                  int chosen_index=generators.exp2Index[min];
+                  int chosen_index=generators.index(min);
                   this->pairs.introducePair(Pair(chosen_index,s,generators));
               }
               //if (t.intersect())
@@ -512,7 +512,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   Polynomial::exp_iterator is_it=inter_as_poly.expBegin();
   Polynomial::exp_iterator is_end=inter_as_poly.expEnd();
   while(is_it!=is_end){
-    int index =this->generators.exp2Index[*is_it];
+    int index =this->generators.index(*is_it);
     if (index!=s){
       
       //product criterion doesn't hold
@@ -679,7 +679,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     int i=m_vec.size()-1;
     while(i>=0){
         //redTail
-        int index=generators.exp2Index[m_vec[i]];
+        int index=generators.index(m_vec[i]);
         Polynomial reduced=red_tail(this->generators,generators[index].p);
         generators[index].p=reduced;
         generators[index].recomputeInformation();
@@ -700,7 +700,7 @@ std::vector<Polynomial> GroebnerStrategy::minimalize(){
     MonomialSet::const_iterator end=m.end();
     while(it!=end){
         //redTail
-        result.push_back(generators[generators.lm2Index[*it]].p);
+        result.push_back(generators[*it].p);
         it++;
     }
     return result;

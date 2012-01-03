@@ -31,20 +31,22 @@ public:
   LessCombinedManySizesInStrat(GroebnerStrategy& strat){
     this->strat=&strat;
   }
-  bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->generators.lm2Index[a];
-    int j=strat->generators.lm2Index[b];
-        deg_type d1=strat->generators[i].tailVariables.deg();
-    deg_type d2=strat->generators[j].tailVariables.deg();
-    wlen_type w1=d1;
-    wlen_type w2=d2;
-    w1*=strat->generators[i].length;
-    w1*=strat->generators[i].ecart();
-    w2*=strat->generators[j].length;
-    w2*=strat->generators[j].ecart();
-    return w1<w2;
-    
-        
+
+  bool operator() (const Monomial& a , const Monomial& b) const {
+    return operator()(strat->generators[a], strat->generators[b]);
+  }
+
+private:
+  bool operator() (const PolyEntry& entry1, const PolyEntry& entry2) const {
+    deg_type d1 = entry1.tailVariables.deg();
+    deg_type d2 = entry2.tailVariables.deg();
+    wlen_type w1 = d1;
+    wlen_type w2 = d2;
+    w1 *= entry1.length;
+    w1 *= entry1.ecart();
+    w2 *= entry2.length;
+    w2 *= entry2.ecart();
+    return w1 < w2;       
   }
 };
 

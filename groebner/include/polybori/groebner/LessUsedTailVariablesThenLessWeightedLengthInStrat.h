@@ -31,17 +31,21 @@ public:
   LessUsedTailVariablesThenLessWeightedLengthInStrat(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
-  bool operator() (const Monomial& a , const Monomial& b) const{
-    int i=strat->generators.lm2Index.find(a)->second;
-    int j=strat->generators.lm2Index.find(b)->second;
-    deg_type d1=strat->generators[i].tailVariables.deg();
-    deg_type d2=strat->generators[j].tailVariables.deg();;
-    if (d1!=d2){
-      return (d1<d2);
-          }
-    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
-    
+
+  bool operator() (const Monomial& a, const Monomial& b) const{
+    return operator()(strat->generators[a], strat->generators[b]);
   }
+
+private:
+  bool operator() (const PolyEntry& entry1, const PolyEntry& entry2) const {
+    deg_type d1 = entry1.tailVariables.deg();
+    deg_type d2 = entry2.tailVariables.deg();
+    if (d1 != d2)
+      return (d1 < d2);
+    
+    return (entry1.weightedLength < entry2.weightedLength);
+  }
+  
 };
 
 END_NAMESPACE_PBORIGB

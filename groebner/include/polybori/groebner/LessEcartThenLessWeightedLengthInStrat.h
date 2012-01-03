@@ -31,31 +31,24 @@ public:
   LessEcartThenLessWeightedLengthInStrat(const GroebnerStrategy& strat){
     this->strat=&strat;
   }
+
   bool operator() (const Monomial& a , const Monomial& b){
-    int i=strat->generators.lm2Index.find(a)->second;
-    int j=strat->generators.lm2Index.find(b)->second;
-    if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
-      if (strat->generators[i].ecart()<strat->generators[j].ecart())
-        return true;
-      else
-        return false;
-    }
-    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
-    
+     return compare(strat->generators[a], strat->generators[b]);
   }
   
   bool operator() (const Exponent& a , const Exponent& b){
-    int i=strat->generators.exp2Index.find(a)->second;
-    int j=strat->generators.exp2Index.find(b)->second;
-    if (strat->generators[i].ecart()!=strat->generators[j].ecart()){
-      if (strat->generators[i].ecart()<strat->generators[j].ecart())
-        return true;
-      else
-        return false;
-    }
-    return (strat->generators[i].weightedLength<strat->generators[j].weightedLength);
-    
+    return compare(strat->generators[a], strat->generators[b]);
   }
+
+private:
+
+  bool compare(const PolyEntry& val1, const PolyEntry& val2) const {
+    if (val1.ecart() != val2.ecart())
+      return (val1.ecart() < val2.ecart());
+
+    return (val1.weightedLength < val2.weightedLength);
+  }
+
 };
 
 END_NAMESPACE_PBORIGB

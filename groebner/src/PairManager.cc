@@ -29,7 +29,7 @@ void PairManager::replacePair(int& i, int& j){
   int j_n=j;
   while(it!=end){
     Exponent curr=*it;
-    int index=strat->generators.exp2Index[curr];
+    int index=strat->generators.index(curr);
     wlen_type curr_wl=strat->generators[index].weightedLength;
     if ((index!=i) && (index!=j)){
     if ((status.hasTRep(index,i)) &&

@@ -736,7 +736,7 @@ int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m){
     MonomialSet::exp_iterator end=ms.expEnd();
     while(it!=end){
         Exponent curr=*it;
-        int index=strat.exp2Index.find(curr)->second;
+        int index=strat.index(curr);
         if (strat[index].ecart()==0){
             if (selected<0){
                 selected=index;

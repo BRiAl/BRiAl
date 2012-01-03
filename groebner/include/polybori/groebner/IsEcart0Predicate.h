@@ -32,7 +32,7 @@ IsEcart0Predicate(const ReductionStrategy& strat){
     this->strat=&strat;
 }
 bool operator() (const Exponent& e){
-    return (*strat)[strat->exp2Index.find(e)->second].ecart()==0;
+    return (*strat)[e].ecart()==0;
 }
 
 

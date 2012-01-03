@@ -29,9 +29,8 @@ using namespace std;
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
 
-class StrategyIndexException{
-    
-};
+typedef PolyEntryIndexException StrategyIndexException;
+
 static void translator_gi(StrategyIndexException const& x) {
     PyErr_SetString( PyExc_IndexError, "Wrong Index access at strategy");
 }
@@ -149,14 +148,8 @@ static void implications(GroebnerStrategy& strat, int i){
 int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return strat.generators.select1(m);
 }
-static Polynomial get_gen_by_lead(const GroebnerStrategy& strat,  const Monomial& m){
-    lm2Index_map_type::const_iterator it,end;
-    end=strat.generators.lm2Index.end();
-    it=strat.generators.lm2Index.find(m);
-    if UNLIKELY(it==end){
-        throw StrategyIndexException();
-    }
-    return strat.generators[it->second].p;
+static Polynomial get_gen_by_lead(const GroebnerStrategy& strat, const Monomial& m){
+  return strat.generators.get(m).p;
 }
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
     if UNLIKELY((i<0)||(i>=strat.generators.size())){
@@ -219,10 +212,10 @@ void export_strategy(){
   .def("recompute_information",&PolyEntry::recomputeInformation);
   
  
-  boost::python::class_<vector<PolyEntry> > ("PolyEntryVector")
-      .def(vector_indexing_suite<vector<PolyEntry> >());
+  boost::python::class_<PolyEntryVector > ("PolyEntryVector")
+      .def(vector_indexing_suite<PolyEntryVector >());
  
-  boost::python::class_<ReductionStrategy,boost::python::bases<vector<PolyEntry> > > ("ReductionStrategy", "ReductionStrategy",
+  boost::python::class_<ReductionStrategy,boost::python::bases<PolyEntryVector > > ("ReductionStrategy", "ReductionStrategy",
          init<const BoolePolyRing&>())
         .def_readwrite("opt_brutal_reductions",&ReductionStrategy::optBrutalReductions)
         .def("add_generator", &ReductionStrategy::addGenerator)

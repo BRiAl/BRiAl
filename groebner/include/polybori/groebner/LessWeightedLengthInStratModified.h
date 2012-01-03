@@ -44,15 +44,15 @@ public:
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    wlen_type wa=wlen_literal_exceptioned((*strat)[strat->lm2Index.find(a)->second]);
-    wlen_type wb=wlen_literal_exceptioned((*strat)[strat->lm2Index.find(b)->second]);
+    wlen_type wa=wlen_literal_exceptioned((*strat)[a]);
+    wlen_type wb=wlen_literal_exceptioned((*strat)[b]);
     
     return wa<wb;
     
   }
   bool operator() (const Exponent& a , const Exponent& b){
-    wlen_type wa=wlen_literal_exceptioned((*strat)[strat->exp2Index.find(a)->second]);
-    wlen_type wb=wlen_literal_exceptioned((*strat)[strat->exp2Index.find(b)->second]);
+    wlen_type wa=wlen_literal_exceptioned((*strat)[a]);
+    wlen_type wb=wlen_literal_exceptioned((*strat)[b]);
     
     return wa<wb;
     

@@ -34,7 +34,7 @@ ReductionStrategy::unmarkNonminimalLeadingTerms(const MonomialSet& lm,
     PBORI_ASSERT((*mfm_start) != *lm.expBegin());
     PBORI_ASSERT((*mfm_start).reducibleBy(*lm.expBegin()));
 
-    (*this)[exp2Index[*mfm_start]].minimal=false;
+    (*this)[*mfm_start].minimal=false;
     ++mfm_start;
   }
 }
@@ -90,7 +90,7 @@ ReductionStrategy::updateLLReductor(PolyEntry& entry) {
     addPolynomialToReductor(entry.p, llReductor);
 }
 
-void ReductionStrategy::setupSetsForElement(PolyEntry& entry, const int index) {
+void ReductionStrategy::setupSetsForElement(PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
 
@@ -103,12 +103,12 @@ void ReductionStrategy::setupSetsForElement(PolyEntry& entry, const int index) {
       updateLLReductor(entry);
     #endif
 
-    lm2Index[entry.lead] = index;
-    exp2Index[entry.leadExp] = index;
+    //    lm2Index[entry.lead] = index;
+    //    exp2Index[entry.leadExp] = index;
 }
 
 void ReductionStrategy::setupSetsForLastElement(){
-  setupSetsForElement( back(), size()-1);
+  setupSetsForElement(back());
 }
 
 

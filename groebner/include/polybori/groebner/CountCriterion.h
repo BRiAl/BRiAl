@@ -37,8 +37,8 @@ public:
     this->j=j;
   }
   bool operator() (int i){
-      PolyEntry & e1=strat->generators[i];
-      PolyEntry & e2=strat->generators[j];
+      const PolyEntry & e1=strat->generators[i];
+      const PolyEntry & e2=strat->generators[j];
       const int USED_VARIABLES_BOUND=6;
       if ((e1.usedVariables.deg()>USED_VARIABLES_BOUND)||
           (e2.usedVariables.deg()>USED_VARIABLES_BOUND)||
@@ -86,8 +86,7 @@ public:
           return false;
   }
   bool operator() (const Exponent &m){
-    int i;
-    i=strat->generators.exp2Index[m];
+    int i = strat->generators.index(m);
     return (*this)(i);
   }
 

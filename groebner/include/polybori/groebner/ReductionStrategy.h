@@ -24,7 +24,7 @@
 BEGIN_NAMESPACE_PBORIGB
 
 /** @class ReductionOptions
- * @brief This class defines options for ReductionStrategy.
+ * @brief This class defines option values for the ReductionStrategy.
  *
  **/
 class ReductionOptions {
@@ -109,7 +109,7 @@ protected:
   void updateLeadingTerms(const PolyEntry&);
   void updateMinimalLeadingTerms(PolyEntry&);
   void updateLLReductor(PolyEntry&);
-  void setupSetsForElement(PolyEntry& entry, const int index);
+  void setupSetsForElement(PolyEntry& entry);
 };
 
 

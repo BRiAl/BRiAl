@@ -33,11 +33,11 @@ public:
     this->strat=&strat;
   }
   bool operator() (const Monomial& a , const Monomial& b){
-    return (*strat)[strat->lm2Index.find(a)->second].weightedLength<(*strat)[strat->lm2Index.find(b)->second].weightedLength;
+    return (*strat)[a].weightedLength<(*strat)[b].weightedLength;
     
   }
   bool operator() (const Exponent& a , const Exponent& b){
-    return (*strat)[strat->exp2Index.find(a)->second].weightedLength<(*strat)[strat->exp2Index.find(b)->second].weightedLength;
+    return (*strat)[a].weightedLength<(*strat)[b].weightedLength;
     
   }
 };

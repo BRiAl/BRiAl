@@ -48,8 +48,7 @@ public:
     this->j=j;
   }
   bool operator() (const Monomial &m){
-    int i;
-    i=strat->generators.lm2Index[m];
+    int i = strat->generators.index(m);
     
     if (strat->pairs.status.hasTRep(i,j))
       return true;
@@ -63,7 +62,7 @@ public:
   }
   bool operator() (const Exponent &m){
     int i;
-    i=strat->generators.exp2Index[m];
+    i=strat->generators.index(m);
     
     if (strat->pairs.status.hasTRep(i,j))
       return true;

@@ -49,7 +49,7 @@ select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
     else {
       //Monomial min=*(std::min_element(ms.begin(),ms.end(), LessWeightedLengthInStrat(strat)));
       Exponent min=*(std::min_element(ms.expBegin(),ms.expEnd(), LargerDegreeComparer()));
-      return strat.exp2Index.find(min)->second;
+      return strat.index(min);
     }
 }
 
