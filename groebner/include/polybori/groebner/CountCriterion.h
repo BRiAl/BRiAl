@@ -37,8 +37,8 @@ public:
     this->j=j;
   }
   bool operator() (int i){
-      const PolyEntry & e1=strat->generators[i];
-      const PolyEntry & e2=strat->generators[j];
+    const PolyEntry & e1=const_cast<const GroebnerStrategy*>(strat)->generators[i];
+      const PolyEntry & e2=const_cast<const GroebnerStrategy*>(strat)->generators[j];
       const int USED_VARIABLES_BOUND=6;
       if ((e1.usedVariables.deg()>USED_VARIABLES_BOUND)||
           (e2.usedVariables.deg()>USED_VARIABLES_BOUND)||

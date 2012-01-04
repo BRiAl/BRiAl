@@ -79,7 +79,7 @@ static int pairs_top_sugar(const GroebnerStrategy& strat){
 static void cleanTopByChainCriterion(GroebnerStrategy & strat){
   strat.pairs.cleanTopByChainCriterion();
 }
-static void printGenerators(GroebnerStrategy& strat){
+static void printGenerators(const GroebnerStrategy& strat){
   int i;
   for (i=0;i<strat.generators.size();i++){
     std::cout<<(strat.generators[i].p)<<std::endl;
@@ -142,21 +142,24 @@ bool contains_one(const GroebnerStrategy& strat){
   return false;
 }
 static void implications(GroebnerStrategy& strat, int i){
-    strat.addNonTrivialImplicationsDelayed(strat.generators[i]);
+  strat.addNonTrivialImplicationsDelayed(const_cast<const GroebnerStrategy&>(strat).generators[i]);
     
 }
 int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return strat.generators.select1(m);
 }
-static Polynomial get_gen_by_lead(const GroebnerStrategy& strat, const Monomial& m){
-  return strat.generators.get(m).p;
-}
+
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
     if UNLIKELY((i<0)||(i>=strat.generators.size())){
         throw StrategyIndexException();
     }
     return strat.generators[i].p;
 }
+
+static Polynomial get_gen_by_lead(const GroebnerStrategy& strat, const Monomial& m){
+  return get_ith_gen(strat, strat.generators.checked_index(m));
+}
+
 class DuplicateLeadException{};
 
 

@@ -35,7 +35,7 @@ const int SLIMGB_SIMPLEST=0;
 template<int variant>
 class SlimgbReduction{
 private:
-  GroebnerStrategy* strat;
+  const GroebnerStrategy* strat;
   std::priority_queue<Polynomial, std::vector<Polynomial>, LMLessCompare> to_reduce;
   public:
   std::vector<Polynomial> result;

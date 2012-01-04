@@ -27,7 +27,7 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 class LessCombinedManySizesInStrat{
 public:
-  GroebnerStrategy* strat;
+  const GroebnerStrategy* strat;
   LessCombinedManySizesInStrat(GroebnerStrategy& strat){
     this->strat=&strat;
   }

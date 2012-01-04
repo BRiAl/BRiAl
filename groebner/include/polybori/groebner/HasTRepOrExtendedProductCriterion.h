@@ -53,7 +53,7 @@ public:
     if (strat->pairs.status.hasTRep(i,j))
       return true;
     
-    if (extended_product_criterion(strat->generators[i],strat->generators[j])){
+    if (extended_product_criterion(const_cast<const GroebnerStrategy*>(strat)->generators[i],const_cast<const GroebnerStrategy*>(strat)->generators[j])){
       strat->pairs.status.setToHasTRep(i,j);
       strat->extendedProductCriterions++;
       return true;
@@ -67,7 +67,7 @@ public:
     if (strat->pairs.status.hasTRep(i,j))
       return true;
     
-    if (extended_product_criterion(strat->generators[i],strat->generators[j])){
+    if (extended_product_criterion(const_cast<const GroebnerStrategy*>(strat)->generators[i],const_cast<const GroebnerStrategy*>(strat)->generators[j])){
       strat->pairs.status.setToHasTRep(i,j);
       strat->extendedProductCriterions++;
       return true;

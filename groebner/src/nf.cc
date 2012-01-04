@@ -243,7 +243,7 @@ static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p
   PolyEntry e(p);
   e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=spoly(strat.generators[i].p,p);
-  strat.generators[i]=e;
+  strat.generators.exchange(i, e);
 
   PBORI_ASSERT(p.ring().id() == strat.r.id());
   PBORI_ASSERT(e.lead.ring().id() == strat.r.id());
@@ -260,8 +260,8 @@ static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const P
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
   bool minimal=strat.generators[i].minimal;
   Polynomial res=strat.generators[i].p;
-  strat.generators[i].p=p;
-  strat.generators[i].recomputeInformation();
+  strat.generators.exchange(i,p);
+
   //strat.generators[i].minimal=false;
   
   if ((strat.generators[i].minimal)&&(strat.generators[i].length==2))
@@ -761,7 +761,7 @@ static Polynomial nf4(GroebnerStrategy& strat, Polynomial p){
   int index;
   while((index=strat.generators.select1(p))>=0){
     PBORI_ASSERT(index<strat.generators.size());
-    Polynomial* g=&strat.generators[index].p;
+    const Polynomial* g=&strat.generators[index].p;
     
     if((strat.generators[index].ecart()==0) && (strat.generators[index].length<=4) &&(strat.generators[index].lead!=p.lead())){
       wlen_type dummy;

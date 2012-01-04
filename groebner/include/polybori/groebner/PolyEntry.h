@@ -16,10 +16,10 @@
 #ifndef polybori_groebner_PolyEntry_h_
 #define polybori_groebner_PolyEntry_h_
 
+#include "LiteralFactorization.h"
+
 // include basic definitions
 #include "groebner_defs.h"
-
-#include "LiteralFactorization.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -63,6 +63,9 @@ public:
     } 
   }
 };
+
+
+
 
 
 inline bool

@@ -20,6 +20,7 @@
 #include "groebner_defs.h"
 #include "polynomial_properties.h"
 #include "PairManager.h"
+#include "PolyEntryVector.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -42,7 +43,17 @@ public:
 };
 
 
+template <class Type>
+class ExponentView {
+public:
+  ExponentView(const Type& val): m_val(val) {}
 
+  typename Type::exp_iterator begin() const { return m_val.expBegin(); }
+  typename Type::exp_iterator end() const { return m_val.expEnd(); }
+
+ private:
+  const Type& m_val;
+};
 
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.
@@ -110,6 +121,24 @@ protected:
   void updateMinimalLeadingTerms(PolyEntry&);
   void updateLLReductor(PolyEntry&);
   void setupSetsForElement(PolyEntry& entry);
+
+
+
+  template <class Iterator, class CompareType>
+  size_type min_index(Iterator start, Iterator finish, const CompareType& comp)
+    const {
+    start = std::min_element(start, finish, comp);
+    if UNLIKELY(start == finish)
+      return size_type(-1);
+    
+    return index(*start);
+  }
+
+  template <class SetType, class CompareType>
+  size_type min_index(const SetType& terms, const CompareType& comp) const {
+    return min_index(terms.begin(), terms.end(), comp);
+  }
+
 };
 
 

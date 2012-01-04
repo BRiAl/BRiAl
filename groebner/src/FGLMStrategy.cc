@@ -240,13 +240,16 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     //leading monomials from gb: vertices/
     mzd_t* row=mzd_init(1, varietySize);
-    for(i=0;i<gbFrom.size();i++){
-        Monomial lm=gbFrom[i].lead;
-        MonomialSet tail=gbFrom[i].tail.diagram();
+    ReductionStrategy::const_iterator start(gbFrom.begin()), 
+      finish(gbFrom.end());
+    while (start != finish){
+        Monomial lm = start->lead;
+        MonomialSet tail = start->tail.set();
         mzd_row_clear_offset(row,0,0);
         writeTailToRow(tail, row);
         writeRowToVariableDivisors(row,lm);
-        
+
+        ++start;
     }
     mzd_free(row);
     //edges

@@ -34,7 +34,7 @@ ReductionStrategy::unmarkNonminimalLeadingTerms(const MonomialSet& lm,
     PBORI_ASSERT((*mfm_start) != *lm.expBegin());
     PBORI_ASSERT((*mfm_start).reducibleBy(*lm.expBegin()));
 
-    (*this)[*mfm_start].minimal=false;
+    access(*mfm_start).minimal = false;
     ++mfm_start;
   }
 }
@@ -115,8 +115,8 @@ void ReductionStrategy::setupSetsForLastElement(){
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
 
-  int res = min_lm_index(leadingTerms.intersect(terms),
-			 LessWeightedLengthInStrat(*this));
+  int res = min_index(leadingTerms.intersect(terms),
+                      LessWeightedLengthInStrat(*this));
 
   if (res == -1 || (*this)[res].weightedLength<=2)
     return res;
@@ -127,12 +127,15 @@ ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
 
 typedef LessWeightedLengthInStratModified StratComparerForSelect;
 
+
 int
 ReductionStrategy::select1(const Polynomial& p) const {
 
 #ifdef LEX_LEAD_RED_STRAT
-  if (p.ring().ordering().isLexicographical())
-    return min_exp_index(leadingTerms.divisorsOf(p.lexLead()), lex_tag());
+  if (p.ring().ordering().isLexicographical()) {
+    MonomialSet ms = leadingTerms.divisorsOf(p.lexLead());
+    return (ms.isZero()?  -1:  index(*ms.expBegin()));
+  }
 #endif
 
   return select1(p.lead());
@@ -140,9 +143,8 @@ ReductionStrategy::select1(const Polynomial& p) const {
 
 int
 ReductionStrategy::select1(const Monomial& m) const {
-
-  return min_exp_index(leadingTerms.divisorsOf(m),
-			   StratComparerForSelect(*this));
+  return min_index(ExponentView<MonomialSet>(leadingTerms.divisorsOf(m)),
+                                             StratComparerForSelect(*this));
 }
 
 Polynomial

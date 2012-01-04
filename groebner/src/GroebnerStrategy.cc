@@ -117,8 +117,7 @@ void GroebnerStrategy::llReduceAll(){
             Polynomial tail=generators[i].tail;
             tail=ll_red_nf(tail,generators.llReductor);
             if (tail!=generators[i].tail){
-                generators[i].p=tail+generators[i].lead;
-                generators[i].recomputeInformation();
+                generators.exchange(i, tail+generators[i].lead);
                 if (generators[i].length==1) generators.monomials=generators.monomials.unite(generators[i].p.diagram());
                 //treat_m_p_1_case(generators[i]);
 
@@ -147,8 +146,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
           new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
         }
         if (generators[i].p!=new_p){
-          generators[i].p=new_p;
-          generators[i].recomputeInformation();
+          generators.exchange(i, new_p);
           if (generators[i].length==1) generators.monomials=generators.monomials.unite(new_p.diagram());
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
@@ -177,7 +175,7 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
         if(s>=0)
-          generators[s].markVariablePairsCalculated();
+          generators.access(s).markVariablePairsCalculated();
         return std::vector<Polynomial>();
     }
 
@@ -197,7 +195,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     if ((get_table_entry4(this->r, p_code,0)==p_code) &&
         (get_table_entry4(this->r, p_code,1)==0)){
         if (s>=0)
-          generators[s].markVariablePairsCalculated();
+          generators.access(s).markVariablePairsCalculated();
         return std::vector<Polynomial>();
     }
     
@@ -224,7 +222,7 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     
     
      if (s>=0)
-       generators[s].markVariablePairsCalculated();
+       generators.access(s).markVariablePairsCalculated();
      
       if (can_add_directly){
         return impl;
@@ -258,7 +256,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
 
     if ((get_table_entry4(this->r,p_code,0)==p_code) && (get_table_entry4(this->r,p_code,1)==0)){
         if(s>=0)
-          generators[s].markVariablePairsCalculated();
+          generators.access(s).markVariablePairsCalculated();
 
         return std::vector<Polynomial>();
     }
@@ -284,7 +282,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     
     
      if (s>=0)
-       generators[s].markVariablePairsCalculated();
+       generators.access(s).markVariablePairsCalculated();
     
     if (can_add_directly){
         return impl;
@@ -312,7 +310,8 @@ void GroebnerStrategy::addVariablePairs(int s){
          {
               //((MonomialSet(p).subset0(*it).isZero())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
       //cout<<"factorcrit"<<endl;
-             generators[s].vPairCalculated.insert(*it);
+
+           generators.access(s).vPairCalculated.insert(*it);
           } else
             this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
           it++;
@@ -320,7 +319,7 @@ void GroebnerStrategy::addVariablePairs(int s){
     } 
 }
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
-  PolyEntry& e=generators[s];
+  const PolyEntry& e=generators[s];
   if ((have_ordering_for_tables(this->r))||
       ((have_base_ordering_for_tables(this->r))&&
        (generators[s].p.inSingleBlock()))) { 
@@ -550,7 +549,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
       impl=treatVariablePairs(s);
     }
       else {
-        generators[s].markVariablePairsCalculated();
+        generators.access(s).markVariablePairsCalculated();
       }
 
     
@@ -681,8 +680,8 @@ std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
         //redTail
         int index=generators.index(m_vec[i]);
         Polynomial reduced=red_tail(this->generators,generators[index].p);
-        generators[index].p=reduced;
-        generators[index].recomputeInformation();
+        generators.exchange(index, reduced);
+
         //if (generators[index].length==1) strat.monomials=strat.monomials.unite(reduced.diagram());
         result.push_back(reduced);
         i--;
