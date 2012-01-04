@@ -114,9 +114,8 @@ void ReductionStrategy::setupSetsForLastElement(){
 
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {
-
-  int res = min_index(leadingTerms.intersect(terms),
-                      LessWeightedLengthInStrat(*this));
+  MonomialSet ms(leadingTerms.intersect(terms));
+  int res = minimum(ms.begin(), ms.end(), LessWeightedLengthInStrat(*this));
 
   if (res == -1 || (*this)[res].weightedLength<=2)
     return res;
@@ -143,8 +142,8 @@ ReductionStrategy::select1(const Polynomial& p) const {
 
 int
 ReductionStrategy::select1(const Monomial& m) const {
-  return min_index(ExponentView<MonomialSet>(leadingTerms.divisorsOf(m)),
-                                             StratComparerForSelect(*this));
+  MonomialSet ms(leadingTerms.divisorsOf(m));
+  return minimum(ms.expBegin(), ms.expEnd(), StratComparerForSelect(*this));
 }
 
 Polynomial

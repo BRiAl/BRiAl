@@ -29,7 +29,7 @@ using namespace std;
 USING_NAMESPACE_PBORIGB
 USING_NAMESPACE_PBORI
 
-typedef PolyEntryIndexException StrategyIndexException;
+class StrategyIndexException {};
 
 static void translator_gi(StrategyIndexException const& x) {
     PyErr_SetString( PyExc_IndexError, "Wrong Index access at strategy");
