@@ -21,26 +21,9 @@
 #include "polynomial_properties.h"
 #include "PairManager.h"
 #include "PolyEntryVector.h"
+#include "ReductionOptions.h"
 
 BEGIN_NAMESPACE_PBORIGB
-
-/** @class ReductionOptions
- * @brief This class defines option values for the ReductionStrategy.
- *
- **/
-class ReductionOptions {
-public:
-  ReductionOptions():
-    reducibleUntil(-1),
-    optLL(false), optBrutalReductions(true),
-    optRedTail(true), optRedTailDegGrowth(true) {}
-
-  bool optBrutalReductions;
-  bool optLL;
-  bool optRedTailDegGrowth;
-  bool optRedTail;
-  idx_type reducibleUntil;
-};
 
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.

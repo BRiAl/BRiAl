@@ -92,9 +92,10 @@ protected:
   data_type get(const MapType& map, const KeyType& key, check) const {
 
     typename MapType::const_iterator result(map.find(key));
-    if (result != map.end())
+
+    if (result == map.end())
       return (data_type)-1;
-    
+
     PBORI_ASSERT(result->second != data_type(-1));
     return result->second;
   }
