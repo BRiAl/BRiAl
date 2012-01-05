@@ -49,6 +49,8 @@ public:
   template <class ElementType>
   void push_back(const ElementType& element) {
     m_data.push_back(element);
+
+    PBORI_ASSERT(m_indices.checked(back().lead) == (size_type)-1);
     m_indices.insert(back(), size() - 1);
   }
 
