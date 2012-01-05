@@ -19,26 +19,6 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-PolyEntry::PolyEntry(const Polynomial &poly):
-  literal_factors(poly),
-  p(poly), usedVariables(poly.usedVariablesExp()),
-  deg(poly.deg()), length(poly.length()), minimal(true),
-  // empty/zero default values to be filled below (TODO: use inheritance here)
-  lead(poly.ring()), leadExp(), leadDeg(), tail(poly.ring()), 
-  weightedLength(), tailVariables(), gcdOfTerms(poly.ring()) {
-
-  this->lead=p.boundedLead(deg);
-  this->leadExp=lead.exp();
-  this->leadDeg=leadExp.deg();
-
-  if (leadDeg==deg)
-    this->weightedLength=this->length;
-  else
-    this->weightedLength=poly.eliminationLengthWithDegBound(deg);
-  
-  tail=poly-lead;
-  this->tailVariables=tail.usedVariablesExp();
-}
 
 void PolyEntry::recomputeInformation(){
   PBORI_ASSERT(this->lead==p.lead());

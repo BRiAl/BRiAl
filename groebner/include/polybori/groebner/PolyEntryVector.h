@@ -66,19 +66,11 @@ public:
   template <class KeyType>
   PolyEntryReference access(const KeyType& rhs) { return m_data[index(rhs)]; }
 
-
-  void exchange(size_type idx, const PolyEntry& rhs) {
+  template <class Type>
+  void exchange(size_type idx, const Type& rhs) {
     PolyEntry& entry = m_data[idx];
     Monomial lm = entry.lead;
     entry = rhs;
-    updateMaps(entry, lm);
-  }
-
-  void exchange(size_type idx, const Polynomial& rhs) {
-    PolyEntry& entry = m_data[idx];
-    Monomial lm = entry.lead;
-    entry.p = rhs;
-    entry.recomputeInformation();
     updateMaps(entry, lm);
   }
 

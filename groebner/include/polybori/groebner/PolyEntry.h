@@ -23,18 +23,29 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-/** @class PolyEntry
- * @brief This class defines PolyEntry.
- *
- **/
-class PolyEntry{
-   PolyEntry();                 /* never use this one! */
+class PolyEntryBase {
 public:
-  PolyEntry(const Polynomial &p);
-
-  bool operator==(const PolyEntry& other) const{
-      return p==other.p;
+  PolyEntryBase(const Polynomial &poly):
+    literal_factors(poly),
+    p(poly), usedVariables(poly.usedVariablesExp()),
+    deg(poly.deg()), length(poly.length()), minimal(true),
+    // empty/zero default values to be filled below (TODO: use inheritance here)
+    lead(poly.ring()), leadExp(), leadDeg(), tail(poly.ring()), 
+    weightedLength(), tailVariables(), gcdOfTerms(poly.ring()) {
+    
+    lead = p.boundedLead(deg);
+    leadExp = lead.exp();
+    leadDeg = leadExp.deg();
+    
+    if (leadDeg == deg)
+      weightedLength = length;
+    else
+      weightedLength = poly.eliminationLengthWithDegBound(deg);
+    
+    tail = poly-lead;
+    tailVariables = tail.usedVariablesExp();
   }
+
   LiteralFactorization literal_factors;
   Polynomial p;
   Monomial lead;
@@ -47,12 +58,39 @@ public:
   Exponent usedVariables;
   Exponent tailVariables;
   Polynomial tail;
+  bool minimal;
   ///set of variables with which pair was calculated
   std::set<idx_type> vPairCalculated; 
-  deg_type ecart() const{
-    return deg-leadDeg;
+};
+
+/** @class PolyEntry
+ * @brief This class defines PolyEntry.
+ *
+ **/
+class PolyEntry:
+  public PolyEntryBase {
+  PolyEntry();                 /* never use this one! */
+
+  typedef PolyEntry self;
+  typedef PolyEntryBase base;
+
+public:
+  PolyEntry(const Polynomial &p): base(p) {}
+
+  bool operator==(const self& other) const { return p == other.p; }
+
+  self& operator=(const self& rhs) {
+    return static_cast<self&>(base::operator=(rhs));
   }
-  bool minimal;
+
+  self& operator=(const Polynomial& rhs) {
+    p = rhs;
+    recomputeInformation();
+    return *this;
+  }
+
+  deg_type ecart() const{ return deg-leadDeg; }
+
   void recomputeInformation();
 
   void markVariablePairsCalculated() {
