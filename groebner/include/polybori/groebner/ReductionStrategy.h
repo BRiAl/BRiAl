@@ -95,10 +95,10 @@ protected:
 
   void updateMonomials(const PolyEntry&);
   void updateLeadingTerms(const PolyEntry&);
-  void updateMinimalLeadingTerms(PolyEntry&);
+  void updateMinimalLeadingTerms(const Monomial&);
   void updateLLReductor(const PolyEntry&);
   void insertIntoLLReductor(const PolyEntry&);
-  void setupSetsForElement(PolyEntry& entry);
+  void setupSetsForElement(const PolyEntry& entry);
 
 
   template <class Iterator, class CompareType>

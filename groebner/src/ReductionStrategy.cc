@@ -65,14 +65,13 @@ ReductionStrategy::updateLeadingTerms(const PolyEntry& entry) {
 }
 
 inline void
-ReductionStrategy::updateMinimalLeadingTerms(PolyEntry& entry) {
+ReductionStrategy::updateMinimalLeadingTerms(const Monomial& lm) {
 
-  const Monomial& lm = entry.lead;
   MonomialSet divisors = minimalLeadingTerms.divisorsOf(lm);
   if(divisors.isZero())
     removeNonminimalLeadingTerms(lm.set(), minimalLeadingTerms.multiplesOf(lm));
-  else if (!(divisors.diff(lm.set()).isZero()))
-    entry.minimal = false;
+  else 
+    access(lm).minimal &= divisors.diff(lm.set()).isZero();
 }
 
 inline void
@@ -109,11 +108,11 @@ ReductionStrategy::updateLLReductor(const PolyEntry& entry) {
   }
 }
 
-void ReductionStrategy::setupSetsForElement(PolyEntry& entry) {
+void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
 
-    updateMinimalLeadingTerms(entry);
+    updateMinimalLeadingTerms(entry.lead);
     updateLeadingTerms(entry);
     updateMonomials(entry);
 

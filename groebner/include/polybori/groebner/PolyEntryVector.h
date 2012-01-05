@@ -39,9 +39,7 @@ public:
   const_iterator end() const { return m_data.end(); }
   const_reference front() const { return m_data.front(); }
   const_reference back() const { return m_data.back(); }
-protected:
-  data_type::reference back()  { return m_data.back(); } // TODO remove
-public:
+
   PolyEntryVector():
     m_data(), m_indices() {}
 
