@@ -42,19 +42,6 @@ public:
   idx_type reducibleUntil;
 };
 
-
-template <class Type>
-class ExponentView {
-public:
-  ExponentView(const Type& val): m_val(val) {}
-
-  typename Type::exp_iterator begin() const { return m_val.expBegin(); }
-  typename Type::exp_iterator end() const { return m_val.expEnd(); }
-
- private:
-  const Type& m_val;
-};
-
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.
  *
@@ -76,24 +63,31 @@ public:
 
       leadingTerms(ring), minimalLeadingTerms(ring),
       leadingTerms11(ring), leadingTerms00(ring),
-      llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
+      llReductor(ring.one()), monomials(ring), monomials_plus_one(ring)  { }
 
     Polynomial nf(const Polynomial& p) const {
       return (optRedTail? reducedNormalForm(p): headNormalForm(p));
     }
 
-    void setupSetsForLastElement();
-
-
-
     bool canRewrite(const Polynomial& p) const {
       return is_rewriteable(p, minimalLeadingTerms);
     }
-  
+
+
+//   template <class ElementType>
+//   void push_back(const ElementType& element) {
+//     PolyEntryVector::push_back(element);
+//     setupSetsForElement(back());
+//   }
+
     void addGenerator(const Polynomial& p) {
         push_back(p);
-        setupSetsForLastElement();
+        setupSetsForElement(back());
     }
+
+    void setupSetsForLastElement() { setupSetsForElement(back()); }  // @todo
+                                                                     // needed
+                                                                     // for GBred
 
     int select1(const Polynomial& p) const;
     int select1(const Monomial& m) const;
@@ -119,7 +113,8 @@ protected:
   void updateMonomials(const PolyEntry&);
   void updateLeadingTerms(const PolyEntry&);
   void updateMinimalLeadingTerms(PolyEntry&);
-  void updateLLReductor(PolyEntry&);
+  void updateLLReductor(const PolyEntry&);
+  void insertIntoLLReductor(const PolyEntry&);
   void setupSetsForElement(PolyEntry& entry);
 
 

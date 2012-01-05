@@ -368,21 +368,6 @@ MonomialSet recursively_insert(MonomialSet::navigator p, idx_type idx, MonomialS
   return recursively_insert(mset.ring(), p, idx, mset.navigation());
 }
 
-void addPolynomialToReductor(Polynomial& p, MonomialSet& m){
-    Monomial lm=p.lead();
-    PBORI_ASSERT (!(m.isZero()));
-    idx_type lead_index=*(lm.begin());
-    Exponent red_lead=*m.expBegin();
-    if (std::find(red_lead.begin(),red_lead.end(),lead_index)==red_lead.end()){
-        //this->log("linear lead reductor\n");
-        p=ll_red_nf(p,m);
-        PBORI_ASSERT(p.lead()==lm);
-        m=ll_red_nf(m,MonomialSet(p.diagram())).diagram();
-        //PBORI_ASSERT(ll_red_nf(m+m.lead(),m)==m+m.lead());
-        m=recursively_insert(p.navigation().elseBranch(),
-                             lead_index, m);
-    }
-}
 
 
 

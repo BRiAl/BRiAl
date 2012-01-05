@@ -20,11 +20,11 @@
 #include <polybori/groebner/LessWeightedLengthInStratModified.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/red_tail.h>
+#include <polybori/groebner/ll_red_nf.h>
 
 BEGIN_NAMESPACE_PBORIGB
 
 
-void addPolynomialToReductor(Polynomial& p, MonomialSet& m); // groebner_alg.cc
 
 template <class Iterator>
 inline void 
@@ -74,6 +74,7 @@ ReductionStrategy::updateMinimalLeadingTerms(PolyEntry& entry) {
   else if (!(divisors.diff(lm.set()).isZero()))
     entry.minimal = false;
 }
+
 inline void
 ReductionStrategy::updateMonomials(const PolyEntry& entry) {
 
@@ -83,11 +84,29 @@ ReductionStrategy::updateMonomials(const PolyEntry& entry) {
   }
 }
 
+
 inline void
-ReductionStrategy::updateLLReductor(PolyEntry& entry) {
+ReductionStrategy::insertIntoLLReductor(const PolyEntry& entry) {
+
+  Polynomial poly = ll_red_nf(entry.p, llReductor);
+  PBORI_ASSERT(poly.lead() == entry.lead);
+
+  llReductor = recursively_insert(poly.navigation().elseBranch(),
+                                  entry.lead.firstIndex(),
+                                  ll_red_nf(llReductor, poly.set()));
+  exchange(entry.lead, poly);
+}
+
+inline void
+ReductionStrategy::updateLLReductor(const PolyEntry& entry) {
+
   if ( (entry.leadDeg == 1) && 
-       (*(entry.p.navigation()) == entry.lead.firstIndex() ) )
-    addPolynomialToReductor(entry.p, llReductor);
+       (*(entry.p.navigation()) == entry.lead.firstIndex() ) ) {
+
+    PBORI_ASSERT (!(llReductor.isZero()));
+    if (!llReductor.expBegin()->reducibleBy(entry.lead.firstIndex()))
+      insertIntoLLReductor(entry);
+  }
 }
 
 void ReductionStrategy::setupSetsForElement(PolyEntry& entry) {
@@ -102,13 +121,6 @@ void ReductionStrategy::setupSetsForElement(PolyEntry& entry) {
     if (optLL)
       updateLLReductor(entry);
     #endif
-
-    //    lm2Index[entry.lead] = index;
-    //    exp2Index[entry.leadExp] = index;
-}
-
-void ReductionStrategy::setupSetsForLastElement(){
-  setupSetsForElement(back());
 }
 
 

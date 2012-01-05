@@ -54,7 +54,6 @@ public:
     optLinearAlgebraInLastBlock(true),
     reduceByTailReduced(false) {
 
-    generators.llReductor = BooleSet(input_ring.one());
   }
 
   bool containsOne() const { return generators.leadingTerms.ownsOne(); }
