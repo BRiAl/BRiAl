@@ -20,7 +20,7 @@
 #include <polybori/groebner/LessWeightedLengthInStratModified.h>
 #include <polybori/groebner/nf.h>
 #include <polybori/groebner/red_tail.h>
-#include <polybori/groebner/ll_red_nf.h>
+
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -28,73 +28,18 @@ BEGIN_NAMESPACE_PBORIGB
 
 template <class Iterator>
 inline void 
-ReductionStrategy::unmarkNonminimalLeadingTerms(const MonomialSet& lm,
-                                                Iterator mfm_start, Iterator mfm_end) {
+ReductionStrategy::unmarkNonMinimalLeadingTerms(Iterator mfm_start,
+						Iterator mfm_end) {
   while (mfm_start != mfm_end){
-    PBORI_ASSERT((*mfm_start) != *lm.expBegin());
-    PBORI_ASSERT((*mfm_start).reducibleBy(*lm.expBegin()));
+//     PBORI_ASSERT((*mfm_start) != lm.exp());
+//     PBORI_ASSERT((*mfm_start).reducibleBy(*lm.set().expBegin()));
 
     access(*mfm_start).minimal = false;
     ++mfm_start;
   }
 }
 
-inline void 
-ReductionStrategy::removeNonminimalLeadingTerms(const MonomialSet& lm,
-                                                MonomialSet lm_multiples_min) {
-  lm_multiples_min = lm_multiples_min.diff(lm);
-  PBORI_ASSERT(lm_multiples_min.intersect(minimalLeadingTerms).intersect(lm).isZero());
 
-  unmarkNonminimalLeadingTerms(lm, lm_multiples_min.expBegin(), lm_multiples_min.expEnd());
-  minimalLeadingTerms = minimalLeadingTerms.diff(lm_multiples_min).unite(lm);
-}
-
-
-inline void 
-ReductionStrategy::updateLeadingTerms(const PolyEntry& entry) {
-
-  const MonomialSet& terms = entry.lead.set();
-  leadingTerms = leadingTerms.unite(terms);
-
-  //doesn't need to be undone on simplification
-  if (entry.literal_factors.is11Factorization())
-    leadingTerms11 = leadingTerms11.unite(terms);
-  
-  if (entry.literal_factors.is00Factorization())
-    leadingTerms00 = leadingTerms00.unite(terms);
-}
-
-inline void
-ReductionStrategy::updateMinimalLeadingTerms(const Monomial& lm) {
-
-  MonomialSet divisors = minimalLeadingTerms.divisorsOf(lm);
-  if(divisors.isZero())
-    removeNonminimalLeadingTerms(lm.set(), minimalLeadingTerms.multiplesOf(lm));
-  else 
-    access(lm).minimal &= divisors.diff(lm.set()).isZero();
-}
-
-inline void
-ReductionStrategy::updateMonomials(const PolyEntry& entry) {
-
-  if (entry.length == 1){
-    PBORI_ASSERT(entry.p.length() == 1);
-    monomials = monomials.unite(entry.p);
-  }
-}
-
-
-inline void
-ReductionStrategy::insertIntoLLReductor(const PolyEntry& entry) {
-
-  Polynomial poly = ll_red_nf(entry.p, llReductor);
-  PBORI_ASSERT(poly.lead() == entry.lead);
-
-  llReductor = recursively_insert(poly.navigation().elseBranch(),
-                                  entry.lead.firstIndex(),
-                                  ll_red_nf(llReductor, poly.set()));
-  exchange(entry.lead, poly);
-}
 
 inline void
 ReductionStrategy::updateLLReductor(const PolyEntry& entry) {
@@ -103,8 +48,10 @@ ReductionStrategy::updateLLReductor(const PolyEntry& entry) {
        (*(entry.p.navigation()) == entry.lead.firstIndex() ) ) {
 
     PBORI_ASSERT (!(llReductor.isZero()));
-    if (!llReductor.expBegin()->reducibleBy(entry.lead.firstIndex()))
-      insertIntoLLReductor(entry);
+    if (!llReductor.expBegin()->reducibleBy(entry.lead.firstIndex())) {
+      Polynomial poly(insertIntoLLReductor(entry));
+      exchange(entry.lead, poly);
+    }
   }
 }
 
@@ -112,7 +59,9 @@ void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
 
-    updateMinimalLeadingTerms(entry.lead);
+    MonomialSet removed = updateMinimalLeadingTerms(entry.lead);
+    unmarkNonMinimalLeadingTerms(removed.expBegin(), removed.expEnd());
+
     updateLeadingTerms(entry);
     updateMonomials(entry);
 

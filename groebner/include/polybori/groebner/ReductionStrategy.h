@@ -22,6 +22,7 @@
 #include "PairManager.h"
 #include "PolyEntryVector.h"
 #include "ReductionOptions.h"
+#include "ReductionTerms.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -30,23 +31,13 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class ReductionStrategy:
-  public PolyEntryVector, public ReductionOptions {
+  public PolyEntryVector, public ReductionOptions, public ReductionTerms {
 
 public:
-    MonomialSet leadingTerms;
-    MonomialSet minimalLeadingTerms;
-    MonomialSet leadingTerms11;
-    MonomialSet leadingTerms00;
-    MonomialSet llReductor;
-    MonomialSet monomials;
-    MonomialSet monomials_plus_one;
 
     ReductionStrategy(const BoolePolyRing& ring):
       PolyEntryVector(), ReductionOptions(),
-
-      leadingTerms(ring), minimalLeadingTerms(ring),
-      leadingTerms11(ring), leadingTerms00(ring),
-      llReductor(ring.one()), monomials(ring), monomials_plus_one(ring)  { }
+      ReductionTerms(ring)  { }
 
     Polynomial nf(const Polynomial& p) const {
       return (optRedTail? reducedNormalForm(p): headNormalForm(p));
@@ -90,14 +81,9 @@ protected:
 
 
   template <class Iterator>
-  void unmarkNonminimalLeadingTerms(const MonomialSet&, Iterator, Iterator);
-  void removeNonminimalLeadingTerms(const MonomialSet&, MonomialSet);
-
-  void updateMonomials(const PolyEntry&);
-  void updateLeadingTerms(const PolyEntry&);
-  void updateMinimalLeadingTerms(const Monomial&);
+  void unmarkNonMinimalLeadingTerms(Iterator, Iterator);
+ 
   void updateLLReductor(const PolyEntry&);
-  void insertIntoLLReductor(const PolyEntry&);
   void setupSetsForElement(const PolyEntry& entry);
 
 
