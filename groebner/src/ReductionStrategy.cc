@@ -26,29 +26,18 @@ BEGIN_NAMESPACE_PBORIGB
 
 
 
-template <class Iterator>
-inline void 
-ReductionStrategy::unmarkNonMinimalLeadingTerms(Iterator mfm_start,
-						Iterator mfm_end) {
-  while (mfm_start != mfm_end){
-//     PBORI_ASSERT((*mfm_start) != lm.exp());
-//     PBORI_ASSERT((*mfm_start).reducibleBy(*lm.set().expBegin()));
-
-    access(*mfm_start).minimal = false;
-    ++mfm_start;
-  }
-}
 
 
 void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
+    unmarkNonMinimalLeadingTerms( minimalLeadingTerms.update(entry.lead) );
 
-    MonomialSet removed = updateMinimalLeadingTerms(entry.lead);
-    unmarkNonMinimalLeadingTerms(removed.expBegin(), removed.expEnd());
+    leadingTerms.update(entry);
+    leadingTerms00.update(entry); //doesn't need to be undone on simplification
+    leadingTerms11.update(entry);
 
-    updateLeadingTerms(entry);
-    updateMonomials(entry);
+    monomials.update(entry);
 
     #ifdef LL_RED_FOR_GROEBNER
     if (optLL) {

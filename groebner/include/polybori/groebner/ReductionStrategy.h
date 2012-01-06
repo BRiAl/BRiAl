@@ -26,10 +26,24 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
+template <class KeyType, bool Value>
+class set_associated_minimal {
+public:
+  set_associated_minimal(PolyEntryVector& strat): m_strat(strat) {}
+
+  void operator()(const KeyType& key) const { 
+    m_strat.access(key).minimal = Value;
+  }
+
+private:
+  PolyEntryVector& m_strat;
+};
+
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.
  *
  **/
+
 class ReductionStrategy:
   public PolyEntryVector, public ReductionOptions, public ReductionTerms {
 
@@ -77,11 +91,13 @@ public:
     Polynomial reducedNormalForm(const Polynomial& p) const;
 
 protected:
+
   int select_short_by_terms(const MonomialSet&) const;
 
-
-  template <class Iterator>
-  void unmarkNonMinimalLeadingTerms(Iterator, Iterator);
+  void unmarkNonMinimalLeadingTerms(MonomialSet removed) {
+    std::for_each(removed.expBegin(), removed.expEnd(),
+                  set_associated_minimal<Exponent, false>(*this));
+  }
  
   void setupSetsForElement(const PolyEntry& entry);
 

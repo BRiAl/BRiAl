@@ -98,17 +98,9 @@ r(orig.r)
 
 
 void GroebnerStrategy::treat_m_p_1_case(const PolyEntry& e){
-    if (e.length==2){
-        PBORI_ASSERT(e.p.length()==2);
-        Polynomial::const_iterator it=e.p.begin();
-        PBORI_ASSERT(it!=e.p.end());
-        it++;
-        PBORI_ASSERT(it!=e.p.end());
-        if (it->deg()==0){
-            generators.monomials_plus_one=generators.monomials_plus_one.unite(e.lead.diagram());
-        }
-    }
+  generators.monomials_plus_one.update(e);
 }
+
 void GroebnerStrategy::llReduceAll(){
     int i;
     Exponent ll_e=*(generators.llReductor.expBegin());
@@ -147,7 +139,8 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         }
         if (generators[i].p!=new_p){
           generators.exchange(i, new_p);
-          if (generators[i].length==1) generators.monomials=generators.monomials.unite(new_p.diagram());
+          generators.monomials.update(new_p);
+
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
             //treat_m_p_1_case(generators[i]);

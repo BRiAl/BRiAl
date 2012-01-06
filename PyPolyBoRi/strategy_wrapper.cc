@@ -194,8 +194,21 @@ static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
     strat.addGeneratorDelayed(p);
 }
 
+template <class Type>
+void export_terms(const char* name) {
+  implicitly_convertible<MonomialSet, Type>();
+  implicitly_convertible<Type, MonomialSet >();
+
+  boost::python::class_<Type,
+    boost::python::bases<MonomialSet> > (name, name,
+                                         init<const BoolePolyRing&>());
+
+}
+
 void export_strategy(){
   export_slimgb();
+  export_terms<MonomialTerms>("MonomialTerms");
+
   def("easy_linear_factors", easy_linear_factors);
   boost::python::class_<PolyEntry>("PolyEntry",
                           "Entry with polynomial and statistical information",

@@ -77,6 +77,135 @@ private:
 };
 
 
+class MinimalLeadingTerms:
+  public MonomialSet {
+
+  typedef MonomialSet base;
+
+public:
+
+  template <class Type>
+  MinimalLeadingTerms(const Type& value): base(value) { }
+
+  /// Insert leading term and return monomials, that are not minimal any more
+  MonomialSet update(const Monomial& lm) {
+
+    MonomialSet divisors(divisorsOf(lm));
+    if(divisors.isZero()) {
+      MonomialSet removed(multiplesOf(lm).diff(lm.set()));
+      PBORI_ASSERT(removed.intersect(*this).intersect(lm.set()).isZero());
+
+      *this = diff(removed).unite(lm.set());
+      PBORI_ASSERT(assertion(lm, removed.expBegin(),removed.expEnd()));
+
+      return removed;
+    }
+    else if (divisors.diff(lm.set()).isZero())
+      return lm.set();
+
+    return lm.ring().zero();
+  }
+
+private:
+  bool assertion(const Monomial& lm,
+                 MonomialSet::exp_iterator start,
+                 MonomialSet::exp_iterator finish) const {
+    while (start != finish) {
+      if ( (*start) == lm.exp() || !start->reducibleBy(lm.exp()) )
+        return false;
+      ++start;
+    }
+    return true;
+  }
+};
+
+template <class NewType>
+class TermsFacade:
+  public MonomialSet {
+
+  typedef MonomialSet base;
+
+public:
+  /// Construct copy or MonomialSet from value
+  template <class Type>
+  TermsFacade(const Type& value): base(value) { }
+
+  /// Insert data (polynomial or leading term) from entry
+  void update(const PolyEntry& entry) { 
+    if (get().isCompatible(entry))
+      operator=(unite(entry.lead.set()));
+  }
+  
+  /// Cheap and save conversion to monomial set
+  operator const base& () { return static_cast<const base&>(*this);}
+  
+private:
+  /// Access complete type
+  const NewType& get() const { return static_cast<const NewType&>(*this); }
+};
+
+class MonomialTerms:
+  public TermsFacade<MonomialTerms> {
+
+public:
+  template <class Type>
+  MonomialTerms(const Type& rhs): TermsFacade<MonomialTerms>(rhs) {}
+
+  bool isCompatible(const PolyEntry& entry) const {
+    PBORI_ASSERT( (entry.length != 1) || (entry.p == entry.lead) );
+    return (entry.length == 1);
+  }
+};
+
+class LeadingTerms:
+  public TermsFacade<LeadingTerms> {
+
+public:
+  template <class Type>
+  LeadingTerms(const Type& rhs): TermsFacade<LeadingTerms>(rhs) {}
+
+  bool isCompatible(const PolyEntry&) const { return true; }
+};
+
+class LeadingTerms00:
+  public TermsFacade<LeadingTerms00> {
+
+public:
+  template <class Type>
+  LeadingTerms00(const Type& rhs): TermsFacade<LeadingTerms00>(rhs) {}
+
+  bool isCompatible(const PolyEntry& entry) const {
+    return entry.literal_factors.is00Factorization();
+  }
+};
+
+class LeadingTerms11:
+  public TermsFacade<LeadingTerms11> {
+
+public:
+  template <class Type>
+  LeadingTerms11(const Type& rhs): TermsFacade<LeadingTerms11>(rhs) {}
+
+  bool isCompatible(const PolyEntry& entry) const {
+    return entry.literal_factors.is11Factorization();
+  }
+};
+
+
+class MonomialPlusOneTerms:
+  public TermsFacade<MonomialPlusOneTerms> {
+
+public:
+  template <class Type>
+  MonomialPlusOneTerms(const Type& rhs): TermsFacade<MonomialPlusOneTerms>(rhs) {}
+
+  bool isCompatible(const PolyEntry& entry) const { 
+    PBORI_ASSERT( (entry.length != 2) || entry.p.isPair());
+    return (entry.length == 2) && (entry.p.hasConstantPart());
+  }
+};
+
+
 
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy
@@ -88,63 +217,18 @@ class ReductionTerms {
   typedef ReductionTerms self;
 
 public:
-  MonomialSet leadingTerms;
-  MonomialSet minimalLeadingTerms;
-  MonomialSet leadingTerms11;
-  MonomialSet leadingTerms00;
+  LeadingTerms leadingTerms;
+  MinimalLeadingTerms minimalLeadingTerms;
+  LeadingTerms11 leadingTerms11;
+  LeadingTerms00 leadingTerms00;
   LLReductor llReductor;
-  MonomialSet monomials;
-  MonomialSet monomials_plus_one;
+  MonomialTerms monomials;
+  MonomialPlusOneTerms monomials_plus_one;
   
   ReductionTerms(const BoolePolyRing& ring):
     leadingTerms(ring), minimalLeadingTerms(ring),
     leadingTerms11(ring), leadingTerms00(ring),
     llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
-
-
-
-
-protected:
-  void updateLeadingTerms(const PolyEntry& entry) {
-    
-    const MonomialSet& terms = entry.lead.set();
-    leadingTerms = leadingTerms.unite(terms);
-    
-    //doesn't need to be undone on simplification
-    if (entry.literal_factors.is11Factorization())
-      leadingTerms11 = leadingTerms11.unite(terms);
-    
-    if (entry.literal_factors.is00Factorization())
-      leadingTerms00 = leadingTerms00.unite(terms);
-  }
-
-
-  void updateMonomials(const PolyEntry& entry) {
-    
-    if (entry.length == 1){
-      PBORI_ASSERT(entry.p.length() == 1);
-      monomials = monomials.unite(entry.p);
-    }
-  }
-
-  MonomialSet updateMinimalLeadingTerms(const Monomial& lm) {
-
-    MonomialSet divisors = minimalLeadingTerms.divisorsOf(lm);
-    MonomialSet removed(lm.ring());
-    if(divisors.isZero()) {
-      removed = minimalLeadingTerms.multiplesOf(lm).diff(lm.set());
-      
-      PBORI_ASSERT(removed.intersect(minimalLeadingTerms).
-		   intersect(lm.set()).isZero());
-    
-      minimalLeadingTerms = minimalLeadingTerms.diff(removed).unite(lm.set());
-    }
-    else if (divisors.diff(lm.set()).isZero())
-      removed = lm.set();
-
-    return removed;
-  }
-
 
 };
 
