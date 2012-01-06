@@ -87,26 +87,28 @@ public:
   template <class Type>
   MinimalLeadingTerms(const Type& value): base(value) { }
 
-  /// Insert leading term and return monomials, that are not minimal any more
+  /// Insert leading term and return monomials, that are not minimal (any more)
   MonomialSet update(const Monomial& lm) {
 
     MonomialSet divisors(divisorsOf(lm));
-    if(divisors.isZero()) {
-      MonomialSet removed(multiplesOf(lm).diff(lm.set()));
-      PBORI_ASSERT(removed.intersect(*this).intersect(lm.set()).isZero());
+    if(divisors.isZero())
+      return cleanup(lm);
 
-      *this = diff(removed).unite(lm.set());
-      PBORI_ASSERT(assertion(lm, removed.expBegin(),removed.expEnd()));
-
-      return removed;
-    }
-    else if (divisors.diff(lm.set()).isZero())
-      return lm.set();
-
-    return lm.ring().zero();
+    return  (divisors == lm.set()? lm.ring().zero(): lm.set());
   }
-
+  
 private:
+
+  MonomialSet cleanup(const Monomial& lm) {
+    MonomialSet removed(multiplesOf(lm).diff(lm.set()));
+
+    PBORI_ASSERT(removed.intersect(*this).intersect(lm.set()).isZero());
+    PBORI_ASSERT(assertion(lm, removed.expBegin(),removed.expEnd()));
+
+    *this = diff(removed).unite(lm.set());
+    return removed;
+  }
+  
   bool assertion(const Monomial& lm,
                  MonomialSet::exp_iterator start,
                  MonomialSet::exp_iterator finish) const {
