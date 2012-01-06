@@ -33,10 +33,10 @@ using namespace std;
 BOOST_PYTHON_MODULE(PyPolyBoRi){
 
   export_main();
+  export_bset();
   export_strategy();
   export_fglm();
   export_monomial();
-  export_bset();
   export_variable_block();
   export_misc();
 }

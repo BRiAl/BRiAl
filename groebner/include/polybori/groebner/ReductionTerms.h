@@ -28,6 +28,56 @@ BEGIN_NAMESPACE_PBORIGB
 MonomialSet recursively_insert(MonomialSet::navigator p,
 			       idx_type idx, MonomialSet mset);
 
+class LLReductor:
+  public MonomialSet {
+
+  typedef MonomialSet base;
+
+public:
+  /// Construct reductor from Ring
+  LLReductor(const BoolePolyRing& ring): base(ring.one()) {}
+
+  /// Construct copy or MonomialSet
+  template <class Type>
+  LLReductor(const Type& value): base(value) { PBORI_ASSERT(!isZero()); }
+
+  /// Assignment
+  template <class Type>
+  LLReductor& operator=(const Type& value) {
+    PBORI_ASSERT(!base(value).isZero());
+    return static_cast<LLReductor&>(base::operator=(*this));
+  }
+
+  /// Test whether polynomial is a compatible reductor element
+  bool improvesBy(const PolyEntry& entry) {
+
+    PBORI_ASSERT (!isZero());
+    return  (entry.leadDeg == 1) && 
+      (*(entry.p.navigation()) == entry.lead.firstIndex() ) &&
+      (!expBegin()->reducibleBy(entry.lead.firstIndex()));
+  }
+
+  /// Insert polynomial if compatible, return updated polynomial
+  Polynomial update(const PolyEntry& entry) {
+    return (improvesBy(entry)? insert(entry): entry.p);
+  }
+
+private:
+  Polynomial insert(const PolyEntry& entry) {
+    
+    Polynomial poly = ll_red_nf(entry.p, *this);
+    PBORI_ASSERT(poly.lead() == entry.lead);
+    
+    operator=(recursively_insert(poly.navigation().elseBranch(),
+                                 entry.lead.firstIndex(),
+                                 ll_red_nf(*this, poly.set())));
+    return poly;
+  }
+
+};
+
+
+
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy
  *
@@ -42,14 +92,17 @@ public:
   MonomialSet minimalLeadingTerms;
   MonomialSet leadingTerms11;
   MonomialSet leadingTerms00;
-  MonomialSet llReductor;
+  LLReductor llReductor;
   MonomialSet monomials;
   MonomialSet monomials_plus_one;
   
   ReductionTerms(const BoolePolyRing& ring):
     leadingTerms(ring), minimalLeadingTerms(ring),
     leadingTerms11(ring), leadingTerms00(ring),
-    llReductor(ring.one()), monomials(ring), monomials_plus_one(ring)  { }
+    llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
+
+
+
 
 protected:
   void updateLeadingTerms(const PolyEntry& entry) {
@@ -92,16 +145,7 @@ protected:
     return removed;
   }
 
-  Polynomial insertIntoLLReductor(const PolyEntry& entry) {
 
-    Polynomial poly = ll_red_nf(entry.p, llReductor);
-    PBORI_ASSERT(poly.lead() == entry.lead);
-    
-    llReductor = recursively_insert(poly.navigation().elseBranch(),
-				    entry.lead.firstIndex(),
-				    ll_red_nf(llReductor, poly.set()));
-    return poly;
-  }
 };
 
 END_NAMESPACE_PBORIGB

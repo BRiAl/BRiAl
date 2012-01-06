@@ -83,7 +83,6 @@ protected:
   template <class Iterator>
   void unmarkNonMinimalLeadingTerms(Iterator, Iterator);
  
-  void updateLLReductor(const PolyEntry&);
   void setupSetsForElement(const PolyEntry& entry);
 
 

@@ -40,21 +40,6 @@ ReductionStrategy::unmarkNonMinimalLeadingTerms(Iterator mfm_start,
 }
 
 
-
-inline void
-ReductionStrategy::updateLLReductor(const PolyEntry& entry) {
-
-  if ( (entry.leadDeg == 1) && 
-       (*(entry.p.navigation()) == entry.lead.firstIndex() ) ) {
-
-    PBORI_ASSERT (!(llReductor.isZero()));
-    if (!llReductor.expBegin()->reducibleBy(entry.lead.firstIndex())) {
-      Polynomial poly(insertIntoLLReductor(entry));
-      exchange(entry.lead, poly);
-    }
-  }
-}
-
 void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
@@ -66,8 +51,11 @@ void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
     updateMonomials(entry);
 
     #ifdef LL_RED_FOR_GROEBNER
-    if (optLL)
-      updateLLReductor(entry);
+    if (optLL) {
+      Polynomial updated = llReductor.update(entry);
+      if (updated != entry.p)
+        exchange(entry.lead, updated);
+    }
     #endif
 }
 

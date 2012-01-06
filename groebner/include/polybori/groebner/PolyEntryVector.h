@@ -80,7 +80,8 @@ private:
   template <class Type>
   void update(PolyEntry& entry, const Type& rhs) {
     Monomial lm(entry.lead);
-    m_indices.update(lm, entry = rhs);
+    entry = rhs;
+    m_indices.update(lm, entry);
   }
 
   data_type m_data;
