@@ -49,7 +49,7 @@ public:
   }
 
   /// Test whether polynomial is a compatible reductor element
-  bool improvesBy(const PolyEntry& entry) {
+  bool isCompatible(const PolyEntry& entry) {
 
     PBORI_ASSERT (!isZero());
     return  (entry.leadDeg == 1) && 
@@ -59,7 +59,7 @@ public:
 
   /// Insert polynomial if compatible, return updated polynomial
   Polynomial update(const PolyEntry& entry) {
-    return (improvesBy(entry)? insert(entry): entry.p);
+    return (isCompatible(entry)? insert(entry): entry.p);
   }
 
 private:
