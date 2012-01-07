@@ -41,12 +41,6 @@ public:
   template <class Type>
   LLReductor(const Type& value): base(value) { PBORI_ASSERT(!isZero()); }
 
-  /// Assignment
-  template <class Type>
-  LLReductor& operator=(const Type& value) {
-    PBORI_ASSERT(!base(value).isZero());
-    return static_cast<LLReductor&>(base::operator=(*this));
-  }
 
   /// Test whether polynomial is a compatible reductor element
   bool isCompatible(const PolyEntry& entry) {
