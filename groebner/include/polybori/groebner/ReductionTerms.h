@@ -141,27 +141,11 @@ private:
 };
 
 class MonomialTerms:
-  public  MonomialSet {
-
-  typedef MonomialSet base;
+  public TermsFacade<MonomialTerms> {
 
 public:
-  /// Construct copy or MonomialSet from value
   template <class Type>
-  MonomialTerms(const Type& value): base(value) { }
-
-  /// Insert data (polynomial or leading term) from entry
-  void update(const PolyEntry& entry, const MonomialSet& terms) { 
-    if (isCompatible(entry))
-      operator=(unite(terms));
-  }
-
-  void update(const PolyEntry& entry) { 
-    update(entry, entry.lead.set());
-  }
-  
-  /// Cheap and save conversion to monomial set
-  operator const base& () { return static_cast<const base&>(*this);}
+  MonomialTerms(const Type& rhs): TermsFacade<MonomialTerms>(rhs) {}
 
   bool isCompatible(const PolyEntry& entry) const {
     PBORI_ASSERT( (entry.length != 1) || (entry.p == entry.lead) );

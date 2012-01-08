@@ -139,8 +139,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
         }
         if (generators[i].p!=new_p){
           generators.exchange(i, new_p);
-	  // AD: Do we really add all monomials here?
-          generators.monomials.update(generators[i],  new_p.set());
+          generators.monomials.update(generators[i]);
 
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
