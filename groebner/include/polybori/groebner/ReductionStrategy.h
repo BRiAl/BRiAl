@@ -95,9 +95,8 @@ protected:
   int select_short_by_terms(const MonomialSet&) const;
 
   void unmarkNonMinimalLeadingTerms(MonomialSet removed) {
-    if (!removed.isZero())
-      std::for_each(removed.expBegin(), removed.expEnd(),
-		    set_associated_minimal<Exponent, false>(*this));
+    std::for_each(removed.expBegin(), removed.expEnd(),
+		  set_associated_minimal<Exponent, false>(*this));
   }
  
   void setupSetsForElement(const PolyEntry& entry);
