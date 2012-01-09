@@ -46,6 +46,9 @@ void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
         exchange(entry.lead, updated);
     }
     #endif
+
+    /// @todo avoid explicit call!
+    insert(back(), size() - 1);
 }
 
 
