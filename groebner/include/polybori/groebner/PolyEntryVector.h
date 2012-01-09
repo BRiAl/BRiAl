@@ -46,25 +46,10 @@ public:
   /// Just insert element
   template <class ElementType>
   void append(const ElementType& element) {
-    push_back(element);
+    m_data.push_back(element);
 
     PBORI_ASSERT(m_indices.checked(back().lead) == (size_type)-1);
-    insert(back(), size() - 1);
-  }
-
-protected:
-  /// Consistently insert element 
-  /// @todo avoid this (may cause inconsistencies)
-  template <class ElementType>
-  void push_back(const ElementType& element) {
-    m_data.push_back(element);
-  }
-
-  /// Just insert indices
-  /// @todo avoid this (may cause inconsistencies)
-  template <class ElementType>
-  void insert(const ElementType& element, size_type index) {
-    m_indices.insert(element, index);
+    m_indices.insert(back(), size() - 1);
   }
 
 public: 

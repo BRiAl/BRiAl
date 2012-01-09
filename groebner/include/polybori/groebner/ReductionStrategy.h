@@ -101,11 +101,11 @@ protected:
   }
  
   //  void setupSetsForElement(const PolyEntry& entry);
-void setupSetsForElement(const PolyEntry& entry) {
-
+  void setupSetsForElement(const PolyEntry& entry) {
+    
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
     unmarkNonMinimalLeadingTerms( minimalLeadingTerms.update(entry.lead) );
-
+    
     leadingTerms.update(entry);
     leadingTerms00.update(entry); //doesn't need to be undone on simplification
     leadingTerms11.update(entry);
@@ -119,10 +119,7 @@ void setupSetsForElement(const PolyEntry& entry) {
         exchange(entry.lead, updated);
     }
     #endif
-
-    /// @todo avoid explicit call!
-    insert(entry, size() - 1);
-}
+  }
 
 
   template <class Iterator, class CompareType>
