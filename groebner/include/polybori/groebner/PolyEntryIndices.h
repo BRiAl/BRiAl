@@ -103,8 +103,6 @@ protected:
 
     typename MapType::const_iterator result(map.find(key));
     PBORI_ASSERT(result != map.end());
-    if (result == map.end())
-      std::cerr<<"!"<<std::endl;
     return result->second;
   }
 
