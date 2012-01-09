@@ -25,9 +25,13 @@
 BEGIN_NAMESPACE_PBORIGB
 
 
+/// Just inserting element @todo for some reason not inlinable
+void PolyEntryIndices::insert(const PolyEntry& entry, const data_type& rhs) {
+  exp2Index[entry.leadExp] = rhs;
+  lm2Index[entry.lead] = rhs;
+}
 
-
-
+/*
 void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
 
     PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
@@ -50,7 +54,7 @@ void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
     /// @todo avoid explicit call!
     insert(back(), size() - 1);
 }
-
+*/
 
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {

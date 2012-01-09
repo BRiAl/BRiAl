@@ -491,7 +491,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   
  
   
-  generators.push_back(e);
+  generators.append(e);
   pairs.status.prolong(PairStatusSet::HAS_T_REP);
   const int s=generators.size()-1;
   

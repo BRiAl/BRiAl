@@ -69,14 +69,15 @@ public:
 //   }
 
     void addGenerator(const Polynomial& p) {
-        push_back(p);
+        append(p);
         setupSetsForElement(back());
     }
 
-    void setupSetsForLastElement() { setupSetsForElement(back()); }  // @todo
-                                                                     // needed
-                                                                     // for GBred
-
+    void setupSetsForLastElement() { setupSetsForElement(back());
+    }  // @todo
+  // needed
+  // for GBred
+  
     int select1(const Polynomial& p) const;
     int select1(const Monomial& m) const;
 
@@ -99,7 +100,29 @@ protected:
 		  set_associated_minimal<Exponent, false>(*this));
   }
  
-  void setupSetsForElement(const PolyEntry& entry);
+  //  void setupSetsForElement(const PolyEntry& entry);
+void setupSetsForElement(const PolyEntry& entry) {
+
+    PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
+    unmarkNonMinimalLeadingTerms( minimalLeadingTerms.update(entry.lead) );
+
+    leadingTerms.update(entry);
+    leadingTerms00.update(entry); //doesn't need to be undone on simplification
+    leadingTerms11.update(entry);
+
+    monomials.update(entry);
+
+    #ifdef LL_RED_FOR_GROEBNER
+    if (optLL) {
+      Polynomial updated = llReductor.update(entry);
+      if (updated != entry.p)
+        exchange(entry.lead, updated);
+    }
+    #endif
+
+    /// @todo avoid explicit call!
+    insert(entry, size() - 1);
+}
 
 
   template <class Iterator, class CompareType>

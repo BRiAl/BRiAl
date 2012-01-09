@@ -43,10 +43,8 @@ public:
   PolyEntryIndices():
     lm2Index(), exp2Index() {}
 
-  /// Consistently inserting element
-  void insert(const PolyEntry& entry, const data_type& rhs) {
-    exp2Index[entry.leadExp] = lm2Index[entry.lead] = rhs;
-  }
+  /// Consistently inserting element @todo for some reason not inlinable
+  void insert(const PolyEntry& entry, const data_type& rhs);
 
   /// Consistently replacing keys
   void update(const Monomial& key, const PolyEntry& entry) {
@@ -54,8 +52,8 @@ public:
     if UNLIKELY(entry.lead != key) {
       lm2Index_map_type::iterator lm_pos = lm2Index.find(key);
       PBORI_ASSERT(lm_pos != lm2Index.end());
-
-      exp2Index[entry.leadExp] = lm2Index[entry.lead] = lm_pos->second;
+      lm2Index[entry.lead] = lm_pos->second;
+      exp2Index[entry.leadExp] = lm_pos->second;
       lm2Index.erase(lm_pos);
       exp2Index.erase(exp2Index.find(key.exp()));
     }
@@ -105,6 +103,8 @@ protected:
 
     typename MapType::const_iterator result(map.find(key));
     PBORI_ASSERT(result != map.end());
+    if (result == map.end())
+      std::cerr<<"!"<<std::endl;
     return result->second;
   }
 

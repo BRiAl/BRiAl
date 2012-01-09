@@ -52,6 +52,7 @@ public:
     insert(back(), size() - 1);
   }
 
+protected:
   /// Consistently insert element 
   /// @todo avoid this (may cause inconsistencies)
   template <class ElementType>
@@ -66,6 +67,7 @@ public:
     m_indices.insert(element, index);
   }
 
+public: 
   template <class KeyType>
   const_reference operator[](const KeyType& rhs) const { return access(rhs); }
 
