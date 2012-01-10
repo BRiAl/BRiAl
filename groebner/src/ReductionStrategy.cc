@@ -25,12 +25,34 @@
 BEGIN_NAMESPACE_PBORIGB
 
 
+
 /// Just inserting element @todo for some reason not inlinable
 void PolyEntryIndices::insert(const PolyEntry& entry, const data_type& rhs) {
   exp2Index[entry.leadExp] = rhs;
   lm2Index[entry.lead] = rhs;
 }
 
+
+/// @note @todo do not inline (optimization screws for some reason)
+void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
+  
+  PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
+  unmarkNonMinimalLeadingTerms( minimalLeadingTerms.update(entry.lead) );
+  
+  leadingTerms.update(entry);
+  leadingTerms00.update(entry); //doesn't need to be undone on simplification
+  leadingTerms11.update(entry);
+  
+  monomials.update(entry);
+  
+#ifdef LL_RED_FOR_GROEBNER
+  if (optLL) {
+    Polynomial updated = llReductor.update(entry);
+    if (updated != entry.p)
+      exchange(entry.lead, updated);
+  }
+#endif
+}
 
 int
 ReductionStrategy::select_short_by_terms(const MonomialSet& terms) const {

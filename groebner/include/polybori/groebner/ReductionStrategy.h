@@ -100,26 +100,7 @@ protected:
 		  set_associated_minimal<Exponent, false>(*this));
   }
  
-  //  void setupSetsForElement(const PolyEntry& entry);
-  void setupSetsForElement(const PolyEntry& entry) {
-    
-    PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
-    unmarkNonMinimalLeadingTerms( minimalLeadingTerms.update(entry.lead) );
-    
-    leadingTerms.update(entry);
-    leadingTerms00.update(entry); //doesn't need to be undone on simplification
-    leadingTerms11.update(entry);
-
-    monomials.update(entry);
-
-    #ifdef LL_RED_FOR_GROEBNER
-    if (optLL) {
-      Polynomial updated = llReductor.update(entry);
-      if (updated != entry.p)
-        exchange(entry.lead, updated);
-    }
-    #endif
-  }
+  void setupSetsForElement(const PolyEntry& entry);
 
 
   template <class Iterator, class CompareType>
