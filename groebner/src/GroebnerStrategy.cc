@@ -95,9 +95,8 @@ void GroebnerStrategy::llReduceAll(){
     Exponent ll_e=*(generators.llReductor.expBegin());
     for(i=0;i<generators.size();i++){
         if ((generators[i].minimal) && (ll_e.GCD(generators[i].tailVariables).deg()>0)){
-            Polynomial tail=generators[i].tail;
-            tail=ll_red_nf(tail,generators.llReductor);
-            if (tail!=generators[i].tail){
+            Polynomial tail = ll_red_nf(generators[i].tail, generators.llReductor);
+            if (tail != generators[i].tail){
                 generators.exchange(i, tail + generators[i].lead);
                 generators.monomials.update(generators[i]);
             }
@@ -649,7 +648,7 @@ bool GroebnerStrategy::variableHasValue(idx_type v){
   //Monomial m=Variable(v);
   for(i=0;i<s;i++){
     if (generators[i].usedVariables.deg() == 1){
-      if ((*(this->generators[i].usedVariables.begin()))==v){
+      if ((*(generators[i].usedVariables.begin()))==v){
         return true;
       }
     }
@@ -657,31 +656,31 @@ bool GroebnerStrategy::variableHasValue(idx_type v){
   return false;
 }
 
-std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
-    MonomialSet m=minimal_elements(this->generators.minimalLeadingTerms);
-    std::vector<Polynomial> result;
-    bool tail_growth_bak=generators.optRedTailDegGrowth;
-    generators.optRedTailDegGrowth=true;
-    std::vector<Exponent> m_vec;
-    m_vec.resize(m.length());
-    std::copy(m.expBegin(),m.expEnd(),m_vec.begin());
-    int i=m_vec.size()-1;
-    while(i>=0){
-        //redTail
-        int index=generators.index(m_vec[i]);
-        Polynomial reduced=red_tail(this->generators,generators[index].p);
-        generators.exchange(index, reduced);
+std::vector<Polynomial>
+GroebnerStrategy::minimalizeAndTailReduce(){
+    MonomialSet m=minimal_elements(generators.minimalLeadingTerms);
 
-        //if (generators[index].length==1) strat.monomials=strat.monomials.unite(reduced.diagram());
-        result.push_back(reduced);
-        i--;
+    bool tail_growth_bak = generators.optRedTailDegGrowth;
+    generators.optRedTailDegGrowth = true;
+
+    MonomialSet::reverse_exp_iterator 
+      start(m.rExpBegin()), finish(m.rExpEnd());
+
+    std::vector<Polynomial> result(m.size(), r);
+    std::vector<Polynomial>::reverse_iterator iter(result.rbegin());
+
+    while(start != finish){
+        int index = generators.index(*start);
+        generators.exchange(index,
+                            *iter = red_tail(generators, generators[index].p));
+        ++iter;
+        ++start;
     }
-    generators.optRedTailDegGrowth=tail_growth_bak;
-    std::vector<Polynomial> result_r(result.size(), result[0].ring());
-    std::copy(result.rbegin(),result.rend(),result_r.begin());
-    return result_r;
-    
+
+    generators.optRedTailDegGrowth = tail_growth_bak;
+    return result;
 }
+
 std::vector<Polynomial> GroebnerStrategy::minimalize(){
     MonomialSet m=minimal_elements(this->generators.minimalLeadingTerms);
     std::vector<Polynomial> result;
