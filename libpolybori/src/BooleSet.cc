@@ -112,6 +112,21 @@ BooleSet::expEnd() const {
   return exp_iterator(navigator(), ring());
 }
 
+// Start of iteration over exponent vectors
+BooleSet::reverse_exp_iterator 
+BooleSet::rExpBegin() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::rExpBegin() const" );
+  return reverse_exp_iterator(base::navigation(), base::ring());
+}
+
+// Finish of iteration over monomials
+BooleSet::reverse_exp_iterator 
+BooleSet::rExpEnd() const {
+
+  PBORI_TRACE_FUNC( "BooleSet::rExpEnd() const" );
+  return reverse_exp_iterator(navigator(), ring());
+}
 
 // Get last term (wrt. lexicographical order)
 BooleSet::term_type

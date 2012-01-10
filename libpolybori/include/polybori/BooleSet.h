@@ -81,6 +81,9 @@ public:
   /// Iterator type for iterating all exponent vectors 
   typedef CGenericIter<LexOrder, navigator, exp_type> exp_iterator;
 
+  /// Iterator type for iterating all exponent vectors 
+  typedef CReverseIter<LexOrder, navigator, exp_type> reverse_exp_iterator;
+
   /// Iterator type for iterating all monomials
   typedef CReverseIter<LexOrder, navigator, term_type> const_reverse_iterator;
 
@@ -134,6 +137,12 @@ public:
 
   /// Finish of backward iteration over terms
   const_reverse_iterator rend() const;
+
+  /// Start of backward exponent iteration over terms
+  reverse_exp_iterator rExpBegin() const;
+
+  /// Finish of backward iteration over terms
+  reverse_exp_iterator rExpEnd() const;
 
   /// Start of iteration over exponent vectors
   exp_iterator expBegin() const;
