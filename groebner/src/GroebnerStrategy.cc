@@ -663,17 +663,16 @@ GroebnerStrategy::minimalizeAndTailReduce(){
     bool tail_growth_bak = generators.optRedTailDegGrowth;
     generators.optRedTailDegGrowth = true;
 
-    MonomialSet::reverse_exp_iterator 
-      start(m.rExpBegin()), finish(m.rExpEnd());
-
+    MonomialSet::reverse_exp_iterator current(m.rExpBegin());
     std::vector<Polynomial> result(m.size(), r);
-    std::vector<Polynomial>::reverse_iterator iter(result.rbegin());
+    std::vector<Polynomial>::reverse_iterator 
+      start(result.rbegin()), finish(result.rend());
 
     while(start != finish){
-        int index = generators.index(*start);
+        int index = generators.index(*current);
         generators.exchange(index,
-                            *iter = red_tail(generators, generators[index].p));
-        ++iter;
+                            *start = red_tail(generators, generators[index].p));
+        ++current;
         ++start;
     }
 
