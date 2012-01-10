@@ -58,68 +58,57 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
 }
 
 // class members
-GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig)
-:pairs(orig.pairs),
-generators(orig.generators),
-r(orig.r)
+GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
+  pairs(orig.pairs),
+  generators(orig.generators),
+  r(orig.r), 
+  cache(orig.cache),
 
+  optDrawMatrices(orig.optDrawMatrices),
+  optModifiedLinearAlgebra(orig.optModifiedLinearAlgebra), 
+  optRedTailInLastBlock(orig.optRedTailInLastBlock),
+  optLinearAlgebraInLastBlock(orig.optLinearAlgebraInLastBlock),
+  optDelayNonMinimals(orig.optDelayNonMinimals),
+  optStepBounded(orig.optStepBounded),
+  optAllowRecursion(orig.optAllowRecursion),
+  optHFE(orig.optHFE),
+  optLazy(orig.optLazy),
+  optExchange(orig.optExchange),
 
-{
- 
-  optDrawMatrices=orig.optDrawMatrices;
-  optModifiedLinearAlgebra=orig.optModifiedLinearAlgebra; 
-  optRedTailInLastBlock=orig.optRedTailInLastBlock;
-  optLinearAlgebraInLastBlock=orig.optLinearAlgebraInLastBlock;
-  optDelayNonMinimals=orig.optDelayNonMinimals;
- 
-  cache=orig.cache;
-  optStepBounded=orig.optStepBounded;
+  reductionSteps(orig.reductionSteps),
+  normalForms(orig.normalForms),
+  currentDegree(orig.currentDegree),
+  chainCriterions(orig.chainCriterions),
+  variableChainCriterions(orig.variableChainCriterions),
+  easyProductCriterions(orig.easyProductCriterions),
+  extendedProductCriterions(orig.extendedProductCriterions),
+  averageLength(orig.averageLength),
+  enabledLog(orig.enabledLog),
+  reduceByTailReduced(orig.reduceByTailReduced) {
 
-  optAllowRecursion=orig.optAllowRecursion;
-  optHFE=orig.optHFE;
-  
-  optLazy=orig.optLazy;
- 
-  optExchange=orig.optExchange;
-  reductionSteps=orig.reductionSteps;
-  normalForms=orig.normalForms;
-  currentDegree=orig.currentDegree;
-  chainCriterions=orig.chainCriterions;
-  variableChainCriterions=orig.variableChainCriterions;
-  easyProductCriterions=orig.easyProductCriterions;
-  extendedProductCriterions=orig.extendedProductCriterions;
-  averageLength=orig.averageLength;
-  enabledLog=orig.enabledLog;
-  reduceByTailReduced=orig.reduceByTailReduced;
- 
-  this->pairs.strat=this;
- 
+  this->pairs.strat = this;
 }
 
-
-void GroebnerStrategy::treat_m_p_1_case(const PolyEntry& e){
-  generators.monomials_plus_one.update(e);
-}
 
 void GroebnerStrategy::llReduceAll(){
     int i;
     Exponent ll_e=*(generators.llReductor.expBegin());
     for(i=0;i<generators.size();i++){
-        if ((generators[i].minimal)&&(ll_e.GCD(generators[i].tailVariables).deg()>0)){
+        if ((generators[i].minimal) && (ll_e.GCD(generators[i].tailVariables).deg()>0)){
             Polynomial tail=generators[i].tail;
             tail=ll_red_nf(tail,generators.llReductor);
             if (tail!=generators[i].tail){
-                generators.exchange(i, tail+generators[i].lead);
-                if (generators[i].length==1) generators.monomials=generators.monomials.unite(generators[i].p.diagram());
-                //treat_m_p_1_case(generators[i]);
-
+                generators.exchange(i, tail + generators[i].lead);
+                generators.monomials.update(generators[i]);
             }
         }
     }
 }
+
 Polynomial GroebnerStrategy::redTail(const Polynomial & p){
     return red_tail(this->generators,p);
 }
+
 void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
   
   if (should_propagate(e)){
@@ -143,7 +132,6 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
 
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
             addNonTrivialImplicationsDelayed(generators[i]);
-            //treat_m_p_1_case(generators[i]);
 
           }
           others.insert(i);
@@ -160,11 +148,13 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
     this->propagate_step(generators[next],others);
   }
 }
+
 void GroebnerStrategy::propagate(const PolyEntry& e){
   if (should_propagate(e)){
     propagate_step(e, std::set<int>());
   }
 }
+
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
     if (literal_factors.rest.isOne()){
         if(s>=0)
@@ -294,23 +284,22 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     
     
 }
-void GroebnerStrategy::addVariablePairs(int s){
-     Exponent::const_iterator it=generators[s].leadExp.begin();
-     Exponent::const_iterator end=generators[s].leadExp.end();
-     while(it!=end){
-         if ((generators[s].lead.deg()==1) ||
-            generators[s].literal_factors.occursAsLeadOfFactor(*it))
-         {
-              //((MonomialSet(p).subset0(*it).isZero())||(MonomialSet(p).subset0(*it)==(MonomialSet(p).subset1(*it))))){
-      //cout<<"factorcrit"<<endl;
 
-           generators.access(s).vPairCalculated.insert(*it);
-          } else
-            this->pairs.introducePair(Pair(s,*it,generators,VARIABLE_PAIR));
-          it++;
-    
+void
+GroebnerStrategy::addVariablePairs(int s) {
+  Exponent::const_iterator it=generators[s].leadExp.begin();
+  Exponent::const_iterator end=generators[s].leadExp.end();
+  while(it != end){
+    if ((generators[s].lead.deg() == 1) ||
+        generators[s].literal_factors.occursAsLeadOfFactor(*it)) {
+      generators.access(s).vPairCalculated.insert(*it);
     } 
+    else
+      pairs.introducePair(Pair(s, *it, generators, VARIABLE_PAIR));
+    it++;
+  } 
 }
+
 std::vector<Polynomial> GroebnerStrategy::treatVariablePairs(int s){
   const PolyEntry& e=generators[s];
   if ((have_ordering_for_tables(this->r))||
@@ -415,7 +404,9 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 
      }
 }
-std::vector<Polynomial> GroebnerStrategy::allGenerators(){
+
+std::vector<Polynomial>
+GroebnerStrategy::allGenerators(){
      int i;
      std::vector<Polynomial> result;
      for (i=0;i<generators.size();i++){
@@ -424,6 +415,7 @@ std::vector<Polynomial> GroebnerStrategy::allGenerators(){
      pairs.appendHiddenGenerators(result);
      return result;
 }
+
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){
 
   Polynomial p=p_arg;
@@ -562,7 +554,9 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     
     return s;
 }
-void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
+
+void
+GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
   //cout<<"p_opp"<<p_opp<<endl;
   const Polynomial::ring_type ring(p_opp.ring());
@@ -639,6 +633,7 @@ void GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     }
   }
 }
+
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
 #ifndef PBORI_NDEBUG
   if (p.ring().id() != this->r.id())
@@ -647,12 +642,13 @@ void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
   PBORI_ASSERT(p.ring().id() == this->r.id());
   this->pairs.introducePair(Pair(p));
 }
+
 bool GroebnerStrategy::variableHasValue(idx_type v){
   int i;
-  int s=this->generators.size();
+  int s = generators.size();
   //Monomial m=Variable(v);
   for(i=0;i<s;i++){
-    if (this->generators[i].usedVariables.deg()==1){
+    if (generators[i].usedVariables.deg() == 1){
       if ((*(this->generators[i].usedVariables.begin()))==v){
         return true;
       }
@@ -660,6 +656,7 @@ bool GroebnerStrategy::variableHasValue(idx_type v){
   }
   return false;
 }
+
 std::vector<Polynomial> GroebnerStrategy::minimalizeAndTailReduce(){
     MonomialSet m=minimal_elements(this->generators.minimalLeadingTerms);
     std::vector<Polynomial> result;

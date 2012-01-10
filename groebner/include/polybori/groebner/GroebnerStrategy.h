@@ -69,7 +69,11 @@ public:
 
   bool variableHasValue(idx_type i);
   void llReduceAll();
-  void treat_m_p_1_case(const PolyEntry& e);
+
+  void treat_m_p_1_case(const PolyEntry& e) {
+    generators.monomials_plus_one.update(e);
+  }
+
 
   Polynomial nextSpoly(){ return pairs.nextSpoly(generators);  }
   void addNonTrivialImplicationsDelayed(const PolyEntry& p);
