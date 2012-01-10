@@ -26,14 +26,19 @@ BEGIN_NAMESPACE_PBORIGB
 
 
 
-/// Just inserting element @todo for some reason not inlinable
+/// Just inserting element 
+/// @todo for some reason not inlinable
+/// see: HeuristicQuickTestCase.test_mult6x6mit_lp 
+///      HeuristicCryptoTestCase.test_ctc_Nr3_B7_n20joined_dp_asc
 void PolyEntryIndices::insert(const PolyEntry& entry, const data_type& rhs) {
   exp2Index[entry.leadExp] = rhs;
   lm2Index[entry.lead] = rhs;
 }
 
 
-/// @note @todo do not inline (optimization screws for some reason)
+/// @todo do not inline (optimization screws for some reason)
+/// see: HeuristicQuickTestCase.test_mult6x6mit_lp 
+///      HeuristicCryptoTestCase.test_ctc_Nr3_B7_n20joined_dp_asc
 void ReductionStrategy::setupSetsForElement(const PolyEntry& entry) {
   
   PBORI_ASSERT(entry.lead.exp() == entry.leadExp);
