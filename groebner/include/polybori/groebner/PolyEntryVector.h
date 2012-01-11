@@ -34,7 +34,7 @@ public:
   typedef data_type::size_type size_type;
   typedef data_type::const_iterator const_iterator;
   typedef data_type::const_reference const_reference;
-  typedef PolyEntryReference<PolyEntryVector> reference;
+  typedef PolyEntryReference reference;
 
   size_type size() const { return m_data.size(); }
   const_iterator begin() const { return m_data.begin(); }
@@ -63,7 +63,7 @@ public:
 
   template <class KeyType>
   reference access(const KeyType& rhs) { 
-    return reference(m_data[index(rhs)], *this);
+    return reference(m_data[index(rhs)], m_indices);
   }
 
   template <class KeyType, class Type>

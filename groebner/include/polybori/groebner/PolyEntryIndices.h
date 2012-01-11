@@ -18,6 +18,7 @@
 
 // include basic definitions
 #include "groebner_defs.h"
+#include "PolyEntry.h"
 
 BEGIN_NAMESPACE_PBORIGB
 

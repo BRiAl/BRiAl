@@ -23,6 +23,9 @@
 #include "groebner_defs.h"
 #include <set>
 
+#include "PolyEntryIndices.h"
+#include "PolyEntry.h"
+
 BEGIN_NAMESPACE_PBORIGB
 
 /** @class PolyEntryReference
@@ -31,13 +34,12 @@ BEGIN_NAMESPACE_PBORIGB
  * It allows non-constant access to those attributes, that
  * could not cause inconsistencies, but only constant access to others
  **/
-template <class VectorType>
 class PolyEntryReference {
   typedef PolyEntryReference self;
 
 public:
-  typedef VectorType vector_type;
-  typedef typename VectorType::value_type value_type;
+  typedef PolyEntryIndices vector_type;
+  typedef PolyEntry value_type;
 
   /// Construct from plain non-constant reference
   PolyEntryReference(value_type &entry, vector_type& parent): 
@@ -60,7 +62,9 @@ public:
   /// Assignment also triggers changes in the parent
   template <class Type>
   self& operator=(const Type& rhs) {
-    m_parent.exchange(m_entry, rhs);
+    Monomial lm(m_entry.lead);
+    m_entry = rhs;
+    m_parent.update(lm, m_entry);
     return *this;
   }
 
