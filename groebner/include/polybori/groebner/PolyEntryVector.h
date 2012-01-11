@@ -22,14 +22,15 @@
 
 // include basic definitions
 #include "groebner_defs.h"
-#include <stdexcept>
 
 BEGIN_NAMESPACE_PBORIGB
 
 class PolyEntryVector {
-
   typedef std::vector<PolyEntry> data_type;
+
 public:
+  /// Vector-style interface
+  //@{
   typedef data_type::value_type value_type;
   typedef data_type::size_type size_type;
   typedef data_type::const_iterator const_iterator;
@@ -41,7 +42,9 @@ public:
   const_iterator end() const { return m_data.end(); }
   const_reference front() const { return m_data.front(); }
   const_reference back() const { return m_data.back(); }
+  //@}
 
+  /// Default constructor
   PolyEntryVector():
     m_data(), m_indices() {}
 
@@ -54,31 +57,32 @@ public:
     m_indices.insert(back(), size() - 1);
   }
 
-public: 
+  /// Read-only access to element by index, leading term or monomial
   template <class KeyType>
-  const_reference operator[](const KeyType& rhs) const { return access(rhs); }
+  const_reference operator[](const KeyType& rhs) const { return operator()(rhs); }
 
+  /// Read-only access to element by index, leading term or monomial
   template <class KeyType>
-  const_reference access(const KeyType& rhs) const {return m_data[index(rhs)];}
+  const_reference operator()(const KeyType& key) const {return m_data[index(key)];}
 
+  /// (Partially) write access to element by index, leading term or monomial
   template <class KeyType>
-  reference access(const KeyType& rhs) { 
+  reference operator()(const KeyType& rhs) {
     return reference(m_data[index(rhs)], m_indices);
   }
 
+  /// Exchange element given by @c key
   template <class KeyType, class Type>
-  void exchange(const KeyType& key, const Type& rhs) {
-    access(key) = rhs;
-  }
+  void exchange(const KeyType& key, const Type& rhs) { operator()(key) = rhs; }
 
+  /// Retrieve index associated to @c key
   template <class KeyType>
-  size_type index(const KeyType& rhs) const {
-    return m_indices(rhs);
-  }
+  size_type index(const KeyType& key) const { return m_indices(key); }
 
+  /// Retrieve index associated to @c key if @c key exists, -1 otherwise
   template <class KeyType>
-  size_type checked_index(const KeyType& rhs) const {
-    return m_indices.checked(rhs);
+  size_type checked_index(const KeyType& key) const {
+    return m_indices.checked(key);
   }
 
 private:

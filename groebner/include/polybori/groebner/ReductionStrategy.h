@@ -32,7 +32,7 @@ public:
   set_associated_minimal(PolyEntryVector& strat): m_strat(strat) {}
 
   void operator()(const KeyType& key) const { 
-    m_strat.access(key).minimal = Value;
+    m_strat(key).minimal = Value;
   }
 
 private:
@@ -60,13 +60,6 @@ public:
     bool canRewrite(const Polynomial& p) const {
       return is_rewriteable(p, minimalLeadingTerms);
     }
-
-
-//   template <class ElementType>
-//   void push_back(const ElementType& element) {
-//     PolyEntryVector::push_back(element);
-//     setupSetsForElement(back());
-//   }
 
     void addGenerator(const Polynomial& p) {
         append(p);

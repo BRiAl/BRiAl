@@ -95,7 +95,7 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
     if (act_pair.getType()==VARIABLE_PAIR){
       
       const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
-      this->strat->generators.access(vp->i).vPairCalculated.insert(vp->v);
+      this->strat->generators(vp->i).vPairCalculated.insert(vp->v);
       int i=vp->i;
       Polynomial res=act_pair.extract(gen);
       
