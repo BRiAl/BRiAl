@@ -34,6 +34,8 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class GroebnerStrategy{
+
+  typedef GroebnerStrategy self;
 public:
   /// copy constructor
   GroebnerStrategy(const GroebnerStrategy& orig);

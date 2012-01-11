@@ -57,6 +57,24 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
   
 }
 
+
+template <class InIter, class OutIter, class Object, class MemberFuncPtr>
+inline OutIter
+transform(InIter start, InIter finish, OutIter result, Object& obj,
+	  MemberFuncPtr func) {
+  for(; start != finish; ++start, ++result) {
+    *result = (obj .* func)(*start);
+  }
+}
+template <class InIter, class Object, class MemberFuncPtr>
+inline void
+for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
+  for(; start != finish; ++start) {
+    (obj .* func)(*start);
+  }
+}
+
+
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   pairs(orig.pairs),
@@ -206,22 +224,14 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
      if (s>=0)
        generators(s).markVariablePairsCalculated();
      
-      if (can_add_directly){
-        return impl;
-    } else {
-        if (!(include_orig)){
-            std::vector<Polynomial>::iterator it=impl.begin();
-            std::vector<Polynomial>::iterator end=impl.end();
-        
-            while(it!=end){
-                addGeneratorDelayed(*it);
-                it++;
-
-            }
-        }
-        return std::vector<Polynomial>();
-    }
+     if (can_add_directly)
+       return impl;
+     else if (!(include_orig))
+       for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
+     
+     return std::vector<Polynomial>();
 }
+
 std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, const Exponent& used_variables,int s, bool include_orig){
     //cout<<"I am here";
     //Polynomial p=generators[s].p;
@@ -564,35 +574,27 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   LiteralFactorization factors_opp(p_opp);
   
   if (factors_opp.trivial()){
-    if (e.literal_factors.trivial()) return;
-    if ( !e.literal_factors.rest.isOne() ){
-      
+    if (e.literal_factors.trivial() || e.literal_factors.rest.isOne()) return;
     
-      //if (e.literal_factors.trivial())
-      mult_by=one_element;
-      LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
-      LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
-      while(itf!=endf){
-        idx_type var=itf->first;
-        int val=itf->second;
-        if (val==0){
-          mult_by*=(Monomial)Variable(var, ring);
-        } else mult_by*=Variable(var, ring)+one_element;
-        itf++;
-      }
-
-      LiteralFactorization::var2var_map_type::const_iterator itv=e.literal_factors.var2var_map.begin();
-      LiteralFactorization::var2var_map_type::const_iterator endv=e.literal_factors.var2var_map.end();
-      while(itv != endv){
-        mult_by *= ring.variable(itv->first) + ring.variable(itv->second);
-        ++itv;
-      }
-
-      p_opp=opposite_logic_mapping(e.literal_factors.rest);
-      factors_opp=LiteralFactorization(p_opp);
-      if (factors_opp.trivial()) return;
-    } else return;
+    //if (e.literal_factors.trivial())
+    mult_by=one_element;
+    LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
+    LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
+    while(itf != endf){
+      mult_by *= (ring.variable(itf->first) + bool(itf->second) );
+      itf++;
+    }
     
+    LiteralFactorization::var2var_map_type::const_iterator itv=e.literal_factors.var2var_map.begin();
+    LiteralFactorization::var2var_map_type::const_iterator endv=e.literal_factors.var2var_map.end();
+    while(itv != endv){
+      mult_by *= ring.variable(itv->first) + ring.variable(itv->second);
+      ++itv;
+    }
+    
+    p_opp=opposite_logic_mapping(e.literal_factors.rest);
+    factors_opp=LiteralFactorization(p_opp);
+    if (factors_opp.trivial()) return;
   }
   
   
@@ -606,7 +608,7 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
     LiteralFactorization::map_type::const_iterator itf=factors_opp.factors.begin();
     LiteralFactorization::map_type::const_iterator endf=factors_opp.factors.end();
     while(itf != endf){
-      addGeneratorDelayed((ring.variable(itf->first) + (itf->second? 1: 0)) *
+      addGeneratorDelayed((ring.variable(itf->first) + bool(itf->second)) *
                           mult_by);
       ++itf;
     }
@@ -671,6 +673,7 @@ public:
 
   ReductionStrategy& m_strat;
 };
+
 
 std::vector<Polynomial>
 GroebnerStrategy::minimalizeAndTailReduce(){
