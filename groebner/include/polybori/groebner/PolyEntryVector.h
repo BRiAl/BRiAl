@@ -68,7 +68,7 @@ public:
 
   template <class KeyType, class Type>
   void exchange(const KeyType& key, const Type& rhs) {
-    update(m_data[index(key)], rhs);
+    access(key) = rhs;
   }
 
   template <class KeyType>
@@ -82,13 +82,6 @@ public:
   }
 
 private:
-  template <class Type>
-  void update(PolyEntry& entry, const Type& rhs) {
-    Monomial lm(entry.lead);
-    entry = rhs;
-    m_indices.update(lm, entry);
-  }
-
   data_type m_data;
   PolyEntryIndices m_indices;
 };
