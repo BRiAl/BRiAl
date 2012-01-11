@@ -19,8 +19,6 @@
 // include basic definitions
 #define polybori_groebner_PolyEntry_h_
 
-#include "PolyEntry.h"
-
 // include basic definitions
 #include "groebner_defs.h"
 #include <set>
@@ -33,14 +31,19 @@ BEGIN_NAMESPACE_PBORIGB
  * It allows non-constant access to those attributes, that
  * could not cause inconsistencies, but only constant access to others
  **/
+template <class VectorType>
 class PolyEntryReference {
   typedef PolyEntryReference self;
 
 public:
+  typedef VectorType vector_type;
+  typedef typename VectorType::value_type value_type;
+
   /// Construct from plain non-constant reference
-  PolyEntryReference(PolyEntry &entry): 
+  PolyEntryReference(value_type &entry, vector_type& parent): 
     m_entry(entry), minimal(entry.minimal),
-    vPairCalculated(entry.vPairCalculated) { }
+    vPairCalculated(entry.vPairCalculated),
+    m_parent(parent) { }
 
   /// Equality check
   bool operator==(const self& rhs) const { return m_entry == rhs; }
@@ -54,14 +57,22 @@ public:
   bool& minimal;
   //@}
 
+  /// Assignment also triggers changes in the parent
+  template <class Type>
+  self& operator=(const Type& rhs) {
+    m_parent.exchange(m_entry, rhs);
+    return *this;
+  }
+
   /// Constant access
-  const PolyEntry& get() const { return const_cast<const PolyEntry&>(m_entry); }
+  const value_type& get() const { return const_cast<const value_type&>(m_entry); }
 
   /// Conversion to constant reference
-  operator const PolyEntry&() const { return get(); }
+  operator const value_type&() const { return get(); }
 
 private:
-  PolyEntry& m_entry;
+  value_type& m_entry;
+  vector_type& m_parent;
 };
 
 END_NAMESPACE_PBORIGB

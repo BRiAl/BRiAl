@@ -81,9 +81,15 @@ protected:
   data_type get(const Exponent& key, CheckType dummy) const {
     return get(exp2Index, key, dummy);
   }
+
   template <class CheckType>
   data_type get(const Monomial& key, CheckType dummy) const {
     return get(lm2Index, key, dummy);
+  }
+
+  template <class CheckType>
+  data_type get(const PolyEntry& key, CheckType dummy) const {
+    return get(lm2Index, key.lead, dummy);
   }
 
   template <class MapType, class KeyType>

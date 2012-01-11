@@ -97,7 +97,7 @@ void GroebnerStrategy::llReduceAll(){
         if ((generators[i].minimal) && (ll_e.GCD(generators[i].tailVariables).deg()>0)){
             Polynomial tail = ll_red_nf(generators[i].tail, generators.llReductor);
             if (tail != generators[i].tail){
-                generators.exchange(i, tail + generators[i].lead);
+              generators.access(i) = tail + generators[i].lead;
                 generators.monomials.update(generators[i]);
             }
         }
@@ -126,7 +126,7 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
           new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
         }
         if (generators[i].p!=new_p){
-          generators.exchange(i, new_p);
+          generators.access(i) = new_p;
           generators.monomials.update(generators[i]);
 
           if ((generators[i].length==2)&&(generators[i].ecart()==0)){
@@ -670,8 +670,7 @@ GroebnerStrategy::minimalizeAndTailReduce(){
 
     while(start != finish){
         int index = generators.index(*current);
-        generators.exchange(index,
-                            *start = red_tail(generators, generators[index].p));
+        generators.access(index) = *start = red_tail(generators, generators[index].p);
         ++current;
         ++start;
     }

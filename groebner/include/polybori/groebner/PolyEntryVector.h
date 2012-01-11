@@ -28,11 +28,13 @@ BEGIN_NAMESPACE_PBORIGB
 
 class PolyEntryVector {
 
-public:
   typedef std::vector<PolyEntry> data_type;
+public:
+  typedef data_type::value_type value_type;
   typedef data_type::size_type size_type;
   typedef data_type::const_iterator const_iterator;
   typedef data_type::const_reference const_reference;
+  typedef PolyEntryReference<PolyEntryVector> reference;
 
   size_type size() const { return m_data.size(); }
   const_iterator begin() const { return m_data.begin(); }
@@ -60,7 +62,9 @@ public:
   const_reference access(const KeyType& rhs) const {return m_data[index(rhs)];}
 
   template <class KeyType>
-  PolyEntryReference access(const KeyType& rhs) { return m_data[index(rhs)]; }
+  reference access(const KeyType& rhs) { 
+    return reference(m_data[index(rhs)], *this);
+  }
 
   template <class KeyType, class Type>
   void exchange(const KeyType& key, const Type& rhs) {
