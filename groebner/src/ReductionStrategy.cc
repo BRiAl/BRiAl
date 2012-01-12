@@ -108,5 +108,22 @@ ReductionStrategy::headNormalForm(const Polynomial& p) const {
 }
 
 
+void ReductionStrategy::llReduceAll() {
+  Exponent ll_e = *(llReductor.expBegin());
+  const_iterator start(begin()), finish(end());
+  for(; start != finish; ++start)
+    llReduce(*start, ll_e);
+}
+
+void ReductionStrategy::llReduce(const PolyEntry& entry, const Exponent& ll_e){
+
+  if ((entry.minimal) && (ll_e.GCD(entry.tailVariables).deg() > 0)) {
+    Polynomial tail = ll_red_nf(entry.tail, llReductor);
+    if (tail != entry.tail) {
+      operator()(entry) = tail + entry.lead;
+      monomials.update(entry);
+    }
+  }
+}
 
 END_NAMESPACE_PBORIGB

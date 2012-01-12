@@ -84,6 +84,11 @@ public:
   size_type checked_index(const KeyType& key) const {
     return m_indices.checked(key);
   }
+  /// Retrieve polynomial associated to @c key
+  template <class KeyType>
+  const Polynomial& polynomial(const KeyType& key) const {
+    return operator[](key).p;
+  }
 
 private:
   data_type m_data;

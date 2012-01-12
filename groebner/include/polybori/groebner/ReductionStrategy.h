@@ -84,7 +84,10 @@ public:
     Polynomial headNormalForm(const Polynomial& p) const;
     Polynomial reducedNormalForm(const Polynomial& p) const;
 
+    void llReduceAll();
+
 protected:
+  void llReduce(const PolyEntry& entry, const Exponent& ll_e);
 
   int select_short_by_terms(const MonomialSet&) const;
 
