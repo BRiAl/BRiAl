@@ -564,6 +564,23 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     return s;
 }
 
+class TimesConstantImplication {
+public:
+  template <class PairType>
+  Polynomial operator()(const Polynomial& lhs, const PairType& rhs) const {
+    return lhs * (lhs.ring().variable(rhs.first) + bool(rhs.second) );
+  }
+};
+
+class TimesVariableExchange {
+public:
+  template <class PairType>
+  Polynomial operator()(const Polynomial& lhs, const PairType& rhs) const {
+    return lhs * (lhs.ring().variable(rhs.first) +
+                  lhs.ring().variable(rhs.second));
+  }
+};
+
 void
 GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   Polynomial p_opp=opposite_logic_mapping(e.p);
@@ -576,22 +593,15 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
   if (factors_opp.trivial()){
     if (e.literal_factors.trivial() || e.literal_factors.rest.isOne()) return;
     
-    //if (e.literal_factors.trivial())
-    mult_by=one_element;
-    LiteralFactorization::map_type::const_iterator itf=e.literal_factors.factors.begin();
-    LiteralFactorization::map_type::const_iterator endf=e.literal_factors.factors.end();
-    while(itf != endf){
-      mult_by *= (ring.variable(itf->first) + bool(itf->second) );
-      itf++;
-    }
-    
-    LiteralFactorization::var2var_map_type::const_iterator itv=e.literal_factors.var2var_map.begin();
-    LiteralFactorization::var2var_map_type::const_iterator endv=e.literal_factors.var2var_map.end();
-    while(itv != endv){
-      mult_by *= ring.variable(itv->first) + ring.variable(itv->second);
-      ++itv;
-    }
-    
+    mult_by = std::accumulate(e.literal_factors.factors.begin(),
+                              e.literal_factors.factors.end(),
+                              one_element, TimesConstantImplication());
+
+ 
+    mult_by = std::accumulate(e.literal_factors.var2var_map.begin(),
+                              e.literal_factors.var2var_map.end(), 
+                              mult_by, TimesVariableExchange());
+
     p_opp=opposite_logic_mapping(e.literal_factors.rest);
     factors_opp=LiteralFactorization(p_opp);
     if (factors_opp.trivial()) return;
@@ -624,20 +634,37 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
 }
 
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
-#ifndef PBORI_NDEBUG
-  if (p.ring().id() != this->r.id())
-      throw std::runtime_error("addGeneratorDelayed failed");
-#endif
-  PBORI_ASSERT(p.ring().id() == this->r.id());
-  this->pairs.introducePair(Pair(p));
+  PBORI_ASSERT(p.ring().id() == r.id());
+  pairs.introducePair(Pair(p));
 }
+
+class VariableHasValue {
+public:
+  VariableHasValue(idx_type value): m_value(value) {}
+
+  bool operator()(const PolyEntry& rhs) const {
+    return (rhs.usedVariables.deg() == 1) && 
+      (*(rhs.usedVariables.begin()) == m_value);
+  }
+
+private:
+  idx_type m_value;
+};
+
+
+/*
+bool GroebnerStrategy::variableHasValue(idx_type v){
+  return std::find_if(generators.begin(), generators.end(),
+                      VariableHasValue(v)) != generators.end();
+}
+*/
 
 bool GroebnerStrategy::variableHasValue(idx_type v){
   ReductionStrategy::const_iterator start(generators.begin()),
     finish(generators.end());
 
   while(start != finish) {
-    if ( (start->usedVariables.deg() == 1) && 
+    if ( (start->usedVariables.deg() == 1) &&
          *(start->usedVariables.begin()) == v )
       return true;
     ++start;
@@ -862,41 +889,45 @@ void GroebnerStrategy::symmGB_F2(){
         
     }
 }
-int GroebnerStrategy::suggestPluginVariable(){
-    std::vector<int> ranking(this->r.nVariables());
-    int s=ranking.size();
-    int i;
-    for(i=0;i<s;i++){ ranking[i]=0;}
-    int result=-1;
-    int most_occ=0;
-    MonomialSet::exp_iterator it=generators.minimalLeadingTerms.expBegin();
-    MonomialSet::exp_iterator end=generators.minimalLeadingTerms.expEnd();
-    while(it!=end){
-        Exponent curr=*it;
-        if (curr.deg()>=2){
-        Exponent::const_iterator curr_it=curr.begin();
-        Exponent::const_iterator curr_end=curr.end();
-        while(curr_it!=curr_end){
-            ranking[*curr_it]++;
-            curr_it++;
-        }}
-        it++;
-    }
+
+class RankingVector:
+  public std::vector<int> {
+  typedef std::vector<value_type> base; 
+public:
+  RankingVector(size_type len): base(len, 0) {}
+
+
+  void increment(size_type idx) {
+    ++operator[](idx);
+  }
+
+  void rerank(const Exponent& exp) {
+    if (exp.deg() >= 2)
+      for_each(exp.begin(), exp.end(), *this, &RankingVector::increment);
+  }
+
+  value_type max_index() const {
+    return (empty()? -1: std::max_element(begin(), end()) - begin());
+  }
+
+};
+
+
+int GroebnerStrategy::suggestPluginVariable() {
+  RankingVector ranking(this->r.nVariables());
+
+  for_each(generators.minimalLeadingTerms.expBegin(),
+           generators.minimalLeadingTerms.expEnd(), 
+           ranking, &RankingVector::rerank );
     
-    for(i=0;i<ranking.size();i++){
-        if (most_occ<ranking[i])
-        {
-            most_occ=ranking[i];
-            result=i;
-        }
-    }
-    return result;
+  return ranking.max_index();
 }
 
 
 Polynomial GroebnerStrategy::nf(Polynomial p) const{
     return generators.nf(p);
 }
+
 #if  defined(HAVE_M4RI) || defined(HAVE_NTL)
 std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>& orig_system){
 
@@ -992,12 +1023,13 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
         std::vector<Exponent> p_t;
         for(j=0;j<cols;j++){
             #ifndef HAVE_M4RI
-            if (mat[i][j]==1){
+            if (mat[i][j]==1)
             #else
-            if (mzd_read_bit(mat,i,j)){
+            if (mzd_read_bit(mat,i,j))
             #endif
+              {
                 p_t.push_back(terms_as_exp[j]);
-            }
+              }
         }
         PBORI_ASSERT(polys.size()!=0);
         Polynomial from_mat=add_up_exponents(p_t,polys[0].ring().zero());
@@ -1019,39 +1051,22 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
 #if  defined(HAVE_NTL) || defined(HAVE_M4RI)
 std::vector<Polynomial>
 GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
+
   if (orig_system.empty())
     return orig_system;
+  
   std::vector<Polynomial> polys;
-    //std::vector<Monomial> leads_from_strat_vec;
-
-    int i;
-    MonomialSet terms(orig_system[0].ring());
-    MonomialSet leads_from_strat(terms.ring());
-    PBORI_ASSERT(orig_system[0].ring().id() ==  terms.ring().id());
-
-#ifndef PBORI_NDEBUG
-    {
-      std::vector < Polynomial >::const_iterator start(orig_system.begin()),
-	finish(orig_system.end());
-      
-      while (start != finish) {
-	PBORI_ASSERT(terms.ring().id() == start->ring().id());
-	++start;
-      }
-    }
-#endif
-    fix_point_iterate(*this,orig_system,polys,terms,leads_from_strat);
-    if (optModifiedLinearAlgebra){
-    linalg_step_modified(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
-    } else {
-        linalg_step(polys,terms,leads_from_strat, enabledLog, optDrawMatrices, matrixPrefix.data());
-    }
-    //leads_from_strat=terms.diff(mod_mon_set(terms,generators.minimalLeadingTerms));
-
-
-    return polys;
+  MonomialSet terms(orig_system[0].ring()), leads_from_strat(terms);
+  
+  PBORI_ASSERT(sameRing(orig_system.begin(), orig_system.end()));
+  fix_point_iterate(*this, orig_system, polys, terms, leads_from_strat);
+  
+  (optModifiedLinearAlgebra? linalg_step_modified:
+   linalg_step)(polys, terms, leads_from_strat, enabledLog, optDrawMatrices,
+                matrixPrefix.data());
+  return polys;
 }
+ 
 #endif
-
 
 END_NAMESPACE_PBORIGB

@@ -93,6 +93,17 @@ public:
   int suggestPluginVariable();
   std::vector<Polynomial> allGenerators();
 
+  template <class Iterator>
+  bool sameRing(Iterator start, Iterator finish) const {
+  
+    while (start != finish) {
+      if (r.id() != start->ring().id())
+        return false;
+      ++start;
+    }
+    return true;
+  }
+
 protected:
   std::vector<Polynomial> treatVariablePairs(int s);
   void treatNormalPairs(int s,MonomialSet intersecting_terms,
@@ -104,9 +115,9 @@ protected:
   std::vector<Polynomial>
   addHigherImplDelayedUsing4(int s,const LiteralFactorization& literal_factors,
                              bool include_orig);
-      
-public:
 
+
+public:
   /// @name public available parameters
   PairManager pairs;
   bool reduceByTailReduced;
