@@ -95,8 +95,6 @@ private:
   PolyEntryIndices m_indices;
 };
 
-
-
 END_NAMESPACE_PBORIGB
 
 #endif /* polybori_groebner_PolyEntryVector_h_ */

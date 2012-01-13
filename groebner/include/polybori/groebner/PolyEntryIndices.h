@@ -45,7 +45,10 @@ public:
     lm2Index(), exp2Index() {}
 
   /// Consistently inserting element @todo for some reason not inlinable
-  void insert(const PolyEntry& entry, const data_type& rhs);
+  void insert(const PolyEntry& entry, const data_type& rhs) {
+    exp2Index[entry.leadExp] = rhs;
+    lm2Index[entry.lead] = rhs;
+  }
 
   /// Consistently replacing keys
   void update(const Monomial& key, const PolyEntry& entry) {
