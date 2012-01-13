@@ -128,8 +128,8 @@ private:
   typedef std::set<const PolyEntry*, PolyEntryPtrLmLess> entryset_type;
 
   void propagate_step(entryset_type& others);
-
-  bool propagate_updated(const PolyEntry& entry, const Polynomial& poly);
+  void exchange(const Polynomial&, const PolyEntry&, entryset_type&);
+  void update_propagated(const PolyEntry& entry);
 
 public:
   /// @name public available parameters

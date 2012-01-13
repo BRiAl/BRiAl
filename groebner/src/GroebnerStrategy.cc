@@ -126,34 +126,35 @@ reduce_by_small_entry(const Polynomial& poly, const PolyEntry& entry) {
           reduce_by_binom_in_tail(poly, entry.p));
 }
 
-void GroebnerStrategy::propagate_step(entryset_type& others){
+void GroebnerStrategy::propagate_step(entryset_type& others) {
 
   const PolyEntry& e = *(*others.begin());
-  others.erase(others.begin());  
+  others.erase(others.begin());
 
-  if (should_propagate(e)){
-    PolyEntryVector::const_iterator start(generators.begin()),
-      finish(generators.end());
-    
-    for(; start != finish; ++start)
-      if ( start->propagatableBy(e) &&
-           propagate_updated(*start, reduce_by_small_entry(start->p, e)) )
-        others.insert(&(*start));
+  if (should_propagate(e)) {
+    for(PolyEntryVector::const_iterator start(generators.begin()),
+	  finish(generators.end()); start != finish; ++start)
+      if (start->propagatableBy(e))
+	exchange(reduce_by_small_entry(start->p, e), *start, others);
   }
 }
 
+void
+GroebnerStrategy::exchange(const Polynomial& reduced, const PolyEntry& entry,
+			   entryset_type& others) {
 
-bool
-GroebnerStrategy::propagate_updated(const PolyEntry& entry, const Polynomial& poly){
-  if (poly != entry.p) {
-    generators(entry) = poly;
-    generators.monomials.update(entry);
-    if ( (entry.length == 2) && (entry.ecart() == 0))
-      addNonTrivialImplicationsDelayed(entry);
-
-    return true;
+  if (reduced != entry.p) {
+    update_propagated(generators(entry) = reduced);
+    others.insert(&entry);
   }
-  return false;
+}
+
+void
+GroebnerStrategy::update_propagated(const PolyEntry& entry) {
+
+  generators.monomials.update(entry);
+  if ( (entry.length == 2) && (entry.ecart() == 0))
+    addNonTrivialImplicationsDelayed(entry);
 }
 
 
@@ -443,6 +444,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
         other_terms=other_terms.diff(generators.leadingTerms11);
     if (is00)
         other_terms=other_terms.diff(generators.leadingTerms00);
+
     while(it!=end){
     
     other_terms=other_terms.subset0(*it);
