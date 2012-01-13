@@ -116,7 +116,12 @@ protected:
                              bool include_orig);
 
 private:
-  void propagate_step(const PolyEntry& e, std::set<int>& others);
+  void propagate_step(const PolyEntry& e, std::set<const PolyEntry*>& others);
+  const PolyEntry* propagate_again(std::set<const PolyEntry*>& others);
+  void propagate_reduce(const PolyEntry& entry, const PolyEntry& old,
+                   std::set<const PolyEntry*>& others);
+
+  void propagate_update(const PolyEntry& entry, const Polynomial& poly);
 
 public:
   /// @name public available parameters

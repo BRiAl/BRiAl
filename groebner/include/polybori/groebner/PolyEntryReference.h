@@ -55,6 +55,10 @@ public:
   void markVariablePairsCalculated() {
     return m_entry.markVariablePairsCalculated(); }
 
+  bool propagatableBy(const PolyEntry& other) const {
+    return m_entry.propagatableBy(other); 
+  }
+
   std::set<idx_type>& vPairCalculated;
   bool& minimal;
   //@}
@@ -78,6 +82,7 @@ private:
   value_type& m_entry;
   vector_type& m_parent;
 };
+
 
 END_NAMESPACE_PBORIGB
 

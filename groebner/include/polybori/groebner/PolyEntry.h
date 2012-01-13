@@ -100,6 +100,11 @@ public:
       it++;
     } 
   }
+
+  bool propagatableBy(const PolyEntry& other) const {
+    return minimal && (deg <= 2) && (length > 1) && (this != &other) &&
+      tailVariables.reducibleBy(other.leadExp);
+  }
 };
 
 
@@ -108,7 +113,8 @@ public:
 
 inline bool
 should_propagate(const PolyEntry& e){
- return ((((e.length==1) && (e.deg>0) && (e.deg<4)))||((e.length==2)&&(e.ecart()==0) &&(e.deg<3)));
+  return ( (e.length == 1) && (e.deg > 0) && (e.deg < 4) ) ||
+    ( (e.length == 2) && (e.ecart() == 0) && (e.deg < 3) );
 
 }
 

@@ -116,58 +116,60 @@ Polynomial GroebnerStrategy::redTail(const Polynomial & p){
     return red_tail(this->generators,p);
 }
 
-void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int>& others){
+inline Polynomial
+reduce_by_small_entry(const Polynomial& poly, const PolyEntry& entry) {
+
+  PBORI_ASSERT((entry.length == 1) || (entry.length == 2));
+
+  return (entry.length == 1?
+          cancel_monomial_in_tail(poly, entry.lead):
+          reduce_by_binom_in_tail(poly, entry.p));
+}
+
+void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<const PolyEntry*>& others){
   
   if (should_propagate(e)){
-    Monomial lm=e.lead;
-    Exponent exp=e.leadExp;
-    int i;
-    int s=generators.size();
-    for(i=0;i<s;i++){      
-      if ((this->generators[i].minimal) && (this->generators[i].deg<=2)&& (this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
-      //if ((this->generators[i].minimal) &&(this->generators[i].length>1) &&(&this->generators[i]!=&e)&&(this->generators[i].tailVariables.reducibleBy(exp))){
-        Polynomial new_p(lm.ring());
-        if (e.length==1){
-          new_p=cancel_monomial_in_tail(this->generators[i].p,e.lead);
-        } else {
-          PBORI_ASSERT(e.length==2);
-          new_p=reduce_by_binom_in_tail(this->generators[i].p,e.p);
-        }
-        if (generators[i].p!=new_p){
-          generators(i) = new_p;
-          generators.monomials.update(generators[i]);
+    PolyEntryVector::const_iterator start(generators.begin()),
+      finish(generators.end());
 
-          if ((generators[i].length==2)&&(generators[i].ecart()==0)){
-            addNonTrivialImplicationsDelayed(generators[i]);
-
-          }
-          others.insert(i);
-          
+    for(; start != finish; ++start)
+      if (start->propagatableBy(e)) {
+        Polynomial new_p = reduce_by_small_entry(start->p, e);
+        if (new_p != start->p) {
+          propagate_update(*start, new_p);
+          others.insert(&(*start));
         }
       }
-    }
   }
 }
 
-void GroebnerStrategy::propagate(const PolyEntry& e){
-  if (should_propagate(e)){
-    std::set<int> others;
-    PolyEntry entry = e;
-    bool iterate = true;
-    do {
-      propagate_step(entry, others);
-      
-      if (!(others.empty())) { ///@todo: should take the one with smallest lm
-        std::set<int>::iterator ob=others.begin();
-        int next=*ob;
-        others.erase(ob);
-        entry = generators[next];
-      }
-      else
-        iterate = false;
-      
-    } while(iterate);
+
+void
+GroebnerStrategy::propagate_update(const PolyEntry& entry, const Polynomial& poly){
+  generators(entry) = poly;
+  generators.monomials.update(entry);
+  if ( (entry.length == 2) && (entry.ecart() == 0))
+    addNonTrivialImplicationsDelayed(entry);
+}
+
+
+const PolyEntry*
+GroebnerStrategy::propagate_again(std::set<const PolyEntry*>& others) {
+
+  if (!(others.empty())) { ///@todo: should take the one with smallest lm
+    const PolyEntry* next = *others.begin();
+    others.erase(others.begin());
+    return next;
   }
+  return NULL;
+}
+
+void GroebnerStrategy::propagate(const PolyEntry& e){
+
+  std::set<const PolyEntry*> others;
+  const PolyEntry* ptr(&e);
+
+  do { propagate_step(*ptr, others); } while(ptr = propagate_again(others));
 }
 
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
