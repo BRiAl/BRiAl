@@ -116,7 +116,7 @@ Polynomial GroebnerStrategy::redTail(const Polynomial & p){
     return red_tail(this->generators,p);
 }
 
-void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
+void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int>& others){
   
   if (should_propagate(e)){
     Monomial lm=e.lead;
@@ -147,18 +147,26 @@ void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<int> others){
       }
     }
   }
-  if (!(others.empty()))
-  { ///@todo: should take the one with smallest lm
-    std::set<int>::iterator ob=others.begin();
-    int next=*ob;
-    others.erase(ob);
-    this->propagate_step(generators[next],others);
-  }
 }
 
 void GroebnerStrategy::propagate(const PolyEntry& e){
   if (should_propagate(e)){
-    propagate_step(e, std::set<int>());
+    std::set<int> others;
+    PolyEntry entry = e;
+    bool iterate = true;
+    do {
+      propagate_step(entry, others);
+      
+      if (!(others.empty())) { ///@todo: should take the one with smallest lm
+        std::set<int>::iterator ob=others.begin();
+        int next=*ob;
+        others.erase(ob);
+        entry = generators[next];
+      }
+      else
+        iterate = false;
+      
+    } while(iterate);
   }
 }
 

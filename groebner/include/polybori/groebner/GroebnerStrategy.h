@@ -80,7 +80,6 @@ public:
   Polynomial nextSpoly(){ return pairs.nextSpoly(generators);  }
   void addNonTrivialImplicationsDelayed(const PolyEntry& p);
   void propagate(const PolyEntry& e); 
-  void propagate_step(const PolyEntry& e, std::set<int> others);
 
   void log(const char* c){ if (enabledLog) std::cout<<c<<std::endl; }
 
@@ -116,6 +115,8 @@ protected:
   addHigherImplDelayedUsing4(int s,const LiteralFactorization& literal_factors,
                              bool include_orig);
 
+private:
+  void propagate_step(const PolyEntry& e, std::set<int>& others);
 
 public:
   /// @name public available parameters
