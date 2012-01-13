@@ -126,50 +126,45 @@ reduce_by_small_entry(const Polynomial& poly, const PolyEntry& entry) {
           reduce_by_binom_in_tail(poly, entry.p));
 }
 
-void GroebnerStrategy::propagate_step(const PolyEntry& e, std::set<const PolyEntry*>& others){
-  
+void GroebnerStrategy::propagate_step(entryset_type& others){
+
+  const PolyEntry& e = *(*others.begin());
+  others.erase(others.begin());  
+
   if (should_propagate(e)){
     PolyEntryVector::const_iterator start(generators.begin()),
       finish(generators.end());
-
+    
     for(; start != finish; ++start)
-      if (start->propagatableBy(e)) {
-        Polynomial new_p = reduce_by_small_entry(start->p, e);
-        if (new_p != start->p) {
-          propagate_update(*start, new_p);
-          others.insert(&(*start));
-        }
-      }
+      if ( start->propagatableBy(e) &&
+           propagate_updated(*start, reduce_by_small_entry(start->p, e)) )
+        others.insert(&(*start));
   }
 }
 
 
-void
-GroebnerStrategy::propagate_update(const PolyEntry& entry, const Polynomial& poly){
-  generators(entry) = poly;
-  generators.monomials.update(entry);
-  if ( (entry.length == 2) && (entry.ecart() == 0))
-    addNonTrivialImplicationsDelayed(entry);
-}
+bool
+GroebnerStrategy::propagate_updated(const PolyEntry& entry, const Polynomial& poly){
+  if (poly != entry.p) {
+    generators(entry) = poly;
+    generators.monomials.update(entry);
+    if ( (entry.length == 2) && (entry.ecart() == 0))
+      addNonTrivialImplicationsDelayed(entry);
 
-
-const PolyEntry*
-GroebnerStrategy::propagate_again(std::set<const PolyEntry*>& others) {
-
-  if (!(others.empty())) { ///@todo: should take the one with smallest lm
-    const PolyEntry* next = *others.begin();
-    others.erase(others.begin());
-    return next;
+    return true;
   }
-  return NULL;
+  return false;
 }
+
 
 void GroebnerStrategy::propagate(const PolyEntry& e){
 
-  std::set<const PolyEntry*> others;
-  const PolyEntry* ptr(&e);
+  entryset_type entries;
+  entries.insert(&e);
 
-  do { propagate_step(*ptr, others); } while(ptr = propagate_again(others));
+  while (!entries.empty())
+    propagate_step(entries);
+
 }
 
 std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){

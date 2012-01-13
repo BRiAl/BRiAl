@@ -29,6 +29,14 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
+class PolyEntryPtrLmLess {
+public:
+  bool operator()(const PolyEntry* lhs, const PolyEntry* rhs) const {
+    return lhs->lead < rhs->lead;
+  }
+};
+
+
 /** @class GroebnerStrategy
  * @brief This class defines GroebnerStrategy.
  *
@@ -116,12 +124,12 @@ protected:
                              bool include_orig);
 
 private:
-  void propagate_step(const PolyEntry& e, std::set<const PolyEntry*>& others);
-  const PolyEntry* propagate_again(std::set<const PolyEntry*>& others);
-  void propagate_reduce(const PolyEntry& entry, const PolyEntry& old,
-                   std::set<const PolyEntry*>& others);
 
-  void propagate_update(const PolyEntry& entry, const Polynomial& poly);
+  typedef std::set<const PolyEntry*, PolyEntryPtrLmLess> entryset_type;
+
+  void propagate_step(entryset_type& others);
+
+  bool propagate_updated(const PolyEntry& entry, const Polynomial& poly);
 
 public:
   /// @name public available parameters
