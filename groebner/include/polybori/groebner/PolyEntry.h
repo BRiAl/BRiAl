@@ -102,7 +102,7 @@ public:
   }
 
   bool propagatableBy(const PolyEntry& other) const {
-    return minimal && (deg <= 2) && (length > 1) && (this != &other) &&
+    return minimal && (deg <= 2) && (length > 1) && (p != other.p) &&
       tailVariables.reducibleBy(other.leadExp);
   }
 };
