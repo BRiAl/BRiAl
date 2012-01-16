@@ -414,10 +414,21 @@ GroebnerStrategy::allGenerators(){
   return result;
 }
 
+class Subset0Operator {
+public:
+
+  MonomialSet operator()(const MonomialSet& rhs,
+                         const MonomialSet::idx_type& idx) {
+    return rhs.subset0(idx);
+  }
+};
+
 int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,std::vector<int>* impl_v){
 
   Polynomial p=p_arg;
   Polynomial::ring_type ring(p_arg.ring());
+  const MonomialSet empty(ring);
+
   PBORI_ASSERT(ring.id() == this->r.id());
   MonomialSet ext_prod_terms(ring);
   PolyEntry e(p);
@@ -430,55 +441,40 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   //here we make use of the fact, that the index of the 1 node is bigger than that of variables
   this->propagate(e);
   //do this before adding leading term
-  Monomial::const_iterator it=e.lead.begin();
-  Monomial::const_iterator end=e.lead.end();
+
   BooleSet other_terms=this->generators.leadingTerms;
-  MonomialSet intersecting_terms(ring);
+  MonomialSet intersecting_terms(empty);
   bool is00=e.literal_factors.is00Factorization();
   bool is11=e.literal_factors.is11Factorization();
-  MonomialSet critical_terms_base(ring);
-  MonomialSet ot2(ring);
-  if (!((is00 && (generators.leadingTerms==generators.leadingTerms00))||(is11 && (generators.leadingTerms==generators.leadingTerms11)))){
-    
-    if (is11)
-        other_terms=other_terms.diff(generators.leadingTerms11);
-    if (is00)
-        other_terms=other_terms.diff(generators.leadingTerms00);
+  MonomialSet critical_terms_base(empty);
 
-    while(it!=end){
-    
-    other_terms=other_terms.subset0(*it);
-    it++;
-    
-    }
-    //other_terms=((Polynomial)other_terms%(Polynomial) e.lm).diagram();
-    
-    
-    if ((is11)||(is00)){
-        
-        if (is00)
-            ot2=generators.leadingTerms00;
-        else
-            ot2=generators.leadingTerms11;
-          /// deactivated existAbstract, because sigfaults on SatTestCase, AD
-          
-        if (!(ot2.isZero())){
-            ext_prod_terms=ot2.existAbstract(lm).diff(other_terms);
-            other_terms=other_terms.unite(ext_prod_terms);
-        }
-       
-        //other_terms=other_terms.unite(ot2);
-    }
+
+  if (!( (is00 && (generators.leadingTerms==generators.leadingTerms00)) ||
+         (is11 && (generators.leadingTerms==generators.leadingTerms11))) ){
+
+    PBORI_ASSERT (!(!p.isOne() && is00 && is11));
+    MonomialSet ot2 = (is11? MonomialSet(generators.leadingTerms11):
+                       (is00? MonomialSet(generators.leadingTerms00):
+                        empty));
+
+    other_terms = std::accumulate(e.lead.begin(), e.lead.end(),
+                                  other_terms.diff(ot2), Subset0Operator());
+
+    if (!(ot2.isZero()))
+      ext_prod_terms = ot2.existAbstract(lm).diff(other_terms);
+
+    other_terms = other_terms.unite(ext_prod_terms);
+
     //we assume that no variable of lm does divide a monomial in other_terms
-    
     //diff suffices if we start from minimal leads
-    intersecting_terms=this->generators.leadingTerms.diff(other_terms);
-    intersecting_terms=intersecting_terms.diff(ot2);//mod_mon_set(intersecting_terms,ot2);
-    PBORI_ASSERT (!((!(p.isOne())) && is00 && is11));
+    intersecting_terms = generators.leadingTerms.diff(other_terms).diff(ot2); 
+    critical_terms_base =
+      mod_mon_set(intersecting_terms.intersect(generators.minimalLeadingTerms),
+                  ot2);
   }
-          
-  critical_terms_base=mod_mon_set(intersecting_terms.intersect(generators.minimalLeadingTerms),ot2);
-  this->easyProductCriterions+=this->generators.minimalLeadingTerms.length()-intersecting_terms.length();
+
+  easyProductCriterions += generators.minimalLeadingTerms.length() - 
+    intersecting_terms.length();
   
  
   
@@ -515,41 +511,29 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
         this->pairs.status.setToHasTRep((*impl_v)[j],s);
     }
   }
-  //Monomial crit_vars=Polynomial(intersecting_terms).usedVariables();
-  
-  
    treatNormalPairs(s,critical_terms_base,other_terms, ext_prod_terms);
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in generators.leadingTerms
     
-    
-    
-    
-    std::vector<Polynomial> impl;
-    
     generators.setupSetsForLastElement();
-      if ((generators[s].minimal)&&(!(is_impl))){
 
-      impl=treatVariablePairs(s);
+    if (generators[s].minimal && !is_impl) {
+      std::vector<Polynomial> impl = treatVariablePairs(s);
+
+      std::vector<int> implication_indices(1, s);
+      implication_indices.reserve(impl.size() + 1);
+      std::vector<Polynomial>::const_iterator start(impl.begin()), finish(impl.end());
+      std::back_insert_iterator<std::vector<int> > result(implication_indices);
+      
+      for(; start != finish; ++start, ++result)
+        *result = addGenerator((generators.optRedTail?
+                                red_tail(generators, *start): *start), true,
+                               &implication_indices); 
     }
-      else {
-        generators(s).markVariablePairsCalculated();
-      }
+    else
+      generators(s).markVariablePairsCalculated();
 
-    
-        int impl_s=impl.size();
-        std::vector<int> implication_indices;
-        implication_indices.push_back(s);
-        for(i=0;i<impl_s;i++){
-            Polynomial implication=impl[i];
-            if (generators.optRedTail)
-                implication=red_tail(this->generators,implication);
 
-            implication_indices.push_back(
-                addGenerator(implication,true,&implication_indices));
-            //addGeneratorDelayed(implication);
-        }
-    
     
     return s;
 }
