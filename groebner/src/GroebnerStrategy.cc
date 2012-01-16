@@ -448,6 +448,7 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   bool is11=e.literal_factors.is11Factorization();
   MonomialSet critical_terms_base(empty);
 
+  easyProductCriterions += generators.minimalLeadingTerms.length();
 
   if (!( (is00 && (generators.leadingTerms==generators.leadingTerms00)) ||
          (is11 && (generators.leadingTerms==generators.leadingTerms11))) ){
@@ -471,10 +472,10 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
     critical_terms_base =
       mod_mon_set(intersecting_terms.intersect(generators.minimalLeadingTerms),
                   ot2);
+
+    easyProductCriterions -= intersecting_terms.length();
   }
 
-  easyProductCriterions += generators.minimalLeadingTerms.length() - 
-    intersecting_terms.length();
   
  
   
@@ -491,51 +492,50 @@ int GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg, bool is_impl,st
   Polynomial::exp_iterator is_it=inter_as_poly.expBegin();
   Polynomial::exp_iterator is_end=inter_as_poly.expEnd();
   while(is_it!=is_end){
-    int index =this->generators.index(*is_it);
-    if (index!=s){
+    int index = generators.index(*is_it);
+    if (index != s){
       
       //product criterion doesn't hold
       //try length 1 crit
-      if (!((generators[index].length==1) &&(generators[s].length==1)))
-      {        
-        this->pairs.status.setToUncalculated(index,s);
-      } else this->extendedProductCriterions++;
+      if (!((generators[index].length == 1) && (generators[s].length == 1)))
+	pairs.status.setToUncalculated(index, s);
+      else
+	++extendedProductCriterions;
     }
-    is_it++;
+    ++is_it;
   }
   if (impl_v!=NULL){
     PBORI_ASSERT(is_impl);
-    int impl_v_size=impl_v->size();
-    int j;
-    for (j=0;j<impl_v_size;j++){
-        this->pairs.status.setToHasTRep((*impl_v)[j],s);
-    }
+    std::vector<int>::const_iterator start(impl_v->begin()),
+      finish(impl_v->end());
+    for (; start != finish; ++start)
+      pairs.status.setToHasTRep(*start, s);
   }
-   treatNormalPairs(s,critical_terms_base,other_terms, ext_prod_terms);
+
+  treatNormalPairs(s,critical_terms_base,other_terms, ext_prod_terms);
     //!!!!! here we add the lm !!!!
     //we assume that lm is minimal in generators.leadingTerms
     
-    generators.setupSetsForLastElement();
+  generators.setupSetsForLastElement();
 
-    if (generators[s].minimal && !is_impl) {
-      std::vector<Polynomial> impl = treatVariablePairs(s);
-
-      std::vector<int> implication_indices(1, s);
-      implication_indices.reserve(impl.size() + 1);
-      std::vector<Polynomial>::const_iterator start(impl.begin()), finish(impl.end());
-      std::back_insert_iterator<std::vector<int> > result(implication_indices);
+  if (generators[s].minimal && !is_impl) {
+    std::vector<Polynomial> impl = treatVariablePairs(s);
       
-      for(; start != finish; ++start, ++result)
-        *result = addGenerator((generators.optRedTail?
-                                red_tail(generators, *start): *start), true,
-                               &implication_indices); 
-    }
-    else
-      generators(s).markVariablePairsCalculated();
-
-
+    std::vector<int> implication_indices(1, s);
+    implication_indices.reserve(impl.size() + 1);
+    std::vector<Polynomial>::const_iterator start(impl.begin()),
+      finish(impl.end());
+    std::back_insert_iterator<std::vector<int> > result(implication_indices);
     
-    return s;
+    for(; start != finish; ++start, ++result)
+      *result = addGenerator((generators.optRedTail?
+			      red_tail(generators, *start): *start), true,
+			     &implication_indices); 
+  }
+  else
+    generators(s).markVariablePairsCalculated();
+
+  return s;
 }
 
 class TimesConstantImplication {
