@@ -42,15 +42,22 @@ public:
     j=std::max(ia,ja);
     table[j][i]=HAS_T_REP;
   }
+
+  template <class Iterator>
+  void setToHasTRep(Iterator start, Iterator finish, int ja){
+    for (; start != finish; ++start)
+      setToHasTRep(*start, ja);
+  }
   void setToUncalculated(int ia, int ja){
     int i,j;
     i=std::min(ia,ja);
     j=std::max(ia,ja);
     table[j][i]=UNCALCULATED;
   }
-  void prolong(bool value=UNCALCULATED){
+  int prolong(bool value=UNCALCULATED){
     int s=table.size();
     table.push_back(bitvector_type(s, value));
+    return s;
   }
   PairStatusSet(int size=0){
     int s=0;

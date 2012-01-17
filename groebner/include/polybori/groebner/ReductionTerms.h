@@ -27,6 +27,8 @@ BEGIN_NAMESPACE_PBORIGB
 // groebner_alg.h
 MonomialSet recursively_insert(MonomialSet::navigator p,
 			       idx_type idx, MonomialSet mset);
+// nf
+MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs);
 
 class LLReductor:
   public MonomialSet {
@@ -202,6 +204,14 @@ public:
 };
 
 
+class Subset0Operator {
+public:
+
+  MonomialSet operator()(const MonomialSet& rhs,
+                         const MonomialSet::idx_type& idx) {
+    return rhs.subset0(idx);
+  }
+};
 
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy
@@ -225,6 +235,44 @@ public:
     leadingTerms(ring), minimalLeadingTerms(ring),
     leadingTerms11(ring), leadingTerms00(ring),
     llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
+
+  MonomialSet intersecting_leads(const PolyEntry& e,
+                                 MonomialSet& other_terms, 
+                                 MonomialSet& ext_prod_terms,
+                                 MonomialSet& critical_terms_base) const {
+
+    other_terms = leadingTerms;
+
+    if (!( (e.literal_factors.is00Factorization() &&
+            (leadingTerms == leadingTerms00)) ||
+           (e.literal_factors.is11Factorization() &&
+            (leadingTerms == leadingTerms11))) ){
+
+      PBORI_ASSERT (!(!e.p.isOne() && e.literal_factors.is00Factorization() &&
+                      e.literal_factors.is11Factorization()));
+      
+      MonomialSet ot2 = (e.literal_factors.is11Factorization()? MonomialSet(leadingTerms11):
+                         (e.literal_factors.is00Factorization()? MonomialSet(leadingTerms00):
+                          e.p.ring().zero()));
+      
+      other_terms = std::accumulate(e.lead.begin(), e.lead.end(),
+                                    other_terms.diff(ot2), Subset0Operator());
+
+      if (!ot2.isZero())
+        ext_prod_terms = ot2.existAbstract(e.lead).diff(other_terms);
+      
+      other_terms = other_terms.unite(ext_prod_terms);
+      
+      //we assume that no variable of lm does divide a monomial in other_terms
+      //diff suffices if we start from minimal leads
+      MonomialSet intersecting_terms = leadingTerms.diff(other_terms).diff(ot2); 
+      critical_terms_base =
+        mod_mon_set(intersecting_terms.intersect(minimalLeadingTerms),
+                    ot2);
+      return intersecting_terms;
+    }
+    return e.p.ring().zero();
+  }
 
 };
 

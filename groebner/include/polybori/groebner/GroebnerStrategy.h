@@ -71,8 +71,7 @@ public:
   std::vector<Polynomial>  minimalizeAndTailReduce();
   std::vector<Polynomial>  minimalize();
 
-  int addGenerator(const BoolePolynomial& p, 
-                   bool is_impl=false, std::vector<int>* impl_v=NULL);
+  void addGenerator(const BoolePolynomial& p);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);  
   void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
@@ -125,11 +124,34 @@ protected:
 
 private:
 
+  int addGeneratorStep(const BoolePolynomial& p,
+                       const std::vector<int>& impl_v);
+
+  int addImplications(const BoolePolynomial& p,
+                      const std::vector<int>& impl_v);
+
   typedef std::set<const PolyEntry*, PolyEntryPtrLmLess> entryset_type;
 
   void propagate_step(entryset_type& others);
   void exchange(const Polynomial&, const PolyEntry&, entryset_type&);
   void update_propagated(const PolyEntry& entry);
+
+
+  template <class Iterator>
+  void check_len1_crit(const int s, Iterator is_it, Iterator is_end) {
+    while(is_it != is_end) {
+      int index = generators.index(*is_it);
+      if (index != s){
+        //product criterion doesn't hold
+        //try length 1 crit
+        if (!((generators[index].length == 1) && (generators[s].length == 1)))
+          pairs.status.setToUncalculated(index, s);
+        else
+          ++extendedProductCriterions;
+      }
+      ++is_it;
+    }
+  }
 
 public:
   /// @name public available parameters

@@ -6,6 +6,8 @@
  *  Copyright 2006 The PolyBoRi Team. See LICENSE file.
  *
  */
+
+
 #include <algorithm>
 #include <vector>
 #include <queue>
@@ -27,7 +29,7 @@ extern "C"{
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB
 
-
+class ReductionStrategy;
 int select_no_deg_growth(const ReductionStrategy& strat, const Monomial& m);
 
 typedef SlimgbReduction<SLIMGB_SIMPLEST> slimgb_reduction_type;
