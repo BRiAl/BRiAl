@@ -146,14 +146,14 @@ private:
     
     while(is_it != is_end) {
       int index = generators.index(*is_it);
-      if (index != s){
-        //product criterion doesn't hold
-        //try length 1 crit
-        if (generators[index].length != 1 || e_len_not_1)
-          pairs.status.setToUncalculated(index, s);
-        else
-          ++extendedProductCriterions;
-      }
+      PBORI_ASSERT(index != s);
+      //product criterion doesn't hold
+      //try length 1 crit
+      if (generators[index].length != 1 || e_len_not_1)
+	pairs.status.setToUncalculated(index, s);
+      else
+	++extendedProductCriterions;
+
       ++is_it;
     }
   }

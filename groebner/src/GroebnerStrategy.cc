@@ -439,13 +439,12 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
   easyProductCriterions += generators.minimalLeadingTerms.length() -
     intersecting_terms.length();
 
-  generators.append(e);
-
-  const int s = generators.size() - 1;
+  const int s = generators.size();
 
   Polynomial inter_as_poly = intersecting_terms;
   check_len1_crit(s, inter_as_poly.expBegin(), inter_as_poly.expEnd(),
 		  e.length != 1);
+  generators.append(e);
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
