@@ -415,18 +415,16 @@ GroebnerStrategy::allGenerators(){
 }
 
 
-int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg,
-                                       const std::vector<int>& impl){
+int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
 
-  Polynomial p=p_arg;
-  Polynomial::ring_type ring(p_arg.ring());
-  const MonomialSet empty(ring);
+  PBORI_ASSERT(p_arg.ring().id() == r.id());
+  const MonomialSet empty(p_arg.ring());
+  PolyEntry e(p_arg);
 
-  PBORI_ASSERT(ring.id() == this->r.id());
-  PolyEntry e(p);
-  //here we make use of the fact, that the index of the 1 node is bigger than that of variables
+  // here we make use of the fact, that the index of the 1 node is 
+  // bigger than that of variables
   generators.reducibleUntil = std::max(generators.reducibleUntil,
-                                       *p.navigation());
+                                       *p_arg.navigation());
 
   //do this before adding leading term
   propagate(e);
@@ -434,60 +432,66 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg,
   BooleSet other_terms(empty);
   MonomialSet ext_prod_terms(empty);
   MonomialSet critical_terms_base(empty);
-  MonomialSet intersecting_terms(generators.intersecting_leads(e, other_terms, 
-                                                               ext_prod_terms,
-                                                               critical_terms_base));
+  MonomialSet intersecting_terms = 
+    generators.intersecting_leads(e, other_terms,  ext_prod_terms,
+				  critical_terms_base);
 
   easyProductCriterions += generators.minimalLeadingTerms.length() -
     intersecting_terms.length();
 
   generators.append(e);
 
-  const int s = pairs.status.prolong(PairStatusSet::HAS_T_REP);
-  PBORI_ASSERT(s == (generators.size()-1));
+  const int s = generators.size() - 1;
 
   Polynomial inter_as_poly = intersecting_terms;
-  check_len1_crit(s, inter_as_poly.expBegin(), inter_as_poly.expEnd());
+  check_len1_crit(s, inter_as_poly.expBegin(), inter_as_poly.expEnd(),
+		  e.length != 1);
 
-  pairs.status.setToHasTRep(impl.begin(), impl.end(), s);
-
-  treatNormalPairs(s,critical_terms_base,other_terms, ext_prod_terms);
-    //!!!!! here we add the lm !!!!
-    //we assume that lm is minimal in generators.leadingTerms
+  //!!!!! here we add the lm !!!!
+  //we assume that lm is minimal in generators.leadingTerms
+  treatNormalPairs(s, critical_terms_base, other_terms, ext_prod_terms);
     
   generators.setupSetsForLastElement();
 
   return s;
 }
 
-int GroebnerStrategy::addImplications(const BoolePolynomial& poly,
-                                      const std::vector<int>& impl){
+void
+GroebnerStrategy::addImplications(const BoolePolynomial& poly,
+				  std::vector<int>& indices){
   PBORI_ASSERT(!poly.isZero());
-
   int result = addGeneratorStep((generators.optRedTail?
-                                 red_tail(generators, poly): poly), impl);
-  generators(result).markVariablePairsCalculated();
+                                 red_tail(generators, poly): poly));
 
-  return result;
+  pairs.status.setToHasTRep(indices.begin(), indices.end(), result);
+  indices.push_back(result);
+  generators(result).markVariablePairsCalculated();
+}
+
+template <class Iterator>
+void
+GroebnerStrategy::addImplications(Iterator start, Iterator finish,
+				  std::vector<int>& indices){
+  for(; start != finish; ++start)
+    addImplications(*start, indices);
+}
+
+void
+GroebnerStrategy::addImplications(const std::vector<Polynomial>& impl, int s) {
+  std::vector<int> indices(1, s);
+  addImplications(impl.begin(), impl.end(), indices);
 }
 
 void
 GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg) {
 
-  int s = addGeneratorStep(p_arg, std::vector<int>());
+  int s = addGeneratorStep(p_arg);
+  PolyEntryReference entry = generators(s);
 
-  if (generators[s].minimal) {
-    std::vector<Polynomial> impl(treatVariablePairs(s));
-
-    std::vector<int> implication_indices(1, s);
-    std::back_insert_iterator<std::vector<int> > result(implication_indices);
-
-    std::vector<Polynomial>::iterator start(impl.begin()), finish(impl.end());
-    for(; start != finish; ++start, ++result)
-      *result = addImplications(*start, implication_indices);
-  }
+  if (entry.minimal)
+    addImplications(treatVariablePairs(s), s);
   else
-    generators(s).markVariablePairsCalculated();
+    entry.markVariablePairsCalculated();
 }
 
 class TimesConstantImplication {
@@ -695,30 +699,24 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 
 
   } 
-  if (impl.size()==0)
+  if (impl.empty())
     addGenerator(p);
-  else{
-    int s=impl.size();
-    int i;
+  else {
     std::vector<int> implication_indices;
-    std::back_insert_iterator<std::vector<int> > result(implication_indices);
 
-      for(i=0;i<s;++i, ++result){
-      PBORI_ASSERT(!(impl[i].isZero()));
-      if (generators.minimalLeadingTerms.divisorsOf(impl[i].leadExp()).isZero()){
-
-        Polynomial p_impl = impl[i];
-        *result = addImplications(p_impl, implication_indices);
-      }
-      else {
-        addGeneratorDelayed(impl[i]);
-                //PBORI_ASSERT(impl[i]!=)
-      }
-
+    std::vector<Polynomial>::const_iterator start(impl.begin()),
+      finish(impl.end());   
+    for(; start != finish; ++start) {
+      PBORI_ASSERT(!start->isZero());
+      if (generators.minimalLeadingTerms.divisorsOf(start->leadExp()).isZero())
+        addImplications(*start, implication_indices);
+      else
+        addGeneratorDelayed(*start);
     }
     PBORI_ASSERT(!(generators.leadingTerms.divisorsOf(p.leadExp()).isZero()));
   }
 }
+
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
     //if (p.isZero()) return;
     Exponent lm_exp=p.leadExp();

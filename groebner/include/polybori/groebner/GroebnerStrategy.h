@@ -124,11 +124,13 @@ protected:
 
 private:
 
-  int addGeneratorStep(const BoolePolynomial& p,
-                       const std::vector<int>& impl_v);
+  int addGeneratorStep(const BoolePolynomial& p);
 
-  int addImplications(const BoolePolynomial& p,
-                      const std::vector<int>& impl_v);
+  void addImplications(const BoolePolynomial& p, std::vector<int>& indices);
+
+  template <class Iterator>
+  void addImplications(Iterator, Iterator, std::vector<int>& indices);
+  void addImplications(const std::vector<Polynomial>& impl, int s);
 
   typedef std::set<const PolyEntry*, PolyEntryPtrLmLess> entryset_type;
 
@@ -138,13 +140,16 @@ private:
 
 
   template <class Iterator>
-  void check_len1_crit(const int s, Iterator is_it, Iterator is_end) {
+  void check_len1_crit(const int s, Iterator is_it, Iterator is_end,
+		       bool e_len_not_1) {
+    pairs.status.prolong(PairStatusSet::HAS_T_REP);
+    
     while(is_it != is_end) {
       int index = generators.index(*is_it);
       if (index != s){
         //product criterion doesn't hold
         //try length 1 crit
-        if (!((generators[index].length == 1) && (generators[s].length == 1)))
+        if (generators[index].length != 1 || e_len_not_1)
           pairs.status.setToUncalculated(index, s);
         else
           ++extendedProductCriterions;

@@ -61,7 +61,7 @@ public:
       return is_rewriteable(p, minimalLeadingTerms);
     }
 
-    void addGenerator(const Polynomial& p) {
+    void addGenerator(const PolyEntry& p) {
         append(p);
         setupSetsForElement(back());
     }
