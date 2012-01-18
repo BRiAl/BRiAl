@@ -128,7 +128,7 @@ public:
 
 protected:
   std::vector<Polynomial> treatVariablePairs(int s);
-  void treatNormalPairs(int s,MonomialSet intersecting_terms,
+  void treatNormalPairs(int s, const PolyEntry&, MonomialSet, MonomialSet intersecting_terms,
                         MonomialSet other_terms, MonomialSet ext_prod_terms);
   void addVariablePairs(int s);
   std::vector<Polynomial>
@@ -155,25 +155,26 @@ private:
   void update_propagated(const PolyEntry& entry);
 
   // product criterion doesn't hold - try length 1 crit
-  void checkSingletonCriterion(const PolyEntry& entry, const MonomialSet& intersection) {
+  void checkSingletonCriterion(const PolyEntry& entry,
+			       const MonomialSet& intersection) {
 
     PBORI_ASSERT(generators.checked_index(entry) == -1);
     pairs.status.prolong(PairStatusSet::HAS_T_REP);
 
     for_each(intersection.expBegin(), intersection.expEnd(), *this,
-             (entry.isSingleton()?  &self::markSingleton: &self::setToUncalculated));
+             (entry.isSingleton()?  &self::markNextSingleton:
+	      &self::setNextToUncalculated));
   }
 
 
-  void markSingleton(const Exponent& key) {
-
+  void markNextSingleton(const Exponent& key) {
     if (generators[key].isSingleton())
       ++extendedProductCriterions;
     else
-      setToUncalculated(key);
+      setNextToUncalculated(key);
   }
 
-  void setToUncalculated(const BooleExponent& key) {
+  void setNextToUncalculated(const BooleExponent& key) {
     pairs.status.setToUncalculated(generators.index(key), generators.size());
   }
 

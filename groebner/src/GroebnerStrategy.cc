@@ -315,8 +315,8 @@ GroebnerStrategy::treatVariablePairs(int s){
   addVariablePairs(s);
   return empty;
 }
-void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){
-    PolyEntry e=generators[s];
+void GroebnerStrategy::treatNormalPairs(int s, const PolyEntry& e,MonomialSet leadingTerms, MonomialSet minimal_intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){
+  //   PolyEntry e=generators[s];
     int i;
     
     if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).isZero()))
@@ -325,10 +325,10 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
 
   #ifndef EXP_FOR_PAIRS
           //MonomialSet already_used;
-          std::vector<Monomial> mt_vec=minimal_elements_multiplied(intersecting_terms.intersect(generators.minimalLeadingTerms), lm);
+       std::vector<Monomial> mt_vec=minimal_elements_multiplied(minimal_intersecting_terms, lm);
   #else
           std::vector<Exponent> mt_vec;
-	  minimal_elements_divided(intersecting_terms.intersect(generators.minimalLeadingTerms), lm,ext_prod_terms,mt_vec);
+	  minimal_elements_divided(minimal_intersecting_terms, lm,ext_prod_terms,mt_vec);
   #endif
 
           int mt_i;
@@ -348,7 +348,7 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
              //     MonomialSet act_l_terms=generators.leadingTerms.intersect(t.divisors());
               //#else
                   MonomialSet act_l_terms = 
-                    fixed_path_divisors(generators.leadingTerms, Monomial(t, lm.ring()), 
+                    fixed_path_divisors(leadingTerms, Monomial(t, lm.ring()), 
                                         Monomial(t_divided, lm.ring()));
                   //generators.leadingTerms.divisorsOf(t);
                   
@@ -431,14 +431,16 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
   Polynomial inter_as_poly = intersecting_terms;
   const int s = generators.size();
 
-  generators.append(e);
+  //generators.append(e);
+  MonomialSet minimal_intersection = critical_terms_base.intersect(generators.minimalLeadingTerms);
+  MonomialSet old_lead = generators.leadingTerms;
+  generators.addGenerator(e);   
 
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
-  treatNormalPairs(s, critical_terms_base, other_terms, ext_prod_terms);
-    
-  generators.setupSetsForLastElement();
+  treatNormalPairs(s, e, old_lead, minimal_intersection, other_terms, ext_prod_terms);
+
 
   return s;
 }

@@ -66,11 +66,6 @@ public:
         setupSetsForElement(back());
     }
 
-    void setupSetsForLastElement() { setupSetsForElement(back());
-    }  // @todo
-  // needed
-  // for GBred
-  
     int select1(const Polynomial& p) const;
     int select1(const Monomial& m) const;
 
