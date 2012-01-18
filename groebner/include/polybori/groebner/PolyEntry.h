@@ -25,7 +25,7 @@ BEGIN_NAMESPACE_PBORIGB
 
 class PolyEntryBase {
 public:
-  explicit PolyEntryBase(const Polynomial &poly):
+  PolyEntryBase(const Polynomial &poly):
     literal_factors(poly),
     p(poly), usedVariables(poly.usedVariablesExp()),
     deg(poly.deg()), length(poly.length()), minimal(true),
