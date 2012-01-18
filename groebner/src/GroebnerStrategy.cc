@@ -414,33 +414,26 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
   //do this before adding leading term
   propagate(e);
 
-  BooleSet other_terms(empty);
-  MonomialSet ext_prod_terms(empty);
-  MonomialSet critical_terms_base(empty);
+  MonomialSet other_terms(empty), ext_prod_terms(empty),
+    critical_terms_base(empty);
   MonomialSet intersecting_terms = 
     generators.intersecting_leads(e, other_terms,  ext_prod_terms,
 				  critical_terms_base);
+  MonomialSet minimal_intersection = critical_terms_base.intersect(generators.minimalLeadingTerms);
+  MonomialSet old_lead = generators.leadingTerms;
 
   checkSingletonCriterion(e, intersecting_terms);
 
   easyProductCriterions += generators.minimalLeadingTerms.length() -
     intersecting_terms.length();
 
-
-
-  Polynomial inter_as_poly = intersecting_terms;
   const int s = generators.size();
 
-  //generators.append(e);
-  MonomialSet minimal_intersection = critical_terms_base.intersect(generators.minimalLeadingTerms);
-  MonomialSet old_lead = generators.leadingTerms;
-  generators.addGenerator(e);   
-
+  generators.append(e);   
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
   treatNormalPairs(s, e, old_lead, minimal_intersection, other_terms, ext_prod_terms);
-
 
   return s;
 }

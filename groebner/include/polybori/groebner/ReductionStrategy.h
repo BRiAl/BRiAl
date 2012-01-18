@@ -61,9 +61,13 @@ public:
       return is_rewriteable(p, minimalLeadingTerms);
     }
 
-    void addGenerator(const PolyEntry& p) {
-        append(p);
-        setupSetsForElement(back());
+    void addGenerator(const Polynomial& p) {
+      append(p);
+    }
+
+    void append(const PolyEntry& p) {
+      PolyEntryVector::append(p);
+      setupSetsForElement(back());
     }
 
     int select1(const Polynomial& p) const;
@@ -81,6 +85,9 @@ public:
 
     void llReduceAll();
 
+  operator const PolyEntryVector&() const {
+    return static_cast<const PolyEntryVector&>(*this);
+  }
 protected:
   void llReduce(const PolyEntry& entry, const Exponent& ll_e);
 
