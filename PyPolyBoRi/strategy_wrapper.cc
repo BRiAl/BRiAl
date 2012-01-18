@@ -227,7 +227,9 @@ void export_strategy(){
   .def_readwrite("minimal",&PolyEntry::minimal)
   .def("recompute_information",&PolyEntry::recomputeInformation);
   
+  implicitly_convertible<BoolePolynomial, PolyEntry>();
  
+
   boost::python::class_<ReductionStrategy> ("ReductionStrategy",
 					    "ReductionStrategy",
 					    init<const BoolePolyRing&>())
