@@ -54,6 +54,13 @@ public:
     j=std::max(ia,ja);
     table[j][i]=UNCALCULATED;
   }
+
+  template <class Iterator>
+  void setToUncalculated(Iterator start, Iterator finish, int ja){
+    for (; start != finish; ++start)
+      setToUncalculated(*start, ja);
+  }
+
   int prolong(bool value=UNCALCULATED){
     int s=table.size();
     table.push_back(bitvector_type(s, value));

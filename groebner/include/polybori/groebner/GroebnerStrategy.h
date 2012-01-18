@@ -37,6 +37,22 @@ public:
 };
 
 
+
+template <class InIter, class OutIter, class Object, class MemberFuncPtr>
+inline OutIter
+transform(InIter start, InIter finish, OutIter result, Object& obj,
+	  MemberFuncPtr func) {
+  for(; start != finish; ++start, ++result)
+    *result = (obj .* func)(*start);
+}
+
+template <class InIter, class Object, class MemberFuncPtr>
+inline void
+for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
+  for(; start != finish; ++start)
+    (obj .* func)(*start);
+}
+
 /** @class GroebnerStrategy
  * @brief This class defines GroebnerStrategy.
  *
@@ -138,24 +154,27 @@ private:
   void exchange(const Polynomial&, const PolyEntry&, entryset_type&);
   void update_propagated(const PolyEntry& entry);
 
+  // product criterion doesn't hold - try length 1 crit
+  void checkSingletonCriterion(const PolyEntry& entry, const MonomialSet& intersection) {
 
-  template <class Iterator>
-  void check_len1_crit(const int s, Iterator is_it, Iterator is_end,
-		       bool e_len_not_1) {
+    PBORI_ASSERT(generators.checked_index(entry) == -1);
     pairs.status.prolong(PairStatusSet::HAS_T_REP);
-    
-    while(is_it != is_end) {
-      int index = generators.index(*is_it);
-      PBORI_ASSERT(index != s);
-      //product criterion doesn't hold
-      //try length 1 crit
-      if (generators[index].length != 1 || e_len_not_1)
-	pairs.status.setToUncalculated(index, s);
-      else
-	++extendedProductCriterions;
 
-      ++is_it;
-    }
+    for_each(intersection.expBegin(), intersection.expEnd(), *this,
+             (entry.isSingleton()?  &self::markSingleton: &self::setToUncalculated));
+  }
+
+
+  void markSingleton(const Exponent& key) {
+
+    if (generators[key].isSingleton())
+      ++extendedProductCriterions;
+    else
+      setToUncalculated(key);
+  }
+
+  void setToUncalculated(const BooleExponent& key) {
+    pairs.status.setToUncalculated(generators.index(key), generators.size());
   }
 
 public:

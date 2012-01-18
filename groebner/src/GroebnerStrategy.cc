@@ -58,23 +58,6 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
 }
 
 
-template <class InIter, class OutIter, class Object, class MemberFuncPtr>
-inline OutIter
-transform(InIter start, InIter finish, OutIter result, Object& obj,
-	  MemberFuncPtr func) {
-  for(; start != finish; ++start, ++result) {
-    *result = (obj .* func)(*start);
-  }
-}
-template <class InIter, class Object, class MemberFuncPtr>
-inline void
-for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
-  for(; start != finish; ++start) {
-    (obj .* func)(*start);
-  }
-}
-
-
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   pairs(orig.pairs),
@@ -397,6 +380,8 @@ void GroebnerStrategy::treatNormalPairs(int s,MonomialSet intersecting_terms,Mon
      }
 }
 
+
+
 class PolyFromPolyEntry {
 public:
   const Polynomial& operator()(const PolyEntry& entry) const {
@@ -436,15 +421,18 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
     generators.intersecting_leads(e, other_terms,  ext_prod_terms,
 				  critical_terms_base);
 
+  checkSingletonCriterion(e, intersecting_terms);
+
   easyProductCriterions += generators.minimalLeadingTerms.length() -
     intersecting_terms.length();
 
-  const int s = generators.size();
+
 
   Polynomial inter_as_poly = intersecting_terms;
-  check_len1_crit(s, inter_as_poly.expBegin(), inter_as_poly.expEnd(),
-		  e.length != 1);
+  const int s = generators.size();
+
   generators.append(e);
+
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms

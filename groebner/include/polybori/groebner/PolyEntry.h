@@ -94,17 +94,15 @@ public:
   void recomputeInformation();
 
   void markVariablePairsCalculated() {
-    Exponent::const_iterator it(leadExp.begin()), end(leadExp.end());
-    while(it != end){
-      vPairCalculated.insert(*it);
-      it++;
-    } 
+    vPairCalculated.insert(leadExp.begin(), leadExp.end());
   }
 
   bool propagatableBy(const PolyEntry& other) const {
     return minimal && (deg <= 2) && (length > 1) && (p != other.p) &&
       tailVariables.reducibleBy(other.leadExp);
   }
+
+  bool isSingleton() const { return length == 1; }
 };
 
 
