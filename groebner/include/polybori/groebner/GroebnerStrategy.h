@@ -17,12 +17,12 @@
 #define polybori_groebner_GroebnerStrategy_h_
 
 // include basic definitions
-#include "groebner_defs.h"
 #include "pairs.h"
 #include "cache_manager.h"
 
 #include "PairManager.h"
 #include "ReductionStrategy.h"
+#include "groebner_defs.h"
 
 #include <vector>
 #include <boost/shared_ptr.hpp>

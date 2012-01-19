@@ -20,6 +20,7 @@
 #include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
 #include <polybori/groebner/ExpGreater.h>
+#include <polybori/groebner/NormalPairsTreatment.h>
 
 #include <polybori/groebner/minimal_elements.h>
 #include <polybori/groebner/groebner_alg.h>
@@ -316,132 +317,6 @@ GroebnerStrategy::treatVariablePairs(int s){
   return empty;
 }
 
-template <class Iterator>
-class NormalPairsTreatmentIterator: 
-  public boost::iterator_facade<
-  NormalPairsTreatmentIterator<Iterator>,
-  MonomialSet,
-  std::forward_iterator_tag,
-  MonomialSet
-  > {
-
-public:
-
-  NormalPairsTreatmentIterator(Iterator iter, 
-                               const typename Iterator::value_type& lead,
-                               const MonomialSet& leads):
-    m_iter(iter), m_leads(leads), m_lm(lead) {}
-
-  /// Incrementation operation
-  void increment() {
-    ++m_iter;
-  }
-
-  /// Equality test
-  bool equal (const NormalPairsTreatmentIterator& rhs) const { return (m_iter == rhs.m_iter); }
-
-  /// Dereferencing of the iterator
-  MonomialSet dereference() const {
-
-#ifndef EXP_FOR_PAIRS
-    Monomial t = *m_iter;
-    Monomial t_divided=t/m_lm;
-    PBORI_ASSERT(t.reducibleBy(m_lm));
-#else
-    Exponent t_divided_exp = *m_iter;
-    Monomial t_divided(t_divided_exp, m_leads.ring());
-    Monomial t(t_divided_exp + m_lm, m_leads.ring());
- 
-#endif
-    
-    return fixed_path_divisors(m_leads, t, t_divided);
-  }
-
-private:
-  Iterator m_iter;
-  MonomialSet m_leads;
-  typename Iterator::value_type m_lm;
-};
-
-#ifdef EXP_FOR_PAIRS
-class NormalPairsTreatmentBase {
-public:
-  typedef Exponent value_type;
-  void init(std::vector<value_type>& mt_vec,
-            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
-            const MonomialSet& ext_prod_terms) {
-    minimal_elements_divided(minimal_intersecting_terms, lead, ext_prod_terms,
-                             mt_vec);
-  } 
-
-  MonomialSet terms(const Exponent& t_divided_exp, const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    Monomial t_divided(t_divided_exp, leading_terms.ring());
-    Monomial t(t_divided_exp + entry.leadExp,t_divided.ring());
-    return fixed_path_divisors(leading_terms, t, t_divided);
-  }
-};
-
-#else
-class NormalPairsTreatmentBase {
-public:
-  typedef Monomial value_type;
-  void init(std::vector<value_type>& mt_vec, 
-            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
-            const MonomialSet& ext_prod_terms) {
-    mt_vec = minimal_elements_multiplied(minimal_intersecting_terms, lead);
-  }
-
-  MonomialSet terms(const Monomial& t, const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    Monomial t_divided = t / entry.lead;
-    PBORI_ASSERT(t.reducibleBy(entry.lead));
-    return fixed_path_divisors(leading_terms, t, t_divided);
-  }
-};
-#endif
-
-class NormalPairsTreatment: 
-  public NormalPairsTreatmentBase {
-
-public:
-  typedef std::vector<MonomialSet>::const_iterator const_iterator;
-
-  /// Standard constructor yields an empty set
-  NormalPairsTreatment():  m_active_terms() { }
-
-  /// Construct a bunch of active leading term sets wrt. given data
-  NormalPairsTreatment(const PolyEntry& entry, 
-                       const MonomialSet& leading_terms,
-                       const MonomialSet& minimal_intersecting_terms,
-                       const MonomialSet& ext_prod_terms):
-    m_active_terms() {
-
-    std::vector<value_type> mt_vec;
-    init(mt_vec, entry.lead, minimal_intersecting_terms, ext_prod_terms);
-    m_active_terms.resize(mt_vec.size(), leading_terms.ring());
-    active_terms(mt_vec.begin(), mt_vec.end(), m_active_terms.begin(),
-                 entry, leading_terms);
-  }
-
-  /// Iterate result
-  //@{
-  const_iterator begin() const { return m_active_terms.begin(); }
-  const_iterator end() const { return m_active_terms.end(); }
-  //@}
-
-private:
-  template <class Iterator, class OutIter>
-  void active_terms(Iterator start, Iterator finish, OutIter iter,
-                    const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    for(; start != finish; ++start, ++iter)
-      *iter = terms(*start, entry, leading_terms);
-  }
-
-  std::vector<MonomialSet> m_active_terms;
-};
-
 
 template <class Iterator>
 void 
@@ -496,16 +371,9 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
   //do this before adding leading term
   propagate(e);
 
-  MonomialSet other_terms(empty), ext_prod_terms(empty),
-    critical_terms_base(empty);
+  NormalPairsTreatment treat_pairs;
   MonomialSet intersecting_terms = 
-    generators.intersecting_leads(e, other_terms,  ext_prod_terms,
-				  critical_terms_base);
-
-  NormalPairsTreatment treat_pairs(e, generators.leadingTerms, 
-                                   critical_terms_base.intersect(generators.minimalLeadingTerms),
-                                   ext_prod_terms);
-
+    generators.intersecting_leads(e, treat_pairs);
 
   checkSingletonCriterion(e, intersecting_terms);
 
@@ -518,8 +386,7 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
-  if(!(Polynomial(other_terms).hasConstantPart()))
-    treatNormalPairs(s,  treat_pairs.begin(),  treat_pairs.end());
+  treatNormalPairs(s,  treat_pairs.begin(),  treat_pairs.end());
 
   return s;
 }

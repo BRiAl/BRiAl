@@ -19,13 +19,13 @@
 // include definitions
 #include "groebner_defs.h"
 #include "contained_variables.h"
-#include "nf.h"
+//#include "nf.h"
 
 #include <vector>
 #include <algorithm>
 
 BEGIN_NAMESPACE_PBORIGB
-
+MonomialSet mod_mon_set(const MonomialSet& as, const MonomialSet &vs); // nf.cc
 MonomialSet mod_deg2_set(const MonomialSet& as, const MonomialSet &vs);  // groebner_alg.cc
 MonomialSet mod_var_set(const MonomialSet& as, const MonomialSet& vs);   // groebner_alg.cc
 

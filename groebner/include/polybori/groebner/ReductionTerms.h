@@ -16,6 +16,8 @@
 #ifndef polybori_groebner_ReductionTerms_h_
 #define polybori_groebner_ReductionTerms_h_
 
+#include "NormalPairsTreatment.h"
+
 #include "ll_red_nf.h"
 
 // include basic definitions
@@ -237,23 +239,22 @@ public:
     llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
 
   MonomialSet intersecting_leads(const PolyEntry& e,
-                                 MonomialSet& other_terms, 
-                                 MonomialSet& ext_prod_terms,
-                                 MonomialSet& critical_terms_base) const {
+                                 NormalPairsTreatment& treat_pairs) const {
+    MonomialSet empty(e.p.ring());
+    MonomialSet ext_prod_terms(empty), critical_terms_base(empty), 
+      intersecting_terms(empty), other_terms(leadingTerms);
+    bool is00 = e.literal_factors.is00Factorization();
+    bool is11 = e.literal_factors.is11Factorization();
 
-    other_terms = leadingTerms;
-
-    if (!( (e.literal_factors.is00Factorization() &&
-            (leadingTerms == leadingTerms00)) ||
-           (e.literal_factors.is11Factorization() &&
-            (leadingTerms == leadingTerms11))) ){
+    if (!( (is00 && (leadingTerms == leadingTerms00)) ||
+           (is11 && (leadingTerms == leadingTerms11))) ){
 
       PBORI_ASSERT (!(!e.p.isOne() && e.literal_factors.is00Factorization() &&
                       e.literal_factors.is11Factorization()));
       
-      MonomialSet ot2 = (e.literal_factors.is11Factorization()? MonomialSet(leadingTerms11):
-                         (e.literal_factors.is00Factorization()? MonomialSet(leadingTerms00):
-                          e.p.ring().zero()));
+      MonomialSet ot2 = (is11? MonomialSet(leadingTerms11):
+                         (is00? MonomialSet(leadingTerms00):
+                          empty));
       
       other_terms = std::accumulate(e.lead.begin(), e.lead.end(),
                                     other_terms.diff(ot2), Subset0Operator());
@@ -265,13 +266,18 @@ public:
       
       //we assume that no variable of lm does divide a monomial in other_terms
       //diff suffices if we start from minimal leads
-      MonomialSet intersecting_terms = leadingTerms.diff(other_terms).diff(ot2); 
+      intersecting_terms = leadingTerms.diff(other_terms).diff(ot2); 
       critical_terms_base =
         mod_mon_set(intersecting_terms.intersect(minimalLeadingTerms),
                     ot2);
-      return intersecting_terms;
+
     }
-    return e.p.ring().zero();
+    if(!(Polynomial(other_terms).hasConstantPart())) 
+      treat_pairs =
+	NormalPairsTreatment(e, leadingTerms, 
+			     critical_terms_base.intersect(minimalLeadingTerms),
+			     ext_prod_terms);
+    return intersecting_terms;
   }
 
 };
