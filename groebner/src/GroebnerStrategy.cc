@@ -326,7 +326,8 @@ GroebnerStrategy::treatNormalPairs(int s, Iterator start, Iterator finish) {
     MonomialSet act_l_terms(*start);
     
     if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(), 
-                     HasTRepOrExtendedProductCriterion(*this, s))==act_l_terms.expEnd()) {
+                     HasTRepOrExtendedProductCriterion(*this, s)) ==
+	act_l_terms.expEnd()) {
       
       Exponent min = *std::min_element(act_l_terms.expBegin(),
                                        act_l_terms.expEnd(),
@@ -360,8 +361,7 @@ GroebnerStrategy::allGenerators(){
 
 int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
 
-  const MonomialSet empty(e.p.ring());
-  PBORI_ASSERT(empty.ring().id() == r.id());
+  PBORI_ASSERT(e.p.ring().id() == r.id());
 
   // here we make use of the fact, that the index of the 1 node is 
   // bigger than that of variables
@@ -376,14 +376,11 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
     generators.intersecting_leads(e, treat_pairs);
 
   checkSingletonCriterion(e, intersecting_terms);
-
   easyProductCriterions += generators.minimalLeadingTerms.length() -
     intersecting_terms.length();
 
   const int s = generators.size();
-
   generators.append(e);   
-
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
   treatNormalPairs(s,  treat_pairs.begin(),  treat_pairs.end());
