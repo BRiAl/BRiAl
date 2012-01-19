@@ -483,16 +483,15 @@ GroebnerStrategy::allGenerators(){
 }
 
 
-int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
+int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
 
-  PBORI_ASSERT(p_arg.ring().id() == r.id());
-  const MonomialSet empty(p_arg.ring());
-  PolyEntry e(p_arg);
+  const MonomialSet empty(e.p.ring());
+  PBORI_ASSERT(empty.ring().id() == r.id());
 
   // here we make use of the fact, that the index of the 1 node is 
   // bigger than that of variables
   generators.reducibleUntil = std::max(generators.reducibleUntil,
-                                       *p_arg.navigation());
+                                       *e.p.navigation());
 
   //do this before adding leading term
   propagate(e);
@@ -552,9 +551,9 @@ GroebnerStrategy::addImplications(const std::vector<Polynomial>& impl, int s) {
 }
 
 void
-GroebnerStrategy::addGenerator(const BoolePolynomial& p_arg) {
+GroebnerStrategy::addGenerator(const PolyEntry& e_arg) {
 
-  int s = addGeneratorStep(p_arg);
+  int s = addGeneratorStep(e_arg);
   PolyEntryReference entry = generators(s);
 
   if (entry.minimal)

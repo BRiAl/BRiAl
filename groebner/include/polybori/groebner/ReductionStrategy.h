@@ -46,12 +46,22 @@ private:
 
 class ReductionStrategy:
   public PolyEntryVector, public ReductionOptions, public ReductionTerms {
-
+  typedef ReductionStrategy self;
 public:
 
     ReductionStrategy(const BoolePolyRing& ring):
       PolyEntryVector(), ReductionOptions(),
       ReductionTerms(ring)  { }
+
+    /// Adding next element
+    void addGenerator(const PolyEntry& entry) {
+      PolyEntryVector::append(entry);
+      setupSetsForElement(back());
+    }
+
+    /// Adding next generator
+    /// @note overwriting virtual to avoid inconsistency when casting
+    void append(const PolyEntry& entry) { addGenerator(entry); }
 
     Polynomial nf(const Polynomial& p) const {
       return (optRedTail? reducedNormalForm(p): headNormalForm(p));
@@ -59,15 +69,6 @@ public:
 
     bool canRewrite(const Polynomial& p) const {
       return is_rewriteable(p, minimalLeadingTerms);
-    }
-
-    void addGenerator(const Polynomial& p) {
-      append(p);
-    }
-
-    void append(const PolyEntry& p) {
-      PolyEntryVector::append(p);
-      setupSetsForElement(back());
     }
 
     int select1(const Polynomial& p) const;
@@ -85,9 +86,9 @@ public:
 
     void llReduceAll();
 
-  operator const PolyEntryVector&() const {
-    return static_cast<const PolyEntryVector&>(*this);
-  }
+    operator const PolyEntryVector&() const {
+      return static_cast<const PolyEntryVector&>(*this);
+    }
 protected:
   void llReduce(const PolyEntry& entry, const Exponent& ll_e);
 

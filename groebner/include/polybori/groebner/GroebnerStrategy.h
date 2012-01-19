@@ -87,7 +87,7 @@ public:
   std::vector<Polynomial>  minimalizeAndTailReduce();
   std::vector<Polynomial>  minimalize();
 
-  void addGenerator(const BoolePolynomial& p);
+  void addGenerator(const PolyEntry& entry);
   void addGeneratorDelayed(const BoolePolynomial & p);
   void addAsYouWish(const Polynomial& p);  
   void addGeneratorTrySplit(const Polynomial& p, bool is_minimal);
@@ -140,7 +140,7 @@ protected:
 
 private:
 
-  int addGeneratorStep(const BoolePolynomial& p);
+  int addGeneratorStep(const PolyEntry&);
 
   void addImplications(const BoolePolynomial& p, std::vector<int>& indices);
 

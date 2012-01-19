@@ -49,8 +49,7 @@ public:
     m_data(), m_indices() {}
 
   /// Just insert element
-  template <class ElementType>
-  void append(const ElementType& element) {
+  virtual void append(const PolyEntry& element) {
     m_data.push_back(element);
 
     PBORI_ASSERT(m_indices.checked(back().lead) == (size_type)-1);
@@ -59,11 +58,15 @@ public:
 
   /// Read-only access to element by index, leading term or monomial
   template <class KeyType>
-  const_reference operator[](const KeyType& rhs) const { return operator()(rhs); }
+  const_reference operator[](const KeyType& rhs) const { 
+    return operator()(rhs); 
+  }
 
   /// Read-only access to element by index, leading term or monomial
   template <class KeyType>
-  const_reference operator()(const KeyType& key) const {return m_data[index(key)];}
+  const_reference operator()(const KeyType& key) const {
+    return m_data[index(key)];
+  }
 
   /// (Partially) write access to element by index, leading term or monomial
   template <class KeyType>
