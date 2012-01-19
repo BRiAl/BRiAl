@@ -163,7 +163,7 @@ private:
 
     for_each(intersection.expBegin(), intersection.expEnd(), *this,
              (entry.isSingleton()?  &self::markNextSingleton:
-	      &self::setNextToUncalculated));
+	      &self::markNextUncalculated));
   }
 
 
@@ -171,10 +171,10 @@ private:
     if (generators[key].isSingleton())
       ++extendedProductCriterions;
     else
-      setNextToUncalculated(key);
+      markNextUncalculated(key);
   }
 
-  void setNextToUncalculated(const BooleExponent& key) {
+  void markNextUncalculated(const BooleExponent& key) {
     pairs.status.setToUncalculated(generators.index(key), generators.size());
   }
 
