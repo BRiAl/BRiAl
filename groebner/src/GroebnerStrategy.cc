@@ -315,70 +315,153 @@ GroebnerStrategy::treatVariablePairs(int s){
   addVariablePairs(s);
   return empty;
 }
-void GroebnerStrategy::treatNormalPairs(int s, const PolyEntry& e,MonomialSet leadingTerms, MonomialSet minimal_intersecting_terms,MonomialSet other_terms, MonomialSet ext_prod_terms){
-  //   PolyEntry e=generators[s];
-    int i;
+
+template <class Iterator>
+class NormalPairsTreatmentIterator: 
+  public boost::iterator_facade<
+  NormalPairsTreatmentIterator<Iterator>,
+  MonomialSet,
+  std::forward_iterator_tag,
+  MonomialSet
+  > {
+
+public:
+
+  NormalPairsTreatmentIterator(Iterator iter, 
+                               const typename Iterator::value_type& lead,
+                               const MonomialSet& leads):
+    m_iter(iter), m_leads(leads), m_lm(lead) {}
+
+  /// Incrementation operation
+  void increment() {
+    ++m_iter;
+  }
+
+  /// Equality test
+  bool equal (const NormalPairsTreatmentIterator& rhs) const { return (m_iter == rhs.m_iter); }
+
+  /// Dereferencing of the iterator
+  MonomialSet dereference() const {
+
+#ifndef EXP_FOR_PAIRS
+    Monomial t = *m_iter;
+    Monomial t_divided=t/m_lm;
+    PBORI_ASSERT(t.reducibleBy(m_lm));
+#else
+    Exponent t_divided_exp = *m_iter;
+    Monomial t_divided(t_divided_exp, m_leads.ring());
+    Monomial t(t_divided_exp + m_lm, m_leads.ring());
+ 
+#endif
     
-    if(!(Polynomial(other_terms).hasConstantPart()))//.divisorsOf(lm).isZero()))
-     {
-       BooleMonomial lm=e.lead;
+    return fixed_path_divisors(m_leads, t, t_divided);
+  }
 
-  #ifndef EXP_FOR_PAIRS
-          //MonomialSet already_used;
-       std::vector<Monomial> mt_vec=minimal_elements_multiplied(minimal_intersecting_terms, lm);
-  #else
-          std::vector<Exponent> mt_vec;
-	  minimal_elements_divided(minimal_intersecting_terms, lm,ext_prod_terms,mt_vec);
-  #endif
+private:
+  Iterator m_iter;
+  MonomialSet m_leads;
+  typename Iterator::value_type m_lm;
+};
 
-          int mt_i;
-          for(mt_i=mt_vec.size()-1;mt_i>=0;mt_i--){
-  #ifndef EXP_FOR_PAIRS
-              Monomial t=mt_vec[mt_i];
-              Monomial t_divided=t/lm;
-              PBORI_ASSERT(t.reducibleBy(lm));
-  #else
-              Exponent t_divided=mt_vec[mt_i];
-              Exponent t=t_divided+e.leadExp;
-  #endif
-              //MonomialSet lm_d=t_divided.divisors();
-              PBORI_ASSERT((other_terms.intersect(t_divided.divisors(lm.ring())).isZero()));
-              if (true){
-             // #ifndef EXP_FOR_PAIRS
-             //     MonomialSet act_l_terms=generators.leadingTerms.intersect(t.divisors());
-              //#else
-                  MonomialSet act_l_terms = 
-                    fixed_path_divisors(leadingTerms, Monomial(t, lm.ring()), 
-                                        Monomial(t_divided, lm.ring()));
-                  //generators.leadingTerms.divisorsOf(t);
-                  
-                  
-                  //intersect(t.divisors());//divisorsOf((Monomial)t);//.intersect(t.divisors());
-              //#endif
-                  if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),HasTRepOrExtendedProductCriterion(*this,s))!=act_l_terms.expEnd()){
-                      //at this point we assume minimality of t_divided w.r.t. natural partial order
-                      //chosen.unite(act_l_terms.weakDivide(lm.diagram()));
-                      continue;
-                  }
-                  // if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(),CountCriterion(*this,s))!=act_l_terms.expEnd()){
-                  //       continue;
-                  //   }
-                  //chosen=chosen.unite(t_divided.diagram());
-                  #ifndef EXP_FOR_PAIRS
+#ifdef EXP_FOR_PAIRS
+class NormalPairsTreatmentBase {
+public:
+  typedef Exponent value_type;
+  void init(std::vector<value_type>& mt_vec,
+            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
+            const MonomialSet& ext_prod_terms) {
+    minimal_elements_divided(minimal_intersecting_terms, lead, ext_prod_terms,
+                             mt_vec);
+  } 
 
-                  Monomial min=*(std::min_element(act_l_terms.begin(),act_l_terms.end(), LessWeightedLengthInStrat(this->generators)));
-                  #else
+  MonomialSet terms(const Exponent& t_divided_exp, const PolyEntry& entry,
+                    const MonomialSet& leading_terms) const {
+    Monomial t_divided(t_divided_exp, leading_terms.ring());
+    Monomial t(t_divided_exp + entry.leadExp,t_divided.ring());
+    return fixed_path_divisors(leading_terms, t, t_divided);
+  }
+};
 
-                  Exponent min=*(std::min_element(act_l_terms.expBegin(),act_l_terms.expEnd(), LessWeightedLengthInStrat(this->generators)));
-                  #endif
-                  int chosen_index=generators.index(min);
-                  this->pairs.introducePair(Pair(chosen_index,s,generators));
-              }
-              //if (t.intersect())
-          }
+#else
+class NormalPairsTreatmentBase {
+public:
+  typedef Monomial value_type;
+  void init(std::vector<value_type>& mt_vec, 
+            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
+            const MonomialSet& ext_prod_terms) {
+    mt_vec = minimal_elements_multiplied(minimal_intersecting_terms, lead);
+  }
 
-     }
+  MonomialSet terms(const Monomial& t, const PolyEntry& entry,
+                    const MonomialSet& leading_terms) const {
+    Monomial t_divided = t / entry.lead;
+    PBORI_ASSERT(t.reducibleBy(entry.lead));
+    return fixed_path_divisors(leading_terms, t, t_divided);
+  }
+};
+#endif
+
+class NormalPairsTreatment: 
+  public NormalPairsTreatmentBase {
+
+public:
+  typedef std::vector<MonomialSet>::const_iterator const_iterator;
+
+  /// Standard constructor yields an empty set
+  NormalPairsTreatment():  m_active_terms() { }
+
+  /// Construct a bunch of active leading term sets wrt. given data
+  NormalPairsTreatment(const PolyEntry& entry, 
+                       const MonomialSet& leading_terms,
+                       const MonomialSet& minimal_intersecting_terms,
+                       const MonomialSet& ext_prod_terms):
+    m_active_terms() {
+
+    std::vector<value_type> mt_vec;
+    init(mt_vec, entry.lead, minimal_intersecting_terms, ext_prod_terms);
+    m_active_terms.resize(mt_vec.size(), leading_terms.ring());
+    active_terms(mt_vec.begin(), mt_vec.end(), m_active_terms.begin(),
+                 entry, leading_terms);
+  }
+
+  /// Iterate result
+  //@{
+  const_iterator begin() const { return m_active_terms.begin(); }
+  const_iterator end() const { return m_active_terms.end(); }
+  //@}
+
+private:
+  template <class Iterator, class OutIter>
+  void active_terms(Iterator start, Iterator finish, OutIter iter,
+                    const PolyEntry& entry,
+                    const MonomialSet& leading_terms) const {
+    for(; start != finish; ++start, ++iter)
+      *iter = terms(*start, entry, leading_terms);
+  }
+
+  std::vector<MonomialSet> m_active_terms;
+};
+
+
+template <class Iterator>
+void 
+GroebnerStrategy::treatNormalPairs(int s, Iterator start, Iterator finish) {
+
+  for (; start != finish; ++start) {
+    MonomialSet act_l_terms(*start);
+    
+    if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(), 
+                     HasTRepOrExtendedProductCriterion(*this, s))==act_l_terms.expEnd()) {
+      
+      Exponent min = *std::min_element(act_l_terms.expBegin(),
+                                       act_l_terms.expEnd(),
+                                       LessWeightedLengthInStrat(generators));
+      
+      pairs.introducePair(Pair(generators.index(min), s, generators));
+    }
+  }
 }
+
 
 
 
@@ -419,8 +502,11 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
   MonomialSet intersecting_terms = 
     generators.intersecting_leads(e, other_terms,  ext_prod_terms,
 				  critical_terms_base);
-  MonomialSet minimal_intersection = critical_terms_base.intersect(generators.minimalLeadingTerms);
-  MonomialSet old_lead = generators.leadingTerms;
+
+  NormalPairsTreatment treat_pairs(e, generators.leadingTerms, 
+                                   critical_terms_base.intersect(generators.minimalLeadingTerms),
+                                   ext_prod_terms);
+
 
   checkSingletonCriterion(e, intersecting_terms);
 
@@ -433,7 +519,8 @@ int GroebnerStrategy::addGeneratorStep(const BoolePolynomial& p_arg){
 
   //!!!!! here we add the lm !!!!
   //we assume that lm is minimal in generators.leadingTerms
-  treatNormalPairs(s, e, old_lead, minimal_intersection, other_terms, ext_prod_terms);
+  if(!(Polynomial(other_terms).hasConstantPart()))
+    treatNormalPairs(s,  treat_pairs.begin(),  treat_pairs.end());
 
   return s;
 }

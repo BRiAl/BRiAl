@@ -128,8 +128,8 @@ public:
 
 protected:
   std::vector<Polynomial> treatVariablePairs(int s);
-  void treatNormalPairs(int s, const PolyEntry&, MonomialSet, MonomialSet intersecting_terms,
-                        MonomialSet other_terms, MonomialSet ext_prod_terms);
+  template <class Iterator>
+  void treatNormalPairs(int s, Iterator, Iterator);
   void addVariablePairs(int s);
   std::vector<Polynomial>
   add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp,
