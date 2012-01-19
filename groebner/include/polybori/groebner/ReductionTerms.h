@@ -136,10 +136,11 @@ public:
       operator=(unite(entry.lead.set()));
   }
   
-  /// Cheap and save conversion to monomial set
-  operator const base& () { return static_cast<const base&>(*this);}
-  
 private:
+  TermsFacade& operator=(const TermsFacade& rhs) {
+    return static_cast<TermsFacade&>(static_cast<base&>(*this) = rhs);
+  }
+
   /// Access complete type
   const NewType& get() const { return static_cast<const NewType&>(*this); }
 };
