@@ -36,7 +36,7 @@ class LLReductor:
   public MonomialSet {
 
   typedef MonomialSet base;
-
+  typedef LLReductor self;
 public:
   /// Construct reductor from Ring
   LLReductor(const BoolePolyRing& ring): base(ring.one()) {}
@@ -61,6 +61,10 @@ public:
   }
 
 private:
+  self& operator=(const self& rhs) {
+    return static_cast<self&>(static_cast<base&>(*this) = rhs);
+  }
+
   Polynomial insert(const PolyEntry& entry) {
     
     Polynomial poly = ll_red_nf(entry.p, *this);
@@ -79,9 +83,9 @@ class MinimalLeadingTerms:
   public MonomialSet {
 
   typedef MonomialSet base;
+  typedef MinimalLeadingTerms self;
 
 public:
-
   template <class Type>
   MinimalLeadingTerms(const Type& value): base(value) { }
 
@@ -96,6 +100,9 @@ public:
   }
   
 private:
+  self& operator=(const self& rhs) {
+    return static_cast<self&>(static_cast<base&>(*this) = rhs);
+  }
 
   MonomialSet cleanup(const Monomial& lm) {
     MonomialSet removed(multiplesOf(lm).diff(lm.set()));
