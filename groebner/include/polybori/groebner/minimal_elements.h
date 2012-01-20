@@ -444,47 +444,43 @@ minimal_elements_divided(MonomialSet m, Monomial lm, std::vector<Exponent>& resu
 #else
 //#define MIN_ELEMENTS_BINARY 1
 #ifdef MIN_ELEMENTS_BINARY
-inline void
-minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
+inline MonomialSet
+minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
 
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
+    if (m.divisorsOf(lm).isZero()){
         Monomial v;
         m=divide_monomial_divisors_out(m,lm);
         //mod=divide_monomial_divisors_out(mod,lm);
-        m=do_minimal_elements_cudd_style(m,mod);
-        result.resize(m.length());
-        std::copy(m.expBegin(),m.expEnd(),result.begin());
-        //return minimal_elements_internal3(m);
-        
+        return do_minimal_elements_cudd_style(m,mod);
     }
+    return m.ring().one();
 }
+
+
 #else
 
-inline void
-minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod, std::vector<Exponent>& result){
+inline MonomialSet
+minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
 
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
-
+    if (m.divisorsOf(lm).isZero()){
         m=m.existAbstract(lm);
         mod=mod.existAbstract(lm);
         //mod=divide_monomial_divisors_out(mod,lm);
         m=mod_mon_set(m,mod);
-        m=minimal_elements_cudd_style_unary(m);
-        result.resize(m.length());
-        std::copy(m.expBegin(),m.expEnd(),result.begin());
- 
-        
-    }
 
+        return minimal_elements_cudd_style_unary(m);
+    }
+    return m.ring().one();
 }
 #endif
 
+inline void
+minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod,
+                         std::vector<Exponent>& result){
+  MonomialSet elements = minimal_elements_divided(m, lm, mod);
+  result.resize(elements.length());
+  std::copy(elements.expBegin(), elements.expEnd(), result.begin());
+}
 
 #endif
 #endif
