@@ -280,7 +280,7 @@ public:
                     ot2);
 
     }
-    if(!(Polynomial(other_terms).hasConstantPart())) 
+    if(!other_terms.ownsOne()) 
       treat_pairs =
 	NormalPairsTreatment(e, leadingTerms, 
 			     critical_terms_base.intersect(minimalLeadingTerms),
