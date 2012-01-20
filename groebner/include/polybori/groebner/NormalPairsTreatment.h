@@ -24,96 +24,113 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-/** @class NormalPairsTreatmentBase
- * @brief This class defines the base of @c NormalPairsTreatment.
- *
- **/
-
-#ifdef EXP_FOR_PAIRS
-class NormalPairsTreatmentBase {
+class ActiveTerms {
 public:
-  typedef Exponent value_type;
-  MonomialSet init(const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
-                   const MonomialSet& ext_prod_terms) {
-    return minimal_elements_divided(minimal_intersecting_terms, lead,
-                                    ext_prod_terms);
-  } 
+  ActiveTerms(const PolyEntry& entry, const MonomialSet& leading_terms):
+    m_exp(entry.leadExp), m_leading_terms(leading_terms) {}
 
-  MonomialSet terms(const Exponent& t_divided_exp, const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    Monomial t_divided(t_divided_exp, leading_terms.ring());
-    Monomial t(t_divided_exp + entry.leadExp,t_divided.ring());
-    return fixed_path_divisors(leading_terms, t, t_divided);
+  MonomialSet operator()(const Exponent& t_divided_exp) const {
+    Monomial t_divided(t_divided_exp, m_leading_terms.ring());
+    Monomial t(t_divided_exp + m_exp, t_divided.ring());
+    return fixed_path_divisors(m_leading_terms, t, t_divided);
   }
+
+private:
+  const Exponent& m_exp;
+  const MonomialSet& m_leading_terms;
 };
-
-#else
-class NormalPairsTreatmentBase {
-public:
-  typedef Monomial value_type;
-  MonomialSet init(const Monomial& lead,
-                   const MonomialSet& minimal_intersecting_terms,
-                   const MonomialSet& ext_prod_terms) {
-    return minimal_elements_multiplied_monoms(minimal_intersecting_terms,lead);
-  }
-
-  MonomialSet terms(const Exponent& t_exp, const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    Monomial t(t_exp, leading_terms.ring());
-    Monomial t_divided = t / entry.lead;
-    PBORI_ASSERT(t.reducibleBy(entry.lead));
-    return fixed_path_divisors(leading_terms, t, t_divided);
-  }
-};
-#endif
 
 /** @class NormalPairsTreatment
  * @brief This class defines NormalPairsTreatment.
  *
  **/
-class NormalPairsTreatment: 
-  public NormalPairsTreatmentBase {
+class NormalPairsTreatment {
 
 public:
+  typedef std::vector<MonomialSet> vector_type;
   typedef std::vector<MonomialSet>::const_iterator const_iterator;
 
   /// Standard constructor yields an empty set
-  NormalPairsTreatment():  m_active_terms() { }
+  NormalPairsTreatment():  m_active_termsets() { }
 
   /// Construct a bunch of active leading term sets wrt. given data
   NormalPairsTreatment(const PolyEntry& entry, 
                        const MonomialSet& leading_terms,
-                       const MonomialSet& minimal_intersecting_terms,
-                       const MonomialSet& ext_prod_terms):
-    m_active_terms() {
+                       const MonomialSet& minimal_intersecting_terms_divided):
+    m_active_termsets(minimal_intersecting_terms_divided.length(),
+		   entry.p.ring()) {
 
-    active_terms(init(entry.lead, minimal_intersecting_terms, ext_prod_terms),
-                 entry, leading_terms);
+    std::transform(minimal_intersecting_terms_divided.expBegin(),
+		   minimal_intersecting_terms_divided.expEnd(),
+		   m_active_termsets.begin(),
+		   ActiveTerms(entry, leading_terms));
   }
-
-  /// Iterate result
+  
+  /// Vector-like interface
   //@{
-  const_iterator begin() const { return m_active_terms.begin(); }
-  const_iterator end() const { return m_active_terms.end(); }
+  const_iterator begin() const { return m_active_termsets.begin(); }
+  const_iterator end() const { return m_active_termsets.end(); }
   //@}
 
 private:
-  void active_terms(const MonomialSet& monoms, const PolyEntry& entry,
-                    const MonomialSet& leading_terms) {
-    m_active_terms.resize(monoms.size(), leading_terms.ring());
-    active_terms(monoms.expBegin(), monoms.expEnd(), m_active_terms.begin(),
-                 entry, leading_terms);
+  vector_type m_active_termsets;
+};
+
+class Subset0Operator {
+public:
+
+  MonomialSet operator()(const MonomialSet& rhs,
+                         const MonomialSet::idx_type& idx) {
+    return rhs.subset0(idx);
+  }
+};
+class ActiveTermsHelper {
+public:
+  ActiveTermsHelper(const PolyEntry& entry, const MonomialSet& leadingTerms,
+		    const MonomialSet& ot2):
+    m_entry(entry), m_ot2(ot2), 
+    m_ext_prod_terms(entry.p.ring()), m_intersection_terms(entry.p.ring()) {
+    
+    MonomialSet other_terms(others(leadingTerms));
+    if (!ot2.isZero())
+      m_ext_prod_terms = ot2.existAbstract(lead()).diff(other_terms);
+    
+    other_terms = other_terms.unite(m_ext_prod_terms);
+    m_intersection_terms = leadingTerms.diff(other_terms).diff(ot2);
+    p_leading_terms = (other_terms.ownsOne()? NULL: &leadingTerms);
   }
 
-  template <class Iterator, class OutIter>
-  void active_terms(Iterator start, Iterator finish, OutIter iter,
-                    const PolyEntry& entry,
-                    const MonomialSet& leading_terms) const {
-    for(; start != finish; ++start, ++iter)
-      *iter = terms(*start, entry, leading_terms);
+  const Monomial& lead() const { return m_entry.lead; }
+  const MonomialSet& intersecting_terms() const { return m_intersection_terms;}
+
+  MonomialSet critical_terms_base(const MonomialSet& minLeadTerms) const {
+    return mod_mon_set(m_intersection_terms.intersect(minLeadTerms), m_ot2);
   }
 
-  std::vector<MonomialSet> m_active_terms;
+  bool empty() const { return !p_leading_terms; }
+
+  MonomialSet minimal_elements(const MonomialSet& minLeadTerms) const {
+    return minimal_elements_divided(critical_terms_base(minLeadTerms), lead(),
+                                    m_ext_prod_terms);
+  }
+
+  NormalPairsTreatment operator()(const MonomialSet& minLeadTerms) const {
+    return (empty()? NormalPairsTreatment():
+	    NormalPairsTreatment(m_entry, *p_leading_terms,
+                                 minimal_elements(minLeadTerms)));
+  }
+
+private:
+
+  MonomialSet others(const MonomialSet& leadingTerms) const {
+    return std::accumulate(lead().begin(), lead().end(), 
+			   leadingTerms.diff(m_ot2), Subset0Operator());
+  }
+  const PolyEntry& m_entry;
+  const MonomialSet* p_leading_terms;
+  MonomialSet m_ot2;
+  MonomialSet m_ext_prod_terms;
+  MonomialSet m_intersection_terms;
 };
 
 END_NAMESPACE_PBORIGB

@@ -214,14 +214,7 @@ public:
 };
 
 
-class Subset0Operator {
-public:
 
-  MonomialSet operator()(const MonomialSet& rhs,
-                         const MonomialSet::idx_type& idx) {
-    return rhs.subset0(idx);
-  }
-};
 
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy
@@ -249,41 +242,24 @@ public:
   MonomialSet intersecting_leads(const PolyEntry& e,
                                  NormalPairsTreatment& treat_pairs) const {
     MonomialSet empty(e.p.ring());
-    MonomialSet ext_prod_terms(empty), critical_terms_base(empty), 
-      intersecting_terms(empty), other_terms(leadingTerms);
     bool is00 = e.literal_factors.is00Factorization();
     bool is11 = e.literal_factors.is11Factorization();
 
     if (!( (is00 && (leadingTerms == leadingTerms00)) ||
            (is11 && (leadingTerms == leadingTerms11))) ){
 
-      PBORI_ASSERT (!(!e.p.isOne() && is00 && is11));
-      
+      PBORI_ASSERT (e.p.isOne() || !is00 || !is11);
       MonomialSet ot2 = (is11? MonomialSet(leadingTerms11):
-                         (is00? MonomialSet(leadingTerms00):
-                          empty));
-      
-      other_terms = std::accumulate(e.lead.begin(), e.lead.end(),
-                                    other_terms.diff(ot2), Subset0Operator());
+                         (is00? MonomialSet(leadingTerms00): empty));
 
-      if (!ot2.isZero())
-        ext_prod_terms = ot2.existAbstract(e.lead).diff(other_terms);
-      
-      other_terms = other_terms.unite(ext_prod_terms);
-      
-      //we assume that no variable of lm does divide a monomial in other_terms
-      //diff suffices if we start from minimal leads
-      intersecting_terms = leadingTerms.diff(other_terms).diff(ot2); 
-      critical_terms_base =
-        mod_mon_set(intersecting_terms.intersect(minimalLeadingTerms),
-                    ot2);
+      ActiveTermsHelper helper(e, leadingTerms, ot2);
+      treat_pairs = helper(minimalLeadingTerms);
 
+      return helper.intersecting_terms();
     }
 
-    treat_pairs = (other_terms.ownsOne()? NormalPairsTreatment():
-                   NormalPairsTreatment(e, leadingTerms, critical_terms_base,
-                                        ext_prod_terms));
-    return intersecting_terms;
+    treat_pairs = NormalPairsTreatment();
+    return empty;
   }
 
 };
