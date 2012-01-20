@@ -218,7 +218,13 @@ BooleSet::minimalElements() const {
 // Division by given term
 BooleSet
 BooleSet::divide(const term_type& rhs) const {
-  return self(base::divideFirst(rhs.diagram()));
+
+  typedef CCacheManagement<ring_type, CCacheTypes::divide>
+    cache_mgr_type;
+
+  return dd_divide_recursively(cache_mgr_type(ring()), 
+                               navigation(), rhs.set().navigation(),
+                               self(ring()));
 }
 
 // Set of variables of the set

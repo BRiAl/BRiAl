@@ -160,21 +160,9 @@ BoolePolynomial&
 BoolePolynomial::operator/=(const monom_type& rhs) {
 
   PBORI_TRACE_FUNC( "BoolePolynomial::operator/=(const monom_type&)" );
-
-
-
-  typedef CCacheManagement<ring_type, CCacheTypes::divide>
-    cache_mgr_type;
-
-  self result = dd_divide_recursively(cache_mgr_type(ring()), 
-                                      navigation(),
-                                      rhs.diagram().navigation(),
-                                      self(ring()));
-
-//   m_dd.divideFirstAssign(rhs.diagram());
-//   PBORI_ASSERT(*this == result);
-  return (*this = result);
+  return (*this = m_dd.divide(rhs));
 }
+
 // Division
 BoolePolynomial&
 BoolePolynomial::operator/=(const exp_type& rhs) {
