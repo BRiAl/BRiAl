@@ -391,57 +391,28 @@ minimal_elements_cudd_style(MonomialSet m){
 
 
 
-#define EXP_FOR_PAIRS
-#ifndef EXP_FOR_PAIRS
-inline
-std::vector<Monomial> minimal_elements_multiplied(MonomialSet m, Monomial lm){
-  
-  
-    std::vector<Monomial> result;
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(lm);
-    } else {
-        Monomial v;
-        //lm austeilen
-        m=divide_monomial_divisors_out(m,lm);
-        
-        //std::vector<idx_type> cv=contained_variables(m);
-        //int i;
-        /*for(i=0;i<cv.size();i++){
-            result.push_back(((Monomial)Variable(cv[i]))*lm);
-            m=m.subset0(cv[i]);
-        }*/
-        m=minimal_elements(m);
-        if (!(m.isZero())){
-            m=m.unateProduct(lm.diagram());
-            result.insert(result.end(), m.begin(), m.end());
-        }
-        
-        
-    }
-    return result;
 
-}
-#else
-#if 0
-inline void
-minimal_elements_divided(MonomialSet m, Monomial lm, std::vector<Exponent>& result){
+inline MonomialSet
+minimal_elements_multiplied_monoms(MonomialSet m, Monomial lm){
+  
+    if (m.divisorsOf(lm).isZero()){
+       m = m.existAbstract(lm);
+       m = minimal_elements_cudd_style_unary(m);
 
-    Exponent exp;//=lm.exp();
-    if (!(m.divisorsOf(lm).isZero())){
-        result.push_back(exp);
-    } else {
-        Monomial v;
-        
-        m=divide_monomial_divisors_out(m,lm);
-        
-        
-        return minimal_elements_internal3(m);
-        
+       return m.unateProduct(lm.set());
     }
-    return result;
+    return lm.set() ;
 }
-#else
+
+inline std::vector<Monomial>
+minimal_elements_multiplied(MonomialSet m, Monomial lm){ 
+
+  MonomialSet result = minimal_elements_multiplied_monoms(m, lm);
+  return std::vector<Monomial>(result.begin(), result.end());
+}
+  
+
+
 //#define MIN_ELEMENTS_BINARY 1
 #ifdef MIN_ELEMENTS_BINARY
 inline MonomialSet
@@ -481,9 +452,6 @@ minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod,
   result.resize(elements.length());
   std::copy(elements.expBegin(), elements.expEnd(), result.begin());
 }
-
-#endif
-#endif
 
 
 END_NAMESPACE_PBORIGB

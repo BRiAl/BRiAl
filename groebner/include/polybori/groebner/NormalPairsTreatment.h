@@ -33,11 +33,10 @@ BEGIN_NAMESPACE_PBORIGB
 class NormalPairsTreatmentBase {
 public:
   typedef Exponent value_type;
-  void init(std::vector<value_type>& mt_vec,
-            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
+  MonomialSet init(const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
             const MonomialSet& ext_prod_terms) {
-    minimal_elements_divided(minimal_intersecting_terms, lead, ext_prod_terms,
-                             mt_vec);
+    return minimal_elements_divided(minimal_intersecting_terms, lead,
+                                    ext_prod_terms);
   } 
 
   MonomialSet terms(const Exponent& t_divided_exp, const PolyEntry& entry,
@@ -52,14 +51,15 @@ public:
 class NormalPairsTreatmentBase {
 public:
   typedef Monomial value_type;
-  void init(std::vector<value_type>& mt_vec, 
-            const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
-            const MonomialSet& ext_prod_terms) {
-    mt_vec = minimal_elements_multiplied(minimal_intersecting_terms, lead);
+  MonomialSet init(const Monomial& lead,
+                   const MonomialSet& minimal_intersecting_terms,
+                   const MonomialSet& ext_prod_terms) {
+    return minimal_elements_multiplied_monoms(minimal_intersecting_terms,lead);
   }
 
-  MonomialSet terms(const Monomial& t, const PolyEntry& entry,
+  MonomialSet terms(const Exponent& t_exp, const PolyEntry& entry,
                     const MonomialSet& leading_terms) const {
+    Monomial t(t_exp, leading_terms.ring());
     Monomial t_divided = t / entry.lead;
     PBORI_ASSERT(t.reducibleBy(entry.lead));
     return fixed_path_divisors(leading_terms, t, t_divided);
@@ -87,10 +87,7 @@ public:
                        const MonomialSet& ext_prod_terms):
     m_active_terms() {
 
-    std::vector<value_type> mt_vec;
-    init(mt_vec, entry.lead, minimal_intersecting_terms, ext_prod_terms);
-    m_active_terms.resize(mt_vec.size(), leading_terms.ring());
-    active_terms(mt_vec.begin(), mt_vec.end(), m_active_terms.begin(),
+    active_terms(init(entry.lead, minimal_intersecting_terms, ext_prod_terms),
                  entry, leading_terms);
   }
 
@@ -101,6 +98,13 @@ public:
   //@}
 
 private:
+  void active_terms(const MonomialSet& monoms, const PolyEntry& entry,
+                    const MonomialSet& leading_terms) {
+    m_active_terms.resize(monoms.size(), leading_terms.ring());
+    active_terms(monoms.expBegin(), monoms.expEnd(), m_active_terms.begin(),
+                 entry, leading_terms);
+  }
+
   template <class Iterator, class OutIter>
   void active_terms(Iterator start, Iterator finish, OutIter iter,
                     const PolyEntry& entry,

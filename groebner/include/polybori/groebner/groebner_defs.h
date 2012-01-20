@@ -18,6 +18,8 @@
 #else
 #endif
 
+// algorithmic variants
+#define EXP_FOR_PAIRS
 
 BEGIN_NAMESPACE_PBORIGB
 
