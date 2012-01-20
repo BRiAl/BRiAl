@@ -34,7 +34,7 @@ class NormalPairsTreatmentBase {
 public:
   typedef Exponent value_type;
   MonomialSet init(const Monomial& lead, const MonomialSet& minimal_intersecting_terms,
-            const MonomialSet& ext_prod_terms) {
+                   const MonomialSet& ext_prod_terms) {
     return minimal_elements_divided(minimal_intersecting_terms, lead,
                                     ext_prod_terms);
   } 

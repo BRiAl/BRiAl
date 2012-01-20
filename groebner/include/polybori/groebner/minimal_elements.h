@@ -419,7 +419,6 @@ inline MonomialSet
 minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
 
     if (m.divisorsOf(lm).isZero()){
-        Monomial v;
         m=divide_monomial_divisors_out(m,lm);
         //mod=divide_monomial_divisors_out(mod,lm);
         return do_minimal_elements_cudd_style(m,mod);
@@ -434,6 +433,7 @@ inline MonomialSet
 minimal_elements_divided(MonomialSet m, Monomial lm, MonomialSet mod){
 
     if (m.divisorsOf(lm).isZero()){
+
         m=m.existAbstract(lm);
         mod=mod.existAbstract(lm);
         //mod=divide_monomial_divisors_out(mod,lm);
