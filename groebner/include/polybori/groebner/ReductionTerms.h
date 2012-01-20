@@ -257,8 +257,7 @@ public:
     if (!( (is00 && (leadingTerms == leadingTerms00)) ||
            (is11 && (leadingTerms == leadingTerms11))) ){
 
-      PBORI_ASSERT (!(!e.p.isOne() && e.literal_factors.is00Factorization() &&
-                      e.literal_factors.is11Factorization()));
+      PBORI_ASSERT (!(!e.p.isOne() && is00 && is11));
       
       MonomialSet ot2 = (is11? MonomialSet(leadingTerms11):
                          (is00? MonomialSet(leadingTerms00):
@@ -281,10 +280,9 @@ public:
 
     }
 
-    if(!other_terms.ownsOne()) 
-      treat_pairs =
-	NormalPairsTreatment(e, leadingTerms, critical_terms_base,
-                             ext_prod_terms);
+    treat_pairs = (other_terms.ownsOne()? NormalPairsTreatment():
+                   NormalPairsTreatment(e, leadingTerms, critical_terms_base,
+                                        ext_prod_terms));
     return intersecting_terms;
   }
 
