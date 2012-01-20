@@ -280,11 +280,11 @@ public:
                     ot2);
 
     }
+
     if(!other_terms.ownsOne()) 
       treat_pairs =
-	NormalPairsTreatment(e, leadingTerms, 
-			     critical_terms_base.intersect(minimalLeadingTerms),
-			     ext_prod_terms);
+	NormalPairsTreatment(e, leadingTerms, critical_terms_base,
+                             ext_prod_terms);
     return intersecting_terms;
   }
 
