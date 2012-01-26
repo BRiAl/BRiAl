@@ -249,10 +249,10 @@ public:
            (is11 && (leadingTerms == leadingTerms11))) ){
 
       PBORI_ASSERT (e.p.isOne() || !is00 || !is11);
-      MonomialSet ot2 = (is11? MonomialSet(leadingTerms11):
+      MonomialSet otherwisely_treated = (is11? MonomialSet(leadingTerms11):
                          (is00? MonomialSet(leadingTerms00): empty));
 
-      ActiveTermsHelper helper(e, leadingTerms, ot2);
+      ActiveTermsHelper helper(e.lead, leadingTerms, otherwisely_treated);
       treat_pairs = helper(minimalLeadingTerms);
 
       return helper.intersecting_terms();
