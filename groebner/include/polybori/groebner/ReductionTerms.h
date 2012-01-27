@@ -17,6 +17,7 @@
 #define polybori_groebner_ReductionTerms_h_
 
 #include "NormalPairsTreatment.h"
+#include "RelatedTerms.h"
 
 #include "ll_red_nf.h"
 
@@ -239,8 +240,8 @@ public:
     leadingTerms11(ring), leadingTerms00(ring),
     llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
 
-  MonomialSet intersecting_leads(const PolyEntry& e,
-                                 NormalPairsTreatment& treat_pairs) const {
+  MonomialSet related(const PolyEntry& e,
+                      NormalPairsTreatment& treat_pairs) const {
     MonomialSet empty(e.p.ring());
     bool is00 = e.literal_factors.is00Factorization();
     bool is11 = e.literal_factors.is11Factorization();
@@ -250,12 +251,13 @@ public:
 
       PBORI_ASSERT (e.p.isOne() || !is00 || !is11);
       MonomialSet otherwisely_treated = (is11? MonomialSet(leadingTerms11):
-                         (is00? MonomialSet(leadingTerms00): empty));
+                                         (is00? MonomialSet(leadingTerms00): empty));
 
-      ActiveTermsHelper helper(e.lead, leadingTerms, otherwisely_treated);
-      treat_pairs = helper(minimalLeadingTerms);
+      RelatedTerms related(e.lead, leadingTerms, otherwisely_treated);
+      treat_pairs = NormalPairsTreatment(related.factors(minimalLeadingTerms),
+                                         ActiveTermsOperator(e.lead, leadingTerms));
 
-      return helper.intersecting_terms();
+      return related;
     }
 
     treat_pairs = NormalPairsTreatment();

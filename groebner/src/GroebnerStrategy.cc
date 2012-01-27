@@ -373,7 +373,7 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
 
   NormalPairsTreatment treat_pairs;
   MonomialSet intersecting_terms = 
-    generators.intersecting_leads(e, treat_pairs);
+    generators.related(e, treat_pairs);
 
   checkSingletonCriterion(e, intersecting_terms);
   easyProductCriterions += generators.minimalLeadingTerms.length() -
