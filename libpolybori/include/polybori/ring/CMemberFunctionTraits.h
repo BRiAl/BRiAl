@@ -61,6 +61,29 @@ class CMemberFunctionTraits<ResultType (Type::*)(ArgType) const>:
   public CMemberFunctionTraitsBase<Type, ResultType, ArgType, const Type&> { };
 
 
+template <class MemberFct>
+class MemberFunctionOperator {
+  typedef CMemberFunctionTraits<MemberFct> traits;
+
+public:
+  MemberFunctionOperator(MemberFct func): m_func(func) {}
+
+  typename traits::result_type operator()(typename traits::object_reference obj,
+                                          typename traits::argument_type arg) {
+    return (obj .* m_func)(arg);
+  }
+
+private:
+  MemberFct m_func;
+};
+
+
+template <class MemberFct>
+MemberFunctionOperator<MemberFct>
+member_function_operator(MemberFct func) {
+  return MemberFunctionOperator<MemberFct>(func);
+}
+
 END_NAMESPACE_PBORI
 
 #endif
