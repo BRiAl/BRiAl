@@ -166,6 +166,12 @@ private:
 	      &self::markNextUncalculated));
   }
 
+  /// check singleton and product criteria
+  void checkCriteria(const PolyEntry& entry, const MonomialSet& terms) {
+    checkSingletonCriterion(entry, terms);
+    easyProductCriterions += generators.minimalLeadingTerms.length() -
+      terms.length();
+  }
 
   void markNextSingleton(const Exponent& key) {
     if (generators[key].isSingleton())

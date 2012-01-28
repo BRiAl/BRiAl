@@ -16,14 +16,15 @@
 #ifndef polybori_groebner_ReductionTerms_h_
 #define polybori_groebner_ReductionTerms_h_
 
-#include "NormalPairsTreatment.h"
-#include "RelatedTerms.h"
-
-#include "ll_red_nf.h"
 
 // include basic definitions
 #include "groebner_defs.h"
 
+#include "BoundedDivisorsOf.h"
+#include "RelatedTerms.h"
+#include <polybori/BooleSetSequence.h>
+
+#include "ll_red_nf.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -215,7 +216,28 @@ public:
 };
 
 
+template <class Type, class Type1>
+const Type&
+which(bool condition, const Type1& value1, const Type& value) {
+  if (condition)
+    return value1;
+  return  value;
+}
 
+template <class Type, class Type1, class Type2>
+const Type&
+which(bool cond1, const Type1& value1, 
+      bool cond2, const Type2& value2, const Type& value) {
+  return which(cond1, value1, which(cond2, value2, value) );
+}
+
+template <class Type, class Type1, class Type2, class Type3>
+const Type&
+which(bool cond1, const Type1& value1, 
+      bool cond2, const Type2& value2, 
+      bool cond3, const Type3& value3, const Type& value ) {
+  return which(cond1, value1, cond2, value2, which(cond3, value3, value) );
+}
 
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy
@@ -235,35 +257,46 @@ public:
   MonomialTerms monomials;
   MonomialPlusOneTerms monomials_plus_one;
   
+  /// Initialize term data for given ring
   ReductionTerms(const BoolePolyRing& ring):
     leadingTerms(ring), minimalLeadingTerms(ring),
     leadingTerms11(ring), leadingTerms00(ring),
     llReductor(ring), monomials(ring), monomials_plus_one(ring)  { }
 
-  MonomialSet related(const PolyEntry& e,
-                      NormalPairsTreatment& treat_pairs) const {
-    MonomialSet empty(e.p.ring());
-    bool is00 = e.literal_factors.is00Factorization();
-    bool is11 = e.literal_factors.is11Factorization();
+  /// Compute terms owning variables of current entry's leading term
+  /// @note Side effect: adds additional data to @c treat_pairs
+  MonomialSet related(const PolyEntry& entry,
+                      BooleSetSequence& divisors) const {
+    MonomialSet empty(entry.p.ring());
+    bool is00 = entry.literal_factors.is00Factorization();
+    bool is11 = entry.literal_factors.is11Factorization();
 
     if (!( (is00 && (leadingTerms == leadingTerms00)) ||
            (is11 && (leadingTerms == leadingTerms11))) ){
-
-      PBORI_ASSERT (e.p.isOne() || !is00 || !is11);
-      MonomialSet otherwisely_treated = (is11? MonomialSet(leadingTerms11):
-                                         (is00? MonomialSet(leadingTerms00): empty));
-
-      RelatedTerms related(e.lead, leadingTerms, otherwisely_treated);
-      treat_pairs = NormalPairsTreatment(related.factors(minimalLeadingTerms),
-                                         ActiveTermsOperator(e.lead, leadingTerms));
-
-      return related;
+      PBORI_ASSERT (entry.p.isOne() || !is00 || !is11);
+      return nontrivial(entry.lead, divisors,
+			which(is11, leadingTerms11,
+			      is00, leadingTerms00, empty));
     }
-
-    treat_pairs = NormalPairsTreatment();
-    return empty;
+    return trivial(empty, divisors);
   }
 
+protected:
+
+  MonomialSet nontrivial(const Monomial& lead,
+			 BooleSetSequence& divisors,
+			 const MonomialSet& ignorable) const {
+    RelatedTerms terms(lead, leadingTerms, ignorable);
+    divisors = BooleSetSequence(terms.factors(minimalLeadingTerms),
+				   BoundedDivisorsOf(lead, leadingTerms));
+    return terms;
+  }
+
+  MonomialSet trivial(const MonomialSet& empty,
+		      BooleSetSequence& treat_pairs) const {
+    treat_pairs = BooleSetSequence();
+    return empty;
+  }
 };
 
 END_NAMESPACE_PBORIGB

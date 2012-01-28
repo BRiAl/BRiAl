@@ -20,7 +20,7 @@
 #include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
 #include <polybori/groebner/ExpGreater.h>
-#include <polybori/groebner/NormalPairsTreatment.h>
+#include <polybori/BooleSetSequence.h>
 
 #include <polybori/groebner/minimal_elements.h>
 #include <polybori/groebner/groebner_alg.h>
@@ -367,23 +367,15 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
   // bigger than that of variables
   generators.reducibleUntil = std::max(generators.reducibleUntil,
                                        *e.p.navigation());
-
   //do this before adding leading term
   propagate(e);
 
-  NormalPairsTreatment treat_pairs;
-  MonomialSet intersecting_terms = 
-    generators.related(e, treat_pairs);
+  BooleSetSequence related_divisors;
+  checkCriteria(e, generators.related(e, related_divisors));
 
-  checkSingletonCriterion(e, intersecting_terms);
-  easyProductCriterions += generators.minimalLeadingTerms.length() -
-    intersecting_terms.length();
-
-  const int s = generators.size();
-  generators.append(e);   
-  //!!!!! here we add the lm !!!!
-  //we assume that lm is minimal in generators.leadingTerms
-  treatNormalPairs(s,  treat_pairs.begin(),  treat_pairs.end());
+  generators.append(e);
+  const int s = generators.size() - 1;
+  treatNormalPairs(s, related_divisors.begin(), related_divisors.end());
 
   return s;
 }
