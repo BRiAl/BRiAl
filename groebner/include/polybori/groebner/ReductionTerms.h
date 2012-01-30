@@ -22,7 +22,7 @@
 
 #include "BoundedDivisorsOf.h"
 #include "RelatedTerms.h"
-#include <polybori/BooleSetSequence.h>
+#include <polybori/TransformedSequence.h>
 
 #include "ll_red_nf.h"
 
@@ -265,8 +265,7 @@ public:
 
   /// Compute terms owning variables of current entry's leading term
   /// @note Side effect: adds additional data to @c treat_pairs
-  MonomialSet related(const PolyEntry& entry,
-                      BooleSetSequence& divisors) const {
+  RelatedTerms related(const PolyEntry& entry) const {
     MonomialSet empty(entry.p.ring());
     bool is00 = entry.literal_factors.is00Factorization();
     bool is11 = entry.literal_factors.is11Factorization();
@@ -274,29 +273,14 @@ public:
     if (!( (is00 && (leadingTerms == leadingTerms00)) ||
            (is11 && (leadingTerms == leadingTerms11))) ){
       PBORI_ASSERT (entry.p.isOne() || !is00 || !is11);
-      return nontrivial(entry.lead, divisors,
-			which(is11, leadingTerms11,
-			      is00, leadingTerms00, empty));
+
+      return RelatedTerms(entry.lead, leadingTerms,
+                          which(is11, leadingTerms11,
+                                is00, leadingTerms00, empty));
     }
-    return trivial(empty, divisors);
+    return RelatedTerms(entry.p.ring());
   }
 
-protected:
-
-  MonomialSet nontrivial(const Monomial& lead,
-			 BooleSetSequence& divisors,
-			 const MonomialSet& ignorable) const {
-    RelatedTerms terms(lead, leadingTerms, ignorable);
-    divisors = BooleSetSequence(terms.factors(minimalLeadingTerms),
-				   BoundedDivisorsOf(lead, leadingTerms));
-    return terms;
-  }
-
-  MonomialSet trivial(const MonomialSet& empty,
-		      BooleSetSequence& treat_pairs) const {
-    treat_pairs = BooleSetSequence();
-    return empty;
-  }
 };
 
 END_NAMESPACE_PBORIGB

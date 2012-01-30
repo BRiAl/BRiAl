@@ -53,6 +53,14 @@ for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
     (obj .* func)(*start);
 }
 
+template <class InIter, class Object, class MemberFuncPtr>
+inline void
+for_each(InIter start, InIter finish, const Object& obj, MemberFuncPtr func) {
+  for(; start != finish; ++start)
+    (obj .* func)(*start);
+}
+
+
 /** @class GroebnerStrategy
  * @brief This class defines GroebnerStrategy.
  *
@@ -128,8 +136,7 @@ public:
 
 protected:
   std::vector<Polynomial> treatVariablePairs(int s);
-  template <class Iterator>
-  void treatNormalPairs(int s, Iterator, Iterator);
+  void normalPairsWithLast(const MonomialSet&);
   void addVariablePairs(int s);
   std::vector<Polynomial>
   add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp,
@@ -140,7 +147,7 @@ protected:
 
 private:
 
-  int addGeneratorStep(const PolyEntry&);
+  void addGeneratorStep(const PolyEntry&);
 
   void addImplications(const BoolePolynomial& p, std::vector<int>& indices);
 

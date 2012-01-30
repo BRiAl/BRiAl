@@ -20,7 +20,7 @@
 #include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
 #include <polybori/groebner/ExpGreater.h>
-#include <polybori/BooleSetSequence.h>
+  //#include <polybori/BooleSetSequence.h>
 
 #include <polybori/groebner/minimal_elements.h>
 #include <polybori/groebner/groebner_alg.h>
@@ -32,7 +32,7 @@
 #include <polybori/groebner/fixed_path_divisors.h>
 #include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/GroebnerStrategy.h>
-
+#include <polybori/groebner/RelatedTerms.h>
 #include <sstream>
 
 BEGIN_NAMESPACE_PBORIGB
@@ -318,28 +318,23 @@ GroebnerStrategy::treatVariablePairs(int s){
 }
 
 
-template <class Iterator>
-void 
-GroebnerStrategy::treatNormalPairs(int s, Iterator start, Iterator finish) {
 
-  for (; start != finish; ++start) {
-    MonomialSet act_l_terms(*start);
+void 
+GroebnerStrategy::normalPairsWithLast(const MonomialSet& act_l_terms) {
+
+  const int s  = generators.size() - 1;
     
-    if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(), 
-                     HasTRepOrExtendedProductCriterion(*this, s)) ==
-	act_l_terms.expEnd()) {
-      
-      Exponent min = *std::min_element(act_l_terms.expBegin(),
-                                       act_l_terms.expEnd(),
-                                       LessWeightedLengthInStrat(generators));
-      
-      pairs.introducePair(Pair(generators.index(min), s, generators));
-    }
+  if (std::find_if(act_l_terms.expBegin(), act_l_terms.expEnd(), 
+                   HasTRepOrExtendedProductCriterion(*this, s)) ==
+      act_l_terms.expEnd()) {
+    
+    Exponent min = *std::min_element(act_l_terms.expBegin(),
+                                     act_l_terms.expEnd(),
+                                     LessWeightedLengthInStrat(generators));
+    
+    pairs.introducePair(Pair(generators.index(min), s, generators));
   }
 }
-
-
-
 
 class PolyFromPolyEntry {
 public:
@@ -359,7 +354,8 @@ GroebnerStrategy::allGenerators(){
 }
 
 
-int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
+void
+GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
 
   PBORI_ASSERT(e.p.ring().id() == r.id());
 
@@ -370,26 +366,28 @@ int GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
   //do this before adding leading term
   propagate(e);
 
-  BooleSetSequence related_divisors;
-  checkCriteria(e, generators.related(e, related_divisors));
+  RelatedTerms related = generators.related(e);
+  checkCriteria(e, related.terms());
+
+  RelatedTerms::divisors_sequence_type
+    related_divisors(related.divisors(generators.minimalLeadingTerms));
 
   generators.append(e);
-  const int s = generators.size() - 1;
-  treatNormalPairs(s, related_divisors.begin(), related_divisors.end());
 
-  return s;
+  for_each(related_divisors.begin(), related_divisors.end(),
+           *this, &GroebnerStrategy::normalPairsWithLast);
 }
 
 void
 GroebnerStrategy::addImplications(const BoolePolynomial& poly,
 				  std::vector<int>& indices){
   PBORI_ASSERT(!poly.isZero());
-  int result = addGeneratorStep((generators.optRedTail?
-                                 red_tail(generators, poly): poly));
-
+  addGeneratorStep((generators.optRedTail?
+                    red_tail(generators, poly): poly));
+  int result = generators.size() - 1;
   pairs.status.setToHasTRep(indices.begin(), indices.end(), result);
   indices.push_back(result);
-  generators(result).markVariablePairsCalculated();
+  generators.back().markVariablePairsCalculated();
 }
 
 template <class Iterator>
@@ -409,11 +407,13 @@ GroebnerStrategy::addImplications(const std::vector<Polynomial>& impl, int s) {
 void
 GroebnerStrategy::addGenerator(const PolyEntry& e_arg) {
 
-  int s = addGeneratorStep(e_arg);
-  PolyEntryReference entry = generators(s);
+  addGeneratorStep(e_arg);
+  PolyEntryReference entry = generators.back();
 
-  if (entry.minimal)
+  if (entry.minimal) {
+    int s = generators.size() - 1;
     addImplications(treatVariablePairs(s), s);
+  }
   else
     entry.markVariablePairsCalculated();
 }

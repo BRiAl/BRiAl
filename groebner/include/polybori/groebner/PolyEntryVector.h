@@ -42,6 +42,7 @@ public:
   const_iterator end() const { return m_data.end(); }
   const_reference front() const { return m_data.front(); }
   const_reference back() const { return m_data.back(); }
+  reference back() { return reference(m_data.back(), m_indices); }
   //@}
 
   /// Default constructor
