@@ -21,6 +21,8 @@
 // include basic definitions
 #include "groebner_defs.h"
 
+#include <functional>
+
 BEGIN_NAMESPACE_PBORIGB
 
 /** @class BoundedDivisorsOf
@@ -37,20 +39,23 @@ BEGIN_NAMESPACE_PBORIGB
  * @note The operator stored references of t0 and T only.
  **/
 
-class BoundedDivisorsOf {
+class BoundedDivisorsOf: 
+  public std::unary_function<Monomial, MonomialSet> {
 
 public:
+  /// Initialize mapping with given parameters
   BoundedDivisorsOf(const Monomial& term, const MonomialSet& terms):
     m_factor(term), m_terms(terms) {}
 
+  /// The actual call
   MonomialSet operator()(const Monomial& t_divided) const {
     Monomial t = t_divided * m_factor;
     return fixed_path_divisors(m_terms, t, t_divided);
   }
 
 private:
-  const Monomial& m_factor;
-  const MonomialSet& m_terms;
+  Monomial m_factor;
+  MonomialSet m_terms;
 };
 
 END_NAMESPACE_PBORIGB
