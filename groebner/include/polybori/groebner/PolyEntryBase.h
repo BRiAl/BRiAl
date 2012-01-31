@@ -2,13 +2,13 @@
 //*****************************************************************************
 /** @file PolyEntryBase.h 
  *
- * @author Alexander Dreyer 
+ * @author Michael Brickenstein (original) and Alexander Dreyer (refactored)
  * @date 2012-01-31 
  *
  * This file includes the definition of the class @c PolyEntryBase.
  *
  * @par Copyright:
- *   (c) 2012 by The PolyBoRi Team
+ *   (c) 2006-2012 by The PolyBoRi Team
  *
 **/
 //*****************************************************************************

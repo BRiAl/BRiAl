@@ -2,7 +2,7 @@
 //*****************************************************************************
 /** @file PolyEntryReference.h 
  *
- * @author Alexander Dreyer
+ * @author Michael Brickenstein (original) and Alexander Dreyer (refactored)
  * @date 2012-01-04
  *
  * This file includes the definition of the class @c PolyEntryReference.

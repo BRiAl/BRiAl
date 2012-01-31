@@ -2,13 +2,13 @@
 //*****************************************************************************
 /** @file PolyEntryIndices.h 
  *
- * @author Alexander Dreyer
+ * @author Michael Brickenstein (original) and Alexander Dreyer (refactored)
  * @date 2012-01-05
  *
  * This file includes the definition of the class @c PolyEntryIndices.
  *
  * @par Copyright:
- *   (c) 2012 by The PolyBoRi Team
+ *   (c) 2006-2012 by The PolyBoRi Team
  *
 **/
 //*****************************************************************************
