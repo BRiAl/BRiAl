@@ -145,11 +145,11 @@ protected:
   addHigherImplDelayedUsing4(PolyEntryReference);
 
   std::vector<Polynomial>
-  addHigherImplDelayedUsing4(const LiteralFactorization& literal_factors);
+  addHigherImplDelayedUsing4(const LiteralFactorization& literal_factors) const;
 
   bool
   addHigherImplDelayedUsing4_(const LiteralFactorization& literal_factors,
-			      bool include_orig, std::vector<Polynomial>&);
+			      bool include_orig, std::vector<Polynomial>&) const;
 
 private:
 

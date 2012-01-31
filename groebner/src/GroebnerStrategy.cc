@@ -175,7 +175,7 @@ GroebnerStrategy::addHigherImplDelayedUsing4(PolyEntryReference entry) {
 
 std::vector<Polynomial>
 GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization& 
-					     literal_factors) {
+					     literal_factors) const {
   std::vector<Polynomial> impl;
   addHigherImplDelayedUsing4_(literal_factors, true, impl);
   return impl;
@@ -185,7 +185,7 @@ bool
 GroebnerStrategy::addHigherImplDelayedUsing4_(const LiteralFactorization& 
 					      literal_factors,
 					      bool include_orig,
-					      std::vector<Polynomial>& impl){
+					      std::vector<Polynomial>& impl) const {
 
     if (literal_factors.rest.isOne()){
       // entry.markVariablePairsCalculated();
