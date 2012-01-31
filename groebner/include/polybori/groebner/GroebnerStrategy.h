@@ -135,19 +135,25 @@ public:
   }
 
 protected:
-  std::vector<Polynomial> treatVariablePairs(int s);
+  std::vector<Polynomial> treatVariablePairs(PolyEntryReference);
   void normalPairsWithLast(const MonomialSet&);
-  void addVariablePairs(int s);
-  std::vector<Polynomial>
+  void addVariablePairs(PolyEntryReference);
+  template <class EntryType>  std::vector<Polynomial>
   add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp,
-                  const Exponent& used_variables, int s, bool include_orig);
+                  const Exponent& used_variables, EntryType entry, bool include_orig);
   std::vector<Polynomial>
-  addHigherImplDelayedUsing4(int s,const LiteralFactorization& literal_factors,
-                             bool include_orig);
+  addHigherImplDelayedUsing4(PolyEntryReference);
+
+  std::vector<Polynomial>
+  addHigherImplDelayedUsing4(const LiteralFactorization& literal_factors);
+
+  bool
+  addHigherImplDelayedUsing4_(const LiteralFactorization& literal_factors,
+			      bool include_orig, std::vector<Polynomial>&);
 
 private:
 
-  void addGeneratorStep(const PolyEntry&);
+  int addGeneratorStep(const PolyEntry&);
 
   void addImplications(const BoolePolynomial& p, std::vector<int>& indices);
 

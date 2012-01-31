@@ -37,6 +37,11 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
+class PolyEntryDummy {
+public:
+  void markVariablePairsCalculated() const {}
+};
+
 static Polynomial opposite_logic_mapping(Polynomial p){
     return map_every_x_to_x_plus_one(p)+1;
 }
@@ -112,16 +117,17 @@ reduce_by_small_entry(const Polynomial& poly, const PolyEntry& entry) {
 
 void GroebnerStrategy::propagate_step(entryset_type& others) {
 
-  const PolyEntry& e = *(*others.begin());
+  const PolyEntry& entry = *(*others.begin());
   others.erase(others.begin());
 
-  if (should_propagate(e)) {
+  if (should_propagate(entry)) {
     for(PolyEntryVector::const_iterator start(generators.begin()),
 	  finish(generators.end()); start != finish; ++start)
-      if (start->propagatableBy(e))
-	exchange(reduce_by_small_entry(start->p, e), *start, others);
+      if (start->propagatableBy(entry))
+	exchange(reduce_by_small_entry(start->p, entry), *start, others);
   }
 }
+
 
 void
 GroebnerStrategy::exchange(const Polynomial& reduced, const PolyEntry& entry,
@@ -152,11 +158,40 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
 
 }
 
-std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, const LiteralFactorization& literal_factors, bool include_orig){
+std::vector<Polynomial>
+GroebnerStrategy::addHigherImplDelayedUsing4(PolyEntryReference entry) {
+
+  std::vector<Polynomial> impl;
+  bool directly = 
+    addHigherImplDelayedUsing4_(((const PolyEntry&)entry).literal_factors,
+				false, impl);
+
+  entry.markVariablePairsCalculated();
+
+  if (!directly) {
+    for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
+    return std::vector<Polynomial>();
+  }
+  return impl;
+}
+
+std::vector<Polynomial>
+GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization& 
+					     literal_factors) {
+  std::vector<Polynomial> impl;
+  addHigherImplDelayedUsing4_(literal_factors, true, impl);
+  return impl;
+}
+
+bool
+GroebnerStrategy::addHigherImplDelayedUsing4_(const LiteralFactorization& 
+					      literal_factors,
+					      bool include_orig,
+					      std::vector<Polynomial>& impl){
+
     if (literal_factors.rest.isOne()){
-        if(s>=0)
-          generators(s).markVariablePairsCalculated();
-        return std::vector<Polynomial>();
+      // entry.markVariablePairsCalculated();
+      return false;
     }
 
     Polynomial p=literal_factors.rest;
@@ -174,14 +209,13 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     int i;
     if ((get_table_entry4(this->r, p_code,0)==p_code) &&
         (get_table_entry4(this->r, p_code,1)==0)){
-        if (s>=0)
-          generators(s).markVariablePairsCalculated();
-        return std::vector<Polynomial>();
+      //entry.markVariablePairsCalculated();
+      return false;
     }
     
     //Exponent e_i_high=multiply_with_literal_factor(literal_factors,Polynomial(Monomial(e_i)).lead());
     bool can_add_directly=true;
-    std::vector<Polynomial> impl;
+    ////    std::vector<Polynomial> impl;
     for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
       unsigned int impl_code=get_table_entry4(this->r, p_code,i);
         if ((include_orig) ||(p_code!=impl_code)){
@@ -201,18 +235,23 @@ std::vector<Polynomial> GroebnerStrategy::addHigherImplDelayedUsing4(int s, cons
     }
     
     
-     if (s>=0)
-       generators(s).markVariablePairsCalculated();
-     
-     if (can_add_directly)
-       return impl;
-     else if (!(include_orig))
-       for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
-     
-     return std::vector<Polynomial>();
+    //entry.markVariablePairsCalculated();
+    
+    if (can_add_directly)
+      return true;
+    else if (!include_orig)
+      return false;
+
+    impl.clear();
+    return false;
 }
 
-std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, const Exponent& used_variables,int s, bool include_orig){
+template <class EntryType>
+std::vector<Polynomial>
+GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, 
+				  const Exponent& used_variables,
+				  EntryType entry,
+				  bool include_orig){
     //cout<<"I am here";
     //Polynomial p=generators[s].p;
     //Exponent used_variables=generatusedVariables;
@@ -227,8 +266,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     unsigned int p_code=p2code_4(p, ring_2_0123);
 
     if ((get_table_entry4(this->r,p_code,0)==p_code) && (get_table_entry4(this->r,p_code,1)==0)){
-        if(s>=0)
-          generators(s).markVariablePairsCalculated();
+        entry.markVariablePairsCalculated();
 
         return std::vector<Polynomial>();
     }
@@ -253,8 +291,7 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
     }
     
     
-    if (s >= 0)
-      generators(s).markVariablePairsCalculated();
+    entry.markVariablePairsCalculated();
     
     if (can_add_directly)
         return impl;
@@ -265,37 +302,40 @@ std::vector<Polynomial> GroebnerStrategy::add4ImplDelayed(const Polynomial& p, c
 }
 
 void
-GroebnerStrategy::addVariablePairs(int s) {
-  Exponent::const_iterator it=generators[s].leadExp.begin();
-  Exponent::const_iterator end=generators[s].leadExp.end();
+GroebnerStrategy::addVariablePairs(PolyEntryReference entryref) {
+
+  const PolyEntry& entry = entryref;
+  Exponent::const_iterator it = entry.leadExp.begin();
+  Exponent::const_iterator end = entry.leadExp.end();
   while(it != end){
-    if ((generators[s].lead.deg() == 1) ||
-        generators[s].literal_factors.occursAsLeadOfFactor(*it)) {
-      generators(s).vPairCalculated.insert(*it);
+    if ((entry.lead.deg() == 1) ||
+        entry.literal_factors.occursAsLeadOfFactor(*it)) {
+      entryref.vPairCalculated.insert(*it);
     } 
     else
-      pairs.introducePair(Pair(s, *it, generators, VARIABLE_PAIR));
+      pairs.introducePair(Pair(generators.size() - 1, *it, generators,
+			       VARIABLE_PAIR));
     it++;
   } 
 }
 
 std::vector<Polynomial>
-GroebnerStrategy::treatVariablePairs(int s){
+GroebnerStrategy::treatVariablePairs(PolyEntryReference entry){
 
-  const PolyEntry& e = generators[s];
+  const PolyEntry& e = entry;
   if ((have_ordering_for_tables(this->r))||
       ((have_base_ordering_for_tables(this->r))&&
        (e.p.inSingleBlock()))) { 
     int uv=e.usedVariables.deg();
     if (uv<=4){
-      return add4ImplDelayed(e.p, e.leadExp, e.usedVariables, s, false);
+      return add4ImplDelayed(e.p, e.leadExp, e.usedVariables, entry, false);
     } 
     else {
       int uv_opt = uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
       ////should also be proofable for var2var factors
       PBORI_ASSERT(uv_opt==e.literal_factors.rest.nUsedVariables());//+2*var2var_map.size());
       if (uv_opt<=4){
-        return addHigherImplDelayedUsing4(s, e.literal_factors, false);
+        return addHigherImplDelayedUsing4(entry);
       }
     }
   }
@@ -313,7 +353,7 @@ GroebnerStrategy::treatVariablePairs(int s){
       return empty;
   }
 
-  addVariablePairs(s);
+  addVariablePairs(entry);
   return empty;
 }
 
@@ -354,39 +394,41 @@ GroebnerStrategy::allGenerators(){
 }
 
 
-void
-GroebnerStrategy::addGeneratorStep(const PolyEntry& e){
+int
+GroebnerStrategy::addGeneratorStep(const PolyEntry& entry){
 
-  PBORI_ASSERT(e.p.ring().id() == r.id());
+  PBORI_ASSERT(entry.p.ring().id() == r.id());
 
   // here we make use of the fact, that the index of the 1 node is 
   // bigger than that of variables
   generators.reducibleUntil = std::max(generators.reducibleUntil,
-                                       *e.p.navigation());
+                                       *entry.p.navigation());
   //do this before adding leading term
-  propagate(e);
+  propagate(entry);
 
-  RelatedTerms related = generators.related(e);
-  checkCriteria(e, related.terms());
+  RelatedTerms related = generators.related(entry);
+  checkCriteria(entry, related.terms());
 
   RelatedTerms::divisors_sequence_type
     related_divisors(related.divisors(generators.minimalLeadingTerms));
 
-  generators.append(e);
+  generators.addGenerator(entry);
 
   for_each(related_divisors.begin(), related_divisors.end(),
            *this, &GroebnerStrategy::normalPairsWithLast);
+
+  return generators.size() - 1;
 }
 
 void
 GroebnerStrategy::addImplications(const BoolePolynomial& poly,
 				  std::vector<int>& indices){
   PBORI_ASSERT(!poly.isZero());
-  addGeneratorStep((generators.optRedTail?
-                    red_tail(generators, poly): poly));
-  int result = generators.size() - 1;
-  pairs.status.setToHasTRep(indices.begin(), indices.end(), result);
-  indices.push_back(result);
+  int idx = addGeneratorStep((generators.optRedTail?
+			      red_tail(generators, poly): poly));
+
+  pairs.status.setToHasTRep(indices.begin(), indices.end(), idx);
+  indices.push_back(idx);
   generators.back().markVariablePairsCalculated();
 }
 
@@ -407,13 +449,11 @@ GroebnerStrategy::addImplications(const std::vector<Polynomial>& impl, int s) {
 void
 GroebnerStrategy::addGenerator(const PolyEntry& e_arg) {
 
-  addGeneratorStep(e_arg);
+  int idx = addGeneratorStep(e_arg);
   PolyEntryReference entry = generators.back();
 
-  if (entry.minimal) {
-    int s = generators.size() - 1;
-    addImplications(treatVariablePairs(s), s);
-  }
+  if (entry.minimal)
+    addImplications(treatVariablePairs(entry), idx);
   else
     entry.markVariablePairsCalculated();
 }
@@ -578,16 +618,17 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
-      way=1;
-      impl=add4ImplDelayed(p,p.leadExp(),p.usedVariablesExp(),-1,true);
+      way = 1;
+      impl = add4ImplDelayed(p, p.leadExp(), p.usedVariablesExp(),
+			   PolyEntryDummy(), true);
     } else {
       way=2;
       if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
         way=3;
         LiteralFactorization f(p);
         if (f.rest.usedVariablesExp().deg()<=4){
-          way=4;
-          impl=addHigherImplDelayedUsing4(-1,f,true);
+          way = 4;
+          impl = addHigherImplDelayedUsing4(f);
         } else {
           deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
           deg_type rest_used_variables_deg=f.rest.usedVariablesExp().deg();
