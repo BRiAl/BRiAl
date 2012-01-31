@@ -165,14 +165,12 @@ GroebnerStrategy::addHigherImplDelayedUsing4(PolyEntryReference entry) {
   bool directly = 
     addHigherImplDelayedUsing4_(((const PolyEntry&)entry).literal_factors,
 				false, impl);
-
   entry.markVariablePairsCalculated();
-
-  if (!directly) {
-    for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
-    return std::vector<Polynomial>();
-  }
-  return impl;
+  if (directly)
+    return impl;
+ 
+  for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
+  return std::vector<Polynomial>();
 }
 
 std::vector<Polynomial>
@@ -213,29 +211,23 @@ GroebnerStrategy::addHigherImplDelayedUsing4_(const LiteralFactorization&
       return false;
     }
     
-    //Exponent e_i_high=multiply_with_literal_factor(literal_factors,Polynomial(Monomial(e_i)).lead());
     bool can_add_directly=true;
-    ////    std::vector<Polynomial> impl;
     for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
       unsigned int impl_code=get_table_entry4(this->r, p_code,i);
+
         if ((include_orig) ||(p_code!=impl_code)){
           Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
-            if ((include_orig)||(e_i!=e)){
-                p_i=
-                    multiply_with_literal_factors(
-                        literal_factors,
-                        p_i);
-               impl.push_back(p_i);
-                if ((can_add_directly) &&(!(this->generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).isZero())))
+
+            if (include_orig || (e_i != e) ) {
+	      p_i = multiply_with_literal_factors(literal_factors, p_i);
+	      impl.push_back(p_i);
+	      can_add_directly = can_add_directly && 
+		generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).isZero();
                 //e_i is wrong here, have to multiply
-                    can_add_directly=false;
             }
         }
     }
-    
-    
-    //entry.markVariablePairsCalculated();
     
     if (can_add_directly)
       return true;
