@@ -37,6 +37,7 @@ public:
   typedef data_type::const_reference const_reference;
   typedef PolyEntryReference reference;
 
+  bool empty() const { return m_data.empty(); }
   size_type size() const { return m_data.size(); }
   const_iterator begin() const { return m_data.begin(); }
   const_iterator end() const { return m_data.end(); }

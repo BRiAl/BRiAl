@@ -61,10 +61,10 @@ bool PairManager::pairSetEmpty() const{
 }
 Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
   //PBORI_ASSERT(!(pairSetEmpty()));
-  if (UNLIKELY(pairSetEmpty())) return strat->r.zero();
+  if (UNLIKELY(pairSetEmpty())) return strat->ring().zero();
   bool replaced_used=false;
   
-  Polynomial replaced(strat->r.zero());
+  Polynomial replaced(strat->ring().zero());
   Pair act_pair(queue.top());
   queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
@@ -146,7 +146,7 @@ void PairManager::cleanTopByChainCriterion(){
       }
       const Exponent lm=queue.top().lm;
       //cout<<"try chain crit"<<endl;
-      const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors(this->strat->r));
+      const MonomialSet lms=this->strat->generators.leadingTerms.intersect(lm.divisors(this->strat->ring()));
       PBORI_ASSERT(lm==strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
       //PBORI_ASSERT(strat->generators.leadingTerms.divisorsOf(strat->generators[i].lmExp.LCM(strat->generators[j].lmExp))==lms);
       //should be set

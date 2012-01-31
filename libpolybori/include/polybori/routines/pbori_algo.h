@@ -845,6 +845,49 @@ count_index(SizeType& size, IdxType idx, const SetType& bset) {
 }
 
 
+template <class InIter, class OutIter, class Object, class MemberFuncPtr>
+inline OutIter
+transform(InIter start, InIter finish, OutIter result, Object& obj,
+	  MemberFuncPtr func) {
+  for(; start != finish; ++start, ++result)
+    *result = (obj .* func)(*start);
+}
+
+template <class InIter, class Object, class MemberFuncPtr>
+inline void
+for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
+  for(; start != finish; ++start)
+    (obj .* func)(*start);
+}
+
+template <class InIter, class Object, class MemberFuncPtr>
+inline void
+for_each(InIter start, InIter finish, const Object& obj, MemberFuncPtr func) {
+  for(; start != finish; ++start)
+    (obj .* func)(*start);
+}
+template <class Type, class Type1>
+const Type&
+which(bool condition, const Type1& value1, const Type& value) {
+  if (condition)
+    return value1;
+  return  value;
+}
+
+template <class Type, class Type1, class Type2>
+const Type&
+which(bool cond1, const Type1& value1, 
+      bool cond2, const Type2& value2, const Type& value) {
+  return which(cond1, value1, which(cond2, value2, value) );
+}
+
+template <class Type, class Type1, class Type2, class Type3>
+const Type&
+which(bool cond1, const Type1& value1, 
+      bool cond2, const Type2& value2, 
+      bool cond3, const Type3& value3, const Type& value ) {
+  return which(cond1, value1, cond2, value2, which(cond3, value3, value) );
+}
 END_NAMESPACE_PBORI
 
 #endif

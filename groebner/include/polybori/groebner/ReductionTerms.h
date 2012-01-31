@@ -23,6 +23,7 @@
 #include "BoundedDivisorsOf.h"
 #include "RelatedTerms.h"
 #include <polybori/TransformedSequence.h>
+#include <polybori/routines/pbori_algo.h> // which
 
 #include "ll_red_nf.h"
 
@@ -216,28 +217,7 @@ public:
 };
 
 
-template <class Type, class Type1>
-const Type&
-which(bool condition, const Type1& value1, const Type& value) {
-  if (condition)
-    return value1;
-  return  value;
-}
 
-template <class Type, class Type1, class Type2>
-const Type&
-which(bool cond1, const Type1& value1, 
-      bool cond2, const Type2& value2, const Type& value) {
-  return which(cond1, value1, which(cond2, value2, value) );
-}
-
-template <class Type, class Type1, class Type2, class Type3>
-const Type&
-which(bool cond1, const Type1& value1, 
-      bool cond2, const Type2& value2, 
-      bool cond3, const Type3& value3, const Type& value ) {
-  return which(cond1, value1, cond2, value2, which(cond3, value3, value) );
-}
 
 /** @class ReductionTerms
  * @brief This class defines term for @c ReductionStrategy

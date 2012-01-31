@@ -33,19 +33,21 @@
 #include <polybori/groebner/linear_algebra_step.h>
 #include <polybori/groebner/GroebnerStrategy.h>
 #include <polybori/groebner/RelatedTerms.h>
+#include <polybori/groebner/PolyFromPolyEntry.h>
+#include <polybori/groebner/TimesConstantImplication.h>
+#include <polybori/groebner/TimesVariableSubstitution.h>
+#include <polybori/groebner/IsVariableOfIndex.h>
+#include <polybori/groebner/RedTailNth.h>
+#include <polybori/groebner/GetNthPoly.h>
+#include <polybori/groebner/RankingVector.h>
 #include <sstream>
 
 BEGIN_NAMESPACE_PBORIGB
 
-class PolyEntryDummy {
-public:
-  void markVariablePairsCalculated() const {}
-};
 
 static Polynomial opposite_logic_mapping(Polynomial p){
     return map_every_x_to_x_plus_one(p)+1;
 }
-
 
 static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
   std::vector<Polynomial> res;
@@ -63,12 +65,10 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
   
 }
 
-
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   pairs(orig.pairs),
   generators(orig.generators),
-  r(orig.r), 
   cache(orig.cache),
 
   optDrawMatrices(orig.optDrawMatrices),
@@ -378,16 +378,13 @@ GroebnerStrategy::normalPairsWithLast(const MonomialSet& act_l_terms) {
   }
 }
 
-class PolyFromPolyEntry {
-public:
-  const Polynomial& operator()(const PolyEntry& entry) const {
-    return entry.p;
-  }
-};
 
 std::vector<Polynomial>
 GroebnerStrategy::allGenerators(){
-  std::vector<Polynomial> result(generators.size(), r);
+  if (generators.empty())
+    return std::vector<Polynomial>();
+
+  std::vector<Polynomial> result(generators.size(), generators.front().p.ring());
   std::transform(generators.begin(), generators.end(), result.begin(),
 		 PolyFromPolyEntry());
   pairs.appendHiddenGenerators(result);
@@ -399,7 +396,8 @@ GroebnerStrategy::allGenerators(){
 int
 GroebnerStrategy::addGeneratorStep(const PolyEntry& entry){
 
-  PBORI_ASSERT(entry.p.ring().id() == r.id());
+  PBORI_ASSERT(generators.empty() ||
+               entry.p.ring().id() == generators[0].p.ring().id());
 
   // here we make use of the fact, that the index of the 1 node is 
   // bigger than that of variables
@@ -460,22 +458,6 @@ GroebnerStrategy::addGenerator(const PolyEntry& e_arg) {
     entry.markVariablePairsCalculated();
 }
 
-class TimesConstantImplication {
-public:
-  template <class PairType>
-  Polynomial operator()(const Polynomial& lhs, const PairType& rhs) const {
-    return lhs * (lhs.ring().variable(rhs.first) + bool(rhs.second) );
-  }
-};
-
-class TimesVariableExchange {
-public:
-  template <class PairType>
-  Polynomial operator()(const Polynomial& lhs, const PairType& rhs) const {
-    return lhs * (lhs.ring().variable(rhs.first) +
-                  lhs.ring().variable(rhs.second));
-  }
-};
 
 void
 GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
@@ -496,7 +478,7 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
  
     mult_by = std::accumulate(e.literal_factors.var2var_map.begin(),
                               e.literal_factors.var2var_map.end(), 
-                              mult_by, TimesVariableExchange());
+                              mult_by, TimesVariableSubstitution());
 
     p_opp=opposite_logic_mapping(e.literal_factors.rest);
     factors_opp=LiteralFactorization(p_opp);
@@ -530,58 +512,16 @@ GroebnerStrategy::addNonTrivialImplicationsDelayed(const PolyEntry& e){
 }
 
 void GroebnerStrategy::addGeneratorDelayed(const BoolePolynomial& p){
-  PBORI_ASSERT(p.ring().id() == r.id());
+  PBORI_ASSERT(generators.empty() ||
+               p.ring().id() == generators[0].p.ring().id());
   pairs.introducePair(Pair(p));
 }
-
-class VariableHasValue {
-public:
-  VariableHasValue(idx_type value): m_value(value) {}
-
-  bool operator()(const PolyEntry& rhs) const {
-    return (rhs.usedVariables.deg() == 1) && 
-      (*(rhs.usedVariables.begin()) == m_value);
-  }
-
-private:
-  idx_type m_value;
-};
 
 
 bool GroebnerStrategy::variableHasValue(idx_type v){
   return std::find_if(generators.begin(), generators.end(),
-                      VariableHasValue(v)) != generators.end();
+                      IsVariableOfIndex(v)) != generators.end();
 }
-
-class RedTailNth {
-public:
-  RedTailNth(ReductionStrategy& strat): m_strat(strat) {}
-
-  template <class KeyType>
-  const Polynomial& operator()(const KeyType& key) {
-    return get(m_strat(key)).p;
-  }
-
-private:
-  const PolyEntry& get(PolyEntryReference entry) {
-    return entry = red_tail(m_strat, entry.get().p);
-  }
-
-  ReductionStrategy& m_strat;
-};
-
-class GetNthPoly {
-public:
-  GetNthPoly(ReductionStrategy& strat): m_strat(strat) {}
-
-  template <class KeyType>
-  const Polynomial& operator()(const KeyType& key) {
-    return m_strat[key].p;
-  }
-
-  ReductionStrategy& m_strat;
-};
-
 
 std::vector<Polynomial>
 GroebnerStrategy::minimalizeAndTailReduce(){
@@ -590,7 +530,7 @@ GroebnerStrategy::minimalizeAndTailReduce(){
     generators.optRedTailDegGrowth = true;
 
     MonomialSet minelts = minimal_elements(generators.minimalLeadingTerms);
-    std::vector<Polynomial> result(minelts.size(), r);
+    std::vector<Polynomial> result(minelts.size(), minelts.ring());
     std::transform(minelts.rExpBegin(), minelts.rExpEnd(), result.rbegin(), 
                    RedTailNth(generators));
 
@@ -602,7 +542,7 @@ std::vector<Polynomial>
 GroebnerStrategy::minimalize(){
 
     MonomialSet minelts = minimal_elements(generators.minimalLeadingTerms);
-    std::vector<Polynomial> result(minelts.size(), r);
+    std::vector<Polynomial> result(minelts.size(), minelts.ring());
     std::transform(minelts.begin(), minelts.end(), result.begin(), 
                    GetNthPoly(generators));
 
@@ -611,7 +551,7 @@ GroebnerStrategy::minimalize(){
 }
 void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minimal){
 
-  PBORI_ASSERT(p.ring().id() == this->r.id());
+  PBORI_ASSERT(generators.empty() || p.ring().id() == generators[0].p.ring().id());
   std::vector<Polynomial> impl;
   int way=0;
   if ((have_ordering_for_tables(p.ring())) ||
@@ -757,27 +697,6 @@ void GroebnerStrategy::symmGB_F2(){
     }
 }
 
-class RankingVector:
-  public std::vector<int> {
-  typedef std::vector<value_type> base; 
-public:
-  RankingVector(size_type len): base(len, 0) {}
-
-
-  void increment(size_type idx) {
-    ++operator[](idx);
-  }
-
-  void rerank(const Exponent& exp) {
-    if (exp.deg() >= 2)
-      for_each(exp.begin(), exp.end(), *this, &RankingVector::increment);
-  }
-
-  value_type max_index() const {
-    return (empty()? -1: std::max_element(begin(), end()) - begin());
-  }
-
-};
 
 
 int GroebnerStrategy::suggestPluginVariable() {
@@ -899,7 +818,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
               }
         }
         PBORI_ASSERT(polys.size()!=0);
-        Polynomial from_mat = add_up_exponents(p_t, r.zero());
+        Polynomial from_mat = add_up_exponents(p_t, orig_system[0].ring().zero());
 	polys.push_back(from_mat);
         if (UNLIKELY(from_mat.isOne())) {
 	  polys.erase(polys.begin(), polys.end() - 1);

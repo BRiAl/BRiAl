@@ -239,23 +239,19 @@ const int FARE_WORSE=10;
 // }
 
 static Polynomial exchange(GroebnerStrategy& strat , int i, const Polynomial & p){
-  PBORI_ASSERT(p.lead()==strat.generators[i].lead);
+  PBORI_ASSERT(p.lead() == strat.generators[i].lead);
   PolyEntry e(p);
+
   e.vPairCalculated=strat.generators[i].vPairCalculated;
   Polynomial res=spoly(strat.generators[i].p,p);
   strat.generators.exchange(i, e);
-
-  PBORI_ASSERT(p.ring().id() == strat.r.id());
-  PBORI_ASSERT(e.lead.ring().id() == strat.r.id());
-  PBORI_ASSERT(e.p.ring().id() == strat.r.id());
-
 
   return res;
 }
 
 static Polynomial exchange_with_promise(GroebnerStrategy& strat , int i, const Polynomial & p){
   PBORI_ASSERT(p.lead()==strat.generators[i].lead);
-  PBORI_ASSERT(p.ring().id() == strat.r.id());
+
   //PolyEntry e(p);
   //e.vPairCalculated=strat.generators[i].vPairCalculated;
   bool minimal=strat.generators[i].minimal;
@@ -415,7 +411,7 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
     }
   }
   
-  Polynomial pivot(strat.r);
+  Polynomial pivot(lm.ring());
   if (pivot_el<strat.generators[index].weightedLength){
     
     pivot_el=curr[found].eliminationLength();
@@ -461,11 +457,11 @@ static void step_S_T(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>
 
 static void step_T_simple(std::vector<PolynomialSugar>& curr, std::vector<Polynomial>& result,  const BooleMonomial& lm,GroebnerStrategy& strat){
   int s=curr.size();
-  Polynomial reductor(strat.r);
+  Polynomial reductor(lm.ring());
   int found;
   wlen_type pivot_el;
   found=0;
-  pivot_el=curr[0].eliminationLength();
+           pivot_el=curr[0].eliminationLength();
   int i;
   for (i=1;i<s;i++){
     wlen_type comp=curr[i].eliminationLength();
@@ -526,7 +522,7 @@ static void step_T_complex(std::vector<PolynomialSugar>& curr, std::vector<Polyn
   std::sort(curr.begin(), curr.end(), PSCompareByEl());
   const int max_cans=5;
   int s=curr.size();
-  Polynomial reductor(strat.r);
+  Polynomial reductor(lm.ring());
   int found;
   wlen_type pivot_el;
   
@@ -571,6 +567,9 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
 
   
   std::vector<Polynomial> result;
+  if (inp.empty())
+    return result;
+
   int i,s;
   s=inp.size();
   int max_steps=average_steps*s;
@@ -592,7 +591,7 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     
     to_reduce.push(to_push);
   }
-  const idx_type last_block_start=strat.r.ordering().lastBlockStart();
+  const idx_type last_block_start=inp[0].ring().ordering().lastBlockStart();
   while (!(to_reduce.empty())){
 
     std::vector<PolynomialSugar> curr;

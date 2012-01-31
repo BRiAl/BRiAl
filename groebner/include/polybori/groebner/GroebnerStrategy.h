@@ -23,42 +23,15 @@
 #include "PairManager.h"
 #include "ReductionStrategy.h"
 #include "groebner_defs.h"
+#include "PolyEntryPtrLmLess.h"
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
+#include <polybori/routines/pbori_algo.h> // member-for_each etc.
+
 BEGIN_NAMESPACE_PBORIGB
 
-class PolyEntryPtrLmLess {
-public:
-  bool operator()(const PolyEntry* lhs, const PolyEntry* rhs) const {
-    return lhs->lead < rhs->lead;
-  }
-};
-
-
-
-template <class InIter, class OutIter, class Object, class MemberFuncPtr>
-inline OutIter
-transform(InIter start, InIter finish, OutIter result, Object& obj,
-	  MemberFuncPtr func) {
-  for(; start != finish; ++start, ++result)
-    *result = (obj .* func)(*start);
-}
-
-template <class InIter, class Object, class MemberFuncPtr>
-inline void
-for_each(InIter start, InIter finish, Object& obj, MemberFuncPtr func) {
-  for(; start != finish; ++start)
-    (obj .* func)(*start);
-}
-
-template <class InIter, class Object, class MemberFuncPtr>
-inline void
-for_each(InIter start, InIter finish, const Object& obj, MemberFuncPtr func) {
-  for(; start != finish; ++start)
-    (obj .* func)(*start);
-}
 
 
 /** @class GroebnerStrategy
@@ -74,7 +47,7 @@ public:
 
   /// Construct from a ring
   GroebnerStrategy(const BoolePolyRing& input_ring):
-    generators(input_ring), r(input_ring), pairs(*this, input_ring),
+    generators(input_ring), pairs(*this, input_ring),
     optRedTailInLastBlock(input_ring.ordering().isBlockOrder()),
     optLazy(!input_ring.ordering().isDegreeOrder()),
 
@@ -90,6 +63,7 @@ public:
 
   }
 
+  const BoolePolyRing& ring() const { return generators.leadingTerms.ring(); }
   bool containsOne() const { return generators.leadingTerms.ownsOne(); }
   
   std::vector<Polynomial>  minimalizeAndTailReduce();
@@ -212,7 +186,7 @@ public:
   std::string matrixPrefix;
   //const char* matrixPrefix;
   boost::shared_ptr<CacheManager> cache;
-  BoolePolyRing r;
+
   bool enabledLog;
   unsigned int reductionSteps;
   int normalForms;

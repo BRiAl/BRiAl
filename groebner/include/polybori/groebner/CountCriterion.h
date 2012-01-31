@@ -50,7 +50,7 @@ public:
 
       Exponent uv_exp=e1.usedVariables.LCM(e2.usedVariables);
 
-      MonomialSet space=uv_exp.divisors(strat->r);
+      MonomialSet space=uv_exp.divisors(e1.p.ring());
       
       Monomial lead_lcm=e1.lead.LCM(e2.lead);
       //I am sure, there exists combinatorial formulas
