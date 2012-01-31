@@ -163,8 +163,84 @@ GroebnerStrategy::addHigherImplDelayedUsing4(PolyEntryReference entry) {
 
   std::vector<Polynomial> impl;
   bool directly = 
-    addHigherImplDelayedUsing4_(((const PolyEntry&)entry).literal_factors,
-				false, impl);
+    addHigherImplDelayedUsing4(((const PolyEntry&)entry).literal_factors,
+                               false, impl);
+  entry.markVariablePairsCalculated();
+  if (directly)
+    return impl;
+  
+  for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
+  return std::vector<Polynomial>();
+}
+
+std::vector<Polynomial>
+GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization& 
+					     literal_factors) const {
+  std::vector<Polynomial> impl;
+  addHigherImplDelayedUsing4(literal_factors, true, impl);
+  return impl;
+}
+
+bool
+GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization& 
+                                             literal_factors,
+                                             bool include_orig,
+                                             std::vector<Polynomial>& impl) const {
+
+    if (literal_factors.rest.isOne()){
+      // entry.markVariablePairsCalculated();
+      return false;
+    }
+
+    Polynomial p=literal_factors.rest;
+    BoolePolyRing ring(p.ring());
+   
+    //Monomial used_variables_m=p.usedVariables();
+    Exponent used_variables = p.usedVariablesExp();
+    Exponent e = p.leadExp();
+    if (e.size()>4) std::cerr<<"too many variables for table"<<std::endl;
+    
+    std::vector<char> ring_2_0123(ring.nVariables());
+    std::vector<idx_type> back_2_ring(4);
+    set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
+    unsigned int p_code=p2code_4(p, ring_2_0123);
+    int i;
+    if ((get_table_entry4(ring, p_code,0) == p_code) &&
+        (get_table_entry4(ring, p_code,1) == 0)){
+      return false;
+    }
+    
+    bool can_add_directly=true;
+    for(i=0;get_table_entry4(ring, p_code,i)!=0;i++){
+      unsigned int impl_code=get_table_entry4(ring, p_code,i);
+
+        if ((include_orig) ||(p_code!=impl_code)){
+          Polynomial p_i=code_2_poly_4(ring, impl_code, back_2_ring);
+            Exponent e_i=p_i.leadExp();
+
+            if (include_orig || (e_i != e) ) {
+	      p_i = multiply_with_literal_factors(literal_factors, p_i);
+	      impl.push_back(p_i);
+	      can_add_directly &= generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).isZero();
+                //e_i is wrong here, have to multiply
+            }
+        }
+    }
+    
+    if (can_add_directly)
+      return true;
+    else if (include_orig)
+      impl.clear();
+
+    return false;
+}
+std::vector<Polynomial>
+GroebnerStrategy::add4ImplDelayed(PolyEntryReference entry) {
+
+  const PolyEntry& e = entry;
+  std::vector<Polynomial> impl;
+
+  bool directly = add4ImplDelayed(e.p, e.leadExp, e.usedVariables, false, impl);
   entry.markVariablePairsCalculated();
   if (directly)
     return impl;
@@ -174,123 +250,58 @@ GroebnerStrategy::addHigherImplDelayedUsing4(PolyEntryReference entry) {
 }
 
 std::vector<Polynomial>
-GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization& 
-					     literal_factors) const {
+GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, 
+                                  const Exponent& used_variables) const {
   std::vector<Polynomial> impl;
-  addHigherImplDelayedUsing4_(literal_factors, true, impl);
+  add4ImplDelayed(p, lm_exp, used_variables, true, impl);
   return impl;
 }
 
 bool
-GroebnerStrategy::addHigherImplDelayedUsing4_(const LiteralFactorization& 
-					      literal_factors,
-					      bool include_orig,
-					      std::vector<Polynomial>& impl) const {
-
-    if (literal_factors.rest.isOne()){
-      // entry.markVariablePairsCalculated();
-      return false;
-    }
-
-    Polynomial p=literal_factors.rest;
-    BoolePolyRing current_ring(p.ring());
-   
-    //Monomial used_variables_m=p.usedVariables();
-    Exponent used_variables=p.usedVariablesExp();
-    Exponent e=p.leadExp();
-    if (e.size()>4) std::cerr<<"too many variables for table"<<std::endl;
-    
-    std::vector<char> ring_2_0123(current_ring.nVariables());
-    std::vector<idx_type> back_2_ring(4);
-    set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
-    unsigned int p_code=p2code_4(p, ring_2_0123);
-    int i;
-    if ((get_table_entry4(this->r, p_code,0)==p_code) &&
-        (get_table_entry4(this->r, p_code,1)==0)){
-      //entry.markVariablePairsCalculated();
-      return false;
-    }
-    
-    bool can_add_directly=true;
-    for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
-      unsigned int impl_code=get_table_entry4(this->r, p_code,i);
-
-        if ((include_orig) ||(p_code!=impl_code)){
-          Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
-            Exponent e_i=p_i.leadExp();
-
-            if (include_orig || (e_i != e) ) {
-	      p_i = multiply_with_literal_factors(literal_factors, p_i);
-	      impl.push_back(p_i);
-	      can_add_directly = can_add_directly && 
-		generators.minimalLeadingTerms.divisorsOf(p_i.leadExp()).isZero();
-                //e_i is wrong here, have to multiply
-            }
-        }
-    }
-    
-    if (can_add_directly)
-      return true;
-    else if (!include_orig)
-      return false;
-
-    impl.clear();
-    return false;
-}
-
-template <class EntryType>
-std::vector<Polynomial>
 GroebnerStrategy::add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, 
 				  const Exponent& used_variables,
-				  EntryType entry,
-				  bool include_orig){
+				  bool include_orig, std::vector<Polynomial>& impl) const {
     //cout<<"I am here";
     //Polynomial p=generators[s].p;
     //Exponent used_variables=generatusedVariables;
 
     Exponent e=lm_exp;//generators[s].lmExp;
-    BoolePolyRing current_ring(p.ring());
+    BoolePolyRing ring(p.ring());
 
-    std::vector<char> ring_2_0123(current_ring.nVariables());
+    std::vector<char> ring_2_0123(ring.nVariables());
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     
     unsigned int p_code=p2code_4(p, ring_2_0123);
 
-    if ((get_table_entry4(this->r,p_code,0)==p_code) && (get_table_entry4(this->r,p_code,1)==0)){
-        entry.markVariablePairsCalculated();
-
-        return std::vector<Polynomial>();
+    if ((get_table_entry4(ring, p_code, 0)==p_code) &&
+        (get_table_entry4(ring, p_code, 1)==0)) {
+      return false;
     }
     
     int i;
     bool can_add_directly=true;
-    std::vector<Polynomial> impl;
-    for(i=0;get_table_entry4(this->r, p_code,i)!=0;i++){
-      unsigned int impl_code=get_table_entry4(this->r,p_code,i);
+
+    for(i=0;get_table_entry4(ring, p_code,i)!=0;i++){
+      unsigned int impl_code=get_table_entry4(ring, p_code, i);
         if ((include_orig) ||(p_code!=impl_code)){
-          Polynomial p_i=code_2_poly_4(current_ring, impl_code, back_2_ring);
+          Polynomial p_i=code_2_poly_4(ring, impl_code, back_2_ring);
             Exponent e_i=p_i.leadExp();
 
             if ((include_orig) ||(e_i!=e)){
                 impl.push_back(p_i);
-                if ((can_add_directly)&&(!(this->generators.minimalLeadingTerms.divisorsOf(e_i).isZero())))
-                    can_add_directly=false;
-                //impl.push_back(p_i);
-                //addGeneratorDelayed(p_i);
+                can_add_directly &= generators.minimalLeadingTerms.divisorsOf(e_i).isZero();
             }
         }
     }
     
     
-    entry.markVariablePairsCalculated();
-    
     if (can_add_directly)
-        return impl;
-    else if (!(include_orig))
-      for_each(impl.begin(), impl.end(), *this, &self::addGeneratorDelayed);
-    
-    return std::vector<Polynomial>();    
+      return true;
+    else if (include_orig)
+      impl.clear();
+
+    return false;
 }
 
 void
@@ -315,12 +326,11 @@ std::vector<Polynomial>
 GroebnerStrategy::treatVariablePairs(PolyEntryReference entry){
 
   const PolyEntry& e = entry;
-  if ((have_ordering_for_tables(this->r))||
-      ((have_base_ordering_for_tables(this->r))&&
-       (e.p.inSingleBlock()))) { 
+  if (have_ordering_for_tables(e.p.ring()) ||
+      (have_base_ordering_for_tables(e.p.ring()) && e.p.inSingleBlock())) {
     int uv=e.usedVariables.deg();
     if (uv<=4){
-      return add4ImplDelayed(e.p, e.leadExp, e.usedVariables, entry, false);
+      return add4ImplDelayed(entry);
     } 
     else {
       int uv_opt = uv-e.literal_factors.factors.size()-2*e.literal_factors.var2var_map.size();
@@ -421,7 +431,7 @@ GroebnerStrategy::addImplications(const BoolePolynomial& poly,
 
   pairs.status.setToHasTRep(indices.begin(), indices.end(), idx);
   indices.push_back(idx);
-  generators.back().markVariablePairsCalculated();
+  generators.last().markVariablePairsCalculated();
 }
 
 template <class Iterator>
@@ -442,7 +452,7 @@ void
 GroebnerStrategy::addGenerator(const PolyEntry& e_arg) {
 
   int idx = addGeneratorStep(e_arg);
-  PolyEntryReference entry = generators.back();
+  PolyEntryReference entry = generators.last();
 
   if (entry.minimal)
     addImplications(treatVariablePairs(entry), idx);
@@ -604,15 +614,14 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
   PBORI_ASSERT(p.ring().id() == this->r.id());
   std::vector<Polynomial> impl;
   int way=0;
-  if ((have_ordering_for_tables(this->r)) ||
-      ((have_base_ordering_for_tables(this->r)) &&
+  if ((have_ordering_for_tables(p.ring())) ||
+      ((have_base_ordering_for_tables(p.ring())) &&
        (p.inSingleBlock()))) { 
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
       way = 1;
-      impl = add4ImplDelayed(p, p.leadExp(), p.usedVariablesExp(),
-			   PolyEntryDummy(), true);
+      impl = add4ImplDelayed(p, p.leadExp(), p.usedVariablesExp());
     } else {
       way=2;
       if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
@@ -772,7 +781,7 @@ public:
 
 
 int GroebnerStrategy::suggestPluginVariable() {
-  RankingVector ranking(this->r.nVariables());
+  RankingVector ranking(generators.minimalLeadingTerms.ring().nVariables());
 
   for_each(generators.minimalLeadingTerms.expBegin(),
            generators.minimalLeadingTerms.expEnd(), 

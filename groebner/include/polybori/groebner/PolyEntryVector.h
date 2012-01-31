@@ -42,8 +42,25 @@ public:
   const_iterator end() const { return m_data.end(); }
   const_reference front() const { return m_data.front(); }
   const_reference back() const { return m_data.back(); }
-  reference back() { return reference(m_data.back(), m_indices); }
+
+  /// Read-only access to element by index, leading term or monomial
+  template <class KeyType>
+  const_reference operator[](const KeyType& rhs) const { 
+    return operator()(rhs); 
+  }
   //@}
+
+  /// Alternative to @c front which allows partial (but consistent) access
+  reference first() { return reference(m_data.front(), m_indices); }
+
+  /// Constant variant, equivalent to @c front, for completeness reasons
+  const_reference first() const { return front(); }
+
+  /// Alternative to @c back() which allows partial (but consistent) access
+  reference last() { return reference(m_data.back(), m_indices); }
+
+  /// Constant variant, equivalent to @c back, for completeness reasons
+  const_reference last() const { return back(); }
 
   /// Default constructor
   PolyEntryVector():
@@ -55,12 +72,6 @@ public:
 
     PBORI_ASSERT(m_indices.checked(back().lead) == (size_type)-1);
     m_indices.insert(back(), size() - 1);
-  }
-
-  /// Read-only access to element by index, leading term or monomial
-  template <class KeyType>
-  const_reference operator[](const KeyType& rhs) const { 
-    return operator()(rhs); 
   }
 
   /// Read-only access to element by index, leading term or monomial

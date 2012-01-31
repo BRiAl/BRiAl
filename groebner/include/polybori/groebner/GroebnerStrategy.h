@@ -125,37 +125,43 @@ public:
 
   template <class Iterator>
   bool sameRing(Iterator start, Iterator finish) const {
-  
-    while (start != finish) {
-      if (r.id() != start->ring().id())
-        return false;
-      ++start;
-    }
-    return true;
+
+    if (start == finish)
+      return true;
+
+    BoolePolyRing::hash_type id(start->ring().id());
+    while ((start != finish) && (start->ring().id() == id)) {  ++start;  }
+
+    return (start == finish);
   }
 
 protected:
   std::vector<Polynomial> treatVariablePairs(PolyEntryReference);
   void normalPairsWithLast(const MonomialSet&);
   void addVariablePairs(PolyEntryReference);
-  template <class EntryType>  std::vector<Polynomial>
-  add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp,
-                  const Exponent& used_variables, EntryType entry, bool include_orig);
-  std::vector<Polynomial>
-  addHigherImplDelayedUsing4(PolyEntryReference);
 
-  std::vector<Polynomial>
-  addHigherImplDelayedUsing4(const LiteralFactorization& literal_factors) const;
+  std::vector<Polynomial> add4ImplDelayed(PolyEntryReference);
+  std::vector<Polynomial> add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, 
+                                          const Exponent& used_variables) const;
 
-  bool
-  addHigherImplDelayedUsing4_(const LiteralFactorization& literal_factors,
-			      bool include_orig, std::vector<Polynomial>&) const;
+
+  std::vector<Polynomial> addHigherImplDelayedUsing4(PolyEntryReference);
+  std::vector<Polynomial> addHigherImplDelayedUsing4(const LiteralFactorization&) const;
+
 
 private:
 
   int addGeneratorStep(const PolyEntry&);
 
   void addImplications(const BoolePolynomial& p, std::vector<int>& indices);
+
+
+  bool add4ImplDelayed(const Polynomial& p, const Exponent& lm_exp, 
+                       const Exponent& used_variables, bool include_orig,
+                       std::vector<Polynomial>& impl) const;
+
+  bool addHigherImplDelayedUsing4(const LiteralFactorization&,
+                                  bool include_orig, std::vector<Polynomial>&) const;
 
   template <class Iterator>
   void addImplications(Iterator, Iterator, std::vector<int>& indices);
@@ -208,7 +214,7 @@ public:
   boost::shared_ptr<CacheManager> cache;
   BoolePolyRing r;
   bool enabledLog;
-   unsigned int reductionSteps;
+  unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
   int chainCriterions;

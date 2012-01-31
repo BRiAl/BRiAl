@@ -72,7 +72,7 @@ public:
 private:
   /// Find related elements from significant, store them, return irrelevant ones
   void init(const MonomialSet& significant, const MonomialSet& unrelated) {
-    PBORI_ASSERT(!m_ignorable.owns(m_lead) && !terms.ownsOne());
+    PBORI_ASSERT(!m_ignorable.owns(m_lead) && !significant.ownsOne());
     m_related = significant.diff(unrelated);
     m_ext_prod_terms = m_ignorable.existAbstract(m_lead).diff(unrelated);
   }
