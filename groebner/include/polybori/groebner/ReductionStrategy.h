@@ -23,21 +23,9 @@
 #include "PolyEntryVector.h"
 #include "ReductionOptions.h"
 #include "ReductionTerms.h"
+#include "SetAssociatedMinimal.h"
 
 BEGIN_NAMESPACE_PBORIGB
-
-template <class KeyType, bool Value>
-class set_associated_minimal {
-public:
-  set_associated_minimal(PolyEntryVector& strat): m_strat(strat) {}
-
-  void operator()(const KeyType& key) const { 
-    m_strat(key).minimal = Value;
-  }
-
-private:
-  PolyEntryVector& m_strat;
-};
 
 /** @class ReductionStrategy
  * @brief This class defines ReductionStrategy.
@@ -89,6 +77,7 @@ public:
     operator const PolyEntryVector&() const {
       return static_cast<const PolyEntryVector&>(*this);
     }
+
 protected:
   void llReduce(const PolyEntry& entry, const Exponent& ll_e);
 
@@ -96,7 +85,7 @@ protected:
 
   void unmarkNonMinimalLeadingTerms(MonomialSet removed) {
     std::for_each(removed.expBegin(), removed.expEnd(),
-		  set_associated_minimal<Exponent, false>(*this));
+		  SetAssociatedMinimal<Exponent, false>(*this));
   }
  
   void setupSetsForElement(const PolyEntry& entry);
