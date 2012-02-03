@@ -24,6 +24,7 @@
 #include "ReductionStrategy.h"
 #include "groebner_defs.h"
 #include "PolyEntryPtrLmLess.h"
+#include "GroebnerOptions.h"
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
@@ -33,12 +34,12 @@
 BEGIN_NAMESPACE_PBORIGB
 
 
-
 /** @class GroebnerStrategy
  * @brief This class defines GroebnerStrategy.
  *
  **/
-class GroebnerStrategy{
+class GroebnerStrategy:
+  public GroebnerOptions {
 
   typedef GroebnerStrategy self;
 public:
@@ -47,21 +48,14 @@ public:
 
   /// Construct from a ring
   GroebnerStrategy(const BoolePolyRing& input_ring):
+    GroebnerOptions(input_ring.ordering().isBlockOrder(), 
+                    !input_ring.ordering().isDegreeOrder()),
+
     generators(input_ring), pairs(*this, input_ring),
-    optRedTailInLastBlock(input_ring.ordering().isBlockOrder()),
-    optLazy(!input_ring.ordering().isDegreeOrder()),
 
-    cache(new CacheManager()), matrixPrefix("mat"),
+    cache(new CacheManager()),
     chainCriterions(0), easyProductCriterions(0), extendedProductCriterions(0),
-
-    optDrawMatrices(false), optModifiedLinearAlgebra(false),
-    optDelayNonMinimals(true), enabledLog(false),
-    variableChainCriterions(0),  optExchange(true), optHFE(false),
-    optStepBounded(false), optAllowRecursion(true),
-    optLinearAlgebraInLastBlock(true),
-    reduceByTailReduced(false) {
-
-  }
+    variableChainCriterions(0) { }
 
   const BoolePolyRing& ring() const { return generators.leadingTerms.ring(); }
   bool containsOne() const { return generators.leadingTerms.ownsOne(); }
@@ -180,34 +174,19 @@ private:
 public:
   /// @name public available parameters
   PairManager pairs;
-  bool reduceByTailReduced;
   ReductionStrategy generators;
-  bool optDrawMatrices;
-  std::string matrixPrefix;
-  //const char* matrixPrefix;
   boost::shared_ptr<CacheManager> cache;
 
-  bool enabledLog;
   unsigned int reductionSteps;
   int normalForms;
   int currentDegree;
+  int averageLength;
+
   int chainCriterions;
   int variableChainCriterions;
   int easyProductCriterions;
   int extendedProductCriterions;
-  int averageLength;
-  
-  bool optHFE;
-  bool optLazy;
-  bool optModifiedLinearAlgebra;
-  bool optDelayNonMinimals;
-  
-  bool optExchange;
-  bool optAllowRecursion;
-  
-  bool optStepBounded;
-  bool optLinearAlgebraInLastBlock;
-  bool optRedTailInLastBlock;
+
 };
 
 END_NAMESPACE_PBORIGB

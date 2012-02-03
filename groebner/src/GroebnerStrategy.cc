@@ -70,17 +70,7 @@ GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   pairs(orig.pairs),
   generators(orig.generators),
   cache(orig.cache),
-
-  optDrawMatrices(orig.optDrawMatrices),
-  optModifiedLinearAlgebra(orig.optModifiedLinearAlgebra), 
-  optRedTailInLastBlock(orig.optRedTailInLastBlock),
-  optLinearAlgebraInLastBlock(orig.optLinearAlgebraInLastBlock),
-  optDelayNonMinimals(orig.optDelayNonMinimals),
-  optStepBounded(orig.optStepBounded),
-  optAllowRecursion(orig.optAllowRecursion),
-  optHFE(orig.optHFE),
-  optLazy(orig.optLazy),
-  optExchange(orig.optExchange),
+  GroebnerOptions(orig),
 
   reductionSteps(orig.reductionSteps),
   normalForms(orig.normalForms),
@@ -89,9 +79,7 @@ GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   variableChainCriterions(orig.variableChainCriterions),
   easyProductCriterions(orig.easyProductCriterions),
   extendedProductCriterions(orig.extendedProductCriterions),
-  averageLength(orig.averageLength),
-  enabledLog(orig.enabledLog),
-  reduceByTailReduced(orig.reduceByTailReduced) {
+  averageLength(orig.averageLength) {
 
   this->pairs.strat = this;
 }
