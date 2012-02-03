@@ -831,7 +831,7 @@ GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
   std::vector<Polynomial> polys;
   MonomialSet terms(orig_system[0].ring()), leads_from_strat(terms);
   
-  PBORI_ASSERT(sameRing(orig_system.begin(), orig_system.end()));
+  PBORI_ASSERT(same_rings(orig_system.begin(), orig_system.end()));
   fix_point_iterate(*this, orig_system, polys, terms, leads_from_strat);
   
   (optModifiedLinearAlgebra? linalg_step_modified:

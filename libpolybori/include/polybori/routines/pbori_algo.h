@@ -888,6 +888,23 @@ which(bool cond1, const Type1& value1,
       bool cond3, const Type3& value3, const Type& value ) {
   return which(cond1, value1, cond2, value2, which(cond3, value3, value) );
 }
+
+
+
+
+template <class IDType, class Iterator>
+bool same_rings(const IDType& id, Iterator start, Iterator finish) {
+  
+  while ((start != finish) && (start->ring().id() == id)) {  ++start;  }
+  return (start == finish);
+}
+
+template <class Iterator>
+bool same_rings(Iterator start, Iterator finish) {
+
+  return (start == finish) || same_ring(start->ring().id(), start, finish);
+}
+
 END_NAMESPACE_PBORI
 
 #endif

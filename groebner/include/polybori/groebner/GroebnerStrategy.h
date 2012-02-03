@@ -91,17 +91,6 @@ public:
   int suggestPluginVariable();
   std::vector<Polynomial> allGenerators();
 
-  template <class Iterator>
-  bool sameRing(Iterator start, Iterator finish) const {
-
-    if (start == finish)
-      return true;
-
-    BoolePolyRing::hash_type id(start->ring().id());
-    while ((start != finish) && (start->ring().id() == id)) {  ++start;  }
-
-    return (start == finish);
-  }
 
 protected:
   std::vector<Polynomial> treatVariablePairs(PolyEntryReference);
