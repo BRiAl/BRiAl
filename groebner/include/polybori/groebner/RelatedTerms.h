@@ -17,7 +17,7 @@
 #define polybori_groebner_RelatedTerms_h_
 
 #include "RelatedTermsBase.h"
-#include <polybori/TransformedSequence.h>
+#include <polybori/common/TransformedSequence.h>
 
 // include basic definitions
 #include "groebner_defs.h"

@@ -26,7 +26,6 @@
 #include "LeadingTerms11.h"
 #include "MonomialPlusOneTerms.h"
 
-#include <polybori/TransformedSequence.h>
 #include <polybori/routines/pbori_algo.h> // which
 
 
