@@ -18,8 +18,8 @@
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
-#include "common/CWeakPtr.h"
-#include "BoolePolyRing.h"
+#include <polybori/common/CWeakPtr.h>
+#include <polybori/BoolePolyRing.h>
 
 BEGIN_NAMESPACE_PBORI
 
