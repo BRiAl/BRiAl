@@ -160,6 +160,8 @@ private:
     pairs.status.setToUncalculated(generators.index(key), generators.size());
   }
 
+  bool shorter_elimination(const MonomialSet& divisors, wlen_type el,
+                           MonomialSet::deg_type deg) const;
 public:
   /// @name public available parameters
   PairManager pairs;

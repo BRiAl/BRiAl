@@ -611,59 +611,35 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
   }
 }
 
+bool GroebnerStrategy::shorter_elimination(const MonomialSet& divisors, wlen_type el,
+                                           MonomialSet::deg_type deg) const {
+  return std::find_if(divisors.expBegin(),divisors.expEnd(),
+                      ShorterEliminationLengthModified(*this, el, deg))
+    != divisors.expEnd();
+}
+
 void GroebnerStrategy::addAsYouWish(const Polynomial& p){
-    //if (p.isZero()) return;
-    Exponent lm_exp=p.leadExp();
-    MonomialSet divisors=this->generators.leadingTerms.divisorsOf(lm_exp);
-    #if 0
-    if (divisors.isZero())
-        addGenerator(p);
-    else addGeneratorDelayed(p);
-    #else
-    if ((optDelayNonMinimals) && (!(divisors.isZero()))){
+    Exponent lm_exp = p.leadExp();
+    MonomialSet::deg_type deg = lm_exp.deg();
+    MonomialSet divisors = generators.leadingTerms.divisorsOf(lm_exp);
+
+    if ( (optDelayNonMinimals && !divisors.isZero()) || 
+         divisors.owns(Monomial(lm_exp, p.ring())) ||
+         shorter_elimination(divisors, p.eliminationLength(), deg) )
       addGeneratorDelayed(p);
-      return;
-    }else {
-      if (divisors.owns(Monomial(lm_exp, p.ring()))){
-          addGeneratorDelayed(p);
-          return;
-    }}
-    wlen_type el=p.eliminationLength();
-    if (std::find_if(
-            divisors.expBegin(),
-            divisors.expEnd(),
-            ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
-        this->addGeneratorDelayed(p);
-    } else {
-      Polynomial pr(p.ring());
-        if (generators.optRedTail)
-            pr=red_tail(this->generators,p);
-        else 
-            {   if (optRedTailInLastBlock)
-                    pr=red_tail_in_last_block(*this,p);
-                else
-                    pr=p;
-            }
-        if (pr!=p){
-            el=pr.eliminationLength();
-            if (std::find_if(
-                    divisors.expBegin(),
-                    divisors.expEnd(),
-                    ShorterEliminationLengthModified(*this,el,lm_exp.deg()))!=divisors.expEnd()){
-                this->addGeneratorDelayed(pr);
-            } else {
-                if (divisors.isZero())
-                    this->addGeneratorTrySplit(pr, true);
-                else
-                    addGenerator(pr);
-            }
-        } else
-            if (divisors.isZero())
-                this->addGeneratorTrySplit(p, true);
-            else
-                addGenerator(p);
+
+    else {
+      Polynomial pred = 
+        which(generators.optRedTail, red_tail(generators, p),
+              optRedTailInLastBlock, red_tail_in_last_block(*this, p), p);
+           
+      if ((pred != p) && shorter_elimination(divisors, pred.eliminationLength(), deg)) 
+        addGeneratorDelayed(pred);
+      else if (divisors.isZero())
+        addGeneratorTrySplit(pred, true);
+      else
+        addGenerator(pred);
     }
-    #endif
 }
 
 int steps(int size) {
