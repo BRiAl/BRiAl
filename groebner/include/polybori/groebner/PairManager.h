@@ -48,7 +48,7 @@ public:
   typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
-  Polynomial nextSpoly(const ReductionStrategy& gen);
+  Polynomial nextSpoly(ReductionStrategy& gen);
   bool pairSetEmpty() const;
   void cleanTopByChainCriterion();
 protected:

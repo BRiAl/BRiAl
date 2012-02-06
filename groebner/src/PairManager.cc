@@ -59,7 +59,7 @@ void PairManager::introducePair(const Pair& pair){
 bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
-Polynomial PairManager::nextSpoly(const ReductionStrategy& gen){
+Polynomial PairManager::nextSpoly(ReductionStrategy& gen){
   //PBORI_ASSERT(!(pairSetEmpty()));
   if (UNLIKELY(pairSetEmpty())) return gen.leadingTerms.ring().zero();
   bool replaced_used=false;
@@ -95,7 +95,7 @@ Polynomial PairManager::nextSpoly(const ReductionStrategy& gen){
     if (act_pair.getType()==VARIABLE_PAIR){
       
       const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
-      strat->generators(vp->i).vPairCalculated.insert(vp->v);
+      gen(vp->i).vPairCalculated.insert(vp->v);
       int i=vp->i;
       Polynomial res=act_pair.extract(gen);
       
