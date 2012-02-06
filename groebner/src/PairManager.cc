@@ -21,25 +21,25 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-void PairManager::replacePair(int& i, int& j){
-  MonomialSet m=strat->generators.leadingTerms.divisorsOf(strat->generators[i].leadExp.LCM(strat->generators[j].leadExp));
+void PairManager::replacePair(const ReductionStrategy& gen, int& i, int& j){
+  MonomialSet m=gen.leadingTerms.divisorsOf(gen[i].leadExp.LCM(gen[j].leadExp));
   MonomialSet::exp_iterator it=m.expBegin();
   MonomialSet::exp_iterator end=m.expEnd();
   int i_n=i;
   int j_n=j;
   while(it!=end){
     Exponent curr=*it;
-    int index=strat->generators.index(curr);
-    wlen_type curr_wl=strat->generators[index].weightedLength;
+    int index=gen.index(curr);
+    wlen_type curr_wl=gen[index].weightedLength;
     if ((index!=i) && (index!=j)){
     if ((status.hasTRep(index,i)) &&
-      (strat->generators[i_n].weightedLength>curr_wl) &&
-      (strat->generators[index].ecart()<=strat->generators[i].ecart())){
+      (gen[i_n].weightedLength>curr_wl) &&
+      (gen[index].ecart()<=gen[i].ecart())){
       i_n=index;
     }
     if ((status.hasTRep(index,j)) &&
-      (strat->generators[j_n].weightedLength>curr_wl) &&
-      (strat->generators[index].ecart()<=strat->generators[j].ecart())
+      (gen[j_n].weightedLength>curr_wl) &&
+      (gen[index].ecart()<=gen[j].ecart())
       ){
       j_n=index;
     }
@@ -59,12 +59,12 @@ void PairManager::introducePair(const Pair& pair){
 bool PairManager::pairSetEmpty() const{
   return queue.empty();
 }
-Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
+Polynomial PairManager::nextSpoly(const ReductionStrategy& gen){
   //PBORI_ASSERT(!(pairSetEmpty()));
-  if (UNLIKELY(pairSetEmpty())) return strat->ring().zero();
+  if (UNLIKELY(pairSetEmpty())) return gen.leadingTerms.ring().zero();
   bool replaced_used=false;
   
-  Polynomial replaced(strat->ring().zero());
+  Polynomial replaced(gen.leadingTerms.ring().zero());
   Pair act_pair(queue.top());
   queue.pop();
   //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
@@ -73,14 +73,14 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
     int i=ij->i;
     int j=ij->j;
     
-    replacePair(i,j);
+    replacePair(gen, i,j);
     if ((i!=ij->i)||(ij->j!=j)){
         
         
 
-      replaced=spoly(strat->generators[i].p,strat->generators[j].p);
+      replaced=spoly(gen[i].p,gen[j].p);
       replaced_used=true;
-      this->status.setToHasTRep(i,j);
+      status.setToHasTRep(i,j);
       //this->status.setToHasTRep(ij->i,j);
       //this->status.setToHasTRep(i,ij->j);
     }
@@ -88,14 +88,14 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
     //ij->i=i;
     //ac->j;
     //cout<<"mark1"<<endl;
-    this->status.setToHasTRep(ij->i,ij->j);
+    status.setToHasTRep(ij->i,ij->j);
   } else{
     
     
     if (act_pair.getType()==VARIABLE_PAIR){
       
       const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
-      this->strat->generators(vp->i).vPairCalculated.insert(vp->v);
+      strat->generators(vp->i).vPairCalculated.insert(vp->v);
       int i=vp->i;
       Polynomial res=act_pair.extract(gen);
       
@@ -103,8 +103,8 @@ Polynomial PairManager::nextSpoly(const PolyEntryVector& gen){
       if (!(res.isZero())){
         Monomial lm=res.lead();
         //uses p itself as reductor has a great potential of extinguishing many terms
-        if (lm==this->strat->generators[i].lead)
-          res+=this->strat->generators[i].p;
+        if (lm==gen[i].lead)
+          res+=gen[i].p;
       }
       
       return res;
@@ -130,17 +130,17 @@ void PairManager::cleanTopByChainCriterion(){
     ///@todo implement this
       const int i=ij->i;
       const int j=ij->j;
-      if (strat->pairs.status.hasTRep(i,j)) {queue.pop();continue;}
+      if (status.hasTRep(i,j)) {queue.pop();continue;}
       if ((strat->generators[i].length==1) &&(strat->generators[j].length==1)){
         this->queue.pop();
-        strat->pairs.status.setToHasTRep(i,j);
+        status.setToHasTRep(i,j);
         continue;
         
       }
       if (extended_product_criterion(strat->generators[i], strat->generators[j])){
         //cout<<"Delayed Extended PC"<<endl;
         this->queue.pop();
-        strat->pairs.status.setToHasTRep(i,j);
+        status.setToHasTRep(i,j);
         this->strat->extendedProductCriterions++;
         continue;
       }
@@ -154,7 +154,7 @@ void PairManager::cleanTopByChainCriterion(){
         //cout<<"non empty"<<endl;
       if (std::find_if(lms.expBegin(),lms.expEnd(),ChainCriterion(*(this->strat),i,j))!=lms.expEnd()){
         this->queue.pop();
-        strat->pairs.status.setToHasTRep(i,j);
+        status.setToHasTRep(i,j);
         //cout<<"Chain Criterion"<<endl;
         //cout.flush();
         strat->chainCriterions++;

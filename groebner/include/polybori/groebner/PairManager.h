@@ -18,6 +18,7 @@
 
 #include "PairStatusSet.h"
 
+
 // include basic definitions
 #include "groebner_defs.h"
 #include "pairs.h"
@@ -28,6 +29,7 @@ BEGIN_NAMESPACE_PBORIGB
 
 // forward declaration
 class GroebnerStrategy;
+class ReductionStrategy;
 
 /** @class PairManager
  * @brief This class defines PairManager.
@@ -46,12 +48,12 @@ public:
   typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
   queue_type queue;
   void introducePair(const Pair& p);
-  Polynomial nextSpoly(const PolyEntryVector& gen);
+  Polynomial nextSpoly(const ReductionStrategy& gen);
   bool pairSetEmpty() const;
   void cleanTopByChainCriterion();
 protected:
-	void replacePair(int& i, int & j);
-   };
+  void replacePair(const ReductionStrategy& gen, int& i, int & j);
+};
 
 END_NAMESPACE_PBORIGB
 
