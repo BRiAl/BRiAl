@@ -80,7 +80,7 @@ public:
   void addNonTrivialImplicationsDelayed(const PolyEntry& p);
   void propagate(const PolyEntry& e); 
 
-  void log(const char* c){ if (enabledLog) std::cout<<c<<std::endl; }
+  void log(const char* c) const { if (enabledLog) std::cout<<c<<std::endl; }
 
   Polynomial redTail(const Polynomial& p);
   std::vector<Polynomial> noroStep(const std::vector<Polynomial>&);
@@ -104,13 +104,30 @@ public:
   bool checkChainCriterion(const Exponent& lm, int i, int j);
   bool checkExtendedProductCriterion(int i, int j);
 
+
+  bool checkVariableSingletonCriterion(int idx) const {
+    return generators[idx].isSingleton();
+  }
+
+  bool checkVariableLeadOfFactorCriterion(int idx, int var) const {
+    bool result = generators[idx].literal_factors.occursAsLeadOfFactor(var);
+    if (result)
+      log("delayed variable linear factor criterion");
+    return result;
+  }
+
   bool checkVariableChainCriterion(int idx) {
     bool result = !generators[idx].minimal;
     if (result)
       ++variableChainCriterions;
     return result;
   }
-
+ 
+  bool checkVariableCriteria(int idx, int var) {
+    return UNLIKELY(checkVariableSingletonCriterion(idx) || 
+		    checkVariableLeadOfFactorCriterion(idx, var)) ||
+      checkVariableChainCriterion(idx);
+  }
 protected:
   std::vector<Polynomial> treatVariablePairs(PolyEntryReference);
   void normalPairsWithLast(const MonomialSet&);

@@ -23,7 +23,7 @@
 #include "groebner_defs.h"
 #include "pairs.h"
 #include "PolyEntry.h"
-  //#include "ChainCriterion.h"
+#include <polybori/routines/pbori_algo.h>
 
 
 #include <utility>
@@ -47,124 +47,63 @@ public:
     queue(ring)  { }
 
   void appendHiddenGenerators(std::vector<Polynomial>& vec) {
-    int i;
-    std::vector<Pair> temp_store;
-    while(!(queue.empty())){
-        Pair temp=queue.top();
-        queue.pop();
-        if (temp.getType()==DELAYED_PAIR){
-            Polynomial pt=((PolyPairData*) temp.data.get())->p;
-            if (!(pt.isZero()))
-                vec.push_back(pt);
-        }
-        temp_store.push_back(temp);
-        
+    queue_type temp(queue);
+    while(!temp.empty()){
+      if (temp.top().getType() == DELAYED_PAIR) {
+	Polynomial pt = ((PolyPairData*) temp.top().data.get())->p;
+	if (!pt.isZero())
+	  vec.push_back(pt);
+      }
+      temp.pop();
     }
-    for(i=0;i<temp_store.size();i++){
-        queue.push(temp_store[i]);
-    }
-}
+  }
  
-
-
-
   void introducePair(const Pair& pair) {
-    if (!((strategy().optHFE) && (pair.getType()==IJ_PAIR) && (pair.sugar>4)))
+    if (!((strategy().optHFE) && (pair.getType() == IJ_PAIR) &&
+	  (pair.sugar > 4)))
       queue.push(pair);
   };
 
   template<class Type>
   Polynomial nextSpoly(Type& gen) {
 
-  //PBORI_ASSERT(!(pairSetEmpty()));
-  if (UNLIKELY(pairSetEmpty())) return gen.leadingTerms.ring().zero();
-  bool replaced_used=false;
-  
-  Polynomial replaced(gen.leadingTerms.ring().zero());
-  Pair act_pair(queue.top());
-  queue.pop();
-  //const IJPairData* ij= dynamic_cast<IJPairData*>(queue.top().data.get());
-  if (act_pair.getType()==IJ_PAIR){
-    IJPairData* ij= (IJPairData*)(act_pair.data.get());
-    int i=ij->i;
-    int j=ij->j;
-    
-    replacePair(gen, i,j);
-    if ((i!=ij->i)||(ij->j!=j)){
-        
-        
+    if (UNLIKELY(pairSetEmpty())) 
+      return gen.leadingTerms.ring().zero();
 
-      replaced=spoly(gen[i].p,gen[j].p);
-      replaced_used=true;
-      status.setToHasTRep(i,j);
-      //this->status.setToHasTRep(ij->i,j);
-      //this->status.setToHasTRep(i,ij->j);
-    }
+    Pair act_pair(queue.top());
+    queue.pop();
     
-    //ij->i=i;
-    //ac->j;
-    //cout<<"mark1"<<endl;
-    status.setToHasTRep(ij->i,ij->j);
-  } else{
-    
-    
-    if (act_pair.getType()==VARIABLE_PAIR){
+    if (act_pair.getType() == IJ_PAIR){
+      const IJPairData* ij= (IJPairData*)(act_pair.data.get());
+      int i = ij->i, j = ij->j;
       
+      replacePair(gen, i, j);
+      status.setToHasTRep(ij->i, ij->j);
+      if ((i != ij->i) || (ij->j != j)){
+	status.setToHasTRep(i,j);
+	return spoly(gen[i].p, gen[j].p);
+      }
+    }
+    Polynomial res = act_pair.extract(gen);
+    if (act_pair.getType() == VARIABLE_PAIR) {
       const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
       gen(vp->i).vPairCalculated.insert(vp->v);
-      int i=vp->i;
-      Polynomial res=act_pair.extract(gen);
-      
-      
-      if (!(res.isZero())){
-        Monomial lm=res.lead();
-        //uses p itself as reductor has a great potential of extinguishing many terms
-        if (lm==gen[i].lead)
-          res+=gen[i].p;
-      }
-      
-      return res;
-      
+      if (!res.isZero() && (res.lead() == gen[vp->i].lead))
+	res += gen[vp->i].p;
     }
+    return res;
   }
-  if (replaced_used) return replaced;
-  Polynomial res=act_pair.extract(gen);
-  
-  
-  
-  return res;
-  
-}
 
-  bool pairSetEmpty() const{
-    return queue.empty();
-  }
+  bool pairSetEmpty() const { return queue.empty(); }
 
   void cleanTopByChainCriterion() {
-    while( !pairSetEmpty()) {
-      if (queue.top().getType()==IJ_PAIR){
-        const IJPairData* ij= (IJPairData*)(queue.top().data.get());
-
-        ///@todo implement this
-          const int i=ij->i;
-          const int j=ij->j;
-          
-          if (!status.hasTRep(i,j)) {
-            if (strategy().checkPairCriteria(queue.top().lm, i, j))
-              status.setToHasTRep(i,j);
-            else
-              return;
-          }
+    while(!pairSetEmpty()) {
+      int id = queue.top().getType();
+      if (id == IJ_PAIR) {
+	if (finished(ijpair())) return;
       }
-      else if (queue.top().getType() == VARIABLE_PAIR) {
-        const VariablePairData *vp=(VariablePairData*)(queue.top().data.get());
-        if (!UNLIKELY(strategy().generators[vp->i].isSingleton() ||
-                      strategy().generators[vp->i].literal_factors.occursAsLeadOfFactor(vp->v) )
-            /*strategy().log("delayed variable linear factor criterion");*/
-            
-            || strategy().checkVariableChainCriterion(vp->i))  {
-          return;
-        }
+      else if (id == VARIABLE_PAIR) {
+	if (finished(variablepair())) return;
       }
       else 
         return;
@@ -176,9 +115,33 @@ public:
   queue_type queue;
 
 protected:
+  const IJPairData& ijpair() const {
+    return *((IJPairData*)queue.top().data.get());
+  }
+  const VariablePairData& variablepair() const {
+    return *((VariablePairData*)queue.top().data.get());
+  }
+
+  bool finished(const IJPairData& ij) {
+    return !(status.hasTRep(ij.i, ij.j) || checkPairCriteria(ij.i, ij.j));
+  }
+  
+  bool finished(const VariablePairData& vp) {
+    return !strategy().checkVariableCriteria(vp.i, vp.v);
+  }
+  
+  bool checkPairCriteria(int i, int j) {
+    if (strategy().checkPairCriteria(queue.top().lm, i, j)) {
+      status.setToHasTRep(i, j);
+      return true;
+    }
+    return false;
+  }
+
   template <class Type>
   void replacePair(const Type& gen, int& i, int& j){
-     MonomialSet m=gen.leadingTerms.divisorsOf(gen[i].leadExp.LCM(gen[j].leadExp));
+     MonomialSet m = 
+       gen.leadingTerms.divisorsOf(gen[i].leadExp.LCM(gen[j].leadExp));
      MonomialSet::exp_iterator it=m.expBegin();
      MonomialSet::exp_iterator end=m.expEnd();
      int i_n=i;
@@ -200,7 +163,7 @@ protected:
            j_n=index;
          }
        }
-       it++;
+       ++it;
      }
      PBORI_ASSERT(i_n!=j_n);
      if (i_n!=j_n){
