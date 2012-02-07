@@ -31,7 +31,7 @@ class ChainCriterion{
 public:
   const GroebnerStrategy* strat;
   int i,j;
-  ChainCriterion(const GroebnerStrategy& strat, const int& i, const int& j){
+  ChainCriterion(const GroebnerStrategy& strat, int i, int j){
     this->strat=&strat;
     this->i=i;
     this->j=j;

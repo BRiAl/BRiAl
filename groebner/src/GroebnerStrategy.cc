@@ -20,6 +20,11 @@
 #include <polybori/groebner/ShorterEliminationLengthModified.h>
 #include <polybori/groebner/tables.h>
 #include <polybori/groebner/ExpGreater.h>
+#include <polybori/groebner/ChainCriterion.h>
+
+// for extended_product_criterion:
+#include <polybori/groebner/HasTRepOrExtendedProductCriterion.h>
+
   //#include <polybori/BooleSetSequence.h>
 
 #include <polybori/groebner/minimal_elements.h>
@@ -67,7 +72,9 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
 
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
-  pairs(orig.pairs),
+  PairManagement<polybori::groebner::GroebnerStrategy>(orig.ring()),
+  pairs(*this),                 // pairs is currently there to keep the
+                                // interface constant
   generators(orig.generators),
   cache(orig.cache),
   GroebnerOptions(orig),
@@ -81,7 +88,29 @@ GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
   extendedProductCriterions(orig.extendedProductCriterions),
   averageLength(orig.averageLength) {
 
-  this->pairs.strat = this;
+  //  this->pairs.strat = this;
+}
+
+bool 
+GroebnerStrategy::checkChainCriterion(const Exponent& lm, int i, int j) {
+    const MonomialSet lms =
+      generators.leadingTerms.intersect(lm.divisors(ring()));
+
+    PBORI_ASSERT(lm == generators[i].leadExp.LCM(generators[j].leadExp));
+    bool result = std::find_if(lms.expBegin(), lms.expEnd(),
+                               ChainCriterion(*this, i, j)) != lms.expEnd();
+    if (result)
+      ++chainCriterions; 
+    return result;
+  }
+
+bool
+GroebnerStrategy::checkExtendedProductCriterion(int i, int j) {
+  bool result = extended_product_criterion(generators[i], generators[j]);
+  if (result)
+   ++extendedProductCriterions;
+
+  return result;
 }
 
 

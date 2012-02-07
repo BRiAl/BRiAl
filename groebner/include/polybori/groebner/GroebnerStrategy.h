@@ -20,7 +20,7 @@
 #include "pairs.h"
 #include "cache_manager.h"
 
-#include "PairManager.h"
+#include "PairManagement.h"
 #include "ReductionStrategy.h"
 #include "groebner_defs.h"
 #include "PolyEntryPtrLmLess.h"
@@ -39,7 +39,7 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class GroebnerStrategy:
-  public GroebnerOptions {
+  public GroebnerOptions, public PairManagement<GroebnerStrategy> {
 
   typedef GroebnerStrategy self;
 public:
@@ -50,8 +50,8 @@ public:
   GroebnerStrategy(const BoolePolyRing& input_ring):
     GroebnerOptions(input_ring.ordering().isBlockOrder(), 
                     !input_ring.ordering().isDegreeOrder()),
-
-    generators(input_ring), pairs(*this, input_ring),
+    PairManagement<GroebnerStrategy>(input_ring),
+    generators(input_ring), pairs(*this),
 
     cache(new CacheManager()),
     chainCriterions(0), easyProductCriterions(0), extendedProductCriterions(0),
@@ -92,6 +92,25 @@ public:
   std::vector<Polynomial> allGenerators();
 
 
+  bool checkSingletonCriterion(int i, int j) const {
+    return generators[i].isSingleton() && generators[j].isSingleton();
+  }
+
+  bool checkPairCriteria(const Exponent& lm, int i, int j) {
+    return checkSingletonCriterion(i, j) || checkExtendedProductCriterion(i, j)
+      || checkChainCriterion(lm, i, j);
+  }
+
+  bool checkChainCriterion(const Exponent& lm, int i, int j);
+  bool checkExtendedProductCriterion(int i, int j);
+
+  bool checkVariableChainCriterion(int idx) {
+    bool result = !generators[idx].minimal;
+    if (result)
+      ++variableChainCriterions;
+    return result;
+  }
+
 protected:
   std::vector<Polynomial> treatVariablePairs(PolyEntryReference);
   void normalPairsWithLast(const MonomialSet&);
@@ -130,6 +149,7 @@ private:
   void exchange(const Polynomial&, const PolyEntry&, entryset_type&);
   void update_propagated(const PolyEntry& entry);
 
+
   // product criterion doesn't hold - try length 1 crit
   void checkSingletonCriterion(const PolyEntry& entry,
 			       const MonomialSet& intersection) {
@@ -164,7 +184,7 @@ private:
                            MonomialSet::deg_type deg) const;
 public:
   /// @name public available parameters
-  PairManager pairs;
+  PairManagement<GroebnerStrategy>& pairs;
   ReductionStrategy generators;
   boost::shared_ptr<CacheManager> cache;
 
