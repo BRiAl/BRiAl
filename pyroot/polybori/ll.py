@@ -186,3 +186,87 @@ def eliminate_ll_ranked(ll_system, to_reduce,
   finally:
       pass
   return (llnf, opt_eliminated)
+
+
+class RingMap:
+    """Define a mapping between two rings by common variable names.
+
+    >>> from polybori.frontend import *
+    >>> to_ring = declare_ring([Block("x", 10)], globals())
+    >>> from_ring = declare_ring([Block("y", 5), Block("x", 10)], globals())
+    >>> mapping = RingMap(to_ring, from_ring)
+    >>> (x(1)+1).navigation().value()
+    6
+    >>> mapping(x(1)+1)
+    x(1) + 1
+    >>> mapping(x(1)+1).navigation().value()
+    1
+    >>> mapping.invert(mapping(x(1)+1))
+    x(1) + 1
+    >>> mapping.invert(mapping(x(1)+1)).navigation().value()
+    6
+    >>> mapping(y(1)+1)
+    Traceback (most recent call last):
+    ...
+    RuntimeError: Operands come from different manager.
+    """
+    def __init__(self, to_ring, from_ring):
+        """Initialize map by two given rings.
+
+        >>> from polybori.frontend import *
+        >>> to_ring = declare_ring([Block("x", 10)], globals())
+        >>> from_ring = declare_ring([Block("y", 5), Block("x", 10)], globals())
+        >>> mapping = RingMap(to_ring, from_ring)
+        >>> mapping(x(1)+1)
+        x(1) + 1
+        """
+        def vars(ring):
+            return [ring.variable(i) for i in xrange(ring.n_variables())]
+        def indices(vars):
+            return dict([(str(v), idx) for (idx, v) in enumerate(vars)])
+                          
+        self.to_ring = to_ring
+        self.from_ring = from_ring
+        to_vars = vars(to_ring)
+        from_vars = vars(from_ring)
+        to_indices = indices(to_vars)
+        from_indices = indices(from_vars)
+        common = list(set(to_indices.keys()) & set(from_indices.keys()))
+
+        to_map = list(from_vars)
+        for elt in common:
+            to_map[from_indices[elt]] = to_vars[to_indices[elt]]
+
+        from_map = list(to_vars)
+        for elt in common:
+            from_map[to_indices[elt]] = from_vars[from_indices[elt]]
+
+        self.to_map = BoolePolynomialVector(to_map)
+        self.from_map = BoolePolynomialVector(from_map)
+
+    def __call__(self, poly):
+        """Execute the map to change rings.
+
+        >>> from polybori.frontend import *
+        >>> to_ring = declare_ring([Block("x", 10)], globals())
+        >>> from_ring = declare_ring([Block("y", 5), Block("x", 10)], globals())
+        >>> mapping = RingMap(to_ring, from_ring)
+        >>> mapping(x(1)+1)
+        x(1) + 1
+        """
+        return substitute_variables(self.to_ring, self.to_map, poly)
+
+    def invert(self, poly):
+        """Inverted map to initial ring.
+
+        >>> from polybori.frontend import *
+        >>> to_ring = declare_ring([Block("x", 10)], globals())
+        >>> from_ring = declare_ring([Block("y", 5), Block("x", 10)], globals())
+        >>> mapping = RingMap(to_ring, from_ring)
+        >>> mapping.invert(mapping(x(1)+1))
+        x(1) + 1
+        """
+        return substitute_variables(self.from_ring, self.from_map, poly)
+
+        
+    
