@@ -17,9 +17,6 @@
 #define polybori_groebner_PolyEntryReference_h_
 
 // include basic definitions
-#define polybori_groebner_PolyEntry_h_
-
-// include basic definitions
 #include "groebner_defs.h"
 #include <set>
 

@@ -72,9 +72,7 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
 
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
-  PairManagement<polybori::groebner::GroebnerStrategy>(orig.ring()),
-  pairs(*this),                 // pairs is currently there to keep the
-                                // interface constant
+  PairManagement<GroebnerStrategy>(orig),
   generators(orig.generators),
   cache(orig.cache),
   GroebnerOptions(orig),

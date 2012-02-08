@@ -19,7 +19,6 @@
 // include basic definitions
 #include "groebner_defs.h"
 #include "polynomial_properties.h"
-#include "PairManager.h"
 #include "PolyEntryVector.h"
 #include "ReductionOptions.h"
 #include "ReductionTerms.h"

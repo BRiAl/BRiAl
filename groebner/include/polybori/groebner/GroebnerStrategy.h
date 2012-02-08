@@ -39,7 +39,7 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class GroebnerStrategy:
-  public GroebnerOptions, protected PairManagement<GroebnerStrategy> {
+  public GroebnerOptions, public PairManagement<GroebnerStrategy> {
 
   typedef GroebnerStrategy self;
 public:
@@ -51,7 +51,7 @@ public:
     GroebnerOptions(input_ring.ordering().isBlockOrder(), 
                     !input_ring.ordering().isDegreeOrder()),
     PairManagement<GroebnerStrategy>(input_ring),
-    generators(input_ring), pairs(*this),
+    generators(input_ring),
 
     cache(new CacheManager()),
     chainCriterions(0), easyProductCriterions(0), extendedProductCriterions(0),
@@ -201,7 +201,6 @@ private:
                            MonomialSet::deg_type deg) const;
 public:
   /// @name public available parameters
-  PairManagement<GroebnerStrategy>& pairs;
   ReductionStrategy generators;
   boost::shared_ptr<CacheManager> cache;
 
