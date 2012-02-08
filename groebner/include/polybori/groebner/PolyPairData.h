@@ -28,7 +28,7 @@ BEGIN_NAMESPACE_PBORIGB
 class PolyPairData: public PairData{
 public:
   Polynomial p;
-  Polynomial extract(const PolyEntryVector& v){
+  Polynomial extract(const PolyEntryVector& v) const {
     return p;
   }
   PolyPairData(const BoolePolynomial& poly): p(poly) { }

@@ -29,7 +29,7 @@ class VariablePairData: public PairData{
 public:
   int i;
   idx_type v;
-  Polynomial extract(const PolyEntryVector& gen){
+  Polynomial extract(const PolyEntryVector& gen) const {
     return Monomial(Variable(v, gen[i].p.ring()))*gen[i].p;
   }
   VariablePairData(int i, idx_type v){

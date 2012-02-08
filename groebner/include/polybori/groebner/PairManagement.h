@@ -23,12 +23,127 @@
 #include "groebner_defs.h"
 #include "pairs.h"
 #include "PolyEntry.h"
+#include "ReductionStrategy.h"
 #include <polybori/routines/pbori_algo.h>
 
 
 #include <utility>
 
 BEGIN_NAMESPACE_PBORIGB
+
+class NextSpoly {
+public:
+
+  NextSpoly(ReductionStrategy& gen, PairStatusSet& status):
+    m_gen(gen), m_status(status) {}
+
+  Polynomial operator()(const Pair& act_pair) {
+    return compute(act_pair, act_pair.extract(m_gen));
+  }
+
+protected:
+  Polynomial compute(const Pair& act_pair, const Polynomial& result) {
+    if (act_pair.getType() == IJ_PAIR)
+      return compute(act_pair.ijPair(), result);
+    else
+      if (act_pair.getType() == VARIABLE_PAIR)
+        return compute(act_pair.variablePair(), result);
+    
+    return result;
+  }
+
+  Polynomial compute(const IJPairData& ij, const Polynomial& res) {
+    int i = ij.i, j = ij.j;
+    replacePair(i, j);
+    m_status.setToHasTRep(ij.i, ij.j);
+    if ((i != ij.i) || (ij.j != j)){
+      m_status.setToHasTRep(i,j);
+      return spoly(m_gen[i].p, m_gen[j].p);
+    }
+    return res;
+  }
+
+  Polynomial compute(const VariablePairData& vp, const Polynomial& res) {
+    m_gen(vp.i).vPairCalculated.insert(vp.v);
+    return (!res.isZero() && (res.lead() == m_gen[vp.i].lead)?
+            res + m_gen[vp.i].p: res);
+  }
+
+  void replacePair(int& first, int& second) {
+    MonomialSet m =
+      m_gen.leadingTerms.divisorsOf(m_gen[first].leadExp.LCM(m_gen[second].leadExp));
+    
+    replacePair(m.expBegin(), m.expEnd(), first, second);
+  }
+
+  template <class Iterator>
+  void replacePair(Iterator start, Iterator finish, int& first, int& second) {
+    std::pair<int, int> original(first, second);
+    while(start != finish)
+      replaceGenerators(m_gen.index(*start++), original, first, second);
+  }
+
+private:
+  void replaceGenerators(int index, std::pair<int, int> original,
+                         int& first, int& second) const {
+
+    if ((index != original.first) && (index != original.second)) {
+      replaceGenerator(index, original.first, first);
+      replaceGenerator(index, original.second, second);    
+    }
+    PBORI_ASSERT(first != second);
+  }
+
+  void replaceGenerator(int next, int original, int& current) const {
+    if (m_status.hasTRep(next, original) &&
+        (m_gen[current].weightedLength > m_gen[next].weightedLength) &&
+        (m_gen[next].ecart() <= m_gen[original].ecart()))
+      current = next;
+  }
+
+  ReductionStrategy& m_gen;
+  PairStatusSet& m_status;
+};
+
+template <class StrategyType>
+class CheckChainCriterion {
+public:
+  typedef StrategyType strategy_type;
+
+  CheckChainCriterion(strategy_type& strategy, PairStatusSet& status):
+    m_strategy(strategy), m_status(status) {}
+
+  /// Clean up @c current and return whether it has a T-representation
+  bool operator()(const Pair& current) {
+    switch (current.getType()) {
+    case IJ_PAIR: return compute(current.ijPair(), current.lm);
+    case VARIABLE_PAIR: return compute(current.variablePair());
+    }
+    return false;
+  }
+
+protected:
+  bool compute(const IJPairData& ij, const Exponent& exp) {
+    return m_status.hasTRep(ij.i, ij.j) || 
+      checkPairCriteria(exp, ij.i, ij.j);
+  }
+  
+  bool compute(const VariablePairData& vp) {
+    return m_strategy.checkVariableCriteria(vp.i, vp.v);
+  }
+  
+  bool checkPairCriteria(const Exponent& exp, int i, int j) {
+    if (m_strategy.checkPairCriteria(exp, i, j)) {
+      m_status.setToHasTRep(i, j);
+      return true;
+    }
+    return false;
+  }
+
+private:
+  strategy_type& m_strategy;
+  PairStatusSet& m_status;
+};
 
 
 /** @class PairManagement
@@ -41,7 +156,7 @@ class PairManagement {
   typedef StrategyType strategy_type;
 
 public:
-  typedef std::priority_queue<Pair,std::vector<PairE>, PairECompare> queue_type;
+  typedef std::priority_queue<Pair, std::vector<PairE>, PairECompare> queue_type;
 
   PairManagement(const BoolePolyRing& ring):
     queue(ring)  { }
@@ -49,128 +164,57 @@ public:
   void appendHiddenGenerators(std::vector<Polynomial>& vec) {
     queue_type temp(queue);
     while(!temp.empty()){
-      if (temp.top().getType() == DELAYED_PAIR) {
-	Polynomial pt = ((PolyPairData*) temp.top().data.get())->p;
-	if (!pt.isZero())
-	  vec.push_back(pt);
-      }
+      appendTo(vec, temp.top());
       temp.pop();
     }
   }
- 
+
   void introducePair(const Pair& pair) {
     if (!((strategy().optHFE) && (pair.getType() == IJ_PAIR) &&
 	  (pair.sugar > 4)))
       queue.push(pair);
   };
 
-  template<class Type>
-  Polynomial nextSpoly(Type& gen) {
-
-    if (UNLIKELY(pairSetEmpty())) 
+  Polynomial nextSpoly(ReductionStrategy& gen) {
+    if (UNLIKELY(pairSetEmpty()))
       return gen.leadingTerms.ring().zero();
 
-    Pair act_pair(queue.top());
-    queue.pop();
-    
-    if (act_pair.getType() == IJ_PAIR){
-      const IJPairData* ij= (IJPairData*)(act_pair.data.get());
-      int i = ij->i, j = ij->j;
-      
-      replacePair(gen, i, j);
-      status.setToHasTRep(ij->i, ij->j);
-      if ((i != ij->i) || (ij->j != j)){
-	status.setToHasTRep(i,j);
-	return spoly(gen[i].p, gen[j].p);
-      }
-    }
-    Polynomial res = act_pair.extract(gen);
-    if (act_pair.getType() == VARIABLE_PAIR) {
-      const VariablePairData *vp=(VariablePairData*)(act_pair.data.get());
-      gen(vp->i).vPairCalculated.insert(vp->v);
-      if (!res.isZero() && (res.lead() == gen[vp->i].lead))
-	res += gen[vp->i].p;
-    }
-    return res;
+    return NextSpoly(gen, status)(popped());
   }
 
   bool pairSetEmpty() const { return queue.empty(); }
 
-  void cleanTopByChainCriterion() {
-    while(!pairSetEmpty()) {
-      int id = queue.top().getType();
-      if (id == IJ_PAIR) {
-	if (finished(ijpair())) return;
-      }
-      else if (id == VARIABLE_PAIR) {
-	if (finished(variablepair())) return;
-      }
-      else 
-        return;
+  void cleanTopByChainCriterion() {  cleanTopByChainCriterion(strategy()); }
+
+  void cleanTopByChainCriterion(strategy_type& strat) {
+    CheckChainCriterion<strategy_type> continuing(strat, status);
+    while(!pairSetEmpty() && continuing(queue.top()))
       queue.pop();   
-    }
   }
 
   PairStatusSet status;
   queue_type queue;
 
 protected:
-  const IJPairData& ijpair() const {
-    return *((IJPairData*)queue.top().data.get());
-  }
-  const VariablePairData& variablepair() const {
-    return *((VariablePairData*)queue.top().data.get());
+
+  /// Append delayed pairs only
+   void appendTo(std::vector<Polynomial>& vec, const Pair& current) const {
+    if (current.getType() == DELAYED_PAIR)
+      appendTo(vec, current.delayedPair().p);
   }
 
-  bool finished(const IJPairData& ij) {
-    return !(status.hasTRep(ij.i, ij.j) || checkPairCriteria(ij.i, ij.j));
-  }
-  
-  bool finished(const VariablePairData& vp) {
-    return !strategy().checkVariableCriteria(vp.i, vp.v);
-  }
-  
-  bool checkPairCriteria(int i, int j) {
-    if (strategy().checkPairCriteria(queue.top().lm, i, j)) {
-      status.setToHasTRep(i, j);
-      return true;
-    }
-    return false;
+  /// Append nonzero polynomials only
+  void appendTo(std::vector<Polynomial>& vec, const Polynomial& poly) const {
+    if (!poly.isZero())
+      vec.push_back(poly);
   }
 
-  template <class Type>
-  void replacePair(const Type& gen, int& i, int& j){
-     MonomialSet m = 
-       gen.leadingTerms.divisorsOf(gen[i].leadExp.LCM(gen[j].leadExp));
-     MonomialSet::exp_iterator it=m.expBegin();
-     MonomialSet::exp_iterator end=m.expEnd();
-     int i_n=i;
-     int j_n=j;
-     while(it!=end){
-       Exponent curr=*it;
-       int index=gen.index(curr);
-       wlen_type curr_wl=gen[index].weightedLength;
-       if ((index!=i) && (index!=j)){
-         if ((status.hasTRep(index,i)) &&
-             (gen[i_n].weightedLength>curr_wl) &&
-             (gen[index].ecart()<=gen[i].ecart())){
-           i_n=index;
-         }
-         if ((status.hasTRep(index,j)) &&
-             (gen[j_n].weightedLength>curr_wl) &&
-             (gen[index].ecart()<=gen[j].ecart())
-             ){
-           j_n=index;
-         }
-       }
-       ++it;
-     }
-     PBORI_ASSERT(i_n!=j_n);
-     if (i_n!=j_n){
-       i=i_n;
-       j=j_n;
-     }
-   }
+  /// @c top() and @c pop() at once
+  Pair popped() {
+    Pair result = queue.top();
+    queue.pop();
+    return result;
+  }
 
   strategy_type& strategy() { return static_cast<strategy_type&>(*this); }
   const strategy_type& strategy() const { 

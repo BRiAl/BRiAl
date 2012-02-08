@@ -32,7 +32,7 @@ public:
   //gives back encoded
   virtual ~PairData() {}
   //we don't demand that the pair is in a consistent state later
-  virtual Polynomial extract(const PolyEntryVector& v)=0;
+  virtual Polynomial extract(const PolyEntryVector& v) const =0;
 };
 
 END_NAMESPACE_PBORIGB

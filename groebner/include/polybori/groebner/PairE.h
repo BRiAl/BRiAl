@@ -44,7 +44,7 @@ public:
     data(rhs.data), lm(rhs.lm) {}
 
 
-  Polynomial extract(const PolyEntryVector& v){
+  Polynomial extract(const PolyEntryVector& v) const {
     return data->extract(v);
   }
   PairE(int i, int j, const PolyEntryVector &v):
@@ -78,7 +78,20 @@ public:
     sugar(delayed.deg()), wlen(delayed.eliminationLength()){
       this->type=DELAYED_PAIR;
   }
-  
+
+  const PolyPairData& delayedPair() const {
+    PBORI_ASSERT(type == DELAYED_PAIR);
+    return *static_cast<const PolyPairData*>(data.get());
+  }
+
+  const IJPairData& ijPair() const {
+    PBORI_ASSERT(type == IJ_PAIR);
+    return *static_cast<const IJPairData*>(data.get());
+  }
+
+  const VariablePairData& variablePair() const {
+    return *static_cast<const VariablePairData*>(data.get());
+  }
 };
 
 END_NAMESPACE_PBORIGB

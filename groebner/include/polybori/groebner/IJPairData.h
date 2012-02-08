@@ -29,7 +29,7 @@ class IJPairData: public PairData{
 public:
   int i;
   int j;
-  Polynomial extract(const PolyEntryVector& v){
+  Polynomial extract(const PolyEntryVector& v) const {
     return spoly(v[i].p,v[j].p);
   }
   IJPairData(int i, int j){
