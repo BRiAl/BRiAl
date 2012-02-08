@@ -132,7 +132,7 @@ reduce_by_small_entry(const Polynomial& poly, const PolyEntry& entry) {
           reduce_by_binom_in_tail(poly, entry.p));
 }
 
-void GroebnerStrategy::propagate_step(entryset_type& others) {
+void GroebnerStrategy::propagateStep(entryset_type& others) {
 
   const PolyEntry& entry = *(*others.begin());
   others.erase(others.begin());
@@ -151,13 +151,13 @@ GroebnerStrategy::exchange(const Polynomial& reduced, const PolyEntry& entry,
 			   entryset_type& others) {
 
   if (reduced != entry.p) {
-    update_propagated(generators(entry) = reduced);
+    updatePropagated(generators(entry) = reduced);
     others.insert(&entry);
   }
 }
 
 void
-GroebnerStrategy::update_propagated(const PolyEntry& entry) {
+GroebnerStrategy::updatePropagated(const PolyEntry& entry) {
 
   generators.monomials.update(entry);
   if ( (entry.length == 2) && (entry.ecart() == 0))
@@ -171,7 +171,7 @@ void GroebnerStrategy::propagate(const PolyEntry& e){
   entries.insert(&e);
 
   while (!entries.empty())
-    propagate_step(entries);
+    propagateStep(entries);
 
 }
 
@@ -640,7 +640,7 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
   }
 }
 
-bool GroebnerStrategy::shorter_elimination(const MonomialSet& divisors, wlen_type el,
+bool GroebnerStrategy::shorterElimination(const MonomialSet& divisors, wlen_type el,
                                            MonomialSet::deg_type deg) const {
   return std::find_if(divisors.expBegin(),divisors.expEnd(),
                       ShorterEliminationLengthModified(*this, el, deg))
@@ -654,7 +654,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
 
     if ( (optDelayNonMinimals && !divisors.isZero()) || 
          divisors.owns(Monomial(lm_exp, p.ring())) ||
-         shorter_elimination(divisors, p.eliminationLength(), deg) )
+         shorterElimination(divisors, p.eliminationLength(), deg) )
       addGeneratorDelayed(p);
 
     else {
@@ -662,7 +662,7 @@ void GroebnerStrategy::addAsYouWish(const Polynomial& p){
         which(generators.optRedTail, red_tail(generators, p),
               optRedTailInLastBlock, red_tail_in_last_block(*this, p), p);
            
-      if ((pred != p) && shorter_elimination(divisors, pred.eliminationLength(), deg)) 
+      if ((pred != p) && shorterElimination(divisors, pred.eliminationLength(), deg)) 
         addGeneratorDelayed(pred);
       else if (divisors.isZero())
         addGeneratorTrySplit(pred, true);

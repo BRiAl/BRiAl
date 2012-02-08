@@ -39,7 +39,7 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class GroebnerStrategy:
-  public GroebnerOptions, public PairManagement<GroebnerStrategy> {
+  public GroebnerOptions, protected PairManagement<GroebnerStrategy> {
 
   typedef GroebnerStrategy self;
 public:
@@ -162,9 +162,9 @@ private:
 
   typedef std::set<const PolyEntry*, PolyEntryPtrLmLess> entryset_type;
 
-  void propagate_step(entryset_type& others);
+  void propagateStep(entryset_type& others);
   void exchange(const Polynomial&, const PolyEntry&, entryset_type&);
-  void update_propagated(const PolyEntry& entry);
+  void updatePropagated(const PolyEntry& entry);
 
 
   // product criterion doesn't hold - try length 1 crit
@@ -197,7 +197,7 @@ private:
     pairs.status.setToUncalculated(generators.index(key), generators.size());
   }
 
-  bool shorter_elimination(const MonomialSet& divisors, wlen_type el,
+  bool shorterElimination(const MonomialSet& divisors, wlen_type el,
                            MonomialSet::deg_type deg) const;
 public:
   /// @name public available parameters
