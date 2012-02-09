@@ -25,6 +25,44 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
+/** @class PairManagerWithStrategy
+ * @brief This class defines PairManagement.
+ *
+ * It defines variants of @c PairManager::cleanTopByChainCriterion() and 
+ * @c PairManager::introducePair(pair) with explicit statement of the strategy.
+ *
+ * @note This is done better in @c PairManagement without storing an
+ * additional reference. For now - to keep the interface constant - we continue
+ * to allow code like @c strat.pairs.cleanTopByChainCriterion() and
+ * @c strat.pairs.introducePair(pair) .
+ **/
+template <class StrategyType>
+class PairManagerWithStrategy:
+  public PairManager {
+
+public:
+  PairManagerWithStrategy(const PairManager& mgr, StrategyType& strategy):
+    PairManager(mgr), m_strategy(strategy) { }
+
+  /// Unhiding the appreciated variant @c cleanTopByChainCriterion(strategy)
+  using PairManager::cleanTopByChainCriterion;
+
+  /// @note Deprecated, use @c PairManagement::cleanTopByChainCriterion() instead
+  void cleanTopByChainCriterion() { cleanTopByChainCriterion(m_strategy); }
+
+  /// @note Deprecated, use @c PairManagement::introducePair(pair) instead
+  void introducePair(const Pair& pair) { introducePair(pair, isHFE()); };
+
+  /// Unhiding the appreciated variant @c introducePair(pair, isHFE)
+  using PairManager::introducePair;
+
+protected:
+  bool isHFE() const { return m_strategy.optHFE; }
+
+private:
+  StrategyType& m_strategy;
+};
+
 /** @class PairManagement
  * @brief This class defines PairManagement.
  *
@@ -37,48 +75,20 @@ class PairManagement {
 public:
 
   PairManagement(const BoolePolyRing& ring):
-    m_pairs(ring), queue(m_pairs.queue), status(m_pairs.status), 
-    pairs(*this)  { }
+    pairs(ring, get()) {}
 
   PairManagement(const self& rhs):
-    m_pairs(rhs.m_pairs), queue(m_pairs.queue), status(m_pairs.status),
-    pairs(*this)  { }
+    pairs(rhs.pairs, get()) { }
 
-  void appendHiddenGenerators(std::vector<Polynomial>& vec) {
-    m_pairs.appendHiddenGenerators(vec);
-  }
 
-  void introducePair(const Pair& pair) {
-    if (!((strategy().optHFE) && (pair.getType() == IJ_PAIR) &&
-	  (pair.sugar > 4)))
-      m_pairs.introduce(pair);
-  };
+  void cleanTopByChainCriterion() { pairs.cleanTopByChainCriterion(get()); }
+  void introducePair(const Pair& pair) { pairs.introducePairs(pair, isHFE()); }
 
-  Polynomial nextSpoly(ReductionStrategy& gen) {
-    return m_pairs.nextSpoly(gen);
-  }
-  bool pairSetEmpty() const { return m_pairs.pairSetEmpty(); }
-
-  void cleanTopByChainCriterion() {  cleanTopByChainCriterion(strategy()); }
-
-  void cleanTopByChainCriterion(strategy_type& strat) {
-    m_pairs.cleanTopByChainCriterion(strat);   
-  }
-
-  /// @name Just for keeping the interface constant - @todo for now
-  //@{
-  PairStatusSet& status;
-  self& pairs;
-  PairManager::queue_type& queue;
-  //@}
+  PairManagerWithStrategy<strategy_type> pairs;
 
 private:
-  strategy_type& strategy() { return static_cast<strategy_type&>(*this); }
-  const strategy_type& strategy() const { 
-    return static_cast<const strategy_type&>(*this); 
-  }
-  
-  PairManager m_pairs;
+  bool isHFE() const { return get().optHFE; }
+  strategy_type& get() { return static_cast<strategy_type&>(*this); }
 };
 
 END_NAMESPACE_PBORIGB

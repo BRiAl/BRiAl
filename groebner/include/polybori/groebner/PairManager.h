@@ -52,7 +52,9 @@ public:
     }
   }
 
-  void introduce(const Pair& pair) { queue.push(pair); };
+  void introducePair(const Pair& pair, bool isHFE) {  
+    if (!skip(pair, isHFE)) queue.push(pair);
+  };  
 
   Polynomial nextSpoly(ReductionStrategy& gen) {
     if (UNLIKELY(pairSetEmpty()))
@@ -74,7 +76,17 @@ public:
   queue_type queue;
 
 protected:
+  /// @c top() and @c pop() at once
+  Pair popped() {
+    Pair result = queue.top();
+    queue.pop();
+    return result;
+  }
 
+private:
+  bool skip(const Pair& pair, bool isHFE) {
+    return isHFE && (pair.getType() == IJ_PAIR) && (pair.sugar > 4);
+  };
   /// Append delayed pairs only
    void appendTo(std::vector<Polynomial>& vec, const Pair& current) const {
     if (current.getType() == DELAYED_PAIR)
@@ -85,13 +97,6 @@ protected:
   void appendTo(std::vector<Polynomial>& vec, const Polynomial& poly) const {
     if (!poly.isZero())
       vec.push_back(poly);
-  }
-
-  /// @c top() and @c pop() at once
-  Pair popped() {
-    Pair result = queue.top();
-    queue.pop();
-    return result;
   }
 };
 
