@@ -20,7 +20,7 @@
 #include "pairs.h"
 #include "cache_manager.h"
 
-#include "PairManagement.h"
+#include "PairManagerFacade.h"
 #include "ReductionStrategy.h"
 #include "groebner_defs.h"
 #include "PolyEntryPtrLmLess.h"
@@ -39,7 +39,7 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 class GroebnerStrategy:
-  public GroebnerOptions, public PairManagement<GroebnerStrategy> {
+  public GroebnerOptions, public PairManagerFacade<GroebnerStrategy> {
 
   typedef GroebnerStrategy self;
 public:
@@ -50,7 +50,7 @@ public:
   GroebnerStrategy(const BoolePolyRing& input_ring):
     GroebnerOptions(input_ring.ordering().isBlockOrder(), 
                     !input_ring.ordering().isDegreeOrder()),
-    PairManagement<GroebnerStrategy>(input_ring),
+    PairManagerFacade<GroebnerStrategy>(input_ring),
     generators(input_ring),
 
     cache(new CacheManager()),
