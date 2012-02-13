@@ -70,7 +70,7 @@ MMout_of_memory(long size)
     (void) fflush(stdout);
     (void) fprintf(stderr, "\nout of memory allocating %u bytes\n",
 		   (unsigned) size);
-    exit(1);
+    abort();
 }
 
 static inline char*

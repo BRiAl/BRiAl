@@ -16,7 +16,7 @@
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
 %define pbori_tmpdoc docs
-%define pbori_scons scons %{?jobs:-j%jobs} CUSTOM_LINKFLAGS="-s"
+%define pbori_scons scons %{?jobs:-j%jobs} LINKFLAGS="-s"
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
@@ -24,7 +24,7 @@
 %define pbori_m4ri_devel m4ri-devel
 %endif
 
-#Note: boost of SLES10 is too old
+#Note: boost-test of SLES10 is too old
 %if 0%{?suse_version}
 %define pbori_check %{suse_version} >= 1100
 %else
@@ -68,6 +68,7 @@ strategies for Groebner base computation.
 Summary: Documentation package for %{name}
 Group: Documentation/Other
 Requires: %{name} = %{version}
+Requires: locales-doc
 
 %description doc
 This package contains the documentation and tutorial of %{name}.
@@ -77,6 +78,7 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Productivity/Scientific/Math
+Requires:       %{name}-libs = %{version}
 %if %{defined suse_version}
 Requires: python-base = %{py_ver} %{?pbori_m4ri}
 %endif
@@ -86,12 +88,19 @@ This package contains the python core routines of %{name}.
 It incorporates code from CUDD and M4RI.
 
 
+%package        libs
+Summary:        Core libraries for %{name}
+Group:          Productivity/Scientific/Math
+
+%description    libs
+Core libraries for %{name}.
+
 
 %package        gui
 Summary:        Qt GUI for %{name}
 Group:          Productivity/Scientific/Math
-Requires:       %{name} = %{version}
-Requires:       PyQt4
+Requires:       python-%{name} = %{version}
+Requires:       PyQt4 locales-gui
 
 %description    gui
 Qt GUI for %{name}.
@@ -101,7 +110,7 @@ Qt GUI for %{name}.
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries
-Requires:       %{name} = %{version}
+Requires:       %{name}-libs = %{version}
 Requires:       boost-devel %{?pbori_m4ri_devel}
 
 %description    devel
@@ -126,11 +135,11 @@ Static libraries for %{name}.
 %build
 %{pbori_scons} prepare-install prepare-devel
 
-%if %{pbori_check}
 %check
+%if %{pbori_check}
 %{pbori_scons} testsuite && testsuite/unittests
-ipbori/ipbori -t
 %endif
+ipbori/ipbori -t
 
 %install
 %{pbori_scons} install devel-install \
@@ -150,15 +159,19 @@ ipbori/ipbori -t
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post devel -p /sbin/ldconfig
-%postun devel -p /sbin/ldconfig
+%post libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
 %attr(755, root, root) %{_bindir}/ipbori
 %attr(644,root,man) %{_mandir}/man1/ipbori.1*
-%{pbori_instdir}
+%{pbori_instdir}/ipbori
 %doc README LICENSE ChangeLog
+
+%files libs
+%defattr(-,root,root,-)
+%attr(755, root, root) %{_libdir}/libpolybori*.so.*
 
 %files -n python-%{name}
 %defattr(-,root,root,-)
@@ -170,13 +183,14 @@ rm -rf $RPM_BUILD_ROOT
 %doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
 
 %files gui
+%defattr(-,root,root,-)
 %attr(755, root, root) %{_bindir}/PolyGUI
 %attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
-
+%{pbori_instdir}/gui
 
 %files devel
 %defattr(-,root,root,-)
-%attr(755, root, root) %{_libdir}/libpolybori*.so*
+%attr(755, root, root) %{_libdir}/libpolybori*.so
 %{_includedir}/polybori
 %{_includedir}/polybori.h
 
@@ -185,8 +199,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> $PBVERSION.$PBRELEASE-0
+- Latest sources (PolyBoRi $PBVERSION.$PBRELEASE)
+* Mon Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> - 
+- Libraries moved to libs package.
 * Wed Aug 17 2011 Alexander Dreyer <adreyer@gmx.de> - 
-- Latest sources (PolyBoRi $PBVERSION.$PBRELEASE-0).
+- Releasing PolyBoRi 0.8.0.
 * Tue Aug 16 2011 Alexander Dreyer <adreyer@gmx.de> - 
 - Adding -devel, -gui-and -static packages.
 * Tue Apr 26 2011 Alexander Dreyer <adreyer@gmx.de> - 
