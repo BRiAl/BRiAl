@@ -24,7 +24,7 @@ def pkey(p):
     return (p[0],len(p))
 mat_counter=0
 def build_and_print_matrices(v,strat):
-    """"old solution using PIL, the currently used implementation is done in C++
+    """old solution using PIL, the currently used implementation is done in C++
     and plots the same matrices, as being calculated"""
     treated=BooleSet()
     v=list(v)
