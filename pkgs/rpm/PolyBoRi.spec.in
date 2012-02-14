@@ -166,6 +166,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %attr(755, root, root) %{_bindir}/ipbori
 %attr(644,root,man) %{_mandir}/man1/ipbori.1*
+%{pbori_instdir}
 %{pbori_instdir}/ipbori
 %doc README LICENSE ChangeLog
 

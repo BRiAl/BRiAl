@@ -247,10 +247,15 @@ def fix_ring():
         return _cpp_append_block(self, next_block_start)    
 
     _append_block.__doc__ += _cpp_append_block.__doc__
-    _change_ordering.__doc__ += _cpp_change_ordering.__doc__
-    _ring_clone.__doc__ += _cpp_ring_clone.__doc__
-    ring_var.__doc__ += old_ring_var.__doc__
-    _set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
+
+    if _cpp_change_ordering.__doc__:
+        _change_ordering.__doc__ += _cpp_change_ordering.__doc__
+    if _cpp_ring_clone.__doc__:
+        _ring_clone.__doc__ += _cpp_ring_clone.__doc__
+    if old_ring_var.__doc__:
+        ring_var.__doc__ += old_ring_var.__doc__
+    if _cpp_set_variable_name.__doc__:
+        _set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
 
     Ring.__init__ = _ring_init
     Ring.var=ring_var
