@@ -12,7 +12,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -71,7 +71,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] UTIL_UNUSED = "$Id$";
+static char rcsid[] UTIL_UNUSED = "$Id: main.c,v 1.41 2012/02/05 01:53:01 fabio Exp fabio $";
 #endif
 
 static  char    buffer[BUFLENGTH];
@@ -986,9 +986,11 @@ ntrReadOptions(
 	    option->dumpFmt = 3; /* DDcal */
 	} else if (STRING_EQUAL(argv[i],"-dumpfact")) {
 	    option->dumpFmt = 4; /* factored form */
+	} else if (STRING_EQUAL(argv[i],"-dumpmv")) {
+	    option->dumpFmt = 5; /* blif-MV */
 	} else if (STRING_EQUAL(argv[i],"-store")) {
 	    i++;
-	    option->store = (int) atoi(argv[i]);   
+	    option->store = (int) atoi(argv[i]);
 	} else if (STRING_EQUAL(argv[i],"-storefile")) {
 	    i++;
 	    option->storefile = util_strsav(argv[i]);
@@ -1017,7 +1019,7 @@ ntrReadOptions(
 	    (void) printf(" %s", argv[i]);
 	}
 	(void) printf("\n");
-        (void) printf("# CUDD Version ");
+	(void) printf("# CUDD Version ");
 	Cudd_PrintVersion(stdout);
 	(void) fflush(stdout);
     }
@@ -1075,7 +1077,7 @@ ntrReadOptionsFile(
     index = 1;
     line = readLine(fp);
     flag = TRUE;
-    
+
     do {
 	c = *line;
 	if ( c == ' ')  {
@@ -1084,12 +1086,12 @@ ntrReadOptionsFile(
 	} else if ( c != ' ' && flag == TRUE) {
 	    flag = FALSE;
 	    slot[index] = line;
-	    index++; 
+	    index++;
 	}
 	line++;
     } while ( *line != '\0');
 
-    
+
     *argv = slot;
     *argc = index;
 
@@ -1141,7 +1143,7 @@ readLine(
 	    c = getc(fp);
 	    continue;
 	}
-	*pbuffer = c;
+	*pbuffer = (char) c;
 	pbuffer++;
 	c = getc(fp);
     } while( c != '\n' &&  c != EOF);
@@ -1171,10 +1173,10 @@ open_file(
     FILE *fp;
 
     if (strcmp(filename, "-") == 0) {
-        return mode[0] == 'r' ? stdin : stdout;
+	return mode[0] == 'r' ? stdin : stdout;
     } else if ((fp = fopen(filename, mode)) == NULL) {
-        perror(filename);
-        exit(1);
+	perror(filename);
+	exit(1);
     }
     return(fp);
 

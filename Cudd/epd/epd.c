@@ -44,7 +44,7 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.]
 
-  Revision    [$Id$]
+  Revision    [$Id: epd.c,v 1.10 2004/08/13 18:20:30 fabio Exp $]
 
 ******************************************************************************/
 

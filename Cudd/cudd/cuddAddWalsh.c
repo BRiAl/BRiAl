@@ -19,7 +19,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -77,7 +77,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddAddWalsh.c,v 1.11 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 
@@ -363,7 +363,7 @@ addWalshInt(
 	Cudd_RecursiveDeref(dd, v);
 	if (i>0) {
 	    w = Cudd_addIte(dd, y[i], u1, t1);
-	    if (u == NULL) {
+	    if (w == NULL) {
 		Cudd_RecursiveDeref(dd, u1);
 		Cudd_RecursiveDeref(dd, t1);
 		Cudd_RecursiveDeref(dd, u);

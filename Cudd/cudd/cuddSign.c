@@ -4,7 +4,7 @@
 
   PackageName [cudd]
 
-  Synopsis    [Computation of signatures]
+  Synopsis    [Computation of signatures.]
 
   Description [External procedures included in this module:
 		    <ul>
@@ -18,7 +18,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -76,7 +76,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddSign.c,v 1.24 2012/02/05 01:07:19 fabio Exp $";
 #endif
 
 static int    size;
@@ -134,7 +134,7 @@ Cudd_CofMinterm(
     int		i, firstLevel;
 
 #ifdef DD_STATS
-    long startTime;
+    unsigned long startTime;
     startTime = util_cpu_time();
     num_calls = 0;
     table_mem = sizeof(st_table);
@@ -180,7 +180,7 @@ Cudd_CofMinterm(
     st_free_table(table);
 #ifdef DD_STATS
     (void) fprintf(dd->out,"Number of calls: %d\tTable memory: %d bytes\n",
-   		  num_calls, table_mem);
+		  num_calls, table_mem);
     (void) fprintf(dd->out,"Time to compute measures: %s\n",
 		  util_print_time(util_cpu_time() - startTime));
 #endif
@@ -316,4 +316,3 @@ ddCofMintermAux(
     return(values);
 
 } /* end of ddCofMintermAux */
-

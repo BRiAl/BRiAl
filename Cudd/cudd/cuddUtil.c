@@ -19,9 +19,11 @@
 		<li> Cudd_EpdCountMinterm()
 		<li> Cudd_CountPath()
 		<li> Cudd_CountPathsToNonZero()
+                <li> Cudd_SupportIndices()
 		<li> Cudd_Support()
 		<li> Cudd_SupportIndex()
 		<li> Cudd_SupportSize()
+		<li> Cudd_VectorSupportIndices()
 		<li> Cudd_VectorSupport()
 		<li> Cudd_VectorSupportIndex()
 		<li> Cudd_VectorSupportSize()
@@ -67,11 +69,14 @@
 		<li> ddPickArbitraryMinterms()
 		<li> ddPickRepresentativeCube()
 		<li> ddEpdFree()
+                <li> ddFindSupport()
+                <li> ddClearVars()
+                <li> indexCompare()
 		</ul>]
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -138,7 +143,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddUtil.c,v 1.83 2012/02/05 01:07:19 fabio Exp $";
 #endif
 
 static	DdNode	*background, *zero;
@@ -146,7 +151,7 @@ static	DdNode	*background, *zero;
 static	long cuddRand = 0;
 static	long cuddRand2;
 static	long shuffleSelect;
-static 	long shuffleTable[STAB_SIZE];
+static	long shuffleTable[STAB_SIZE];
 
 /*---------------------------------------------------------------------------*/
 /* Macro declarations                                                        */
@@ -179,8 +184,11 @@ static void ddSupportStep (DdNode *f, int *support);
 static void ddClearFlag (DdNode *f);
 static int ddLeavesInt (DdNode *n);
 static int ddPickArbitraryMinterms (DdManager *dd, DdNode *node, int nvars, int nminterms, char **string);
-static int ddPickRepresentativeCube (DdManager *dd, DdNode *node, int nvars, double *weight, char *string);
+static int ddPickRepresentativeCube (DdManager *dd, DdNode *node, double *weight, char *string);
 static enum st_retval ddEpdFree (char * key, char * value, char * arg);
+static void ddFindSupport(DdManager *dd, DdNode *f, int *SP);
+static void ddClearVars(DdManager *dd, int SP);
+static int indexCompare(const void *a, const void *b);
 
 /**AutomaticEnd***************************************************************/
 
@@ -338,8 +346,8 @@ Cudd_bddPrintCover(
     FREE(array);
 #ifdef DD_DEBUG
     if (!Cudd_bddLeq(dd,cover,u) || !Cudd_bddLeq(dd,l,cover)) {
-        Cudd_RecursiveDeref(dd,cover);
-        return(0);
+	Cudd_RecursiveDeref(dd,cover);
+	return(0);
     }
     Cudd_RecursiveDeref(dd,cover);
 #endif
@@ -408,14 +416,14 @@ Cudd_PrintDebug(
 	if (minterms == (double)CUDD_OUT_OF_MEM) retval = 0;
 	(void) fprintf(dd->out,": %d nodes %d leaves %g minterms\n",
 		       nodes, leaves, minterms);
-        if (pr > 2) {
+	if (pr > 2) {
 	    if (!cuddP(dd, f)) retval = 0;
 	}
 	if (pr == 2 || pr > 3) {
 	    if (!Cudd_PrintMinterm(dd,f)) retval = 0;
 	    (void) fprintf(dd->out,"\n");
 	}
-        (void) fflush(dd->out);
+	(void) fflush(dd->out);
     }
     return(retval);
 
@@ -438,7 +446,7 @@ int
 Cudd_DagSize(
   DdNode * node)
 {
-    int	i;	
+    int	i;
 
     i = ddDagInt(Cudd_Regular(node));
     ddClearFlag(Cudd_Regular(node));
@@ -459,7 +467,7 @@ Cudd_DagSize(
   This function uses a refinement of the algorithm of Cabodi et al.
   (ICCAD96). The refinement allows the procedure to account for part
   of the recombination that may occur in the part of the cofactor above
-  the cofactoring variable. This procedure does no create any new node.
+  the cofactoring variable. This procedure does not create any new node.
   It does keep a small table of results; therefore it may run out of memory.
   If this is a concern, one should use Cudd_EstimateCofactorSimple, which
   is faster, does not allocate any memory, but is less accurate.]
@@ -514,7 +522,7 @@ Cudd_EstimateCofactorSimple(
   DdNode * node,
   int i)
 {
-    int	val;	
+    int	val;
 
     val = cuddEstimateCofactorSimple(Cudd_Regular(node),i);
     ddClearFlag(Cudd_Regular(node));
@@ -541,7 +549,7 @@ Cudd_SharingSize(
   DdNode ** nodeArray,
   int  n)
 {
-    int	i,j;	
+    int	i,j;
 
     i = 0;
     for (j = 0; j < n; j++) {
@@ -583,7 +591,7 @@ Cudd_CountMinterm(
 
     background = manager->background;
     zero = Cudd_Not(manager->one);
-    
+
     max = pow(2.0,(double)nvars);
     table = cuddHashTableInit(manager,1,2);
     if (table == NULL) {
@@ -621,7 +629,7 @@ Cudd_CountPath(
 {
 
     st_table	*table;
-    double	i;	
+    double	i;
 
     table = st_init_table(st_ptrcmp,st_ptrhash);
     if (table == NULL) {
@@ -662,7 +670,7 @@ Cudd_EpdCountMinterm(
 
     background = manager->background;
     zero = Cudd_Not(manager->one);
-    
+
     EpdPow2(nvars, &max);
     table = st_init_table(EpdCmp, st_ptrhash);
     if (table == NULL) {
@@ -677,8 +685,8 @@ Cudd_EpdCountMinterm(
 	return(CUDD_OUT_OF_MEM);
     }
     if (Cudd_IsComplement(node)) {
-    	EpdSubtract3(&max, epd, &tmp);
-    	EpdCopy(&tmp, epd);
+	EpdSubtract3(&max, epd, &tmp);
+	EpdCopy(&tmp, epd);
     }
     return(0);
 
@@ -705,7 +713,7 @@ Cudd_CountPathsToNonZero(
 {
 
     st_table	*table;
-    double	i;	
+    double	i;
 
     table = st_init_table(st_ptrcmp,st_ptrhash);
     if (table == NULL) {
@@ -719,6 +727,51 @@ Cudd_CountPathsToNonZero(
 } /* end of Cudd_CountPathsToNonZero */
 
 #ifdef CUDD_ORIGINAL_INCLUSION
+/**Function********************************************************************
+
+  Synopsis    [Finds the variables on which a DD depends.]
+
+  Description [Finds the variables on which a DD depends.  Returns the
+  number of variables if successful; CUDD_OUT_OF_MEM otherwise.]
+
+  SideEffects [The indices of the support variables are returned as
+  side effects.  If the function is constant, no array is allocated.]
+
+  SeeAlso     [Cudd_Support Cudd_SupportIndex Cudd_VectorSupportIndices]
+
+******************************************************************************/
+int
+Cudd_SupportIndices(
+  DdManager * dd /* manager */,
+  DdNode * f /* DD whose support is sought */,
+  int **indices /* array containing (on return) the indices */)
+{
+    int SP = 0;
+
+    ddFindSupport(dd, Cudd_Regular(f), &SP);
+    ddClearFlag(Cudd_Regular(f));
+    ddClearVars(dd, SP);
+    if (SP > 0) {
+        int i;
+        *indices = ALLOC(int, SP);
+        if (*indices == NULL) {
+            dd->errorCode = CUDD_MEMORY_OUT;
+            return(CUDD_OUT_OF_MEM);
+        }
+
+        for (i = 0; i < SP; i++)
+            (*indices)[i] = (int) (ptrint) dd->stack[i];
+
+        qsort(*indices, SP, sizeof(int), indexCompare);
+    } else {
+        *indices = NULL;
+    }
+
+    return(SP);
+
+} /* end of Cudd_SupportIndices */
+
+
 /**Function********************************************************************
 
   Synopsis    [Finds the variables on which a DD depends.]
@@ -738,55 +791,33 @@ Cudd_Support(
   DdNode * f /* DD whose support is sought */)
 {
     int	*support;
-    DdNode *res, *tmp, *var;
-    int	i,j;
-    int size;
+    DdNode *res;
+    int j;
 
-    /* Allocate and initialize support array for ddSupportStep. */
-    size = ddMax(dd->size, dd->sizeZ);
-    support = ALLOC(int,size);
-    if (support == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	return(NULL);
+    int size = Cudd_SupportIndices(dd, f, &support);
+    if (size == CUDD_OUT_OF_MEM)
+        return(NULL);
+
+    /* Transform support from array of indices to cube. */
+    res = DD_ONE(dd);
+    cuddRef(res);
+    
+    for (j = size - 1; j >= 0; j--) { /* for each index bottom-up (almost) */
+        int index = support[j];
+        DdNode *var = dd->vars[index];
+        DdNode *tmp = Cudd_bddAnd(dd,res,var);
+        if (tmp == NULL) {
+            Cudd_RecursiveDeref(dd,res);
+            FREE(support);
+            return(NULL);
+        }
+        cuddRef(tmp);
+        Cudd_RecursiveDeref(dd,res);
+        res = tmp;
     }
-    for (i = 0; i < size; i++) {
-	support[i] = 0;
-    }
-
-    /* Compute support and clean up markers. */
-    ddSupportStep(Cudd_Regular(f),support);
-    ddClearFlag(Cudd_Regular(f));
-
-    /* Transform support from array to cube. */
-    do {
-	dd->reordered = 0;
-	res = DD_ONE(dd);
-	cuddRef(res);
-	for (j = size - 1; j >= 0; j--) { /* for each level bottom-up */
-	    i = (j >= dd->size) ? j : dd->invperm[j];
-	    if (support[i] == 1) {
-	        /* The following call to cuddUniqueInter is guaranteed
-		** not to trigger reordering because the node we look up
-		** already exists. */ 
-		var = cuddUniqueInter(dd,i,dd->one,Cudd_Not(dd->one));
-		cuddRef(var);
-		tmp = cuddBddAndRecur(dd,res,var);
-		if (tmp == NULL) {
-		    Cudd_RecursiveDeref(dd,res);
-		    Cudd_RecursiveDeref(dd,var);
-		    res = NULL;
-		    break;
-		}
-		cuddRef(tmp);
-		Cudd_RecursiveDeref(dd,res);
-		Cudd_RecursiveDeref(dd,var);
-		res = tmp;
-	    }
-	}
-    } while (dd->reordered == 1);
 
     FREE(support);
-    if (res != NULL) cuddDeref(res);
+    cuddDeref(res);
     return(res);
 
 } /* end of Cudd_Support */
@@ -804,7 +835,7 @@ Cudd_Support(
 
   SideEffects [None]
 
-  SeeAlso     [Cudd_Support Cudd_VectorSupport Cudd_ClassifySupport]
+  SeeAlso     [Cudd_Support Cudd_SupportIndices Cudd_ClassifySupport]
 
 ******************************************************************************/
 int *
@@ -840,13 +871,11 @@ Cudd_SupportIndex(
 
   Synopsis    [Counts the variables on which a DD depends.]
 
-  Description [Counts the variables on which a DD depends.
-  Returns the number of the variables if successful; CUDD_OUT_OF_MEM
-  otherwise.]
+  Description [Returns the variables on which a DD depends.]
 
   SideEffects [None]
 
-  SeeAlso     [Cudd_Support]
+  SeeAlso     [Cudd_Support Cudd_SupportIndices]
 
 ******************************************************************************/
 int
@@ -854,36 +883,69 @@ Cudd_SupportSize(
   DdManager * dd /* manager */,
   DdNode * f /* DD whose support size is sought */)
 {
-    int	*support;
-    int	i;
-    int size;
-    int count;
+    int SP = 0;
 
-    /* Allocate and initialize support array for ddSupportStep. */
-    size = ddMax(dd->size, dd->sizeZ);
-    support = ALLOC(int,size);
-    if (support == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	return(CUDD_OUT_OF_MEM);
-    }
-    for (i = 0; i < size; i++) {
-	support[i] = 0;
-    }
-
-    /* Compute support and clean up markers. */
-    ddSupportStep(Cudd_Regular(f),support);
+    ddFindSupport(dd, Cudd_Regular(f), &SP);
     ddClearFlag(Cudd_Regular(f));
+    ddClearVars(dd, SP);
 
-    /* Count support variables. */
-    count = 0;
-    for (i = 0; i < size; i++) {
-	if (support[i] == 1) count++;
-    }
-
-    FREE(support);
-    return(count);
+    return(SP);
 
 } /* end of Cudd_SupportSize */
+
+
+/**Function********************************************************************
+
+  Synopsis    [Finds the variables on which a set of DDs depends.]
+
+  Description [Finds the variables on which a set of DDs depends.  The
+  set must contain either BDDs and ADDs, or ZDDs.  Returns the number
+  of variables if successful; CUDD_OUT_OF_MEM otherwise.]
+
+  SideEffects [The indices of the support variables are returned as
+  side effects.  If the function is constant, no array is allocated.]
+
+  SeeAlso     [Cudd_Support Cudd_SupportIndex Cudd_VectorSupportIndices]
+
+******************************************************************************/
+int
+Cudd_VectorSupportIndices(
+  DdManager * dd /* manager */,
+  DdNode ** F /* DD whose support is sought */,
+  int  n /* size of the array */,
+  int **indices /* array containing (on return) the indices */)
+{
+    int i;
+    int SP = 0;
+
+    /* Compute support and clean up markers. */
+    for (i = 0; i < n; i++) {
+	ddFindSupport(dd, Cudd_Regular(F[i]), &SP);
+    }
+    for (i = 0; i < n; i++) {
+	ddClearFlag(Cudd_Regular(F[i]));
+    }
+    ddClearVars(dd, SP);
+
+    if (SP > 0) {
+        int i;
+        *indices = ALLOC(int, SP);
+        if (*indices == NULL) {
+            dd->errorCode = CUDD_MEMORY_OUT;
+            return(CUDD_OUT_OF_MEM);
+        }
+
+        for (i = 0; i < SP; i++)
+            (*indices)[i] = (int) (ptrint) dd->stack[i];
+
+        qsort(*indices, SP, sizeof(int), indexCompare);
+    } else {
+        *indices = NULL;
+    }
+
+    return(SP);
+
+} /* end of Cudd_VectorSupportIndices */
 
 #ifdef CUDD_ORIGINAL_INCLUSION
 /**Function********************************************************************
@@ -907,49 +969,28 @@ Cudd_VectorSupport(
   int  n /* size of the array */)
 {
     int	*support;
-    DdNode *res, *tmp, *var;
-    int	i,j;
-    int size;
+    DdNode *res;
+    int	j;
+    int size = Cudd_VectorSupportIndices(dd, F, n, &support);
+    if (size == CUDD_OUT_OF_MEM)
+        return(NULL);
 
-    /* Allocate and initialize support array for ddSupportStep. */
-    size = ddMax(dd->size, dd->sizeZ);
-    support = ALLOC(int,size);
-    if (support == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	return(NULL);
-    }
-    for (i = 0; i < size; i++) {
-	support[i] = 0;
-    }
-
-    /* Compute support and clean up markers. */
-    for (i = 0; i < n; i++) {
-	ddSupportStep(Cudd_Regular(F[i]),support);
-    }
-    for (i = 0; i < n; i++) {
-	ddClearFlag(Cudd_Regular(F[i]));
-    }
-
-    /* Transform support from array to cube. */
+    /* Transform support from array of indices to cube. */
     res = DD_ONE(dd);
     cuddRef(res);
-    for (j = size - 1; j >= 0; j--) { /* for each level bottom-up */
-	i = (j >= dd->size) ? j : dd->invperm[j];
-	if (support[i] == 1) {
-	    var = cuddUniqueInter(dd,i,dd->one,Cudd_Not(dd->one));
-	    cuddRef(var);
-	    tmp = Cudd_bddAnd(dd,res,var);
-	    if (tmp == NULL) {
-		Cudd_RecursiveDeref(dd,res);
-		Cudd_RecursiveDeref(dd,var);
-		FREE(support);
-		return(NULL);
-	    }
-	    cuddRef(tmp);
-	    Cudd_RecursiveDeref(dd,res);
-	    Cudd_RecursiveDeref(dd,var);
-	    res = tmp;
-	}
+    
+    for (j = size - 1; j >= 0; j--) { /* for each index bottom-up (almost) */
+        int index = support[j];
+        DdNode *var = dd->vars[index];
+        DdNode *tmp = Cudd_bddAnd(dd,res,var);
+        if (tmp == NULL) {
+            Cudd_RecursiveDeref(dd,res);
+            FREE(support);
+            return(NULL);
+        }
+        cuddRef(tmp);
+        Cudd_RecursiveDeref(dd,res);
+        res = tmp;
     }
 
     FREE(support);
@@ -969,7 +1010,7 @@ Cudd_VectorSupport(
 
   SideEffects [None]
 
-  SeeAlso     [Cudd_SupportIndex Cudd_VectorSupport Cudd_ClassifySupport]
+  SeeAlso     [Cudd_SupportIndex Cudd_VectorSupport Cudd_VectorSupportIndices]
 
 ******************************************************************************/
 int *
@@ -1010,10 +1051,8 @@ Cudd_VectorSupportIndex(
 
   Synopsis    [Counts the variables on which a set of DDs depends.]
 
-  Description [Counts the variables on which a set of DDs depends.
-  The set must contain either BDDs and ADDs, or ZDDs.
-  Returns the number of the variables if successful; CUDD_OUT_OF_MEM
-  otherwise.]
+  Description [Returns the variables on which a set of DDs depends.
+  The set must contain either BDDs and ADDs, or ZDDs.]
 
   SideEffects [None]
 
@@ -1026,38 +1065,19 @@ Cudd_VectorSupportSize(
   DdNode ** F /* array of DDs whose support is sought */,
   int  n /* size of the array */)
 {
-    int	*support;
-    int	i;
-    int size;
-    int count;
-
-    /* Allocate and initialize support array for ddSupportStep. */
-    size = ddMax(dd->size, dd->sizeZ);
-    support = ALLOC(int,size);
-    if (support == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	return(CUDD_OUT_OF_MEM);
-    }
-    for (i = 0; i < size; i++) {
-	support[i] = 0;
-    }
+    int i;
+    int SP = 0;
 
     /* Compute support and clean up markers. */
     for (i = 0; i < n; i++) {
-	ddSupportStep(Cudd_Regular(F[i]),support);
+	ddFindSupport(dd, Cudd_Regular(F[i]), &SP);
     }
     for (i = 0; i < n; i++) {
 	ddClearFlag(Cudd_Regular(F[i]));
     }
+    ddClearVars(dd, SP);
 
-    /* Count vriables in support. */
-    count = 0;
-    for (i = 0; i < size; i++) {
-	if (support[i] == 1) count++;
-    }
-
-    FREE(support);
-    return(count);
+    return(SP);
 
 } /* end of Cudd_VectorSupportSize */
 
@@ -1087,83 +1107,75 @@ Cudd_ClassifySupport(
   DdNode ** onlyG /* cube of variables only in g */)
 {
     int	*supportF, *supportG;
-    DdNode *tmp, *var;
-    int	i,j;
-    int size;
+    int	fi, gi;
+    int sizeF, sizeG;
 
-    /* Allocate and initialize support arrays for ddSupportStep. */
-    size = ddMax(dd->size, dd->sizeZ);
-    supportF = ALLOC(int,size);
-    if (supportF == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	return(0);
-    }
-    supportG = ALLOC(int,size);
-    if (supportG == NULL) {
-	dd->errorCode = CUDD_MEMORY_OUT;
-	FREE(supportF);
-	return(0);
-    }
-    for (i = 0; i < size; i++) {
-	supportF[i] = 0;
-	supportG[i] = 0;
+    sizeF = Cudd_SupportIndices(dd, f, &supportF);
+    if (sizeF == CUDD_OUT_OF_MEM)
+        return(0);
+
+    sizeG = Cudd_SupportIndices(dd, g, &supportG);
+    if (sizeG == CUDD_OUT_OF_MEM) {
+        FREE(supportF);
+        return(0);
     }
 
-    /* Compute supports and clean up markers. */
-    ddSupportStep(Cudd_Regular(f),supportF);
-    ddClearFlag(Cudd_Regular(f));
-    ddSupportStep(Cudd_Regular(g),supportG);
-    ddClearFlag(Cudd_Regular(g));
-
-    /* Classify variables and create cubes. */
+    /* Classify variables and create cubes. This part of the procedure
+    ** relies on the sorting of the indices in the two support arrays.
+    */
     *common = *onlyF = *onlyG = DD_ONE(dd);
     cuddRef(*common); cuddRef(*onlyF); cuddRef(*onlyG);
-    for (j = size - 1; j >= 0; j--) { /* for each level bottom-up */
-	i = (j >= dd->size) ? j : dd->invperm[j];
-	if (supportF[i] == 0 && supportG[i] == 0) continue;
-	var = cuddUniqueInter(dd,i,dd->one,Cudd_Not(dd->one));
-	cuddRef(var);
-	if (supportG[i] == 0) {
-	    tmp = Cudd_bddAnd(dd,*onlyF,var);
+    fi = sizeF - 1;
+    gi = sizeG - 1;
+    while (fi >= 0 || gi >= 0) {
+        int indexF = fi >= 0 ? supportF[fi] : -1;
+        int indexG = gi >= 0 ? supportG[gi] : -1;
+        int index = ddMax(indexF, indexG);
+        DdNode *var = dd->vars[index];
+#ifdef DD_DEBUG
+        assert(index >= 0);
+#endif
+        if (indexF == indexG) {
+            DdNode *tmp = Cudd_bddAnd(dd,*common,var);
 	    if (tmp == NULL) {
 		Cudd_RecursiveDeref(dd,*common);
 		Cudd_RecursiveDeref(dd,*onlyF);
 		Cudd_RecursiveDeref(dd,*onlyG);
-		Cudd_RecursiveDeref(dd,var);
-		FREE(supportF); FREE(supportG);
-		return(0);
-	    }
-	    cuddRef(tmp);
-	    Cudd_RecursiveDeref(dd,*onlyF);
-	    *onlyF = tmp;
-	} else if (supportF[i] == 0) {
-	    tmp = Cudd_bddAnd(dd,*onlyG,var);
-	    if (tmp == NULL) {
-		Cudd_RecursiveDeref(dd,*common);
-		Cudd_RecursiveDeref(dd,*onlyF);
-		Cudd_RecursiveDeref(dd,*onlyG);
-		Cudd_RecursiveDeref(dd,var);
-		FREE(supportF); FREE(supportG);
-		return(0);
-	    }
-	    cuddRef(tmp);
-	    Cudd_RecursiveDeref(dd,*onlyG);
-	    *onlyG = tmp;
-	} else {
-	    tmp = Cudd_bddAnd(dd,*common,var);
-	    if (tmp == NULL) {
-		Cudd_RecursiveDeref(dd,*common);
-		Cudd_RecursiveDeref(dd,*onlyF);
-		Cudd_RecursiveDeref(dd,*onlyG);
-		Cudd_RecursiveDeref(dd,var);
 		FREE(supportF); FREE(supportG);
 		return(0);
 	    }
 	    cuddRef(tmp);
 	    Cudd_RecursiveDeref(dd,*common);
 	    *common = tmp;
-	}
-	Cudd_RecursiveDeref(dd,var);
+            fi--;
+            gi--;
+        } else if (index == indexF) {
+	    DdNode *tmp = Cudd_bddAnd(dd,*onlyF,var);
+	    if (tmp == NULL) {
+		Cudd_RecursiveDeref(dd,*common);
+		Cudd_RecursiveDeref(dd,*onlyF);
+		Cudd_RecursiveDeref(dd,*onlyG);
+		FREE(supportF); FREE(supportG);
+		return(0);
+	    }
+	    cuddRef(tmp);
+	    Cudd_RecursiveDeref(dd,*onlyF);
+	    *onlyF = tmp;
+            fi--;
+        } else { /* index == indexG */
+	    DdNode *tmp = Cudd_bddAnd(dd,*onlyG,var);
+	    if (tmp == NULL) {
+		Cudd_RecursiveDeref(dd,*common);
+		Cudd_RecursiveDeref(dd,*onlyF);
+		Cudd_RecursiveDeref(dd,*onlyG);
+		FREE(supportF); FREE(supportG);
+		return(0);
+	    }
+	    cuddRef(tmp);
+	    Cudd_RecursiveDeref(dd,*onlyG);
+	    *onlyG = tmp;
+            gi--;
+        }
     }
 
     FREE(supportF); FREE(supportG);
@@ -1190,7 +1202,7 @@ int
 Cudd_CountLeaves(
   DdNode * node)
 {
-    int	i;	
+    int	i;
 
     i = ddLeavesInt(Cudd_Regular(node));
     ddClearFlag(Cudd_Regular(node));
@@ -1310,7 +1322,7 @@ Cudd_bddPickOneMinterm(
     }
 
     for (i = 0; i < n; i++) {
-        indices[i] = vars[i]->index;
+	indices[i] = vars[i]->index;
     }
 
     result = Cudd_bddPickOneCube(dd,f,string);
@@ -1322,7 +1334,7 @@ Cudd_bddPickOneMinterm(
 
     /* Randomize choice for don't cares. */
     for (i = 0; i < n; i++) {
-	if (string[indices[i]] == 2) 
+	if (string[indices[i]] == 2)
 	    string[indices[i]] = (char) ((Cudd_Random() & 0x20) >> 5);
     }
 
@@ -1435,7 +1447,7 @@ Cudd_bddPickArbitraryMinterms(
     }
 
     for (i = 0; i < n; i++) {
-        indices[i] = vars[i]->index;
+	indices[i] = vars[i]->index;
     }
 
     result = ddPickArbitraryMinterms(dd,f,n,k,string);
@@ -1498,7 +1510,8 @@ Cudd_bddPickArbitraryMinterms(
 	/* Randomize choice for don't cares. */
 	for (j = 0; j < n; j++) {
 	    if (string[i][indices[j]] == '2')
-		string[i][indices[j]] = (Cudd_Random() & 0x20) ? '1' : '0';
+		string[i][indices[j]] =
+		  (char) ((Cudd_Random() & 0x20) ? '1' : '0');
 	}
 
 	while (isSame) {
@@ -1513,9 +1526,9 @@ Cudd_bddPickArbitraryMinterms(
 		strcpy(string[i], saveString);
 		/* Randomize choice for don't cares. */
 		for (j = 0; j < n; j++) {
-		    if (string[i][indices[j]] == '2') 
-			string[i][indices[j]] = (Cudd_Random() & 0x20) ?
-			    '1' : '0';
+		    if (string[i][indices[j]] == '2')
+			string[i][indices[j]] =
+			  (char) ((Cudd_Random() & 0x20) ? '1' : '0');
 		}
 	    }
 	}
@@ -1617,14 +1630,14 @@ Cudd_SubsetWithMaskVars(
 
     zero = Cudd_Not(dd->one);
     size = dd->size;
-    
+
     weight = ALLOC(double,size);
     if (weight == NULL) {
 	dd->errorCode = CUDD_MEMORY_OUT;
 	return(NULL);
     }
     for (i = 0; i < size; i++) {
-        weight[i] = 0.0;
+	weight[i] = 0.0;
     }
     for (i = 0; i < mvars; i++) {
 	cof = Cudd_Cofactor(dd, f, maskVars[i]);
@@ -1641,11 +1654,13 @@ Cudd_SubsetWithMaskVars(
     string = ALLOC(char, size + 1);
     if (string == NULL) {
 	dd->errorCode = CUDD_MEMORY_OUT;
+	FREE(weight);
 	return(NULL);
     }
     mask = ALLOC(int, size);
     if (mask == NULL) {
 	dd->errorCode = CUDD_MEMORY_OUT;
+	FREE(weight);
 	FREE(string);
 	return(NULL);
     }
@@ -1657,16 +1672,18 @@ Cudd_SubsetWithMaskVars(
     indices = ALLOC(int,nvars);
     if (indices == NULL) {
 	dd->errorCode = CUDD_MEMORY_OUT;
+	FREE(weight);
 	FREE(string);
 	FREE(mask);
 	return(NULL);
     }
     for (i = 0; i < nvars; i++) {
-        indices[i] = vars[i]->index;
+	indices[i] = vars[i]->index;
     }
 
-    result = ddPickRepresentativeCube(dd,f,nvars,weight,string);
+    result = ddPickRepresentativeCube(dd,f,weight,string);
     if (result == 0) {
+	FREE(weight);
 	FREE(string);
 	FREE(mask);
 	FREE(indices);
@@ -1684,6 +1701,7 @@ Cudd_SubsetWithMaskVars(
 	} else
 	    continue;
 	if (newCube == NULL) {
+	    FREE(weight);
 	    FREE(string);
 	    FREE(mask);
 	    FREE(indices);
@@ -1725,6 +1743,7 @@ Cudd_SubsetWithMaskVars(
 	} else
 	    continue;
 	if (newCube == NULL) {
+	    FREE(weight);
 	    FREE(string);
 	    FREE(mask);
 	    FREE(indices);
@@ -1748,10 +1767,10 @@ Cudd_SubsetWithMaskVars(
 	subset = NULL;
     }
 
+    FREE(weight);
     FREE(string);
     FREE(mask);
     FREE(indices);
-    FREE(weight);
     return(subset);
 
 } /* end of Cudd_SubsetWithMaskVars */
@@ -2189,7 +2208,7 @@ Cudd_bddComputeCube(
   int  n)
 {
     DdNode	*cube;
-    DdNode 	*fn;
+    DdNode	*fn;
     int         i;
 
     cube = DD_ONE(dd);
@@ -2239,7 +2258,7 @@ Cudd_addComputeCube(
   int  n)
 {
     DdNode	*cube, *zero;
-    DdNode 	*fn;
+    DdNode	*fn;
     int         i;
 
     cube = DD_ONE(dd);
@@ -2636,7 +2655,7 @@ Cudd_AverageDistance(
 		diff = (long) scan - (long) Cudd_Regular(cuddE(scan));
 		tesubtotal += (double) ddAbs(diff);
 		temeasured += 2.0;
-		if (scan->next != NULL) {
+		if (scan->next != sentinel) {
 		    diff = (long) scan - (long) scan->next;
 		    nextsubtotal += (double) ddAbs(diff);
 		    nextmeasured += 1.0;
@@ -2924,15 +2943,15 @@ cuddCollectNodes(
 
     /* If already visited, nothing to do. */
     if (st_is_member(visited, (char *) f) == 1)
-        return(1);
+	return(1);
 
     /* Check for abnormal condition that should never happen. */
     if (f == NULL)
-        return(0);
+	return(0);
 
     /* Mark node as visited. */
     if (st_add_direct(visited, (char *) f, NULL) == ST_OUT_OF_MEM)
-        return(0);
+	return(0);
 
     /* Check terminal case. */
     if (cuddIsConstant(f))
@@ -2984,7 +3003,7 @@ cuddNodeArray(
 
     *n = size;
     return(table);
-  
+
 } /* cuddNodeArray */
 
 
@@ -3011,52 +3030,52 @@ dp2(
 {
     DdNode *g, *n, *N;
     int T,E;
-    
+
     if (f == NULL) {
-        return(0);
+	return(0);
     }
     g = Cudd_Regular(f);
     if (cuddIsConstant(g)) {
 #if SIZEOF_VOID_P == 8
-        (void) fprintf(dd->out,"ID = %c0x%lx\tvalue = %-9g\n", bang(f),
-		(unsigned long) g / (unsigned long) sizeof(DdNode),cuddV(g));
+	(void) fprintf(dd->out,"ID = %c0x%lx\tvalue = %-9g\n", bang(f),
+		(ptruint) g / (ptruint) sizeof(DdNode),cuddV(g));
 #else
-        (void) fprintf(dd->out,"ID = %c0x%x\tvalue = %-9g\n", bang(f),
-		(unsigned) g / (unsigned) sizeof(DdNode),cuddV(g));
+	(void) fprintf(dd->out,"ID = %c0x%x\tvalue = %-9g\n", bang(f),
+		(ptruint) g / (ptruint) sizeof(DdNode),cuddV(g));
 #endif
 	return(1);
     }
     if (st_is_member(t,(char *) g) == 1) {
-        return(1);
+	return(1);
     }
     if (st_add_direct(t,(char *) g,NULL) == ST_OUT_OF_MEM)
 	return(0);
 #ifdef DD_STATS
 #if SIZEOF_VOID_P == 8
     (void) fprintf(dd->out,"ID = %c0x%lx\tindex = %d\tr = %d\t", bang(f),
-		(unsigned long) g / (unsigned long) sizeof(DdNode), g->index, g->ref);
+		(ptruint) g / (ptruint) sizeof(DdNode), g->index, g->ref);
 #else
     (void) fprintf(dd->out,"ID = %c0x%x\tindex = %d\tr = %d\t", bang(f),
-		(unsigned) g / (unsigned) sizeof(DdNode),g->index,g->ref);
+		(ptruint) g / (ptruint) sizeof(DdNode),g->index,g->ref);
 #endif
 #else
 #if SIZEOF_VOID_P == 8
-    (void) fprintf(dd->out,"ID = %c0x%lx\tindex = %d\t", bang(f),
-		(unsigned long) g / (unsigned long) sizeof(DdNode),g->index);
+    (void) fprintf(dd->out,"ID = %c0x%lx\tindex = %u\t", bang(f),
+		(ptruint) g / (ptruint) sizeof(DdNode),g->index);
 #else
-    (void) fprintf(dd->out,"ID = %c0x%x\tindex = %d\t", bang(f),
-		(unsigned) g / (unsigned) sizeof(DdNode),g->index);
+    (void) fprintf(dd->out,"ID = %c0x%x\tindex = %hu\t", bang(f),
+		(ptruint) g / (ptruint) sizeof(DdNode),g->index);
 #endif
 #endif
     n = cuddT(g);
     if (cuddIsConstant(n)) {
-        (void) fprintf(dd->out,"T = %-9g\t",cuddV(n));
+	(void) fprintf(dd->out,"T = %-9g\t",cuddV(n));
 	T = 1;
     } else {
 #if SIZEOF_VOID_P == 8
-        (void) fprintf(dd->out,"T = 0x%lx\t",(unsigned long) n / (unsigned long) sizeof(DdNode));
+	(void) fprintf(dd->out,"T = 0x%lx\t",(ptruint) n / (ptruint) sizeof(DdNode));
 #else
-        (void) fprintf(dd->out,"T = 0x%x\t",(unsigned) n / (unsigned) sizeof(DdNode));
+	(void) fprintf(dd->out,"T = 0x%x\t",(ptruint) n / (ptruint) sizeof(DdNode));
 #endif
 	T = 0;
     }
@@ -3064,22 +3083,22 @@ dp2(
     n = cuddE(g);
     N = Cudd_Regular(n);
     if (cuddIsConstant(N)) {
-        (void) fprintf(dd->out,"E = %c%-9g\n",bang(n),cuddV(N));
+	(void) fprintf(dd->out,"E = %c%-9g\n",bang(n),cuddV(N));
 	E = 1;
     } else {
 #if SIZEOF_VOID_P == 8
-        (void) fprintf(dd->out,"E = %c0x%lx\n", bang(n), (unsigned long) N/(unsigned long) sizeof(DdNode));
+	(void) fprintf(dd->out,"E = %c0x%lx\n", bang(n), (ptruint) N/(ptruint) sizeof(DdNode));
 #else
-        (void) fprintf(dd->out,"E = %c0x%x\n", bang(n), (unsigned) N/(unsigned) sizeof(DdNode));
+	(void) fprintf(dd->out,"E = %c0x%x\n", bang(n), (ptruint) N/(ptruint) sizeof(DdNode));
 #endif
 	E = 0;
     }
     if (E == 0) {
-        if (dp2(dd,N,t) == 0)
+	if (dp2(dd,N,t) == 0)
 	    return(0);
     }
     if (T == 0) {
-        if (dp2(dd,cuddT(g),t) == 0)
+	if (dp2(dd,cuddT(g),t) == 0)
 	    return(0);
     }
     return(1);
@@ -3130,7 +3149,7 @@ ddPrintMintermAux(
 	}
 	index = N->index;
 	list[index] = 0;
-	ddPrintMintermAux(dd,Nnv,list); 
+	ddPrintMintermAux(dd,Nnv,list);
 	list[index] = 1;
 	ddPrintMintermAux(dd,Nv,list);
 	list[index] = 2;
@@ -3239,7 +3258,9 @@ cuddEstimateCofactor(
 
     if (Cudd_IsComplement(node->next)) {
 	if (!st_lookup(table,(char *)node,(char **)ptr)) {
-	    st_add_direct(table,(char *)node,(char *)node);
+	    if (st_add_direct(table,(char *)node,(char *)node) ==
+		ST_OUT_OF_MEM)
+		return(CUDD_OUT_OF_MEM);
 	    *ptr = node;
 	}
 	return(0);
@@ -3521,7 +3542,7 @@ ddCountPathAux(
     paths2 = ddCountPathAux(Cudd_Regular(Nnv),table);
     if (paths2 == (double)CUDD_OUT_OF_MEM) return((double)CUDD_OUT_OF_MEM);
     paths = paths1 + paths2;
-    
+
     ppaths = ALLOC(double,1);
     if (ppaths == NULL) {
 	return((double)CUDD_OUT_OF_MEM);
@@ -3590,8 +3611,8 @@ ddEpdCountMintermAux(
     status = ddEpdCountMintermAux(Cudd_Regular(Ne),max,&minE,table);
     if (status == CUDD_OUT_OF_MEM) return(CUDD_OUT_OF_MEM);
     if (Cudd_IsComplement(Ne)) {
-    	EpdSubtract3(max, &minE, epd);
-    	EpdCopy(epd, &minE);
+	EpdSubtract3(max, &minE, epd);
+	EpdCopy(epd, &minE);
     }
     EpdMultiply(&minE, (double)0.5);
     EpdAdd3(&minT, &minE, epd);
@@ -3692,16 +3713,14 @@ ddSupportStep(
   DdNode * f,
   int * support)
 {
-    if (cuddIsConstant(f) || Cudd_IsComplement(f->next)) {
+    if (cuddIsConstant(f) || Cudd_IsComplement(f->next))
 	return;
-    }
 
     support[f->index] = 1;
     ddSupportStep(cuddT(f),support);
     ddSupportStep(Cudd_Regular(cuddE(f)),support);
     /* Mark as visited. */
-    f->next = Cudd_Not(f->next);
-    return;
+    f->next = Cudd_Complement(f->next);
 
 } /* end of ddSupportStep */
 
@@ -3715,7 +3734,7 @@ ddSupportStep(
 
   SideEffects [None]
 
-  SeeAlso     [ddSupportStep ddDagInt]
+  SeeAlso     [ddSupportStep ddFindSupport ddLeavesInt ddDagInt]
 
 ******************************************************************************/
 static void
@@ -3846,7 +3865,6 @@ static int
 ddPickRepresentativeCube(
   DdManager *dd,
   DdNode *node,
-  int nvars,
   double *weight,
   char *string)
 {
@@ -3919,3 +3937,96 @@ ddEpdFree(
     return(ST_CONTINUE);
 
 } /* end of ddEpdFree */
+
+
+/**Function********************************************************************
+
+  Synopsis [Recursively find the support of f.]
+
+  Description [Recursively find the support of f.  This function uses the
+  LSB of the next field of the nodes of f as visited flag.  It also uses the
+  LSB of the next field of the variables as flag to remember whether a
+  certain index has already been seen.  Finally, it uses the manager stack
+  to record all seen indices.]
+
+  SideEffects [The stack pointer SP is modified by side-effect.  The next
+  fields are changed and need to be reset.]
+
+******************************************************************************/
+static void
+ddFindSupport(
+  DdManager *dd,
+  DdNode *f,
+  int *SP)
+{
+    int index;
+    DdNode *var;
+
+    if (cuddIsConstant(f) || Cudd_IsComplement(f->next)) {
+	return;
+    }
+
+    index = f->index;
+    var = dd->vars[index];
+    /* It is possible that var is embedded in f.  That causes no problem,
+    ** though, because if we see it after encountering another node with
+    ** the same index, nothing is supposed to happen.
+    */
+    if (!Cudd_IsComplement(var->next)) {
+        var->next = Cudd_Complement(var->next);
+        dd->stack[*SP] = (DdNode *)(ptrint) index;
+        (*SP)++;
+    }
+    ddFindSupport(dd, cuddT(f), SP);
+    ddFindSupport(dd, Cudd_Regular(cuddE(f)), SP);
+    /* Mark as visited. */
+    f->next = Cudd_Complement(f->next);
+
+} /* end of ddFindSupport */
+
+
+/**Function********************************************************************
+
+  Synopsis [Clears visited flags for variables.]
+
+  Description [Clears visited flags for variables.]
+
+  SideEffects [None]
+
+******************************************************************************/
+static void
+ddClearVars(
+  DdManager *dd,
+  int SP)
+{
+    int i;
+
+    for (i = 0; i < SP; i++) {
+        int index = (int) (ptrint) dd->stack[i];
+        DdNode *var = dd->vars[index];
+        var->next = Cudd_Regular(var->next);
+    }
+    
+} /* end of ddClearVars */
+
+
+/**Function********************************************************************
+
+  Synopsis [Compares indices for qsort.]
+
+  Description [Compares indices for qsort.  Subtracting these integers
+  cannot produce overflow, because they are non-negative.]
+
+  SideEffects [None]
+
+******************************************************************************/
+static int
+indexCompare(
+  const void *a,
+  const void *b)
+{
+    int ia = *((int *) a);
+    int ib = *((int *) b);
+    return(ia - ib);
+
+} /* end of indexCompare */

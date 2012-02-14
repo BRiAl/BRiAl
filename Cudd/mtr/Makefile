@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile,v 1.2 1994/10/03 23:30:34 fabio Exp fabio $
 #
 #    mtr - multiway-branching tree package
 #---------------------------

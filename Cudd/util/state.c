@@ -11,7 +11,7 @@ util_restart_restore_state()
 
 #else
 
-static char rcsid[] = "$Id$";
+static char rcsid[] = "$Id: state.c,v 1.1 1997/11/04 22:38:50 fabio Exp $";
 
 #ifdef vax
 int util_restart_state[32];

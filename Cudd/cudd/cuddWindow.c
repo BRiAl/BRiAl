@@ -4,7 +4,7 @@
 
   PackageName [cudd]
 
-  Synopsis    [Functions for window permutation]
+  Synopsis    [Functions for variable reordering by window permutation.]
 
   Description [Internal procedures included in this module:
 		<ul>
@@ -24,7 +24,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -81,7 +81,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddWindow.c,v 1.15 2012/02/05 01:07:19 fabio Exp $";
 #endif
 
 #ifdef DD_STATS
@@ -369,7 +369,7 @@ ddPermuteWindow3(
 
     size = table->keys - table->isolated;
     y = x+1; z = y+1;
-    
+
     /* The permutation pattern is:
     ** (x,y)(y,z)
     ** repeated three times to get all 3! = 6 permutations.
@@ -609,7 +609,7 @@ ddPermuteWindow4(
 
     size = table->keys - table->isolated;
     x = w+1; y = x+1; z = y+1;
-    
+
     /* The permutation pattern is:
      * (w,x)(y,z)(w,x)(x,y)
      * (y,z)(w,x)(y,z)(x,y)
@@ -1021,4 +1021,3 @@ ddWindowConv4(
     return(1);
 
 } /* end of ddWindowConv4 */
-

@@ -4,7 +4,7 @@
 
   PackageName [cudd]
 
-  Synopsis    [function to compute the negation of an ADD.]
+  Synopsis    [Function to compute the negation of an ADD.]
 
   Description [External procedures included in this module:
 		<ul>
@@ -19,7 +19,7 @@
 
   Author      [Fabio Somenzi, Balakrishna Kumthekar]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -77,7 +77,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddAddNeg.c,v 1.14 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 
@@ -120,6 +120,7 @@ Cudd_addNegate(
     DdNode *res;
 
     do {
+	dd->reordered = 0;
 	res = cuddAddNegateRecur(dd,f);
     } while (dd->reordered == 1);
     return(res);
@@ -150,6 +151,7 @@ Cudd_addRoundOff(
     double trunc = pow(10.0,(double)N);
 
     do {
+	dd->reordered = 0;
 	res = cuddAddRoundOffRecur(dd,f,trunc);
     } while (dd->reordered == 1);
     return(res);
@@ -242,17 +244,17 @@ cuddAddRoundOffRecur(
     DdNode *res, *fv, *fvn, *T, *E;
     double n;
     DD_CTFP1 cacheOp;
-  
+
     statLine(dd);
     if (cuddIsConstant(f)) {
-        n = ceil(cuddV(f)*trunc)/trunc;
+	n = ceil(cuddV(f)*trunc)/trunc;
 	res = cuddUniqueConst(dd,n);
 	return(res);
     }
     cacheOp = (DD_CTFP1) Cudd_addRoundOff;
     res = cuddCacheLookup1(dd,cacheOp,f);
     if (res != NULL) {
-        return(res);
+	return(res);
     }
     /* Recursive Step */
     fv = cuddT(f);
@@ -264,13 +266,13 @@ cuddAddRoundOffRecur(
     cuddRef(T);
     E = cuddAddRoundOffRecur(dd,fvn,trunc);
     if (E == NULL) {
-        Cudd_RecursiveDeref(dd,T);
+	Cudd_RecursiveDeref(dd,T);
 	return(NULL);
     }
     cuddRef(E);
     res = (T == E) ? T : cuddUniqueInter(dd,(int)f->index,T,E);
     if (res == NULL) {
-        Cudd_RecursiveDeref(dd,T);
+	Cudd_RecursiveDeref(dd,T);
 	Cudd_RecursiveDeref(dd,E);
 	return(NULL);
     }
@@ -280,10 +282,9 @@ cuddAddRoundOffRecur(
     /* Store result. */
     cuddCacheInsert1(dd,cacheOp,f,res);
     return(res);
-  
+
 } /* end of cuddAddRoundOffRecur */
 
 /*---------------------------------------------------------------------------*/
 /* Definition of static functions                                            */
 /*---------------------------------------------------------------------------*/
-

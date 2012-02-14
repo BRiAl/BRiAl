@@ -5,7 +5,7 @@
   PackageName [cudd]
 
   Synopsis [Procedure to subset the given BDD choosing the shortest paths
-            (largest cubes) in the BDD.]
+	    (largest cubes) in the BDD.]
 
 
   Description  [External procedures included in this module:
@@ -16,7 +16,7 @@
 		Internal procedures included in this module:
 		<ul>
 		<li> cuddSubsetShortPaths()
-		</ul> 
+		</ul>
 		Static procedures included in this module:
 		<ul>
 		<li> BuildSubsetBdd()
@@ -34,7 +34,7 @@
 
   Author      [Kavita Ravi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -76,11 +76,10 @@
 /*---------------------------------------------------------------------------*/
 
 #define DEFAULT_PAGE_SIZE 2048 /* page size to store the BFS queue element type */
-#define DEFAULT_NODE_DIST_PAGE_SIZE 2048 /*  page sizesto store NodeDist_t type */
-#define MAXSHORTINT    	((DdHalfWord) ~0) /* constant defined to store
+#define DEFAULT_NODE_DIST_PAGE_SIZE 2048 /*  page size to store NodeDist_t type */
+#define MAXSHORTINT	((DdHalfWord) ~0) /* constant defined to store
 					   * maximum distance of a node
-					   * from the root or the
-					   * constant
+					   * from the root or the constant
 					   */
 #define INITIAL_PAGES 128 /* number of initial pages for the
 			   * queue/NodeDist_t type */
@@ -89,11 +88,11 @@
 /* Stucture declarations                                                     */
 /*---------------------------------------------------------------------------*/
 
-/* structure created to store subset results for each node and distances with 
+/* structure created to store subset results for each node and distances with
  * odd and even parity of the node from the root and sink. Main data structure
  * in this procedure.
  */
-struct NodeDist{
+struct NodeDist {
     DdHalfWord oddTopDist;
     DdHalfWord evenTopDist;
     DdHalfWord oddBotDist;
@@ -111,43 +110,40 @@ struct AssortedInfo {
     int threshold;
 };
 
+struct GlobalInfo {
+    struct NodeDist **nodeDistPages; /* pointers to the pages */
+    int		nodeDistPageIndex; /* index to next element */
+    int		nodeDistPage; /* index to current page */
+    int		nodeDistPageSize; /* page size */
+    int		maxNodeDistPages; /* number of page pointers */
+    struct NodeDist *currentNodeDistPage; /* current page */
+    DdNode      ***queuePages; /* pointers to the pages */
+    int		queuePageIndex;	/* index to next element */
+    int		queuePage; /* index to current page */
+    int		queuePageSize; /* page size */
+    int		maxQueuePages; /* number of page pointers */
+    DdNode      **currentQueuePage; /* current page */
+#ifdef DD_DEBUG
+    int         numCalls;
+    int         hits;
+    int         thishit;
+#endif
+};
+
 /*---------------------------------------------------------------------------*/
 /* Type declarations                                                         */
 /*---------------------------------------------------------------------------*/
 
 typedef struct NodeDist NodeDist_t;
+typedef struct GlobalInfo GlobalInfo_t;
 
 /*---------------------------------------------------------------------------*/
 /* Variable declarations                                                     */
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddSubsetSP.c,v 1.36 2012/02/05 01:07:19 fabio Exp $";
 #endif
-
-#ifdef DD_DEBUG
-static int numCalls;
-static int hits;
-static int thishit;
-#endif
-
-
-static 	int 		memOut; /* flag to indicate out of memory */
-static  DdNode          *zero, *one; /* constant functions */
-
-static  NodeDist_t      **nodeDistPages; /* pointers to the pages */
-static	int		nodeDistPageIndex; /* index to next element */
-static	int		nodeDistPage; /* index to current page */
-static	int		nodeDistPageSize = DEFAULT_NODE_DIST_PAGE_SIZE; /* page size */
-static	int		maxNodeDistPages; /* number of page pointers */
-static  NodeDist_t      *currentNodeDistPage; /* current page */
-
-static  DdNode          ***queuePages; /* pointers to the pages */
-static	int		queuePageIndex;	/* index to next element */
-static	int		queuePage; /* index to current page */
-static	int		queuePageSize = DEFAULT_PAGE_SIZE; /* page size */
-static	int		maxQueuePages; /* number of page pointers */
-static  DdNode          **currentQueuePage; /* current page */
 
 
 /*---------------------------------------------------------------------------*/
@@ -164,13 +160,13 @@ extern "C" {
 /* Static function prototypes                                                */
 /*---------------------------------------------------------------------------*/
 
-static void ResizeNodeDistPages (void);
-static void ResizeQueuePages (void);
-static void CreateTopDist (st_table *pathTable, int parentPage, int parentQueueIndex, int topLen, DdNode **childPage, int childQueueIndex, int numParents, FILE *fp);
+static void ResizeNodeDistPages (DdManager *dd, GlobalInfo_t *gInfo);
+static void ResizeQueuePages (DdManager *dd, GlobalInfo_t *gInfo);
+static void CreateTopDist (DdManager *dd, GlobalInfo_t *gInfo, st_table *pathTable, int parentPage, int parentQueueIndex, int topLen, DdNode **childPage, int childQueueIndex, int numParents, FILE *fp);
 static int CreateBotDist (DdNode *node, st_table *pathTable, unsigned int *pathLengthArray, FILE *fp);
-static st_table * CreatePathTable (DdNode *node, unsigned int *pathLengthArray, FILE *fp);
+static st_table * CreatePathTable (DdManager *dd, GlobalInfo_t *gInfo, DdNode *node, unsigned int *pathLengthArray, FILE *fp);
 static unsigned int AssessPathLength (unsigned int *pathLengthArray, int threshold, int numVars, unsigned int *excess, FILE *fp);
-static DdNode * BuildSubsetBdd (DdManager *dd, st_table *pathTable, DdNode *node, struct AssortedInfo *info, st_table *subsetNodeTable);
+static DdNode * BuildSubsetBdd (DdManager *dd, GlobalInfo_t *gInfo, st_table *pathTable, DdNode *node, struct AssortedInfo *info, st_table *subsetNodeTable);
 static enum st_retval stPathTableDdFree (char *key, char *value, char *arg);
 
 /**AutomaticEnd***************************************************************/
@@ -222,11 +218,10 @@ Cudd_SubsetShortPaths(
 {
     DdNode *subset;
 
-    memOut = 0;
     do {
 	dd->reordered = 0;
 	subset = cuddSubsetShortPaths(dd, f, numVars, threshold, hardlimit);
-    } while((dd->reordered ==1) && (!memOut));
+    } while(dd->reordered == 1);
 
     return(subset);
 
@@ -275,11 +270,10 @@ Cudd_SupersetShortPaths(
     DdNode *subset, *g;
 
     g = Cudd_Not(f);
-    memOut = 0;
     do {
 	dd->reordered = 0;
 	subset = cuddSubsetShortPaths(dd, g, numVars, threshold, hardlimit);
-    } while((dd->reordered ==1) && (!memOut));
+    } while(dd->reordered == 1);
 
     return(Cudd_NotCond(subset, (subset != NULL)));
 
@@ -314,26 +308,27 @@ cuddSubsetShortPaths(
   DdNode * f /* function to be subset */,
   int  numVars /* total number of variables in consideration */,
   int  threshold /* maximum number of nodes allowed in the subset */,
-  int  hardlimit /* flag determining whether thershold should be respected strictly */)
+  int  hardlimit /* flag determining whether threshold should be respected strictly */)
 {
+    GlobalInfo_t gInfo;
     st_table *pathTable;
     DdNode *N, *subset;
 
     unsigned int  *pathLengthArray;
     unsigned int maxpath, oddLen, evenLen, pathLength, *excess;
     int i;
-    NodeDist_t 	*nodeStat;
+    NodeDist_t	*nodeStat;
     struct AssortedInfo *info;
     st_table *subsetNodeTable;
 
-    one = DD_ONE(dd);
-    zero = Cudd_Not(one);
+    gInfo.nodeDistPageSize = DEFAULT_NODE_DIST_PAGE_SIZE;
+    gInfo.queuePageSize = DEFAULT_PAGE_SIZE;
 
     if (numVars == 0) {
       /* set default value */
       numVars = Cudd_ReadSize(dd);
     }
-    
+
     if (threshold > numVars) {
 	threshold = threshold - numVars;
     }
@@ -350,12 +345,12 @@ cuddSubsetShortPaths(
 
 
 #ifdef DD_DEBUG
-    numCalls = 0;
+    gInfo.numCalls = 0;
 #endif
 
-    pathTable = CreatePathTable(f, pathLengthArray, dd->err);
+    pathTable = CreatePathTable(dd, &gInfo, f, pathLengthArray, dd->err);
 
-    if ((pathTable == NULL) || (memOut)) {
+    if ((pathTable == NULL) || (dd->errorCode == CUDD_MEMORY_OUT)) {
 	if (pathTable != NULL)
 	    st_free_table(pathTable);
 	FREE(pathLengthArray);
@@ -396,6 +391,8 @@ cuddSubsetShortPaths(
 	if (!st_lookup(pathTable, N, &nodeStat)) {
 	    fprintf(dd->err, "Something wrong, root node must be in table\n");
 	    dd->errorCode = CUDD_INTERNAL_ERROR;
+	    FREE(excess);
+	    FREE(info);
 	    return(NULL);
 	} else {
 	    if ((nodeStat->oddTopDist != MAXSHORTINT) &&
@@ -412,16 +409,16 @@ cuddSubsetShortPaths(
 
 	    pathLength = (oddLen <= evenLen) ? oddLen : evenLen;
 	    if (pathLength > maxpath) {
-		(void) fprintf(dd->err, "All computations are bogus, since root has path length greater than max path length within threshold %d, %d\n", maxpath, pathLength);
+		(void) fprintf(dd->err, "All computations are bogus, since root has path length greater than max path length within threshold %u, %u\n", maxpath, pathLength);
 		dd->errorCode = CUDD_INTERNAL_ERROR;
 		return(NULL);
 	    }
 	}
 
 #ifdef DD_DEBUG
-	numCalls = 0;
-	hits = 0;
-	thishit = 0;
+	gInfo.numCalls = 0;
+	gInfo.hits = 0;
+	gInfo.thishit = 0;
 #endif
 	/* initialize a table to store computed nodes */
 	if (hardlimit) {
@@ -429,7 +426,7 @@ cuddSubsetShortPaths(
 	} else {
 	    subsetNodeTable = NIL(st_table);
 	}
-	subset = BuildSubsetBdd(dd, pathTable, f, info, subsetNodeTable);
+	subset = BuildSubsetBdd(dd, &gInfo, pathTable, f, info, subsetNodeTable);
 	if (subset != NULL) {
 	    cuddRef(subset);
 	}
@@ -437,7 +434,7 @@ cuddSubsetShortPaths(
 
 #ifdef DD_DEBUG
 	(void) fprintf(dd->out, "Hits = %d, New==Node = %d, NumCalls = %d\n",
-		hits, thishit, numCalls);
+		gInfo.hits, gInfo.thishit, gInfo.numCalls);
 #endif
 
 	if (subsetNodeTable != NIL(st_table)) {
@@ -455,15 +452,13 @@ cuddSubsetShortPaths(
     FREE(excess);
     st_free_table(pathTable);
     FREE(pathLengthArray);
-    for (i = 0; i <= nodeDistPage; i++) FREE(nodeDistPages[i]);
-    FREE(nodeDistPages);
+    for (i = 0; i <= gInfo.nodeDistPage; i++) FREE(gInfo.nodeDistPages[i]);
+    FREE(gInfo.nodeDistPages);
 
 #ifdef DD_DEBUG
     /* check containment of subset in f */
     if (subset != NULL) {
-	DdNode *check;
-	check = Cudd_bddIteConstant(dd, subset, f, one);
-	if (check != one) {
+	if (!Cudd_bddLeq(dd, subset, f)) {
 	    (void) fprintf(dd->err, "Wrong partition\n");
 	    dd->errorCode = CUDD_INTERNAL_ERROR;
 	    return(NULL);
@@ -496,53 +491,55 @@ cuddSubsetShortPaths(
   next page when the end of the page is reached and allocates new
   pages when necessary. ]
 
-  SideEffects [Changes the size of  pages, page, page index, maximum 
+  SideEffects [Changes the size of  pages, page, page index, maximum
   number of pages freeing stuff in case of memory out. ]
 
   SeeAlso     []
 
 ******************************************************************************/
 static void
-ResizeNodeDistPages(void)
+ResizeNodeDistPages(
+  DdManager *dd /* DD manager */,
+  GlobalInfo_t *gInfo /* global information */)
 {
     int i;
     NodeDist_t **newNodeDistPages;
 
     /* move to next page */
-    nodeDistPage++;
+    gInfo->nodeDistPage++;
 
     /* If the current page index is larger than the number of pages
-     * allocated, allocate a new page array. Page numbers are incremented by 
+     * allocated, allocate a new page array. Page numbers are incremented by
      * INITIAL_PAGES
      */
-    if (nodeDistPage == maxNodeDistPages) {
-	newNodeDistPages = ALLOC(NodeDist_t *,maxNodeDistPages + INITIAL_PAGES);
+    if (gInfo->nodeDistPage == gInfo->maxNodeDistPages) {
+	newNodeDistPages = ALLOC(NodeDist_t *,gInfo->maxNodeDistPages + INITIAL_PAGES);
 	if (newNodeDistPages == NULL) {
-	    for (i = 0; i < nodeDistPage; i++) FREE(nodeDistPages[i]);
-	    FREE(nodeDistPages);
-	    memOut = 1;
+	    for (i = 0; i < gInfo->nodeDistPage; i++) FREE(gInfo->nodeDistPages[i]);
+	    FREE(gInfo->nodeDistPages);
+	    dd->errorCode = CUDD_MEMORY_OUT;
 	    return;
 	} else {
-	    for (i = 0; i < maxNodeDistPages; i++) {
-		newNodeDistPages[i] = nodeDistPages[i];
+	    for (i = 0; i < gInfo->maxNodeDistPages; i++) {
+		newNodeDistPages[i] = gInfo->nodeDistPages[i];
 	    }
 	    /* Increase total page count */
-	    maxNodeDistPages += INITIAL_PAGES;
-	    FREE(nodeDistPages);
-	    nodeDistPages = newNodeDistPages;
+	    gInfo->maxNodeDistPages += INITIAL_PAGES;
+	    FREE(gInfo->nodeDistPages);
+	    gInfo->nodeDistPages = newNodeDistPages;
 	}
     }
     /* Allocate a new page */
-    currentNodeDistPage = nodeDistPages[nodeDistPage] = ALLOC(NodeDist_t,
-							      nodeDistPageSize);
-    if (currentNodeDistPage == NULL) {
-	for (i = 0; i < nodeDistPage; i++) FREE(nodeDistPages[i]);
-	FREE(nodeDistPages);
-	memOut = 1;
+    gInfo->currentNodeDistPage = gInfo->nodeDistPages[gInfo->nodeDistPage] =
+        ALLOC(NodeDist_t, gInfo->nodeDistPageSize);
+    if (gInfo->currentNodeDistPage == NULL) {
+	for (i = 0; i < gInfo->nodeDistPage; i++) FREE(gInfo->nodeDistPages[i]);
+	FREE(gInfo->nodeDistPages);
+	dd->errorCode = CUDD_MEMORY_OUT;
 	return;
     }
     /* reset page index */
-    nodeDistPageIndex = 0;
+    gInfo->nodeDistPageIndex = 0;
     return;
 
 } /* end of ResizeNodeDistPages */
@@ -550,58 +547,61 @@ ResizeNodeDistPages(void)
 
 /**Function********************************************************************
 
-  Synopsis    [Resize the number of pages allocated to store nodes in the BFS 
+  Synopsis    [Resize the number of pages allocated to store nodes in the BFS
   traversal of the Bdd  .]
 
-  Description [Resize the number of pages allocated to store nodes in the BFS 
+  Description [Resize the number of pages allocated to store nodes in the BFS
   traversal of the Bdd. The procedure  moves the counter to the
   next page when the end of the page is reached and allocates new
   pages when necessary.]
 
-  SideEffects [Changes the size of pages, page, page index, maximum 
+  SideEffects [Changes the size of pages, page, page index, maximum
   number of pages freeing stuff in case of memory out. ]
 
   SeeAlso     []
 
 ******************************************************************************/
 static void
-ResizeQueuePages(void)
+ResizeQueuePages(
+  DdManager *dd /* DD manager */,
+  GlobalInfo_t *gInfo /* global information */)
 {
     int i;
     DdNode ***newQueuePages;
 
-    queuePage++;
+    gInfo->queuePage++;
     /* If the current page index is larger than the number of pages
-     * allocated, allocate a new page array. Page numbers are incremented by 
+     * allocated, allocate a new page array. Page numbers are incremented by
      * INITIAL_PAGES
      */
-    if (queuePage == maxQueuePages) {
-	newQueuePages = ALLOC(DdNode **,maxQueuePages + INITIAL_PAGES);
+    if (gInfo->queuePage == gInfo->maxQueuePages) {
+	newQueuePages = ALLOC(DdNode **,gInfo->maxQueuePages + INITIAL_PAGES);
 	if (newQueuePages == NULL) {
-	    for (i = 0; i < queuePage; i++) FREE(queuePages[i]);
-	    FREE(queuePages);
-	    memOut = 1;
+	    for (i = 0; i < gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+	    FREE(gInfo->queuePages);
+	    dd->errorCode = CUDD_MEMORY_OUT;
 	    return;
 	} else {
-	    for (i = 0; i < maxQueuePages; i++) {
-		newQueuePages[i] = queuePages[i];
+	    for (i = 0; i < gInfo->maxQueuePages; i++) {
+		newQueuePages[i] = gInfo->queuePages[i];
 	    }
 	    /* Increase total page count */
-	    maxQueuePages += INITIAL_PAGES;
-	    FREE(queuePages);
-	    queuePages = newQueuePages;
+	    gInfo->maxQueuePages += INITIAL_PAGES;
+	    FREE(gInfo->queuePages);
+	    gInfo->queuePages = newQueuePages;
 	}
     }
     /* Allocate a new page */
-    currentQueuePage = queuePages[queuePage] = ALLOC(DdNode *,queuePageSize);
-    if (currentQueuePage == NULL) {
-	for (i = 0; i < queuePage; i++) FREE(queuePages[i]);
-	FREE(queuePages);
-	memOut = 1;
+    gInfo->currentQueuePage = gInfo->queuePages[gInfo->queuePage] =
+        ALLOC(DdNode *,gInfo->queuePageSize);
+    if (gInfo->currentQueuePage == NULL) {
+	for (i = 0; i < gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+	FREE(gInfo->queuePages);
+	dd->errorCode = CUDD_MEMORY_OUT;
 	return;
     }
     /* reset page index */
-    queuePageIndex = 0;
+    gInfo->queuePageIndex = 0;
     return;
 
 } /* end of ResizeQueuePages */
@@ -627,6 +627,8 @@ ResizeQueuePages(void)
 ******************************************************************************/
 static void
 CreateTopDist(
+  DdManager *dd /* DD manager */,
+  GlobalInfo_t *gInfo /* global information */,
   st_table * pathTable /* hast table to store path lengths */,
   int  parentPage /* the pointer to the page on which the first parent in the queue is to be found. */,
   int  parentQueueIndex /* pointer to the first parent on the page */,
@@ -642,31 +644,31 @@ CreateTopDist(
     int processingDone, childrenCount;
 
 #ifdef DD_DEBUG
-    numCalls++;
+    gInfo->numCalls++;
 
     /* assume this procedure comes in with only the root node*/
     /* set queue index to the next available entry for addition */
     /* set queue page to page of addition */
-    if ((queuePages[parentPage] == childPage) && (parentQueueIndex ==
+    if ((gInfo->queuePages[parentPage] == childPage) && (parentQueueIndex ==
 						  childQueueIndex)) {
 	fprintf(fp, "Should not happen that they are equal\n");
     }
-    assert(queuePageIndex == childQueueIndex);
-    assert(currentQueuePage == childPage);
+    assert(gInfo->queuePageIndex == childQueueIndex);
+    assert(gInfo->currentQueuePage == childPage);
 #endif
     /* number children added to queue is initialized , needed for
-     * numParents in the next call 
+     * numParents in the next call
      */
     childrenCount = 0;
     /* process all the nodes in this level */
     while (numParents) {
 	numParents--;
-	if (parentQueueIndex == queuePageSize) {
+	if (parentQueueIndex == gInfo->queuePageSize) {
 	    parentPage++;
 	    parentQueueIndex = 0;
 	}
 	/* a parent to process */
-	node = *(queuePages[parentPage] + parentQueueIndex);
+	node = *(gInfo->queuePages[parentPage] + parentQueueIndex);
 	parentQueueIndex++;
 	/* get its children */
 	N = Cudd_Regular(node);
@@ -696,17 +698,17 @@ CreateTopDist(
 		if (!st_lookup(pathTable, regChild, &nodeStat)) {
 		    /* if not in table, has never been visited */
 		    /* create entry for table */
-		    if (nodeDistPageIndex == nodeDistPageSize)
-			ResizeNodeDistPages();
-		    if (memOut) {
-			for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-			FREE(queuePages);
+		    if (gInfo->nodeDistPageIndex == gInfo->nodeDistPageSize)
+			ResizeNodeDistPages(dd, gInfo);
+		    if (dd->errorCode == CUDD_MEMORY_OUT) {
+			for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+			FREE(gInfo->queuePages);
 			st_free_table(pathTable);
 			return;
 		    }
 		    /* New entry for child in path Table is created here */
-		    nodeStat = currentNodeDistPage + nodeDistPageIndex;
-		    nodeDistPageIndex++;
+		    nodeStat = gInfo->currentNodeDistPage + gInfo->nodeDistPageIndex;
+		    gInfo->nodeDistPageIndex++;
 
 		    /* Initialize fields of the node data */
 		    nodeStat->oddTopDist = MAXSHORTINT;
@@ -724,15 +726,15 @@ CreateTopDist(
 			nodeStat->evenTopDist = (DdHalfWord) topLen + 1;
 		    }
 
-		    /* insert entry element for  child in the table */
-		    if (st_insert(pathTable, (char *)regChild,
-				  (char *)nodeStat) == ST_OUT_OF_MEM) {
-			memOut = 1;
-			for (i = 0; i <= nodeDistPage; i++)
-			    FREE(nodeDistPages[i]);
-			FREE(nodeDistPages);
-			for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-			FREE(queuePages);
+		    /* insert entry element for child in the table */
+		    if (st_insert(pathTable, regChild,
+				  nodeStat) == ST_OUT_OF_MEM) {
+			dd->errorCode = CUDD_MEMORY_OUT;
+			for (i = 0; i <= gInfo->nodeDistPage; i++)
+			    FREE(gInfo->nodeDistPages[i]);
+			FREE(gInfo->nodeDistPages);
+			for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+			FREE(gInfo->queuePages);
 			st_free_table(pathTable);
 			return;
 		    }
@@ -743,16 +745,16 @@ CreateTopDist(
 		     * again.
 		     */
 
-		    if (queuePageIndex == queuePageSize) ResizeQueuePages();
-		    if (memOut) {
-			for (i = 0; i <= nodeDistPage; i++)
-			    FREE(nodeDistPages[i]);
-			FREE(nodeDistPages);
+		    if (gInfo->queuePageIndex == gInfo->queuePageSize) ResizeQueuePages(dd, gInfo);
+		    if (dd->errorCode == CUDD_MEMORY_OUT) {
+			for (i = 0; i <= gInfo->nodeDistPage; i++)
+			    FREE(gInfo->nodeDistPages[i]);
+			FREE(gInfo->nodeDistPages);
 			st_free_table(pathTable);
 			return;
 		    }
-		    *(currentQueuePage + queuePageIndex) = child;
-		    queuePageIndex++;
+		    *(gInfo->currentQueuePage + gInfo->queuePageIndex) = child;
+		    gInfo->queuePageIndex++;
 
 		    childrenCount++;
 		} else {
@@ -762,17 +764,17 @@ CreateTopDist(
 			  MAXSHORTINT)) || ((!Cudd_IsComplement(child)) &&
 				  (nodeStat->evenTopDist == MAXSHORTINT))) {
 
-			if (queuePageIndex == queuePageSize) ResizeQueuePages();
-			if (memOut) {
-			    for (i = 0; i <= nodeDistPage; i++)
-				FREE(nodeDistPages[i]);
-			    FREE(nodeDistPages);
+			if (gInfo->queuePageIndex == gInfo->queuePageSize) ResizeQueuePages(dd, gInfo);
+			if (dd->errorCode == CUDD_MEMORY_OUT) {
+			    for (i = 0; i <= gInfo->nodeDistPage; i++)
+				FREE(gInfo->nodeDistPages[i]);
+			    FREE(gInfo->nodeDistPages);
 			    st_free_table(pathTable);
 			    return;
 
 			}
-			*(currentQueuePage + queuePageIndex) = child;
-			queuePageIndex++;
+			*(gInfo->currentQueuePage + gInfo->queuePageIndex) = child;
+			gInfo->queuePageIndex++;
 
 			/* update the distance with the appropriate parity */
 			if (Cudd_IsComplement(child)) {
@@ -790,15 +792,15 @@ CreateTopDist(
     }  /*end of while numParents */
 
 #ifdef DD_DEBUG
-    assert(queuePages[parentPage] == childPage);
+    assert(gInfo->queuePages[parentPage] == childPage);
     assert(parentQueueIndex == childQueueIndex);
 #endif
 
     if (childrenCount != 0) {
 	topLen++;
-	childPage = currentQueuePage;
-	childQueueIndex = queuePageIndex;
-	CreateTopDist(pathTable, parentPage, parentQueueIndex, topLen,
+	childPage = gInfo->currentQueuePage;
+	childQueueIndex = gInfo->queuePageIndex;
+	CreateTopDist(dd, gInfo, pathTable, parentPage, parentQueueIndex, topLen,
 		      childPage, childQueueIndex, childrenCount, fp);
     }
 
@@ -891,7 +893,7 @@ CreateBotDist(
 		nodeStat->oddBotDist = 1;
 	    else
 		nodeStat->evenBotDist = 1;
-	} else { 
+	} else {
 	    /* If node not in table, recur. */
 	    if (!st_lookup(pathTable, regChild, &nodeStatChild)) {
 		fprintf(fp, "Something wrong, node in table should have been created in top dist proc.\n");
@@ -1011,6 +1013,8 @@ CreateBotDist(
 ******************************************************************************/
 static st_table *
 CreatePathTable(
+  DdManager *dd /* DD manager */,
+  GlobalInfo_t *gInfo /* global information */,
   DdNode * node /* root of function */,
   unsigned int * pathLengthArray /* array of path lengths to store nodes labeled with the various path lengths */,
   FILE *fp /* where to write messages */)
@@ -1030,59 +1034,60 @@ CreatePathTable(
     pathTable = st_init_table(st_ptrcmp,st_ptrhash);
 
     /* initializing pages for info about each node */
-    maxNodeDistPages = INITIAL_PAGES;
-    nodeDistPages = ALLOC(NodeDist_t *, maxNodeDistPages);
-    if (nodeDistPages == NULL) {
+    gInfo->maxNodeDistPages = INITIAL_PAGES;
+    gInfo->nodeDistPages = ALLOC(NodeDist_t *, gInfo->maxNodeDistPages);
+    if (gInfo->nodeDistPages == NULL) {
 	goto OUT_OF_MEM;
     }
-    nodeDistPage = 0;
-    currentNodeDistPage = nodeDistPages[nodeDistPage] =
-	ALLOC(NodeDist_t, nodeDistPageSize);
-    if (currentNodeDistPage == NULL) {
-	for (i = 0; i <= nodeDistPage; i++) FREE(nodeDistPages[i]);
-	FREE(nodeDistPages);
+    gInfo->nodeDistPage = 0;
+    gInfo->currentNodeDistPage = gInfo->nodeDistPages[gInfo->nodeDistPage] =
+	ALLOC(NodeDist_t, gInfo->nodeDistPageSize);
+    if (gInfo->currentNodeDistPage == NULL) {
+	for (i = 0; i <= gInfo->nodeDistPage; i++) FREE(gInfo->nodeDistPages[i]);
+	FREE(gInfo->nodeDistPages);
 	goto OUT_OF_MEM;
     }
-    nodeDistPageIndex = 0;
+    gInfo->nodeDistPageIndex = 0;
 
     /* Initializing pages for the BFS search queue, implemented as an array. */
-    maxQueuePages = INITIAL_PAGES;
-    queuePages = ALLOC(DdNode **, maxQueuePages);
-    if (queuePages == NULL) {
+    gInfo->maxQueuePages = INITIAL_PAGES;
+    gInfo->queuePages = ALLOC(DdNode **, gInfo->maxQueuePages);
+    if (gInfo->queuePages == NULL) {
 	goto OUT_OF_MEM;
     }
-    queuePage = 0;
-    currentQueuePage  = queuePages[queuePage] = ALLOC(DdNode *, queuePageSize);
-    if (currentQueuePage == NULL) {
-	for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-	FREE(queuePages);
+    gInfo->queuePage = 0;
+    gInfo->currentQueuePage  = gInfo->queuePages[gInfo->queuePage] =
+        ALLOC(DdNode *, gInfo->queuePageSize);
+    if (gInfo->currentQueuePage == NULL) {
+	for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+	FREE(gInfo->queuePages);
 	goto OUT_OF_MEM;
     }
-    queuePageIndex = 0;
+    gInfo->queuePageIndex = 0;
 
     /* Enter the root node into the queue to start with. */
-    parentPage = queuePage;
-    parentQueueIndex = queuePageIndex;
+    parentPage = gInfo->queuePage;
+    parentQueueIndex = gInfo->queuePageIndex;
     topLen = 0;
-    *(currentQueuePage + queuePageIndex) = node;
-    queuePageIndex++;
-    childPage = currentQueuePage;
-    childQueueIndex = queuePageIndex;
+    *(gInfo->currentQueuePage + gInfo->queuePageIndex) = node;
+    gInfo->queuePageIndex++;
+    childPage = gInfo->currentQueuePage;
+    childQueueIndex = gInfo->queuePageIndex;
 
     N = Cudd_Regular(node);
 
-    if (nodeDistPageIndex == nodeDistPageSize) ResizeNodeDistPages();
-    if (memOut) {
-	for (i = 0; i <= nodeDistPage; i++) FREE(nodeDistPages[i]);
-	FREE(nodeDistPages);
-	for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-	FREE(queuePages);
+    if (gInfo->nodeDistPageIndex == gInfo->nodeDistPageSize) ResizeNodeDistPages(dd, gInfo);
+    if (dd->errorCode == CUDD_MEMORY_OUT) {
+	for (i = 0; i <= gInfo->nodeDistPage; i++) FREE(gInfo->nodeDistPages[i]);
+	FREE(gInfo->nodeDistPages);
+	for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+	FREE(gInfo->queuePages);
 	st_free_table(pathTable);
 	goto OUT_OF_MEM;
     }
 
-    nodeStat = currentNodeDistPage + nodeDistPageIndex;
-    nodeDistPageIndex++;
+    nodeStat = gInfo->currentNodeDistPage + gInfo->nodeDistPageIndex;
+    gInfo->nodeDistPageIndex++;
 
     nodeStat->oddTopDist = MAXSHORTINT;
     nodeStat->evenTopDist = MAXSHORTINT;
@@ -1091,13 +1096,13 @@ CreatePathTable(
     nodeStat->regResult = NULL;
     nodeStat->compResult = NULL;
 
-    insertValue = st_insert(pathTable, (char *)N, (char *)nodeStat);
+    insertValue = st_insert(pathTable, N, nodeStat);
     if (insertValue == ST_OUT_OF_MEM) {
-	memOut = 1;
-	for (i = 0; i <= nodeDistPage; i++) FREE(nodeDistPages[i]);
-	FREE(nodeDistPages);
-	for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-	FREE(queuePages);
+	dd->errorCode = CUDD_MEMORY_OUT;
+	for (i = 0; i <= gInfo->nodeDistPage; i++) FREE(gInfo->nodeDistPages[i]);
+	FREE(gInfo->nodeDistPages);
+	for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+	FREE(gInfo->queuePages);
 	st_free_table(pathTable);
 	goto OUT_OF_MEM;
     } else if (insertValue == 1) {
@@ -1115,17 +1120,17 @@ CreatePathTable(
      * root
      */
 #ifdef DD_DEBUG
-    numCalls = 0;
+    gInfo->numCalls = 0;
 #endif
-    CreateTopDist(pathTable, parentPage, parentQueueIndex, (int) topLen,
+    CreateTopDist(dd, gInfo, pathTable, parentPage, parentQueueIndex, (int) topLen,
 		  childPage, childQueueIndex, numParents, fp);
-    if (memOut) {
+    if (dd->errorCode == CUDD_MEMORY_OUT) {
 	fprintf(fp, "Out of Memory and cant count path lengths\n");
 	goto OUT_OF_MEM;
     }
 
 #ifdef DD_DEBUG
-    numCalls = 0;
+    gInfo->numCalls = 0;
 #endif
     /* call the function that counts the distance of each node from the
      * constant
@@ -1133,13 +1138,13 @@ CreatePathTable(
     if (!CreateBotDist(node, pathTable, pathLengthArray, fp)) return(NULL);
 
     /* free BFS queue pages as no longer required */
-    for (i = 0; i <= queuePage; i++) FREE(queuePages[i]);
-    FREE(queuePages);
+    for (i = 0; i <= gInfo->queuePage; i++) FREE(gInfo->queuePages[i]);
+    FREE(gInfo->queuePages);
     return(pathTable);
 
 OUT_OF_MEM:
     (void) fprintf(fp, "Out of Memory, cannot allocate pages\n");
-    memOut = 1;
+    dd->errorCode = CUDD_MEMORY_OUT;
     return(NULL);
 
 } /*end of CreatePathTable */
@@ -1248,6 +1253,7 @@ AssessPathLength(
 static DdNode *
 BuildSubsetBdd(
   DdManager * dd /* DD manager */,
+  GlobalInfo_t *gInfo /* global information */,
   st_table * pathTable /* path table with path lengths and computed results */,
   DdNode * node /* current node */,
   struct AssortedInfo * info /* assorted information structure */,
@@ -1265,9 +1271,9 @@ BuildSubsetBdd(
     int tiebreakChild;
     int  processingDone, thenDone, elseDone;
 
-
+    DdNode *zero = Cudd_Not(DD_ONE(dd));
 #ifdef DD_DEBUG
-    numCalls++;
+    gInfo->numCalls++;
 #endif
     if (Cudd_IsConstant(node))
 	return(node);
@@ -1291,7 +1297,7 @@ BuildSubsetBdd(
     if (Cudd_IsComplement(node)) {
 	if  (nodeStat->compResult != NULL) {
 #ifdef DD_DEBUG
-	    hits++;
+	    gInfo->hits++;
 #endif
 	    return(nodeStat->compResult);
 	}
@@ -1301,7 +1307,7 @@ BuildSubsetBdd(
 	 */
 	if (nodeStat->regResult != NULL) {
 #ifdef DD_DEBUG
-	    hits++;
+	    gInfo->hits++;
 #endif
 	    return(nodeStat->regResult);
 	}
@@ -1365,7 +1371,7 @@ BuildSubsetBdd(
 
 	NvPathLength = (oddLen <= evenLen) ? oddLen : evenLen;
 	NvBotDist = (oddLen <= evenLen) ? nodeStatNv->oddBotDist:
-	                                           nodeStatNv->evenBotDist;
+						   nodeStatNv->evenBotDist;
     }
     /* if else child constant, branch is the child */
     if (Cudd_IsConstant(Nnv)) {
@@ -1409,7 +1415,7 @@ BuildSubsetBdd(
 
 	NnvPathLength = (oddLen <= evenLen) ? oddLen : evenLen;
 	NnvBotDist = (oddLen <= evenLen) ? nodeStatNnv->oddBotDist :
-	                                           nodeStatNnv->evenBotDist;
+						   nodeStatNnv->evenBotDist;
     }
 
     tiebreakChild = (NvBotDist <= NnvBotDist) ? 1 : 0;
@@ -1458,20 +1464,19 @@ BuildSubsetBdd(
 		if (info->findShortestPath) {
 		    info->findShortestPath = 0;
 		}
-		childBranch = BuildSubsetBdd(dd, pathTable, child, info,
+		childBranch = BuildSubsetBdd(dd, gInfo, pathTable, child, info,
 					     subsetNodeTable);
 
 	    } else { /* Case: path length of node = maxpath */
 		/* If the node labeled with maxpath is found in the
 		** maxpathTable, use it to build the subset BDD.  */
-		if (st_lookup(info->maxpathTable, (char *)regChild,
-			      (char **)&entry)) {
+		if (st_lookup(info->maxpathTable, regChild, &entry)) {
 		    /* When a node that is already been chosen is hit,
 		    ** the quest for a complete path is over.  */
 		    if (info->findShortestPath) {
 			info->findShortestPath = 0;
 		    }
-		    childBranch = BuildSubsetBdd(dd, pathTable, child, info,
+		    childBranch = BuildSubsetBdd(dd, gInfo, pathTable, child, info,
 						 subsetNodeTable);
 		} else {
 		    /* If node is not found in the maxpathTable and
@@ -1480,15 +1485,15 @@ BuildSubsetBdd(
 		    ** replace the node with a zero.  */
 		    if (info->thresholdReached <= 0) {
 			if (info->findShortestPath) {
-			    if (st_insert(info->maxpathTable, (char *)regChild,
-					  (char *)NIL(char)) == ST_OUT_OF_MEM) {
-				memOut = 1;
+			    if (st_insert(info->maxpathTable, regChild,
+					  NULL) == ST_OUT_OF_MEM) {
+				dd->errorCode = CUDD_MEMORY_OUT;
 				(void) fprintf(dd->err, "OUT of memory\n");
 				info->thresholdReached = 0;
 				childBranch = zero;
 			    } else {
 				info->thresholdReached--;
-				childBranch = BuildSubsetBdd(dd, pathTable,
+				childBranch = BuildSubsetBdd(dd, gInfo, pathTable,
 						    child, info,subsetNodeTable);
 			    }
 			} else { /* not find shortest path, we dont need this
@@ -1497,9 +1502,9 @@ BuildSubsetBdd(
 			}
 		    } else { /* Threshold hasn't been reached,
 			     ** need the node. */
-			if (st_insert(info->maxpathTable, (char *)regChild,
-				      (char *)NIL(char)) == ST_OUT_OF_MEM) {
-			    memOut = 1;
+			if (st_insert(info->maxpathTable, regChild,
+				      NULL) == ST_OUT_OF_MEM) {
+			    dd->errorCode = CUDD_MEMORY_OUT;
 			    (void) fprintf(dd->err, "OUT of memory\n");
 			    info->thresholdReached = 0;
 			    childBranch = zero;
@@ -1508,7 +1513,7 @@ BuildSubsetBdd(
 			    if (info->thresholdReached <= 0) {
 				info->findShortestPath = 1;
 			    }
-			    childBranch = BuildSubsetBdd(dd, pathTable,
+			    childBranch = BuildSubsetBdd(dd, gInfo, pathTable,
 						 child, info, subsetNodeTable);
 
 			} /* end of st_insert successful */
@@ -1538,7 +1543,7 @@ BuildSubsetBdd(
 	}
 	processingDone++;
 
-    } /*end of while processing Nv, Nnv */  	
+    } /*end of while processing Nv, Nnv */
 
     info->findShortestPath = 0;
     topid = Cudd_NodeReadIndex(N);
@@ -1560,10 +1565,10 @@ BuildSubsetBdd(
 	/* subset node table keeps all new nodes that have been created to keep
 	 * a running count of how many nodes have been built in the subset.
 	 */
-	if (!st_lookup(subsetNodeTable, (char *)regNew, (char **)&entry)) {
+	if (!st_lookup(subsetNodeTable, regNew, &entry)) {
 	    if (!Cudd_IsConstant(regNew)) {
-		if (st_insert(subsetNodeTable, (char *)regNew,
-			      (char *)NULL) == ST_OUT_OF_MEM) {
+		if (st_insert(subsetNodeTable, regNew,
+			      NULL) == ST_OUT_OF_MEM) {
 		    (void) fprintf(dd->err, "Out of memory\n");
 		    return (NULL);
 		}
@@ -1588,7 +1593,7 @@ BuildSubsetBdd(
 	     */
 	    if (neW == node) {
 #ifdef DD_DEBUG
-		thishit++;
+		gInfo->thishit++;
 #endif
 		/* if a result for the node has already been computed, then
 		 * it can only be smaller than teh node itself. hence store
@@ -1606,7 +1611,7 @@ BuildSubsetBdd(
 	    cuddRef(nodeStat->regResult);
 	    if (neW == node) {
 #ifdef DD_DEBUG
-		thishit++;
+		gInfo->thishit++;
 #endif
 		if (nodeStat->compResult != NULL) {
 		    Cudd_RecursiveDeref(dd, nodeStat->compResult);
@@ -1614,7 +1619,7 @@ BuildSubsetBdd(
 		nodeStat->compResult = Cudd_Not(neW);
 		cuddRef(nodeStat->compResult);
 	    }
-	} 
+	}
 
 	cuddDeref(neW);
 	return(neW);

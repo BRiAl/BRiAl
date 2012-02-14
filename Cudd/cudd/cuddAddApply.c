@@ -35,7 +35,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -92,7 +92,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddAddApply.c,v 1.19 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 
@@ -517,11 +517,11 @@ Cudd_addDiff(
     if (G == DD_PLUS_INFINITY(dd)) return(F);
     if (cuddIsConstant(F) && cuddIsConstant(G)) {
 	if (cuddV(F) != cuddV(G)) {
-            if (cuddV(F) < cuddV(G)) {
-                return(F);
-            } else {
-                return(G);
-            }
+	    if (cuddV(F) < cuddV(G)) {
+		return(F);
+	    } else {
+		return(G);
+	    }
 	} else {
 	    return(DD_PLUS_INFINITY(dd));
 	}
@@ -939,4 +939,3 @@ cuddAddMonadicApplyRecur(
 /*---------------------------------------------------------------------------*/
 /* Definition of static functions                                            */
 /*---------------------------------------------------------------------------*/
-

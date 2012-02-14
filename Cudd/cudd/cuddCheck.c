@@ -27,7 +27,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -84,7 +84,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddCheck.c,v 1.37 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -150,7 +150,7 @@ Cudd_DebugCheck(
     int		totalNode;
     int		deadNode;
     int		index;
-    
+    int         shift;
 
     edgeTable = st_init_table(st_ptrcmp,st_ptrhash);
     if (edgeTable == NULL) return(CUDD_OUT_OF_MEM);
@@ -160,11 +160,12 @@ Cudd_DebugCheck(
 	index = table->invperm[i];
 	if (i != (unsigned) table->perm[index]) {
 	    (void) fprintf(table->err,
-			   "Permutation corrupted: invperm[%d] = %d\t perm[%d] = %d\n",
+			   "Permutation corrupted: invperm[%u] = %d\t perm[%d] = %d\n",
 			   i, index, index, table->perm[index]);
 	}
 	nodelist = table->subtables[i].nodelist;
 	slots = table->subtables[i].slots;
+	shift = table->subtables[i].shift;
 
 	totalNode = 0;
 	deadNode = 0;
@@ -172,7 +173,7 @@ Cudd_DebugCheck(
 	    f = nodelist[j];
 	    while (f != sentinel) {
 		totalNode++;
-		if (cuddT(f) != NULL && cuddE(f) != NULL && f->ref != 0) { 
+		if (cuddT(f) != NULL && cuddE(f) != NULL && f->ref != 0) {
 		    if ((int) f->index != index) {
 			(void) fprintf(table->err,
 				       "Error: node has illegal index\n");
@@ -205,6 +206,11 @@ Cudd_DebugCheck(
 			cuddPrintNode(f,table->err);
 			flag =1;
 		    }
+                    if (ddHash(cuddT(f),cuddE(f),shift) != j) {
+                        (void) fprintf(table->err, "Error: misplaced node\n");
+			cuddPrintNode(f,table->err);
+			flag =1;
+                    }
 		    /* Increment the internal reference count for the
 		    ** then child of the current node.
 		    */
@@ -218,7 +224,7 @@ Cudd_DebugCheck(
 			st_free_table(edgeTable);
 			return(CUDD_OUT_OF_MEM);
 		    }
-		
+
 		    /* Increment the internal reference count for the
 		    ** else child of the current node.
 		    */
@@ -264,7 +270,7 @@ Cudd_DebugCheck(
 	index = table->invpermZ[i];
 	if (i != (unsigned) table->permZ[index]) {
 	    (void) fprintf(table->err,
-			   "Permutation corrupted: invpermZ[%d] = %d\t permZ[%d] = %d in ZDD\n",
+			   "Permutation corrupted: invpermZ[%u] = %d\t permZ[%d] = %d in ZDD\n",
 			   i, index, index, table->permZ[index]);
 	}
 	nodelist = table->subtableZ[i].nodelist;
@@ -276,7 +282,7 @@ Cudd_DebugCheck(
 	    f = nodelist[j];
 	    while (f != NULL) {
 		totalNode++;
-		if (cuddT(f) != NULL && cuddE(f) != NULL && f->ref != 0) { 
+		if (cuddT(f) != NULL && cuddE(f) != NULL && f->ref != 0) {
 		    if ((int) f->index != index) {
 			(void) fprintf(table->err,
 				       "Error: ZDD node has illegal index\n");
@@ -324,7 +330,7 @@ Cudd_DebugCheck(
 			st_free_table(edgeTable);
 			return(CUDD_OUT_OF_MEM);
 		    }
-		
+
 		    /* Increment the internal reference count for the
 		    ** else child of the current node.
 		    */
@@ -377,17 +383,17 @@ Cudd_DebugCheck(
 	f = nodelist[j];
 	while (f != NULL) {
 	    totalNode++;
-	    if (f->ref != 0) { 
+	    if (f->ref != 0) {
 		if (f->index != CUDD_CONST_INDEX) {
 		    fprintf(table->err,"Error: node has illegal index\n");
 #if SIZEOF_VOID_P == 8
 		    fprintf(table->err,
-			    "       node 0x%lx, id = %d, ref = %d, value = %g\n",
-			    (unsigned long)f,f->index,f->ref,cuddV(f));
+			    "       node 0x%lx, id = %u, ref = %u, value = %g\n",
+			    (ptruint)f,f->index,f->ref,cuddV(f));
 #else
 		    fprintf(table->err,
-			    "       node 0x%x, id = %d, ref = %d, value = %g\n",
-			    (unsigned)f,f->index,f->ref,cuddV(f));
+			    "       node 0x%x, id = %hu, ref = %hu, value = %g\n",
+			    (ptruint)f,f->index,f->ref,cuddV(f));
 #endif
 		    flag = 1;
 		}
@@ -411,9 +417,9 @@ Cudd_DebugCheck(
     while (st_gen(gen, &f, &count)) {
 	if (count > (int)(f->ref) && f->ref != DD_MAXREF) {
 #if SIZEOF_VOID_P == 8
-	    fprintf(table->err,"ref count error at node 0x%lx, count = %d, id = %d, ref = %d, then = 0x%lx, else = 0x%lx\n",(unsigned long)f,count,f->index,f->ref,(unsigned long)cuddT(f),(unsigned long)cuddE(f));
+	    fprintf(table->err,"ref count error at node 0x%lx, count = %d, id = %u, ref = %u, then = 0x%lx, else = 0x%lx\n",(ptruint)f,count,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #else
-	    fprintf(table->err,"ref count error at node 0x%x, count = %d, id = %d, ref = %d, then = 0x%x, else = 0x%x\n",(unsigned)f,count,f->index,f->ref,(unsigned)cuddT(f),(unsigned)cuddE(f));
+	    fprintf(table->err,"ref count error at node 0x%x, count = %d, id = %hu, ref = %hu, then = 0x%x, else = 0x%x\n",(ptruint)f,count,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #endif
 	    debugFindParent(table,f);
 	    flag = 1;
@@ -581,23 +587,23 @@ in the constant table (difference=%d)\n", dead);
     }
     if ((unsigned) totalKeys != table->keys + table->keysZ) {
 	(void) fprintf(table->err, "Wrong number of total keys found \
-(difference=%d)\n", totalKeys-table->keys);
+(difference=%d)\n", (int) (totalKeys-table->keys));
     }
     if ((unsigned) totalSlots != table->slots) {
 	(void) fprintf(table->err, "Wrong number of total slots found \
-(difference=%d)\n", totalSlots-table->slots);
+(difference=%d)\n", (int) (totalSlots-table->slots));
     }
     if (table->minDead != (unsigned) (table->gcFrac * table->slots)) {
 	(void) fprintf(table->err, "Wrong number of minimum dead found \
-(%d vs. %d)\n", table->minDead,
+(%u vs. %u)\n", table->minDead,
 	(unsigned) (table->gcFrac * (double) table->slots));
     }
     if ((unsigned) totalDead != table->dead + table->deadZ) {
 	(void) fprintf(table->err, "Wrong number of total dead found \
-(difference=%d)\n", totalDead-table->dead);
+(difference=%d)\n", (int) (totalDead-table->dead));
     }
-    (void)printf("Average length of non-empty lists = %g\n",
-    (double) table->keys / (double) nonEmpty);
+    (void) fprintf(table->out,"Average length of non-empty lists = %g\n",
+                   (double) table->keys / (double) nonEmpty);
 
     return(count);
 
@@ -647,10 +653,10 @@ cuddHeapProfile(
     /* Print header. */
 #if SIZEOF_VOID_P == 8
     retval = fprintf(dd->out,"*** DD heap profile for 0x%lx ***\n",
-		     (unsigned long) dd);
+		     (ptruint) dd);
 #else
     retval = fprintf(dd->out,"*** DD heap profile for 0x%x ***\n",
-		     (unsigned) dd);
+		     (ptruint) dd);
 #endif
     if (retval == EOF) return 0;
 
@@ -709,9 +715,9 @@ cuddPrintNode(
 {
     f = Cudd_Regular(f);
 #if SIZEOF_VOID_P == 8
-    (void) fprintf(fp,"       node 0x%lx, id = %d, ref = %d, then = 0x%lx, else = 0x%lx\n",(unsigned long)f,f->index,f->ref,(unsigned long)cuddT(f),(unsigned long)cuddE(f));
+    (void) fprintf(fp,"       node 0x%lx, id = %u, ref = %u, then = 0x%lx, else = 0x%lx\n",(ptruint)f,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #else
-    (void) fprintf(fp,"       node 0x%x, id = %d, ref = %d, then = 0x%x, else = 0x%x\n",(unsigned)f,f->index,f->ref,(unsigned)cuddT(f),(unsigned)cuddE(f));
+    (void) fprintf(fp,"       node 0x%x, id = %hu, ref = %hu, then = 0x%x, else = 0x%x\n",(ptruint)f,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #endif
 
 } /* end of cuddPrintNode */
@@ -770,7 +776,7 @@ cuddPrintVarGroups(
 	}
     }
     if (!silent) {
-	(void) printf("%d", level + root->size - 1);
+	(void) printf("%d", (int) (level + root->size - 1));
 	if (root->flags != MTR_DEFAULT) {
 	    (void) printf("|");
 	    if (MTR_TEST(root,MTR_FIXED)) (void) printf("F");
@@ -811,7 +817,7 @@ debugFindParent(
     int		slots;
     DdNodePtr	*nodelist;
     DdNode	*f;
-	
+
     for (i = 0; i < cuddI(table,node->index); i++) {
 	nodelist = table->subtables[i].nodelist;
 	slots = table->subtables[i].slots;
@@ -821,11 +827,11 @@ debugFindParent(
 	    while (f != NULL) {
 		if (cuddT(f) == node || Cudd_Regular(cuddE(f)) == node) {
 #if SIZEOF_VOID_P == 8
-		    (void) fprintf(table->out,"parent is at 0x%lx, id = %d, ref = %d, then = 0x%lx, else = 0x%lx\n",
-			(unsigned long)f,f->index,f->ref,(unsigned long)cuddT(f),(unsigned long)cuddE(f));
+		    (void) fprintf(table->out,"parent is at 0x%lx, id = %u, ref = %u, then = 0x%lx, else = 0x%lx\n",
+			(ptruint)f,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #else
-		    (void) fprintf(table->out,"parent is at 0x%x, id = %d, ref = %d, then = 0x%x, else = 0x%x\n",
-			(unsigned)f,f->index,f->ref,(unsigned)cuddT(f),(unsigned)cuddE(f));
+		    (void) fprintf(table->out,"parent is at 0x%x, id = %hu, ref = %hu, then = 0x%x, else = 0x%x\n",
+			(ptruint)f,f->index,f->ref,(ptruint)cuddT(f),(ptruint)cuddE(f));
 #endif
 		}
 		f = f->next;
@@ -857,7 +863,7 @@ debugCheckParent(
     int         i,j;
     int		slots;
     DdNode	**nodelist,*f;
-    
+
     for (i = 0; i < cuddI(table,node->index); i++) {
 	nodelist = table->subtables[i].nodelist;
 	slots = table->subtables[i].slots;
@@ -868,8 +874,8 @@ debugCheckParent(
 		if ((Cudd_Regular(cuddE(f)) == node || cuddT(f) == node) && f->ref != 0) {
 		    (void) fprintf(table->err,
 				   "error with zero ref count\n");
-		    (void) fprintf(table->err,"parent is 0x%x, id = %d, ref = %d, then = 0x%x, else = 0x%x\n",f,f->index,f->ref,cuddT(f),cuddE(f));
-		    (void) fprintf(table->err,"child  is 0x%x, id = %d, ref = %d, then = 0x%x, else = 0x%x\n",node,node->index,node->ref,cuddT(node),cuddE(node));
+		    (void) fprintf(table->err,"parent is 0x%x, id = %u, ref = %u, then = 0x%x, else = 0x%x\n",f,f->index,f->ref,cuddT(f),cuddE(f));
+		    (void) fprintf(table->err,"child  is 0x%x, id = %u, ref = %u, then = 0x%x, else = 0x%x\n",node,node->index,node->ref,cuddT(node),cuddE(node));
 		}
 		f = f->next;
 	    }

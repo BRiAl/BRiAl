@@ -20,7 +20,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -52,7 +52,7 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.]
 
-  Revision    [$Id$]
+  Revision    [$Id: mtr.h,v 1.17 2012/02/05 01:06:19 fabio Exp $]
 
 ******************************************************************************/
 
@@ -78,13 +78,6 @@ extern "C" {
 #define SIZEOF_INT 4
 #endif
 
-#undef CONST
-#if defined(__STDC__) || defined(__cplusplus)
-#define CONST           const
-#else /* !(__STDC__ || __cplusplus) */
-#define CONST
-#endif /* !(__STDC__ || __cplusplus) */
-
 #if defined(__GNUC__)
 #define MTR_INLINE __inline__
 # if (__GNUC__ >2 || __GNUC_MINOR__ >=7)
@@ -96,10 +89,10 @@ extern "C" {
 #define MTR_INLINE
 #define MTR_UNUSED
 #endif
- 
+
 /* Flag definitions */
 #define MTR_DEFAULT	0x00000000
-#define MTR_TERMINAL 	0x00000001
+#define MTR_TERMINAL	0x00000001
 #define MTR_SOFT	0x00000002
 #define MTR_FIXED	0x00000004
 #define MTR_NEWNODE	0x00000008
@@ -152,7 +145,7 @@ typedef struct MtrNode {
 /*---------------------------------------------------------------------------*/
 
 /* Flag manipulation macros */
-#define MTR_SET(node, flag)		(node->flags |= (flag))
+#define MTR_SET(node, flag)	(node->flags |= (flag))
 #define MTR_RESET(node, flag)	(node->flags &= ~ (flag))
 #define MTR_TEST(node, flag)	(node->flags & (flag))
 
@@ -179,7 +172,10 @@ extern MtrNode * Mtr_MakeGroup (MtrNode *root, unsigned int low, unsigned int hi
 extern MtrNode * Mtr_DissolveGroup (MtrNode *group);
 extern MtrNode * Mtr_FindGroup (MtrNode *root, unsigned int low, unsigned int high);
 extern int Mtr_SwapGroups (MtrNode *first, MtrNode *second);
+extern void Mtr_ReorderGroups(MtrNode *treenode, int *permutation);
+  
 extern void Mtr_PrintGroups (MtrNode *root, int silent);
+  extern int Mtr_PrintGroupedOrder(MtrNode * root, int *invperm, FILE *fp);
 extern MtrNode * Mtr_ReadGroups (FILE *fp, int nleaves);
 
 /**AutomaticEnd***************************************************************/

@@ -29,7 +29,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -89,7 +89,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddCache.c,v 1.36 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -201,9 +201,12 @@ cuddInitCache(
 
 /**Function********************************************************************
 
-  Synopsis    [Inserts a result in the cache.]
+  Synopsis    [Inserts a result in the cache for a function with three
+  operands.]
 
-  Description []
+  Description [Inserts a result in the cache for a function with three
+  operands.  The operator tag (see cuddInt.h for details) is split and stored
+  into unused bits of the first two pointers.]
 
   SideEffects [None]
 
@@ -271,7 +274,7 @@ cuddCacheInsert2(
     entry = &table->cache[posn];
 
     if (entry->data != NULL) {
-        table->cachecollisions++;
+	table->cachecollisions++;
     }
     table->cacheinserts++;
 
@@ -312,7 +315,7 @@ cuddCacheInsert1(
     entry = &table->cache[posn];
 
     if (entry->data != NULL) {
-        table->cachecollisions++;
+	table->cachecollisions++;
     }
     table->cacheinserts++;
 
@@ -360,7 +363,7 @@ cuddCacheLookup(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -422,7 +425,7 @@ cuddCacheLookupZdd(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -478,7 +481,7 @@ cuddCacheLookup2(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -531,7 +534,7 @@ cuddCacheLookup1(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -586,7 +589,7 @@ cuddCacheLookup2Zdd(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -640,7 +643,7 @@ cuddCacheLookup1Zdd(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
 
@@ -703,7 +706,7 @@ cuddConstantLookup(
     cache = table->cache;
 #ifdef DD_DEBUG
     if (cache == NULL) {
-        return(NULL);
+	return(NULL);
     }
 #endif
     posn = ddCHash2(uh,uf,ug,table->cacheShift);
@@ -715,7 +718,7 @@ cuddConstantLookup(
     if (en->data != NULL &&
 	en->f == (DdNodePtr)uf && en->g == (DdNodePtr)ug && en->h == uh) {
 	table->cacheHits++;
-        return(en->data);
+	return(en->data);
     }
 
     /* Cache miss: decide whether to resize. */
@@ -810,7 +813,7 @@ cuddCacheProfile(
     }
     mean /= (double) slots;
     meansq /= (double) slots;
-    
+
     /* Compute the standard deviation from both the data and the
     ** theoretical model for a random distribution. */
     stddev = sqrt(meansq - mean*mean);
@@ -927,7 +930,7 @@ cuddCacheResize(
 	table->acache = oldacache;
 	/* Do not try to resize again. */
 	table->maxCacheHard = oldslots - 1;
-	table->cacheSlack = - (oldslots + 1);
+	table->cacheSlack = - (int) (oldslots + 1);
 	return;
     }
     /* If the size of the cache entry is a power of 2, we want to
@@ -964,7 +967,7 @@ cuddCacheResize(
 	    entry->f = old->f;
 	    entry->g = old->g;
 	    entry->h = old->h;
-	    entry->data = old->data;	
+	    entry->data = old->data;
 #ifdef DD_CACHE_PROFILE
 	    entry->count = 1;
 #endif

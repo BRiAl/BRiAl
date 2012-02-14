@@ -26,7 +26,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -81,7 +81,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] MTR_UNUSED = "$Id$";
+static char rcsid[] MTR_UNUSED = "$Id: mtrBasic.c,v 1.15 2012/02/05 01:06:19 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -249,7 +249,7 @@ Mtr_CopyTree(
 	}
     }
     return(copy);
-    
+
 } /* end of Mtr_CopyTree */
 
 
@@ -341,7 +341,7 @@ Mtr_CreateFirstChild(
     child = Mtr_AllocNode();
     if (child == NULL) return(NULL);
 
-    child->child = child->younger = child-> elder = NULL;
+    child->child = NULL;
     child->flags = 0;
     Mtr_MakeFirstChild(parent,child);
     return(child);
@@ -370,7 +370,7 @@ Mtr_CreateLastChild(
     child = Mtr_AllocNode();
     if (child == NULL) return(NULL);
 
-    child->child = child->younger = child->elder = NULL;
+    child->child = NULL;
     child->flags = 0;
     Mtr_MakeLastChild(parent,child);
     return(child);
@@ -395,13 +395,13 @@ Mtr_MakeNextSibling(
   MtrNode * first,
   MtrNode * second)
 {
+    second->parent = first->parent;
+    second->elder = first;
     second->younger = first->younger;
     if (first->younger != NULL) {
 	first->younger->elder = second;
     }
-    second->parent = first->parent;
     first->younger = second;
-    second->elder = first;
     return;
 
 } /* end of Mtr_MakeNextSibling */
@@ -425,12 +425,12 @@ Mtr_PrintTree(
     if (node == NULL) return;
     (void) fprintf(stdout,
 #if SIZEOF_VOID_P == 8
-    "N=0x%-8lx C=0x%-8lx Y=0x%-8lx E=0x%-8lx P=0x%-8lx F=%x L=%d S=%d\n",
+    "N=0x%-8lx C=0x%-8lx Y=0x%-8lx E=0x%-8lx P=0x%-8lx F=%x L=%u S=%u\n",
     (unsigned long) node, (unsigned long) node->child,
     (unsigned long) node->younger, (unsigned long) node->elder,
     (unsigned long) node->parent, node->flags, node->low, node->size);
 #else
-    "N=0x%-8x C=0x%-8x Y=0x%-8x E=0x%-8x P=0x%-8x F=%x L=%d S=%d\n",
+    "N=0x%-8x C=0x%-8x Y=0x%-8x E=0x%-8x P=0x%-8x F=%x L=%hu S=%hu\n",
     (unsigned) node, (unsigned) node->child,
     (unsigned) node->younger, (unsigned) node->elder,
     (unsigned) node->parent, node->flags, node->low, node->size);
@@ -448,4 +448,3 @@ Mtr_PrintTree(
 /*---------------------------------------------------------------------------*/
 /* Definition of static functions                                            */
 /*---------------------------------------------------------------------------*/
-

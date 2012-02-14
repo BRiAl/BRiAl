@@ -25,7 +25,7 @@
 
   Author      [Balakrishna Kumthekar]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -170,8 +170,10 @@ Cudd_SplitSet(
 	}
 
 	if (S == one) {
-	    if (m == max) 
+	    if (m == max) {
+		FREE(varSeen);
 		return(S);
+	    }
 	    result = selectMintermsFromUniverse(manager,varSeen,m);
 	    if (result)
 		cuddRef(result);
@@ -301,7 +303,7 @@ cuddSplitSetRecur(
   
     /* Lookup the # of minterms in the onset of the node from the table. */
     if (!Cudd_IsConstant(Nv)) {
-	st_lookup(mtable, Nv, &dummy);
+	if (!st_lookup(mtable, Nv, &dummy)) return(NULL);
 	numT = *dummy/(2*(1<<index));
     } else if (Nv == one) {
 	numT = max/(2*(1<<index));
@@ -310,7 +312,7 @@ cuddSplitSetRecur(
     }
   
     if (!Cudd_IsConstant(Nnv)) {
-	st_lookup(mtable, Nnv, &dummy);
+	if (!st_lookup(mtable, Nnv, &dummy)) return(NULL);
 	numE = *dummy/(2*(1<<index));
     } else if (Nnv == one) {
 	numE = max/(2*(1<<index));

@@ -27,7 +27,7 @@
 
   Author      [In-Ho Moon]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -84,7 +84,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddZddIsop.c,v 1.22 2012/02/05 01:07:19 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -154,10 +154,10 @@ Cudd_zddIsop(
 /**Function********************************************************************
 
   Synopsis    [Computes a BDD in the interval between L and U with a
-  simple sum-of-produuct cover.]
+  simple sum-of-product cover.]
 
   Description [Computes a BDD in the interval between L and U with a
-  simple sum-of-produuct cover. This procedure is similar to
+  simple sum-of-product cover. This procedure is similar to
   Cudd_zddIsop, but it does not return the ZDD for the cover. Returns
   a pointer to the BDD if successful; NULL otherwise.]
 
@@ -185,14 +185,15 @@ Cudd_bddIsop(
 
 /**Function********************************************************************
 
-  Synopsis [Converts a ZDD cover to a BDD graph.]
+  Synopsis [Converts a ZDD cover to a BDD.]
 
-  Description [Converts a ZDD cover to a BDD graph. If successful, it
-  returns a BDD node, otherwise it returns NULL.]
+  Description [Converts a ZDD cover to a BDD for the function represented
+  by the cover. If successful, it returns a BDD node, otherwise it returns
+  NULL.]
 
   SideEffects []
 
-  SeeAlso     [cuddMakeBddFromZddCover]
+  SeeAlso     [Cudd_zddIsop]
 
 ******************************************************************************/
 DdNode	*
@@ -252,11 +253,11 @@ cuddZddIsop(
     statLine(dd);
     if (L == zero) {
 	*zdd_I = zdd_zero;
-    	return(zero);
+	return(zero);
     }
     if (U == one) {
 	*zdd_I = zdd_one;
-    	return(one);
+	return(one);
     }
 
     if (U == zero || L == one) {
@@ -291,28 +292,28 @@ cuddZddIsop(
     /* Compute cofactors. */
     if (top_l == v) {
 	index = Cudd_Regular(L)->index;
-    	Lv = Cudd_T(L);
-    	Lnv = Cudd_E(L);
-    	if (Cudd_IsComplement(L)) {
-    	    Lv = Cudd_Not(Lv);
-    	    Lnv = Cudd_Not(Lnv);
-    	}
+	Lv = Cudd_T(L);
+	Lnv = Cudd_E(L);
+	if (Cudd_IsComplement(L)) {
+	    Lv = Cudd_Not(Lv);
+	    Lnv = Cudd_Not(Lnv);
+	}
     }
     else {
 	index = Cudd_Regular(U)->index;
-        Lv = Lnv = L;
+	Lv = Lnv = L;
     }
 
     if (top_u == v) {
-    	Uv = Cudd_T(U);
-    	Unv = Cudd_E(U);
-    	if (Cudd_IsComplement(U)) {
-    	    Uv = Cudd_Not(Uv);
-    	    Unv = Cudd_Not(Unv);
-    	}
+	Uv = Cudd_T(U);
+	Unv = Cudd_E(U);
+	if (Cudd_IsComplement(U)) {
+	    Uv = Cudd_Not(Uv);
+	    Unv = Cudd_Not(Unv);
+	}
     }
     else {
-        Uv = Unv = U;
+	Uv = Unv = U;
     }
 
     Lsub0 = cuddBddAndRecur(dd, Lnv, Cudd_Not(Uv));
@@ -587,14 +588,14 @@ cuddBddIsop(
 
     statLine(dd);
     if (L == zero)
-    	return(zero);
+	return(zero);
     if (U == one)
-    	return(one);
+	return(one);
 
     /* Check cache */
     r = cuddCacheLookup2(dd, cuddBddIsop, L, U);
     if (r)
-    	return(r);
+	return(r);
 
     top_l = dd->perm[Cudd_Regular(L)->index];
     top_u = dd->perm[Cudd_Regular(U)->index];
@@ -603,28 +604,28 @@ cuddBddIsop(
     /* Compute cofactors */
     if (top_l == v) {
 	index = Cudd_Regular(L)->index;
-    	Lv = Cudd_T(L);
-    	Lnv = Cudd_E(L);
-    	if (Cudd_IsComplement(L)) {
-    	    Lv = Cudd_Not(Lv);
-    	    Lnv = Cudd_Not(Lnv);
-    	}
+	Lv = Cudd_T(L);
+	Lnv = Cudd_E(L);
+	if (Cudd_IsComplement(L)) {
+	    Lv = Cudd_Not(Lv);
+	    Lnv = Cudd_Not(Lnv);
+	}
     }
     else {
 	index = Cudd_Regular(U)->index;
-        Lv = Lnv = L;
+	Lv = Lnv = L;
     }
 
     if (top_u == v) {
-    	Uv = Cudd_T(U);
-    	Unv = Cudd_E(U);
-    	if (Cudd_IsComplement(U)) {
-    	    Uv = Cudd_Not(Uv);
-    	    Unv = Cudd_Not(Unv);
-    	}
+	Uv = Cudd_T(U);
+	Unv = Cudd_E(U);
+	if (Cudd_IsComplement(U)) {
+	    Uv = Cudd_Not(Uv);
+	    Unv = Cudd_Not(Unv);
+	}
     }
     else {
-        Uv = Unv = U;
+	Uv = Unv = U;
     }
 
     Lsub0 = cuddBddAndRecur(dd, Lnv, Cudd_Not(Uv));
@@ -775,17 +776,17 @@ cuddBddIsop(
 
 /**Function********************************************************************
 
-  Synopsis [Converts a ZDD cover to a BDD graph.]
+  Synopsis [Converts a ZDD cover to a BDD.]
 
-  Description [Converts a ZDD cover to a BDD graph. If successful, it
-  returns a BDD node, otherwise it returns NULL. It is a recursive
-  algorithm as the following. First computes 3 cofactors of a ZDD cover;
-  f1, f0 and fd. Second, compute BDDs(b1, b0 and bd) of f1, f0 and fd.
-  Third, compute T=b1+bd and E=b0+bd. Fourth, compute ITE(v,T,E) where v
-  is the variable which has the index of the top node of the ZDD cover.
-  In this case, since the index of v can be larger than either one of T or
-  one of E, cuddUniqueInterIVO is called, here IVO stands for
-  independent variable ordering.]
+  Description [Converts a ZDD cover to a BDD. If successful, it returns
+  a BDD node, otherwise it returns NULL. It is a recursive algorithm
+  that works as follows. First it computes 3 cofactors of a ZDD cover:
+  f1, f0 and fd. Second, it compute BDDs (b1, b0 and bd) of f1, f0 and fd.
+  Third, it computes T=b1+bd and E=b0+bd. Fourth, it computes ITE(v,T,E) where
+  v is the variable which has the index of the top node of the ZDD cover.
+  In this case, since the index of v can be larger than either the one of T
+  or the one of E, cuddUniqueInterIVO is called, where IVO stands for
+  independent from variable ordering.]
 
   SideEffects []
 
@@ -815,7 +816,7 @@ cuddMakeBddFromZddCover(
 	return(neW);
 
     v = Cudd_Regular(node)->index;	/* either yi or zi */
-    cuddZddGetCofactors3(dd, node, v, &f1, &f0, &fd);
+    if (cuddZddGetCofactors3(dd, node, v, &f1, &f0, &fd)) return(NULL);
     Cudd_Ref(f1);
     Cudd_Ref(f0);
     Cudd_Ref(fd);
@@ -829,7 +830,7 @@ cuddMakeBddFromZddCover(
     }
     Cudd_Ref(b1);
     b0 = cuddMakeBddFromZddCover(dd, f0);
-    if (!b1) {
+    if (!b0) {
 	Cudd_RecursiveDerefZdd(dd, f1);
 	Cudd_RecursiveDerefZdd(dd, f0);
 	Cudd_RecursiveDerefZdd(dd, fd);
@@ -909,4 +910,3 @@ cuddMakeBddFromZddCover(
 /*---------------------------------------------------------------------------*/
 /* Definition of static functions                                            */
 /*---------------------------------------------------------------------------*/
-

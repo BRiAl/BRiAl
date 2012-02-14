@@ -1,4 +1,4 @@
-/* $Id$ */
+/* $Id: util.h,v 1.10 2012/02/05 05:34:04 fabio Exp fabio $ */
 
 #ifndef UTIL_H
 #define UTIL_H
@@ -40,8 +40,6 @@ typedef int util_ptrint;
 /* these are too entrenched to get away with changing the name */
 #define strsav		util_strsav
 #include <unistd.h>
-extern char *optarg;
-extern int optind, opterr;
 
 #define NIL(type)		((type *) 0)
 
@@ -191,24 +189,18 @@ extern char *MMrealloc (char *, long);
 #endif
 
 extern long util_cpu_time (void);
-extern int util_getopt (int, char **, char *);
-extern void util_getopt_reset (void);
-extern char *util_path_search (char *);
-extern char *util_file_search (char *, char *, char *);
-extern int util_pipefork (char **, FILE **, FILE **, int *);
+extern char *util_path_search (char const *);
+extern char *util_file_search (char const *, char *, char const *);
+extern int util_pipefork (char * const *, FILE **, FILE **, int *);
 extern void util_print_cpu_stats (FILE *);
 extern char *util_print_time (unsigned long);
-extern int util_save_image (char *, char *);
-extern char *util_strsav (char *);
-extern char *util_tilde_expand (char *);
-extern void util_restart (char *, char *, int);
+extern int util_save_image (char const *, char const *);
+extern char *util_strsav (char const *);
+extern char *util_tilde_expand (char const *);
+extern void util_restart (char const *, char const *, int);
 
 
-/* util_getopt() global variables (ack !) */
-extern int util_optind;
-extern char *util_optarg;
-
-extern long getSoftDataLimit (void);
+extern unsigned long getSoftDataLimit (void);
 
 #ifdef __cplusplus
 }

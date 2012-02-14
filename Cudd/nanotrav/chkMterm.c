@@ -1,5 +1,5 @@
 /**CFile***********************************************************************
- 
+
   FileName    [chkMterm.c]
 
   PackageName [ntr]
@@ -21,8 +21,8 @@
   SeeAlso     []
 
   Author      [Fabio Somenzi]
-   
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -75,7 +75,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] UTIL_UNUSED = "$Id$";
+static char rcsid[] UTIL_UNUSED = "$Id: chkMterm.c,v 1.9 2012/02/05 01:53:01 fabio Exp fabio $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -99,7 +99,7 @@ static enum st_retval stFree (char *key, char *value, char *arg);
 /*---------------------------------------------------------------------------*/
 /* Definition of internal functions                                          */
 /*---------------------------------------------------------------------------*/
-    
+
 
 /**Function********************************************************************
 
@@ -233,5 +233,3 @@ stFree(
     return(ST_CONTINUE);
 
 } /* end of stFree */
-
-

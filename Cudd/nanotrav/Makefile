@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile,v 1.12 1999/08/31 19:10:05 fabio Exp fabio $
 #
 # nanotrav: simple FSM traversal program
 #---------------------------------------------------------------------------

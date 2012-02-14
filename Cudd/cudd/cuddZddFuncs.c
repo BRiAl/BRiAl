@@ -41,7 +41,7 @@
 
   Author      [In-Ho Moon]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -98,7 +98,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddZddFuncs.c,v 1.17 2012/02/05 01:07:19 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -1345,7 +1345,7 @@ cuddZddDivideF(
   Synopsis    [Computes the three-way decomposition of f w.r.t. v.]
 
   Description [Computes the three-way decomposition of function f (represented
-  by a ZDD) wit respect to variable v.]
+  by a ZDD) wit respect to variable v.  Returns 0 if successful; 1 otherwise.]
 
   SideEffects [The results are returned in f1, f0, and fd.]
 
@@ -1441,7 +1441,7 @@ cuddZddGetCofactors3(
 	    if (*f1 == NULL) {
 		Cudd_RecursiveDerefZdd(dd, pc);
 		Cudd_RecursiveDerefZdd(dd, nc);
-		Cudd_RecursiveDerefZdd(dd, *f1);
+		Cudd_RecursiveDerefZdd(dd, *f0);
 		return(1);
 	    }
 	    Cudd_Ref(*f1);

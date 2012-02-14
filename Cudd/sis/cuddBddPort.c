@@ -72,7 +72,7 @@ struct bdd_gen {
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddBddPort.c,v 1.11 1996/05/08 06:13:08 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/

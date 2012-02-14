@@ -37,7 +37,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -94,7 +94,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: cuddBridge.c,v 1.20 2012/02/05 01:07:18 fabio Exp $";
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -466,8 +466,8 @@ cuddBddTransfer(
     return(res);
 
 failure:
+    /* No need to free gen because it is always NULL here. */
     if (table != NULL) st_free_table(table);
-    if (gen != NULL) st_free_gen(gen);
     return(NULL);
 
 } /* end of cuddBddTransfer */
@@ -969,7 +969,7 @@ cuddBddTransferRecur(
     /* Now f is a regular pointer to a non-constant node. */
 
     /* Check the cache. */
-    if(st_lookup(table, f, &res))
+    if (st_lookup(table, f, &res))
 	return(Cudd_NotCond(res,comple));
     
     /* Recursive step. */

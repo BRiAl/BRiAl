@@ -68,8 +68,8 @@ static inline void
 MMout_of_memory(long size)
 {
     (void) fflush(stdout);
-    (void) fprintf(stderr, "\nout of memory allocating %u bytes\n",
-		   (unsigned) size);
+    (void) fprintf(stderr, "\nout of memory allocating %lu bytes\n",
+		   (unsigned long) size);
     abort();
 }
 

@@ -30,7 +30,7 @@
   "AS IS" BASIS, AND THE UNIVERSITY OF COLORADO HAS NO OBLIGATION TO PROVIDE
   MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.]
 
-  Revision    [$Id$]
+  Revision    [$Id: cuddBdd.h,v 1.2 1996/07/30 20:42:04 bobbie Exp $]
 
 ******************************************************************************/
 

@@ -16,7 +16,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -65,7 +65,7 @@
 /*---------------------------------------------------------------------------*/
 
 #ifndef lint
-static char rcsid[] DD_UNUSED = "$Id$";
+static char rcsid[] DD_UNUSED = "$Id: testcudd.c,v 1.23 2012/02/05 05:30:29 fabio Exp $";
 #endif
 
 static const char *onames[] = { "C", "M" }; /* names of functions to be dumped */
@@ -82,6 +82,7 @@ static int testIterators (DdManager *dd, DdNode *M, DdNode *C, int pr);
 static int testXor (DdManager *dd, DdNode *f, int pr, int nvars);
 static int testHamming (DdManager *dd, DdNode *f, int pr);
 static int testWalsh (DdManager *dd, int N, int cmu, int approach, int pr);
+static int testSupport(DdManager *dd, DdNode *f, DdNode *g, int pr);
 
 /**AutomaticEnd***************************************************************/
 
@@ -98,11 +99,12 @@ static int testWalsh (DdManager *dd, int N, int cmu, int approach, int pr);
 
 ******************************************************************************/
 int
-main(int argc, char **argv)
+main(int argc, char * const *argv)
 {
     FILE *fp;           /* pointer to input file */
     char *file = (char *) "";	/* input file name */
     FILE *dfp = NULL;	/* pointer to dump file */
+    FILE *savefp = NULL;/* pointer to save current manager's stdout setting */
     char *dfile;	/* file for DD dump */
     DdNode *dfunc[2];	/* addresses of the functions to be dumped */
     DdManager *dd;	/* pointer to DD manager */
@@ -110,8 +112,8 @@ main(int argc, char **argv)
     DdNode *M;
     DdNode **x;		/* pointers to variables */
     DdNode **y;		/* pointers to variables */
-    DdNode **xn;       	/* complements of row variables */
-    DdNode **yn_;      	/* complements of column variables */
+    DdNode **xn;	/* complements of row variables */
+    DdNode **yn_;	/* complements of column variables */
     DdNode **xvars;
     DdNode **yvars;
     DdNode *C;		/* result of converting from ADD to BDD */
@@ -146,8 +148,8 @@ main(int argc, char **argv)
     int    blifOrDot;		/* dump format: 0 -> dot, 1 -> blif, ... */
     int    retval;		/* return value */
     int    i;			/* loop index */
-    long   startTime;		/* initial time */
-    long   lapTime;
+    unsigned long startTime;	/* initial time */
+    unsigned long   lapTime;
     int    size;
     unsigned int cacheSize, maxMemory;
     unsigned int nvars,nslots;
@@ -173,7 +175,7 @@ main(int argc, char **argv)
     blifOrDot = 0; /* dot format */
 
     /* Parse command line. */
-    while ((c = util_getopt(argc, argv, (char *) "CDHMPS:a:bcd:g:hkmn:p:v:x:X:"))
+    while ((c = getopt(argc, argv, "CDHMPS:a:bcd:g:hkmn:p:v:x:X:"))
 	   != EOF) {
 	switch(c) {
 	case 'C':
@@ -194,13 +196,13 @@ main(int argc, char **argv)
 	    profile = 1;
 	    break;
 	case 'S':
-	    nslots = atoi(util_optarg);
+	    nslots = atoi(optarg);
 	    break;
 	case 'X':
-	    maxMemory = atoi(util_optarg);
+	    maxMemory = atoi(optarg);
 	    break;
 	case 'a':
-	    approach = atoi(util_optarg);
+	    approach = atoi(optarg);
 	    break;
 	case 'b':
 	    blifOrDot = 1; /* blif format */
@@ -209,10 +211,10 @@ main(int argc, char **argv)
 	    clearcache = 1;
 	    break;
 	case 'd':
-	    dfile = util_optarg;
+	    dfile = optarg;
 	    break;
 	case 'g':
-	    groupcheck = atoi(util_optarg);
+	    groupcheck = atoi(optarg);
 	    break;
 	case 'k':
 	    keepperm = 1;
@@ -221,16 +223,16 @@ main(int argc, char **argv)
 	    multiple = 1;
 	    break;
 	case 'n':
-	    N = atoi(util_optarg);
+	    N = atoi(optarg);
 	    break;
 	case 'p':
-	    pr = atoi(util_optarg);
+	    pr = atoi(optarg);
 	    break;
 	case 'v':
-	    nvars = atoi(util_optarg);
+	    nvars = atoi(optarg);
 	    break;
 	case 'x':
-	    cacheSize = atoi(util_optarg);
+	    cacheSize = atoi(optarg);
 	    break;
 	case 'h':
 	default:
@@ -239,10 +241,10 @@ main(int argc, char **argv)
 	}
     }
 
-    if (argc - util_optind == 0) {
+    if (argc - optind == 0) {
 	file = (char *) "-";
-    } else if (argc - util_optind == 1) {
-	file = argv[util_optind];
+    } else if (argc - optind == 1) {
+	file = argv[optind];
     } else {
 	usage(argv[0]);
     }
@@ -251,7 +253,7 @@ main(int argc, char **argv)
 	usage(argv[0]);
     }
 
-    if (pr >= 0) {
+    if (pr > 0) {
 	(void) printf("# %s\n", TESTCUDD_VERSION);
 	/* Echo command line and arguments. */
 	(void) printf("#");
@@ -283,13 +285,13 @@ main(int argc, char **argv)
 	nx = maxnx; ny = maxny;
 	if (pr>0) lapTime = util_cpu_time();
 	if (harwell) {
-	    if (pr >= 0) (void) printf(":name: ");
+	    if (pr > 0) (void) printf(":name: ");
 	    ok = Cudd_addHarwell(fp, dd, &M, &x, &y, &xn, &yn_, &nx, &ny,
 	    &m, &n, 0, 2, 1, 2, pr);
 	} else {
 	    ok = Cudd_addRead(fp, dd, &M, &x, &y, &xn, &yn_, &nx, &ny,
 	    &m, &n, 0, 2, 1, 2);
-	    if (pr >= 0)
+	    if (pr > 0)
 		(void) printf(":name: %s: %d rows %d columns\n", file, m, n);
 	}
 	if (!ok) {
@@ -351,7 +353,8 @@ main(int argc, char **argv)
 	retval = testIterators(dd,M,C,pr);
 	if (retval == 0) exit(2);
 
-	cuddCacheProfile(dd,stdout);
+        if (pr > 0)
+            cuddCacheProfile(dd,stdout);
 
 	/* Test XOR */
 	retval = testXor(dd,C,pr,nx+ny);
@@ -379,10 +382,46 @@ main(int argc, char **argv)
 	    }
 	    Cudd_RecursiveDeref(dd, CPr);
 	}
+
+	/* Test inequality generator. */
+	{
+	    int Nmin = ddMin(nx,ny);
+	    int q;
+	    DdGen *gen;
+	    int *cube;
+	    DdNode *f = Cudd_Inequality(dd,Nmin,2,xvars,yvars);
+	    if (f == NULL) exit(2);
+	    Cudd_Ref(f);
+	    if (pr>0) {
+		(void) printf(":4: ineq");
+		Cudd_PrintDebug(dd,f,nx+ny,pr);
+		if (pr>1) {
+		    Cudd_ForeachPrime(dd,Cudd_Not(f),Cudd_Not(f),gen,cube) {
+			for (q = 0; q < dd->size; q++) {
+			    switch (cube[q]) {
+			    case 0:
+				(void) printf("1");
+				break;
+			    case 1:
+				(void) printf("0");
+				break;
+			    case 2:
+				(void) printf("-");
+				break;
+			    default:
+				(void) printf("?");
+			    }
+			}
+			(void) printf(" 1\n");
+		    }
+		    (void) printf("\n");
+		}
+	    }
+	    Cudd_IterDerefBdd(dd, f);
+	}
 	FREE(xvars); FREE(yvars);
 
 	Cudd_RecursiveDeref(dd, CP);
-	Cudd_RecursiveDeref(dd, ycube);
 
 	/* Test functions for essential variables. */
 	ess = Cudd_FindEssential(dd,C);
@@ -431,6 +470,12 @@ main(int argc, char **argv)
 	if (Cudd_bddIteConstant(dd,Cudd_Not(shortP),one,C) != one) exit(2);
 	Cudd_RecursiveDeref(dd, shortP);
 
+        /* Experiment with support functions. */
+        if (!testSupport(dd,M,ycube,pr)) {
+            exit(2);
+        }
+	Cudd_RecursiveDeref(dd, ycube);
+
 	if (profile) {
 	    retval = cuddHeapProfile(dd);
 	}
@@ -442,7 +487,7 @@ main(int argc, char **argv)
 	}
 
 	/* Reorder if so requested. */
-        if (approach != CUDD_REORDER_NONE) {
+	if (approach != CUDD_REORDER_NONE) {
 #ifndef DD_STATS
 	    retval = Cudd_EnableReorderingReporting(dd);
 	    if (retval == 0) {
@@ -526,7 +571,7 @@ main(int argc, char **argv)
 	    if (blifOrDot == 1) {
 		/* Only dump C because blif cannot handle ADDs */
 		retval = Cudd_DumpBlif(dd,1,dfunc,NULL,(char **)onames,
-				       NULL,dfp);
+				       NULL,dfp,0);
 	    } else {
 		retval = Cudd_DumpDot(dd,2,dfunc,NULL,(char **)onames,dfp);
 	    }
@@ -542,15 +587,15 @@ main(int argc, char **argv)
 	if (clearcache) {
 	    if (pr>0) {(void) printf("Clearing the cache... ");}
 	    for (i = dd->cacheSlots - 1; i>=0; i--) {
-		dd->cache[i].data = NIL(DdNode);
+		dd->cache[i].data = NULL;
 	    }
 	    if (pr>0) {(void) printf("done\n");}
 	}
 	if (pr>0) {
 	    (void) printf("Number of variables = %6d\t",dd->size);
-	    (void) printf("Number of slots     = %6d\n",dd->slots);
-	    (void) printf("Number of keys      = %6d\t",dd->keys);
-	    (void) printf("Number of min dead  = %6d\n",dd->minDead);
+	    (void) printf("Number of slots     = %6u\n",dd->slots);
+	    (void) printf("Number of keys      = %6u\t",dd->keys);
+	    (void) printf("Number of min dead  = %6u\n",dd->minDead);
 	}
 
     } while (multiple && !feof(fp));
@@ -567,8 +612,15 @@ main(int argc, char **argv)
 
     /* Check variable destruction. */
     assert(cuddDestroySubtables(dd,3));
+    if (pr == 0) {
+        savefp = Cudd_ReadStdout(dd);
+        Cudd_SetStdout(dd,fopen("/dev/null","a"));
+    }
     assert(Cudd_DebugCheck(dd) == 0);
     assert(Cudd_CheckKeys(dd) == 0);
+    if (pr == 0) {
+        Cudd_SetStdout(dd,savefp);
+    }
 
     retval = Cudd_CheckZeroRef(dd);
     ok = retval != 0;  /* ok == 0 means O.K. */
@@ -577,7 +629,7 @@ main(int argc, char **argv)
 	    "%d non-zero DD reference counts after dereferencing\n", retval);
     }
 
-    if (pr >= 0) {
+    if (pr > 0) {
 	(void) Cudd_PrintInfo(dd,stdout);
     }
 
@@ -590,8 +642,8 @@ main(int argc, char **argv)
     if (pr>0) (void) printf("total time = %s\n",
 		util_print_time(util_cpu_time() - startTime));
 
-    if (pr >= 0) util_print_cpu_stats(stdout);
-    exit(ok);
+    if (pr > 0) util_print_cpu_stats(stdout);
+    return ok;
     /* NOTREACHED */
 
 } /* end of main */
@@ -672,10 +724,10 @@ open_file(char *filename, const char *mode)
     FILE *fp;
 
     if (strcmp(filename, "-") == 0) {
-        return mode[0] == 'r' ? stdin : stdout;
+	return mode[0] == 'r' ? stdin : stdout;
     } else if ((fp = fopen(filename, mode)) == NULL) {
-        perror(filename);
-        exit(1);
+	perror(filename);
+	exit(1);
     }
     return fp;
 
@@ -847,32 +899,31 @@ testIterators(
 
     /* Test iterator on nodes. */
     if (pr>2) {
-	DdGen *gen;
 	DdNode *node;
 	(void) printf("Testing iterator on nodes:\n");
 	Cudd_ForeachNode(dd,M,gen,node) {
 	    if (Cudd_IsConstant(node)) {
 #if SIZEOF_VOID_P == 8
 		(void) printf("ID = 0x%lx\tvalue = %-9g\n",
-			      (unsigned long) node /
-			      (unsigned long) sizeof(DdNode),
+			      (ptruint) node /
+			      (ptruint) sizeof(DdNode),
 			      Cudd_V(node));
 #else
 		(void) printf("ID = 0x%x\tvalue = %-9g\n",
-			      (unsigned int) node /
-			      (unsigned int) sizeof(DdNode),
+			      (ptruint) node /
+			      (ptruint) sizeof(DdNode),
 			      Cudd_V(node));
 #endif
 	    } else {
 #if SIZEOF_VOID_P == 8
-		(void) printf("ID = 0x%lx\tindex = %d\tr = %d\n",
-			      (unsigned long) node /
-			      (unsigned long) sizeof(DdNode),
+		(void) printf("ID = 0x%lx\tindex = %u\tr = %u\n",
+			      (ptruint) node /
+			      (ptruint) sizeof(DdNode),
 			      node->index, node->ref);
 #else
-		(void) printf("ID = 0x%x\tindex = %d\tr = %d\n",
-			      (unsigned int) node /
-			      (unsigned int) sizeof(DdNode),
+		(void) printf("ID = 0x%x\tindex = %u\tr = %u\n",
+			      (ptruint) node /
+			      (ptruint) sizeof(DdNode),
 			      node->index, node->ref);
 #endif
 	    }
@@ -1028,10 +1079,100 @@ testHamming(
 
     d = Cudd_MinHammingDist(dd,f,minterm,size);
 
-    (void) printf("Minimum Hamming distance = %d\n", d);
+    if (pr > 0)
+        (void) printf("Minimum Hamming distance = %d\n", d);
 
     FREE(vars);
     FREE(minterm);
     return(1);
 
 } /* end of testHamming */
+
+
+/**Function********************************************************************
+
+  Synopsis    [Tests the support functions.]
+
+  Description [Tests the support functions. Returns
+  1 if successful; 0 otherwise.]
+
+  SideEffects [None]
+
+  SeeAlso     []
+
+******************************************************************************/
+static int
+testSupport(
+  DdManager *dd,
+  DdNode *f,
+  DdNode *g,
+  int pr)
+{
+    DdNode *sb, *common, *onlyF, *onlyG;
+    DdNode *F[2];
+    int *support;
+    int ret, ssize;
+    int size = Cudd_ReadSize(dd);
+
+    sb = Cudd_Support(dd, f);
+    if (sb == NULL) return(0);
+    Cudd_Ref(sb);
+    if (pr > 0) {
+	(void) printf("Support of f: ");
+	Cudd_PrintDebug(dd,sb,size,pr);
+    }
+    Cudd_RecursiveDeref(dd, sb);
+
+    ssize = Cudd_SupportIndices(dd, f, &support);
+    if (ssize == CUDD_OUT_OF_MEM) return(0);
+    if (pr > 0) {
+	(void) printf("Size of the support of f: %d\n", ssize);
+    }
+    FREE(support);
+
+    ssize = Cudd_SupportSize(dd, f);
+    if (pr > 0) {
+	(void) printf("Size of the support of f: %d\n", ssize);
+    }
+
+    F[0] = f;
+    F[1] = g;
+    sb = Cudd_VectorSupport(dd, F, 2);
+    if (sb == NULL) return(0);
+    Cudd_Ref(sb);
+    if (pr > 0) {
+	(void) printf("Support of f and g: ");
+	Cudd_PrintDebug(dd,sb,size,pr);
+    }
+    Cudd_RecursiveDeref(dd, sb);
+
+    ssize = Cudd_VectorSupportIndices(dd, F, 2, &support);
+    if (ssize == CUDD_OUT_OF_MEM) return(0);
+    if (pr > 0) {
+	(void) printf("Size of the support of f and g: %d\n", ssize);
+    }
+    FREE(support);
+
+    ssize = Cudd_VectorSupportSize(dd, F, 2);
+    if (pr > 0) {
+	(void) printf("Size of the support of f and g: %d\n", ssize);
+    }
+
+    ret = Cudd_ClassifySupport(dd, f, g, &common, &onlyF, &onlyG);
+    if (ret == 0) return(0);
+    Cudd_Ref(common); Cudd_Ref(onlyF); Cudd_Ref(onlyG);
+    if (pr > 0) {
+	(void) printf("Support common to f and g: ");
+	Cudd_PrintDebug(dd,common,size,pr);
+	(void) printf("Support private to f: ");
+	Cudd_PrintDebug(dd,onlyF,size,pr);
+	(void) printf("Support private to g: ");
+	Cudd_PrintDebug(dd,onlyG,size,pr);
+    }
+    Cudd_RecursiveDeref(dd, common);
+    Cudd_RecursiveDeref(dd, onlyF);
+    Cudd_RecursiveDeref(dd, onlyG);
+
+    return(1);
+
+} /* end of testSupport */

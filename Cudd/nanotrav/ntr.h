@@ -12,7 +12,7 @@
 
   Author      [Fabio Somenzi]
 
-  Copyright   [Copyright (c) 1995-2004, Regents of the University of Colorado
+  Copyright   [Copyright (c) 1995-2012, Regents of the University of Colorado
 
   All rights reserved.
 
@@ -44,7 +44,7 @@
   ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
   POSSIBILITY OF SUCH DAMAGE.]
 
-  Revision    [$Id$]
+  Revision    [$Id: ntr.h,v 1.28 2012/02/05 01:53:01 fabio Exp fabio $]
 
 ******************************************************************************/
 
@@ -152,7 +152,7 @@ typedef	struct	NtrOptions {
     Cudd_ReorderingType	reordering; /* NONE RANDOM PIVOT SIFTING ... */
     int		autoDyn;	/* ON OFF */
     Cudd_ReorderingType autoMethod; /* RANDOM PIVOT SIFTING CONVERGE ... */
-    char 	*treefile;	/* file name for variable tree */
+    char	*treefile;	/* file name for variable tree */
     int		firstReorder;	/* when to do first reordering */
     int		countDead;	/* count dead nodes toward triggering
 				   reordering */
@@ -229,7 +229,7 @@ typedef struct NtrPartTR {
   SideEffects  [none]
 
   SeeAlso      []
-		   
+
 ******************************************************************************/
 #define STRING_EQUAL(s1,s2) (strcmp((s1),(s2)) == 0)
 
