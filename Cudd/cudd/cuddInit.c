@@ -59,14 +59,14 @@
 #include "util.h"
 #include "cuddInt.h"
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #include <polybori/cudd/prefix_internal.h>
 #endif
 
 /*---------------------------------------------------------------------------*/
 /* Constant declarations                                                     */
 /*---------------------------------------------------------------------------*/
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 void (*MMoutOfMemory)(long) = MMout_of_memory;
 /* MMout_of_memory -- out of memory for lazy people, flush and exit */
 

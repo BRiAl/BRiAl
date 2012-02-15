@@ -78,7 +78,7 @@
 #include "util.h"
 #include "cuddInt.h"
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #include <polybori/cudd/prefix_internal.h>
 #endif
 
@@ -311,7 +311,7 @@ Cudd_zddDivideF(
 
 } /* end of Cudd_zddDivideF */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Computes a complement cover for a ZDD node.]
@@ -1503,7 +1503,7 @@ cuddZddGetCofactors2(
 
 } /* end of cuddZddGetCofactors2 */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Computes a complement of a ZDD node.]

@@ -1,6 +1,6 @@
 /* header-only replacement for Cudd's util/ */
 
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 #include "../util/util.h"
 #define polybori_cuddy_util_h_
 #endif

@@ -84,7 +84,7 @@
 #include "util.h"
 #include "cuddInt.h"
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #include <polybori/cudd/prefix_internal.h>
 #endif
 
@@ -151,7 +151,7 @@ static char rcsid[] DD_UNUSED = "$Id: cuddTable.c,v 1.126 2012/02/05 01:07:19 fa
 /*---------------------------------------------------------------------------*/
 
 static void ddRehashZdd (DdManager *unique, int i);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 static int ddResizeTable (DdManager *unique, int index, int amount);
 #endif
 static int cuddFindParent (DdManager *table, DdNode *node);
@@ -163,7 +163,7 @@ static void cuddRotateLeft (DdNodePtr *nodeP);
 static void cuddRotateRight (DdNodePtr *nodeP);
 static void cuddDoRebalance (DdNodePtr **stack, int stackN);
 #endif
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 static void ddPatchTree (DdManager *dd, MtrNode *treenode);
 #endif
 #ifdef DD_DEBUG
@@ -234,7 +234,7 @@ Cudd_Prime(
 
 ******************************************************************************/
 
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 int
 Cudd_Reserve(
   DdManager *manager,
@@ -632,7 +632,7 @@ cuddInitTable(
     unique->realignZ = 0;	/* initially disabled */
     unique->nextDyn = DD_FIRST_REORDER;
     unique->countDead = ~0;
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     unique->tree = NULL;
     unique->treeZ = NULL;
 #endif
@@ -737,7 +737,7 @@ cuddFreeTable(
     FREE(unique->deathRow);
 #endif
 
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     if (unique->tree != NULL) Mtr_FreeTree(unique->tree);
     if (unique->treeZ != NULL) Mtr_FreeTree(unique->treeZ);
 #endif
@@ -901,7 +901,7 @@ cuddGarbageCollect(
 	}
 	if ((unsigned) deleted != unique->subtables[i].dead) {
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 	    ddReportRefMess(unique, i, "pbori_cuddGarbageCollect");
 #else
 	    ddReportRefMess(unique, i, "cuddGarbageCollect");
@@ -1065,7 +1065,7 @@ cuddGarbageCollect(
   SeeAlso     [cuddUniqueInterZdd]
 
 ******************************************************************************/
-#ifdef ORIG_CUDD
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 DdNode *
 cuddZddGetNode(
   DdManager * zdd,
@@ -1082,7 +1082,7 @@ cuddZddGetNode(
 
 } /* end of cuddZddGetNode */
 #endif
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis [Wrapper for cuddUniqueInterZdd that is independent of variable
@@ -1181,7 +1181,7 @@ cuddUniqueInter(
         }
     }
     if (index >= unique->size) {
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
         int amount = ddMax(DD_DEFAULT_RESIZE,unique->size/20);
         if (!ddResizeTable(unique,index,amount)) return(NULL);
 
@@ -1190,7 +1190,7 @@ cuddUniqueInter(
 #endif
 
     }
-#ifdef ORIG_CUDD
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     level = unique->perm[index];
 #else
     level=index;
@@ -1229,7 +1229,7 @@ cuddUniqueInter(
     }
 
     /* countDead is 0 if deads should be counted and ~0 if they should not. */
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     if (unique->autoDyn &&
         unique->keys - (unique->dead & unique->countDead) >= unique->nextDyn &&
         unique->maxReorderings > 0) {
@@ -1259,7 +1259,7 @@ cuddUniqueInter(
 #endif
 	return(NULL);
     }
-#endif /* CUDD_ORIG_INCLUSION*/
+#endif /* PBORI_FORCE_ORIGINAL_CUDD*/
 
     if (subtable->keys > subtable->maxKeys) {
 	if (unique->gcEnabled &&
@@ -1360,7 +1360,7 @@ cuddUniqueInter(
   SeeAlso     [cuddUniqueInter Cudd_MakeBddFromZddCover]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 DdNode *
 cuddUniqueInterIVO(
   DdManager * unique,
@@ -1457,7 +1457,7 @@ cuddUniqueInterZdd(
     }
 
     /* countDead is 0 if deads should be counted and ~0 if they should not. */
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     if (unique->autoDynZ &&
     unique->keysZ - (unique->deadZ & unique->countDead) >= unique->nextDyn) {
 #ifdef DD_DEBUG
@@ -1476,7 +1476,7 @@ cuddUniqueInterZdd(
 #endif
 	return(NULL);
     }
-#endif /* CUDD_ORIG_INCLUSION  */
+#endif /* PBORI_FORCE_ORIGINAL_CUDD  */
     unique->keysZ++;
     subtable->keys++;
 
@@ -1760,7 +1760,7 @@ cuddRehash(
   SeeAlso     [cuddRehash]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 void
 cuddShrinkSubtable(
   DdManager *unique,
@@ -2584,7 +2584,7 @@ ddRehashZdd(
   SeeAlso     [Cudd_Reserve cuddResizeTableZdd]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 static int
 ddResizeTable(
   DdManager * unique,
@@ -3148,7 +3148,7 @@ cuddDoRebalance(
   SeeAlso     []
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 static void
 ddPatchTree(
   DdManager *dd,

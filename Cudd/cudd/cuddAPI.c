@@ -212,7 +212,7 @@
 #include "util.h"
 #include "cuddInt.h"
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #include <polybori/cudd/prefix_internal.h>
 #endif
 
@@ -245,7 +245,7 @@ static char rcsid[] DD_UNUSED = "$Id: cuddAPI.c,v 1.64 2012/02/05 01:07:18 fabio
 /*---------------------------------------------------------------------------*/
 /* Static function prototypes                                                */
 /*---------------------------------------------------------------------------*/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 static void fixVarTree (MtrNode *treenode, int *perm, int size);
 static int addMultiplicityGroups (DdManager *dd, MtrNode *treenode, int multiplicity, char *vmask, char *lmask);
 #endif
@@ -273,7 +273,7 @@ static int addMultiplicityGroups (DdManager *dd, MtrNode *treenode, int multipli
   Cudd_addNewVarAtLevel]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 DdNode *
 Cudd_addNewVar(
   DdManager * dd)
@@ -534,7 +534,7 @@ Cudd_zddIthVar(
   SeeAlso     [Cudd_bddNewVar Cudd_bddIthVar Cudd_bddNewVarAtLevel]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 int
 Cudd_zddVarsFromBddVars(
   DdManager * dd /* DD manager */,
@@ -2416,7 +2416,7 @@ Cudd_SetReorderingCycle(
   SeeAlso     [Cudd_SetTree Cudd_FreeTree Cudd_ReadZddTree]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 MtrNode *
 Cudd_ReadTree(
   DdManager * dd)
@@ -3942,7 +3942,7 @@ Cudd_ReorderingReporting(
   SeeAlso     [Cudd_StdPreReordHook]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 int
 Cudd_PrintGroupedOrder(
   DdManager * dd,
@@ -3981,7 +3981,7 @@ Cudd_PrintGroupedOrder(
   SeeAlso     [Cudd_EnableReorderingReporting]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 int
 Cudd_EnableOrderingMonitoring(
   DdManager *dd)
@@ -4357,7 +4357,7 @@ Cudd_SetMaxMemory(
   SeeAlso     [Cudd_bddUnbindVar]
 
 ******************************************************************************/
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 int
 Cudd_bddBindVar(
   DdManager *dd /* manager */,

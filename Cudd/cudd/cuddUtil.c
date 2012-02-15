@@ -237,7 +237,7 @@ Cudd_PrintMinterm(
 
 } /* end of Cudd_PrintMinterm */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Prints a sum of prime implicants of a BDD.]
@@ -726,7 +726,7 @@ Cudd_CountPathsToNonZero(
 
 } /* end of Cudd_CountPathsToNonZero */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Finds the variables on which a DD depends.]
@@ -947,7 +947,7 @@ Cudd_VectorSupportIndices(
 
 } /* end of Cudd_VectorSupportIndices */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Finds the variables on which a set of DDs depends.]
@@ -1081,7 +1081,7 @@ Cudd_VectorSupportSize(
 
 } /* end of Cudd_VectorSupportSize */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Classifies the variables in the support of two DDs.]
@@ -1271,7 +1271,7 @@ Cudd_bddPickOneCube(
 
 } /* end of Cudd_bddPickOneCube */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Picks one on-set minterm randomly from the given DD.]
@@ -1373,7 +1373,7 @@ Cudd_bddPickOneMinterm(
 
 }  /* end of Cudd_bddPickOneMinterm */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Picks k on-set minterms evenly distributed from given DD.]
@@ -1583,7 +1583,7 @@ Cudd_bddPickArbitraryMinterms(
 
 }  /* end of Cudd_bddPickArbitraryMinterms */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Extracts a subset from a BDD.]
@@ -2002,7 +2002,7 @@ done:
 
 } /* end of Cudd_NextCube */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Finds the first prime of a Boolean function.]
@@ -2118,7 +2118,7 @@ Cudd_FirstPrime(
 
 } /* end of Cudd_FirstPrime */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Generates the next prime of a Boolean function.]
@@ -2184,7 +2184,7 @@ Cudd_NextPrime(
 
 } /* end of Cudd_NextPrime */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Computes the cube of an array of BDD variables.]
@@ -2234,7 +2234,7 @@ Cudd_bddComputeCube(
 
 }  /* end of Cudd_bddComputeCube */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Computes the cube of an array of ADD variables.]
@@ -2285,7 +2285,7 @@ Cudd_addComputeCube(
 
 } /* end of Cudd_addComputeCube */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Builds the BDD of a cube from a positional array.]
@@ -2331,7 +2331,7 @@ Cudd_CubeArrayToBdd(
 
 } /* end of Cudd_CubeArrayToBdd */
 #endif
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Builds a positional array from the BDD of a cube.]
@@ -2544,7 +2544,7 @@ Cudd_IsGenEmpty(
 
 } /* end of Cudd_IsGenEmpty */
 
-#ifdef CUDD_ORIGINAL_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 /**Function********************************************************************
 
   Synopsis    [Builds a cube of BDD variables from an array of indices.]

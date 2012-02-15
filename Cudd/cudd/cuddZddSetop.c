@@ -76,7 +76,7 @@
 #include "util.h"
 #include "cuddInt.h"
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #include <polybori/cudd/prefix_internal.h>
 #endif
 

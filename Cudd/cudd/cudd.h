@@ -61,7 +61,7 @@
 /* Nested includes                                                           */
 /*---------------------------------------------------------------------------*/
 
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 #include "mtr.h"
 #include "epd.h"
 #ifndef CUDD_ASSERT
@@ -638,7 +638,7 @@ typedef int (*DD_QSFP)(const void *, const void *);
 /* Function prototypes                                                       */
 /*---------------------------------------------------------------------------*/
 
-#ifndef CUDD_ORIGINAL_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 extern DdNode * Cudd_addNewVar (PBORI_PREFIX(DdManager) *dd);
 extern DdNode * Cudd_addNewVarAtLevel (PBORI_PREFIX(DdManager) *dd, int level);
 extern DdNode * Cudd_bddNewVar (PBORI_PREFIX(DdManager) *dd);
@@ -719,7 +719,7 @@ extern double Cudd_ReadMaxGrowthAlternate (PBORI_PREFIX(DdManager) * dd);
 extern void Cudd_SetMaxGrowthAlternate (PBORI_PREFIX(DdManager) * dd, double mg);
 extern int Cudd_ReadReorderingCycle (PBORI_PREFIX(DdManager) * dd);
 extern void Cudd_SetReorderingCycle (PBORI_PREFIX(DdManager) * dd, int cycle);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern MtrNode * Cudd_ReadTree (PBORI_PREFIX(DdManager) *dd);
 extern void Cudd_SetTree (PBORI_PREFIX(DdManager) *dd, MtrNode *tree);
 extern void Cudd_FreeTree (PBORI_PREFIX(DdManager) *dd);
@@ -931,7 +931,7 @@ extern DdNode * Cudd_bddSqueeze (PBORI_PREFIX(DdManager) *dd, DdNode *l, DdNode 
 extern DdNode * Cudd_bddMinimize (PBORI_PREFIX(DdManager) *dd, DdNode *f, DdNode *c);
 extern DdNode * Cudd_SubsetCompress (PBORI_PREFIX(DdManager) *dd, DdNode *f, int nvars, int threshold);
 extern DdNode * Cudd_SupersetCompress (PBORI_PREFIX(DdManager) *dd, DdNode *f, int nvars, int threshold);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern MtrNode * Cudd_MakeTreeNode (PBORI_PREFIX(DdManager) *dd, unsigned int low, unsigned
 int size, unsigned int type);
 #endif
@@ -999,7 +999,7 @@ extern int Cudd_DagSize (DdNode *node);
 extern int Cudd_EstimateCofactor (PBORI_PREFIX(DdManager) *dd, DdNode * node, int i, int phase);
 extern int Cudd_EstimateCofactorSimple (DdNode * node, int i);
 extern int Cudd_SharingSize (DdNode **nodeArray, int n);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern double Cudd_CountMinterm (PBORI_PREFIX(DdManager) *manager, DdNode *node, int nvars);
 extern int Cudd_EpdCountMinterm (PBORI_PREFIX(DdManager) *manager, DdNode *node, int nvars, EpDouble *epd);
 #endif
@@ -1037,7 +1037,7 @@ extern double Cudd_AverageDistance (PBORI_PREFIX(DdManager) *dd);
 extern long Cudd_Random (void);
 extern void Cudd_Srandom (long seed);
 extern double Cudd_Density (PBORI_PREFIX(DdManager) *dd, DdNode *f, int nvars);
-#endif /* CUDD_ORIGINAL_INCLUSION*/
+#endif /* PBORI_FORCE_ORIGINAL_CUDD*/
 
 extern void PBORI_PREFIX(Cudd_OutOfMem) (long size);
 extern int PBORI_PREFIX(Cudd_zddCount) (PBORI_PREFIX(DdManager) *zdd, DdNode *P);
@@ -1049,7 +1049,7 @@ extern DdNode	* PBORI_PREFIX(Cudd_zddDivide) (PBORI_PREFIX(DdManager) *dd, DdNod
 extern DdNode	* PBORI_PREFIX(Cudd_zddWeakDivF) (PBORI_PREFIX(DdManager) *dd, DdNode *f, DdNode *g);
 extern DdNode	* PBORI_PREFIX(Cudd_zddDivideF) (PBORI_PREFIX(DdManager) *dd, DdNode *f, DdNode *g);
 extern DdNode	* PBORI_PREFIX(Cudd_zddComplement) (PBORI_PREFIX(DdManager) *dd, DdNode *node);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern MtrNode * Cudd_MakeZddTreeNode (PBORI_PREFIX(DdManager) *dd, unsigned int low, unsigned
 int size, unsigned int type);
 #endif
@@ -1080,7 +1080,7 @@ extern int PBORI_PREFIX(Cudd_zddNextPath) (DdGen *gen, int **path);
 extern char * PBORI_PREFIX(Cudd_zddCoverPathToString) (PBORI_PREFIX(DdManager) *zdd, int *path, char *str);
 extern DdNode * PBORI_PREFIX(Cudd_zddSupport) (PBORI_PREFIX(DdManager) * dd, DdNode * f);
 extern int PBORI_PREFIX(Cudd_zddDumpDot) (PBORI_PREFIX(DdManager) *dd, int n, DdNode **f, char **inames, char **onames, FILE *fp);
-#ifndef CUDD_ORIGINAL_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 extern int Cudd_bddSetPiVar (PBORI_PREFIX(DdManager) *dd, int index);
 extern int Cudd_bddSetPsVar (PBORI_PREFIX(DdManager) *dd, int index);
 extern int Cudd_bddSetNsVar (PBORI_PREFIX(DdManager) *dd, int index);
@@ -1104,7 +1104,7 @@ extern int Cudd_bddIsVarHardGroup (PBORI_PREFIX(DdManager) *dd, int index);
 #endif
 
 /* For consistence: introduce prefixed macros */
-#ifndef CUDD_ORIGINAL_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #define pbori_Cudd_IsConstant Cudd_IsConstant
 #define pbori_Cudd_Not Cudd_Not
 #define pbori_Cudd_NotCond Cudd_NotCond

@@ -88,7 +88,7 @@
 
 #include <math.h>
 #include "cudd.h"
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 #include "st.h"
 
 #else 
@@ -427,7 +427,7 @@ struct PBORI_PREFIX(DdManager) {	/* specialized DD symbol table */
     int realignZ;		/* realign BDD order after ZDD reordering */
     unsigned int nextDyn;	/* reorder if this size is reached */
     unsigned int countDead;	/* if 0, count deads to trigger reordering */
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     MtrNode *tree;		/* variable group tree (BDD) */
     MtrNode *treeZ;		/* variable group tree (ZDD) */
 #endif
@@ -1062,7 +1062,7 @@ extern void PBORI_PREFIX(cuddCacheFlush) (PBORI_PREFIX(DdManager) *table);
 extern int PBORI_PREFIX(cuddComputeFloorLog2) (unsigned int value);
 extern int cuddHeapProfile (PBORI_PREFIX(DdManager) *dd);
 extern void cuddPrintNode (DdNode *f, FILE *fp);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern void cuddPrintVarGroups (PBORI_PREFIX(DdManager) * dd, MtrNode * root, int zdd, int
 silent);
 #endif
@@ -1130,7 +1130,7 @@ extern void PBORI_PREFIX(cuddShrinkDeathRow) (PBORI_PREFIX(DdManager) *table);
 extern DdNode * cuddDynamicAllocNode (PBORI_PREFIX(DdManager) *table);
 extern int cuddSifting (PBORI_PREFIX(DdManager) *table, int lower, int upper);
 extern int cuddSwapping (PBORI_PREFIX(DdManager) *table, int lower, int upper, Cudd_ReorderingType heuristic);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern int cuddNextHigh (PBORI_PREFIX(DdManager) *table, int x);
 extern int cuddNextLow (PBORI_PREFIX(DdManager) *table, int x);
 #endif
@@ -1159,7 +1159,7 @@ extern DdNode * PBORI_PREFIX(cuddUniqueInterZdd) (PBORI_PREFIX(DdManager) *uniqu
 extern DdNode * PBORI_PREFIX(cuddUniqueConst) (PBORI_PREFIX(DdManager) *unique, CUDD_VALUE_TYPE value);
 
 
-#ifdef ORIG_CUDD
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 
 extern DdNode * cuddZddGetNode (PBORI_PREFIX(DdManager) *zdd, int id, DdNode *T, DdNode *E);
 #else
@@ -1213,7 +1213,7 @@ extern DdNode	* cuddBddIsop (PBORI_PREFIX(DdManager) *dd, DdNode *L, DdNode *U);
 extern DdNode	* cuddMakeBddFromZddCover (PBORI_PREFIX(DdManager) *dd, DdNode *node);
 extern int cuddZddLinearSifting (PBORI_PREFIX(DdManager) *table, int lower, int upper);
 extern int cuddZddAlignToBdd (PBORI_PREFIX(DdManager) *table);
-#ifdef CUDD_ORIG_INCLUSION
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
 extern int cuddZddNextHigh (PBORI_PREFIX(DdManager) *table, int x);
 extern int cuddZddNextLow (PBORI_PREFIX(DdManager) *table, int x);
 #endif
@@ -1241,12 +1241,12 @@ extern int cuddZddP (PBORI_PREFIX(DdManager) *zdd, DdNode *f);
 #endif
 
 
-#ifndef CUDD_ORIG_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #define Cudd_OutOfMem MMout_of_memory
 #endif
 
 /* For consistence: introduce prefixed macros */
-#ifndef CUDD_ORIGINAL_INCLUSION
+#ifndef PBORI_FORCE_ORIGINAL_CUDD
 #define pbori_cuddIsConstant cuddIsConstant
 #define pbori_cuddNot cuddNot
 #define pbori_cuddNotCond cuddNotCond
