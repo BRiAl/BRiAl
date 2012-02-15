@@ -30,6 +30,8 @@
 
 BEGIN_NAMESPACE_PBORI
 
+typedef PBORI_PREFIX(DdManager) DdManager;
+
 /** @class pbori_traits 
  * @brief This class contains property definitions to be used in polybori 
  * classes

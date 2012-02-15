@@ -16,6 +16,7 @@
 #include <polybori/pbori_defs.h>
 
 #include <polybori/cudd/cudd.h>
+#include <polybori/cudd/prefix_internal.h>
 
 BEGIN_NAMESPACE_PBORI
 

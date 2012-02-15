@@ -797,7 +797,8 @@ env.Append(CPPDEFINES=["HAVE_IEEE_754"])
 
 
 cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
-cuddInt cudd""") ]
+cuddInt cudd""") ] + [PBInclPath('cudd/prefix' + fname + '.h')
+                      for fname in ['', '_internal'] ]
     
 cudd_resources = [CuddPath('cudd/cudd' + elt) for elt in Split("""
 API.c Cache.c Init.c LCache.c Ref.c Table.c ZddFuncs.c ZddSetop.c""") ]

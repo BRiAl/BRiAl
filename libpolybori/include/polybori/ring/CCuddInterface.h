@@ -42,7 +42,7 @@
 #include <polybori/common/CWeakPtrFacade.h>
 
 // get PBORI_PREFIX(cudd error) texts
-inline const char* error_text(DdManager* mgr) {
+inline const char* error_text(PBORI_PREFIX(DdManager)* mgr) {
     switch (PBORI_PREFIX(Cudd_ReadErrorCode)(mgr)) {
     case CUDD_MEMORY_OUT:
       return("Out of memory.");
@@ -60,13 +60,13 @@ inline const char* error_text(DdManager* mgr) {
 
 /// Increment reference count
 inline void 
-intrusive_ptr_add_ref(DdManager* ptr){
+intrusive_ptr_add_ref(PBORI_PREFIX(DdManager)* ptr){
   ++(ptr->hooks);
 }
 
 /// Release current pointer by decrementing reference counting
 inline void 
-intrusive_ptr_release(DdManager* ptr) {
+intrusive_ptr_release(PBORI_PREFIX(DdManager)* ptr) {
   if (!(--(ptr->hooks))) {
     int retval = PBORI_PREFIX(Cudd_CheckZeroRef)(ptr);
     // Check for unexpected non-zero reference counts
@@ -79,7 +79,7 @@ intrusive_ptr_release(DdManager* ptr) {
 
 BEGIN_NAMESPACE_PBORI
 
-
+typedef PBORI_PREFIX(DdManager) DdManager;
 
 /// @name Define templates for generating member functions from CUDD procedures
 //@{

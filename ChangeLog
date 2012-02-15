@@ -1,5 +1,6 @@
 Release Name: 0.8.1
 * Merged Cudd with cudd 2.5.0
+* Prefixed patched Cudd's function with pbori_
 * ipbori is now an all-python script with fallback to plain python if
   IPython is not available
 * Python interface utilizes shared libraries

@@ -248,4 +248,7 @@
 #define cuddZddDiff pbori_cuddZddDiff
 #define cuddZddIte pbori_cuddZddIte
 #define cuddHashTableResize pbori_cuddHashTableResize
+
+#define DdManager pbori_DdManager
+
 #endif /* polybori_cudd_prefix_internal_h_ */
