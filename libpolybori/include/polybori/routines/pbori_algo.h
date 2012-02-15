@@ -28,7 +28,6 @@
 
 // temporarily
 #include <polybori/cudd/cudd.h>
-#include <polybori/cudd/cuddInt.h>
 #include <polybori/ring/CCuddInterface.h>
 
 BEGIN_NAMESPACE_PBORI
@@ -267,7 +266,7 @@ dd_print(NaviType navi) {
  
     std::cout << std::endl<< "idx " << *navi <<" addr "<<
       ((DdNode*)navi)<<" ref "<<
-      int(Cudd_Regular((DdNode*)navi)->ref) << std::endl;
+      int(PBORI_PREFIX(Cudd_Regular)((DdNode*)navi)->ref) << std::endl;
 
     dd_print(navi.thenBranch());
     dd_print(navi.elseBranch());
@@ -276,7 +275,7 @@ dd_print(NaviType navi) {
   else {
     std::cout << "const isvalid? "<<navi.isValid()<<" addr "
               <<((DdNode*)navi)<<" ref "<<
-      int(Cudd_Regular((DdNode*)navi)->ref)<<std::endl;
+      int(PBORI_PREFIX(Cudd_Regular)((DdNode*)navi)->ref)<<std::endl;
 
   }
 }
@@ -524,27 +523,27 @@ cudd_generate_multiples(const ManagerType& mgr,
 
     DdNode* zeroNode( (mgr.getManager())->zero ); 
 
-    Cudd_Ref(prev);
+    PBORI_PREFIX(Cudd_Ref)(prev);
     while(start != finish) {
 
       while((multStart != multFinish) && (*start < *multStart)) {
 
-        DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *multStart,
+        DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( mgr.getManager(), *multStart,
                                              prev, prev );
 
-        Cudd_Ref(result);
-        Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+        PBORI_PREFIX(Cudd_Ref)(result);
+        PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr.getManager(), prev);
 
         prev = result;
         ++multStart;
 
       };
 
-      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *start,
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( mgr.getManager(), *start,
                                            prev, zeroNode );
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr.getManager(), prev);
 
       prev = result;
 
@@ -558,18 +557,18 @@ cudd_generate_multiples(const ManagerType& mgr,
 
     while(multStart != multFinish) {
 
-      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *multStart,
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( mgr.getManager(), *multStart,
                                            prev, prev );
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr.getManager(), prev);
 
       prev = result;
       ++multStart;
 
     };
 
-    Cudd_Deref(prev);
+    PBORI_PREFIX(Cudd_Deref)(prev);
 
     typedef DDBase dd_base;
     return dd_base(mgr, prev);
@@ -586,20 +585,20 @@ cudd_generate_divisors(const ManagerType& mgr,
 
     DdNode* prev= (mgr.getManager())->one;
 
-    Cudd_Ref(prev);
+    PBORI_PREFIX(Cudd_Ref)(prev);
     while(start != finish) {
  
-      DdNode* result = cuddUniqueInterZdd( mgr.getManager(), *start,
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( mgr.getManager(), *start,
                                            prev, prev);
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(mgr.getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr.getManager(), prev);
  
       prev = result;
       ++start;
     }
 
-    Cudd_Deref(prev);
+    PBORI_PREFIX(Cudd_Deref)(prev);
     ///@todo Next line needs generalization 
       return DDBase(mgr, prev);
 
@@ -668,14 +667,14 @@ increment_iteratorlike(IteratorLike iter) {
 
 #ifdef PBORI_LOWLEVEL_XOR 
 
-// dummy for cuddcache (implemented in pbori_routines.cc)
+// dummy for PBORI_PREFIX(cuddcache) (implemented in pbori_routines.cc)
 DdNode* 
 pboriCuddZddUnionXor__(DdManager *, DdNode *, DdNode *);
 
 
 /// The following should be made more generic 
 /// @todo This is still Cudd-like style, should be rewritten with PolyBoRi's
-/// cache wrapper, which would the dependency on cuddInt.h
+/// cache wrapper, which would the dependency on PBORI_PREFIX(cuddInt.h)
 template <class MgrType, class NodeType>
 NodeType
 pboriCuddZddUnionXor(MgrType zdd, NodeType P, NodeType Q) {
@@ -694,59 +693,59 @@ pboriCuddZddUnionXor(MgrType zdd, NodeType P, NodeType Q) {
     return(empty);
 
   /* Check cache */
-  res = cuddCacheLookup2Zdd(table, pboriCuddZddUnionXor__, P, Q);
+  res = PBORI_PREFIX(cuddCacheLookup2Zdd)(table, pboriCuddZddUnionXor__, P, Q);
   if (res != NULL)
     return(res);
   
-  if (cuddIsConstant(P))
+  if (PBORI_PREFIX(cuddIsConstant)(P))
     p_top = P->index;
   else
     p_top = P->index;/* zdd->permZ[P->index]; */
-  if (cuddIsConstant(Q))
+  if (PBORI_PREFIX(cuddIsConstant)(Q))
     q_top = Q->index;
   else
     q_top = Q->index; /* zdd->permZ[Q->index]; */
   if (p_top < q_top) {
-    e = pboriCuddZddUnionXor(zdd, cuddE(P), Q);
+    e = pboriCuddZddUnionXor(zdd, PBORI_PREFIX(cuddE)(P), Q);
     if (e == NULL) return (NULL);
-    Cudd_Ref(e);
-    res = cuddZddGetNode(zdd, P->index, cuddT(P), e);
+    PBORI_PREFIX(Cudd_Ref)(e);
+    res = PBORI_PREFIX(cuddZddGetNode)(zdd, P->index, PBORI_PREFIX(cuddT)(P), e);
     if (res == NULL) {
-      Cudd_RecursiveDerefZdd(table, e);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(table, e);
       return(NULL);
     }
-    Cudd_Deref(e);
+    PBORI_PREFIX(Cudd_Deref)(e);
   } else if (p_top > q_top) {
-    e = pboriCuddZddUnionXor(zdd, P, cuddE(Q));
+    e = pboriCuddZddUnionXor(zdd, P, PBORI_PREFIX(cuddE)(Q));
     if (e == NULL) return(NULL);
-    Cudd_Ref(e);
-    res = cuddZddGetNode(zdd, Q->index, cuddT(Q), e);
+    PBORI_PREFIX(Cudd_Ref)(e);
+    res = PBORI_PREFIX(cuddZddGetNode)(zdd, Q->index, PBORI_PREFIX(cuddT)(Q), e);
     if (res == NULL) {
-      Cudd_RecursiveDerefZdd(table, e);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(table, e);
       return(NULL);
     }
-    Cudd_Deref(e);
+    PBORI_PREFIX(Cudd_Deref)(e);
   } else {
-    t = pboriCuddZddUnionXor(zdd, cuddT(P), cuddT(Q));
+    t = pboriCuddZddUnionXor(zdd, PBORI_PREFIX(cuddT)(P), PBORI_PREFIX(cuddT)(Q));
     if (t == NULL) return(NULL);
-    Cudd_Ref(t);
-    e = pboriCuddZddUnionXor(zdd, cuddE(P), cuddE(Q));
+    PBORI_PREFIX(Cudd_Ref)(t);
+    e = pboriCuddZddUnionXor(zdd, PBORI_PREFIX(cuddE)(P), PBORI_PREFIX(cuddE)(Q));
     if (e == NULL) {
-      Cudd_RecursiveDerefZdd(table, t);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(table, t);
       return(NULL);
     }
-    Cudd_Ref(e);
-    res = cuddZddGetNode(zdd, P->index, t, e);
+    PBORI_PREFIX(Cudd_Ref)(e);
+    res = PBORI_PREFIX(cuddZddGetNode)(zdd, P->index, t, e);
     if (res == NULL) {
-      Cudd_RecursiveDerefZdd(table, t);
-      Cudd_RecursiveDerefZdd(table, e);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(table, t);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(table, e);
       return(NULL);
     }
-    Cudd_Deref(t);
-    Cudd_Deref(e);
+    PBORI_PREFIX(Cudd_Deref)(t);
+    PBORI_PREFIX(Cudd_Deref)(e);
   }
   
-  cuddCacheInsert2(table, pboriCuddZddUnionXor__, P, Q, res);
+  PBORI_PREFIX(cuddCacheInsert2)(table, pboriCuddZddUnionXor__, P, Q, res);
   
   return(res);
 } /* end of pboriCuddZddUnionXor */

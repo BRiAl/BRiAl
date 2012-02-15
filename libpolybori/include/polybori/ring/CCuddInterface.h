@@ -41,9 +41,9 @@
 
 #include <polybori/common/CWeakPtrFacade.h>
 
-// get cudd error texts
+// get PBORI_PREFIX(cudd error) texts
 inline const char* error_text(DdManager* mgr) {
-    switch (Cudd_ReadErrorCode(mgr)) {
+    switch (PBORI_PREFIX(Cudd_ReadErrorCode)(mgr)) {
     case CUDD_MEMORY_OUT:
       return("Out of memory.");
     case CUDD_TOO_MANY_NODES:
@@ -68,11 +68,11 @@ intrusive_ptr_add_ref(DdManager* ptr){
 inline void 
 intrusive_ptr_release(DdManager* ptr) {
   if (!(--(ptr->hooks))) {
-    int retval = Cudd_CheckZeroRef(ptr);
+    int retval = PBORI_PREFIX(Cudd_CheckZeroRef)(ptr);
     // Check for unexpected non-zero reference counts
     PBORI_ASSERT(retval == 0);
 
-    Cudd_Quit(ptr);
+    PBORI_PREFIX(Cudd_Quit)(ptr);
   }
 }
 
@@ -84,13 +84,13 @@ BEGIN_NAMESPACE_PBORI
 /// @name Define templates for generating member functions from CUDD procedures
 //@{
 #define PB_CUDDMGR_READ(count, data, funcname) data funcname() const { \
-  return BOOST_PP_CAT(Cudd_, funcname)(*this); }
+  return BOOST_PP_CAT(PBORI_PREFIX(Cudd_), funcname)(*this); }
 
 #define PB_CUDDMGR_SWITCH(count, data, funcname) void funcname() { \
-    BOOST_PP_CAT(Cudd_, funcname)(*this); }
+    BOOST_PP_CAT(PBORI_PREFIX(Cudd_), funcname)(*this); }
 
 #define PB_CUDDMGR_SET(count, data, funcname)  void funcname(data arg) { \
-    BOOST_PP_CAT(Cudd_, funcname)(*this, arg); }
+    BOOST_PP_CAT(PBORI_PREFIX(Cudd_), funcname)(*this, arg); }
 //@}
 
 /** @class CCuddInterface
@@ -139,7 +139,7 @@ public:
 
   /// Copy constructor
   CCuddInterface(const self& rhs): p_mgr(rhs.p_mgr), m_vars(rhs.m_vars) {
-    std::for_each(m_vars.begin(), m_vars.end(), Cudd_Ref);
+    std::for_each(m_vars.begin(), m_vars.end(), PBORI_PREFIX(Cudd_Ref));
   }
 
   /// Destructor
@@ -161,13 +161,13 @@ public:
   }
 
   /// Get ZDD variable 
-  node_ptr zddVar(idx_type idx) const { return apply(Cudd_zddIthVar, idx); }
+  node_ptr zddVar(idx_type idx) const { return apply(PBORI_PREFIX(Cudd_zddIthVar), idx); }
 
   /// Get 1-terminal for ZDDs
-  node_ptr zddOne(idx_type iMax) const  { return apply(Cudd_ReadZddOne, iMax); }
+  node_ptr zddOne(idx_type iMax) const  { return apply(PBORI_PREFIX(Cudd_ReadZddOne), iMax); }
 
   /// Get 0-terminal for ZDDs
-  node_ptr zddZero() const { return apply(Cudd_ReadZero); }
+  node_ptr zddZero() const { return apply(PBORI_PREFIX(Cudd_ReadZero)); }
 
   /// Get 1-terminal for ZDDs
   node_ptr zddOne() const {  
@@ -178,59 +178,59 @@ public:
   /// @name Member functions mimicking/interfacing with CUDD procedures 
   /// @note See preprocessor generated members below
   //@{
-  int ReorderingStatusZdd(Cudd_ReorderingType * method) const {
-    return Cudd_ReorderingStatusZdd(*this, method);
+  int ReorderingStatusZdd(PBORI_PREFIX(Cudd_ReorderingType) * method) const {
+    return PBORI_PREFIX(Cudd_ReorderingStatusZdd)(*this, method);
   }
 
   /// @note unused (do not use permutations if the variables)
   idx_type ReadPermZdd(idx_type idx) const { 
-    return Cudd_ReadPermZdd(*this, idx); 
+    return PBORI_PREFIX(Cudd_ReadPermZdd)(*this, idx); 
   }
 
   /// @note unused (do not use permutations if the variables)
   idx_type ReadInvPermZdd(idx_type idx) const { 
-    return Cudd_ReadInvPermZdd(*this, idx);
+    return PBORI_PREFIX(Cudd_ReadInvPermZdd)(*this, idx);
   }
 
-  void AddHook(DD_HFP f, Cudd_HookType where) { 
-    checkedResult(Cudd_AddHook(*this, f, where));
+  void AddHook(DD_HFP f, PBORI_PREFIX(Cudd_HookType) where) { 
+    checkedResult(PBORI_PREFIX(Cudd_AddHook)(*this, f, where));
   }
-  void RemoveHook(DD_HFP f, Cudd_HookType where) { 
-    checkedResult(Cudd_RemoveHook(*this, f, where)); 
+  void RemoveHook(DD_HFP f, PBORI_PREFIX(Cudd_HookType) where) { 
+    checkedResult(PBORI_PREFIX(Cudd_RemoveHook)(*this, f, where)); 
   }
-  int IsInHook(DD_HFP f, Cudd_HookType where) const { 
-    return Cudd_IsInHook(*this, f, where); 
+  int IsInHook(DD_HFP f, PBORI_PREFIX(Cudd_HookType) where) const { 
+    return PBORI_PREFIX(Cudd_IsInHook)(*this, f, where); 
   }
   void EnableReorderingReporting() { 
-    checkedResult(Cudd_EnableReorderingReporting(*this)); 
+    checkedResult(PBORI_PREFIX(Cudd_EnableReorderingReporting)(*this)); 
   }
   void DisableReorderingReporting() { 
-    checkedResult(Cudd_DisableReorderingReporting(*this)); 
+    checkedResult(PBORI_PREFIX(Cudd_DisableReorderingReporting)(*this)); 
   }
 
-  void DebugCheck(){ checkedResult(Cudd_DebugCheck(*this)); }
-  void CheckKeys(){ checkedResult(Cudd_CheckKeys(*this)); }
-  void PrintLinear() { checkedResult(Cudd_PrintLinear(*this)); }
+  void DebugCheck(){ checkedResult(PBORI_PREFIX(Cudd_DebugCheck)(*this)); }
+  void CheckKeys(){ checkedResult(PBORI_PREFIX(Cudd_CheckKeys)(*this)); }
+  void PrintLinear() { checkedResult(PBORI_PREFIX(Cudd_PrintLinear)(*this)); }
 
-  int ReadLinear(int x, int y) { return Cudd_ReadLinear(*this, x, y); }
+  int ReadLinear(int x, int y) { return PBORI_PREFIX(Cudd_ReadLinear)(*this, x, y); }
 
-  size_type Prime(size_type pr) const { return Cudd_Prime(pr); }
+  size_type Prime(size_type pr) const { return PBORI_PREFIX(Cudd_Prime)(pr); }
 
-  void PrintVersion(FILE * fp) const { std::cout.flush(); Cudd_PrintVersion(fp); }
+  void PrintVersion(FILE * fp) const { std::cout.flush(); PBORI_PREFIX(Cudd_PrintVersion)(fp); }
 
   void zddPrintSubtable() const{ 
     std::cout.flush();
-    Cudd_zddPrintSubtable(*this);
+    PBORI_PREFIX(Cudd_zddPrintSubtable)(*this);
   }
 
-  void zddReduceHeap(Cudd_ReorderingType heuristic, int minsize) {
-    checkedResult(Cudd_zddReduceHeap(*this, heuristic, minsize));
+  void zddReduceHeap(PBORI_PREFIX(Cudd_ReorderingType) heuristic, int minsize) {
+    checkedResult(PBORI_PREFIX(Cudd_zddReduceHeap)(*this, heuristic, minsize));
   }
   void zddShuffleHeap(int * permutation) { 
-    checkedResult(Cudd_zddShuffleHeap(*this, permutation));
+    checkedResult(PBORI_PREFIX(Cudd_zddShuffleHeap)(*this, permutation));
   }
   void zddSymmProfile(int lower, int upper) const {
-    Cudd_zddSymmProfile(*this, lower, upper);
+    PBORI_PREFIX(Cudd_zddSymmProfile)(*this, lower, upper);
   }
 
   /// @note Preprocessor generated members
@@ -281,7 +281,7 @@ public:
 
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, FILE*, (ReadStdout)(ReadStderr))
 
-  PB_CUDDMGR_SET(BOOST_PP_NIL, Cudd_ReorderingType, AutodynEnableZdd)
+  PB_CUDDMGR_SET(BOOST_PP_NIL, PBORI_PREFIX(Cudd_ReorderingType), AutodynEnableZdd)
   PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
   PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
 #else
@@ -302,7 +302,7 @@ public:
   size_type nVariables() const { return (size_type)ReadZddSize(); }
 
   /// clear all temporarily stored data
-  void cacheFlush() {  cuddCacheFlush(*this); }
+  void cacheFlush() {  PBORI_PREFIX(cuddCacheFlush)(*this); }
 
 protected:
 
@@ -310,7 +310,7 @@ protected:
   mgr_ptr init(size_type numVars,size_type numVarsZ, size_type numSlots,
                  size_type cacheSize, large_size_type maxMemory) {
 
-    DdManager* ptr = Cudd_Init(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
+    DdManager* ptr = PBORI_PREFIX(Cudd_Init)(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
     if UNLIKELY(ptr==NULL)
       throw PBoRiError(CTypes::failed);
     
@@ -344,12 +344,12 @@ protected:
 protected:
   /// Dereferencing of diagram node
   void recursiveDeref(node_ptr node) const { 
-    Cudd_RecursiveDerefZdd(*this, node);
+    PBORI_PREFIX(Cudd_RecursiveDerefZdd)(*this, node);
   }
 
   /// Generate raw variable
   void initVar(node_ptr& node, idx_type idx) const {
-    Cudd_Ref(node = cuddUniqueInterZdd(*this, 
+    PBORI_PREFIX(Cudd_Ref)(node = PBORI_PREFIX(cuddUniqueInterZdd)(*this, 
                                        idx, zddOne(),  zddZero()));
   }
 

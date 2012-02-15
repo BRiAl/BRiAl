@@ -84,10 +84,13 @@
 #include "util.h"
 #include "cuddInt.h"
 
+#ifndef CUDD_ORIG_INCLUSION
+#include <polybori/cudd/prefix_internal.h>
+#endif
+
 /*---------------------------------------------------------------------------*/
 /* Constant declarations                                                     */
 /*---------------------------------------------------------------------------*/
-
 #ifndef DD_UNSORTED_FREE_LIST
 #ifdef DD_RED_BLACK_FREE_LIST
 /* Constants for red/black trees. */
@@ -897,7 +900,12 @@ cuddGarbageCollect(
 	    *lastP = sentinel;
 	}
 	if ((unsigned) deleted != unique->subtables[i].dead) {
+
+#ifndef CUDD_ORIG_INCLUSION
+	    ddReportRefMess(unique, i, "pbori_cuddGarbageCollect");
+#else
 	    ddReportRefMess(unique, i, "cuddGarbageCollect");
+#endif
 	}
 	totalDeleted += deleted;
 	unique->subtables[i].keys -= deleted;

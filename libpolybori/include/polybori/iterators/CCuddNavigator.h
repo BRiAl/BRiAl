@@ -139,16 +139,16 @@ public:
   //@}
 
   /// Force incrementation of reference count
-  void incRef() const {  PBORI_ASSERT(isValid()); Cudd_Ref(pNode); }
+  void incRef() const {  PBORI_ASSERT(isValid()); PBORI_PREFIX(Cudd_Ref)(pNode); }
 
   /// Force decrementation of reference count
-  void decRef() const {  PBORI_ASSERT(isValid()); Cudd_Deref(pNode); }
+  void decRef() const {  PBORI_ASSERT(isValid()); PBORI_PREFIX(Cudd_Deref)(pNode); }
 
   /// Force recursive decrementation of reference count
   template <class MgrType>
   void recursiveDecRef(const MgrType& mgr) const {
     PBORI_ASSERT(isValid());
-    Cudd_RecursiveDerefZdd(mgr, pNode); 
+    PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr, pNode); 
   }
 
 private: 

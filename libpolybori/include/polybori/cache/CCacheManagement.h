@@ -187,7 +187,7 @@ public:
   }
   /// Get constant zero
   dd_type zero() const {
-    return ring_type(m_mgr).zero();//dd_base(m_mgr, Cudd_ReadZero(m_mgr->manager()));//manager().zddZero();
+    return ring_type(m_mgr).zero();//dd_base(m_mgr, PBORI_PREFIX(Cudd_ReadZero)(m_mgr->manager()));//manager().zddZero();
   }
 
   ring_type ring() const { return ring_type(manager()); }
@@ -294,7 +294,7 @@ public:
 
   /// Find cached value wrt. given node
   node_type find(node_type node) const {
-    return cuddCacheLookup1Zdd(internalManager(), cache_dummy, node);
+    return PBORI_PREFIX(cuddCacheLookup1Zdd)(internalManager(), cache_dummy, node);
   }
 
   /// Find cached value wrt. given node (for navigator type)
@@ -304,9 +304,9 @@ public:
 
   /// Store cached value wrt. given node  
   void insert(node_type node, node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert1(internalManager(), cache_dummy, node, result);
-    Cudd_Deref(result);
+    PBORI_PREFIX(Cudd_Ref)(result);
+    PBORI_PREFIX(cuddCacheInsert1)(internalManager(), cache_dummy, node, result);
+    PBORI_PREFIX(Cudd_Deref)(result);
   }
 
   /// Store cached value wrt. given node  
@@ -349,7 +349,7 @@ public:
 
   /// Find cached value wrt. given node
   node_type find(node_type first, node_type second) const {
-    return cuddCacheLookup2Zdd(internalManager(), cache_dummy, first, second);
+    return PBORI_PREFIX(cuddCacheLookup2Zdd)(internalManager(), cache_dummy, first, second);
   }
   /// Find cached value wrt. given node (for navigator type)
   navigator find(navigator first, navigator second) const { 
@@ -358,9 +358,9 @@ public:
 
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert2(internalManager(), cache_dummy, first, second, result);
-    Cudd_Deref(result);
+    PBORI_PREFIX(Cudd_Ref)(result);
+    PBORI_PREFIX(cuddCacheInsert2)(internalManager(), cache_dummy, first, second, result);
+    PBORI_PREFIX(Cudd_Deref)(result);
   }
 
   /// Store cached value wrt. given node  
@@ -404,7 +404,7 @@ public:
 
   /// Find cached value wrt. given node
   node_type find(node_type first, node_type second, node_type third) const {
-    return cuddCacheLookupZdd(internalManager(), (ptruint)GENERIC_DD_TAG, 
+    return PBORI_PREFIX(cuddCacheLookupZdd)(internalManager(), (ptruint)GENERIC_DD_TAG, 
                               first, second, third);
   }
 
@@ -417,10 +417,10 @@ public:
   /// Store cached value wrt. given node  
   void insert(node_type first, node_type second, node_type third, 
               node_type result) const {
-    Cudd_Ref(result);
-    cuddCacheInsert(internalManager(), (ptruint)GENERIC_DD_TAG, 
+    PBORI_PREFIX(Cudd_Ref)(result);
+    PBORI_PREFIX(cuddCacheInsert)(internalManager(), (ptruint)GENERIC_DD_TAG, 
                     first, second, third, result);
-    Cudd_Deref(result);
+    PBORI_PREFIX(Cudd_Deref)(result);
   }
   /// Store cached value wrt. given node  
   void insert(navigator first, navigator second, navigator third, 

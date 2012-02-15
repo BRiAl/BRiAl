@@ -212,6 +212,10 @@
 #include "util.h"
 #include "cuddInt.h"
 
+#ifndef CUDD_ORIG_INCLUSION
+#include <polybori/cudd/prefix_internal.h>
+#endif
+
 /*---------------------------------------------------------------------------*/
 /* Constant declarations                                                     */
 /*---------------------------------------------------------------------------*/

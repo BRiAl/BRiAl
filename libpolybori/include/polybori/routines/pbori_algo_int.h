@@ -22,7 +22,7 @@
 // get polybori's functionals
 #include "pbori_func.h"
 #include <polybori/iterators/CCuddNavigator.h>
-
+#include <polybori/cudd/cudd.h>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -30,7 +30,7 @@ BEGIN_NAMESPACE_PBORI
 
 inline void 
 inc_ref(DdNode* node) {  
-  Cudd_Ref(node); 
+  PBORI_PREFIX(Cudd_Ref)(node); 
 }
 
 template<class NaviType>
@@ -41,7 +41,7 @@ inc_ref(const NaviType & navi) {
 
 inline void 
 dec_ref(DdNode* node) {  
-  Cudd_Deref(node); 
+  PBORI_PREFIX(Cudd_Deref)(node); 
 }
 
 template<class NaviType>
@@ -64,7 +64,7 @@ do_get_node(const NaviType & navi) {
 template <class MgrType>
 inline void 
 recursive_dec_ref(const MgrType& mgr, DdNode* node) {  
-  Cudd_RecursiveDerefZdd(mgr, node);
+  PBORI_PREFIX(Cudd_RecursiveDerefZdd)(mgr, node);
 }
 
 template <class MgrType, class NaviType>
@@ -78,7 +78,7 @@ recursive_dec_ref(const MgrType& mgr, const NaviType & navi) {
 // multiples_of_one_term(NaviType navi, SizeType nmax, ManagerType& man){
 
 
-//   std::vector<int> indices (Cudd_SupportSize(man,navi));
+//   std::vector<int> indices (PBORI_PREFIX(Cudd_SupportSize)(man,navi));
 //   std::vector<int>::iterator iter(indices.begin());
 
 //       NaviType multiples = navi;
@@ -94,7 +94,7 @@ recursive_dec_ref(const MgrType& mgr, const NaviType & navi) {
 
 //       // int nmax = dd.nVariables();
 
-//       Cudd_Ref(multiples);
+//       PBORI_PREFIX(Cudd_Ref)(multiples);
 //       NaviType emptyset = navi.elseBranch();
 
 //       NaviType tmp;
@@ -106,14 +106,14 @@ recursive_dec_ref(const MgrType& mgr, const NaviType & navi) {
 //           //  while(i > *start) {
 
 //           tmp = cuddZddGetNode(man, i, multiples, multiples);
-//           Cudd_Ref(tmp);
-//           Cudd_Deref(multiples);
+//           PBORI_PREFIX(Cudd_Ref)(tmp);
+//           PBORI_PREFIX(Cudd_Deref)(multiples);
 //           multiples = tmp;
 //           --i;
 //         }
 //         tmp = cuddZddGetNode(man, i, multiples, emptyset);
-//         Cudd_Ref(tmp);
-//         Cudd_Deref(multiples);
+//         PBORI_PREFIX(Cudd_Ref)(tmp);
+//         PBORI_PREFIX(Cudd_Deref)(multiples);
 //         multiples = tmp;
 //         --i;
 //         ++start;
@@ -267,10 +267,10 @@ minimal_of_two_terms(NaviType navi, NaviType& multiples,
     elseMult = 
       indexed_term_multiples(elseTail, idxStart, idxFinish, apply);
 //       if(elseMult==elseTail)
-//         Cudd_Deref(elseMult);
+//         PBORI_PREFIX(Cudd_Deref)(elseMult);
   }
   else {
-    ///   Cudd_Ref(elseTail);
+    ///   PBORI_PREFIX(Cudd_Ref)(elseTail);
     ///!1  elseMult =  elseTail;
        apply.assign(elseMult, elseTail);///
   }
@@ -297,9 +297,9 @@ elseMult.decRef();
      thenMult = 
         indexed_term_multiples(thenTail, idxStart, idxFinish, apply);
 //       if(thenMult==thenTail)
-//         Cudd_Deref(thenMult);
-//Cudd_Deref(thenTail);///
-      ////////   Cudd_Ref(thenMult);///
+//         PBORI_PREFIX(Cudd_Deref)(thenMult);
+//PBORI_PREFIX(Cudd_Deref)(thenTail);///
+      ////////   PBORI_PREFIX(Cudd_Ref)(thenMult);///
     }
     else{
       ///!1 thenMult= thenTail;
@@ -311,7 +311,7 @@ elseMult.decRef();
   ReverseIterator idxIter = idxStart;
   const_reverse_iterator start(elseIdx.rbegin()), finish(elseIdx.rend());
   
-  //  Cudd_Ref(elseMult);
+  //  PBORI_PREFIX(Cudd_Ref)(elseMult);
   // std::cout << "isRed"<< isReducible <<std::endl;
 
   if(!elseMult.isConstant())
@@ -339,10 +339,10 @@ elseMult.decRef();
     multiples = elseMult;
 
 
-    ///////   Cudd_Ref(multiples); ///////
-    //  Cudd_Ref(elseTail); 
-    //Cudd_Deref(thenTail); 
-    //Cudd_Deref(thenMult); 
+    ///////   PBORI_PREFIX(Cudd_Ref)(multiples); ///////
+    //  PBORI_PREFIX(Cudd_Ref)(elseTail); 
+    //PBORI_PREFIX(Cudd_Deref)(thenTail); 
+    //PBORI_PREFIX(Cudd_Deref)(thenMult); 
  
     // std::cerr<< "h4"<<std::endl;
     return elseTail;
@@ -353,7 +353,7 @@ elseMult.decRef();
     const_reverse_iterator start2(thenIdx.rbegin()), finish2(thenIdx.rend());
     ReverseIterator idxIter = idxStart;
 
-    //  Cudd_Ref(thenMult);
+    //  PBORI_PREFIX(Cudd_Ref)(thenMult);
 //     NaviType printer = thenMult;    std::cout<< "thenMult"<<std::endl;
 //     while(!printer.isConstant()){
 //       std::cout<< *printer <<" & ";
@@ -393,7 +393,7 @@ elseMult.decRef();
 //       printer.incrementThen();
 //     }
     //  std::cout<< std::endl;
-    //////////  Cudd_Ref(multiples);
+    //////////  PBORI_PREFIX(Cudd_Ref)(multiples);
     // return apply.newNode(navi);
     //  std::cout << " "<<((DdNode*)thenTail)->ref<<std::endl;
     // std::cerr<< "h8"<<std::endl;
@@ -507,22 +507,22 @@ public:
   void replacingUnite(navigator& newNode,
                       const navigator& first, const navigator& second) const {
  
-    apply_replacing_cudd_function(Cudd_zddUnion, mgr, newNode, first, second);
+    apply_replacing_cudd_function(PBORI_PREFIX(Cudd_zddUnion), mgr, newNode, first, second);
   }
 
   void uniteAssign(navigator& first, const navigator& second) const {
-    apply_assign_cudd_function(Cudd_zddUnion, mgr, first, second);
+    apply_assign_cudd_function(PBORI_PREFIX(Cudd_zddUnion), mgr, first, second);
   }
   void diffAssign(navigator& first, const navigator& second) const {
-    apply_assign_cudd_function(Cudd_zddDiff, mgr, first, second);
+    apply_assign_cudd_function(PBORI_PREFIX(Cudd_zddDiff), mgr, first, second);
   }
   navigator diff(const navigator& first, const navigator& second) const {
-    return apply_cudd_function(Cudd_zddDiff, mgr, first, second);
+    return apply_cudd_function(PBORI_PREFIX(Cudd_zddDiff), mgr, first, second);
   }
   void replacingNode(navigator& newNode, idx_type idx, 
                      navigator& first, navigator& second) const {
 
-    newNode = navigator(cuddZddGetNode(mgr, idx, first.getNode(), 
+    newNode = navigator(PBORI_PREFIX(cuddZddGetNode)(mgr, idx, first.getNode(), 
                                        second.getNode()));
     newNode.incRef();
     recursive_dec_ref(mgr, first);
@@ -531,11 +531,11 @@ public:
  
   void newNodeAssign(idx_type idx, 
                      navigator& thenNode, const navigator& elseNode) const {
-    navigator newNode = navigator(cuddZddGetNode(mgr, idx, 
+    navigator newNode = navigator(PBORI_PREFIX(cuddZddGetNode)(mgr, idx, 
                                                  thenNode.getNode(), 
                                                  elseNode.getNode()));
     newNode.incRef();
-    //Cudd_Deref(thenNode);   
+    //PBORI_PREFIX(Cudd_Deref)(thenNode);   
     recursive_dec_ref(mgr, thenNode);
     thenNode = newNode;
   }
@@ -545,7 +545,7 @@ public:
   }
 
   void productAssign(navigator& node, idx_type idx) const {
-    navigator emptyset = navigator(Cudd_ReadZero(mgr));
+    navigator emptyset = navigator(PBORI_PREFIX(Cudd_ReadZero)(mgr));
     newNodeAssign(idx, node, emptyset);
   }
 
@@ -560,10 +560,10 @@ public:
   }
 
   size_type nSupport(const navigator& node) const {
-    return Cudd_SupportSize(mgr, node.getNode());
+    return PBORI_PREFIX(Cudd_SupportSize)(mgr, node.getNode());
   }
   size_type length(const navigator& node) const {
-    return Cudd_zddCount(mgr, node.getNode());
+    return PBORI_PREFIX(Cudd_zddCount)(mgr, node.getNode());
   }
 
   navigator& newNode(navigator& node) const {
@@ -695,7 +695,7 @@ dd_minimal_elements(NaviType navi,DDType2& multiples,
 
 
     if(nlen == 1) {             // Special case of only one term
-      //      Cudd_Ref(navi);
+      //      PBORI_PREFIX(Cudd_Ref)(navi);
       multiples = indexed_term_multiples(navi, idxStart, idxEnd, apply);
       return apply.newNode(navi);
     }

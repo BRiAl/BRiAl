@@ -19,7 +19,8 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
-#include <polybori/cudd/cuddInt.h>
+#include <polybori/cudd/cudd.h>
+#include <polybori/cudd/prefix.h>
 #include "CApplyNodeFacade.h"
 #include "CNodeCounter.h"
 
@@ -64,7 +65,7 @@ template <class DataType>
 inline void
 extrusive_ptr_release(const DataType& data, DdNode* ptr) {
    if (ptr != NULL) {
-     Cudd_RecursiveDerefZdd(data.getManager(), ptr);
+     PBORI_PREFIX(Cudd_RecursiveDerefZdd)(data.getManager(), ptr);
    }
 }
 
@@ -72,7 +73,7 @@ extrusive_ptr_release(const DataType& data, DdNode* ptr) {
 template <class DataType>
 inline void 
 extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
-  if (ptr) Cudd_Ref(ptr);
+  if (ptr) PBORI_PREFIX(Cudd_Ref)(ptr);
 }
 
 /** @class CCuddDDFacade
@@ -95,7 +96,7 @@ extrusive_ptr_add_ref(const DataType&, DdNode* ptr) {
 
 #define PB_ZDD_APPLY(count, data, funcname) \
   diagram_type BOOST_PP_CAT(PBORI_NAME_, funcname)(data rhs) const {    \
-      return apply(BOOST_PP_CAT(Cudd_zdd, funcname),           \
+    return apply(BOOST_PP_CAT(PBORI_PREFIX(Cudd_zdd), funcname),        \
                               rhs); }
 
 template <class RingType, class DiagramType>
@@ -198,8 +199,8 @@ public:
 
   /// Performs the inclusion test for ZDDs
   bool implies(const self& rhs) const {
-    return Cudd_zddDiffConst(getManager(), getNode(), rhs.getNode()) ==
-      Cudd_ReadZero(getManager());
+    return PBORI_PREFIX(Cudd_zddDiffConst)(getManager(), getNode(), rhs.getNode()) ==
+      PBORI_PREFIX(Cudd_ReadZero)(getManager());
   }
 
 
@@ -217,7 +218,7 @@ public:
 
   }
   void PrintMinterm() const  {
-    checkAssumption(apply(Cudd_zddPrintMinterm) == 1);
+    checkAssumption(apply(PBORI_PREFIX(Cudd_zddPrintMinterm)) == 1);
   }
   //@}
 
@@ -228,7 +229,7 @@ public:
   double countDouble() const { return dd_long_count<double>(navigation()); }
 
   /// Get index of curent node
-  size_type rootIndex() const { return Cudd_NodeReadIndex(getNode()); }
+  size_type rootIndex() const { return PBORI_PREFIX(Cudd_NodeReadIndex)(getNode()); }
 
   /// Number of nodes in the current decision diagram
   size_type nNodes() const { return CNodeCounter<navigator>()(navigation()); }
@@ -236,11 +237,11 @@ public:
   /// Number of references pointing here
   size_type refCount() const { 
     PBORI_ASSERT(getNode() != NULL);
-    return Cudd_Regular(getNode())->ref;
+    return PBORI_PREFIX(Cudd_Regular)(getNode())->ref;
   }
 
   /// Test whether diagram represents the empty set
-  bool isZero() const { return getNode() == Cudd_ReadZero(getManager()); }
+  bool isZero() const { return getNode() == PBORI_PREFIX(Cudd_ReadZero)(getManager()); }
 
   /// Test whether diagram represents the empty set
   bool isOne() const { return getNode() == DD_ONE(getManager()); }
@@ -292,27 +293,27 @@ protected:
     
     DdNode* zeroNode( (getManager())->zero ); 
     
-    Cudd_Ref(prev);
+    PBORI_PREFIX(Cudd_Ref)(prev);
     while(start != finish) {
       
       while((multStart != multFinish) && (*start < *multStart)) {
 
-        DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+        DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( getManager(), *multStart,
                                              prev, prev );
 
-        Cudd_Ref(result);
-        Cudd_RecursiveDerefZdd(getManager(), prev);
+        PBORI_PREFIX(Cudd_Ref)(result);
+        PBORI_PREFIX(Cudd_RecursiveDerefZdd)(getManager(), prev);
 
         prev = result;
         ++multStart;
 
       };
 
-      DdNode* result = cuddUniqueInterZdd( getManager(), *start,
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( getManager(), *start,
                                            prev, zeroNode );
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(getManager(), prev);
 
       prev = result;
 
@@ -326,18 +327,18 @@ protected:
 
     while(multStart != multFinish) {
 
-      DdNode* result = cuddUniqueInterZdd( getManager(), *multStart,
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( getManager(), *multStart,
                                            prev, prev );
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(getManager(), prev);
 
       prev = result;
       ++multStart;
 
     };
 
-    Cudd_Deref(prev);
+    PBORI_PREFIX(Cudd_Deref)(prev);
 
 
     return diagram_type(mgr, prev);
@@ -352,20 +353,20 @@ protected:
 
     DdNode* prev= (getManager())->one;
 
-    Cudd_Ref(prev);
+    PBORI_PREFIX(Cudd_Ref)(prev);
     while(start != finish) {
 
-      DdNode* result = cuddUniqueInterZdd( getManager(),
+      DdNode* result = PBORI_PREFIX(cuddUniqueInterZdd)( getManager(),
                                            *start, prev, prev);
 
-      Cudd_Ref(result);
-      Cudd_RecursiveDerefZdd(getManager(), prev);
+      PBORI_PREFIX(Cudd_Ref)(result);
+      PBORI_PREFIX(Cudd_RecursiveDerefZdd)(getManager(), prev);
 
       prev = result;
       ++start;
     }
 
-    Cudd_Deref(prev);
+    PBORI_PREFIX(Cudd_Deref)(prev);
     ///@todo Next line needs generalization 
       return diagram_type(mgr, prev);
 
@@ -377,7 +378,7 @@ public:
     if (rhs.isZero())
       return *this;
 
-    //    return apply(pboriCudd_zddUnionXor, rhs);
+    //    return apply(pboriPBORI_PREFIX(Cudd_zddUnionXor), rhs);
     base::checkSameManager(rhs);
     return diagram_type(ring(), pboriCudd_zddUnionXor(getManager(), getNode(), rhs.getNode()) );
   }
@@ -404,7 +405,7 @@ public:
 
 
   /// Get numbers of used variables
-  //  size_type nSupport() const { return apply(Cudd_SupportSize); }
+  //  size_type nSupport() const { return apply(PBORI_PREFIX(PBORI_PREFIX(Cudd_SupportSize));) }
 
   /// Start of first term
   first_iterator firstBegin() const {
@@ -457,7 +458,7 @@ public:
 
   /// Checks whether the the diagram corresponds to {} or {{}} (polynomial 0 or 1)
   bool_type isConstant() const {
-    return (getNode()) && Cudd_IsConstant(getNode());
+    return (getNode()) && PBORI_PREFIX(Cudd_IsConstant)(getNode());
   }
 
 
@@ -472,7 +473,7 @@ private:
     if ((idx >= *thenNavi) || (idx >= *elseNavi))
       throw PBoRiGenericError<CTypes::invalid_ite>();
     
-    return cuddZddGetNode(ring.getManager(), idx, 
+    return PBORI_PREFIX(cuddZddGetNode)(ring.getManager(), idx, 
                           thenNavi.getNode(), elseNavi.getNode());
   }
 
