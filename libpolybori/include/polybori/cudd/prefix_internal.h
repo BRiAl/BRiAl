@@ -249,6 +249,15 @@
 #define cuddZddIte pbori_cuddZddIte
 #define cuddHashTableResize pbori_cuddHashTableResize
 
+#define zdd_subset0_aux pbori_zdd_subset0_aux
+#define zdd_subset1_aux pbori_zdd_subset1_aux
+
+#define MMalloc pbori_MMalloc
+#define MMrealloc pbori_MMrealloc
+#define MMfree pbori_MMfree
+#define MMoutOfMemory pbori_MMoutOfMemory
+#define MMout_of_memory pbori_MMout_of_memory
+
 #define DdManager pbori_DdManager
 
 #endif /* polybori_cudd_prefix_internal_h_ */

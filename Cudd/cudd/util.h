@@ -8,6 +8,7 @@
 #ifndef polybori_cuddy_util_h_
 #define polybori_cuddy_util_h_
 
+#include <polybori/cudd/prefix.h>
 #ifdef __cplusplus
 
 #include <ctime>
@@ -28,13 +29,13 @@ extern "C" {
 #endif
 
 #define ALLOC(type, num)	\
-    ((type *) MMalloc((long) sizeof(type) * (long) (num)))
+  ((type *) PBORI_PREFIX(MMalloc)((long) sizeof(type) * (long) (num)))
 #define REALLOC(type, obj, num)	\
-    ((type *) MMrealloc((char *) (obj), (long) sizeof(type) * (long) (num)))
+  ((type *) PBORI_PREFIX(MMrealloc)((char *) (obj), (long) sizeof(type) * (long) (num)))
 #define FREE(obj)		\
     ((obj) ? (free((char *) (obj)), (obj) = 0) : 0)
 
-extern void (*MMoutOfMemory) (long);
+  extern void (*PBORI_PREFIX(MMoutOfMemory)) (long);
 
 static inline long util_cpu_time () {
   clock_t saved_time = clock();
@@ -65,7 +66,7 @@ getSoftDataLimit(void) {
  */
 
 static inline void 
-MMout_of_memory(long size)
+PBORI_PREFIX(MMout_of_memory)(long size)
 {
     (void) fflush(stdout);
     (void) fprintf(stderr, "\nout of memory allocating %lu bytes\n",
@@ -74,30 +75,30 @@ MMout_of_memory(long size)
 }
 
 static inline char*
-MMalloc(long size) {
+PBORI_PREFIX(MMalloc)(long size) {
   if (size == 0) size = sizeof(long);
 
   char* result = (char*) malloc((unsigned) size);
-  if (!result  && MMoutOfMemory)
-    (*MMoutOfMemory)(size);
+  if (!result  && PBORI_PREFIX(MMoutOfMemory))
+    (*PBORI_PREFIX(MMoutOfMemory))(size);
 
   return result;
 }
 
 static inline char *
-MMrealloc(char *obj, long size) {
-  if (!obj) return MMalloc(size);
+PBORI_PREFIX(MMrealloc)(char *obj, long size) {
+  if (!obj) return PBORI_PREFIX(MMalloc)(size);
   if (size <= 0) size = sizeof(long);
     
   char* result = (char*) realloc(obj, (unsigned) size);
-  if (!result  && MMoutOfMemory)
-    (*MMoutOfMemory)(size);
+  if (!result  && PBORI_PREFIX(MMoutOfMemory))
+    (*PBORI_PREFIX(MMoutOfMemory))(size);
 
   return result;
 }
 
 static inline void
-MMfree(char *obj) {
+PBORI_PREFIX(MMfree)(char *obj) {
   if (obj) free(obj); 
 }
 
