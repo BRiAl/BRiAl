@@ -9,8 +9,8 @@
  * \author Martin Albrecht <M.R.Albrecht@rhul.ac.uk>
  */
 
-#ifndef GRAYFLEX_H
-#define GRAYFLEX_H
+#ifndef M4RI_GRAYFLEX_H
+#define M4RI_GRAYFLEX_H
 
 /******************************************************************************
 *
@@ -32,13 +32,11 @@
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
  
-#include "misc.h"
-
 /**
  * Maximum allowed value for k.
  */
 
-#define MAXKAY 16
+#define __M4RI_MAXKAY 16
 
 /**
  * \brief Gray codes.
@@ -76,27 +74,17 @@ typedef struct {
 } code;
 
 /**
- * Global codebook.
+ * Global m4ri_codebook.
  *
  * \warning Not thread safe!
  */ 
 
-extern code **codebook;
-
-
-/**
- * Swaps l bits in v.
- *
- * \warning Uppper bits of return value may contain garbage after
- * operation.
- */
-
-int m4ri_swap_bits(int v,int l);
+extern code **m4ri_codebook;
 
 /**
  * Returns the i-th gray code entry for a gray code of length \f$2^l\f$.
  * 
- * \param i The ndex in the Gray code table.
+ * \param i The index in the Gray code table.
  * \param l Length of the Gray code.
  *
  * \return i-th Gray code entry.
@@ -157,4 +145,4 @@ void m4ri_destroy_all_codes(void);
 
 int m4ri_opt_k(int a,int b,int c);
 
-#endif //GRAYFLEX_H
+#endif // M4RI_GRAYFLEX_H

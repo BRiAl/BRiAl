@@ -26,13 +26,11 @@ import sys
 from os import sep, path
 from glob import glob
 
-m4ri=["grayflex.c", "permutation.c", 
-    "packedmatrix.c","strassen.c","misc.c",
-    "brilliantrussian.c",
-    "lqup.c", "trsm.c", "pluq_mmpf.c"]
+m4ri=Split("""grayflex.c permutation.c packedmatrix.c strassen.c
+misc.c brilliantrussian.c trsm.c mmc.c echelonform.c pls.c pls_mmpf.c""")
 m4ri=[path.join("M4RI/m4ri", m) for m in m4ri]
 
-m4ri_inc = 'M4RI/m4ri'
+m4ri_inc = 'M4RI'
 
 
 def pathsplit(p, rest=[]):
@@ -709,7 +707,7 @@ if not env.GetOption('clean'):
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
-       env['CPPPATH'] = ['M4RI'] + env['CPPPATH']
+       env['CPPPATH'] = [m4ri_inc] + env['CPPPATH']
 
 
     conf.GuessM4RIFlags()
@@ -731,7 +729,8 @@ else: # when cleaning
  
 # end of not cleaning
 
-env.Clean('.', Split("""config.log .sconsign.dblite .sconf_temp""") + \
+env.Clean('.',  glob("config.log") + \
+  #glob(".scon*") + \
               glob(PBPath('*' + env['LIBSUFFIX'])) + \
               glob(GBPath('*' + env['LIBSUFFIX'])) + \
               glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
@@ -890,7 +889,12 @@ gb_src = [GBPath('src', source) for source in gb_src]
 
 if not(external_m4ri):
    gb_src += m4ri
-
+   M4RIInc = PathJoiner('M4RI/m4ri')
+   m4ri_config = \
+       env.Command([M4RIInc('config.h'), M4RIInc('m4ri_config.h')], 
+                   [M4RIInc('config.h.in'), M4RIInc('m4ri_config.h.in')],
+                   action = 'cd M4RI; ./configure --prefix=$PREFIX; cd -')
+   
 libgb_name = libpb_name + '_groebner'
 libgb_name_static = libgb_name
 

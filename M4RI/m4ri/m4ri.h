@@ -24,8 +24,9 @@
 *
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
-#ifndef M4RI_H
-#define M4RI_H
+
+#ifndef M4RI_M4RI_H
+#define M4RI_M4RI_H
 
 /**
  * \mainpage 
@@ -42,9 +43,15 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef __cplusplus
+#if defined(__M4RI_HAVE_SSE2) && __M4RI_HAVE_SSE2
+#   if !defined(__SSE2__) || !__SSE2__
+#       error "Your current compiler and / or CFLAGS setting doesn't allow SSE2 code. Please change that or these to the setting(s) you used when compiling M4RI."
+#   endif
+#endif
+
+#if defined(__cplusplus) && !defined(M4RI_WRAPWORD) && !defined (_MSC_VER)
 extern "C" {
-#endif //__cplusplus
+#endif
 
 #include "permutation.h"
 #include "packedmatrix.h"
@@ -53,12 +60,14 @@ extern "C" {
 #include "grayflex.h"
 #include "parity.h"
 #include "trsm.h"
-#include "lqup.h"
-#include "pluq_mmpf.h"
+#include "pls.h"
+#include "pls_mmpf.h"
 #include "solve.h"
+#include "echelonform.h"
+#include "io.h"
 
-#ifdef __cplusplus
+#if defined(__cplusplus) && !defined(M4RI_WRAPWORD) && !defined (_MSC_VER)
 }
-#endif //__cplusplus
+#endif
 
-#endif //M4RI_H
+#endif // M4RI_M4RI_H

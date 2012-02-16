@@ -18,87 +18,83 @@
 *                  http://www.gnu.org/licenses/
 ******************************************************************************/
 
-#include "grayflex.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
+#include "misc.h"
+#include "grayflex.h"
 
-code **codebook = NULL;
-
-int m4ri_swap_bits(int v,int length) {
-  unsigned int r = v; /* r will be reversed bits of v; first get LSB of v */
-  int s = length - 1; /* extra shift needed at end */
-  
-  for (v >>= 1; v; v >>= 1) {   
-    r <<= 1;
-    r |= v & 1;
-    s--;
-  }
-  r <<= s;
-  return r;
-}
+code **m4ri_codebook = NULL;
 
 int m4ri_gray_code(int number, int length) {
   int lastbit = 0;
   int res = 0;
-  int i,bit;
-  for(i=length-1; i>=0;  i--) {
-    bit = number & (1<<i);
-    res |= ((lastbit>>1) ^ bit); 
+  for(int i = length - 1; i >= 0; --i) {
+    int bit = number & (1 << i);
+    res |= (lastbit >> 1) ^ bit;
     lastbit = bit;
-  };
-  return m4ri_swap_bits(res,length) & ((1<<length)-1);
+  }
+  return res;
 }
 
 void m4ri_build_code(int *ord, int *inc, int l) {
-  int i,j;
-
-  for(i=0 ; i < TWOPOW(l) ; i++) {
+  for(int i = 0 ; i < (int)__M4RI_TWOPOW(l); ++i) {
     ord[i] = m4ri_gray_code(i, l);
   }
 
-  for(i = l ; i>0 ; i--) {
-    for(j=1 ; j < TWOPOW(i) + 1 ; j++) {
-      inc[j *TWOPOW(l-i) -1 ] = l - i;
+  for(int i = l; i > 0; --i) {
+    for(int j = 1; j < (int)__M4RI_TWOPOW(i) + 1; ++j) {
+      inc[j * __M4RI_TWOPOW(l - i) - 1] = l - i;
     }
   }
 }
 
 void m4ri_build_all_codes() {
-  if (codebook) {
+  if (m4ri_codebook) {
     return;
   }
-  int k;
-  codebook=(code**)m4ri_mm_calloc(MAXKAY+1, sizeof(code *));
+  m4ri_codebook=(code**)m4ri_mm_calloc(__M4RI_MAXKAY + 1, sizeof(code*));
   
-  for(k=1 ; k<MAXKAY+1; k++) {
-    codebook[k] = (code *)m4ri_mm_calloc(sizeof(code),1);
-    codebook[k]->ord =(int *)m4ri_mm_calloc(TWOPOW(k),sizeof(int));
-    codebook[k]->inc =(int *)m4ri_mm_calloc(TWOPOW(k),sizeof(int));
-    m4ri_build_code(codebook[k]->ord, codebook[k]->inc, k);
+  for(int k = 1; k < __M4RI_MAXKAY + 1; ++k) {
+    m4ri_codebook[k] = (code*)m4ri_mm_calloc(1, sizeof(code));
+    m4ri_codebook[k]->ord =(int*)m4ri_mm_calloc(__M4RI_TWOPOW(k), sizeof(int));
+    m4ri_codebook[k]->inc =(int*)m4ri_mm_calloc(__M4RI_TWOPOW(k), sizeof(int));
+    m4ri_build_code(m4ri_codebook[k]->ord, m4ri_codebook[k]->inc, k);
   }
 }
 
 void m4ri_destroy_all_codes() {
-  int i;
-  if (!codebook) {
+  if (!m4ri_codebook) {
     return;
   }
-  for(i=1; i<MAXKAY+1; i++) {
-    m4ri_mm_free(codebook[i]->inc);
-    m4ri_mm_free(codebook[i]->ord);
-    m4ri_mm_free(codebook[i]);
+  for(int i = 1; i < __M4RI_MAXKAY + 1; ++i) {
+    m4ri_mm_free(m4ri_codebook[i]->inc);
+    m4ri_mm_free(m4ri_codebook[i]->ord);
+    m4ri_mm_free(m4ri_codebook[i]);
   }
-  m4ri_mm_free(codebook);
-  codebook = NULL;
+  m4ri_mm_free(m4ri_codebook);
+  m4ri_codebook = NULL;
 }
 
-static inline int log2_floor(int n){
-  int i;
-  for(i=0;TWOPOW(i)<=n;i++){}
-  return i;
+static int log2_floor(int v) {
+  static unsigned const int b[] = { 0x2, 0xC, 0xF0, 0xFF00, 0xFFFF0000 };
+  static unsigned const int S[] = { 1, 2, 4, 8, 16 };
+  unsigned int r = 0;
+  for (int i = 4; i >= 0; --i)
+  {
+    if ((v & b[i]))
+    {
+      v >>= S[i];
+      r |= S[i];
+    } 
+  }
+  return r;
 }
 
-int m4ri_opt_k(int a,int b,int c) {
-  int n = MIN(a,b);
-  int res = MIN( MAXKAY, MAX(1, (int)(0.75*log2_floor(n))) );
+int m4ri_opt_k(int a, int b, int c) {
+  int n = MIN(a, b);
+  int res = MIN(__M4RI_MAXKAY, MAX(1, (int)(0.75 * (1 + log2_floor(n)))) );
   return res;
 }

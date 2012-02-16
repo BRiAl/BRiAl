@@ -5,10 +5,11 @@
  *
  * \author Jean-Guillaume Dumas <Jean-Guillaume.Dumas@imag.fr>
  *
- * \attention This file is currently broken.
  */
-#ifndef SOLVE_H
-#define SOLVE_H
+
+#ifndef M4RI_SOLVE_H
+#define M4RI_SOLVE_H
+
  /*******************************************************************
  *
  *            M4RI: Linear Algebra over GF(2)
@@ -28,8 +29,6 @@
  *
  ********************************************************************/
 
-#include <stdio.h>
-#include "misc.h"
 #include "permutation.h"
 #include "packedmatrix.h"
 
@@ -40,14 +39,13 @@
  *
  * \param A Input matrix (overwritten).
  * \param B Input matrix, being overwritten by the solution matrix X
- * \param cutoff Minimal dimension for Strassen recursion.
- * \param inconsistency_check decide wether or not to check for
- *        incosistency (faster without but output not defined if
+ * \param cutoff Minimal dimension for Strassen recursion (default: 0).
+ * \param inconsistency_check decide wether or not to perform a check
+ *        for incosistency (faster without but output not defined if
  *        system is not consistent).
- *
+ * \return 0 if a solution was found, -1 otherwise
  */
-void mzd_solve_left(mzd_t *A, mzd_t *B, const int cutoff, 
-                    const int inconsistency_check);
+int mzd_solve_left(mzd_t *A, mzd_t *B, int const cutoff, int const inconsistency_check);
 
 /**
  * \brief Solves (P L U Q) X = B
@@ -59,21 +57,23 @@ void mzd_solve_left(mzd_t *A, mzd_t *B, const int cutoff,
  * The solution X is stored inplace on B
  *
  * This version assumes that the matrices are at an even position on
- * the RADIX grid and that their dimension is a multiple of RADIX.
+ * the m4ri_radix grid and that their dimension is a multiple of m4ri_radix.
  *
  * \param A Input upper/lower triangular matrices.
  * \param rank is rank of A.
  * \param P Input row permutation matrix.
  * \param Q Input column permutation matrix.
  * \param B Input matrix, being overwritten by the solution matrix X.
- * \param cutoff Minimal dimension for Strassen recursion.
- * \param inconsistency_check decide whether or not to check for
- *        incosistency (faster without but output not defined if
- *        system is not consistent).
+ * \param cutoff Minimal dimension for Strassen recursion (default: 0).
+ * \param inconsistency_check decide whether or not to perform a check
+ *        for incosistency (faster without but output not defined if
+ *        system is not consistent).  \return 0 if a solution was
+ *        found, -1 otherwise
+ * \return 0 if a solution was found, -1 otherwise
  */
-void mzd_pluq_solve_left (mzd_t *A, size_t rank, 
-                          mzp_t *P, mzp_t *Q, 
-                          mzd_t *B, const int cutoff, const int inconsistency_check);
+int mzd_pluq_solve_left (mzd_t const *A, rci_t rank, 
+                         mzp_t const *P, mzp_t const *Q, 
+                         mzd_t *B, int const cutoff, int const inconsistency_check);
 
 /**
  * \brief  Solves (P L U Q) X = B
@@ -85,22 +85,23 @@ void mzd_pluq_solve_left (mzd_t *A, size_t rank,
  * The solution X is stored inplace on B.
  *
  * This version assumes that the matrices are at an even position on
- * the RADIX grid and that their dimension is a multiple of RADIX.
+ * the m4ri_radix grid and that their dimension is a multiple of m4ri_radix.
  *
  * \param A Input upper/lower triangular matrices.
  * \param rank is rank of A.
  * \param P Input row permutation matrix.
  * \param Q Input column permutation matrix.
  * \param B Input matrix, being overwritten by the solution matrix X.
- * \param cutoff Minimal dimension for Strassen recursion.
- * \param inconsistency_check decide whether or not to check for
- *        incosistency (faster without but output not defined if
- *        system is not consistent).
- *
+ * \param cutoff Minimal dimension for Strassen recursion (default: 0).
+ * \param inconsistency_check decide whether or not to perform a check
+ *        for incosistency (faster without but output not defined if
+ *        system is not consistent).  \return 0 if a solution was
+ *        found, -1 otherwise
+ * \return 0 if a solution was found, -1 otherwise
  */
-void _mzd_pluq_solve_left(mzd_t *A, size_t rank, 
-                          mzp_t *P, mzp_t *Q, 
-                          mzd_t *B, const int cutoff, const int inconsistency_check);
+int _mzd_pluq_solve_left(mzd_t const *A, rci_t rank, 
+                         mzp_t const *P, mzp_t const *Q, 
+                         mzd_t *B, int const cutoff, int const inconsistency_check);
 
 /**
  * \brief Solves A X = B with A and B matrices.
@@ -108,15 +109,36 @@ void _mzd_pluq_solve_left(mzd_t *A, size_t rank,
  * The solution X is stored inplace on B.
  *
  * This version assumes that the matrices are at an even position on
- * the RADIX grid and that their dimension is a multiple of RADIX.
+ * the m4ri_radix grid and that their dimension is a multiple of m4ri_radix.
  *
- * \param A Input matrix.
+ * \param A Input matrix (overwritten).
  * \param B Input matrix, being overwritten by the solution matrix X.
- * \param cutoff Minimal dimension for Strassen recursion.
- * \param inconsistency_check decide whether or not to check for
- *        incosistency (faster without but output not defined if
- *        system is not consistent).
+ * \param cutoff Minimal dimension for Strassen recursion (default: 0).
+ * \param inconsistency_check decide whether or not to perform a check
+ *        for incosistency (faster without but output not defined if
+ *        system is not consistent).  \return 0 if a solution was
+ *        found, -1 otherwise
+ * \return 0 if a solution was found, -1 otherwise
  */
-void _mzd_solve_left(mzd_t *A, mzd_t *B, const int cutoff, const int inconsistency_check);
+int _mzd_solve_left(mzd_t *A, mzd_t *B, int const cutoff, int const inconsistency_check);
 
-#endif // SOLVE_H
+/**
+ * \brief Solve X for A X = 0.
+ *
+ * If r is the rank of the nr x nc matrix A, return the nc x (nc-r)
+ * matrix X such that A*X == 0 and that the columns of X are linearly
+ * independent.
+ *
+ * \param A Input matrix (overwritten).
+ * \param cutoff Minimal dimension for Strassen recursion (default: 0).
+ *
+ * \wordoffset
+ *
+ * \sa mzd_pluq()
+ *
+ * \return X, NULL if kernel is empty
+ */
+
+mzd_t *mzd_kernel_left_pluq(mzd_t *A, int const cutoff);
+
+#endif // M4RI_SOLVE_H

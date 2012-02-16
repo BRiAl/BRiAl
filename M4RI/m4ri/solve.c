@@ -17,24 +17,26 @@
  *                  http://www.gnu.org/licenses/
  *
  ********************************************************************/
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "solve.h"
 #include "strassen.h"
-#include "lqup.h"
+#include "pls.h"
 #include "trsm.h"
 #include "permutation.h"
 
-void mzd_solve_left(mzd_t *A, mzd_t *B, const int cutoff, const int inconsistency_check) {    
+int mzd_solve_left(mzd_t *A, mzd_t *B, int const cutoff, int const inconsistency_check) {    
   if(A->ncols > B->nrows)
-    m4ri_die("mzd_solve_left: A ncols (%d) need to be lower than B nrows (%d).\n", A->ncols, B->nrows);
+    m4ri_die("mzd_solve_left: A ncols (%d) must be smaller than B nrows (%d).\n", A->ncols, B->nrows);
 
-  _mzd_solve_left (A, B, cutoff, inconsistency_check);
+  return _mzd_solve_left(A, B, cutoff, inconsistency_check);
 }
  
-void mzd_pluq_solve_left (mzd_t *A, size_t rank, 
-                          mzp_t *P, mzp_t *Q, 
-                          mzd_t *B, const int cutoff, const int inconsistency_check) 
-{
+int mzd_pluq_solve_left (mzd_t const *A, rci_t rank, 
+                         mzp_t const *P, mzp_t const *Q, 
+                         mzd_t *B, int const cutoff, int const inconsistency_check) {
   if(A->ncols > B->nrows)
     m4ri_die("mzd_pluq_solve_left: A ncols (%d) need to be lower than B nrows (%d).\n", A->ncols, B->nrows);
   if(P->length != A->nrows)
@@ -42,12 +44,12 @@ void mzd_pluq_solve_left (mzd_t *A, size_t rank,
   if(Q->length != A->ncols)
       m4ri_die("mzd_pluq_solve_left: A ncols (%d) need to match Q size (%d).\n", A->ncols, P->length);
 
-  _mzd_pluq_solve_left (A, rank, P, Q, B, cutoff, inconsistency_check);
+  return _mzd_pluq_solve_left (A, rank, P, Q, B, cutoff, inconsistency_check);
 }
 
-void _mzd_pluq_solve_left (mzd_t *A, size_t rank, 
-                           mzp_t *P, mzp_t *Q, 
-                           mzd_t *B, const int cutoff, const int inconsistency_check) {
+int _mzd_pluq_solve_left(mzd_t const *A, rci_t rank, 
+                         mzp_t const *P, mzp_t const *Q, 
+                         mzd_t *B, int const cutoff, int const inconsistency_check) {
   /** A is supposed to store L lower triangular and U upper triangular
    *  B is modified in place 
    *  (Bi's in the comments are just modified versions of B)
@@ -58,61 +60,64 @@ void _mzd_pluq_solve_left (mzd_t *A, size_t rank,
    *  4) Q B5 = B4
    */
 
-  /* P B2 = B1 or B2 = P^T B1*/
+  int retval = 0;
+
+  /* P B2 = B1 or B2 = P^T B1 */
   mzd_apply_p_left(B, P);
   
   /* L B3 = B2 */
   
   /* view on the upper part of L */
-  mzd_t *LU = mzd_init_window(A,0,0,rank,rank);
-  mzd_t *Y1 = mzd_init_window(B,0,0,rank,B->ncols);
+  mzd_t const *LU = mzd_init_window_const(A, 0, 0, rank, rank);
+  mzd_t *Y1 = mzd_init_window(B, 0, 0, rank, B->ncols);
   mzd_trsm_lower_left(LU, Y1, cutoff);
-  
-  if (inconsistency_check) {
-    /* Check for inconsistency */
-    /** FASTER without this check
-     * 
-     * update with the lower part of L 
+
+  if (inconsistency_check) { /* Check for inconsistency */    
+    /** FASTER without this check; update with the lower part of L
      */
-    mzd_t *H = mzd_init_window(A, rank, 0, A->nrows, rank);
-    mzd_t *Y2 = mzd_init_window(B,rank,0,B->nrows,B->ncols);
+    mzd_t const *H  = mzd_init_window_const(A, rank, 0, A->nrows, rank);
+    mzd_t *Y2 = mzd_init_window(B, rank, 0, A->nrows, B->ncols);
+    if(A->nrows < B->nrows) {
+      mzd_t *Y3 = mzd_init_window(B, A->nrows, 0, B->nrows, B->ncols);
+      mzd_set_ui(Y3, 0);
+      mzd_free_window(Y3);
+    }
     mzd_addmul(Y2, H, Y1, cutoff);
     /*
      * test whether Y2 is the zero matrix
      */
-    if( !mzd_is_zero(Y2) ) {
-      //printf("inconsistent system of size %llu x %llu\n", Y2->nrows, Y2->ncols);
-      //printf("Y2=");
-      //mzd_print(Y2);
+    if(!mzd_is_zero(Y2)) {
+      retval = -1;
     }
-    mzd_free_window(H);
+    mzd_free_window((mzd_t*)H);
     mzd_free_window(Y2);
   }
   /* U B4 = B3 */
   mzd_trsm_upper_left(LU, Y1, cutoff);
-  mzd_free_window(LU);
+  mzd_free_window((mzd_t*)LU);
   mzd_free_window(Y1);
   
   if (!inconsistency_check) {
-    /** Default is to set the indefined bits to zero 
-     * if inconsistency has been checked then 
-     *    Y2 bits are already all zeroes
-     * thus this clearing is not needed
+    /** Default is to set the undefined bits to zero if inconsistency
+     * has been checked then Y2 bits are already all zeroes thus this
+     * clearing is not needed
      */
-    for(size_t i = rank; i<B->nrows; i++) {
-      for(size_t j=0; j<B->ncols; j+=RADIX) {
-        mzd_clear_bits(B, i, j, MIN(RADIX,B->ncols - j));
+    for(rci_t i = rank; i < B->nrows; ++i) {
+      for(rci_t j = 0; j < B->ncols; j += m4ri_radix) {
+        mzd_clear_bits(B, i, j, MIN(m4ri_radix, B->ncols - j));
       }
     }
   }
-  /* Q B5 = B4 or B5 = Q^T B4*/
-  mzd_apply_p_right(B, Q);
+  /* Q B5 = B4 or B5 = Q^T B4 */
+  mzd_apply_p_left_trans(B, Q);
 
   /* P L U Q B5 = B1 */
+  __M4RI_DD_MZD(B); 
+  __M4RI_DD_INT(retval);
+  return retval;
 }
 
-
-void _mzd_solve_left (mzd_t *A, mzd_t *B, const int cutoff, const int inconsistency_check) {
+int _mzd_solve_left(mzd_t *A, mzd_t *B, int const cutoff, int const inconsistency_check) {
   /**
    *  B is modified in place 
    *  (Bi's in the comments are just modified versions of B)
@@ -122,15 +127,54 @@ void _mzd_solve_left (mzd_t *A, mzd_t *B, const int cutoff, const int inconsiste
    *  4) U B4 = B3
    *  5) Q B5 = B4
    */
-  mzp_t * P = mzp_init(A->nrows);
-  mzp_t * Q = mzp_init(A->ncols);
+  mzp_t *P = mzp_init(A->nrows);
+  mzp_t *Q = mzp_init(A->ncols);
   
   /* PLUQ = A */
-  size_t rank = _mzd_pluq(A, P, Q, cutoff);  
+  rci_t rank = _mzd_pluq(A, P, Q, cutoff);
   /* 2, 3, 4, 5 */
-  mzd_pluq_solve_left(A, rank, P, Q, B, cutoff, inconsistency_check);
+  int retval = mzd_pluq_solve_left(A, rank, P, Q, B, cutoff, inconsistency_check);
   
   mzp_free(P);
   mzp_free(Q);
+
+  __M4RI_DD_MZD(A);
+  __M4RI_DD_MZD(B);
+  return retval;
 }
 
+mzd_t *mzd_kernel_left_pluq(mzd_t *A, int const cutoff) {
+  mzp_t *P = mzp_init(A->nrows);
+  mzp_t *Q = mzp_init(A->ncols);
+
+  rci_t r = mzd_pluq(A, P, Q, cutoff);
+
+  if (r == A->ncols) {
+    mzp_free(P);
+    mzp_free(Q);
+    __M4RI_DD_MZD(A);
+    return NULL;
+  }
+
+  mzd_t *U = mzd_init_window(A, 0, 0, r, r);
+  mzd_t *B = mzd_init_window(A, 0, r, r, A->ncols);
+
+  mzd_trsm_upper_left(U, B, cutoff);
+
+  mzd_t *R = mzd_init(A->ncols, A->ncols - r);
+  mzd_t *RU = mzd_init_window(R, 0, 0, r, R->ncols);
+  mzd_copy(RU, B);
+  for(rci_t i = 0; i < R->ncols; ++i) {
+    mzd_write_bit(R, r + i, i, 1);
+  }
+  mzd_apply_p_left_trans(R, Q);
+  mzp_free(P);
+  mzp_free(Q);
+  mzd_free_window(RU);
+  mzd_free_window(U);
+  mzd_free_window(B);
+
+  __M4RI_DD_MZD(A);
+  __M4RI_DD_MZD(R);
+  return R;
+}
