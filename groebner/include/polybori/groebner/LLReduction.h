@@ -56,7 +56,7 @@ LLReduction<have_redsb, single_call_for_noredsb,
             fast_multiplication>::operator() (const Polynomial& p,
                                               MonomialSet::navigator r_nav) {     
 
-  if UNLIKELY(p.isConstant()) return p;
+  if PBORI_UNLIKELY(p.isConstant()) return p;
     
   MonomialSet::navigator p_nav=p.navigation();
   idx_type p_index=*p_nav;
@@ -65,12 +65,12 @@ LLReduction<have_redsb, single_call_for_noredsb,
     r_nav.incrementThen();
   }
   
-  if UNLIKELY(r_nav.isConstant())
+  if PBORI_UNLIKELY(r_nav.isConstant())
     return p;
 
   MonomialSet::navigator cached = cache_mgr.find(p_nav, r_nav);
 
-  if LIKELY(cached.isValid()) 
+  if PBORI_LIKELY(cached.isValid()) 
     return MonomialSet(cache_mgr.generate(cached));
 
   Polynomial res(0, p.ring());

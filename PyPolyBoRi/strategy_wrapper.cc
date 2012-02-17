@@ -150,7 +150,7 @@ int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
 }
 
 static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
-    if UNLIKELY((i<0)||(i>=strat.generators.size())){
+    if PBORI_UNLIKELY((i<0)||(i>=strat.generators.size())){
         throw StrategyIndexException();
     }
     return strat.generators[i].p;
@@ -172,9 +172,9 @@ static void translator_d(DuplicateLeadException const& x) {
 
 
 static void add_generator(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
+    if PBORI_UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     Monomial m=p.lead();
-    if UNLIKELY(strat.generators.leadingTerms.owns(m)) throw DuplicateLeadException();
+    if PBORI_UNLIKELY(strat.generators.leadingTerms.owns(m)) throw DuplicateLeadException();
     strat.addGenerator(p);
 }
 static StrategyIterator stratbegin(const GroebnerStrategy& strat){
@@ -185,12 +185,12 @@ static StrategyIterator stratend(const GroebnerStrategy& strat){
 }
 
 static void add_as_you_wish(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
+    if PBORI_UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     strat.addAsYouWish(p);
 }
 
 static void add_generator_delayed(GroebnerStrategy& strat, const Polynomial& p){
-    if UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
+    if PBORI_UNLIKELY(p.isZero()) throw PolynomialIsZeroException();
     strat.addGeneratorDelayed(p);
 }
 

@@ -76,7 +76,7 @@ public:
       // MonomialSet my_zeros=zeros(e1.p, space).intersect(zeros(e2.p, space));
       
       
-      if (UNLIKELY(standard_monomials==my_zeros.size()))
+      if (PBORI_UNLIKELY(standard_monomials==my_zeros.size()))
       {
           strat->pairs.status.setToHasTRep(i,j);
           return true;

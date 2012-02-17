@@ -75,7 +75,7 @@ protected:
     if (!navi.isValid())
       return invalid;
 
-    if UNLIKELY(navi.isConstant())
+    if PBORI_UNLIKELY(navi.isConstant())
       return mgr.nVariables();
     else 
       return *navi;
@@ -123,7 +123,7 @@ protected:
   /// Convert plain number to navigation type
   navigator toNode(idx_type idx, const manager_type& mgr) const {
 
-    if LIKELY((size_type)idx < mgr.nVariables())
+    if PBORI_LIKELY((size_type)idx < mgr.nVariables())
 	       return  mgr.variable(idx).set().navigation();
 
     return  mgr.zero().navigation();

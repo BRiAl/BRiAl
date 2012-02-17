@@ -124,7 +124,7 @@ public:
   }
  
   bool checkVariableCriteria(int idx, int var) {
-    return UNLIKELY(checkVariableSingletonCriterion(idx) || 
+    return PBORI_UNLIKELY(checkVariableSingletonCriterion(idx) || 
 		    checkVariableLeadOfFactorCriterion(idx, var)) ||
       checkVariableChainCriterion(idx);
   }

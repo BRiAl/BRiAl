@@ -467,9 +467,9 @@ block_deg_lex_idx_compare(IdxType lhs, IdxType rhs,
 
   CTypes::comp_type result = CTypes::equality;
 
-  if UNLIKELY( (rhsend == finish) && (lhsend != finish) )
+  if PBORI_UNLIKELY( (rhsend == finish) && (lhsend != finish) )
     result = CTypes::less_than;
-  else if UNLIKELY(lhsend == finish)
+  else if PBORI_UNLIKELY(lhsend == finish)
     result = CTypes::greater_than;
   else {
     PBORI_ASSERT((lhsend != finish) && (rhsend != finish));

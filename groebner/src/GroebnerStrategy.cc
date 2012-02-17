@@ -720,12 +720,12 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     
     for(i=0;i<orig_system.size();i++){
         Polynomial p=orig_system[i];
-        if LIKELY(!(p.isZero())){
+        if PBORI_LIKELY(!(p.isZero())){
             p=ll_red_nf(p,generators.llReductor);
-            if LIKELY(!(p.isZero())){
+            if PBORI_LIKELY(!(p.isZero())){
                 p=generators.reducedNormalForm(p);
-                if LIKELY(!(p.isZero())){
-                    if (UNLIKELY(p.isOne())){
+                if PBORI_LIKELY(!(p.isZero())){
+                    if (PBORI_UNLIKELY(p.isOne())){
                         polys.clear();
                         polys.push_back(p);
                         return polys;
@@ -736,13 +736,13 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
             }
         }
     }
-    if UNLIKELY(polys.size()==0) return std::vector<Polynomial>();
+    if PBORI_UNLIKELY(polys.size()==0) return std::vector<Polynomial>();
     typedef std::map<int,Exponent> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
     
     int rows=polys.size();
     int cols=terms.size();
-    if UNLIKELY(this->enabledLog){
+    if PBORI_UNLIKELY(this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
     #ifndef HAVE_M4RI
@@ -781,7 +781,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     int rank=gauss(mat);
     #else
     {        
-       if UNLIKELY(optDrawMatrices){
+       if PBORI_UNLIKELY(optDrawMatrices){
             std::ostringstream matname;   
             matname << matrixPrefix.data() << round << ".png";
             draw_matrix(mat, matname.str().c_str());
@@ -811,7 +811,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
         PBORI_ASSERT(polys.size()!=0);
         Polynomial from_mat = add_up_exponents(p_t, orig_system[0].ring().zero());
 	polys.push_back(from_mat);
-        if (UNLIKELY(from_mat.isOne())) {
+        if (PBORI_UNLIKELY(from_mat.isOne())) {
 	  polys.erase(polys.begin(), polys.end() - 1);
 	  break;
 	}

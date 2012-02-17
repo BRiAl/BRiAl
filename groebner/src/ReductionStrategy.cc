@@ -91,7 +91,7 @@ ReductionStrategy::reducedNormalForm(const Polynomial& p) const {
 
 Polynomial
 ReductionStrategy::headNormalForm(const Polynomial& p) const {
-  if UNLIKELY(p.isZero()) return p;
+  if PBORI_UNLIKELY(p.isZero()) return p;
     
   return (p.ring().ordering().isDegreeOrder()?
 	  nf3_degree_order(*this, p, p.lead()): nf3(*this, p, p.lead()));

@@ -45,18 +45,18 @@
 
 /// For optimizing if-branches
 #ifdef __GNUC__
-#ifndef LIKELY
-#define LIKELY(expression) (__builtin_expect(!!(expression), 1))
+#ifndef PBORI_LIKELY
+#define PBORI_LIKELY(expression) (__builtin_expect(!!(expression), 1))
 #endif
-#ifndef UNLIKELY
-#define UNLIKELY(expression) (__builtin_expect(!!(expression), 0))
+#ifndef PBORI_UNLIKELY
+#define PBORI_UNLIKELY(expression) (__builtin_expect(!!(expression), 0))
 #endif
 #else
-#ifndef LIKELY
-#define LIKELY(expression) (expression)
+#ifndef PBORI_LIKELY
+#define PBORI_LIKELY(expression) (expression)
 #endif
-#ifndef UNLIKELY
-#define UNLIKELY(expression) (expression)
+#ifndef PBORI_UNLIKELY
+#define PBORI_UNLIKELY(expression) (expression)
 #endif
 #endif 
 

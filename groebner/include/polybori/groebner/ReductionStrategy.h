@@ -94,7 +94,7 @@ protected:
   size_type minimum(Iterator start, Iterator finish, const CompareType& comp)
     const {
     start = std::min_element(start, finish, comp);
-    if UNLIKELY(start == finish)
+    if PBORI_UNLIKELY(start == finish)
       return size_type(-1);
     
     return index(*start);

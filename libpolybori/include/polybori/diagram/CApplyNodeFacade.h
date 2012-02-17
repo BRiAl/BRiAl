@@ -64,7 +64,7 @@ public:
 protected:
   /// Test, whether both operands 
   void checkSameManager(const diagram_type& other) const {
-    if UNLIKELY(my().getManager() != other.getManager()) {
+    if PBORI_UNLIKELY(my().getManager() != other.getManager()) {
       throw std::runtime_error("Operands come from different manager.");
     }
   }

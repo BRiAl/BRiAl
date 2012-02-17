@@ -84,7 +84,7 @@ add_up_lex_sorted_exponents(const BoolePolyRing& ring,
     int limes=end;
     vec[start].popFirst();
     for(limes=start+1;limes<end;limes++){
-        if (UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
+        if (PBORI_UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
             PBORI_ASSERT((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
             break;
         } else 
@@ -154,7 +154,7 @@ unite_polynomials(const std::vector<Polynomial>& res_vec, int
 start, int end, Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=end-start;
-    if UNLIKELY(s==0) return init;
+    if PBORI_UNLIKELY(s==0) return init;
     if (s==1) return res_vec[start];
     int h=s/2;
     return Polynomial(unite_polynomials(res_vec,start,start+h,
@@ -168,7 +168,7 @@ unite_polynomials(const std::vector<Polynomial>& res_vec,
                                     Polynomial init){
     //we assume the polynomials to be pairwise different
     int s=res_vec.size();
-    if UNLIKELY(s==0) return init;
+    if PBORI_UNLIKELY(s==0) return init;
     if (s==1) return res_vec[0];
     int h=s/2;
     

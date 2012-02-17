@@ -69,7 +69,7 @@ public:
     // by checked_idx_type idx should always be <= max(int) (== blockEnd() - 1)
     PBORI_ASSERT(idx <= *(blockEnd() - 1));
 
-    if UNLIKELY((idx >= CTypes::max_index()) || (idx <= *(blockEnd() - 2)))
+    if PBORI_UNLIKELY((idx >= CTypes::max_index()) || (idx <= *(blockEnd() - 2)))
       throw std::runtime_error("Blocks must be positive and have to be "
                                "added in a strictly increasing order.");
 

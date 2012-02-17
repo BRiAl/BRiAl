@@ -47,14 +47,14 @@ static int log2_floor(int n){
 }
 static int optimal_k_for_multiplication(int a,int b,int c,const GroebnerStrategy& strat){
     int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(b)));
-    if UNLIKELY(strat.enabledLog)
+    if PBORI_UNLIKELY(strat.enabledLog)
         std::cout<<"optimal k for multiplication:"<<res<<std::endl;
     return res;
 }
 static int optimal_k_for_gauss(int m, int n, const GroebnerStrategy& strat){
     int l=std::min(n,m);
     int res=std::min(M4RI_MAXKAY,std::max(1,log2_floor(l)+1-log2_floor(log2_floor(l))));
-    if UNLIKELY(strat.enabledLog)
+    if PBORI_UNLIKELY(strat.enabledLog)
         std::cout<<"optimal k for gauss:"<<res<<std::endl;
     return res;
 }
@@ -781,7 +781,7 @@ Polynomial do_plug_1(const Polynomial& p, const MonomialSet& m_plus_ones){
         return p;
     }
     Polynomial::navigator p_nav=p.navigation();
-    if UNLIKELY(p_nav.isConstant()) return p;
+    if PBORI_UNLIKELY(p_nav.isConstant()) return p;
     idx_type p_index=*p_nav;
     while(p_index>*m_nav){
         PBORI_ASSERT(!(m_nav.isConstant()));

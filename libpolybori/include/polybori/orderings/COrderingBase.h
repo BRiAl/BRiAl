@@ -161,7 +161,7 @@ public:
 protected:
   /// Get monomial from set of subsets of Boolean variables (internal use only)
   monom_type monom(const set_type& rhs) const { 
-    if UNLIKELY(rhs.isZero())
+    if PBORI_UNLIKELY(rhs.isZero())
       throw PBoRiGenericError<CTypes::illegal_on_zero>();
     return monom_type(rhs); 
   }

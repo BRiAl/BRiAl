@@ -264,7 +264,7 @@ public:
   }
 
   bool_type markedOne() const {
-    if UNLIKELY(empty())
+    if PBORI_UNLIKELY(empty())
       return false;
     else
       return !m_stack.front().isValid();
@@ -423,13 +423,13 @@ public:
 
   void increment() {
     PBORI_ASSERT(!base::empty());
-    if UNLIKELY(base::markedOne()) {
+    if PBORI_UNLIKELY(base::markedOne()) {
       base::clearOne();
       return;
     }
       
     next();
-    if UNLIKELY(!base::empty()) {
+    if PBORI_UNLIKELY(!base::empty()) {
       followThen();
       terminate();
     }
@@ -438,11 +438,11 @@ public:
 
    void decrement() {
 
-    if UNLIKELY(base::markedOne()) {
+    if PBORI_UNLIKELY(base::markedOne()) {
       base::clearOne();
     }
     previous();
-    if UNLIKELY(!base::empty()){
+    if PBORI_UNLIKELY(!base::empty()){
       followElse();
       base::decrementNode();
     }
@@ -454,7 +454,7 @@ public:
 
     bool isZero = base::isInvalid();
     base::decrementNode();
-    if UNLIKELY(base::empty() && !isZero)
+    if PBORI_UNLIKELY(base::empty() && !isZero)
       base::markOne();
   }
 

@@ -73,7 +73,7 @@ DegRevLexAscOrder::exp_type
 DegRevLexAscOrder::leadExp(const poly_type& poly) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&) const)" );
-//   if UNLIKELY(poly.isZero())
+//   if PBORI_UNLIKELY(poly.isZero())
 //     throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   return self::leadExp(poly, poly.deg());
@@ -85,7 +85,7 @@ DegRevLexAscOrder::leadExp(const poly_type& poly, deg_type bound) const {
 
   PBORI_TRACE_FUNC( "DegRevLexAscOrder::leadexp(const poly_type&, deg_type) const)" );
 
-//    if UNLIKELY(poly.isZero())
+//    if PBORI_UNLIKELY(poly.isZero())
 //      throw PBoRiGenericError<CTypes::illegal_on_zero>();
 
   CacheManager<CCacheTypes::dp_asc_lead> 

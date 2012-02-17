@@ -270,7 +270,7 @@ protected:
 
   /// Check whether previous decision diagram operation for validity
   void checkAssumption(bool isValid) const {
-    if UNLIKELY(!isValid)
+    if PBORI_UNLIKELY(!isValid)
       throw std::runtime_error(error_text(getManager()));
   }
 

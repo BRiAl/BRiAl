@@ -471,7 +471,7 @@ dd_recursive_degree_lead(const CacheType& cache_mgr, const DegCacheMgr&
 
   typedef CIndexCacheHandle<NaviType> deg2node;
 
-  if UNLIKELY(degree < 0)
+  if PBORI_UNLIKELY(degree < 0)
     return cache_mgr.zero();
 
   if (navi.isConstant())
@@ -532,7 +532,7 @@ dd_recursive_degree_leadexp(const CacheType& cache_mgr,
                             SizeType degree,
                             DescendingProperty prop) {
   typedef CIndexCacheHandle<NaviType> deg2node;
-  if UNLIKELY(degree < 0) {
+  if PBORI_UNLIKELY(degree < 0) {
     result.resize(0);
     return result;
   }

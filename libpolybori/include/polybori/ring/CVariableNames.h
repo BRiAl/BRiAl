@@ -66,7 +66,7 @@ public:
   /// Get name of variable with index idx
   const_reference operator[](idx_type idx) const { 
 
-    if UNLIKELY(size_type(idx) >= m_data.size())
+    if PBORI_UNLIKELY(size_type(idx) >= m_data.size())
       return undefName();
     return m_data[idx].c_str(); 
   }
@@ -76,7 +76,7 @@ public:
 
     size_type nlen = m_data.size();
 
-    if UNLIKELY((size_type)idx >= nlen) {
+    if PBORI_UNLIKELY((size_type)idx >= nlen) {
       m_data.resize((size_type)idx + 1);
       reset((idx_type)nlen);
     }

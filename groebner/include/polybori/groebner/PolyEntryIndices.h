@@ -53,7 +53,7 @@ public:
   /// Consistently replacing keys
   void update(const Monomial& key, const PolyEntry& entry) {
 
-    if UNLIKELY(entry.lead != key) {
+    if PBORI_UNLIKELY(entry.lead != key) {
       lm2Index_map_type::iterator lm_pos = lm2Index.find(key);
       PBORI_ASSERT(lm_pos != lm2Index.end());
       lm2Index[entry.lead] = lm_pos->second;

@@ -293,7 +293,7 @@ public:
 
 
   node_ptr getVar(idx_type idx) const {
-    if UNLIKELY(idx >= m_vars.size())
+    if PBORI_UNLIKELY(idx >= m_vars.size())
       throw PBoRiError(CTypes::out_of_bounds);
     return  m_vars[idx];
   }
@@ -311,7 +311,7 @@ protected:
                  size_type cacheSize, large_size_type maxMemory) {
 
     DdManager* ptr = PBORI_PREFIX(Cudd_Init)(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
-    if UNLIKELY(ptr==NULL)
+    if PBORI_UNLIKELY(ptr==NULL)
       throw PBoRiError(CTypes::failed);
     
     ptr->hooks = NULL;          // abusing hooks pointer for reference counting
@@ -326,7 +326,7 @@ protected:
 
   /// Generate check numerical result of previous operation
   void checkedResult(int result) const  {
-    if UNLIKELY(result == 0) {
+    if PBORI_UNLIKELY(result == 0) {
       throw std::runtime_error(error_text(*this));
     } 
   }

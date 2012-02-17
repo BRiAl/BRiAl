@@ -898,7 +898,7 @@ public:
 //   handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
 
 //   bool found(unsigned err) const {
-//     if UNLIKELY(err == ErrorNumber) {
+//     if PBORI_UNLIKELY(err == ErrorNumber) {
 //       m_errfunc(cudd_error_traits<ErrorNumber>()());
 //       return true;
 //     }
@@ -906,7 +906,7 @@ public:
 //   }
 
 //   void operator()(unsigned err) const {
-//     if UNLIKELY(err == ErrorNumber) 
+//     if PBORI_UNLIKELY(err == ErrorNumber) 
 //       m_errfunc(cudd_error_traits<ErrorNumber>()());
 //     else
 //       reinterpret_cast<const handle_error<ErrorNumber - 1>&>(*this)(err);
@@ -924,7 +924,7 @@ public:
 //   handle_error(errorfunc_type errfunc): m_errfunc(errfunc) {}
 
 //   void operator()(unsigned err) const {
-//     if LIKELY(err == 0)
+//     if PBORI_LIKELY(err == 0)
 //       m_errfunc(cudd_error_traits<0>()());
 //   }
 // protected: 

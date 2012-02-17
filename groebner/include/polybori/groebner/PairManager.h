@@ -57,7 +57,7 @@ public:
   };  
 
   Polynomial nextSpoly(ReductionStrategy& gen) {
-    if (UNLIKELY(pairSetEmpty()))
+    if (PBORI_UNLIKELY(pairSetEmpty()))
       return gen.leadingTerms.ring().zero();
 
     return NextSpoly(gen, status)(popped());

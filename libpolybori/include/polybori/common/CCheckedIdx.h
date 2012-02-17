@@ -34,7 +34,7 @@ class CCheckedIdx:
 
 public:
   CCheckedIdx(idx_type idx): m_idx(idx) {
-    if UNLIKELY(idx < 0) handle_error();
+    if PBORI_UNLIKELY(idx < 0) handle_error();
   }
   CCheckedIdx(const self& rhs): m_idx(rhs.m_idx) { }
   ~CCheckedIdx() {}

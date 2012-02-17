@@ -72,7 +72,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
             Polynomial p=extendable_system[i];
 	    PBORI_ASSERT(p.ring().id() == current_ring.id());
 
-            if UNLIKELY(p.isZero()) continue;
+            if PBORI_UNLIKELY(p.isZero()) continue;
             
             p=cheap_reductions(strat.generators, p);
             
@@ -89,7 +89,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
                 Monomial m=*it;
 
                 int index=select_largest_degree(strat.generators, m);
-                if LIKELY(index>=0){
+                if PBORI_LIKELY(index>=0){
 
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
@@ -142,7 +142,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
             #ifndef HAVE_M4RI
             if (mat[i][j]==1){
             #else
-            if UNLIKELY(mzd_read_bit(mat,i,j)==1){
+            if PBORI_UNLIKELY(mzd_read_bit(mat,i,j)==1){
             #endif
                 if (p_t_i.size()==0){
                     if (leads_from_strat.owns(terms_as_exp[j])) {
@@ -168,13 +168,13 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
 
 inline void
 linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log, bool optDrawMatrices=false, const char* matrixPrefix="mat"){
-    if UNLIKELY(polys.size()==0) return;
+    if PBORI_UNLIKELY(polys.size()==0) return;
  
     static int round=0;
 
     int rows=polys.size();
     int cols=terms.size();
-    if UNLIKELY(log){
+    if PBORI_UNLIKELY(log){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
     #ifndef HAVE_M4RI
@@ -190,7 +190,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     #ifndef HAVE_M4RI
     int rank=gauss(mat);
     #else
-    if UNLIKELY(optDrawMatrices){
+    if PBORI_UNLIKELY(optDrawMatrices){
          ++round;
 	 std::ostringstream matname;
 	 matname << matrixPrefix << round << ".png";
@@ -198,7 +198,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
     #endif
-    if UNLIKELY(log){
+    if PBORI_UNLIKELY(log){
         std::cout<<"finished gauss"<<std::endl;
     }
     translate_back(polys, leads_from_strat, mat,tabs.ring_order2lex, tabs.terms_as_exp,tabs.terms_as_exp_lex,rank);
@@ -235,10 +235,10 @@ transposePackedMB(mzd_t* mat){
 inline mzd_t*
 pbori_transpose(mzd_t* mat) {
 
-  if UNLIKELY(mat->nrows == 0)
+  if PBORI_UNLIKELY(mat->nrows == 0)
     return mzd_init(mat->ncols, 0);
 
-  if UNLIKELY(mat->ncols == 0)
+  if PBORI_UNLIKELY(mat->ncols == 0)
     return mzd_init(0, mat->nrows);
 
   return mzd_transpose(NULL,mat);
@@ -262,7 +262,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
 
-    if UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
+    if PBORI_UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
@@ -275,17 +275,17 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int             i;
     std::vector < std::pair < Polynomial, Monomial > >polys_lm;
     for (i = 0; i < polys.size(); i++) {
-        if LIKELY(!(polys[i].isZero()))
+        if PBORI_LIKELY(!(polys[i].isZero()))
 		   polys_lm.push_back(std::pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
 std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     polys.clear();
     
     //special cases
-    if UNLIKELY(polys_lm.size() == 0)
+    if PBORI_UNLIKELY(polys_lm.size() == 0)
         return;
     Monomial        last(current_ring);
-    if UNLIKELY(polys_lm[0].second.deg() == 0) {
+    if PBORI_UNLIKELY(polys_lm[0].second.deg() == 0) {
         PBORI_ASSERT(polys_lm[0].first.isOne());
         polys.resize(1, current_ring);
         polys[0] = 1;
@@ -301,7 +301,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
       std::vector < std::pair < Polynomial, Monomial > >::iterator end = polys_lm.end();
 
         while (it != end) {
-            if LIKELY(it->second != last) {
+            if PBORI_LIKELY(it->second != last) {
                 last = it->second;
                 polys_triangular.push_back(it->first);
 		
@@ -333,7 +333,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
         rows_step1=rows;
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"STEP1: ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
 
@@ -347,7 +347,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
 
         polys_triangular.clear();
         
-        if UNLIKELY(optDrawMatrices) {
+        if PBORI_UNLIKELY(optDrawMatrices) {
 	    std::ostringstream matname;
 	    matname << matrixPrefix << round << "_step1.png";
 	    draw_matrix(mat_step1, matname.str().c_str());
@@ -356,7 +356,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         mzd_top_echelonize_m4ri
             (mat_step1,0);
 
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
         int rank=mat_step1->nrows;
@@ -370,7 +370,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         for(i=0;i<cols;i++){
             int j;
             for(j=pivot_row;j<rows;j++){
-                if UNLIKELY(mzd_read_bit(mat_step1,j,i)==1){
+                if PBORI_UNLIKELY(mzd_read_bit(mat_step1,j,i)==1){
                     if (j!=pivot_row)
                         mzd_row_swap(mat_step1,j,pivot_row);
                     
@@ -381,26 +381,26 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
                     break;
                 }
             }
-            if UNLIKELY(j==rows){
+            if PBORI_UNLIKELY(j==rows){
                 PBORI_ASSERT(i>=pivot_row);
                 compactified_columns2old_columns[i-pivot_row]=i;
             }
             
         }
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished sort"<<std::endl;
         }
         PBORI_ASSERT(pivot_row==rows);
 
         translate_back(polys, leads_from_strat, mat_step1,step1.ring_order2lex, step1.terms_as_exp,step1.terms_as_exp_lex,rank);
         
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished translate"<<std::endl;
         }
 
         //delete columns
         mzd_t* transposed_step1 = pbori_transpose(mat_step1);
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(mat_step1);
@@ -409,22 +409,22 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
             int source=compactified_columns2old_columns[i];
             PBORI_ASSERT(i<=source);
             PBORI_ASSERT(source<=transposed_step1->nrows);
-            if LIKELY(i!=source) mzd_row_swap(transposed_step1,source,i);
+            if PBORI_LIKELY(i!=source) mzd_row_swap(transposed_step1,source,i);
             
         }
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished permute"<<std::endl;
         }
 
         //cols, rows arguments are swapped, as matrix is transposed
         mzd_t* sub_step1=mzd_submatrix(NULL,transposed_step1,0,0,remaining_cols,rows);
 
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished submat"<<std::endl;
         }
         mzd_free(transposed_step1);
         mat_step1 = pbori_transpose(sub_step1);
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished transpose"<<std::endl;
         }
         mzd_free(sub_step1);
@@ -470,7 +470,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
     }
     
-    if UNLIKELY(log){
+    if PBORI_UNLIKELY(log){
         std::cout<<"iterate over rest polys"<<std::endl;
     }
     
@@ -482,7 +482,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     PBORI_ASSERT(mat_step1->nrows==terms_unique.size());
     PBORI_ASSERT(mat_step1->ncols==remaining_cols);
 
-    if UNLIKELY(optDrawMatrices)
+    if PBORI_UNLIKELY(optDrawMatrices)
     {
       std::ostringstream matname;
       matname << matrixPrefix << round << "_mult_A.png";
@@ -491,18 +491,18 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
       matname << mat_step2_factor << round << "_mult_B.png";
       draw_matrix(mat_step1,matname.str().c_str());
     }
-    if UNLIKELY(log){
+    if PBORI_UNLIKELY(log){
         std::cout<<"start mult"<<std::endl;
     }
     
     mzd_t* eliminated;
-    if LIKELY((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
+    if PBORI_LIKELY((mat_step2_factor->nrows!=0) && (mat_step1->nrows!=0) && (mat_step2_factor->ncols!=0) && (mat_step1->ncols!=0))   
         eliminated=mzd_mul_m4rm(NULL,mat_step2_factor,mat_step1,0);
     else
         eliminated=mzd_init(mat_step2_factor->nrows,mat_step1->ncols);
 
     mzd_free(mat_step2_factor);
-    if UNLIKELY(log){
+    if PBORI_UNLIKELY(log){
         std::cout<<"end mult"<<std::endl;
     }
     mzd_free(mat_step1);
@@ -512,10 +512,10 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         int j;
         PBORI_ASSERT(remaining_cols==eliminated->ncols);
         for(j=0;j<remaining_cols;j++){
-            if UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
+            if PBORI_UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
                 PBORI_ASSERT(step2.terms_as_exp[remaining_col2new_col[j]]==step1.terms_as_exp[compactified_columns2old_columns[j]]);
                 
-                if UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
+                if PBORI_UNLIKELY(mzd_read_bit(mat_step2,i,remaining_col2new_col[j])==1){
                     mzd_write_bit(mat_step2,i,remaining_col2new_col[j],0);
                         } else mzd_write_bit(mat_step2,i,remaining_col2new_col[j],1);
             }
@@ -524,10 +524,10 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
 
     mzd_free(eliminated);
     
-     if UNLIKELY(log){
+     if PBORI_UNLIKELY(log){
             std::cout<<"STEP2: ROWS:"<<rows_step2<<"COLUMNS:"<<cols_step2<<std::endl;
         }
-    if UNLIKELY(optDrawMatrices)
+    if PBORI_UNLIKELY(optDrawMatrices)
     {
       std::ostringstream matname;
       matname << matrixPrefix << round << "_step2.png";
@@ -543,7 +543,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     } else
         rank_step2=0;
 
-        if UNLIKELY(log){
+        if PBORI_UNLIKELY(log){
             std::cout<<"finished gauss"<<std::endl;
         }
 

@@ -64,7 +64,7 @@ public:
 
   /// We may easily
   var_type operator()(idx_type i){
-    if UNLIKELY( (i > m_last) || (i < m_start_index) ){
+    if PBORI_UNLIKELY( (i > m_last) || (i < m_start_index) ){
       throw VariableIndexException();
     }
     return

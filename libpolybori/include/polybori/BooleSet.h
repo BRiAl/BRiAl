@@ -167,7 +167,7 @@ public:
   exp_type usedVariablesExp() const;
 
   self change(idx_type idx) const {
-    if UNLIKELY(idx >= ring().nVariables())
+    if PBORI_UNLIKELY(idx >= ring().nVariables())
       throw PBoRiError(CTypes::out_of_bounds);
     return base::change(idx);
   }
