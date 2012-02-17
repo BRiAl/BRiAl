@@ -86,6 +86,9 @@ class PathJoiner(object):
       for fdir in Split("""testsuite PyPolyBoRi Cudd groebner libpolybori doc
  build""") ]
 
+M4RIPath = PathJoiner('M4RI')
+M4RIInc = PathJoiner(M4RIPath('m4ri'))
+
 DataPath = PathJoiner(TestsPath('py/data'))
 
 DebPath = PathJoiner('pkgs/debian')
@@ -581,8 +584,13 @@ if not env.GetOption('clean'):
         context.Result(result)
         return result
 
-    def GuessM4RIFlags(context):
+    def GuessM4RIFlags(context, external):
         context.Message('Guessing m4ri compile flags... ')
+        if not external:
+            if not os.path.exists(M4RIInc('config.h')):
+                context.Message("Abusing m4ri's configure to get headers... ")
+                Execute("cd M4RI; ./configure --prefix=$PREFIX; cd -")
+        
         test_src =  """
         #include <m4ri/%s>
         #include <stdio.h>
@@ -708,9 +716,8 @@ if not env.GetOption('clean'):
        env['LIBS'] += ['m4ri']
     else:
        env['CPPPATH'] = [m4ri_inc] + env['CPPPATH']
-
-
-    conf.GuessM4RIFlags()
+       
+    conf.GuessM4RIFlags(external_m4ri)
 
     env = conf.Finish()
 
@@ -729,11 +736,10 @@ else: # when cleaning
  
 # end of not cleaning
 
-env.Clean('.',  glob("config.log") + \
-  #glob(".scon*") + \
-              glob(PBPath('*' + env['LIBSUFFIX'])) + \
-              glob(GBPath('*' + env['LIBSUFFIX'])) + \
-              glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
+env.Clean('.',  glob("config.log") + glob(".scon*") + \
+          glob(PBPath('*' + env['LIBSUFFIX'])) + \
+          glob(GBPath('*' + env['LIBSUFFIX'])) + \
+          glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
 
 
 have_pydoc = env['HAVE_PYDOC']
@@ -889,11 +895,9 @@ gb_src = [GBPath('src', source) for source in gb_src]
 
 if not(external_m4ri):
    gb_src += m4ri
-   M4RIInc = PathJoiner('M4RI/m4ri')
-   m4ri_config = \
-       env.Command([M4RIInc('config.h'), M4RIInc('m4ri_config.h')], 
-                   [M4RIInc('config.h.in'), M4RIInc('m4ri_config.h.in')],
-                   action = 'cd M4RI; ./configure --prefix=$PREFIX; cd -')
+   env.Clean(M4RIPath(), [M4RIPath(elt) for elt in Split(""".deps Makefile
+   config.status libtool m4ri.pc m4ri/config.h m4ri/m4ri_config.h m4ri/stamp-h1
+   testsuite/Makefile""")])
    
 libgb_name = libpb_name + '_groebner'
 libgb_name_static = libgb_name
