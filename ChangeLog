@@ -1,4 +1,5 @@
 Release Name: 0.8.1
+* fallback m4ri updated to release 20111203
 * Merged Cudd with cudd 2.5.0
 * Prefixed patched Cudd's function with pbori_
 * ipbori is now an all-python script with fallback to plain python if
