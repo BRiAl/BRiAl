@@ -411,7 +411,7 @@ public:
     bool invalid = true;
     while (!base::empty() && invalid) {
       incrementElse();
-      if (invalid = base::isInvalid())
+      if ((invalid = base::isInvalid()))
         base::decrementNode();
     }
   }
@@ -627,7 +627,7 @@ public:
     while (!atBegin() && invalid) {
       PBORI_ASSERT(!base::isConstant());
       base::incrementElse();
-      if (invalid = base::isInvalid())
+      if ((invalid = base::isInvalid()))
         base::decrementNode();
     }
   }
