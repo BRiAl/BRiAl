@@ -270,10 +270,10 @@ void export_strategy(){
   .def("clean_top_by_chain_criterion", cleanTopByChainCriterion)
   .def("all_generators", &GroebnerStrategy::allGenerators)
   
-#if defined(HAVE_NTL) || defined(HAVE_M4RI)
+#if defined(PBORI_HAVE_NTL) || defined(PBORI_HAVE_M4RI)
   .def("noro_step", &GroebnerStrategy::noroStep)
 #endif
-#if defined(HAVE_NTL) || defined(HAVE_M4RI)
+#if defined(PBORI_HAVE_NTL) || defined(PBORI_HAVE_M4RI)
   .def("faugere_step_dense", &GroebnerStrategy::faugereStepDense)
 #endif
   .def("variable_has_value",&GroebnerStrategy::variableHasValue)

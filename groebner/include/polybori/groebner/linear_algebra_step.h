@@ -26,12 +26,12 @@
 #include "MatrixMonomialOrderTables.h"
 #include "PolyMonomialPairComparerLess.h"
 
-#ifdef HAVE_NTL
+#ifdef PBORI_HAVE_NTL
 #include <NTL/GF2.h>
 #include <NTL/mat_GF2.h>
 NTL_CLIENT
 #endif
-#ifdef HAVE_M4RI
+#ifdef PBORI_HAVE_M4RI
 const int M4RI_MAXKAY = 16;
 #endif
 
@@ -54,7 +54,7 @@ select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
 }
 
 
-#if  defined(HAVE_NTL) || defined(HAVE_M4RI)
+#if  defined(PBORI_HAVE_NTL) || defined(PBORI_HAVE_M4RI)
 
 typedef Exponent::idx_map_type from_term_map_type;
 
@@ -115,7 +115,7 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
-            #ifndef HAVE_M4RI
+            #ifndef PBORI_HAVE_M4RI
             mat[i][from_term_map[*it]]=1;
             #else
             from_term_map_type::const_iterator from_it=from_term_map.find(*it);
@@ -139,7 +139,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
     
         bool from_strat=false;
         for(j=0;j<cols;j++){
-            #ifndef HAVE_M4RI
+            #ifndef PBORI_HAVE_M4RI
             if (mat[i][j]==1){
             #else
             if PBORI_UNLIKELY(mzd_read_bit(mat,i,j)==1){
@@ -177,7 +177,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     if PBORI_UNLIKELY(log){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
-    #ifndef HAVE_M4RI
+    #ifndef PBORI_HAVE_M4RI
     mat_GF2 mat(INIT_SIZE,rows,cols);
     #else
     mzd_t* mat=mzd_init(rows,cols);
@@ -187,7 +187,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     fill_matrix(mat,polys,tabs.from_term_map);
 
     polys.clear();
-    #ifndef HAVE_M4RI
+    #ifndef PBORI_HAVE_M4RI
     int rank=gauss(mat);
     #else
     if PBORI_UNLIKELY(optDrawMatrices){
@@ -203,7 +203,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     }
     translate_back(polys, leads_from_strat, mat,tabs.ring_order2lex, tabs.terms_as_exp,tabs.terms_as_exp_lex,rank);
     
-    #ifdef HAVE_M4RI
+    #ifdef PBORI_HAVE_M4RI
     mzd_free(mat);
     #endif
 }

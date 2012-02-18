@@ -26,13 +26,13 @@
 #include <sstream>
 
 
-#ifdef HAVE_TR1_UNORDERED_MAP
+#ifdef PBORI_HAVE_TR1_UNORDERED_MAP
 #  include <tr1/unordered_map>
 #else 
-#  ifdef HAVE_UNORDERED_MAP
+#  ifdef PBORI_HAVE_UNORDERED_MAP
 #    include <unordered_map>
 #  else
-#    ifdef HAVE_HASH_MAP
+#    ifdef PBORI_HAVE_HASH_MAP
 #      include <ext/hash_map>
 #    else
 #     include <map>
@@ -630,13 +630,13 @@ class generate_index_map {
 public:
   /// Type for index maps
 
-#ifdef HAVE_TR1_UNORDERED_MAP
+#ifdef PBORI_HAVE_TR1_UNORDERED_MAP
   typedef std::tr1::unordered_map<Type, idx_type, hashes<Type> > type;
 #else
-#  ifdef HAVE_UNORDERED_MAP
+#  ifdef PBORI_HAVE_UNORDERED_MAP
      typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
 #  else
-#    ifdef HAVE_HASH_MAP
+#    ifdef PBORI_HAVE_HASH_MAP
       typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
 #    else
        typedef std::map<Type, idx_type> type;

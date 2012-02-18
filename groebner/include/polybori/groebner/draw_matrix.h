@@ -19,7 +19,7 @@
 // include basic definitions
 #include "groebner_defs.h"
 
-#ifdef HAVE_GD
+#ifdef PBORI_HAVE_GD
 #define DRAW_MATRICES
 #endif
 #ifdef DRAW_MATRICES

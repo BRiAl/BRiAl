@@ -643,7 +643,7 @@ if not env.GetOption('clean'):
             env.Append(LIBS=gdlibs)
             if conf.CheckFunc("testing_PNGs",
                               "#include<gd.h>\n#define testing_PNGs() gdImagePng(NULL,NULL) "):
-                env.Append(CPPDEFINES=["HAVE_GD"])
+                env.Append(CPPDEFINES=["PBORI_HAVE_GD"])
                 GD_LIBS = gdlibs
             else:
                 print "libgd is available, but could not generate png file -",\
@@ -654,14 +654,14 @@ if not env.GetOption('clean'):
 
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
-            env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
+            env.Append(CPPDEFINES=["PBORI_HAVE_HASH_MAP"])  
     else:
         if conf.CheckCXXHeader('unordered_map'):
-            env.Append(CPPDEFINES=["HAVE_UNORDERED_MAP"])
+            env.Append(CPPDEFINES=["PBORI_HAVE_UNORDERED_MAP"])
         elif conf.CheckCXXHeader('tr1/unordered_map'):
-            env.Append(CPPDEFINES=["HAVE_TR1_UNORDERED_MAP"])
+            env.Append(CPPDEFINES=["PBORI_HAVE_TR1_UNORDERED_MAP"])
         elif conf.CheckCXXHeader('ext/hash_map'):
-            env.Append(CPPDEFINES=["HAVE_HASH_MAP"])  
+            env.Append(CPPDEFINES=["PBORI_HAVE_HASH_MAP"])  
         
     extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
@@ -670,7 +670,7 @@ if not env.GetOption('clean'):
         env.Prepend(LIBS = ["m"])
 
     env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
-    env.Append(CPPDEFINES=["PACKED","HAVE_M4RI"])
+    env.Append(CPPDEFINES=["PBORI_HAVE_M4RI"])
 
 
     if HAVE_PYTHON_EXTENSION:
@@ -798,7 +798,7 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 # Stuff for building Cudd library
 ######################################################################
 
-env.Append(CPPDEFINES=["HAVE_IEEE_754"])
+#env.Append(CPPDEFINES=["PBORI_HAVE_IEEE_754"])
 
 
 cudd_headers = [ CuddPath('cudd/' + fname + '.h') for fname in Split("""
