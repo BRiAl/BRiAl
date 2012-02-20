@@ -24,6 +24,11 @@
 %define pbori_m4ri_devel m4ri-devel
 %endif
 
+%if 0%{?fedora_version}%{?redhat_version}%{?centos_version}
+%define pbori_m4ri m4ri
+%define pbori_m4ri_devel m4ri-devel
+%endif
+
 #Note: boost-test of SLES10 is too old
 %if 0%{?suse_version}
 %define pbori_check %{suse_version} >= 1100
@@ -141,13 +146,31 @@ having shared libraries in place at runtime.
 %prep
 %setup -q
 
-
 %build
-%{pbori_scons} prepare-install prepare-devel
+%{pbori_scons} prepare-install prepare-devel  \
+        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
+        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
+        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
+        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
+        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
+        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
+        PYTHON=%{__python} \
+        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
+        MANDIR=$RPM_BUILD_ROOT/%{_mandir}
+ 
 
 %check
 %if %{pbori_check}
-%{pbori_scons} testsuite && testsuite/unittests
+%{pbori_scons} testsuite/unittests  \
+        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
+        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
+        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
+        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
+        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
+        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
+        PYTHON=%{__python} \
+        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
+        MANDIR=$RPM_BUILD_ROOT/%{_mandir} && testsuite/unittests
 %endif
 ipbori/ipbori -t
 
@@ -163,6 +186,7 @@ ipbori/ipbori -t
         DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
         MANDIR=$RPM_BUILD_ROOT/%{_mandir}
  
+
 # rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
 %__mv $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
  
