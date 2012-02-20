@@ -330,7 +330,9 @@ opts.Add('DEVEL_LIB_PREFIX',
          'development version library installation directory',
          '$DEVEL_PREFIX/lib' )
 
-         
+opts.Add(BoolVariable('M4RI_RPM',
+                      'Assume rpm knows about M4RI', False))   
+
 opts.Add(BoolVariable('HAVE_DOXYGEN',
                     'Generate doxygen-based documentation, if available', True))
 opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
@@ -746,6 +748,11 @@ have_pydoc = env['HAVE_PYDOC']
 
 env['PBVERSION'] = pboriversion
 env['PBRELEASE'] = pborirelease
+
+if env['M4RI_RPM']:
+    env['PB_M4RI_RPM'] = "1"
+else:
+    env['PB_M4RI_RPM'] = "0"
 
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
