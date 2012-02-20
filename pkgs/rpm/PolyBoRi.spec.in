@@ -24,6 +24,7 @@
 %define pbori_m4ri_devel m4ri-devel
 %endif
 
+# Note: Using inofficial m4ri build
 %if $PB_M4RI_RPM
 %if 0%{?fedora_version}%{?redhat_version}%{?centos_version}%{?suse_version}
 %define pbori_m4ri m4ri
