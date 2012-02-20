@@ -100,8 +100,8 @@ cd $BUILDDIR
 
 scons distribute USE_TIMESTAMP=no $@
 
-scons prepare-rpm $@
 scons srpm $@
+scons prepare-rpm M4RI_RPM=True $@
 
 TARBALL=`ls *tar.gz`
 rm -rf $RELEASE_DIR

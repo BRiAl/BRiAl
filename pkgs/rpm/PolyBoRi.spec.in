@@ -16,7 +16,17 @@
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
 %define pbori_tmpdoc docs
-%define pbori_scons scons %{?jobs:-j%jobs} LINKFLAGS="-s" CCFLAGS="%{optflags}"
+%define pbori_scons scons %{?jobs:-j%jobs} \\\
+        LINKFLAGS="-s" CCFLAGS="%{optflags}" \\\
+        EPREFIX=%{buildroot}%{_bindir} \\\
+        DEVEL_PREFIX=%{buildroot}%{_prefix} \\\
+        DEVEL_INCLUDE_PREFIX=%{buildroot}%{_includedir} \\\
+        DEVEL_LIB_PREFIX=%{buildroot}%{_libdir} \\\
+        PYINSTALLPREFIX=%{buildroot}%{pbori_pyinstprefix} \\\
+        INSTALLDIR=%{buildroot}%{pbori_instdir} \\\
+        PYTHON=%{__python} \\\
+        DOCDIR=%{buildroot}%{pbori_docpath} \\\
+        MANDIR=%{buildroot}%{_mandir}
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
@@ -150,44 +160,17 @@ having shared libraries in place at runtime.
 %setup -q
 
 %build
-%{pbori_scons} prepare-install prepare-devel  \
-        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
-        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
-        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
-        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
-        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
-        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-        PYTHON=%{__python} \
-        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
-        MANDIR=$RPM_BUILD_ROOT/%{_mandir}
+%{pbori_scons} prepare-install prepare-devel 
  
 
 %check
 %if %{pbori_check}
-%{pbori_scons} testsuite/unittests  \
-        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
-        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
-        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
-        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
-        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
-        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-        PYTHON=%{__python} \
-        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
-        MANDIR=$RPM_BUILD_ROOT/%{_mandir} && testsuite/unittests
+%{pbori_scons} testsuite/unittests && testsuite/unittests
 %endif
 ipbori/ipbori -t
 
 %install
-%{pbori_scons} install devel-install \
-        EPREFIX=$RPM_BUILD_ROOT/%{_bindir} \
-        DEVEL_PREFIX=$RPM_BUILD_ROOT/%{_prefix} \
-        DEVEL_INCLUDE_PREFIX=$RPM_BUILD_ROOT/%{_includedir} \
-        DEVEL_LIB_PREFIX=$RPM_BUILD_ROOT/%{_libdir} \
-        PYINSTALLPREFIX=$RPM_BUILD_ROOT/%{pbori_pyinstprefix} \
-        INSTALLDIR=$RPM_BUILD_ROOT/%{pbori_instdir} \
-        PYTHON=%{__python} \
-        DOCDIR=$RPM_BUILD_ROOT/%{pbori_docpath} \
-        MANDIR=$RPM_BUILD_ROOT/%{_mandir}
+%{pbori_scons} install devel-install
  
 
 # rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
