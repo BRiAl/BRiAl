@@ -41,22 +41,23 @@ public:
     optAllowRecursion(true), optLinearAlgebraInLastBlock(true),
     reduceByTailReduced(false) { }
 
-  std::string matrixPrefix;
-  bool reduceByTailReduced;
-  bool enabledLog;
-
-  bool optDrawMatrices; 
-  bool optHFE;
+  bool optRedTailInLastBlock;
   bool optLazy;
+
+  std::string matrixPrefix;
+  bool optDrawMatrices;
+ 
   bool optModifiedLinearAlgebra;
   bool optDelayNonMinimals;
-  
+  bool enabledLog; 
+
   bool optExchange;
-  bool optAllowRecursion;
-  
+  bool optHFE;
   bool optStepBounded;
+  bool optAllowRecursion;
   bool optLinearAlgebraInLastBlock;
-  bool optRedTailInLastBlock;
+
+  bool reduceByTailReduced;
 };
 
 END_NAMESPACE_PBORIGB

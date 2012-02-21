@@ -51,7 +51,7 @@ struct cached_deg {
   typedef typename cache_type::manager_type manager_type;
   cached_deg(const manager_type & mgr): m_deg_cache(mgr) {}
 
-  typename NavigatorType::size_type
+  typename NavigatorType::deg_type
   operator()(NavigatorType navi) const {
     return dd_cached_degree(m_deg_cache, navi);
   }
@@ -591,6 +591,7 @@ public:
   typedef CTermStack<NavigatorType, Category, BaseType> base;
   typedef NavigatorType navigator;
   typedef typename base::idx_type idx_type;
+  typedef typename base::deg_type deg_type;
   typedef typename base::size_type size_type;
   typedef typename cached_block_deg<navigator>::manager_type manager_type;
 
@@ -601,7 +602,7 @@ public:
   CDegStackCore(const CDegStackCore& rhs):
     base(rhs), block(rhs.block) {}
 
-  size_type getDeg(navigator navi) const { return block(navi); }
+  deg_type getDeg(navigator navi) const { return block(navi); }
 
   bool atBegin() const { 
     return base::empty() || (base::index() < block.min()); 
@@ -810,7 +811,7 @@ public:
         }
         base::gotoEnd();
 
-        if (doloop = (base::isInvalid() || (base::size() != size)) )
+        if ((doloop = (base::isInvalid() || (base::size() != size)) ) )
           base::decrementNode();
 
     } while (!base::empty() && doloop);

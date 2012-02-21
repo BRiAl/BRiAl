@@ -160,9 +160,8 @@ void FGLMStrategy::writeRowToVariableDivisors(mzd_t* row, Monomial lm){
                 monomial2MultiplicationMatrixRowIndex[lm]=divided_index;
                 first=false;
             }
-            int j;
             if (transposed){
-                for(j=0;j<varietySize;j++){
+              for(std::size_t j=0;j<varietySize;j++){
                     mzd_write_bit(mat, j, divided_index, mzd_read_bit(row,0,j));
                 }
             } else {
@@ -191,8 +190,7 @@ void transpose_window_to_row(mzd_t* transposed_vec, mzd_t* window){
 }
 Polynomial FGLMStrategy::rowToPoly(mzd_t* row){
     MonomialVector vec;
-    int i;
-    for(i=0;i<varietySize;i++){
+    for(std::size_t i=0;i<varietySize;i++){
         if (mzd_read_bit(row,0,i)==1){
             vec.push_back(standardMonomialsFromVector[i]);
         }
@@ -204,20 +202,19 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     //first we write into rows, later we transpose
     //algorithm here
-    int i,j;
     multiplicationTables.resize(nVariables);
     tableXRowYIsMonomialFromWithIndex.resize(nVariables);
-    for(i=0;i<nVariables;i++){
+    for(std::size_t i=0; i < nVariables;i++){
         multiplicationTables[i]=mzd_init(varietySize,varietySize);
         tableXRowYIsMonomialFromWithIndex[i].resize(varietySize);
-        for(j=0;j<varietySize;j++){
+        for(std::size_t j=0;j<varietySize;j++){
             tableXRowYIsMonomialFromWithIndex[i][j]=-1;
         }
     }
     
     //standard monomials
     
-    for(i=0;i<standardMonomialsFromVector.size();i++){
+    for(std::size_t i=0;i<standardMonomialsFromVector.size();i++){
         Monomial m=standardMonomialsFromVector[i];
         Monomial::const_iterator it=m.begin();
         Monomial::const_iterator end=m.end();
@@ -333,9 +330,9 @@ void FGLMStrategy::setupMultiplicationTables(){
     
     {
         #ifdef DRAW_MATRICES
-        for(i=0;i<multiplicationTables.size();i++){
+      for(std::size_t i=0;i<multiplicationTables.size();i++){
             char matname[255];
-            sprintf(matname,"mult_table%d.png",i);
+            sprintf(matname,"mult_table%d.png",(int)i);
 
             draw_matrix(multiplicationTables[i],matname);
         }
@@ -355,18 +352,16 @@ void FGLMStrategy::findVectorInMultTables(mzd_t* dst, Monomial m){
         }
     }
 }
-void clear_mat(mzd_t* mat){
-    int i;
-    for(i=0;i<mat->nrows;i++){
-        mzd_row_clear_offset(mat,i,0);
-    }
+void clear_mat(mzd_t* mat) {
+  for(int i = 0; i < mat->nrows; ++i) {
+    mzd_row_clear_offset(mat,i,0);
+  }
 }
 void FGLMStrategy::transposeMultiplicationTables(){
     //From now on, we multiply, so here we transpose
-    int i;
     mzd_t* new_mat=mzd_init(varietySize,varietySize);
     mzd_t* swap;
-    for(i=0;i<multiplicationTables.size();i++){
+    for(std::size_t i=0;i<multiplicationTables.size();i++){
         //unnecassary many allocations of matrices
         //mzd_t* new_mat=mzd_init(varietySize,varietySize);
         clear_mat(new_mat);
@@ -384,8 +379,7 @@ void FGLMStrategy::transposeMultiplicationTables(){
 void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
 
     vars=gb.leadingTerms.usedVariables();
-    int i;
-    for (i=0;i<gb.size();i++){
+    for (std::size_t i=0;i<gb.size();i++){
         vars=vars * Monomial(gb[i].usedVariables, from);
     }
     
@@ -403,7 +397,7 @@ void FGLMStrategy::analyzeGB(const ReductionStrategy& gb){
     }
 
 
-    nVariables=vars.deg();
+    nVariables=vars.size();
     ring2Index.resize(from.nVariables());
     index2Ring.resize(nVariables);
     idx_type ring_index;
@@ -509,8 +503,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
     //mzd_row_clear_offset(mat,d,varietySize);//might be random data at the end as mat is wider
 
 
-    int i,j;
-    for(i=0;i<varietySize;i++){
+    for(std::size_t i=0;i<varietySize;i++){
         if (mzd_read_bit(mat,d,i)==1){
             bool succ=false;
             int row_idx=rowStartingWithIndex[i];
@@ -535,7 +528,7 @@ FGLMStrategy::IndexVector FGLMStrategy::rowVectorIsLinearCombinationOfRows(mzd_t
         }
     }
     IndexVector res;
-    for(i=0;i<d;i++){
+    for(int i=0;i<d;i++){
         if (mzd_read_bit(mat,d,i+varietySize)==1){
             res.push_back(i);
         }
@@ -556,7 +549,6 @@ PolynomialVector FGLMStrategy::main(){
     mzd_t* acc1=mzd_init(1, varietySize);
     mzd_t* acc2=mzd_init(1, varietySize);
 
-    int i;
     
     typedef std::set<Monomial> MonomialSetSTL;
     
@@ -570,7 +562,7 @@ PolynomialVector FGLMStrategy::main(){
     IndexVector w_start_indices;
     rowStartingWithIndex.resize(varietySize);
     rowIsStandardMonomialToWithIndex.resize(varietySize);
-    for(i=0;i<rowStartingWithIndex.size();i++){
+    for(std::size_t i=0;i<rowStartingWithIndex.size();i++){
         rowStartingWithIndex[i]=-1;
         rowIsStandardMonomialToWithIndex[i]=-1;
     }
@@ -586,7 +578,7 @@ PolynomialVector FGLMStrategy::main(){
 
     VariableVector varsVectorTo;
     varsVectorTo.reserve(varsVector.size());
-    for(i=0;i<varsVector.size();i++){
+    for(std::size_t i=0;i<varsVector.size();i++){
       varsVectorTo.push_back(to.coerce(varsVector[i]));
       C.insert(varsVectorTo.back());
     }
@@ -652,7 +644,7 @@ PolynomialVector FGLMStrategy::main(){
                 
                 IndexVector lin_combination=rowVectorIsLinearCombinationOfRows(w_window,  v_d);
                 MonomialVector p_vec;
-                for(i=0;i<lin_combination.size();i++){
+                for(std::size_t i=0;i<lin_combination.size();i++){
                     PBORI_ASSERT (lin_combination[i]<b.size());
                     p_vec.push_back(b[lin_combination[i]]);
                 }
@@ -670,7 +662,7 @@ PolynomialVector FGLMStrategy::main(){
                 rowStartingWithIndex[e.firstNonZeroIndex]=d;
                 mzd_write_bit(w,d,varietySize+d,1);
                 if (is_standard_monomial_from){
-                    idx_type from_idx=standardMonomialsFrom2Index[m];
+                    std::size_t from_idx=standardMonomialsFrom2Index[m];
                     if (e.firstNonZeroIndex==from_idx){
                         //we assume, the row is untached
                         rowIsStandardMonomialToWithIndex[d]=d;
@@ -691,7 +683,7 @@ PolynomialVector FGLMStrategy::main(){
                 mzd_copy_row(v,d,v_d,0);
                 
                 idx_type m_begin=*m.begin();
-                for(i=0;(i<varsVectorTo.size())&&(index2Ring[i]<m_begin);i++){
+                for(std::size_t i=0;(i<varsVectorTo.size())&&(index2Ring[i]<m_begin);i++){
                   Variable var=varsVectorTo[i];
                     if (!(m.reducibleBy(var))){
                       Monomial m_v= var*m;
@@ -710,7 +702,7 @@ PolynomialVector FGLMStrategy::main(){
     mzd_free(v_d);
     mzd_free(v);
 
-    for(i=0;i<addTheseLater.size();i++){
+    for(std::size_t i=0;i<addTheseLater.size();i++){
         F.push_back(to.coerce(addTheseLater[i]));
     }
     
@@ -718,7 +710,7 @@ PolynomialVector FGLMStrategy::main(){
     mzd_free(acc2);
 
 #ifndef PBORI_NDEBUG
-    for (long idx = 0; idx < F.size(); ++idx) {
+    for (std::size_t idx = 0; idx < F.size(); ++idx) {
       PBORI_ASSERT(to.id() == F[idx].ring().id());
     }
 #endif
@@ -729,23 +721,19 @@ PolynomialVector FGLMStrategy::main(){
 void FGLMStrategy::testMultiplicationTables(){
     #ifndef PBORI_NDEBUG
 
-    int i;
-    int j;
-
-    for(i=0;i<varsVector.size();i++){
+    for(std::size_t i=0;i<varsVector.size();i++){
         Variable v=varsVector[i];
         PBORI_ASSERT (v.index()>=i);
-        for (j=0;j<standardMonomialsFromVector.size(); j++){
+        for (std::size_t j=0;j<standardMonomialsFromVector.size(); j++){
             Monomial m=standardMonomialsFromVector[j];
             mzd_t* table=multiplicationTableForVariable(v);
-            int k;
             if (m==v){continue;}
             
             Polynomial product=reducedNormalFormInFromRing(m*v);
 
             MonomialSet product_set=product.diagram();
             Polynomial sum(0, product.ring());
-            for(k=0;k<varietySize;k++){
+            for(std::size_t k=0;k<varietySize;k++){
                 Monomial m2=standardMonomialsFromVector[k];
                 
                 if (mzd_read_bit(table,j,k)==1){
@@ -780,12 +768,12 @@ bool FGLMStrategy::canAddThisElementLaterToGB(Polynomial p){
     return false;
 }
 FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_with_ordering_type& to_ring,  const PolynomialVector& gb)
-  :to(to_ring), from(from_ring), gbFrom(from_ring),
-   vars(from_ring), 
+  : vars(from_ring), 
+
    standardMonomialsFrom(from_ring),
    leadingTermsFrom(from_ring),
    varsSet(from_ring),
-   edgesUnitedVerticesFrom(from_ring) {
+    gbFrom(from_ring), edgesUnitedVerticesFrom(from_ring), from(from_ring), to(to_ring){
 
     prot=false;
     transposed=false;

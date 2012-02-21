@@ -90,15 +90,13 @@ public:
 
   /// Initialize raw decision diagram management
   CCuddCore(size_type numVarsZ, const order_ptr& order):  
-    ref(0), m_names(numVarsZ), 
-    m_mgr(0, numVarsZ), pOrder(order) {
-
-  }
+    m_mgr(0, numVarsZ), ref(0), m_names(numVarsZ), 
+    pOrder(order) {  }
 
   /// Copy Constructor (nearly deep copy, but shallow copy of manager, names and
   /// ordering)
   CCuddCore(const self& rhs):
-    ref(0), m_mgr(rhs.m_mgr), m_names(rhs.m_names), pOrder(rhs.pOrder) { }
+    m_mgr(rhs.m_mgr), ref(0), m_names(rhs.m_names), pOrder(rhs.pOrder) { }
 
   /// Destructor
   ~CCuddCore(){ }

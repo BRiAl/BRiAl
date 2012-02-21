@@ -29,9 +29,9 @@ BEGIN_NAMESPACE_PBORIGB
 class ReductionOptions {
 public:
   ReductionOptions():
-    reducibleUntil(-1),
-    optLL(false), optBrutalReductions(true),
-    optRedTail(true), optRedTailDegGrowth(true) {}
+    optBrutalReductions(true), optLL(false), 
+    optRedTailDegGrowth(true), optRedTail(true), 
+    reducibleUntil(-1) {}
 
   bool optBrutalReductions;
   bool optLL;

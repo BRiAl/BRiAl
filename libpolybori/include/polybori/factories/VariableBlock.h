@@ -49,15 +49,14 @@ public:
   VariableBlock(idx_type size, idx_type start_index, idx_type offset,
                 bool reverse, const ring_type& ring):
     base(ring), 
-    m_start_index(start_index), m_offset(offset),
-    m_last (start_index + size - 1), m_reverse(reverse) { }
+    m_start_index(start_index), 
+    m_last (start_index + size - 1), m_offset(offset), m_reverse(reverse) { }
 
   /// Copy constructor
   VariableBlock(const self& rhs):
     base(rhs),
     m_start_index(rhs.m_start_index),
-    m_offset(rhs.m_offset),
-    m_last(rhs.m_last), m_reverse(rhs.m_reverse) { } 
+    m_last(rhs.m_last), m_offset(rhs.m_offset), m_reverse(rhs.m_reverse) { } 
 
   /// Destructor
   ~VariableBlock() {}

@@ -67,8 +67,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
     leads_from_strat=MonomialSet(current_ring);
     res_terms=MonomialSet(current_ring);
 
-    int i;
-        for(i=0;i<extendable_system.size();i++){
+    for(std::size_t i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
 	    PBORI_ASSERT(p.ring().id() == current_ring.id());
 
@@ -110,8 +109,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
 
 inline void
 fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_term_map){
-    int i;
-    for(i=0;i<polys.size();i++){
+    for(std::size_t i=0;i<polys.size();i++){
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
@@ -130,7 +128,7 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
 inline void
 translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_t* mat,const std::vector<int>& ring_order2lex, const std::vector<Exponent>& terms_as_exp,const std::vector<Exponent>& terms_as_exp_lex,int rank){
     int cols=mat->ncols;
-    int rows=mat->nrows;
+    //    int rows=mat->nrows; /// @todo unused?
     
     int i;
     for(i=0;i<rank;i++){
@@ -155,7 +153,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
         if (!(from_strat)){
             std::vector<Exponent> p_t(p_t_i.size());
             std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
-            for(j=0;j<p_t_i.size();j++){
+            for(std::size_t j=0;j<p_t_i.size();j++){
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
             polys.push_back(add_up_lex_sorted_exponents(leads_from_strat.ring(),
@@ -268,13 +266,13 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     }
     static int round=0;
     round++;
-    const int russian_k=16;
+    // const int russian_k=16; ///
     MonomialSet     terms_unique(current_ring);
     std::vector < Monomial > terms_unique_vec;
     MonomialSet     terms_step1(current_ring);
-    int             i;
     std::vector < std::pair < Polynomial, Monomial > >polys_lm;
-    for (i = 0; i < polys.size(); i++) {
+
+    for (std::size_t i = 0; i < polys.size(); i++) {
         if PBORI_LIKELY(!(polys[i].isZero()))
 		   polys_lm.push_back(std::pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
@@ -367,9 +365,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         PBORI_ASSERT(cols>=rows);
         remaining_cols=cols-rows;
         compactified_columns2old_columns.resize(remaining_cols);
-        for(i=0;i<cols;i++){
-            int j;
-            for(j=pivot_row;j<rows;j++){
+        for(int i=0;i<cols;i++){
+            int j=pivot_row;
+            for(;j<rows;j++){
                 if PBORI_UNLIKELY(mzd_read_bit(mat_step1,j,i)==1){
                     if (j!=pivot_row)
                         mzd_row_swap(mat_step1,j,pivot_row);
@@ -405,7 +403,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
         mzd_free(mat_step1);
 
-        for(i=0;i<remaining_cols;i++){
+        for(int i=0;i<remaining_cols;i++){
             int source=compactified_columns2old_columns[i];
             PBORI_ASSERT(i<=source);
             PBORI_ASSERT(source<=transposed_step1->nrows);
@@ -443,7 +441,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     // setup_order_tables(step2.terms_as_exp,step2.terms_as_exp_lex,step2.ring_order2lex,step2.lex_order2ring,step2.from_term_map, terms_step2);
     
     
-    for(i=0;i<polys_rest.size();i++){
+    for(std::size_t i=0;i<polys_rest.size();i++){
         Polynomial p_r=polys_rest[i];
         Polynomial p_t=p_r.diagram().intersect(terms_step2);
         Polynomial p_u=p_r.diagram().diff(p_t.diagram());
@@ -475,7 +473,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     }
     
     std::vector<int> remaining_col2new_col(remaining_cols);
-    for(i=0;i<remaining_cols;i++){
+    for(int i=0;i<remaining_cols;i++){
         remaining_col2new_col[i]=step2.from_term_map[step1.terms_as_exp[compactified_columns2old_columns[i]]];
     }
     PBORI_ASSERT(mat_step2_factor->ncols==mat_step1->nrows);
@@ -508,10 +506,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     mzd_free(mat_step1);
     PBORI_ASSERT(polys_rest.size()==eliminated->nrows);
     PBORI_ASSERT(mat_step2->nrows==eliminated->nrows);
-    for(i=0;i<polys_rest.size();i++){
-        int j;
+    for(std::size_t i=0;i<polys_rest.size();i++){
         PBORI_ASSERT(remaining_cols==eliminated->ncols);
-        for(j=0;j<remaining_cols;j++){
+        for(int j=0;j<remaining_cols;j++){
             if PBORI_UNLIKELY(mzd_read_bit(eliminated,i,j)==1){
                 PBORI_ASSERT(step2.terms_as_exp[remaining_col2new_col[j]]==step1.terms_as_exp[compactified_columns2old_columns[j]]);
                 

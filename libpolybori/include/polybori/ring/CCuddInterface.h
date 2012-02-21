@@ -54,6 +54,10 @@ inline const char* error_text(PBORI_PREFIX(DdManager)* mgr) {
       return("Invalid argument.");
     case CUDD_INTERNAL_ERROR:
       return("Internal error.");
+    case CUDD_TIMEOUT_EXPIRED:
+      return("Timed out.");
+    case CUDD_NO_ERROR:
+      return("No error. (Should not reach here!)");
     }
     return("Unexpected error.");
   }
@@ -68,10 +72,8 @@ intrusive_ptr_add_ref(PBORI_PREFIX(DdManager)* ptr){
 inline void 
 intrusive_ptr_release(PBORI_PREFIX(DdManager)* ptr) {
   if (!(--(ptr->hooks))) {
-    int retval = PBORI_PREFIX(Cudd_CheckZeroRef)(ptr);
-    // Check for unexpected non-zero reference counts
-    PBORI_ASSERT(retval == 0);
 
+    PBORI_ASSERT(PBORI_PREFIX(Cudd_CheckZeroRef)(ptr) == 0);
     PBORI_PREFIX(Cudd_Quit)(ptr);
   }
 }
@@ -134,7 +136,7 @@ public:
                  unsigned long maxMemory = PBORI_MAX_MEMORY):
     p_mgr(init(numVars, numVarsZ, numSlots, cacheSize, maxMemory)),
     m_vars(numVarsZ) {
-    for (idx_type idx = 0; idx < numVarsZ; ++idx) initVar(m_vars[idx], idx);
+    for (idx_type idx = 0; size_type(idx) < numVarsZ; ++idx) initVar(m_vars[idx], idx);
   }
 
   /// Copy constructor
@@ -293,7 +295,7 @@ public:
 
 
   node_ptr getVar(idx_type idx) const {
-    if PBORI_UNLIKELY(idx >= m_vars.size())
+    if PBORI_UNLIKELY(size_type(idx) >= m_vars.size())
       throw PBoRiError(CTypes::out_of_bounds);
     return  m_vars[idx];
   }

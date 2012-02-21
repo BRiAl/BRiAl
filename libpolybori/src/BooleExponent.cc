@@ -289,7 +289,7 @@ BooleExponent::divide(const monom_type& rhs) const {
 }
 
 // Degree of the lcm
-BooleExponent::size_type
+BooleExponent::deg_type
 BooleExponent::LCMDeg(const self& rhs) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::LCMDeg(const self&) const" );

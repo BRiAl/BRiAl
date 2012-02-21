@@ -42,7 +42,7 @@ public:
       const int USED_VARIABLES_BOUND=6;
       if ((e1.usedVariables.deg()>USED_VARIABLES_BOUND)||
           (e2.usedVariables.deg()>USED_VARIABLES_BOUND)||
-          (e1.usedVariables.LCMDeg(e2.usedVariables)>USED_VARIABLES_BOUND)
+          (e1.usedVariables.LCMDeg(e2.usedVariables) > USED_VARIABLES_BOUND)
           
           
           ||(e1.p.set().nNodes()>30)||(e2.p.set().nNodes()>30))
@@ -65,7 +65,8 @@ public:
       )-1)
       +((1<<gcd_deg)-1)*((1<<(e1.leadDeg-gcd_deg))+(1<<(e2.leadDeg-gcd_deg)));
 
-      int standard_monomials= (standard_monomials_in_common_lead <<(uv_exp.size()-lead_lcm.deg()));
+      MonomialSet::size_type standard_monomials =
+        (standard_monomials_in_common_lead <<(uv_exp.size()-lead_lcm.deg()));
       
       MonomialSet zeros1=zeros(e1.p, space);
       MonomialSet zeros2=zeros(e2.p, space);

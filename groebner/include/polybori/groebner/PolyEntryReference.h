@@ -40,9 +40,8 @@ public:
 
   /// Construct from plain non-constant reference
   PolyEntryReference(value_type &entry, vector_type& parent): 
-    m_entry(entry), minimal(entry.minimal),
-    vPairCalculated(entry.vPairCalculated),
-    m_parent(parent) { }
+    vPairCalculated(entry.vPairCalculated), minimal(entry.minimal),
+    m_entry(entry), m_parent(parent) { }
 
   /// Equality check
   bool operator==(const self& rhs) const { return m_entry == rhs; }

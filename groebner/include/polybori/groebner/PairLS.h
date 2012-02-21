@@ -53,31 +53,27 @@ public:
     return data->extract(v);
   }
   PairLS(int i, int j, const PolyEntryVector &v):
+    wlen(v[i].weightedLength+v[j].weightedLength-2),
     data(new IJPairData(i,j)),
-    lm(v[i].lead*v[j].lead),
-    wlen(v[i].weightedLength+v[j].weightedLength-2)
+    lm(v[i].lead*v[j].lead)
   {
     type=IJ_PAIR;
     sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
   }
   PairLS(int i, idx_type v, const PolyEntryVector &gen,int type):
-    data(new VariablePairData(i,v)),
-    sugar(gen[i].deg+1),
-   // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
+     // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].lead)
-  
-  {
+    sugar(gen[i].deg+1),
+    data(new VariablePairData(i,v)), lm(gen[i].lead) {
     PBORI_ASSERT(type==VARIABLE_PAIR);
     this->type=type;
   }
   
   PairLS(const Polynomial& delayed):
-    data(new PolyPairData(delayed)),
-    lm(delayed.lead()), 
-    sugar(delayed.deg()), wlen(delayed.eliminationLength()){
-      this->type=DELAYED_PAIR;
-  }
+    type(DELAYED_PAIR), wlen(delayed.eliminationLength()), 
+    sugar(delayed.deg()),
+    data(new PolyPairData(delayed)), 
+    lm(delayed.lead()) { }
   
 };
 

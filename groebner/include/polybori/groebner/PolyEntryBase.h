@@ -30,11 +30,12 @@ class PolyEntryBase {
 public:
   PolyEntryBase(const Polynomial &poly):
     literal_factors(poly),
-    p(poly), usedVariables(poly.usedVariablesExp()),
-    deg(poly.deg()), length(poly.length()), minimal(true),
+    p(poly), lead(poly.ring()), weightedLength(), 
+    length(poly.length()), deg(poly.deg()), 
     // empty/zero default values to be filled below (TODO: use inheritance here)
-    lead(poly.ring()), leadExp(), leadDeg(), tail(poly.ring()), 
-    weightedLength(), tailVariables(), gcdOfTerms(poly.ring()) {
+    leadDeg(), leadExp(), gcdOfTerms(poly.ring()), 
+    usedVariables(poly.usedVariablesExp()),
+    tailVariables(), tail(poly.ring()),  minimal(true), vPairCalculated() {
     
     lead = p.boundedLead(deg);
     leadExp = lead.exp();

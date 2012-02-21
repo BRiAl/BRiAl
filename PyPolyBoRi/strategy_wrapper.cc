@@ -79,27 +79,27 @@ static int pairs_top_sugar(const GroebnerStrategy& strat){
 static void cleanTopByChainCriterion(GroebnerStrategy & strat){
   strat.pairs.cleanTopByChainCriterion();
 }
-static void printGenerators(const GroebnerStrategy& strat){
-  int i;
-  for (i=0;i<strat.generators.size();i++){
-    std::cout<<(strat.generators[i].p)<<std::endl;
-  }
-}
-static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
-  vector<Polynomial> res;
-  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
-  strat.pairs.cleanTopByChainCriterion();
-  deg_type deg=strat.pairs.queue.top().sugar;
+
+// static void printGenerators(const GroebnerStrategy& strat){
+//   for (std::size_t i=0;i<strat.generators.size();i++){
+//     std::cout<<(strat.generators[i].p)<<std::endl;
+//   }
+// }
+// static vector<Polynomial> nextDegreeSpolys(GroebnerStrategy& strat){
+//   vector<Polynomial> res;
+//   PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
+//   strat.pairs.cleanTopByChainCriterion();
+//   deg_type deg=strat.pairs.queue.top().sugar;
   
-  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg)){
+//   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg)){
     
-    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
-    res.push_back(strat.nextSpoly());
-    strat.pairs.cleanTopByChainCriterion();
-  }
-  return res;
+//     PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
+//     res.push_back(strat.nextSpoly());
+//     strat.pairs.cleanTopByChainCriterion();
+//   }
+//   return res;
   
-}
+// }
 
 static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   vector<Polynomial> res;
@@ -107,7 +107,8 @@ static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   
-  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (res.size()<n)){
+  while((!(strat.pairs.pairSetEmpty())) &&
+        (strat.pairs.queue.top().sugar<=deg) && (res.size() < (std::size_t)n)){
     
     PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
@@ -116,21 +117,21 @@ static vector<Polynomial> someNextDegreeSpolys(GroebnerStrategy& strat, int n){
   return res;
   
 }
-static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
-  vector<Polynomial> res;
-  PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
-  strat.pairs.cleanTopByChainCriterion();
-  deg_type deg=strat.pairs.queue.top().sugar;
-  wlen_type wlen=strat.pairs.queue.top().wlen;
-  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
+// static vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat, double f, int n){
+//   vector<Polynomial> res;
+//   PBORI_ASSERT(!(strat.pairs.pairSetEmpty()));
+//   strat.pairs.cleanTopByChainCriterion();
+//   deg_type deg=strat.pairs.queue.top().sugar;
+//   wlen_type wlen=strat.pairs.queue.top().wlen;
+//   while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<(std::size_t)n)){
     
-    PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
-    res.push_back(strat.nextSpoly());
-    strat.pairs.cleanTopByChainCriterion();
-  }
-  return res;
+//     PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
+//     res.push_back(strat.nextSpoly());
+//     strat.pairs.cleanTopByChainCriterion();
+//   }
+//   return res;
   
-}
+// }
 bool contains_one(const GroebnerStrategy& strat){
   int s=strat.generators.size();
   int i;
@@ -149,7 +150,7 @@ int select_wrapped(const GroebnerStrategy & strat, const Monomial& m){
     return strat.generators.select1(m);
 }
 
-static Polynomial get_ith_gen(const GroebnerStrategy& strat, int i){
+static Polynomial get_ith_gen(const GroebnerStrategy& strat, std::size_t i){
     if PBORI_UNLIKELY((i<0)||(i>=strat.generators.size())){
         throw StrategyIndexException();
     }

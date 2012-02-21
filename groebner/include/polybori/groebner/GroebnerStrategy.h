@@ -54,8 +54,8 @@ public:
     generators(input_ring),
 
     cache(new CacheManager()),
-    chainCriterions(0), easyProductCriterions(0), extendedProductCriterions(0),
-    variableChainCriterions(0) { }
+    chainCriterions(0),  variableChainCriterions(0), 
+    easyProductCriterions(0), extendedProductCriterions(0) { }
 
   const BoolePolyRing& ring() const { return generators.leadingTerms.ring(); }
   bool containsOne() const { return generators.leadingTerms.ownsOne(); }

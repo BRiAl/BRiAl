@@ -48,8 +48,8 @@ struct Fpolyfac {
 
   BoolePolyRing ring;
   BooleExponent bexp;
-  BooleSet bset;
   BooleVariable x, y, z, v, w;
+  BooleSet bset;
 };
 
 

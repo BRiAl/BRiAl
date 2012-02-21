@@ -115,7 +115,7 @@ class BooleExponent:
   void resize(size_type nsize) { m_data.resize(nsize); }
 
   /// Degree of the corresponding monomial
-  size_type deg() const { return size(); }
+  deg_type deg() const { return size(); }
 
   /// Divisors of the monomial
   set_type divisors(const ring_type&) const;
@@ -206,7 +206,7 @@ class BooleExponent:
 //   bool_type reducibleBy(const var_type& rhs) const;
 
   /// Degree of the least common multiple
-  size_type LCMDeg(const self&) const;
+  deg_type LCMDeg(const self&) const;
 
   /// Compute theleast common multiple and assign
   /// self& LCMAssign(const self&);

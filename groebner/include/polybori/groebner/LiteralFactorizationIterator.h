@@ -46,9 +46,9 @@ public:
                                var2var_map_type::const_iterator
                                var2var_iter_
                                ):
-    m_ring(literal_factorization_->rest.ring()), 
+    var2var_iter(var2var_iter_), var2const_iter(var2const_iter_),
     literal_factorization(literal_factorization_),
-    var2const_iter(var2const_iter_), var2var_iter(var2var_iter_) { }
+    m_ring(literal_factorization_->rest.ring())  { }
   
 
   self & operator++();

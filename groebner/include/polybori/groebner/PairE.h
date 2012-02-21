@@ -39,45 +39,43 @@ public:
   pair_data_ptr data;
   Exponent lm; //must not be the real lm, can be lm of syzygy or something else
 
- PairE(const PairE& rhs):
-  type(rhs.getType()), wlen(rhs.wlen), sugar(rhs.sugar), 
-    data(rhs.data), lm(rhs.lm) {}
+  PairE(const PairE& rhs):
+   type(rhs.getType()), wlen(rhs.wlen), sugar(rhs.sugar), 
+   data(rhs.data), lm(rhs.lm) {}
 
 
   Polynomial extract(const PolyEntryVector& v) const {
     return data->extract(v);
   }
   PairE(int i, int j, const PolyEntryVector &v):
+    type(IJ_PAIR),
+    wlen(v[i].weightedLength+v[j].weightedLength-2),
     data(new IJPairData(i,j)),
-    lm(v[i].leadExp+v[j].leadExp),
-    wlen(v[i].weightedLength+v[j].weightedLength-2)
-  {
-    type=IJ_PAIR;
+    lm(v[i].leadExp+v[j].leadExp) {
     sugar=lm.deg()+std::max(v[i].ecart(),v[j].ecart());
   }
+
   PairE(int i, idx_type v, const PolyEntryVector &gen,int type):
-    data(new VariablePairData(i,v)),
-    sugar(gen[i].deg+1),
-   // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
     wlen(gen[i].weightedLength+gen[i].length),
-  lm(gen[i].leadExp)
-  
-  {
+    sugar(gen[i].deg+1),
+    data(new VariablePairData(i,v)), 
+    // sugar(gen[i].lmDeg+1),///@only do that because of bad criteria impl
+    
+    lm(gen[i].leadExp) {
     PBORI_ASSERT(type==VARIABLE_PAIR);
     this->type=type;
     if (gen[i].leadExp==gen[i].usedVariables)
-        sugar=gen[i].deg;
+      sugar=gen[i].deg;
     if (gen[i].tailVariables.deg()<gen[i].deg)
-        sugar=gen[i].deg;
+      sugar=gen[i].deg;
   }
   
   PairE(const Polynomial& delayed):
+    type(DELAYED_PAIR), wlen(delayed.eliminationLength()),
+    sugar(delayed.deg()), 
     data(new PolyPairData(delayed)),
     //lm(delayed.lead()),
-    lm(delayed.leadExp()),
-    sugar(delayed.deg()), wlen(delayed.eliminationLength()){
-      this->type=DELAYED_PAIR;
-  }
+    lm(delayed.leadExp()) { }
 
   const PolyPairData& delayedPair() const {
     PBORI_ASSERT(type == DELAYED_PAIR);

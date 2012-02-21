@@ -31,10 +31,10 @@ struct Fmonom {
   typedef BooleMonomial monom_type;
   Fmonom(const BoolePolyRing& input_ring = BoolePolyRing(5)):  
     ring(input_ring),
+    bset(1, ring.one(), ring.zero()),
     bexp(BooleExponent().change(1)),
     x(0, input_ring), y(1, input_ring), z(2, input_ring),
-    v(3, input_ring), w(4, input_ring),
-    bset(1, ring.one(), ring.zero()) {
+    v(3, input_ring), w(4, input_ring) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
     bset = BooleSet(1, ring.one(), ring.zero()); // something non-trivial

@@ -78,7 +78,7 @@ minimal_elements_internal2(MonomialSet s){
         return s;
     } else {
     
-        int z;
+        MonomialSet::size_type z;
         MonomialSet cv_set(s.ring());
         for(z=cv.size()-1;z>=0;z--){
             Monomial mv=Variable(cv[z], s.ring());
@@ -139,8 +139,7 @@ minimal_elements_internal3(MonomialSet s){
         return result;
     }
     std::vector<idx_type> cv=contained_variables(s);
-    int i;
-    for(i=0;i<cv.size();i++){
+    for(MonomialSet::size_type i=0;i<cv.size();i++){
             s=s.subset0(cv[i]);
             Exponent t;
             t.insert(cv[i]);
@@ -155,7 +154,7 @@ minimal_elements_internal3(MonomialSet s){
         exponents.insert(exponents.end(), s.expBegin(),s.expEnd());
         int nvars=s.ring().nVariables();
         std::vector<std::vector<int> > occ_vecs(nvars);
-        for(i=0;i<exponents.size()-1;i++){
+        for(MonomialSet::size_type i=0;i<exponents.size()-1;i++){
             Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
             Exponent::const_iterator end=((const Exponent&) exponents[i]).end();
             while(it!=end){
@@ -169,13 +168,12 @@ minimal_elements_internal3(MonomialSet s){
             occ_sets[i].insert(occ_vecs[i].begin(),occ_vecs[i].end());
         }*/
         std::vector<bool> still_minimal(exponents.size());
-        for(i=exponents.size()-1;i>=0;i--){
+        for(MonomialSet::size_type i=exponents.size()-1;i>=0;i--){
             still_minimal[i]=true;
         }
-        int result_orig=result.size();
-        //cout<<"orig:"<<exponents.size()<<endl;
+
         //lex smalles is last so backwards
-        for(i=exponents.size()-1;i>=0;i--){
+        for(MonomialSet::size_type i=exponents.size()-1;i>=0;i--){
             if (still_minimal[i]){
                 //we assume, that each exponents has deg>0
                 Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
@@ -218,7 +216,6 @@ minimal_elements_internal3(MonomialSet s){
                 result.push_back(exponents[i]);
             }
         }
-        //cout<<"after:"<<result.size()-result_orig<<endl;
         
     }
     return result;

@@ -30,7 +30,7 @@ red_tail_general(const ReductionStrategy& strat, Polynomial p){
 
   PBORI_ASSERT(!p.isZero());
 
-  int deg_bound=p.deg();
+  // int deg_bound=p.deg(); /// @todo unused?
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
   bool changed=false;
@@ -63,7 +63,7 @@ red_tail_general(const ReductionStrategy& strat, Polynomial p){
         rest_lead=*it;
         }
     else irr_p=p;
-    int s,i;
+    int s;
     s=irr.size();
     PBORI_ASSERT(s==irr_p.length());
     //if (s!=irr_p.length()) cout<<"ADDUP FAILED!!!!!!!!!!!!!!!!!!!!!!!!\n";
@@ -98,7 +98,7 @@ red_tail_generic(const ReductionStrategy& strat, Polynomial p){
 
   PBORI_ASSERT(!p.isZero());
 
-  int deg_bound=p.deg();
+  // int deg_bound=p.deg(); /// @todo unused?
   std::vector<Polynomial> res_vec;
   Polynomial orig_p=p;
   bool changed=false;
@@ -161,7 +161,7 @@ red_tail_generic(const ReductionStrategy& strat, Polynomial p){
         
         }
     else irr_p=p;
-    int s,i;
+    size_t s;
     s=irr.size();
 
     PBORI_ASSERT((s==irr_p.length())||(rest_is_irreducible));

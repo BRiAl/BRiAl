@@ -52,9 +52,9 @@ class CacheManager{
             if (it!=impl.end()){
                 succ=true;
                 res_type res(new poly_vec_type(it->second));
-                int i;
+
                 
-                for(i=0;i<res->size();i++){
+                for(poly_vec_type::size_type i=0;i<res->size();i++){
                     (*res)[i]=translate_indices((*res)[i],back_2_ring);
                 }
                 return res;
@@ -72,8 +72,8 @@ class CacheManager{
             set_up_translation_vectors(ring_2_0123,back_2_ring, used_exp);
             Polynomial key_t=translate_indices(key,ring_2_0123);
             poly_vec_type value_t(value);
-            int i;
-            for(i=0;i<value_t.size();i++){
+
+            for(poly_vec_type::size_type i=0;i<value_t.size();i++){
                 value_t[i]=translate_indices(value_t[i], ring_2_0123);
             }
             impl[key_t]=value_t;

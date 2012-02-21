@@ -153,8 +153,8 @@ static char rcsid[] DD_UNUSED = "$Id: cuddTable.c,v 1.126 2012/02/05 01:07:19 fa
 static void ddRehashZdd (DdManager *unique, int i);
 #ifdef PBORI_FORCE_ORIGINAL_CUDD
 static int ddResizeTable (DdManager *unique, int index, int amount);
-#endif
 static int cuddFindParent (DdManager *table, DdNode *node);
+#endif
 DD_INLINE static void ddFixLimits (DdManager *unique);
 #ifdef DD_RED_BLACK_FREE_LIST
 static void cuddOrderedInsert (DdNodePtr *root, DdNodePtr node);
@@ -1163,7 +1163,9 @@ cuddUniqueInter(
 {
     int pos;
     unsigned int level;
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     int retval;
+#endif
     DdNodePtr *nodelist;
     DdNode *looking;
     DdNodePtr *previousP;
@@ -1409,7 +1411,9 @@ cuddUniqueInterZdd(
 {
     int pos;
     unsigned int level;
+#ifdef PBORI_FORCE_ORIGINAL_CUDD
     int retval;
+#endif
     DdNodePtr *nodelist;
     DdNode *looking;
     DdSubtable *subtable;
@@ -2812,7 +2816,6 @@ ddResizeTable(
     return(1);
 
 } /* end of ddResizeTable */
-#endif
 
 /**Function********************************************************************
 
@@ -2857,7 +2860,7 @@ cuddFindParent(
     return(0);
 
 } /* end of cuddFindParent */
-
+#endif
 
 /**Function********************************************************************
 

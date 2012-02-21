@@ -50,8 +50,7 @@ public:
         return multiplicationTables[ring2Index[v.index()]];
     }
     ~FGLMStrategy(){
-        int i;
-        for(i=0;i<multiplicationTables.size();i++){
+        for(std::size_t i=0;i<multiplicationTables.size();i++){
             mzd_free(multiplicationTables[i]);
         }
     }
@@ -83,7 +82,7 @@ private:
     IndexVector ring2Index;
     IndexVector index2Ring;
     IndexVector rowStartingWithIndex;
-    idx_type nVariables;
+    MonomialSet::size_type nVariables;
     bool transposed;
     std::vector<IndexVector> tableXRowYIsMonomialFromWithIndex;
     lm2Index_map_type standardMonomialsFrom2Index;

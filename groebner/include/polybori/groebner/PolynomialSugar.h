@@ -27,7 +27,7 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 class PolynomialSugar{
 public:
-  PolynomialSugar(const Polynomial& poly): lm(poly.ring()), exp(), p(poly) {
+  PolynomialSugar(const Polynomial& poly): lm(poly.ring()), p(poly),  exp(){
     sugar=p.deg();
     if (!(p.isZero())){
       this->lm=p.boundedLead(sugar);
@@ -39,7 +39,7 @@ public:
     length=p.length();
   }
   PolynomialSugar(const Polynomial& poly, int sugar, len_type length):
-    lm(poly.ring()), exp(), p(poly) {
+    lm(poly.ring()), p(poly), exp() {
 
     PBORI_ASSERT(length>=0);
     

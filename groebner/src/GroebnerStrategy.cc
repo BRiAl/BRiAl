@@ -60,7 +60,7 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
   strat.pairs.cleanTopByChainCriterion();
   deg_type deg=strat.pairs.queue.top().sugar;
   wlen_type wlen=strat.pairs.queue.top().wlen;
-  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<n)){
+  while((!(strat.pairs.pairSetEmpty())) &&(strat.pairs.queue.top().sugar<=deg) && (strat.pairs.queue.top().wlen<=wlen*f+2)&& (res.size()<(std::size_t)n)){
     
     PBORI_ASSERT(strat.pairs.queue.top().sugar==deg);
     res.push_back(strat.nextSpoly());
@@ -72,19 +72,19 @@ static std::vector<Polynomial> small_next_degree_spolys(GroebnerStrategy& strat,
 
 // class members
 GroebnerStrategy::GroebnerStrategy(const GroebnerStrategy& orig):
+  GroebnerOptions(orig),
   PairManagerFacade<GroebnerStrategy>(orig),
   generators(orig.generators),
   cache(orig.cache),
-  GroebnerOptions(orig),
 
   reductionSteps(orig.reductionSteps),
   normalForms(orig.normalForms),
   currentDegree(orig.currentDegree),
+  averageLength(orig.averageLength),
   chainCriterions(orig.chainCriterions),
   variableChainCriterions(orig.variableChainCriterions),
   easyProductCriterions(orig.easyProductCriterions),
-  extendedProductCriterions(orig.extendedProductCriterions),
-  averageLength(orig.averageLength) {
+  extendedProductCriterions(orig.extendedProductCriterions) {
 
   //  this->pairs.strat = this;
 }
@@ -219,14 +219,13 @@ GroebnerStrategy::addHigherImplDelayedUsing4(const LiteralFactorization&
     std::vector<idx_type> back_2_ring(4);
     set_up_translation_vectors(ring_2_0123, back_2_ring, used_variables);
     unsigned int p_code=p2code_4(p, ring_2_0123);
-    int i;
     if ((get_table_entry4(ring, p_code,0) == p_code) &&
         (get_table_entry4(ring, p_code,1) == 0)){
       return false;
     }
     
     bool can_add_directly=true;
-    for(i=0;get_table_entry4(ring, p_code,i)!=0;i++){
+    for(int i=0;get_table_entry4(ring, p_code,i)!=0;i++){
       unsigned int impl_code=get_table_entry4(ring, p_code,i);
 
         if ((include_orig) ||(p_code!=impl_code)){
@@ -362,11 +361,10 @@ GroebnerStrategy::treatVariablePairs(PolyEntryReference entry){
   
   Polynomial rest=e.literal_factors.rest;
   
-  int rest_lm_deg=rest.leadDeg();
   Monomial rest_uv=rest.usedVariables();
   if ((rest_uv.deg() > 1) && (rest_uv.deg() < 12)){
     MonomialSet my_ones = zeros(rest + 1, rest_uv.divisors());
-    if ((my_ones.size() << rest.leadDeg()) == (1 << rest_uv.deg()))
+    if ((my_ones.size() << rest.leadDeg()) == (std::size_t(1) << rest_uv.deg()))
       return empty;
   }
 
@@ -715,10 +713,9 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     static int round=0;
     round++;
     std::vector<Polynomial> polys;
-    int i;
     MonomialSet terms(orig_system[0].ring());
     
-    for(i=0;i<orig_system.size();i++){
+    for(std::size_t i=0;i<orig_system.size();i++){
         Polynomial p=orig_system[i];
         if PBORI_LIKELY(!(p.isZero())){
             p=ll_red_nf(p,generators.llReductor);
@@ -759,11 +756,11 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
 
     from_term_map_type from_term_map;
     //to_term_map_type to_term_map;
-    for (i=0;i<terms_as_exp.size();i++){
+    for (std::size_t i=0;i<terms_as_exp.size();i++){
         from_term_map[terms_as_exp[i]]=i;
         //to_term_map[i]=terms_as_exp[i]);
     }
-    for(i=0;i<polys.size();i++){
+    for(std::size_t i=0;i<polys.size();i++){
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
@@ -795,10 +792,10 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     else
             rank=0;
     #endif
-    for(i=rank-1;i>=0;i--){
-        int j;
+    for(int i=rank-1;i>=0;i--){
+        int j=0;
         std::vector<Exponent> p_t;
-        for(j=0;j<cols;j++){
+        for(;j<cols;j++){
             #ifndef PBORI_HAVE_M4RI
             if (mat[i][j]==1)
             #else

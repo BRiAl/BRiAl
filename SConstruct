@@ -574,7 +574,8 @@ if not env.GetOption('clean'):
         test_src_sizeof =  """
         #include <stdio.h>
         int main(int argc, char **argv) {
-          printf("SIZEOF_VOID_P=%i SIZEOF_INT=%i SIZEOF_LONG=%i", sizeof(void*), sizeof(int), sizeof(long));
+          printf("SIZEOF_VOID_P=%u SIZEOF_INT=%u SIZEOF_LONG=%u",
+            (unsigned)sizeof(void*), (unsigned)sizeof(int), (unsigned)sizeof(long));
           return 0;
         }
         """

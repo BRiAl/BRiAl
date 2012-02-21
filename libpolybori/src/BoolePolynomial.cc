@@ -791,7 +791,7 @@ BoolePolynomial::eliminationLength() const{
     return 0;
   if (ring().ordering().isTotalDegreeOrder())
     return this->length();
-  size_type deg=this->deg();
+  deg_type deg=this->deg();
   if (deg==this->leadDeg()){
     return this->length();
   }

@@ -28,6 +28,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
+#ifndef random
+long int random(void);
+#endif
+
 #include <stdarg.h>
 #include "grayflex.h"
 #include "misc.h"

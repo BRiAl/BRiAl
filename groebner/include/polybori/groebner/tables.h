@@ -79,7 +79,7 @@ p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
   return p2code<unsigned int, ZeroFunction, SetBitUInt>(p,ring_2_0123, 4);
 }
 
-inline int
+inline unsigned int
 get_table_entry4(const BoolePolyRing& ring, int p_code, int pos){
   switch(ring.ordering().getBaseOrderCode()){
         #ifdef PBORI_HAVE_LP4_DATA
