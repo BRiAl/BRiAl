@@ -260,10 +260,11 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
 
-    if PBORI_UNLIKELY(((long long) unmodified_cols)*((long long) unmodified_rows)>20000000000ll){
+    if PBORI_UNLIKELY(((wlen_type) unmodified_cols)*((wlen_type) unmodified_rows)>20000000000ll){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
+
     static int round=0;
     round++;
     // const int russian_k=16; ///

@@ -587,6 +587,19 @@ if not env.GetOption('clean'):
         context.Result(result)
         return result
 
+    def CheckLongLong(context):
+        context.Message('Checking whether C++ knows about long long... ')
+        test_src_longlong =  """
+        int main(int argc, char **argv) {
+          long long val = 0LL;
+          return (int)val;
+        }
+        """
+        (result, values) = context.TryRun(test_src_longlong, '.cc')
+        result = (result == 1)
+        context.Result(result)
+        return result
+
     def GuessM4RIFlags(context, external):
         context.Message('Guessing m4ri compile flags... ')
         if not external:
@@ -630,12 +643,16 @@ if not env.GetOption('clean'):
 
     conf = Configure(env, 
                      custom_tests = {'CheckSizeOfTypes': CheckSizeOfTypes,
+                                     'CheckLongLong': CheckLongLong,
                                      'GuessM4RIFlags': GuessM4RIFlags})
+
     if not conf.CheckSizeOfTypes():
         print "Could not detect type sizes (maybe compile/link flags " + \
             "trouble)! Exiting."
         Exit(1)
 
+    if conf.CheckLongLong():
+        env.Append(CPPDefines='PBORI_HAVE_LONG_LONG')
 
     gdlibs = env["GD_LIBS"]
     if gdlibs and conf.CheckCHeader("gd.h"):
