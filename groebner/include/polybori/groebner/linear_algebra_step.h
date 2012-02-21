@@ -242,6 +242,31 @@ pbori_transpose(mzd_t* mat) {
   return mzd_transpose(NULL,mat);
 }
 
+/// This checks cols*rows > 20000000000ll
+inline bool matrix_size_exceeded(wlen_type cols, wlen_type rows) {
+
+#ifdef PBORI_HAVE_LONG_LONG
+  return (cols*rows > 20000000000ll);
+#else
+  unsigned max_value = 4;
+  wlen_type result = (cols >> 16)*(rows >> 16);
+  if (result > max_value)
+    return true;
+
+  max_value -= result;
+  wlen_type result2 = (cols >> 16)*(rows & 0xffff) +
+    (cols & 0xffff)*(rows >> 16);
+  if ( (result2 >> 16) > max_value)
+    return true;
+
+  //max_value -= result2;
+  wlen_type result3 = (cols & 0xffff)*(rows & 0xffff);
+
+  return  ( (result2 +  (result3 >> 16)) >> 16) > max_value;
+
+#endif
+}
+
 inline void 
 linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
 {
@@ -260,7 +285,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
 
-    if PBORI_UNLIKELY(((wlen_type) unmodified_cols)*((wlen_type) unmodified_rows)>20000000000ll){
+    if PBORI_UNLIKELY(matrix_size_exceeded(unmodified_cols, unmodified_rows)){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
