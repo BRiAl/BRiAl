@@ -28,13 +28,14 @@
 
 #ifndef M4RI_DOXYGEN
 
+#ifndef __cplusplus
 static inline word calculate_hash(word const* rowptr, wi_t wide) {
   unsigned long long hash = 0;
   for (word const* ptr = rowptr; ptr < rowptr + wide; ++ptr)
     hash ^= *ptr;
   return hash;
 }
-
+#endif 
 static inline word rotate_word(word w, int shift) {
   return (w << shift) | (w >> (m4ri_radix - w));
 }

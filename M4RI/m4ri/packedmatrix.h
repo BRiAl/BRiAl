@@ -1385,6 +1385,7 @@ double _mzd_density(mzd_t const *A, wi_t res, rci_t r, rci_t c);
 
 rci_t mzd_first_zero_row(mzd_t const *A);
 
+#ifndef __cplusplus
 /**
  * \brief Return hash value for matrix.
  *
@@ -1397,6 +1398,6 @@ static inline unsigned long long mzd_hash(mzd_t const *A) {
     hash ^= rotate_word(calculate_hash(A->rows[r], A->width), r % m4ri_radix);
   return hash;
 }
-
+#endif 
 
 #endif // M4RI_PACKEDMATRIX_H

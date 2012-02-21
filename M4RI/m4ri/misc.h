@@ -311,6 +311,7 @@ static word const m4ri_ffff = __M4RI_CONVERT_TO_WORD(-1);
 
 #define __M4RI_MIDDLE_BITMASK(n, offset) (__M4RI_LEFT_BITMASK(n) << (offset))
 
+#ifndef __cplusplus
 /**
  * \brief swap bits in the word v
  *
@@ -326,6 +327,7 @@ static inline word m4ri_swap_bits(word v) {
   v =  (v >> 32)                          |  (v                          << 32);
   return v;
 }
+#endif
 
 /**
  * \brief pack bits (inverse of m4ri_spread_bits)

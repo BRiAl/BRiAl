@@ -38,6 +38,7 @@
 #define __M4RI_MIX32(a, b) (((((a) >> 32) ^ (a)) << 32) | \
                             ((((b) << 32) ^ (b)) >> 32))
 
+#ifndef __cplusplus
 /**
  * \brief Step for mixing two 64-bit words to compute their parity.
  */
@@ -123,5 +124,7 @@ static inline word m4ri_parity64(word *buf)
 
    return __M4RI_MIX1(e1, e0);
 }
+
+#endif /* __cplusplus */
 
 #endif // M4RI_PARITY_H
