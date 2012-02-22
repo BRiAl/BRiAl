@@ -119,7 +119,7 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
             from_term_map_type::const_iterator from_it=from_term_map.find(*it);
             PBORI_ASSERT(from_it!=from_term_map.end());
             mzd_write_bit(mat,i,from_it->second,1);
-            #endif
+            #endif 
             it++;
         }
     }
@@ -242,29 +242,64 @@ pbori_transpose(mzd_t* mat) {
   return mzd_transpose(NULL,mat);
 }
 
-/// This checks cols*rows > 20000000000ll
-inline bool matrix_size_exceeded(wlen_type cols, wlen_type rows) {
 
-#ifdef PBORI_HAVE_LONG_LONG
-  return (cols*rows > 20000000000ll);
-#else
-  unsigned max_value = 4;
-  wlen_type result = (cols >> 16)*(rows >> 16);
-  if (result > max_value)
+template <unsigned NBits>
+class BitMask;
+
+template <>
+class BitMask<0> {
+public:
+  static const unsigned long mask = 0;
+};
+
+template <unsigned NBits>
+class BitMask {
+public:
+  static const unsigned long mask = (BitMask<NBits-1>::mask << 1) + 1;
+};
+
+template <unsigned NBits, unsigned long MaxHigh>
+inline bool
+number_check(const unsigned long& number, 
+	     unsigned long& high, unsigned long& low) {
+  const unsigned long mask = BitMask<NBits>::mask; 
+
+  high += (number >> NBits);
+  if (high > MaxHigh)
     return true;
+  low += (number & mask);
 
-  max_value -= result;
-  wlen_type result2 = (cols >> 16)*(rows & 0xffff) +
-    (cols & 0xffff)*(rows >> 16);
-  if ( (result2 >> 16) > max_value)
+  high += (low >> NBits);
+  if (high > MaxHigh)
     return true;
+  low  &= mask;
 
-  //max_value -= result2;
-  wlen_type result3 = (cols & 0xffff)*(rows & 0xffff);
+  return false;
+}
+template <unsigned NBits, unsigned long MaxHigh, unsigned long MaxLow>
+inline bool
+number_check_low(const unsigned long& number, 
+		 unsigned long& high, unsigned long& low) {
 
-  return  ( (result2 +  (result3 >> 16)) >> 16) > max_value;
+  return number_check<NBits, MaxHigh>(number >> NBits, high, low) ||
+    ((high == MaxHigh) && ( ((low << NBits) + 
+			     (number & BitMask<NBits-1>::mask)) > MaxLow) );
+}
 
-#endif
+/// This checks cols*rows > MaxHigh*2^(2*NBits) + MaxLow
+template <unsigned NBits, 
+	  unsigned long MaxHigh, unsigned long MaxLow>
+inline bool
+matrix_size_exceeded(wlen_type cols, wlen_type rows) {
+
+  const unsigned long mask = BitMask<NBits-1>::mask;
+  unsigned long high = (cols >> NBits)*(rows >> NBits), low = 0;
+
+  return (high > MaxHigh) || 
+    number_check<NBits, MaxHigh>((cols >> NBits)*(rows & mask), high, low)  || 
+    number_check<NBits, MaxHigh>((cols & mask)*(rows >> NBits), high, low) ||
+    number_check_low<NBits, MaxHigh, MaxLow>((cols & mask)*(rows & mask),
+					     high, low);
 }
 
 inline void 
@@ -285,7 +320,9 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
 
-    if PBORI_UNLIKELY(matrix_size_exceeded(unmodified_cols, unmodified_rows)){
+    /// This checks cols*rows > 20000000000ll = 4*2^32 + 2820130816
+    if (PBORI_UNLIKELY((matrix_size_exceeded<16,4,2820130816>(unmodified_cols,
+						          unmodified_rows)))){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
