@@ -249,57 +249,138 @@ class BitMask;
 template <>
 class BitMask<0> {
 public:
+  static const unsigned nbits = 0;
   static const unsigned long mask = 0;
+
+  unsigned long low(const unsigned long& value) const { return 0; }
+  const unsigned long& high(const unsigned long& value) const { return value; }
+  const unsigned long& shift(const unsigned long& value) const { return value; }
 };
 
 template <unsigned NBits>
 class BitMask {
 public:
-  static const unsigned long mask = (BitMask<NBits-1>::mask << 1) + 1;
+  static const unsigned nbits = NBits;
+  static const unsigned long mask = (BitMask<nbits-1>::mask << 1) + 1;
+
+  unsigned long low(const unsigned long& value) const {
+    return value & mask;
+  }
+  unsigned long high(const unsigned long& value) const {
+    return value >> NBits;
+  }
+  unsigned long shift(const unsigned long& value) const {
+    return value << NBits;
+  }
 };
 
-template <unsigned NBits, unsigned long MaxHigh>
-inline bool
-number_check(const unsigned long& number, 
-	     unsigned long& high, unsigned long& low) {
-  const unsigned long mask = BitMask<NBits>::mask; 
 
-  high += (number >> NBits);
-  if (high > MaxHigh)
-    return true;
-  low += (number & mask);
+class DelayedLongLong:
+  protected std::pair<unsigned long, unsigned long>,
+  protected BitMask<sizeof(unsigned long)*4> {
 
-  high += (low >> NBits);
-  if (high > MaxHigh)
-    return true;
-  low  &= mask;
+public:
+  typedef unsigned long long_type;
 
-  return false;
-}
-template <unsigned NBits, unsigned long MaxHigh, unsigned long MaxLow>
-inline bool
-number_check_low(const unsigned long& number, 
-		 unsigned long& high, unsigned long& low) {
+protected:
+  typedef std::pair<long_type, long_type> base;
 
-  return number_check<NBits, MaxHigh>(number >> NBits, high, low) ||
-    ((high == MaxHigh) && ( ((low << NBits) + 
-			     (number & BitMask<NBits-1>::mask)) > MaxLow) );
-}
+public:
+  DelayedLongLong(const long_type& high, const long_type& low):
+    base(high, low) {}
 
-/// This checks cols*rows > MaxHigh*2^(2*NBits) + MaxLow
-template <unsigned NBits, 
-	  unsigned long MaxHigh, unsigned long MaxLow>
-inline bool
-matrix_size_exceeded(wlen_type cols, wlen_type rows) {
+#ifdef PBORI_HAVE_LONG_LONG
+  operator unsigned long long() const {
+    return (unsigned long long(first) << (sizeof(long_type)*8)) + second;
+  }
+#endif
+};
 
-  const unsigned long mask = BitMask<NBits-1>::mask;
-  unsigned long high = (cols >> NBits)*(rows >> NBits), low = 0;
+template <DelayedLongLong::long_type High,
+          DelayedLongLong::long_type Low>
+class LongLongConstant {
+public:
+  typedef typename DelayedLongLong::long_type long_type;
+  static const long_type first = High;
+  static const long_type second = Low;
 
-  return (high > MaxHigh) || 
-    number_check<NBits, MaxHigh>((cols >> NBits)*(rows & mask), high, low)  || 
-    number_check<NBits, MaxHigh>((cols & mask)*(rows >> NBits), high, low) ||
-    number_check_low<NBits, MaxHigh, MaxLow>((cols & mask)*(rows & mask),
-					     high, low);
+#ifdef PBORI_HAVE_LONG_LONG
+  operator DelayedLongLong() const {
+    return DelayedLongLong(first, second);
+  }
+  operator unsigned long long() const {
+    return operator DelayedLongLong();
+  }
+#endif
+};
+
+
+
+template <DelayedLongLong::long_type MaxHigh,
+          DelayedLongLong::long_type MaxLow>
+class LongProductLess:
+  private DelayedLongLong {
+  typedef DelayedLongLong base;
+
+public:
+  LongProductLess():
+    base(0, 0) {}
+
+  bool operator()(const long_type& higher, const long_type & lower) {
+
+    return most(high(higher) * high(lower)) || 
+      mid(high(higher)*low(lower)) || mid(low(higher)*high(lower)) ||
+      least(low(higher)*low(lower));
+  }
+
+protected:
+  bool most(const long_type& number) {
+    first = number;
+    second = 0;
+    return (first > MaxHigh);
+  }
+
+  bool mid(const long_type& number) {
+    first += high(number);
+
+    if (first > MaxHigh)
+      return true;
+    second += low(number);
+
+    first += high(second);
+
+    if (first > MaxHigh)
+      return true;
+
+    second = low(second);
+    return false;
+  }
+
+  bool least(const long_type& number) {
+    return mid(high(number)) ||
+      ((first == MaxHigh) && ( (shift(second) + low(number)) > MaxLow));
+  }
+
+
+};
+
+class DelayedLongProduct:
+  private DelayedLongLong {
+
+  typedef DelayedLongLong base;
+public:
+  DelayedLongProduct(const long_type& high, const long_type & low):
+    base(high, low) {}
+
+  template <long_type MaxHigh, long_type MaxLow>
+  bool less(const LongLongConstant<MaxHigh, MaxLow>&) const {
+    return LongProductLess<MaxHigh, MaxLow>()(first, second);
+  }
+};
+
+template <class RhsType>
+bool operator> (DelayedLongProduct lhs, const RhsType& rhs) {
+   return lhs.less(rhs);
 }
 
 inline void 
@@ -321,8 +402,8 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_cols=terms.size();
 
     /// This checks cols*rows > 20000000000ll = 4*2^32 + 2820130816
-    if (PBORI_UNLIKELY((matrix_size_exceeded<16,4,2820130816>(unmodified_cols,
-						          unmodified_rows)))){
+    if (PBORI_UNLIKELY( (DelayedLongProduct(unmodified_cols, unmodified_rows) >
+                         LongLongConstant<4,2820130816>()) )){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
