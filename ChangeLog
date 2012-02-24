@@ -11,7 +11,8 @@ Release Name: 0.8.1
 * Install/InstallAs fixes permissions
 * ipbori -t runs PolyBoRi's doctests	
 * internal refactoring of ReductionStrategy and GroebnerStrategy started
-	
+* avoiding long long
+
 Release Name: 0.8.0
 * improved standard-conformity, multiprocessing safety, and usability
 * renamed subdirectory polybori to libpolybori

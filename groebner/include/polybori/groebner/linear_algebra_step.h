@@ -26,6 +26,10 @@
 #include "MatrixMonomialOrderTables.h"
 #include "PolyMonomialPairComparerLess.h"
 
+#include "BitMask.h"
+#include "DelayedLongProduct.h"
+#include "LongLongConstant.h"
+
 #ifdef PBORI_HAVE_NTL
 #include <NTL/GF2.h>
 #include <NTL/mat_GF2.h>
@@ -243,145 +247,6 @@ pbori_transpose(mzd_t* mat) {
 }
 
 
-template <unsigned NBits>
-class BitMask;
-
-template <>
-class BitMask<0> {
-public:
-  static const unsigned nbits = 0;
-  static const unsigned long mask = 0;
-
-  unsigned long low(const unsigned long& value) const { return 0; }
-  const unsigned long& high(const unsigned long& value) const { return value; }
-  const unsigned long& shift(const unsigned long& value) const { return value; }
-};
-
-template <unsigned NBits>
-class BitMask {
-public:
-  static const unsigned nbits = NBits;
-  static const unsigned long mask = (BitMask<nbits-1>::mask << 1) + 1;
-
-  unsigned long low(const unsigned long& value) const {
-    return value & mask;
-  }
-  unsigned long high(const unsigned long& value) const {
-    return value >> NBits;
-  }
-  unsigned long shift(const unsigned long& value) const {
-    return value << NBits;
-  }
-};
-
-
-class DelayedLongLong:
-  protected std::pair<unsigned long, unsigned long>,
-  protected BitMask<sizeof(unsigned long)*4> {
-
-public:
-  typedef unsigned long long_type;
-
-protected:
-  typedef std::pair<long_type, long_type> base;
-
-public:
-  DelayedLongLong(const long_type& high, const long_type& low):
-    base(high, low) {}
-
-#ifdef PBORI_HAVE_LONG_LONG
-  operator unsigned long long() const {
-    return (unsigned long long(first) << (sizeof(long_type)*8)) + second;
-  }
-#endif
-};
-
-template <DelayedLongLong::long_type High,
-          DelayedLongLong::long_type Low>
-class LongLongConstant {
-public:
-  typedef typename DelayedLongLong::long_type long_type;
-  static const long_type first = High;
-  static const long_type second = Low;
-
-#ifdef PBORI_HAVE_LONG_LONG
-  operator DelayedLongLong() const {
-    return DelayedLongLong(first, second);
-  }
-  operator unsigned long long() const {
-    return operator DelayedLongLong();
-  }
-#endif
-};
-
-
-
-template <DelayedLongLong::long_type MaxHigh,
-          DelayedLongLong::long_type MaxLow>
-class LongProductLess:
-  private DelayedLongLong {
-  typedef DelayedLongLong base;
-
-public:
-  LongProductLess():
-    base(0, 0) {}
-
-  bool operator()(const long_type& higher, const long_type & lower) {
-
-    return most(high(higher) * high(lower)) || 
-      mid(high(higher)*low(lower)) || mid(low(higher)*high(lower)) ||
-      least(low(higher)*low(lower));
-  }
-
-protected:
-  bool most(const long_type& number) {
-    first = number;
-    second = 0;
-    return (first > MaxHigh);
-  }
-
-  bool mid(const long_type& number) {
-    first += high(number);
-
-    if (first > MaxHigh)
-      return true;
-    second += low(number);
-
-    first += high(second);
-
-    if (first > MaxHigh)
-      return true;
-
-    second = low(second);
-    return false;
-  }
-
-  bool least(const long_type& number) {
-    return mid(high(number)) ||
-      ((first == MaxHigh) && ( (shift(second) + low(number)) > MaxLow));
-  }
-
-
-};
-
-class DelayedLongProduct:
-  private DelayedLongLong {
-
-  typedef DelayedLongLong base;
-public:
-  DelayedLongProduct(const long_type& high, const long_type & low):
-    base(high, low) {}
-
-  template <long_type MaxHigh, long_type MaxLow>
-  bool less(const LongLongConstant<MaxHigh, MaxLow>&) const {
-    return LongProductLess<MaxHigh, MaxLow>()(first, second);
-  }
-};
-
-template <class RhsType>
-bool operator> (DelayedLongProduct lhs, const RhsType& rhs) {
-   return lhs.less(rhs);
-}
 
 inline void 
 linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, MonomialSet leads_from_strat, bool log, bool optDrawMatrices, const char* matrixPrefix)
