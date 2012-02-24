@@ -965,7 +965,7 @@ env.Clean(DocPath('c++'), docutarget)
 testclasses = Split("""GroebnerStrategy spoly term_accumulate CStringLiteral BooleEnv BooleSet BooleConstant BoolePolyRing BooleExponent BooleVariable BooleMonomial BoolePolynomial PBoRiError CCuddDDFacade DegRevLexAscOrder DegLexOrder
 BlockDegRevLexAscOrder BlockDegLexOrder  LexOrder 
 CFactoryBase MonomialFactory PolynomialFactory VariableFactory SetFactory
-weak_pointers FGLMStrategy""")
+weak_pointers FGLMStrategy DelayedLongProduct""")
 
 # Note: use custom TEST_CPPPATH settings for testing header installation, if any
 try:
