@@ -28,7 +28,7 @@
 
 #include "BitMask.h"
 #include "DelayedLongProduct.h"
-#include "LongLongConstant.h"
+#include "Long64From32BitsPair.h"
 
 #ifdef PBORI_HAVE_NTL
 #include <NTL/GF2.h>
@@ -266,9 +266,9 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
     int unmodified_rows=polys.size();
     int unmodified_cols=terms.size();
 
-    /// This checks cols*rows > 20000000000ll = 4*2^32 + 2820130816
+    /// This checks cols*rows > 20000000000 = 4*2^32 + 2820130816
     if (PBORI_UNLIKELY( (DelayedLongProduct(unmodified_cols, unmodified_rows) >
-                         LongLongConstant<4,2820130816>()) )){
+			 Long64From32BitsPair<4u, 2820130816u>::value) )){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }

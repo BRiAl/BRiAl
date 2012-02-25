@@ -38,8 +38,15 @@ public:
   DelayedLongProduct(const long_type& high, const long_type & low):
     base(high, low) {}
 
+  bool greater(long_type rhs) const {
+    if (high(first) && high(second))
+      return (first > rhs/second);
+
+    return (first * second) > rhs;
+  }
+
   template <long_type MaxHigh, long_type MaxLow>
-  bool less(const LongLongConstant<MaxHigh, MaxLow>&) const {
+  bool greater(const LongLongConstant<MaxHigh, MaxLow>&) const {
     return LongProductLess<MaxHigh, MaxLow>()(first, second);
   }
 };
@@ -47,8 +54,9 @@ public:
 template <class RhsType>
 inline bool
 operator> (DelayedLongProduct lhs, const RhsType& rhs) {
-   return lhs.less(rhs);
+   return lhs.greater(rhs);
 }
+
 
 
 END_NAMESPACE_PBORIGB

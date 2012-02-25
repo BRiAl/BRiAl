@@ -36,10 +36,10 @@ public:
   static const long_type first = High;
   static const long_type second = Low;
 
-#ifdef PBORI_HAVE_LONG_LONG
   operator DelayedLongLong() const {
     return DelayedLongLong(first, second);
   }
+#ifdef PBORI_HAVE_LONG_LONG
   operator unsigned long long() const {
     return operator DelayedLongLong();
   }

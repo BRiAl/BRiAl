@@ -24,6 +24,7 @@ USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
 struct Fdelayedlongprod {
+  typedef unsigned long long_type;
   Fdelayedlongprod() {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
@@ -63,6 +64,24 @@ BOOST_AUTO_TEST_CASE(test_less) {
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<<(sizeof(long)*4),
 					(unsigned long)(2)<<(sizeof(long)*4) )>
 		    LongLongConstant<4,1>()), false);
+
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 34), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 35), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 36), false);
+
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
+		     long_type(34)<<32), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
+		     long_type(35)<<32), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
+		     long_type(36)<<32), false);
+
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
+		     long_type(34)<<32), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
+		     long_type(35)<<32), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
+		     long_type(36)<<32), false);
 
 }
 
