@@ -38,8 +38,11 @@ public:
   DelayedLongProduct(const long_type& high, const long_type & low):
     base(high, low) {}
 
+  // a,b != 0,  a <= c/b:  a*b <= (c/b)*b  <= (c/b)*b + (c%b) = c
+  // a,b != 0,  a >  c/b:  Assume a*b  <= c = (c/b)*b + (c%b) ->
+  //   (c/b)*b < a*b  <= (c/b)*b + (c%b)  ->  c/b < a < c/b+1 (contradicts int)
   bool greater(long_type rhs) const {
-    if (high(first) && high(second))
+    if (high(first) && high(second)) 
       return (first > rhs/second);
 
     return (first * second) > rhs;
