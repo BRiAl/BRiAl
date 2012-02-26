@@ -25,7 +25,8 @@ USING_NAMESPACE_PBORIGB
 
 struct Fdelayedlongprod {
   typedef unsigned long long_type;
-  Fdelayedlongprod() {
+  unsigned nhalf;
+  Fdelayedlongprod(): nhalf(sizeof(long_type)*4) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
   }
@@ -69,12 +70,12 @@ BOOST_AUTO_TEST_CASE(test_less) {
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 35), false);
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 36), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
-		     long_type(34)<<32), true);
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
-		     long_type(35)<<32), false);
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<32, 7) >
-		     long_type(36)<<32), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<nhalf, 7) >
+		     long_type(34)<<nhalf), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<nhalf, 7) >
+		     long_type(35)<<nhalf), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<nhalf, 7) >
+		     long_type(36)<<nhalf), false);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
 		     long_type(34)<<32), true);
