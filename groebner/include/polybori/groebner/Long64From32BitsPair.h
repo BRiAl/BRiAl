@@ -37,7 +37,7 @@ template <DelayedLongLong::long_type High,
           DelayedLongLong::long_type Low>
 class Long64From32BitsPairBase<High, Low, 4> {
 public:
-  LongLongConstant<High, Low> operator()() const { 
+  static LongLongConstant<High, Low> get() { 
     return LongLongConstant<High, Low>();
   }
 };
@@ -48,7 +48,7 @@ template <DelayedLongLong::long_type High,
 class Long64From32BitsPairBase<High, Low, 8> {
 public:
   typedef typename DelayedLongLong::long_type long_type;
-  long_type operator()() const { return (High << sizeof(long_type)*4) + Low; }
+  static long_type get() { return (High << sizeof(long_type)*4) + Low; }
 };
 
 /** @class Long64From32BitsPair
