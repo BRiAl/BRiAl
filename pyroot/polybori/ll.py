@@ -188,7 +188,7 @@ def eliminate_ll_ranked(ll_system, to_reduce,
   return (llnf, opt_eliminated)
 
 
-class RingMap:
+class RingMap(object):
     """Define a mapping between two rings by common variable names.
 
     >>> from polybori.frontend import *
