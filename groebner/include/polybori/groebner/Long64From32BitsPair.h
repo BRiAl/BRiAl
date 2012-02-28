@@ -18,8 +18,7 @@
 
 // include basic definitions
 #include "groebner_defs.h"
-#include "DelayedLongLong.h"
-#include "LongLongConstant.h"
+#include "PseudoLongLong.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -28,26 +27,24 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 
-template <DelayedLongLong::long_type High,
-          DelayedLongLong::long_type Low, unsigned SizeOfLong>
+template <unsigned long High, unsigned long Low, unsigned SizeOfLong>
 class Long64From32BitsPairBase;
 
 
-template <DelayedLongLong::long_type High,
-          DelayedLongLong::long_type Low>
+template <unsigned long High, unsigned long Low>
 class Long64From32BitsPairBase<High, Low, 4> {
 public:
-  static LongLongConstant<High, Low> get() { 
-    return LongLongConstant<High, Low>();
+  static PseudoLongLong<High, Low> get() { 
+    return PseudoLongLong<High, Low>();
   }
 };
 
 
-template <DelayedLongLong::long_type High,
-          DelayedLongLong::long_type Low>
+template <unsigned long High,
+          unsigned long Low>
 class Long64From32BitsPairBase<High, Low, 8> {
 public:
-  typedef typename DelayedLongLong::long_type long_type;
+  typedef unsigned long long_type;
   static long_type get() { return (High << sizeof(long_type)*4) + Low; }
 };
 
@@ -55,13 +52,12 @@ public:
  * @brief This class defines Long64From32BitsPair.
  *
  **/
-template <DelayedLongLong::long_type High,
-          DelayedLongLong::long_type Low>
+template <unsigned long High, unsigned long Low>
 class Long64From32BitsPair:
   public Long64From32BitsPairBase<High, Low,
-				  sizeof(DelayedLongLong::long_type)> {
+				  sizeof(unsigned long)> {
 public:
-  typedef typename DelayedLongLong::long_type long_type;
+  typedef unsigned long long_type;
 
 };
 

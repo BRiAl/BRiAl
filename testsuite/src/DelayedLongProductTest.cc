@@ -19,7 +19,8 @@
 using boost::test_tools::output_test_stream;
 
 #include <polybori/groebner/DelayedLongProduct.h>
-#include <polybori/groebner/LongLongConstant.h>
+#include <polybori/groebner/PseudoLongLong.h>
+#include <polybori/groebner/Long64From32BitsPair.h>
 USING_NAMESPACE_PBORI
 USING_NAMESPACE_PBORIGB
 
@@ -43,28 +44,28 @@ BOOST_AUTO_TEST_CASE(test_less) {
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
 					(unsigned long)(-1)) >
-		     LongLongConstant<(unsigned long)(-1), (unsigned long)(-1)>()), true);
+		     PseudoLongLong<(unsigned long)(-1), (unsigned long)(-1)>()), true);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
 					(unsigned long)(-1)) >
-		     LongLongConstant<(unsigned long)(-1), 0>()), false);
+		     PseudoLongLong<(unsigned long)(-1), 0>()), false);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
 					(unsigned long)(-1)) >
-		     LongLongConstant<(unsigned long)(-1)/2, 
+		     PseudoLongLong<(unsigned long)(-1)/2, 
 		     (unsigned long)(-1)>()), true);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf,
 					(unsigned long)(2)<< nhalf) >
-		     LongLongConstant<3,(unsigned long)(-1)>()), true);
+		     PseudoLongLong<3,(unsigned long)(-1)>()), true);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf ,
 					(unsigned long)(2)<< nhalf ) >
-		    LongLongConstant<4,0>()), false);
+		    PseudoLongLong<4,0>()), false);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf,
 					(unsigned long)(2)<< nhalf )>
-		    LongLongConstant<4,1>()), false);
+		    PseudoLongLong<4,1>()), false);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 34), true);
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 35), false);
@@ -83,6 +84,11 @@ BOOST_AUTO_TEST_CASE(test_less) {
 		     long_type(35)<<32), false);
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
 		     long_type(36)<<32), false);
+
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
+		     long_type(36)<<32), false);
+
+
 
 }
 

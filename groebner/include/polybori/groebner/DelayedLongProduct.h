@@ -18,10 +18,10 @@
 
 // include basic definitions
 #include "groebner_defs.h"
-#include "DelayedLongLong.h"
-#include "LongLongConstant.h"
-#include "LongProductLess.h"
+#include "PseudoLongLong.h"
+#include "BitMask.h"
 #include "NBitsUsed.h"
+
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -32,10 +32,14 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 
 class DelayedLongProduct:
-  private DelayedLongLong {
-  typedef DelayedLongLong base;
+  protected std::pair<unsigned long, unsigned long>,
+  protected BitMask<sizeof(unsigned long)*4> {
+
+  typedef std::pair<unsigned long, unsigned long> base;
 
 public:
+  typedef unsigned long long_type;
+
   DelayedLongProduct(const long_type& high, const long_type & low):
     base(high, low) {}
 
@@ -49,7 +53,7 @@ public:
 
   /// compare carry-over savely with represented by two unsigned longs
   template <long_type MaxHigh, long_type MaxLow>
-  bool greater(const LongLongConstant<MaxHigh, MaxLow>&) const {
+  bool greater(const PseudoLongLong<MaxHigh, MaxLow>&) const {
 
    if (second == 0)
       return false;
