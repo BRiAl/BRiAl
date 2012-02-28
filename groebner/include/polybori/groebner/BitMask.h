@@ -38,7 +38,9 @@ public:
   unsigned long low(const unsigned long& value) const { return 0; }
   const unsigned long& high(const unsigned long& value) const { return value; }
   const unsigned long& shift(const unsigned long& value) const { return value; }
+  unsigned long back(const unsigned long& value) const { return 0; }
 };
+
 
 template <unsigned NBits>
 class BitMask {
@@ -55,9 +57,22 @@ public:
   unsigned long shift(const unsigned long& value) const {
     return value << NBits;
   }
+  unsigned long back(const unsigned long& value) const {
+    return value << (sizeof(unsigned long)*8 - NBits);
+  }
 };
 
+template <>
+class BitMask<sizeof(unsigned long)*8> {
+public:
+  static const unsigned nbits = sizeof(unsigned long)*8;
+  static const unsigned long mask = (BitMask<nbits-1>::mask << 1) + 1;
 
+  const unsigned long& low(const unsigned long& value) const { return value; }
+  unsigned long high(const unsigned long& value) const { return 0; }
+  unsigned long shift(const unsigned long& value) const { return 0; }
+  const unsigned long& back(const unsigned long& value) const { return value; }
+};
 
 END_NAMESPACE_PBORIGB
 

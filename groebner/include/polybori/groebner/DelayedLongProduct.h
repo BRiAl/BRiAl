@@ -21,6 +21,7 @@
 #include "DelayedLongLong.h"
 #include "LongLongConstant.h"
 #include "LongProductLess.h"
+#include "NBitsUsed.h"
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -38,19 +39,27 @@ public:
   DelayedLongProduct(const long_type& high, const long_type & low):
     base(high, low) {}
 
-  // a,b != 0,  a <= c/b:  a*b <= (c/b)*b  <= (c/b)*b + (c%b) = c
-  // a,b != 0,  a >  c/b:  Assume a*b  <= c = (c/b)*b + (c%b) ->
+  // b != 0,  a <= c/b:  a*b <= (c/b)*b  <= (c/b)*b + (c%b) = c
+  // b != 0,  a >  c/b:  Assume a*b  <= c = (c/b)*b + (c%b) ->
   //   (c/b)*b < a*b  <= (c/b)*b + (c%b)  ->  c/b < a < c/b+1 (contradicts int)
   bool greater(long_type rhs) const {
-    if (high(first) && high(second)) 
-      return (first > rhs/second);
-
-    return (first * second) > rhs;
+    return (second != 0) && (first > rhs/second);
   }
 
   template <long_type MaxHigh, long_type MaxLow>
   bool greater(const LongLongConstant<MaxHigh, MaxLow>&) const {
-    return LongProductLess<MaxHigh, MaxLow>()(first, second);
+
+   if (second == 0)
+      return false;
+
+    BitMask<sizeof(long_type)*8 - NBitsUsed<MaxHigh>::value > front;
+    long_type front_part = (front.shift(MaxHigh) + front.high(MaxLow)) ;
+
+    long_type divided  = front_part / second;
+ 
+    return (front.high(divided) == 0) &&
+      (first > (front.back(divided) + 
+		(front.back(front_part%second)+ front.low(MaxLow) ) / second));
   }
 };
 
