@@ -64,8 +64,8 @@ def sparse_random_system(ring, number_of_polynomials, variables_per_polynomial, 
 def sparse_random_system_data_file_content(
     number_of_variables, **kwds):
     r"""
-    >>> sparse_random_system_data_file_content(10, number_of_polynomials = 5, variables_per_polynomial = 3, degree=2, random_seed=123)
-    "declare_ring(['x'+str(i) for in xrange(10)])\nideal=\\\n[x0*x3 + x0 + x3*x9 + x3,\n x0*x2 + x2 + x5,\n x0*x4 + x4*x8 + x4,\n x0*x1 + x0*x7,\n x2*x5 + x2 + x5 + x9]\n\n"
+    >>> sparse_random_system_data_file_content(10, number_of_polynomials = 5, variables_per_polynomial = 3, degree=2, random_seed=123) # doctest: +ELLIPSIS
+    "declare_ring(['x'+str(i) for in xrange(10)])\nideal=\\\n[...]\n\n"
     """
     dummy_dict=dict()
     r=declare_ring(['x'+str(i) for i in xrange(number_of_variables)], dummy_dict)
