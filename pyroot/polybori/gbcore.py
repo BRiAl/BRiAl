@@ -484,6 +484,8 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
     convert_with_fglm_to_ring=None,
     modified_linear_algebra=True, preprocessor=None, 
     deg_bound = False, implementation = "Python",
+    full_prot = False, prot = False,
+    draw_matrices = False, preprocess_only = False,
 **impl_options):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
 
@@ -513,8 +515,6 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
         I=[prod + 1]
 
     import nf
-    nf.print_matrices=draw_matrices
-    nf.matrix_prefix=matrix_prefix
     
     if implementation=="Python":
         implementation=symmGB_F2_python
@@ -533,6 +533,8 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
     def call_algorithm(I,max_generators=None):
         return implementation(I,
             deg_bound = deg_bound,
+            full_prot = False,
+            prot = False,
             max_generators=max_generators)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
