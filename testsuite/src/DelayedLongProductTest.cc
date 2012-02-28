@@ -85,9 +85,12 @@ BOOST_AUTO_TEST_CASE(test_less) {
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
 		     long_type(36)<<32), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(7)<<32) >
-		     long_type(36)<<32), false);
-
+  BOOST_CHECK_EQUAL((DelayedLongProduct(3, long_type(1)<<32) >
+		     Long64From32BitsPair<4, 0>::get()), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(4, long_type(1)<<32) >
+		     Long64From32BitsPair<4, 0>::get()), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(5, long_type(1)<<32) >
+		     Long64From32BitsPair<4, 0>::get()), true);
 
 
 }
