@@ -33,12 +33,13 @@ BEGIN_NAMESPACE_PBORIGB
 
 class DelayedLongProduct:
   private DelayedLongLong {
-
   typedef DelayedLongLong base;
+
 public:
   DelayedLongProduct(const long_type& high, const long_type & low):
     base(high, low) {}
 
+  /// compare carry-over savely
   // b != 0,  a <= c/b:  a*b <= (c/b)*b  <= (c/b)*b + (c%b) = c
   // b != 0,  a >  c/b:  Assume a*b  <= c = (c/b)*b + (c%b) ->
   //   (c/b)*b < a*b  <= (c/b)*b + (c%b)  ->  c/b < a < c/b+1 (contradicts int)
@@ -46,6 +47,7 @@ public:
     return (second != 0) && (first > rhs/second);
   }
 
+  /// compare carry-over savely with represented by two unsigned longs
   template <long_type MaxHigh, long_type MaxLow>
   bool greater(const LongLongConstant<MaxHigh, MaxLow>&) const {
 
@@ -53,13 +55,13 @@ public:
       return false;
 
     BitMask<sizeof(long_type)*8 - NBitsUsed<MaxHigh>::value > front;
-    long_type front_part = (front.shift(MaxHigh) + front.high(MaxLow)) ;
-
+    const long_type front_part = (front.shift(MaxHigh) + front.high(MaxLow));
     long_type divided  = front_part / second;
- 
-    return (front.high(divided) == 0) &&
-      (first > (front.back(divided) + 
-		(front.back(front_part%second)+ front.low(MaxLow) ) / second));
+
+    return  (front.high(divided) == 0) && 
+      (first > front.back(divided)) &&
+      (first - front.back(divided) > 
+       (front.back(front_part%second)+ front.low(MaxLow) ) / second);
   }
 };
 
