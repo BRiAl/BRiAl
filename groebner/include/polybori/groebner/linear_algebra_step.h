@@ -268,7 +268,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
 
     /// This checks cols*rows > 20000000000 = 4*2^32 + 2820130816
     if (PBORI_UNLIKELY( (DelayedLongProduct(unmodified_cols, unmodified_rows) >
-			 Long64From32BitsPair<4u, 2820130816u>::value) )){
+			 Long64From32BitsPair<4u, 2820130816u>()()) )){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
