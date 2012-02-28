@@ -14,6 +14,11 @@ from polybori.interpolate import lex_groebner_basis_for_polynomial_via_variety
 from inspect import getargspec
 from polybori.fglm import _fglm
 
+def get_options_from_function(f):
+    (argnames,varargs,varopts,defaults) = getargspec(f)
+    return dict(
+        zip(
+            argnames[-len(defaults):],defaults))
 
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
@@ -215,8 +220,8 @@ def gb_with_pre_post_option(
         if hasattr(f,"options"):
             wrapper.options=copy(f.options)
         else:
-            (argnames,varargs,varopts,defaults)=getargspec(f)
-            wrapper.options=dict(zip(argnames[-len(defaults):],defaults))
+            
+            wrapper.options = get_options_from_function(f)
 
         wrapper.options[option]=default
         return wrapper
@@ -474,19 +479,12 @@ def eliminate_identical_variables_pre(I, prot):
 @gb_with_pre_post_option("fix_deg_bound",if_not_option=["interpolation_gb"], post=fix_deg_bound_post,default=True)
 @gb_with_pre_post_option("minsb",post=minsb_post,if_not_option=["redsb","deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
 @gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
-def groebner_basis(I, faugere=False,
-       preprocess_only=False, selection_size= 1000,
-       full_prot= False, recursion= False,
-       prot= False, step_factor= 1,
-       deg_bound=False, lazy= True, ll= False,
-       max_growth= 2.0, exchange= True,
-       matrix_prefix= "matrix", red_tail= True,
-       implementation="Python",
-       llfirst= False, noro= False, implications= False,
-       draw_matrices= False, llfirstonthefly= False,
-       linear_algebra_in_last_block=True, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
-       convert_with_fglm_to_ring=None,
-       red_tail_deg_growth=True, modified_linear_algebra=True, preprocessor=None):
+def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, 
+    clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
+    convert_with_fglm_to_ring=None,
+    modified_linear_algebra=True, preprocessor=None, 
+    deg_bound = False, implementation = "Python",
+**impl_options):
     """Computes a Groebner basis of a given ideal I, w.r.t options."""
 
     if not I:
@@ -533,19 +531,8 @@ def groebner_basis(I, faugere=False,
       import sys
       sys.exit(0)
     def call_algorithm(I,max_generators=None):
-        return implementation(I, opt_red_tail=red_tail,\
-            max_growth=max_growth, step_factor=step_factor,
-            implications=implications,prot=prot,
-            full_prot=full_prot,deg_bound=deg_bound,
-            selection_size=selection_size, opt_lazy=lazy, 
-            opt_exchange=exchange, opt_allow_recursion=recursion,
-            use_faugere=faugere,
-            use_noro=noro,ll=ll,
-            draw_matrices=draw_matrices,
-            matrix_prefix=matrix_prefix,
-            modified_linear_algebra=modified_linear_algebra,
-            opt_linear_algebra_in_last_block=linear_algebra_in_last_block,
-            max_generators=max_generators, red_tail_deg_growth=red_tail_deg_growth)
+        return implementation(I,
+            max_generators=max_generators)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:
@@ -558,7 +545,24 @@ def groebner_basis(I, faugere=False,
     else:
         return call_algorithm(I)
 
-groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join((k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))+"\nTurn off heuristic by setting heuristic=False"
+
+def build_groebner_basis_doc_string():
+    additional_options_from_buchberger = get_options_from_function(symmGB_F2_python)
+    for k in list(additional_options_from_buchberger):
+        if k in groebner_basis.options:
+            del additional_options_from_buchberger[k]
+
+    groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join(
+        (k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))\
+        +"""\nTurn off heuristic by setting heuristic=False
+        Additional options come from the actual buchberger implementation.
+        In case of our standard Python implementation these
+        are the following:
+        """ +\
+        "\n".join(
+            (k+"  :  "+repr(additional_options_from_buchberger[k]) for k in additional_options_from_buchberger))
+
+build_groebner_basis_doc_string()
 
 def _test():
     import doctest
