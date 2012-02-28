@@ -532,11 +532,12 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
       sys.exit(0)
     def call_algorithm(I,max_generators=None):
         return implementation(I,
+            deg_bound = deg_bound,
             max_generators=max_generators)
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:
-                return call_algorithm(I,max_generators=max_generators)
+                return call_algorithm(I, max_generators=max_generators, **impl_options)
             except GeneratorLimitExceeded, e:
                 I=list(e.strat.all_generators())
                 del e.strat
