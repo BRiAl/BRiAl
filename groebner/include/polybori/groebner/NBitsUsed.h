@@ -30,13 +30,13 @@ BEGIN_NAMESPACE_PBORIGB
 template<unsigned long NValue>
 class NBitsUsed {
 public:
-  static const unsigned value = NBitsUsed<(NValue >> 1)>::value + 1;
+  enum { value = NBitsUsed<(NValue >> 1)>::value + 1};
 };
 
 template<>
 class NBitsUsed<0> {
 public:
-  static const unsigned value = 0;
+  enum { value = 0};
 };
 
 

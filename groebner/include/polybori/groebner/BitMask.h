@@ -32,8 +32,7 @@ class BitMask;
 template <>
 class BitMask<0> {
 public:
-  static const unsigned nbits = 0;
-  static const unsigned long mask = 0;
+  enum { nbits = 0, mask = 0 };
 
   unsigned long low(const unsigned long& value) const { return 0; }
   const unsigned long& high(const unsigned long& value) const { return value; }
@@ -45,8 +44,7 @@ public:
 template <unsigned NBits>
 class BitMask {
 public:
-  static const unsigned nbits = NBits;
-  static const unsigned long mask = (BitMask<nbits-1>::mask << 1) + 1;
+  enum { nbits = NBits, mask = (BitMask<nbits-1>::mask << 1) + 1};
 
   unsigned long low(const unsigned long& value) const {
     return value & mask;
@@ -65,8 +63,8 @@ public:
 template <>
 class BitMask<sizeof(unsigned long)*8> {
 public:
-  static const unsigned nbits = sizeof(unsigned long)*8;
-  static const unsigned long mask = (BitMask<nbits-1>::mask << 1) + 1;
+  enum { nbits = sizeof(unsigned long)*8,
+	 mask = (BitMask<nbits-1>::mask << 1) + 1};
 
   const unsigned long& low(const unsigned long& value) const { return value; }
   unsigned long high(const unsigned long& value) const { return 0; }
