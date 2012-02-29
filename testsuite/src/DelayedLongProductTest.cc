@@ -42,29 +42,30 @@ BOOST_AUTO_TEST_CASE(test_less) {
 
   BOOST_TEST_MESSAGE( "operator<..." );
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
-					(unsigned long)(-1)) >
-		     PseudoLongLong<(unsigned long)(-1), (unsigned long)(-1)>()), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(-1), 
+					long_type(-1)) >
+		     PseudoLongLong<long_type(-1), long_type(-1)>()), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
-					(unsigned long)(-1)) >
-		     PseudoLongLong<(unsigned long)(-1), 0>()), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(-1), 
+					long_type(-1)) >
+		     PseudoLongLong<long_type(-1), 0>()), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(-1), 
-					(unsigned long)(-1)) >
-		     PseudoLongLong<(unsigned long)(-1)/2, 
-		     (unsigned long)(-1)>()), true);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf,
-					(unsigned long)(2)<< nhalf) >
-		     PseudoLongLong<3,(unsigned long)(-1)>()), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(-1), 
+					long_type(-1)) >
+		     PseudoLongLong<long_type(-1)/2, 
+		     long_type(-1)>()), true);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf ,
-					(unsigned long)(2)<< nhalf ) >
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(2)<< nhalf,
+					long_type(2)<< nhalf) >
+		     PseudoLongLong<3,long_type(-1)>()), true);
+
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(2)<< nhalf ,
+					long_type(2)<< nhalf ) >
 		    PseudoLongLong<4,0>()), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct((unsigned long)(2)<< nhalf,
-					(unsigned long)(2)<< nhalf )>
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(2)<< nhalf,
+					long_type(2)<< nhalf )>
 		    PseudoLongLong<4,1>()), false);
 
   BOOST_CHECK_EQUAL((DelayedLongProduct(5, 7) > 34), true);

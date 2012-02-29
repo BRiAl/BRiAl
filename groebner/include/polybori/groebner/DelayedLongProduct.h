@@ -32,7 +32,7 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 
 class DelayedLongProduct:
-  protected std::pair<unsigned long, unsigned long>,
+  public std::pair<unsigned long, unsigned long>,
   protected BitMask<sizeof(unsigned long)*4> {
 
   typedef std::pair<unsigned long, unsigned long> base;
@@ -52,27 +52,32 @@ public:
   }
 
   /// compare carry-over savely with represented by two unsigned longs
+  template <long_type MaxLow>
+  bool greater(const PseudoLongLong<0, MaxLow>&) const {
+    return greater(MaxLow);
+  }
+
+  /// compare carry-over savely with represented by two unsigned longs
   template <long_type MaxHigh, long_type MaxLow>
   bool greater(const PseudoLongLong<MaxHigh, MaxLow>&) const {
 
-   if (second == 0)
-      return false;
+    long_type least = low(first)*low(second);
+    long_type mixed = high(least) + high(first)*low(second);
+    long_type most = high(mixed) + high(first)*high(second);
+    if (most > MaxHigh)
+      return true;
 
-    BitMask<sizeof(long_type)*8 - NBitsUsed<MaxHigh>::value > front;
-    const long_type front_part = (front.shift(MaxHigh) + front.high(MaxLow));
-    long_type divided  = front_part / second;
-
-    return  (front.high(divided) == 0) && 
-      (first > front.back(divided)) &&
-      (first - front.back(divided) > 
-       (front.back(front_part%second)+ front.low(MaxLow) ) / second);
+    mixed = low(mixed) + low(first)*high(second);
+    most += high(mixed);
+    least = shift(mixed) + low(least);
+    return (most > MaxHigh) || ( (most == MaxHigh) && (least > MaxLow) );
   }
 };
 
 template <class RhsType>
 inline bool
 operator> (DelayedLongProduct lhs, const RhsType& rhs) {
-   return lhs.greater(rhs);
+  return lhs.greater(rhs);
 }
 
 
