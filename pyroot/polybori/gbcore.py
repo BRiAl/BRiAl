@@ -20,6 +20,26 @@ def get_options_from_function(f):
         zip(
             argnames[-len(defaults):],defaults))
 
+def filter_oldstyle_options(**options):
+    filtered = dict()
+    for key in options.keys():
+        newkey = key       
+        for prefix in ['', 'use_', 'opt_allow_', 'opt_']:
+            newkey = newkey.replace(prefix, '')
+        filtered[newkey] = options[key]
+
+    return filtered
+
+def filter_newstyle_options(func, **options):
+    allowed = get_options_from_function(func).keys()
+    filtered = dict()
+    for key in options.keys():
+        for prefix in ['', 'use_', 'opt_', 'opt_allow_']:
+            if prefix + key in allowed:
+                filtered[prefix + key] = options[key]
+
+    return filtered
+                
 def owns_one_constant(I):
     """Determines whether I contains the constant one polynomial."""
     for p in I:
@@ -514,8 +534,6 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
             prod=(p+1)*prod
         I=[prod + 1]
 
-    import nf
-    
     if implementation=="Python":
         implementation=symmGB_F2_python
     else:
@@ -530,16 +548,19 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
         print p
       import sys
       sys.exit(0)
+
     def call_algorithm(I,max_generators=None):
         return implementation(I,
             deg_bound = deg_bound,
             full_prot = False,
             prot = False,
-            max_generators=max_generators)
+            max_generators=max_generators,
+            **filter_newstyle_options(implementation, **impl_options))
+    
     if clean_and_restart_algorithm:
         for max_generators in [1000,10000,50000,100000,200000,300000,400000,None]:
             try:
-                return call_algorithm(I, max_generators=max_generators, **impl_options)
+                return call_algorithm(I, max_generators=max_generators)
             except GeneratorLimitExceeded, e:
                 I=list(e.strat.all_generators())
                 del e.strat
@@ -550,20 +571,22 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
 
 
 def build_groebner_basis_doc_string():
-    additional_options_from_buchberger = get_options_from_function(symmGB_F2_python)
+    additional_options_from_buchberger = \
+                             filter_oldstyle_options(**get_options_from_function(symmGB_F2_python))
     for k in list(additional_options_from_buchberger):
         if k in groebner_basis.options:
             del additional_options_from_buchberger[k]
 
     groebner_basis.__doc__=groebner_basis.__doc__+"\nOptions are:\n"+"\n".join(
-        (k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options))\
-        +"""\nTurn off heuristic by setting heuristic=False
-        Additional options come from the actual buchberger implementation.
-        In case of our standard Python implementation these
-        are the following:
-        """ +\
-        "\n".join(
-            (k+"  :  "+repr(additional_options_from_buchberger[k]) for k in additional_options_from_buchberger))
+        (k+"  :  "+repr(groebner_basis.options[k]) for k in groebner_basis.options)) + \
+"""
+
+Turn off heuristic by setting heuristic=False
+  Additional options come from the actual buchberger implementation.
+  In case of our standard Python implementation these are the following:
+
+""" + "\n".join(
+    (k+"  :  "+repr(additional_options_from_buchberger[k]) for k in additional_options_from_buchberger))
 
 build_groebner_basis_doc_string()
 
