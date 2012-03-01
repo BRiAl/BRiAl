@@ -1143,7 +1143,8 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
            auxiliary .deps"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
-           config.h coding.py unittests Makefile config.status libtool m4ri.pc stamp-h1"""))
+           *config.h coding.py unittests Makefile config.status libtool
+           m4ri.pc stamp-h1"""))
 
    
 if distribute or rpm_generation or deb_generation:
