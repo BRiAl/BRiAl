@@ -1141,10 +1141,11 @@ env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
            .cvsignore .dblite .log .sconsign .depend .out .graphViz_temp .exe
            .kprof.html .rpm .spec .so.0 .so.0.0.0 .0 .gcda .orig .rej .bin"""),
            DISTTAR_EXCLUDEDIRS = Split("""CVS .svn .sconf_temp SOURCES BUILD
-           auxiliary"""),
+           auxiliary .deps"""),
            DISTTAR_EXCLUDEPATTERN = Split(""".#* #*# *~ profiled cacheopts.h
-           config.h coding.py unittests"""))
+           config.h coding.py unittests Makefile config.status libtool m4ri.pc stamp-h1"""))
 
+   
 if distribute or rpm_generation or deb_generation:
     allsrcs = Split("""SConstruct README LICENSE ChangeLog versionnumber
 disttar.py doxygen.py""")
