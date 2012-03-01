@@ -1,11 +1,11 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file DelayedLongProduct.h 
+/** @file PseudoLongProduct.h 
  *
  * @author Alexander Dreyer
  * @date 2012-02-23
  *
- * This file includes the definition of the class @c DelayedLongProduct.
+ * This file includes the definition of the class @c PseudoLongProduct.
  *
  * @par Copyright:
  *   (c) by The PolyBoRi Team
@@ -13,8 +13,8 @@
 **/
 //*****************************************************************************
 
-#ifndef polybori_groebner_DelayedLongProduct_h_
-#define polybori_groebner_DelayedLongProduct_h_
+#ifndef polybori_groebner_PseudoLongProduct_h_
+#define polybori_groebner_PseudoLongProduct_h_
 
 // include basic definitions
 #include "groebner_defs.h"
@@ -23,20 +23,20 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
-/** @class DelayedLongProduct
+/** @class PseudoLongProduct
  * @brief This class defines a delayed product of longs and comparison with
  * @c LongLong Constant.
  *
  **/
 
-class DelayedLongProduct:
+class PseudoLongProduct:
   protected BitMask<sizeof(unsigned long)*4> {
 
 public:
   typedef unsigned long long_type;
 
-  DelayedLongProduct(const long_type& first, const long_type & second):
-    least(low(first)*low(second)), most(high(first)*high(second)) {
+  PseudoLongProduct(const long_type& first, const long_type& second):
+    most(high(first)*high(second)), least(low(first)*low(second)) {
 
     long_type mixed = high(least) + high(first)*low(second);
     most += high(mixed);
@@ -70,7 +70,7 @@ private:
 
 template <class RhsType>
 inline bool
-operator> (DelayedLongProduct lhs, const RhsType& rhs) {
+operator> (PseudoLongProduct lhs, const RhsType& rhs) {
   return lhs.greater(rhs);
 }
 
@@ -78,4 +78,4 @@ operator> (DelayedLongProduct lhs, const RhsType& rhs) {
 
 END_NAMESPACE_PBORIGB
 
-#endif /* polybori_groebner_DelayedLongProduct_h_ */
+#endif /* polybori_groebner_PseudoLongProduct_h_ */
