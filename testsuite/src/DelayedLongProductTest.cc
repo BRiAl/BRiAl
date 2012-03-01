@@ -27,7 +27,8 @@ USING_NAMESPACE_PBORIGB
 struct Fdelayedlongprod {
   typedef unsigned long long_type;
   unsigned nhalf;
-  Fdelayedlongprod(): nhalf(sizeof(long_type)*4) {
+  unsigned nbits;
+  Fdelayedlongprod(): nhalf(sizeof(long_type)*4), nbits(sizeof(long_type)*8) {
 
     BOOST_TEST_MESSAGE( "setup fixture" );
   }
@@ -79,12 +80,13 @@ BOOST_AUTO_TEST_CASE(test_less) {
   BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<nhalf, 7) >
 		     long_type(36)<<nhalf), false);
 
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<16, long_type(7)<<16) >
-		     long_type(34)<<32), true);
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<16, long_type(7)<<16) >
-		     long_type(35)<<32), false);
-  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<16, long_type(7)<<16) >
-		     long_type(36)<<32), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<(nhalf - 4), long_type(7)<<(nhalf-4)) >
+		     long_type(34)<<(nbits - 8)), true);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<(nhalf - 4), long_type(7)<<(nhalf-4)) >
+		     long_type(35)<<(nbits - 8)), false);
+  BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(5)<<(nhalf - 4), long_type(7)<<(nhalf-4)) >
+		     long_type(36)<<(nbits - 8)), false);
+
 
   BOOST_CHECK_EQUAL((DelayedLongProduct(long_type(3)<<16, long_type(1)<<16) >
 		     Long64From32BitsPair<4, 0>::get()), false);
