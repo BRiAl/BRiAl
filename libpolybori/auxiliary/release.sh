@@ -134,7 +134,8 @@ tar -xvzf $tardebian
 cd polybori-*
 
 scons prepare-debian
-rm -rf .scon* *.pyc
+scons -c M4RI
+rm -rf .scon* *.pyc config.log
 
 cd -
 dpkg-source -b polybori-*  $tardebian || exit 1

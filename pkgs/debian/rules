@@ -21,7 +21,7 @@ build-python%:
 		PYINSTALLPREFIX=$(TMPDEST)$(PYTHONSITE) MANDIR=$(TMPDEST)/usr/share/man \
 		PREFIX=$(TMPDEST)/usr EPREFIX=$(TMPDEST)/usr/bin \
 		DOCDIR=$(TMPDEST)/usr/share/doc/polybori PYTHON=$(PYTHON) \
-		RELATIVEPYPREFIX=/usr/lib/python$(lastword $(PYVERS))/site-packages
+		RELATIVEPYPREFIX=/usr/lib/python$(lastword $(PYVERS))/site-packages \
 		BOOST_PYTHON=boost_python-py$(patsubst %.,%,$(lastword $(PYVERS)))
 	touch $@
 
