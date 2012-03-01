@@ -20,8 +20,6 @@
 #include "groebner_defs.h"
 #include "PseudoLongLong.h"
 #include "BitMask.h"
-#include "NBitsUsed.h"
-
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -32,23 +30,26 @@ BEGIN_NAMESPACE_PBORIGB
  **/
 
 class DelayedLongProduct:
-  public std::pair<unsigned long, unsigned long>,
   protected BitMask<sizeof(unsigned long)*4> {
-
-  typedef std::pair<unsigned long, unsigned long> base;
 
 public:
   typedef unsigned long long_type;
 
-  DelayedLongProduct(const long_type& high, const long_type & low):
-    base(high, low) {}
+  DelayedLongProduct(const long_type& first, const long_type & second):
+    least(low(first)*low(second)), most(high(first)*high(second)) {
+
+    long_type mixed = high(least) + high(first)*low(second);
+    most += high(mixed);
+    
+    mixed = low(mixed) + low(first)*high(second);
+    most += high(mixed);
+
+    least = shift(mixed) + low(least);
+  }
 
   /// compare carry-over savely
-  // b != 0,  a <= c/b:  a*b <= (c/b)*b  <= (c/b)*b + (c%b) = c
-  // b != 0,  a >  c/b:  Assume a*b  <= c = (c/b)*b + (c%b) ->
-  //   (c/b)*b < a*b  <= (c/b)*b + (c%b)  ->  c/b < a < c/b+1 (contradicts int)
   bool greater(long_type rhs) const {
-    return (second != 0) && (first > rhs/second);
+    return (most > 0) || (least > rhs);
   }
 
   /// compare carry-over savely with represented by two unsigned longs
@@ -60,18 +61,11 @@ public:
   /// compare carry-over savely with represented by two unsigned longs
   template <long_type MaxHigh, long_type MaxLow>
   bool greater(const PseudoLongLong<MaxHigh, MaxLow>&) const {
-
-    long_type least = low(first)*low(second);
-    long_type mixed = high(least) + high(first)*low(second);
-    long_type most = high(mixed) + high(first)*high(second);
-    if (most > MaxHigh)
-      return true;
-
-    mixed = low(mixed) + low(first)*high(second);
-    most += high(mixed);
-    least = shift(mixed) + low(least);
     return (most > MaxHigh) || ( (most == MaxHigh) && (least > MaxLow) );
   }
+
+private:
+  long_type most, least;
 };
 
 template <class RhsType>
