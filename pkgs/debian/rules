@@ -12,10 +12,13 @@ build-python%: PYTHON=/usr/bin/python$*
 build-python%: PYTHONSITE=`/usr/bin/python$* -c 'import setuptools; print setuptools.distutils.sysconfig.get_python_lib() '`
 build-python%:
 	echo $(TMPDEST)
-	scons prepare-install PYTHON=$(PYTHON)
-	cat config.log
-	ls  /usr/lib/libboost_python*
-	ls -la /usr/lib/libboost_python.so
+	scons prepare-install INSTALLDIR=$(TMPDEST)/usr/lib/polybori \
+		PYINSTALLPREFIX=$(TMPDEST)$(PYTHONSITE) MANDIR=$(TMPDEST)/usr/share/man \
+		PREFIX=$(TMPDEST)/usr EPREFIX=$(TMPDEST)/usr/bin \
+		DOCDIR=$(TMPDEST)/usr/share/doc/polybori PYTHON=$(PYTHON) \
+		RELATIVEPYPREFIX=/usr/lib/python$(lastword $(PYVERS))/site-packages \
+		BOOST_PYTHON=boost_python-py$(subst .,,$(lastword $(PYVERS)))
+
 	mkdir -p $(TMPDEST)
 	scons install devel-install INSTALLDIR=$(TMPDEST)/usr/lib/polybori \
 		PYINSTALLPREFIX=$(TMPDEST)$(PYTHONSITE) MANDIR=$(TMPDEST)/usr/share/man \
