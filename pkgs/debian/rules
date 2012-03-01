@@ -14,7 +14,8 @@ build-python%:
 	echo $(TMPDEST)
 	scons prepare-install PYTHON=$(PYTHON)
 	cat config.log
-	ldd /usr/lib/libboost_python.so
+	ls  /usr/lib/libboost_python*
+	ls -la /usr/lib/libboost_python.so
 	mkdir -p $(TMPDEST)
 	scons install devel-install INSTALLDIR=$(TMPDEST)/usr/lib/polybori \
 		PYINSTALLPREFIX=$(TMPDEST)$(PYTHONSITE) MANDIR=$(TMPDEST)/usr/share/man \
