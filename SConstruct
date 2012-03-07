@@ -1568,12 +1568,7 @@ if 'install' in COMMAND_LINE_TARGETS:
                 env.AddPostAction(elt, 
                                   "install_name_tool -id " + name + " $TARGET")
 
-        if HAVE_PYTHON_EXTENSION:
-            pypb_inst = env.Install(InstPyPath("polybori/dynamic"), pypb)
-            env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
-            so_pyfiles += pypb_inst
-
-    else:
+    if HAVE_PYTHON_EXTENSION:
         pypb_inst = env.Install(InstPyPath("polybori/dynamic"), pypb)
         env.Depends(pypb_inst, dylibs_inst + dylibs_readable_inst)
         so_pyfiles += pypb_inst
@@ -1636,7 +1631,8 @@ if 'install' in COMMAND_LINE_TARGETS:
         targetfile = InstPyPath(env.relpath(PyRootPath(), instfile))
         pyfiles += env.InstallAs(targetfile, instfile)
 
-    pyfiles +=  env.Install(InstPyPath("polybori/dynamic"), pypb_init_py)
+    if HAVE_PYTHON_EXTENSION:
+        pyfiles +=  env.Install(InstPyPath("polybori/dynamic"), pypb_init_py)
 
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         cmdline = """$PYTHON -c "import compileall; compileall.compile_dir('"""
