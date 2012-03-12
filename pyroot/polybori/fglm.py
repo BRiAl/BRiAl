@@ -63,7 +63,7 @@ def m_k_plus_one(completed_elements, variables):
     >>> m_k_plus_one(s,variables)
     x(2)*x(3)
     >>> r2 = r.clone(ordering=dp_asc)
-    >>> m_k_plus_one(r2.coerce(s).set(),r2.coerce(variables).set())
+    >>> m_k_plus_one(r2(s).set(),r2(variables).set())
     x(1)*x(3)
     """
     return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]

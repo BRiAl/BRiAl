@@ -359,13 +359,13 @@ def other_ordering_pre(I,option_set,kwds):
         kwds=dict((k,options[k]) for k in options if not (k in ("other_ordering_first","switch_to","I")))
         kwds["redsb"]=True
         I_orig=I
-        I=groebner_basis([new_ring.coerce(poly) for poly in I],**kwds)
+        I=groebner_basis([new_ring(poly) for poly in I],**kwds)
         variety_size=variety_size_from_gb(I)
         if variety_size<50000:
             main_kwds["convert_with_fglm_from_ring"]=new_ring
             main_kwds["convert_with_fglm_to_ring"]=old_ring        
         else:
-            I = [old_ring.coerce(poly) for poly in I]
+            I = [old_ring(poly) for poly in I]
     finally:
         pass
 

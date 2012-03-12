@@ -23,16 +23,14 @@ class IntegerPolynomial(object):
                 if and_:
                     res.append(i)
             return (self, IntegerPolynomial(dict([(i, BooleConstant(1)) for i in res])))
-        if isinstance(other,  VariableType) or isinstance(other, Monomial):
+        if not isinstance(other,  IntegerPolynomial):
             other=Polynomial(other)
-        if isinstance(other, Polynomial):
-            return (self, IntegerPolynomial(dict([(0, other)])))
-        return None
+        return (self, IntegerPolynomial(dict([(0, other)])))
+
     def __add__(self, other):
         """
         >>> from polybori import *
-        >>> declare_ring([Block("x",1000)], globals()) # doctest: +ELLIPSIS
-        <...>
+        >>> r= declare_ring([Block("x",1000)], globals()) # doctest: +ELLIPSIS
         >>> p=IntegerPolynomial(x(1))
         >>> p
         {0: x(1)}

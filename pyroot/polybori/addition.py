@@ -113,9 +113,9 @@ def multiply_by_addition(word_a, word_b):
     word_b=list(word_b)
     summands=[]
     if word_a:
-        zero = word_a[0] * 0
+        zero = word_a[0].ring().zero()
     elif word_b:
-        zero = word_b[0] * 0
+        zero = word_b[0].ring().zero()
     else:
         zero = BooleConstant(0)
 
