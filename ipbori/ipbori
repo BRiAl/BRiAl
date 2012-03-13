@@ -63,6 +63,10 @@ def _test(args):
     try:
       module = new_module(file.replace('.','_'))
       content = open(file).read()
+      from distutils.sysconfig import get_python_version
+      if get_python_version() == '2.5':
+          content = 'from __future__ import with_statement\n' + content
+
       exec content in module.__dict__ 
 
       # Some PolyBoRi modules do have optional (possibly hidden) dependencies
