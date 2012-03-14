@@ -150,14 +150,15 @@ are compatible with the stlport4 option.
 
 cygwin
 ======
-In the main directory generate a file custom.py with the following context:
+In the main directory generate a file custom.py with the following content:
 
 BOOST_PYTHON = 'boost_python-mt'
 BOOST_TEST = 'boost_unit_test_framework-mt'
 HAVE_L2H = False
 HAVE_HEVEA = False
 HAVE_TEX4HT = False
-SHLIBVERSIONSUFFIX = False
+DEFAULT_LINKFLAGS=[]
+SHLIBVERSIONING=False
 DEVEL_LIB_PREFIX = '$EPREFIX' # dlls needs to be placed here?
 
 ====================
