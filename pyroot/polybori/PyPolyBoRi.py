@@ -17,13 +17,12 @@ _sageify = 'PBORI_NOSAGE' not in _os.environ
 
 try:
     if _sageify:
-        import sage.rings.polynomial.pbori
+        from sage import all
+        from sage.rings.polynomial.pbori import *
 except:
     _sageify = False
 
 if _sageify:
-    from sage import all
-    from sage.rings.polynomial.pbori import *
     import weakref
 
     class OrderCode:
