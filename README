@@ -157,6 +157,8 @@ BOOST_TEST = 'boost_unit_test_framework-mt'
 HAVE_L2H = False
 HAVE_HEVEA = False
 HAVE_TEX4HT = False
+SHLIBVERSIONSUFFIX = False
+DEVEL_LIB_PREFIX = '$EPREFIX' # dlls needs to be placed here?
 
 ====================
 See also: Singular/README

@@ -124,6 +124,9 @@ except:
 import os
 
 def FinalizePermissions(targets, perm=None):
+    def isdll(path):
+        return 'dll' in os.path.basename(path).split(os.path.extsep)[1:]
+    
     for src in targets:
         path = str(src)
         if not os.path.islink(path):
@@ -131,7 +134,7 @@ def FinalizePermissions(targets, perm=None):
                 if os.path.isdir(path):
                     perm = 040755
                 else:
-                    if os.access(path, os.X_OK):
+                    if os.access(path, os.X_OK) or isdll(path):
                         perm = 0755
                     else:
                         perm = 0644
@@ -202,7 +205,7 @@ def _moduleflags(env):
     return []
 
 def _relative_rpath(target, env):
-    if not target or env['PLATFORM']=="darwin":
+    if not target or env['PLATFORM'] in ["darwin", "cygwin"]:
         return ''
 
     targetdir = os.path.dirname(env.subst(str(target)))
