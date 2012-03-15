@@ -22,6 +22,13 @@ def _exists():
             import jinja
         except ImportError:
             return False
+
+    try:
+        process = Popen(["dot", "-V"])
+        process.close()               
+    except:                           
+        return False   
+
     return True
 
 
