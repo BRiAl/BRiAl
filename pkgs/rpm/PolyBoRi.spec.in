@@ -32,13 +32,14 @@
 %if 0%{?fedora_version} >= 15
 %define pbori_m4ri m4ri
 %define pbori_m4ri_devel m4ri-devel
-%endif
 
+%else
 # Note: Using inofficial m4ri build
 %if $PB_M4RI_RPM
-%if 0%{?fedora_version}%{?redhat_version}%{?centos_version}%{?suse_version}
+%if 0%{?redhat_version}%{?centos_version}%{?suse_version}
 %define pbori_m4ri m4ri
 %define pbori_m4ri_devel m4ri-devel
+%endif
 %endif
 %endif
 
@@ -109,7 +110,7 @@ Summary: Python core package for %{name}
 Group: Productivity/Scientific/Math
 Requires:       %{name}-libs = %{version}
 %if %{defined suse_version}
-Requires: python-base = %{py_ver} %{?pbori_m4ri}
+Requires: python-base = %{py_ver}
 %endif
 
 %description -n python-%{name}
