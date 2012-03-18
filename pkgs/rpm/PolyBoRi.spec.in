@@ -98,7 +98,6 @@ It uses the libraries CUDD and M4RI.
 Summary: Documentation package for %{name}
 Group: Documentation/Other
 Requires: %{name} = %{version}
-Requires: locales-doc
 
 %description doc
 This package contains the documentation and tutorial of %{name}.
@@ -133,7 +132,7 @@ data structures and Groebner basis algorithms.
 Summary:        Qt GUI for %{name}
 Group:          Productivity/Scientific/Math
 Requires:       python-%{name} = %{version}
-Requires:       %{pbori_pyqt} locales-gui
+Requires:       %{pbori_pyqt} 
 
 %description    gui
 This packagae contains a PyQt-based GUI for %{name}. It comes with the simple
