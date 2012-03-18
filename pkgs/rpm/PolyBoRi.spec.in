@@ -49,11 +49,23 @@
 %define pbori_check 1
 %endif
 
+# python-QT binding may have different names
+%if 0%{?fedora_version}%{?suse_version}
+%if 0%{?suse_version} >= 1100
+%define pbori_pyqt python-qt4
+%else
+%define pbori_pyqt %{?fedora:PyQt4} %{?suse_version:PyQt}
+%endif
+%else
+%define pbori_pyqt python-qt4
+%endif
+
 BuildRequires: scons boost-devel gcc gcc-c++ python-devel gd-devel 
 BuildRequires: doxygen %{?fedora:tex4ht} %{?pbori_m4ri_devel}
 %if 0%{?suse_version} >= 1100
 BuildRequires: texlive-latex texlive-tex4ht
 %endif
+#BuildRequires: %{pbori_pyqt}
 
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
@@ -121,7 +133,7 @@ data structures and Groebner basis algorithms.
 Summary:        Qt GUI for %{name}
 Group:          Productivity/Scientific/Math
 Requires:       python-%{name} = %{version}
-Requires:       PyQt4 locales-gui
+Requires:       %{pbori_pyqt} locales-gui
 
 %description    gui
 This packagae contains a PyQt-based GUI for %{name}. It comes with the simple
