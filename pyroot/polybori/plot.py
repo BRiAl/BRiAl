@@ -24,8 +24,11 @@ def _exists():
             return False
 
     try:
-        process = Popen(["dot", "-V"])
-        process.close()               
+        from subprocess import Popen, PIPE
+        from os import devnull
+        out = open(devnull)
+        process = Popen(["dot", "-V"], stderr=out, stdout=out)
+        out.close()
     except:                           
         return False   
 
