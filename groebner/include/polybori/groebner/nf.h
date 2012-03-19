@@ -16,7 +16,7 @@
 #include "groebner_alg.h"
 
 
-#if PBORI_HAVE_M4RI
+#ifdef PBORI_HAVE_M4RI
 extern "C"{
 #include <m4ri/m4ri.h>
 
