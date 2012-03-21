@@ -854,7 +854,7 @@ public:
     PBORI_ASSERT(m_zero.isValid());
     PBORI_ASSERT(m_zero.isEmpty());
 
-    push(m_zero);
+    base::push(m_zero);
   }
 
 private:

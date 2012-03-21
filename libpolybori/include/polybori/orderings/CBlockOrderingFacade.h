@@ -91,7 +91,7 @@ public:
     CacheManager<order_lead_tag> cache_mgr(poly.ring());
     typename base_type::descending_property descending;
 
-    return monom(  dd_block_degree_lead(cache_mgr, blockDegCache, 
+    return base_type::monom( dd_block_degree_lead(cache_mgr, blockDegCache, 
                                         poly.navigation(), m_indices.begin(),
                                         set_type(poly.ring()), descending) );
   }
