@@ -21,6 +21,7 @@
 #ifndef polybori_cudd_prefix_internal_h_
 #define polybori_cudd_prefix_internal_h_
 
+#ifndef PBORI_USE_ORIGINAL_CUDD
 #define Cudd_IsNonConstant pbori_Cudd_IsNonConstant
 #define Cudd_ReadStartTime pbori_Cudd_ReadStartTime
 #define Cudd_SetStartTime pbori_Cudd_SetStartTime
@@ -259,5 +260,6 @@
 #define MMout_of_memory pbori_MMout_of_memory
 
 #define DdManager pbori_DdManager
-
+#endif
+ 
 #endif /* polybori_cudd_prefix_internal_h_ */

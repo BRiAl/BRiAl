@@ -21,6 +21,10 @@
 #ifndef polybori_cudd_prefix_h_
 #define polybori_cudd_prefix_h_
 
+#ifdef PBORI_USE_ORIGINAL_CUDD
+#define PBORI_PREFIX(name) name
+#else
 #define PBORI_PREFIX(name) pbori_ ## name
+#endif
 
 #endif
