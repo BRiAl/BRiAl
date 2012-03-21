@@ -901,7 +901,7 @@ bool same_rings(const IDType& id, Iterator start, Iterator finish) {
 template <class Iterator>
 bool same_rings(Iterator start, Iterator finish) {
 
-  return (start == finish) || same_ring(start->ring().id(), start, finish);
+  return (start == finish) || same_rings(start->ring().id(), start, finish);
 }
 
 END_NAMESPACE_PBORI
