@@ -286,13 +286,12 @@ public:
   PB_CUDDMGR_SET(BOOST_PP_NIL, PBORI_PREFIX(Cudd_ReorderingType), AutodynEnableZdd)
   PB_CUDDMGR_SET(BOOST_PP_NIL, unsigned long, SetMaxMemory)
   PB_CUDDMGR_SET(BOOST_PP_NIL, double, SetMaxGrowth)
+  /** @endcode */
+  ///
+  //@}
 #else
   BOOST_PP_SEQ_FOR_EACH(PB_CUDDMGR_READ, int,(ReadZddSize))
 #endif
-  /** @endcode */
-  /// 
-  //@}
-
 
   node_ptr getVar(idx_type idx) const {
     if PBORI_UNLIKELY(size_type(idx) >= m_vars.size())

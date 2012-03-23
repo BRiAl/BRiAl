@@ -1,6 +1,6 @@
 // -*- c++ -*-
 //*****************************************************************************
-/** @file groebner_ExpLexLess.h 
+/** @file ExpLexLess.h 
  *
  * @author Michael Brickenstein
  * @date 2011-07-01
