@@ -659,9 +659,10 @@ if not env.GetOption('clean'):
 
     gdlibs = env["GD_LIBS"]
     if gdlibs and conf.CheckCHeader("gd.h"):
-        store_libs = env["LIBS"]
+        store_libs = [elt for elt in env["LIBS"]]
         env.Append(LIBS=gdlibs[1:])
-        if conf.CheckLib(gdlibs[0]):
+
+        if conf.CheckLib(gdlibs[0], autoadd=0):
             env["LIBS"] = store_libs
             env.Append(LIBS=gdlibs)
             if conf.CheckFunc("testing_PNGs",
@@ -690,14 +691,13 @@ if not env.GetOption('clean'):
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         env.Append(CPPPATH=[pyconf.incdir])
         env.Append(LIBPATH=[pyconf.libdir, pyconf.staticlibdir])
-        env.Prepend(LIBS = ["m"])
 
     env.Prepend(CPPPATH=[PBPath('include'), GBPath('include')])
     env.Append(CPPDEFINES=["PBORI_HAVE_M4RI"])
 
 
     if HAVE_PYTHON_EXTENSION:
-        if not (conf.CheckLib(pyconf.libname)):
+        if not (conf.CheckLib(pyconf.libname, autoadd=0)):
             print "Python library not available (needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
 
@@ -708,14 +708,17 @@ if not env.GetOption('clean'):
             HAVE_PYTHON_EXTENSION = False
 
     if HAVE_PYTHON_EXTENSION:
-        if not ( conf.CheckLibWithHeader([env['BOOST_PYTHON']],
-                 path.join('boost', 'python.hpp'), 'c++') ):
-            HAVE_PYTHON_EXTENSION = False
+        store_libs =[elt for elt in env["LIBS"]]
+        env.Append(LIBS=pyconf.libname)
+        if not ( conf.CheckLibWithHeader([env['BOOST_PYTHON'], pyconf.libname ],
+                 path.join('boost', 'python.hpp'), 'c++', autoadd=0) ):
+
             print "Warning Boost/Python library (", env['BOOST_PYTHON'],
             print ") not available (needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
+        env["LIBS"] = store_libs
 
-    if not conf.CheckLib(BOOST_TEST):
+    if not conf.CheckLib(BOOST_TEST, autoadd=0):
          print "Warning Boost/unit test framework library (",
          print BOOST_TEST, ") not available. Skipping tests."
          BOOST_TEST = None
@@ -734,7 +737,7 @@ if not env.GetOption('clean'):
             if not have_t4h:
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
-    external_m4ri = conf.CheckLib('m4ri')
+    external_m4ri = conf.CheckLib('m4ri', autoadd=0)
     if external_m4ri:
        env['LIBS'] += ['m4ri']
     else:
