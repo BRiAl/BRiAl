@@ -530,9 +530,10 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
         return _fglm(I, from_ring, to_ring)
 
     if interpolation_gb:
-        if len(I)!=1 or I[0].ring().get_order_code()!=OrderCode.lp:
+        first = iter(I).next()
+        if len(I)!=1 or first.ring().get_order_code()!=OrderCode.lp:
             raise ValueError
-        return lex_groebner_basis_for_polynomial_via_variety(I[0])
+        return lex_groebner_basis_for_polynomial_via_variety(first)
     if deg_bound is False:
         deg_bound=100000000L
     I=[Polynomial(p) for p in I if not p.is_zero()]
