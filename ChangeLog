@@ -1,3 +1,11 @@
+Release Name: 0.8.2
+* Dependencies of optional rpm package gui fixed
+* Fixed bug which prevented self-testing of polybori.plot
+* Build systems uses as few libs as possible for linking
+* Explicit name lookup of attributes from template base
+* Preprocessor misconception fixed (#if vs. #ifdef)
+* polybori.gbcore drops assumption ideal were a list (still assuming iteratable)
+
 Release Name: 0.8.1
 * fallback m4ri updated to release 20111203
 * Merged Cudd with cudd 2.5.0
