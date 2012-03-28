@@ -469,7 +469,7 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         tools +=  ['gnulink']
     else:
         if 'gnulink' in tools:
-            tools.remove(arg)
+            tools.remove('gnulink')
         tools +=  ['sunlink']
     if tools != defaultenv['TOOLS']:    
 
