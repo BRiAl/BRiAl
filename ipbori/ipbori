@@ -103,7 +103,7 @@ def ipbori_shell(context):
     try:
       from IPython.frontend.terminal.interactiveshell import \
           TerminalInteractiveShell
-      return TerminalInteractiveShell(user_global_ns = context,
+      return TerminalInteractiveShell(user_ns = context,
                                       display_banner = True)
     except ImportError:
       import IPython.Shell
