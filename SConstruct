@@ -108,7 +108,9 @@ def shell_output(*args):
     result = Popen(args, stdin=None, stdout=PIPE, stderr=STDOUT, env=os.environ)
     result.wait()
     
-    return result.stdout.read()
+    return result.stdout.read().rstrip()
+
+
 
 pyroot="pyroot/"
 ipbroot = 'ipbori'
@@ -585,10 +587,15 @@ env.AlwaysBuild(config_h)
 
 class PythonConfig(object):
     def __init__(self, python_executable):
-        def querycmd(arg): # Note: subprocess.POpen blocks calling python itself
-            return os.popen(self.python + " -c " + \
-                            '"from distutils.sysconfig import *; \
-                            print ' + arg + '"').read().strip()
+        def querycmd(arg):
+            from subprocess import Popen, PIPE, STDOUT
+            result = Popen([self.python], stdin=PIPE, stdout=PIPE, stderr=STDOUT,
+                           env=os.environ)
+            result.stdin.writelines(["from distutils.sysconfig import *\n",
+                                     "print " + arg + "\n"])
+            result.stdin.close()
+            result.wait()
+            return result.stdout.read().strip()
 
         self.python = python_executable
         self.version = querycmd("get_python_version()")
@@ -1742,3 +1749,4 @@ if 'dump' in COMMAND_LINE_TARGETS:
 
 env.Alias('dump', 'SConstruct')
 env.Alias('dump_default', 'SConstruct')
+
