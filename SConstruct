@@ -105,10 +105,9 @@ def SplitColonSep(arg):
 
 def shell_output(*args):
     from subprocess import Popen, PIPE, STDOUT
-    result = Popen(args, stdin=None, stdout=PIPE, stderr=STDOUT, env=os.environ)
-    result.wait()
+    process = Popen(args, stdin=None, stdout=PIPE, stderr=STDOUT, env=os.environ)
     
-    return result.stdout.read().rstrip()
+    return process.communicate()[0].rstrip()
 
 
 
@@ -589,13 +588,11 @@ class PythonConfig(object):
     def __init__(self, python_executable):
         def querycmd(arg):
             from subprocess import Popen, PIPE, STDOUT
-            result = Popen([self.python], stdin=PIPE, stdout=PIPE, stderr=STDOUT,
+            process = Popen([self.python], stdin=PIPE, stdout=PIPE, stderr=STDOUT,
                            env=os.environ)
-            result.stdin.writelines(["from distutils.sysconfig import *\n",
-                                     "print " + arg + "\n"])
-            result.stdin.close()
-            result.wait()
-            return result.stdout.read().strip()
+            return process.communicate("from distutils.sysconfig import *\n" +
+                                       "print " + arg + "\n")[0].strip()
+
 
         self.python = python_executable
         self.version = querycmd("get_python_version()")
