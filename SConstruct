@@ -443,10 +443,10 @@ def setup_env(defaultenv):
     #       also we do not know which variables are used in general
 
     return (Environment(ENV = os.environ, options = opts, tools = tools, 
-                        toolpath = '.'), opts)
+                        toolpath = '.'), opts, tools)
 
 
-(env, opts) = setup_env(defaultenv)
+(env, opts, tools) = setup_env(defaultenv)
 
 if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
     def is_gnu():
