@@ -170,7 +170,8 @@ defaultenv = Environment(ENV = os.environ, options=defaultopts)
 # See also: http://trac.sagemath.org/sage_trac/ticket/9872 and #6437
 def detect_linker(env):
     import re
-    if re.search("Binutils|GNU",  shell_output(env['CC'], '-Wl,-v')):
+    args = env.subst('$CC').split() + ['-Wl,-v']
+    if re.search("Binutils|GNU",  shell_output(*args)):
         return "gnu"
 
     # Non-gnu linker or linux (could be Sun or Intel linker) will return 'posix'.
@@ -178,7 +179,8 @@ def detect_linker(env):
 
 def detect_compiler(env):
     import re
-    if re.search("gcc version",  shell_output(env['CC'], '-v')):
+    args = env.subst('$CC').split() + ['-v']
+    if re.search("gcc version",  shell_output(*args)):
         return "gnu"
 
     # Non-gnu linker or linux (could be Sun or Intel linker) will return 'posix'.
