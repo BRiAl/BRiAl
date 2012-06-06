@@ -10,6 +10,61 @@ interface.
 AUTHOR:
     The PolyBoRi Team, 2007-2012
 
+            Examples:
+
+            >>> from polybori.frontend import *
+            >>> r=declare_ring([Block("x",10),Block("y",10)], globals())   
+            >>> x(0)>x(1)                                       
+            True
+            >>> x(0)>x(1)*x(2)
+            True
+            >>> y(0)>y(1)                                       
+            True
+            >>> y(0)>y(1)*y(2)
+            True
+
+            >>> r = r.clone(ordering=dlex)
+            >>> r(x(0)) > r(x(1))
+            True
+            >>> r(x(0)) > r(x(1)*x(2))
+            False
+
+            >>> r = r.clone(ordering=dp_asc)
+            >>> r(x(0)) > r(x(1))
+            False
+            >>> r(x(0)) > r(x(1)*x(2))
+            False
+
+            >>> r = r.clone(ordering=block_dlex, blocks=[10])
+            >>> r(x(0)) > r(x(1))
+            True
+            >>> r(x(0)) > r(x(1)*x(2))
+            False
+            >>> r(x(0)) > r(y(0)*y(1)*y(2))
+            True
+
+            >>> r = r.clone(ordering=block_dp_asc)
+            >>> r(x(0)) > r(x(1))
+            False
+            >>> r(x(0)) > r(y(0))
+            False
+            >>> r(x(0)) > r(x(1)*x(2))
+            False
+
+            >>> r = r.clone(ordering=block_dp_asc, blocks=[10])
+            >>> r(x(0)) > r(y(0))
+            True
+
+            >>> r(x(0)) > r(y(0)*y(1))
+            True
+
+            >>> r = r.clone(names=["z(17)", "z(7)"])
+            >>> [r(x(idx)) for idx in xrange(3)]
+            [z(17), z(7), x(2)]
+            >>> r = r.clone(names="abcde")
+            >>> [r(x(idx)) for idx in xrange(6)]
+            [a, b, c, d, e, x(5)]
+
 """
 
 import os as _os
@@ -227,12 +282,11 @@ else: # import Polybori's original interface
 
 
         def _ring_settings(ring, names, blocks):
-            pass
             for (idx, elt) in enumerate(names):
                 _cpp_set_variable_name(ring, idx, elt)
 
-                for elt in blocks:
-                    _cpp_append_block(ring, elt)
+            for elt in blocks:
+                _cpp_append_block(ring, elt)
 
 
         def _ring_init(self, first, ordering=None, names=[], blocks=[]):
@@ -263,6 +317,7 @@ else: # import Polybori's original interface
         def _ring_clone(self, ordering=None, names=[], blocks=[]):
             """ring.clone(ordering=..., names=..., block=...) generates a shallow copy
             of ring, but with different ordering, names or blocks if given.
+
             Further information/call patterns: """
             ring = _cpp_ring_clone(self)
             if ordering is not None:
