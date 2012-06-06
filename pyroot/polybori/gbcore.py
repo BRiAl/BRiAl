@@ -563,7 +563,7 @@ def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation
             deg_bound = deg_bound,
             full_prot = False,
             prot = False,
-            max_generators=max_generators,
+            max_generators=max_generators, draw_matrices = draw_matrices,
             **filter_newstyle_options(implementation, **impl_options))
     
     if clean_and_restart_algorithm:
