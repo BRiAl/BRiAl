@@ -21,6 +21,7 @@
 #include "add_up.h"
 #include "nf.h"
 #include "draw_matrix.h"
+#include "delayed_addition.h"
 
 #include "GroebnerStrategy.h"
 #include "MatrixMonomialOrderTables.h"
@@ -73,7 +74,7 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
 
     for(std::size_t i=0;i<extendable_system.size();i++){
             Polynomial p=extendable_system[i];
-	    PBORI_ASSERT(p.ring().id() == current_ring.id());
+        PBORI_ASSERT(p.ring().id() == current_ring.id());
 
             if PBORI_UNLIKELY(p.isZero()) continue;
             
@@ -97,11 +98,11 @@ fix_point_iterate(const GroebnerStrategy& strat,std::vector<Polynomial> extendab
                         Monomial m2=m/strat.generators[index].lead;
                         Polynomial p2=m2*strat.generators[index].p;
                         extendable_system.push_back(p2);
-			PBORI_ASSERT(current_ring.id() ==  strat.generators[index].lead.ring().id());
-			PBORI_ASSERT(current_ring.id() ==  strat.generators[index].p.ring().id());
-			PBORI_ASSERT(current_ring.id() ==  m.ring().id());
-			PBORI_ASSERT(current_ring.id() ==  m2.ring().id());
-			PBORI_ASSERT(current_ring.id() ==  p2.ring().id());
+            PBORI_ASSERT(current_ring.id() ==  strat.generators[index].lead.ring().id());
+            PBORI_ASSERT(current_ring.id() ==  strat.generators[index].p.ring().id());
+            PBORI_ASSERT(current_ring.id() ==  m.ring().id());
+            PBORI_ASSERT(current_ring.id() ==  m2.ring().id());
+            PBORI_ASSERT(current_ring.id() ==  p2.ring().id());
                 }
                 ++it;
             }
@@ -135,6 +136,8 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
     //    int rows=mat->nrows; /// @todo unused?
     
     int i;
+    std::vector<std::vector<Exponent> > conversion_vector ;
+    BoolePolyRing ring = leads_from_strat.ring();
     for(i=0;i<rank;i++){
         int j;
         std::vector<int> p_t_i;
@@ -154,17 +157,25 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
                 p_t_i.push_back(ring_order2lex[j]);
             }
         }
+        
         if (!(from_strat)){
             std::vector<Exponent> p_t(p_t_i.size());
             std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
             for(std::size_t j=0;j<p_t_i.size();j++){
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
-            polys.push_back(add_up_lex_sorted_exponents(leads_from_strat.ring(),
-							p_t,0,p_t.size()));
+            conversion_vector.push_back(p_t);
+            polys.push_back(add_up_lex_sorted_exponents(ring,
+                            p_t,0,p_t.size()));
             PBORI_ASSERT(!(polys[polys.size()-1].isZero()));
         }
     }
+    std::vector<Polynomial> converted_vector= translate_from_lex_sorted_exponent_vectors(conversion_vector, ring);
+    
+    polys.reserve(polys.size() + converted_vector.size());
+    polys.insert(polys.end(),converted_vector.begin(),converted_vector.end());
+    
+
 }
 
 
@@ -194,8 +205,8 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     #else
     if PBORI_UNLIKELY(optDrawMatrices){
          ++round;
-	 std::ostringstream matname;
-	 matname << matrixPrefix << round << ".png";
+     std::ostringstream matname;
+     matname << matrixPrefix << round << ".png";
          draw_matrix(mat, matname.str().c_str());
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
@@ -268,7 +279,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
 
     /// This checks cols*rows > 20000000000 = 4*2^32 + 2820130816
     if (PBORI_UNLIKELY( (PseudoLongProduct(unmodified_cols, unmodified_rows) >
-			 Long64From32BitsPair<4u, 2820130816u>::get()) )){
+             Long64From32BitsPair<4u, 2820130816u>::get()) )){
       PBoRiError error(CTypes::matrix_size_exceeded);
       throw error;
     }
@@ -283,7 +294,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
 
     for (std::size_t i = 0; i < polys.size(); i++) {
         if PBORI_LIKELY(!(polys[i].isZero()))
-		   polys_lm.push_back(std::pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
+           polys_lm.push_back(std::pair < Polynomial, Monomial > (polys[i], polys[i].lead()));
     }
 std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     polys.clear();
@@ -311,7 +322,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
             if PBORI_LIKELY(it->second != last) {
                 last = it->second;
                 polys_triangular.push_back(it->first);
-		
+        
 
         PBORI_ASSERT(std::   find(terms_unique_vec.begin(), terms_unique_vec.end(), it->second) == terms_unique_vec.end());
 
@@ -355,9 +366,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         polys_triangular.clear();
         
         if PBORI_UNLIKELY(optDrawMatrices) {
-	    std::ostringstream matname;
-	    matname << matrixPrefix << round << "_step1.png";
-	    draw_matrix(mat_step1, matname.str().c_str());
+        std::ostringstream matname;
+        matname << matrixPrefix << round << "_step1.png";
+        draw_matrix(mat_step1, matname.str().c_str());
         }
         //optimize: call back subst directly
         mzd_top_echelonize_m4ri

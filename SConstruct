@@ -978,7 +978,9 @@ gb_src=Split("""groebner.cc LiteralFactorization.cc
 LiteralFactorizationIterator.cc randomset.cc pairs.cc
 groebner_alg.cc FGLMStrategy.cc polynomial_properties.cc LexBucket.cc
 dlex4data.cc dp_asc4data.cc lp4data.cc nf.cc interpolate.cc GroebnerStrategy.cc
-PairManager.cc PolyEntry.cc ReductionStrategy.cc MatrixMonomialOrderTables.cc""")
+PairManager.cc PolyEntry.cc ReductionStrategy.cc MatrixMonomialOrderTables.cc
+delayed_addition.cc
+""")
 gb_src = [GBPath('src', source) for source in gb_src]
 
 if not(external_m4ri):
