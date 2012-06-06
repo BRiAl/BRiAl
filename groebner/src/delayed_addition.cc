@@ -1,6 +1,8 @@
 #include <polybori/groebner/groebner.h>
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <iostream>
+#include <algorithm>
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -145,12 +147,25 @@ boost::shared_ptr<Evaluateable>
                        add_up_lex_sorted_exponents_delayed(ring, vec,limes,end));
 }
 
+bool compare_evaluateables(Evaluateable* a, Evaluateable* b){
+    return a->index()>b->index();
+}
 
 std::vector<Polynomial> translate_from_lex_sorted_exponent_vectors(std::vector<std::vector<Exponent> >& conversion_vector, BoolePolyRing ring){
     std::vector<boost::shared_ptr<Evaluateable> > delayed_polys;
+    Evaluateable::evec_type nodes_collector;
     int i;
     for (i=0; i< conversion_vector.size();i++){
         delayed_polys.push_back(add_up_lex_sorted_exponents_delayed(ring, conversion_vector[i], 0, conversion_vector[i].size()));
+        delayed_polys.back()->push_back_nodes(nodes_collector);
+    }
+    std::sort(nodes_collector.begin(), nodes_collector.end(), compare_evaluateables);
+    for (i=0; i < nodes_collector.size();i++){
+        std::cout<<nodes_collector[i]->index()<<std::endl;
+        //results are cached, we just traverse the computation graph in correct order
+        //should be good for caching
+        //in particular parent children dependencies have to be respected
+        nodes_collector[i]->evaluate();
     }
 }
 END_NAMESPACE_PBORIGB
