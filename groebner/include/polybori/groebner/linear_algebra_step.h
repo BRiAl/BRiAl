@@ -131,12 +131,12 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
 }
 
 inline void
-translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_t* mat,const std::vector<int>& ring_order2lex, const std::vector<Exponent>& terms_as_exp,const std::vector<Exponent>& terms_as_exp_lex,int rank){
+translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_t* mat,MatrixMonomialOrderTables& step,int rank){
     int cols=mat->ncols;
     //    int rows=mat->nrows; /// @todo unused?
     
     int i;
-    std::vector<std::vector<Exponent> > conversion_vector ;
+    std::vector<std::vector<Monomial> > conversion_vector ;
     BoolePolyRing ring = leads_from_strat.ring();
     for(i=0;i<rank;i++){
         int j;
@@ -150,24 +150,25 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
             if PBORI_UNLIKELY(mzd_read_bit(mat,i,j)==1){
             #endif
                 if (p_t_i.size()==0){
-                    if (leads_from_strat.owns(terms_as_exp[j])) {
+                    if (leads_from_strat.owns(step.terms_as_exp[j])) {
                         from_strat=true;break;
                     }
                 }
-                p_t_i.push_back(ring_order2lex[j]);
+                p_t_i.push_back(step.ring_order2lex[j]);
             }
         }
         
         if (!(from_strat)){
-            std::vector<Exponent> p_t(p_t_i.size());
+            std::vector<Monomial> p_t;
+            p_t.reserve(p_t_i.size());
             std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
             for(std::size_t j=0;j<p_t_i.size();j++){
-                p_t[j]=terms_as_exp_lex[p_t_i[j]];
+                p_t.push_back(step.terms_vec_lex[p_t_i[j]]);
             }
             conversion_vector.push_back(p_t);
         }
     }
-    std::vector<Polynomial> converted_vector= translate_from_lex_sorted_exponent_vectors(conversion_vector, ring);
+    std::vector<Polynomial> converted_vector= translate_from_lex_sorted_monomials(conversion_vector, ring);
     
     polys.reserve(polys.size() + converted_vector.size());
     polys.insert(polys.end(),converted_vector.begin(),converted_vector.end());
@@ -211,7 +212,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     if PBORI_UNLIKELY(log){
         std::cout<<"finished gauss"<<std::endl;
     }
-    translate_back(polys, leads_from_strat, mat,tabs.ring_order2lex, tabs.terms_as_exp,tabs.terms_as_exp_lex,rank);
+    translate_back(polys, leads_from_strat, mat,tabs,rank);
     
     #ifdef PBORI_HAVE_M4RI
     mzd_free(mat);
@@ -407,7 +408,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         }
         PBORI_ASSERT(pivot_row==rows);
 
-        translate_back(polys, leads_from_strat, mat_step1,step1.ring_order2lex, step1.terms_as_exp,step1.terms_as_exp_lex,rank);
+        translate_back(polys, leads_from_strat, mat_step1,step1,rank);
         
         if PBORI_UNLIKELY(log){
             std::cout<<"finished translate"<<std::endl;
@@ -561,7 +562,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
             std::cout<<"finished gauss"<<std::endl;
         }
 
-    translate_back(polys, leads_from_strat, mat_step2,step2.ring_order2lex, step2.terms_as_exp,step2.terms_as_exp_lex,rank_step2);
+    translate_back(polys, leads_from_strat, mat_step2,step2, rank_step2);
     mzd_free(mat_step2);
     
 

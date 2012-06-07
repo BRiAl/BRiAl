@@ -41,6 +41,7 @@ public:
   std::vector<int> lex_order2ring;
   from_term_map_type from_term_map;
   MonomialSet terms;
+  std::vector<Monomial> terms_vec_lex;
 
 private:
   void setup_order_tables();

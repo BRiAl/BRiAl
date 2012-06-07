@@ -28,7 +28,16 @@ MatrixMonomialOrderTables::setup_order_tables(){
     int n=terms.size();
     terms_as_exp.resize(n);
     terms_as_exp_lex.resize(n);
+    terms_vec_lex.reserve(n);
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
+    MonomialSet::const_iterator terms_it = terms.begin();
+    MonomialSet::const_iterator terms_end = terms.end();
+    while(terms_it!=terms_end){
+        terms_vec_lex.push_back(*terms_it);
+        terms_it++;
+    }
+    //std::copy(terms.begin(), terms.end(), terms_vec_lex.begin());
+    
     terms_as_exp_lex=terms_as_exp;
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),
 	      ExpGreater(terms.ring()));

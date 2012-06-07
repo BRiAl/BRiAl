@@ -147,16 +147,55 @@ boost::shared_ptr<Evaluateable>
                        add_up_lex_sorted_exponents_delayed(ring, vec,limes,end));
 }
 
+
+boost::shared_ptr<Evaluateable>
+    add_up_lex_sorted_monomials_delayed(const BoolePolyRing& ring,
+                            std::vector<Monomial>& vec, int start, int end){
+    PBORI_ASSERT(end<=vec.size());
+    PBORI_ASSERT(start>=0);
+    int d=end-start;
+    PBORI_ASSERT(d>=0);
+    if (d<=1){
+        switch(d){
+            case 0:
+                return (boost::shared_ptr<Evaluateable>) new PolynomialData(Polynomial(ring));
+        case 1:return (boost::shared_ptr<Evaluateable>) new PolynomialData(vec[start]);
+
+        }
+
+
+    }
+
+    //more than two monomial, lex sorted, so if first is  constant, all are constant
+    if (vec[start].deg()==0) return (boost::shared_ptr<Evaluateable>) new PolynomialData( Polynomial(end-start, ring));
+    PBORI_ASSERT (!(vec[start].deg()==0));
+    idx_type idx=*vec[start].begin();
+    int limes=end;
+    vec[start].popFirst();
+    for(limes=start+1;limes<end;limes++){
+        if (PBORI_UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
+            PBORI_ASSERT((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
+            break;
+        } else 
+           vec[limes].popFirst();
+            //vec[limes].changeAssign(idx);
+    }
+
+    return (boost::shared_ptr<Evaluateable>) new IteEvaluation(idx, add_up_lex_sorted_monomials_delayed(ring, vec,start,limes),
+                       add_up_lex_sorted_monomials_delayed(ring, vec,limes,end));
+}
+
+
 bool compare_evaluateables(Evaluateable* a, Evaluateable* b){
     return a->index()>b->index();
 }
 
-std::vector<Polynomial> translate_from_lex_sorted_exponent_vectors(std::vector<std::vector<Exponent> >& conversion_vector, BoolePolyRing ring){
+std::vector<Polynomial> translate_from_lex_sorted_monomials(std::vector<std::vector<Monomial> >& conversion_vector, BoolePolyRing ring){
     std::vector<boost::shared_ptr<Evaluateable> > delayed_polys;
     Evaluateable::evec_type nodes_collector;
     int i;
     for (i=0; i< conversion_vector.size();i++){
-        delayed_polys.push_back(add_up_lex_sorted_exponents_delayed(ring, conversion_vector[i], 0, conversion_vector[i].size()));
+        delayed_polys.push_back(add_up_lex_sorted_monomials_delayed(ring, conversion_vector[i], 0, conversion_vector[i].size()));
         delayed_polys.back()->push_back_nodes(nodes_collector);
     }
     std::sort(nodes_collector.begin(), nodes_collector.end(), compare_evaluateables);
