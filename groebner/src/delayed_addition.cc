@@ -161,7 +161,7 @@ std::vector<Polynomial> translate_from_lex_sorted_exponent_vectors(std::vector<s
     }
     std::sort(nodes_collector.begin(), nodes_collector.end(), compare_evaluateables);
     for (i=0; i < nodes_collector.size();i++){
-        std::cout<<nodes_collector[i]->index()<<std::endl;
+        // std::cout<<nodes_collector[i]->index()<<std::endl;
         //results are cached, we just traverse the computation graph in correct order
         //should be good for caching
         //in particular parent children dependencies have to be respected
