@@ -14,6 +14,7 @@ syntax:glob
 *.toc
 *.os
 *.o
+*.bin
 .sconsign.dblite 
 thesis.pdf
 articleenv/

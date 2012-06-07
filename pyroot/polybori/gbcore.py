@@ -37,6 +37,7 @@ def filter_newstyle_options(func, **options):
         for prefix in ['', 'use_', 'opt_', 'opt_allow_']:
             if prefix + key in allowed:
                 filtered[prefix + key] = options[key]
+                break
 
     return filtered
                 
