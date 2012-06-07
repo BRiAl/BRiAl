@@ -167,5 +167,11 @@ std::vector<Polynomial> translate_from_lex_sorted_exponent_vectors(std::vector<s
         //in particular parent children dependencies have to be respected
         nodes_collector[i]->evaluate();
     }
+    std::vector<Polynomial> poly_vec;
+    poly_vec.reserve(delayed_polys.size());
+    for(i=0;i<delayed_polys.size();i++){
+        poly_vec.push_back(delayed_polys[i]->evaluate());
+    }
+    return poly_vec;
 }
 END_NAMESPACE_PBORIGB
