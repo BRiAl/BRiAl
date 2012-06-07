@@ -714,25 +714,6 @@ if not env.GetOption('clean'):
     if conf.CheckLongLong():
         env.Append(CPPDefines='PBORI_HAVE_LONG_LONG')
 
-    gdlibs = env["GD_LIBS"]
-    if gdlibs and conf.CheckCHeader("gd.h"):
-        store_libs = [elt for elt in env["LIBS"]]
-        env.Append(LIBS=gdlibs[1:])
-
-        if conf.CheckLib(gdlibs[0], autoadd=0):
-            env["LIBS"] = store_libs
-            env.Append(LIBS=gdlibs)
-            if conf.CheckFunc("testing_PNGs",
-                              "#include<gd.h>\n#define testing_PNGs() gdImagePng(NULL,NULL) "):
-                env.Append(CPPDEFINES=["PBORI_HAVE_GD"])
-                GD_LIBS = gdlibs
-            else:
-                print "libgd is available, but could not generate png file -",\
-                  "dependencies in GD_LIBS missing? -", \
-                  "Skipping gd-based optional features."
-        env["LIBS"] = store_libs
-
-
     if env['FORCE_HASH_MAP']:
         if conf.CheckCXXHeader('ext/hash_map'):
             env.Append(CPPDEFINES=["PBORI_HAVE_HASH_MAP"])  
@@ -795,12 +776,42 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
     external_m4ri = conf.CheckLib('m4ri', autoadd=0)
+    m4ri_png = False
     if external_m4ri:
-       env['LIBS'] += ['m4ri']
+       env.Append(LIBS='m4ri')
+       if conf.CheckFunc('testing_m4ri_PNGs', """
+                   #include <m4ri/io.h>
+                   #define testing_m4ri_PNGs() mzd_to_png(NULL,"",0,"",0)"""):
+           m4ri_png = True
+           env.Append(CPPDEFINES=["PBORI_HAVE_M4RI_PNG"])
+           for suffix in ['', '12', '13', '10', '11']:
+               if conf.CheckLib('png' + suffix, autoadd=0):
+                   GD_LIBS = ['png' + suffix]
+                   break
     else:
        env['CPPPATH'] = [m4ri_inc] + env['CPPPATH']
        
     conf.GuessM4RIFlags(external_m4ri)
+
+    if not m4ri_png:
+        gdlibs = env["GD_LIBS"]
+        if gdlibs and conf.CheckCHeader("gd.h"):
+            store_libs = [elt for elt in env["LIBS"]]
+            env.Append(LIBS=gdlibs[1:])
+
+            if conf.CheckLib(gdlibs[0], autoadd=0):
+                env["LIBS"] = store_libs
+                env.Append(LIBS=gdlibs)
+                if conf.CheckFunc("testing_PNGs",
+                                  "#include<gd.h>\n#define testing_PNGs() gdImagePng(NULL,NULL) "):
+                    env.Append(CPPDEFINES=["PBORI_HAVE_GD"])
+                    GD_LIBS = gdlibs
+                else:
+                    print "libgd is available, but could not generate png file -",\
+                      "dependencies in GD_LIBS missing? -", \
+                      "Skipping gd-based optional features."
+            env["LIBS"] = store_libs
+
 
     env = conf.Finish()
 
