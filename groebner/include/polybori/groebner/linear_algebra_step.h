@@ -165,9 +165,6 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
                 p_t[j]=terms_as_exp_lex[p_t_i[j]];
             }
             conversion_vector.push_back(p_t);
-            polys.push_back(add_up_lex_sorted_exponents(ring,
-                            p_t,0,p_t.size()));
-            PBORI_ASSERT(!(polys[polys.size()-1].isZero()));
         }
     }
     std::vector<Polynomial> converted_vector= translate_from_lex_sorted_exponent_vectors(conversion_vector, ring);
