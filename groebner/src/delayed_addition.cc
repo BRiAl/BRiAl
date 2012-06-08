@@ -6,6 +6,7 @@
 
 BEGIN_NAMESPACE_PBORIGB
 
+typedef Polynomial::navigator nav_type;
 class Evaluateable {
 public:
     typedef std::vector<Evaluateable*> evec_type;
@@ -150,7 +151,7 @@ boost::shared_ptr<Evaluateable>
 
 boost::shared_ptr<Evaluateable>
     add_up_lex_sorted_monomials_delayed(const BoolePolyRing& ring,
-                            std::vector<Monomial>& vec, int start, int end){
+                            std::vector<nav_type>& vec, int start, int end){
     PBORI_ASSERT(end<=vec.size());
     PBORI_ASSERT(start>=0);
     int d=end-start;
@@ -159,7 +160,7 @@ boost::shared_ptr<Evaluateable>
         switch(d){
             case 0:
                 return (boost::shared_ptr<Evaluateable>) new PolynomialData(Polynomial(ring));
-        case 1:return (boost::shared_ptr<Evaluateable>) new PolynomialData(vec[start]);
+        case 1:return (boost::shared_ptr<Evaluateable>) new PolynomialData(Polynomial(vec[start], ring));
 
         }
 
@@ -167,17 +168,17 @@ boost::shared_ptr<Evaluateable>
     }
 
     //more than two monomial, lex sorted, so if first is  constant, all are constant
-    if (vec[start].deg()==0) return (boost::shared_ptr<Evaluateable>) new PolynomialData( Polynomial(end-start, ring));
-    PBORI_ASSERT (!(vec[start].deg()==0));
-    idx_type idx=*vec[start].begin();
-    int limes=end;
-    vec[start].popFirst();
-    for(limes=start+1;limes<end;limes++){
-        if (PBORI_UNLIKELY((vec[limes].deg()==0)||(*vec[limes].begin()!=idx))){
-            PBORI_ASSERT((vec[limes].deg()==0)||(*vec[limes].begin()>idx));
+    if (vec[start].isConstant()) return (boost::shared_ptr<Evaluateable>) new PolynomialData( Polynomial(end-start, ring));
+    PBORI_ASSERT (!(vec[start].isConstant()));
+    idx_type idx=*vec[start];
+    int limes = end;
+    vec[start] = vec[start].thenBranch();
+    for(limes=start+1; limes<end; limes++){
+        if (PBORI_UNLIKELY((vec[limes].isConstant()) || (*vec[limes] != idx))){
+            PBORI_ASSERT((vec[limes].isConstant()) || (*vec[limes]>idx));
             break;
         } else 
-           vec[limes].popFirst();
+            vec[limes]=vec[limes].thenBranch();
             //vec[limes].changeAssign(idx);
     }
 
@@ -190,7 +191,7 @@ bool compare_evaluateables(Evaluateable* a, Evaluateable* b){
     return a->index()>b->index();
 }
 
-std::vector<Polynomial> translate_from_lex_sorted_monomials(std::vector<std::vector<Monomial> >& conversion_vector, BoolePolyRing ring){
+std::vector<Polynomial> translate_from_lex_sorted_monomials(std::vector<std::vector<nav_type> >& conversion_vector, BoolePolyRing ring){
     std::vector<boost::shared_ptr<Evaluateable> > delayed_polys;
     Evaluateable::evec_type nodes_collector;
     int i;

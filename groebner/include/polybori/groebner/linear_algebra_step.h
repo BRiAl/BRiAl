@@ -136,7 +136,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
     //    int rows=mat->nrows; /// @todo unused?
     
     int i;
-    std::vector<std::vector<Monomial> > conversion_vector ;
+    std::vector<std::vector<Polynomial::navigator> > conversion_vector ;
     BoolePolyRing ring = leads_from_strat.ring();
     for(i=0;i<rank;i++){
         int j;
@@ -159,16 +159,17 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
         }
         
         if (!(from_strat)){
-            std::vector<Monomial> p_t;
+            conversion_vector.resize(conversion_vector.size()+1);
+            std::vector<Polynomial::navigator>& p_t=conversion_vector.back();
             p_t.reserve(p_t_i.size());
             std::sort(p_t_i.begin(),p_t_i.end(),std::less<int>());            
             for(std::size_t j=0;j<p_t_i.size();j++){
-                p_t.push_back(step.terms_vec_lex[p_t_i[j]]);
+                p_t.push_back(Polynomial(step.terms_vec_lex[p_t_i[j]]).navigation());
             }
-            conversion_vector.push_back(p_t);
+            // conversion_vector.push_back(p_t);
         }
     }
-    std::vector<Polynomial> converted_vector= translate_from_lex_sorted_monomials(conversion_vector, ring);
+    std::vector<Polynomial> converted_vector = translate_from_lex_sorted_monomials(conversion_vector, ring);
     
     polys.reserve(polys.size() + converted_vector.size());
     polys.insert(polys.end(),converted_vector.begin(),converted_vector.end());
@@ -178,7 +179,9 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
 
 
 inline void
-linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_from_strat, bool log, bool optDrawMatrices=false, const char* matrixPrefix="mat"){
+linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,
+    MonomialSet leads_from_strat, bool log, 
+    bool optDrawMatrices=false, const char* matrixPrefix="mat"){
     if PBORI_UNLIKELY(polys.size()==0) return;
  
     static int round=0;
