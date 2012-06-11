@@ -12,6 +12,7 @@ from polybori.PyPolyBoRi import *
 
 datafilename="data.stas1"
 ordername="lp"
+prot=True
 
 try:
     from custom_profile import filename as datafilename
@@ -21,10 +22,15 @@ try:
     from custom_profile import ordering as ordername
 except:
     print 'No ordering in custom_profile.py file! Using ' + ordername + '.'
-
+try:
+    from custom_profile import protocol as prot
+except:
+    print 'No protocol in custom_profile.py file! Using ' + prot + '.'
+    
 data=load_data(datafilename, base_dir="../../polybori-testsuite/")
-change_ordering(getattr(OrderCode,ordername))
-I=groebner_basis(data.ideal)
+ring = data.ideal[0].ring().clone(ordering=getattr(OrderCode,ordername))
+
+I=groebner_basis([ring(poly) for poly in data.ideal], prot=prot)
 
 
 ## from_ring=global_ring()
