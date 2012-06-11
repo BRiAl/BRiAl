@@ -9,8 +9,10 @@ BEGIN_NAMESPACE_PBORIGB
 typedef Polynomial::navigator nav_type;
 class Evaluateable {
 public:
-    typedef std::vector<Evaluateable*> evec_type;
-    
+  typedef std::vector< std::vector<Evaluateable*>  > evec_type;
+
+    Evaluateable(idx_type idx = 0): _index(idx) { }
+
     virtual ~Evaluateable(){
         
     }
@@ -20,12 +22,14 @@ public:
     virtual BoolePolyRing ring(){
         
     }
-    virtual idx_type index(){
-        
+    const idx_type& index() const {
+        return _index;
     }
     virtual void push_back_nodes(evec_type & evec){
         
     }
+protected:
+    idx_type _index;
 };
 
 
@@ -38,8 +42,9 @@ public:
         }
         return res;
     }
-    IteEvaluation(idx_type v, boost::shared_ptr<Evaluateable> then_branch, boost::shared_ptr<Evaluateable> else_branch):
-        res(then_branch->ring()), then_branch(then_branch), else_branch(else_branch), _index(v)
+    IteEvaluation(idx_type v, boost::shared_ptr<Evaluateable> then_branch,
+                  boost::shared_ptr<Evaluateable> else_branch): Evaluateable(v),
+        res(then_branch->ring()), then_branch(then_branch), else_branch(else_branch)
     {
     
     }
@@ -49,17 +54,17 @@ public:
         return then_branch -> ring();
     }
     void push_back_nodes(evec_type & evec){
-        evec.push_back(this);
+        evec[index()].push_back(this);
         then_branch->push_back_nodes(evec);
         else_branch->push_back_nodes(evec);
     }
     
-    idx_type index() {
-        return _index;
-    }
+//     idx_type index() {
+//         return _index;
+//     }
 protected:
     Polynomial res;
-    idx_type _index;
+
     boost::shared_ptr<Evaluateable> then_branch;
     boost::shared_ptr<Evaluateable> else_branch;
     
@@ -74,14 +79,14 @@ public:
     }
     PolynomialData(Polynomial p):data(p){
     }
-    idx_type index() {
-        if (!(data.isConstant())){
-            return *(data.navigation());
-        }
-        else {
-            return ring().nVariables();
-        }
-    }
+//     idx_type index() {
+//         if (!(data.isConstant())){
+//             return *(data.navigation());
+//         }
+//         else {
+//             return ring().nVariables();
+//         }
+//     }
 protected:
     Polynomial data;
     
@@ -97,13 +102,9 @@ public:
     BoolePolyRing ring(){
         return _ring;
     }
-    ExponentData(Exponent e, BoolePolyRing r):data(e), _ring(r), converted(r){
-    }
-    idx_type index(){
-        if (data.deg()>0)
-            return *(data.begin());
-        else
-            return _ring.nVariables();
+    ExponentData(const Exponent& e, const BoolePolyRing& r):
+      Evaluateable(e.deg() > 0? *(data.begin()): r.nVariables()),
+      data(e), _ring(r), converted(r){
     }
 protected:
     Exponent data;
@@ -186,32 +187,42 @@ boost::shared_ptr<Evaluateable>
                        add_up_lex_sorted_monomials_delayed(ring, vec,limes,end));
 }
 
-
+inline 
 bool compare_evaluateables(Evaluateable* a, Evaluateable* b){
     return a->index()>b->index();
 }
 
 std::vector<Polynomial> translate_from_lex_sorted_monomials(std::vector<std::vector<nav_type> >& conversion_vector, BoolePolyRing ring){
     std::vector<boost::shared_ptr<Evaluateable> > delayed_polys;
-    Evaluateable::evec_type nodes_collector;
+    Evaluateable::evec_type nodes_collector(ring.nVariables()+1);
     int i;
     for (i=0; i< conversion_vector.size();i++){
         delayed_polys.push_back(add_up_lex_sorted_monomials_delayed(ring, conversion_vector[i], 0, conversion_vector[i].size()));
         delayed_polys.back()->push_back_nodes(nodes_collector);
     }
-    std::sort(nodes_collector.begin(), nodes_collector.end(), compare_evaluateables);
-    for (i=0; i < nodes_collector.size();i++){
-        // std::cout<<nodes_collector[i]->index()<<std::endl;
+    //std::sort(nodes_collector.begin(), nodes_collector.end(),
+    //compare_evaluateables);
+    typedef Evaluateable::evec_type::const_reverse_iterator iter;
+    for (iter start(nodes_collector.rbegin()), finish(nodes_collector.rend());
+         start != finish; ++start){
+
+      typedef Evaluateable::evec_type::value_type::const_iterator inner_iter;
+      for (inner_iter istart(start->begin()), iend(start->end()); istart != iend;
+                             ++istart){
         //results are cached, we just traverse the computation graph in correct order
         //should be good for caching
         //in particular parent children dependencies have to be respected
-        nodes_collector[i]->evaluate();
+        (*istart)->evaluate();
+      }
     }
+
     std::vector<Polynomial> poly_vec;
     poly_vec.reserve(delayed_polys.size());
+
     for(i=0;i<delayed_polys.size();i++){
         poly_vec.push_back(delayed_polys[i]->evaluate());
     }
     return poly_vec;
 }
+
 END_NAMESPACE_PBORIGB
