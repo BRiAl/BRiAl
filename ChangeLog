@@ -5,6 +5,7 @@ Release Name: 0.8.2
 * Explicit name lookup of attributes from template base
 * Preprocessor misconception fixed (#if vs. #ifdef)
 * polybori.gbcore drops assumption ideal were a list (still assuming iteratable)
+* png generation via libm4ri (alternative to libgb)
 
 Release Name: 0.8.1
 * fallback m4ri updated to release 20111203
