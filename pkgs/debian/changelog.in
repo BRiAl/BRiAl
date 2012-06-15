@@ -1,3 +1,9 @@
+polybori (0.8.2-0) unstable; urgency=low
+
+  * Minor release of the PolyBoRi framework.
+
+ -- Alexander Dreyer <adreyer@gmx.de>  Fri, 15 Jun 2012 22:09:13 +0100
+
 polybori (0.8.1-0) unstable; urgency=low
 
   * Minor release of the PolyBoRi framework.
