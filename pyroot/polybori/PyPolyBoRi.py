@@ -13,57 +13,57 @@ AUTHOR:
             Examples:
 
             >>> from polybori.frontend import *
-            >>> r=declare_ring([Block("x",10),Block("y",10)], globals())   
-            >>> x(0)>x(1)                                       
+            >>> r=declare_ring(["x0","x1","x2","y0","y1","y2"], globals())   
+            >>> x0>x1                                       
             True
-            >>> x(0)>x(1)*x(2)
+            >>> x0>x1*x2
             True
-            >>> y(0)>y(1)                                       
+            >>> y0>y1                                       
             True
-            >>> y(0)>y(1)*y(2)
+            >>> y0>y1*y2
             True
 
             >>> r = r.clone(ordering=dlex)
-            >>> r(x(0)) > r(x(1))
+            >>> r(x0) > r(x1)
             True
-            >>> r(x(0)) > r(x(1)*x(2))
+            >>> r(x0) > r(x1*x2)
             False
 
             >>> r = r.clone(ordering=dp_asc)
-            >>> r(x(0)) > r(x(1))
+            >>> r(x0) > r(x1)
             False
-            >>> r(x(0)) > r(x(1)*x(2))
+            >>> r(x0) > r(x1*x2)
             False
 
-            >>> r = r.clone(ordering=block_dlex, blocks=[10])
-            >>> r(x(0)) > r(x(1))
+            >>> r = r.clone(ordering=block_dlex, blocks=[3])
+            >>> r(x0) > r(x1)
             True
-            >>> r(x(0)) > r(x(1)*x(2))
+            >>> r(x0) > r(x1*x2)
             False
-            >>> r(x(0)) > r(y(0)*y(1)*y(2))
+            >>> r(x0) > r(y0*y1*y2)
             True
 
             >>> r = r.clone(ordering=block_dp_asc)
-            >>> r(x(0)) > r(x(1))
+            >>> r(x0) > r(x1)
             False
-            >>> r(x(0)) > r(y(0))
+            >>> r(x0) > r(y0)
             False
-            >>> r(x(0)) > r(x(1)*x(2))
+            >>> r(x0) > r(x1*x2)
             False
 
-            >>> r = r.clone(ordering=block_dp_asc, blocks=[10])
-            >>> r(x(0)) > r(y(0))
+            >>> r = r.clone(ordering=block_dp_asc, blocks=[3])
+            >>> r(x0) > r(y0)
             True
 
-            >>> r(x(0)) > r(y(0)*y(1))
+            >>> r(x0) > r(y0*y1)
             True
 
-            >>> r = r.clone(names=["z(17)", "z(7)"])
-            >>> [r(x(idx)) for idx in xrange(3)]
-            [z(17), z(7), x(2)]
+            >>> r = r.clone(names=["z17", "z7"])
+            >>> [r.variable(idx) for idx in xrange(3)]
+            [z17, z7, x2]
             >>> r = r.clone(names="abcde")
-            >>> [r(x(idx)) for idx in xrange(6)]
-            [a, b, c, d, e, x(5)]
+            >>> [r.variable(idx) for idx in xrange(6)]
+            [a, b, c, d, e, y2]
 
 """
 
