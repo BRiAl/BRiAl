@@ -226,9 +226,9 @@ public:
   var_type firstVariable() const;
 
   /// Get first index in monomial
+  /// @note return out-of-range integer for polynomial one 
   idx_type firstIndex() const {
-    PBORI_ASSERT(!m_poly.isConstant());
-    return *begin();
+    return *m_poly.navigation();
   }
 
   /// Access ring, where this belongs to

@@ -265,6 +265,8 @@ BooleMonomial::var_type
 BooleMonomial::firstVariable() const {
 
   PBORI_TRACE_FUNC( "BooleMonomial::firstVariable() const" );
+  if PBORI_UNLIKELY(m_poly.isConstant())
+    throw PBoRiError(CTypes::out_of_bounds);
   return var_type(firstIndex(), ring());
 }
 END_NAMESPACE_PBORI
