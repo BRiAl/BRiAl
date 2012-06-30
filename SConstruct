@@ -480,7 +480,7 @@ if defaultenv['PLATFORM'] == "sunos":  # forcing gcc, keeping linker
         defaultenv = Environment(ENV=os.environ, tools=tools,
                                  options=platform_opts)
 
-        (env, opts) = setup_env(defaultenv)
+        (env, opts, tools) = setup_env(defaultenv)
 
 
 # Monkey patching Install/InstallAs to fix permissions on install
