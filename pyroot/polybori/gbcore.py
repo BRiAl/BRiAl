@@ -369,7 +369,9 @@ def other_ordering_pre(I,option_set,kwds):
         I_orig=I
         I=groebner_basis([new_ring(poly) for poly in I],**kwds)
         variety_size=variety_size_from_gb(I)
-        if variety_size<50000:
+
+        fglm_bound = options.get("fglm_bound") or groebner_basis.options["fglm_bound"]
+        if variety_size < fglm_bound:
             main_kwds["convert_with_fglm_from_ring"]=new_ring
             main_kwds["convert_with_fglm_to_ring"]=old_ring        
         else:
@@ -509,7 +511,7 @@ def eliminate_identical_variables_pre(I, prot):
 @gb_with_pre_post_option("redsb",post=redsb_post,if_not_option=["deg_bound","interpolation_gb","convert_with_fglm_from_ring"],default=True)
 def groebner_basis(I, heuristic=True,unique_ideal_generator=False, interpolation_gb=False, 
     clean_and_restart_algorithm=False, convert_with_fglm_from_ring=None,
-    convert_with_fglm_to_ring=None,
+    convert_with_fglm_to_ring=None, fglm_bound=40000,
     modified_linear_algebra=True, preprocessor=None, 
     deg_bound = False, implementation = "Python",
     full_prot = False, prot = False,
