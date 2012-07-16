@@ -624,7 +624,57 @@ BOOST_TEST = env['BOOST_TEST']
 dylibs = []
 stlibs = []
 
+def check_variants(conf, libname, header, generators, priority):
+    if not libname:
+        return None
+    if header:
+        def checklib(name):
+            return conf.CheckLibWithHeader(name, header, 'c++', autoadd=0)
+    else:
+        def checklib(name):
+            return conf.CheckLib(name, autoadd=0)
+
+    names=[[]]
+
+    for idx in priority:
+        gen = generators[idx]
+        names += [name + [(idx, elt)] for name in names for elt in gen]
+
+    for elt in names:
+        namelist = map(lambda x:x[1], sorted(elt, key=lambda x:x[0]))
+        name = '-'.join([libname] + namelist);
+        if checklib(name):
+            return name
+            
+    return None
+
+def check_boost_variants(conf, libname, header=None):
+    return check_variants(conf, libname, header,
+                          [[pyconf.version], ['gcc'], ['mt', 'mt-p'], 
+                           ['_'.join(map(str,  env['BOOST_VERSION'][0:nlen]))
+                            for nlen in [2,3] ] ], [3,0,2,1])
+    
 if not env.GetOption('clean'):
+    def BoostVersion(context):
+        # Boost versions are in format major.minor.subminor
+        context.Message('Detecting Boost version... ')
+        (result, values) = context.TryRun("""
+        #include <boost/version.hpp>
+        #include <iostream>
+        int main() {
+            std::cout << BOOST_VERSION;
+            return 0;
+        }
+        """, '.cpp')
+        result = (result == 1)
+        values = (int(values[0:-5]), int(values[-5:-2]), int(values[-2:-1]))
+        if result:
+            context.Display('.'.join(map(str, values)) + '... ')
+            env.Append(BOOST_VERSION=values)
+
+        context.Result(result)
+        return result
+
     def CheckSizeOfTypes(context):
         context.Message('Detecting type sizes... ')
         test_src_sizeof =  """
@@ -704,7 +754,8 @@ if not env.GetOption('clean'):
     conf = Configure(env, 
                      custom_tests = {'CheckSizeOfTypes': CheckSizeOfTypes,
                                      'CheckLongLong': CheckLongLong,
-                                     'GuessM4RIFlags': GuessM4RIFlags})
+                                     'GuessM4RIFlags': GuessM4RIFlags,
+                                     'BoostVersion': BoostVersion})
 
     if not conf.CheckSizeOfTypes():
         print "Could not detect type sizes (maybe compile/link flags " + \
@@ -745,21 +796,31 @@ if not env.GetOption('clean'):
             print "(needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
 
+
+        
     if HAVE_PYTHON_EXTENSION:
+        conf.BoostVersion()
+
         store_libs =[elt for elt in env["LIBS"]]
         env.Append(LIBS=pyconf.libname)
-        if not ( conf.CheckLibWithHeader([env['BOOST_PYTHON'], pyconf.libname ],
-                 path.join('boost', 'python.hpp'), 'c++', autoadd=0) ):
-
-            print "Warning Boost/Python library (", env['BOOST_PYTHON'],
-            print ") not available (needed for python extension)!"
+                
+        BOOST_PYTHON = check_boost_variants(conf, env['BOOST_PYTHON'],
+                                            path.join('boost', 'python.hpp'))
+        if BOOST_PYTHON is None:
+            
+            print "Warning Boost/Python library BOOST_PYTHON =",
+            print repr(env['BOOST_PYTHON']), "(or variants)  not available " +\
+                  "(needed for python extension)!"
             HAVE_PYTHON_EXTENSION = False
+        env['BOOST_PYTHON'] = BOOST_PYTHON         
+
         env["LIBS"] = store_libs
 
-    if not conf.CheckLib(BOOST_TEST, autoadd=0):
-         print "Warning Boost/unit test framework library (",
-         print BOOST_TEST, ") not available. Skipping tests."
-         BOOST_TEST = None
+    BOOST_TEST = check_boost_variants(conf, env['BOOST_TEST'])
+    if BOOST_TEST is None:
+         print "Warning Boost/unit test framework library BOOST_TEST =",
+         print repr(env['BOOST_TEST']), " not available. Skipping tests."
+    env['BOOST_TEST'] = BOOST_TEST
 
     have_l2h = env['HAVE_L2H'] and env.Detect('latex2html')
 
