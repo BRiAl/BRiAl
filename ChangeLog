@@ -1,4 +1,5 @@
 * new option groebner_basis(..., fglm_bound=40000)
+* improved boost libraries detection
 
 Release Name: 0.8.2
 * Dependencies of optional rpm package gui fixed
