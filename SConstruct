@@ -216,7 +216,7 @@ def _dynmodule_flags(env):
 
 def _moduleflags(env):
     if env['PLATFORM']=="darwin":
-        python_absolute = shell_output("which", env["PYTHON"])
+        python_absolute = shell_output("which", env.subst("$PYTHON"))
         return ["-fvisibility=hidden", "-bundle_loader", python_absolute]
 
     return []
