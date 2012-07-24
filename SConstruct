@@ -667,11 +667,13 @@ if not env.GetOption('clean'):
         }
         """, '.cpp')
         result = (result == 1)
-        values = (int(values[0:-5]), int(values[-5:-2]), int(values[-2:-1]))
         if result:
+            values = (int(values[0:-5]), int(values[-5:-2]), int(values[-2:-1]))
             context.Display('.'.join(map(str, values)) + '... ')
-            env.Append(BOOST_VERSION=values)
+        else:
+            values = [0]*3
 
+        env.Append(BOOST_VERSION=values)
         context.Result(result)
         return result
 
@@ -797,10 +799,8 @@ if not env.GetOption('clean'):
             HAVE_PYTHON_EXTENSION = False
 
 
-        
+    conf.BoostVersion() 
     if HAVE_PYTHON_EXTENSION:
-        conf.BoostVersion()
-
         store_libs =[elt for elt in env["LIBS"]]
         env.Append(LIBS=pyconf.libname)
                 
