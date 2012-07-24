@@ -28,5 +28,9 @@ pyroot=sys.argv[1]
 pyroot=abspath(pyroot)
 chdir("doc/python")
 sys.path.append(pyroot)
-writedocs(pyroot)
+try:
+    import polybori
+    writedocs(pyroot)
+except:
+    print "Cannot generate python docs. Skipping..."
 

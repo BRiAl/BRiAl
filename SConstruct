@@ -1230,8 +1230,11 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
             LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
             CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
+elif extern_python_ext:
+    dynamic_init_py = env.Command(PyRootPath('polybori/dynamic/__init__.py'), 
+                                  [], [Touch("$TARGET")])
 
-  
+    env.Alias(BuildPath(), dynamic_init_py) 
 
 else:
     print "no python extension"
