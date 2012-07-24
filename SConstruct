@@ -1175,8 +1175,8 @@ if HAVE_PYTHON_EXTENSION:
     
     if env['PLATFORM']=="darwin":
             def fix_install_name(target, source, env):
-                names = ' '.join([str(elt) for elt in dylibs])
-                names = Split(shell_output('otool', '-D', names))[1::2]
+                names = [str(elt) for elt in dylibs]
+                names = Split(shell_output('otool', '-D', *names))[1::2]
                 for name in names:
                     newname = "@loader_path/" + \
                         env.relpath(InstPyPath("polybori/dynamic"),
