@@ -1,5 +1,8 @@
 * new option groebner_basis(..., fglm_bound=40000)
 * improved boost libraries detection
+* skip python docs for external python extension
+* removed spaces from arguments for shell_output to fix SConstruct on darwin
+* added header polybori/embed.h for easy python/polybori integration
 
 Release Name: 0.8.2
 * Dependencies of optional rpm package gui fixed

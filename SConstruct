@@ -777,7 +777,7 @@ if not env.GetOption('clean'):
             env.Append(CPPDEFINES=["PBORI_HAVE_TR1_UNORDERED_MAP"])
         elif conf.CheckCXXHeader('ext/hash_map'):
             env.Append(CPPDEFINES=["PBORI_HAVE_HASH_MAP"])  
-        
+
     extern_python_ext = env['EXTERNAL_PYTHON_EXTENSION']
     if HAVE_PYTHON_EXTENSION or extern_python_ext:
         env.Append(CPPPATH=[pyconf.incdir])
@@ -1118,6 +1118,7 @@ if BOOST_TEST:
                           CPPPATH=testCPPPATH,
                           CPPDEFINES = ["BOOST_TEST_DYN_LINK"])
 
+    
     def test_building(target, sources, env):
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
@@ -1129,6 +1130,15 @@ if BOOST_TEST:
 
     for testfile in testfiles:
         test_building(path.splitext(testfile.path)[0] + '.bin', [testfile], env)
+
+    if env['BOOST_PYTHON']:
+        env.Program(TestsPath("embedTest"), [TestsPath('src', "embedTest.cc")] + testmain, 
+                    CPPPATH=testCPPPATH,
+                    LIBS = env['LIBS'] + \
+                    [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS + \
+                    [env['BOOST_PYTHON'], pyconf.libname],
+                    CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
+        
 
 
 ######################################################################

@@ -113,6 +113,14 @@ Provided that /prefix/for/executables/bin is in your path, typing
 starts an IPython session with the PolyBoRi framework loaded.
 
 
+Python embedding
+================
+For utilizing its full capabilites please use PolyBoRi via python. To simplify
+embedding into C++-based software you may include the header polybori/embed.h
+and use the functionality defined therein.
+See testsuite/src/embedTest.cc for an extensive example.
+
+
 Workaround for scons 0.96.x
 ===========================
 
