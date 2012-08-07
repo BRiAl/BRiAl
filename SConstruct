@@ -1279,6 +1279,7 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
 
         env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
                   glob(PyRootPath('polybori/dynamic/*.pyc')))
+        env.Depends(pydocu, PyRootPath('polybori/dynamic/__init__.py'))
 #        env.Ignore(pydocu, dynamic_modules)
     #bld=Builder("cd")
 
