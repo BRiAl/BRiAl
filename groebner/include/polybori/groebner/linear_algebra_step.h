@@ -195,7 +195,7 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     if PBORI_UNLIKELY(optDrawMatrices){
          ++round;
 	 std::ostringstream matname;
-	 matname << matrixPrefix << round << ".png";
+	 matname << matrixPrefix << round << ".png"<< std::ends;
          draw_matrix(mat, matname.str().c_str());
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
@@ -356,7 +356,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
         
         if PBORI_UNLIKELY(optDrawMatrices) {
 	    std::ostringstream matname;
-	    matname << matrixPrefix << round << "_step1.png";
+	    matname << matrixPrefix << round << "_step1.png" <<std::ends;
 	    draw_matrix(mat_step1, matname.str().c_str());
         }
         //optimize: call back subst directly
@@ -492,10 +492,10 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     if PBORI_UNLIKELY(optDrawMatrices)
     {
       std::ostringstream matname;
-      matname << matrixPrefix << round << "_mult_A.png";
+      matname << matrixPrefix << round << "_mult_A.png"<<std::ends;
       draw_matrix(mat_step2_factor, matname.str().c_str());
       matname.clear();
-      matname << mat_step2_factor << round << "_mult_B.png";
+      matname << mat_step2_factor << round << "_mult_B.png"<<std::ends;
       draw_matrix(mat_step1,matname.str().c_str());
     }
     if PBORI_UNLIKELY(log){
@@ -536,7 +536,7 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     if PBORI_UNLIKELY(optDrawMatrices)
     {
       std::ostringstream matname;
-      matname << matrixPrefix << round << "_step2.png";
+      matname << matrixPrefix << round << "_step2.png"<<std::ends;
       draw_matrix(mat_step2, matname.str().c_str());
     }
 

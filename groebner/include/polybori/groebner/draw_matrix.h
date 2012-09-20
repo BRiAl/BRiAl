@@ -36,7 +36,7 @@ inline void
 draw_matrix(mzd_t* mat, const char* filename){
 
   if ((mat->ncols == 0) || (mat->nrows == 0)) {
-    std::cerr << "0-dimensional matrix cannot be drawed, skipping." <<std::endl;
+    std::cerr << "0-dimensional matrix cannot be drawed, skipping "<< filename<<"" <<std::endl;
     return;
   }
 
