@@ -528,11 +528,13 @@ class BoxLayout(QtGui.QWidget):
             options.ordering='block_' + options.ordering
         #mydata=load_file('/p/sys/IndAlg/share/data/uf20_45.py')
         mydata=load_file(self.filename)
-        I=mydata.ideal
+
+        ring = mydata.r.clone(ordering=getattr(OrderCode, options.ordering))
+        I = [ring(p) for p in mydata.ideal] 
         t=time()
         tc=clock()
-       
-        change_ordering(getattr(OrderCode, options.ordering))
+
+
         if match("block",options.ordering):
             block_starts=parse_blocks(options.blocks,mydata)
             block_starts.sort()
