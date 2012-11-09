@@ -540,8 +540,9 @@ class BoxLayout(QtGui.QWidget):
             block_starts.sort()
             for s in block_starts:
                 append_ring_block(s)
+
         if not options.auto:
-            I = groebner_basis(I, **dict([(k,getattr(options,k)) for k in dir(options) if k in groebner_basis.options]))
+            I = groebner_basis(I, **dict([(k,getattr(options,k)) for k in dir(options)]))
         else:
             I= groebner_basis(I,prot=options.prot)
 
