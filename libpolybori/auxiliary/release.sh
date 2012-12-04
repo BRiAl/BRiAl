@@ -49,7 +49,7 @@ done
 
 export TMPDIR="/tmp/$USER/PB$$"
 export BUILDDIR="$TMPDIR/polybori"
-export HG_SF="http://polybori.hg.sourceforge.net:8000/hgroot/polybori/polybori"
+export HG_SF="http://hg.code.sf.net/p/polybori/code"
 
 OLDPWD=${PWD}
 THIS="$0"
@@ -86,15 +86,15 @@ echo "Releasing PolyBoRi release ${HG_TAG}"
 
 $EXEC hg tag $FORCED $HG_TAG || (echo "Release already tagged!"; exit 1)
 $EXEC hg push || (echo "Pushing to devel repo failed"; exit 1)
-# please set ssh site data in .ssh/config
-$EXECSYNC hg push ssh://polybori/hgroot/polybori/polybori/ \
+# please set ssh site data in .ssh/config, something like USER@hg.code.sf.net
+$EXECSYNC hg push ssh://polybori/p/polybori/code \
   || (echo "Pushing to official Repo failed"; exit 1)
 
 rm -rf $TMPDIR
 mkdir $TMPDIR
 cd $TMPDIR 
 
-hg clone $HG_SF
+hg clone $HG_SF polybori
 
 cd $BUILDDIR
 
