@@ -49,8 +49,8 @@ void export_bset(){
     .def("__repr__", streamable_as_str<BooleSet>)
     .def("__str__", streamable_as_str<BooleSet>)
     .def("__len__", &BooleSet::length)
-    .def("__iter__", range(&BooleSet::begin, &BooleSet::end))
-    .def("__reversed__", range(&BooleSet::rbegin, &BooleSet::rend))
+    .def("__iter__", boost::python::range(&BooleSet::begin, &BooleSet::end))
+    .def("__reversed__", boost::python::range(&BooleSet::rbegin, &BooleSet::rend))
     .def("__hash__", &BooleSet::hash, "Fast hash code, based on the \
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
     .def("stable_hash", &BooleSet::stableHash, "Reproducible hash code")

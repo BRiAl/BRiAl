@@ -77,7 +77,7 @@ pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")
   .def("stable_hash", &BoolePolynomial::stableHash, "Reproducible hash code")
   .def("__len__", &BoolePolynomial::length, "Number of terms")
   .def("terms", 
-       range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
+       boost::python::range(&BoolePolynomial::orderedBegin, &BoolePolynomial::orderedEnd))
   .def("__pow__",poly_power)
   //.def(self+=self)
   //.def(self-=self)

@@ -183,7 +183,7 @@ with inverted variable order\n\
     .def("get_order_code", get_order_code)
     .def("append_block", append_block,
       "Append integer, which marks the index of the start of the next block (for block orderings)")
-    .def("blocks", range(ring_block_begin, ring_block_end));
+    .def("blocks", boost::python::range(ring_block_begin, ring_block_end));
   
 
   boost::python::class_<BooleConstant>("BooleConstant", 
@@ -196,7 +196,7 @@ with inverted variable order\n\
     .def(self*self)
     .def("__str__", streamable_as_str<BooleConstant>)
     .def("__repr__", streamable_as_str<BooleConstant>)
-    .def("variables", range(&BooleConstant::variableBegin, &BooleConstant::variableEnd))
+    .def("variables", boost::python::range(&BooleConstant::variableBegin, &BooleConstant::variableEnd))
     .def("deg", &BooleConstant::deg)
     .def("is_one", &BooleConstant::isOne)
     .def("is_zero", &BooleConstant::isZero)

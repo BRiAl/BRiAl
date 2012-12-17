@@ -63,7 +63,7 @@ void export_monomial(){
   .def(init<const BooleMonomial &>())
   .def(init<const BooleVariable &>())
   .def("is_one", &BooleMonomial::isOne)
-  .def("variables", range(&BooleMonomial::variableBegin, &BooleMonomial::variableEnd))
+  .def("variables", boost::python::range(&BooleMonomial::variableBegin, &BooleMonomial::variableEnd))
   //.def("__iter__", boost::python::iterator<BooleMonomial>())
   .def("__hash__", &BooleMonomial::hash, "Fast hash code, based on the \
 pointer to the underlying ZDD node. \nIt may vary from runtime to runtime.")

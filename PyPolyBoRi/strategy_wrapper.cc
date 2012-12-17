@@ -264,7 +264,7 @@ void export_strategy(){
   .def("next_spoly", &GroebnerStrategy::nextSpoly)
   .def("some_spolys_in_next_degree", someNextDegreeSpolys)
   .def("__len__",nGenerators)
-  .def("__iter__",range(stratbegin, stratend))
+  .def("__iter__", boost::python::range(stratbegin, stratend))
   .def("__getitem__", get_ith_gen)
   .def("__getitem__", get_gen_by_lead)
   
