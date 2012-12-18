@@ -15,7 +15,7 @@ except:
     pborirelease = "0"
 
 
-libraryversion = "0.0.0"
+
 debname = "polybori-" + pboriversion + '.' + pborirelease
 
 import tarfile
@@ -408,7 +408,7 @@ def setup_env(defaultenv):
     opts.Add('SHLIBVERSIONSUFFIX',
              'Shared libraries suffix for library versioning.',
              '-' + pboriversion +'.' + pborirelease +
-             defaultenv['SHLIBSUFFIX'] + '.' + libraryversion)
+             defaultenv['SHLIBSUFFIX'] + '.$LIBRARY_VERSION')
 
 
 
@@ -431,6 +431,8 @@ def setup_env(defaultenv):
     else:
             if var != "LIBSUFFIX":
                 print "Variable", var, "not in default environment!"
+
+    opts.Add('LIBRARY_VERSION', "libtool-style library version", '0.0.0')
 
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
 
@@ -987,12 +989,12 @@ def SymlinkReadableLibname(files):
     result = []
     import re
     soPattern = re.compile('(.*)\.[0-9]*\.[0-9]*$', re.I|re.S)
-    sonameversion = soPattern.findall(path.basename(libraryversion))[0]
+    sonameversion = soPattern.findall(path.basename(env.subst('$LIBRARY_VERSION')))[0]
     
     for fname in files:
         fname = str(fname)
         soname = soPattern.sub(r'\1', fname)
-        versionname = fname.replace('.' + libraryversion, '')
+        versionname = fname.replace('.' + env.subst('$LIBRARY_VERSION'), '')
         simple = fname.replace(suffix, simplesuffix)
 
         for (dest, src) in [(soname, fname), (versionname, soname),
