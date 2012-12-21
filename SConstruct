@@ -435,6 +435,9 @@ def setup_env(defaultenv):
     opts.Add('LIBRARY_VERSION', "libtool-style library version", '0.0.0')
 
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
+    opts.Add('PKGCONFIGFILE', "Write settings to pkg-config file, if given", '')
+    opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
+
 
     opts.Add('PLATFORM', "Manually set another platform (unusual)",
              defaultenv['PLATFORM'])
@@ -1820,6 +1823,34 @@ if 'install' in COMMAND_LINE_TARGETS:
         conffile = env.Command(conffilename, 'SConstruct', build_conffile)
         env.AlwaysBuild(conffile)
         env.Alias('install', conffile)
+
+    pkgconfigfilename = env['PKGCONFIGFILE']
+    if pkgconfigfilename:
+        def build_pcfile(target, source, env):
+            from string import Template
+            page = """
+prefix=$PREFIX
+exec_prefix=$${prefix}
+includedir=$DEVEL_INCLUDE_PREFIX
+libdir=$DEVEL_LIB_PREFIX
+
+Name: polybori
+Description: The PolyBoRi library
+URL: http://polybori.sourceforge.net
+Version: %s
+Requires: $GD_LIBS
+Cflags: $CXXFLAGS $CCFLAGS $_CCCOMCOM
+Libs: $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS ${_stripixes(LIBLINKPREFIX, GD_LIBS, LIBLINKSUFFIX, LIBPREFIXES, LIBSUFFIXES, __env__)}
+            """ % (pboriversion + '.' + pborirelease)
+            page = env.subst(page).replace(env.subst("$TMPINSTALLDIR"),'') + '\n'
+            open(str(target[0]), 'w').writelines(page)
+
+            return None
+
+        pcfile = env.Command(pkgconfigfilename, 'SConstruct', build_pcfile)
+        env.AlwaysBuild(pcfile)
+        env.Alias('install', pcfile)
+
     
 
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
