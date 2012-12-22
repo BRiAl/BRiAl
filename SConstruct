@@ -435,7 +435,8 @@ def setup_env(defaultenv):
     opts.Add('LIBRARY_VERSION', "libtool-style library version", '0.0.0')
 
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
-    opts.Add('PKGCONFIGFILE', "Write settings to pkg-config file, if given", '')
+    opts.Add('PKGCONFIGPATH', 
+             "Write settings to pkg-config file in path, if given", '')
     opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
 
 
@@ -1824,32 +1825,43 @@ if 'install' in COMMAND_LINE_TARGETS:
         env.AlwaysBuild(conffile)
         env.Alias('install', conffile)
 
-    pkgconfigfilename = env['PKGCONFIGFILE']
-    if pkgconfigfilename:
+    pkgconfigdirname = env['PKGCONFIGPATH']
+    if pkgconfigdirname:
         def build_pcfile(target, source, env):
-            from string import Template
+            localenv = source[0].get_env()
+            libflags = localenv.subst("$LINKFLAGS $_LIBDIRFLAGS $_LIBFLAGS ${_stripixes(LIBLINKPREFIX, GD_LIBS, LIBLINKSUFFIX, LIBPREFIXES, LIBSUFFIXES, __env__)}");
+            libs = ' '.join(set([l.replace('-l','') for l in libflags.split() 
+                    if l.startswith('-l')]))
             page = """
 prefix=$PREFIX
 exec_prefix=$${prefix}
 includedir=$DEVEL_INCLUDE_PREFIX
 libdir=$DEVEL_LIB_PREFIX
 
-Name: polybori
+Name: %s
 Description: The PolyBoRi library
 URL: http://polybori.sourceforge.net
 Version: %s
-Requires: $GD_LIBS
+Requires: %s
 Cflags: $CXXFLAGS $CCFLAGS $_CCCOMCOM
-Libs: $LINKFLAGS $SOURCES $_LIBDIRFLAGS $_LIBFLAGS ${_stripixes(LIBLINKPREFIX, GD_LIBS, LIBLINKSUFFIX, LIBPREFIXES, LIBSUFFIXES, __env__)}
-            """ % (pboriversion + '.' + pborirelease)
-            page = env.subst(page).replace(env.subst("$TMPINSTALLDIR"),'') + '\n'
+Libs: %s
+            """ % (env.File(target[0]).name.replace('.pc',''),
+                   pboriversion + '.' + pborirelease,
+                   libs, libflags)
+            page = localenv.subst_target_source(page).replace(env.subst("$TMPINSTALLDIR"),'') + '\n'
             open(str(target[0]), 'w').writelines(page)
 
             return None
 
-        pcfile = env.Command(pkgconfigfilename, 'SConstruct', build_pcfile)
-        env.AlwaysBuild(pcfile)
-        env.Alias('install', pcfile)
+        pcfiles = [env.Command(path.join(pkgconfigdirname,
+                                         "polybori-groebner.pc"),
+                               libgbShared, build_pcfile),
+                   env.Command(path.join(pkgconfigdirname,
+                                         "polybori.pc"), libpbShared, build_pcfile)
+                   ]
+
+        env.AlwaysBuild(pcfiles)
+        env.Alias('install', pcfiles)
 
     
 
