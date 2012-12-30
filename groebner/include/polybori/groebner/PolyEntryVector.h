@@ -71,7 +71,10 @@ public:
   virtual void append(const PolyEntry& element) {
     m_data.push_back(element);
 
-    PBORI_ASSERT(m_indices.checked(back().lead) == (size_type)-1);
+#ifndef PBORI_NDEBUG    
+    if(m_indices.checked(back().lead) != (size_type)-1)
+      throw std::runtime_error("leading terms not unique when appending to PolyEntryVector");
+#endif
     m_indices.insert(back(), size() - 1);
   }
 
