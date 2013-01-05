@@ -1,14 +1,17 @@
 from random import Random
-from polybori.PyPolyBoRi import Monomial, BooleSet, Polynomial, if_then_else as ite,\
-    lp, gauss_on_polys, ll_red_nf_redsb
+from polybori.PyPolyBoRi import (Monomial, BooleSet, Polynomial, if_then_else
+    as ite, lp, gauss_on_polys, ll_red_nf_redsb)
 from polybori.ll import ll_encode
 from polybori.statistics import used_vars_set
+
+
 class CNFEncoder(object):
-    def __init__(self, r, random_seed = 16):
+    def __init__(self, r, random_seed=16):
         self.random_generator = Random(random_seed)
         self.one_set = r.one().set()
         self.empty_set = r.zero().set()
         self.r = r
+
     def zero_blocks(self, f):
         """divides the zero set of f into blocks
         >>> from polybori import *
@@ -17,17 +20,18 @@ class CNFEncoder(object):
         >>> e.zero_blocks(r.variable(0)*r.variable(1)*r.variable(2))
         [{y: 0}, {z: 0}, {x: 0}]
         """
-        f=Polynomial(f)
+        f = Polynomial(f)
         variables = f.vars_as_monomial()
-    
+
         space = variables.divisors()
         variables = list(variables.variables())
         zeros = f.zeros_in(space)
         rest = zeros
         res = list()
-        
+
         def choose_old(s):
-            return iter(rest).next()# somewhat 
+            return iter(rest).next()  # somewhat
+
             #inefficient compared to polynomials lex_lead
         def choose(s):
             indices = []
@@ -40,10 +44,10 @@ class CNFEncoder(object):
                     indices.append(nav.value())
                     nav = t
                 else:
-                    if self.random_generator.randint(0,1):
+                    if self.random_generator.randint(0, 1):
                         indices.append(nav.value())
                         nav = t
-                    
+
                     else:
                         nav = e
             assert nav.terminal_one()
@@ -54,6 +58,7 @@ class CNFEncoder(object):
         while not rest.empty():
             l = choose(rest)
             l_variables = set(l.variables())
+
             def get_val(var):
                 if var in l_variables:
                     return 1
@@ -86,12 +91,13 @@ class CNFEncoder(object):
         >>> [sorted(c.iteritems()) for c in e.clauses(r.variable(1)+r.variable(0))]
         [[(y, 1), (x, 0)], [(y, 0), (x, 1)]]
         """
-        f_plus_one = f+1
-        blocks = self.zero_blocks(f+1)
-        negated_blocks=[dict([(variable, 1-value) for (variable, value) 
-            in b.iteritems()]) for b in blocks ]
-        # we form an expression for a var configuration *not* lying in the block
-        # it is evaluated to 0 by f, iff it is not lying in any zero block of f+1
+        f_plus_one = f + 1
+        blocks = self.zero_blocks(f + 1)
+        negated_blocks = [dict([(variable, 1 - value) for (variable, value)
+            in b.iteritems()]) for b in blocks]
+        # we form an expression for a var configuration *not* lying in the
+        # block it is evaluated to 0 by f, iff it is not lying in any zero
+        # block of f+1
         return negated_blocks
 
     def polynomial_clauses(self, f):
@@ -106,31 +112,33 @@ class CNFEncoder(object):
         >>> groebner_basis([p], heuristic = False)==groebner_basis(e.polynomial_clauses(p), heuristic = False)
         True
         """
+
         def product(l):
             res = l[0]
             for p in l[1:]:
-                res = res*p
-            #please care about the order of these multiplications for performance
+                res = res * p
+            # please care about the order of these multiplications for
+            # performance
             return res
-        return [product([variable + value for (variable, value) in b.iteritems()]) 
-            for b in self.clauses(f)]
+        return [product([variable + value for (variable, value)
+                         in b.iteritems()]) for b in self.clauses(f)]
 
     def to_dimacs_index(self, v):
-        return v.index()+1
-        
+        return v.index() + 1
+
     def dimacs_encode_clause(self, c):
         def get_sign(val):
-            if value == 1: 
+            if value == 1:
                 return 1
             return -1
-            
+
         items = sorted(c.iteritems(), reverse=True)
         return " ".join(
-        [str(v) for v in 
+        [str(v) for v in
             [
-            get_sign(value)*self.to_dimacs_index(variable) 
-            for (variable, value) in items]+[0]])
-            
+            get_sign(value) * self.to_dimacs_index(variable)
+            for (variable, value) in items] + [0]])
+
     def dimacs_encode_polynomial(self, p):
         """
          >>> from polybori import *
@@ -141,7 +149,7 @@ class CNFEncoder(object):
          ['1 2 -3 0', '1 -2 3 0', '-1 -2 -3 0', '-1 2 3 0']
             """
         clauses = self.clauses(p)
-        res=[]
+        res = []
         for c in clauses:
             res.append(self.dimacs_encode_clause(c))
         return res
@@ -158,7 +166,8 @@ class CNFEncoder(object):
         >>> e.dimacs_cnf([r.variable(0)*r.variable(1)*r.variable(2), r.variable(1)+r.variable(0)])
         'c cnf generated by PolyBoRi\np cnf 3 3\n-1 -2 -3 0\n-1 2 0\n1 -2 0'
         """
-        clauses_list = [c for p in polynomial_system for c in self.dimacs_encode_polynomial(p)]
+        clauses_list = [c for p in polynomial_system for c in self.
+            dimacs_encode_polynomial(p)]
         res = ["c cnf generated by PolyBoRi"]
         r = polynomial_system[0].ring()
         n_variables = r.n_variables()
@@ -166,8 +175,11 @@ class CNFEncoder(object):
         for c in clauses_list:
             res.append(c)
         return "\n".join(res)
+
+
 class CryptoMiniSatEncoder(CNFEncoder):
-    group_counter=0
+    group_counter = 0
+
     def dimacs_encode_polynomial(self, p):
         r"""
          >>> from polybori import *
@@ -184,23 +196,24 @@ class CryptoMiniSatEncoder(CNFEncoder):
          >>> e.dimacs_encode_polynomial(p+1)
          ['x1 2 -3 0\nc g 2 x + y + z + 1']
             """
-        if p.deg()!=1 or len(p)<=1:
+        if p.deg() != 1 or len(p) <= 1:
             res = super(CryptoMiniSatEncoder, self).dimacs_encode_polynomial(p)
         else:
-            
+
             if p.has_constant_part():
                 invert_last = True
             else:
                 invert_last = False
-            variables=list(p.vars_as_monomial().variables())
+            variables = list(p.vars_as_monomial().variables())
             indices = [self.to_dimacs_index(v) for v in variables]
             if invert_last:
-                indices[-1]=-indices[-1]
+                indices[-1] = -indices[-1]
             indices.append(0)
-            res = ["x"+" ".join([str(v) for v in indices])]
+            res = ["x" + " ".join([str(v) for v in indices])]
         self.group_counter = self.group_counter + 1
-        group_comment="\nc g %s %s" %(self.group_counter, str(p)[:30])
-        return [c+group_comment for c in res]
+        group_comment = "\nc g %s %s" % (self.group_counter, str(p)[:30])
+        return [c + group_comment for c in res]
+
     def dimacs_cnf(self, polynomial_system):
         r"""
             >>> from polybori import *
@@ -213,10 +226,13 @@ class CryptoMiniSatEncoder(CNFEncoder):
             >>> e.dimacs_cnf([r.variable(0)*r.variable(1)*r.variable(2), r.variable(1)+r.variable(0)])
             'c cnf generated by PolyBoRi\np cnf 3 2\n-1 -2 -3 0\nc g 3 x*y*z\nx1 2 0\nc g 4 x + y\nc v 1 x\nc v 2 y\nc v 3 z'
             """
-        uv=list(used_vars_set(polynomial_system).variables())
-        res=super(CryptoMiniSatEncoder, self).dimacs_cnf(polynomial_system)
-        res=res+"\n"+"\n".join(["c v %s %s"% (self.to_dimacs_index(v), v) for v in uv])
+        uv = list(used_vars_set(polynomial_system).variables())
+        res = super(CryptoMiniSatEncoder, self).dimacs_cnf(polynomial_system)
+        res = res + "\n" + "\n".join(["c v %s %s" % (self.to_dimacs_index(v),
+            v) for v in uv])
         return res
+
+
 def _test():
     import doctest
     doctest.testmod()

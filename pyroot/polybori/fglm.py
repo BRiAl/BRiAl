@@ -1,21 +1,24 @@
 if __name__ == "__main__":
-    import os, sys
+    import os
+    import sys
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir))
-    
+
+
     def _test():
         import doctest
         doctest.testmod()
 
-
-from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector,\
+from polybori.PyPolyBoRi import BooleSet, Polynomial, BoolePolynomialVector, \
     FGLMStrategy, Monomial, Ring
 
 from polybori.blocks import declare_ring
 
+
 def _fglm(I, from_ring, to_ring):
     """Unchecked variant of fglm"""
-    vec=BoolePolynomialVector(I)
-    return FGLMStrategy(from_ring,to_ring,vec).main()
+    vec = BoolePolynomialVector(I)
+    return FGLMStrategy(from_ring, to_ring, vec).main()
+
 
 def fglm(I, from_ring, to_ring):
     """
@@ -36,7 +39,8 @@ def fglm(I, from_ring, to_ring):
         if poly.ring().id() != from_ring.id():
             raise ValueError, "Ideal I must be from the first ring argument"
     return _fglm(I, from_ring, to_ring)
-    
+
+
 def vars_real_divisors(monomial, monomial_set):
     """
     returns all elements of of monomial_set, which result multiplied by a variable in monomial.
@@ -49,7 +53,9 @@ def vars_real_divisors(monomial, monomial_set):
     >>> vars_real_divisors(x(1)*x(2)*x(3),b)
     {{x(1),x(2)}}
     """
-    return BooleSet(Polynomial(monomial_set.divisors_of(monomial)).graded_part(monomial.deg()-1))
+    return BooleSet(Polynomial(monomial_set.divisors_of(monomial)). \
+        graded_part(monomial.deg() - 1))
+
 
 def m_k_plus_one(completed_elements, variables):
     """ calculates $m_{k+1}$ from the FGLM algorithm as described in Wichmanns diploma thesis
@@ -66,7 +72,8 @@ def m_k_plus_one(completed_elements, variables):
     >>> m_k_plus_one(r2(s).set(),r2(variables).set())
     x(1)*x(3)
     """
-    return sorted(completed_elements.cartesian_product(variables).diff(completed_elements))[0]
+    return sorted(completed_elements.cartesian_product(variables).diff(
+        completed_elements))[0]
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
-if __name__=='__main__':
+if __name__ == '__main__':
     from sys import path as search_path
-    from os import path as file_path   
+    from os import path as file_path
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
 
 
@@ -17,6 +17,7 @@ from polybori.PyPolyBoRi import Ring, VariableFactory, MonomialFactory
 from polybori.PyPolyBoRi import PolynomialFactory, SetFactory
 from polybori.PyPolyBoRi import Variable, Monomial, Polynomial, BooleSet
 import polybori
+
 
 class FactoryContext(object):
     """Temporarily exchange the constructor of a given type with a compatible
@@ -35,12 +36,14 @@ class FactoryContext(object):
     ...     print "caught expected exception"
     caught expected exception
     """
+
     def __init__(self, original, factory):
         self.original = original
         self.factory = factory
 
     def __enter__(self):
         self.fallback = self.original.__init__
+
         def func(orig, *args):
             try:
                 self.fallback(orig, self.factory(*args))
@@ -52,7 +55,8 @@ class FactoryContext(object):
 
     def __exit__(self, type, value, traceback):
         self.original.__init__ = self.fallback
-        return False       
+        return False
+
 
 class RingContext(object):
     """Temporarily fix the ring for constructors of some ring-dependent types
@@ -73,6 +77,7 @@ class RingContext(object):
     ...     print "caught expected exception"
     caught expected exception
     """
+
     def __init__(self, ring):
         self.contexts = (FactoryContext(Variable, VariableFactory(ring)),
                          FactoryContext(Monomial, MonomialFactory(ring)),
@@ -91,7 +96,6 @@ class RingContext(object):
         return result
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     import doctest
     doctest.testmod()
-

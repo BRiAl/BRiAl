@@ -1,12 +1,12 @@
 import os
 from sys import maxint
 _proc_status = '/proc/%d/status' % os.getpid()
-
 #_scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
 #          'KB': 1024.0, 'MB': 1024.0*1024.0}
 
 _scale = {'kB': 1, 'mB': 1024, 'gB': 1024 * 1024,
           'KB': 1, 'MB': 1024, 'GB': 1024 * 1024}
+
 
 def _VmB(VmKey):
     '''Private.
@@ -28,6 +28,7 @@ def _VmB(VmKey):
   #  return float(v[1]) * _scale[v[2]]
     return int(v[1]) * _scale[v[2]]
 
+
 def memory(since=0):
     '''Return memory usage in kilobytes.
     '''
@@ -39,22 +40,23 @@ def resident(since=0):
     '''
     return _VmB('VmRSS:') - since
 
+
 def memorypeak(since=0):
     '''Return memory usage peak in kilobytes.
     '''
     try:
         return _VmB('VmPeak:') - since
     except:
-        return float('nan') # old Linux?
+        return float('nan')  # old Linux?
 
 
 def residentpeak(since=0):
     '''Return resident memory usage peak in kilobytes.
     '''
     try:
-        return _VmB('VmHWM:')  - since
+        return _VmB('VmHWM:') - since
     except:
-        return float('nan')  # old Linux?    
+        return float('nan')  # old Linux?
 
 
 def stacksize(since=0):

@@ -1,4 +1,4 @@
-"""The PolyBoRi package implements a framework for computations with Polynomials in Boolean Ring. 
+"""The PolyBoRi package implements a framework for computations with Polynomials in Boolean Ring.
 
 The core of PolyBoRi is a C++ library, which provides high-level data types for Boolean polynomials and monomials,
 exponent vectors, as well as for the underlying polynomial rings and subsets of the powerset of the Boolean variables.
@@ -13,23 +13,22 @@ AUTHOR:
     The PolyBoRi Team, 2007-2011
 
 REFERENCES:
-M. Brickenstein, A. Dreyer, G. Greuel, M. Wedler, O. Wienand, 
-New developments in the theory of Groebner bases and applications 
+M. Brickenstein, A. Dreyer, G. Greuel, M. Wedler, O. Wienand,
+New developments in the theory of Groebner bases and applications
 to formal Verification,  Preprint at http://arxiv.org/abs/0801.1177
 
-M. Brickenstein, A. Dreyer, PolyBoRi: 
-A Groebner Basis Framework for Boolean Polynomials, 
+M. Brickenstein, A. Dreyer, PolyBoRi:
+A Groebner Basis Framework for Boolean Polynomials,
 Reports of Fraunhofer ITWM, No. 122, Kaiserslautern, Germany, 2007.
 http://www.itwm.fraunhofer.de/zentral/download/berichte/bericht122.pdf
 
-M. Brickenstein, A. Dreyer, PolyBoRi: 
+M. Brickenstein, A. Dreyer, PolyBoRi:
 A framework for Groebner basis computations with Boolean polynomials,
-Electronic Proceedings of the MEGA 2007 - Effective Methods in Algebraic Geometry, Strobl, Austria, June 2007. 
+Electronic Proceedings of the MEGA 2007 - Effective Methods in Algebraic Geometry, Strobl, Austria, June 2007.
 http://www.ricam.oeaw.ac.at/mega2007/electronic/electronic.html
 """
 
 from polybori.PyPolyBoRi import *
-
 
 # Get all-inclusive groebner routine
 from polybori.gbcore import groebner_basis
@@ -42,5 +41,5 @@ from polybori.gbrefs import load_file
 from polybori.specialsets import *
 
 
-def plist(a,b):
-    return [a,b]
+def plist(a, b):
+    return [a, b]

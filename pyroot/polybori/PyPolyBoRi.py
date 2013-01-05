@@ -13,12 +13,12 @@ AUTHOR:
             Examples:
 
             >>> from polybori.frontend import *
-            >>> r=declare_ring(["x0","x1","x2","y0","y1","y2"], globals())   
-            >>> x0>x1                                       
+            >>> r=declare_ring(["x0","x1","x2","y0","y1","y2"], globals())
+            >>> x0>x1
             True
             >>> x0>x1*x2
             True
-            >>> y0>y1                                       
+            >>> y0>y1
             True
             >>> y0>y1*y2
             True
@@ -80,22 +80,25 @@ except:
 if _sageify:
     import weakref
 
+
     class OrderCode:
         pass
 
     OrderCode.__dict__ = order_dict
     OrderCode.__module__ = __name__
 
+
     def Ring(n, order='lp', names=None, blocks=[]):
 
         pbnames = names
         if pbnames is None:
-            pbnames = ['x(' + str(idx)+ ')' for idx in xrange(n)]
+            pbnames = ['x(' + str(idx) + ')' for idx in xrange(n)]
         order = TermOrder_from_pb_order(n, order, blocks)
-        R =  BooleanPolynomialRing(n, names=pbnames, order=order)
+        R = BooleanPolynomialRing(n, names=pbnames, order=order)
         return R
 
     BoolePolynomialVector = BooleanPolynomialVector
+
 
     #todo: PolyBoRi's original interface uses its WeakRingPtr here
     def WeakRingRef(ring):
@@ -106,33 +109,37 @@ if _sageify:
     Variable = VariableFactory()
 
 
-else: # import Polybori's original interface
+else:  # import Polybori's original interface
     from sys import modules
     from itertools import chain
     import re
     import warnings
-    compatibility_mode=False
-    # First try, whether PyPolyBoRi is already in modules (e.g. static profiling)
+    compatibility_mode = False
+    # First try, whether PyPolyBoRi is already in modules (e.g. static
+    # profiling)
     try:
         pb = modules["PyPolyBoRi"]
         for k in dir(pb):
-            globals()[k]=getattr(pb,k)   
+            globals()[k] = getattr(pb, k)
     except:
         from polybori.dynamic.PyPolyBoRi import *
 
+
     def replace_init_proc(cls):
-        old_init=cls.__init__
-        def init(self,iteratable=None):
+        old_init = cls.__init__
+
+        def init(self, iteratable=None):
             old_init(self)
             if iteratable:
                 for item in iteratable:
                     self.append(item)
-        cls.__init__=init
+        cls.__init__ = init
 
     replace_init_proc(BoolePolynomialVector)
     replace_init_proc(IntVector)
 
-    monomial_old_init=Monomial.__init__
+    monomial_old_init = Monomial.__init__
+
 
     def fix_monomials():
         try:
@@ -150,52 +157,55 @@ else: # import Polybori's original interface
               - sequence of variables
             """
             try:
-                monomial_old_init(self,arg)
+                monomial_old_init(self, arg)
             except:
-                items=sorted((x for x in arg),reverse=True, key=top_index)
-                prototype=Monomial(items[0])
+                items = sorted((x for x in arg), reverse=True, key=top_index)
+                prototype = Monomial(items[0])
                 for x in items[1:]:
-                    prototype*=x
+                    prototype *= x
 
-                monomial_old_init(self,prototype)
+                monomial_old_init(self, prototype)
 
-        Monomial.__init__=monomial_new_init
+        Monomial.__init__ = monomial_new_init
 
     _add_up_polynomials = add_up_polynomials
-    
+
+
     def fix_booleset(set_type):
-        booleset_old_init=set_type.__init__
-        def booleset_new_init(self,arg=None, second=None):
+        booleset_old_init = set_type.__init__
+
+        def booleset_new_init(self, arg=None, second=None):
             """
             Constructor of the class BooleSet (constructs a BooleSet from a CCuddNavigator
             arg    : of type polybori.dynamic.PyPolyBoRi.CCuddNavigator
-            second : of type polybori.dynamic.PyPolyBoRi.BooleRing 
+            second : of type polybori.dynamic.PyPolyBoRi.BooleRing
             """
             if second != None:
                 booleset_old_init(self, arg, second)
             else:
                 try:
-                    booleset_old_init(self,arg)
+                    booleset_old_init(self, arg)
                 except:
-                    s=set()
-                    v=BoolePolynomialVector()
+                    s = set()
+                    v = BoolePolynomialVector()
                     arglist = list(arg)
                     for i in arglist:
                         s.add(Monomial(i))
                     for i in s:
                         v.append(i)
-                    p = _add_up_polynomials(v, Polynomial(arglist[0].ring().zero()))
-                    booleset_old_init(self,p.set())
+                    p = _add_up_polynomials(v, Polynomial(arglist[0].ring().
+                        zero()))
+                    booleset_old_init(self, p.set())
 
         set_type.__init__ = booleset_new_init
-
 
     fix_booleset(BooleSet)
 
     for k in OrderCode.values:
-        globals()[str(OrderCode.values[k])]=OrderCode.values[k]
+        globals()[str(OrderCode.values[k])] = OrderCode.values[k]
 
     monomial_cplusplus_div = Monomial.__div__
+
 
     def monomial_python_div(self, arg):
         try:
@@ -207,24 +217,31 @@ else: # import Polybori's original interface
 
     variable_cplusplus_div = Variable.__div__
 
+
     def variable_python_div(self, arg):
         try:
-            return variable_cplusplus_div(self,arg)
+            return variable_cplusplus_div(self, arg)
         except ValueError:
             return Polynomial(0, self.ring())
 
     Variable.__div__ = variable_python_div
 
-    snake_pattern=re.compile('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
+    snake_pattern = re.compile('(((?<=[a-z])[A-Z])|([A-Z](?![A-Z]|$)))')
+
+
     def to_snake_case(s):
         return snake_pattern.sub('_\\1', s).lower().strip('_')
 
+
     def warn_snake_case(a, snaked):
-        warnings.warn("access to %s is deprecated, use %s instead" % (a, snaked), stacklevel=3)
+        warnings.warn("access to %s is deprecated, use %s instead" % (a,
+            snaked), stacklevel=3)
+
+
     def _strategy_getattr(self, a):
         if hasattr(self.reduction_strategy, a):
-            return getattr(self.reduction_strategy,a)
-        snaked=to_snake_case(a)
+            return getattr(self.reduction_strategy, a)
+        snaked = to_snake_case(a)
 
         if snaked in self.__dict__:
             warn_snake_case(a, snaked)
@@ -233,13 +250,15 @@ else: # import Polybori's original interface
             warn_snake_case(a, snaked)
             return getattr(self.reduction_strategy, snaked)
         raise AttributeError
+
+
     def _strategy_setattr(self, a, v):
         if a in self.__dict__:
-            self.__dict__[a]=v
+            self.__dict__[a] = v
             return
         if hasattr(self.reduction_strategy, a):
             return setattr(self.reduction_strategy, a, v)
-        snaked=to_snake_case(a)
+        snaked = to_snake_case(a)
         if snaked in self.__dict__:
             warn_snake_case(a, snaked)
             return setattr(self, snaked, v)
@@ -247,10 +266,11 @@ else: # import Polybori's original interface
         if hasattr(self.reduction_strategy, snaked):
             warn_snake_case(a, snaked)
             return setattr(self.reduction_strategy, snaked, v)
-        self.__dict__[a]=v
+        self.__dict__[a] = v
     if compatibility_mode:
-        GroebnerStrategy.__getattr__=_strategy_getattr
-        GroebnerStrategy.__setattr__=_strategy_setattr
+        GroebnerStrategy.__getattr__ = _strategy_getattr
+        GroebnerStrategy.__setattr__ = _strategy_setattr
+
 
     def weakringref_call(self):
         if self.is_valid():
@@ -267,7 +287,7 @@ else: # import Polybori's original interface
         except:
             _cpp_ring_init = Ring._libpolybori_init = Ring.__init__
 
-        old_ring_var=Ring.var
+        old_ring_var = Ring.var
         _cpp_set_variable_name = Ring.set_variable_name
         _cpp_append_block = Ring.append_block
         _cpp_change_ordering = Ring.change_ordering
@@ -276,10 +296,9 @@ else: # import Polybori's original interface
         _cpp_ring_clone = Ring.clone
 
         def ring_var(self, i):
-            """Deprecated; use Ring.variable(...). """ 
+            """Deprecated; use Ring.variable(...). """
             warnings.warn('Ring.var is deprectated; use Ring.variable instead')
             return old_ring_var(self, i)
-
 
         def _ring_settings(ring, names, blocks):
             for (idx, elt) in enumerate(names):
@@ -288,9 +307,8 @@ else: # import Polybori's original interface
             for elt in blocks:
                 _cpp_append_block(ring, elt)
 
-
         def _ring_init(self, first, ordering=None, names=[], blocks=[]):
-            """Ring(n, ordering, names, block) generates a new Boolean 
+            """Ring(n, ordering, names, block) generates a new Boolean
             polynomial ring with n variables, given  monomial ordering, variable
             names and block ordering blocks, if given.
             Further information/call patterns: """""" """
@@ -300,17 +318,14 @@ else: # import Polybori's original interface
                 _cpp_ring_init(self, first, ordering)
             _ring_settings(self, names, blocks)
 
-
         def _set_variable_name(self, idx, name):
             """ Deprecated; use Ring.clone(names=...). """
             warnings.warn('Ring.set_variable_name is deprectated:\
         use Ring.clone(names=...) instead')
-            return _cpp_set_variable_name(self, idx, name)    
-
-
+            return _cpp_set_variable_name(self, idx, name)
 
         def ring_var(self, i):
-            """Deprecated; use Ring.variable(...). """ 
+            """Deprecated; use Ring.variable(...). """
             warnings.warn('Ring.var is deprectated; use Ring.variable instead')
             return old_ring_var(self, i)
 
@@ -337,7 +352,7 @@ else: # import Polybori's original interface
             """Deprectated; use Ring.clone(blocks=...). """
             warnings.warn('Ring.append_block is deprecated:\
             use Ring.clone(blocks=...) instead')
-            return _cpp_append_block(self, next_block_start)    
+            return _cpp_append_block(self, next_block_start)
 
         _append_block.__doc__ += _cpp_append_block.__doc__
 
@@ -351,7 +366,7 @@ else: # import Polybori's original interface
             _set_variable_name.__doc__ += _cpp_set_variable_name.__doc__
 
         Ring.__init__ = _ring_init
-        Ring.var=ring_var
+        Ring.var = ring_var
         Ring.set_variable_name = _set_variable_name
         Ring.clone = _ring_clone
         Ring.change_ordering = _change_ordering
@@ -366,6 +381,8 @@ del _os, _sageify
 
 # Common stuff og both interfaces
 _add_up_polynomials = add_up_polynomials
+
+
 def add_up_polynomials(polys, init):
     """
     Adds up the polynomials in polys (which should be a BoolePolynomialVector or a sequence of ???
@@ -380,9 +397,7 @@ def add_up_polynomials(polys, init):
 
 _gauss_on_polys = gauss_on_polys
 
+
 def gauss_on_polys(l):
-    vec=BoolePolynomialVector(l)
+    vec = BoolePolynomialVector(l)
     return list(_gauss_on_polys(vec))
-
-
-

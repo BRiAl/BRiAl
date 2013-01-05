@@ -1,30 +1,34 @@
-if __name__=='__main__':
+if __name__ == '__main__':
     from sys import path as search_path
     from os import path as file_path
     search_path.append(file_path.join(file_path.dirname(__file__), '..'))
-    
+
 from polybori.PyPolyBoRi import Monomial, Polynomial, BooleSet, BooleConstant
 from polybori.PyPolyBoRi import Variable as VariableType
 
+
 class IntegerPolynomial(object):
     """Polynomial with positive integer coefficients"""
+
     def __init__(self, boolean_polys):
         super(IntegerPolynomial, self).__init__()
         if not isinstance(boolean_polys, dict):
-            boolean_polys=dict([(0, Polynomial(boolean_polys))])
-        self.boolean_polys=boolean_polys
+            boolean_polys = dict([(0, Polynomial(boolean_polys))])
+        self.boolean_polys = boolean_polys
+
     def __coerce__(self, other):
         #TODO handle long
-        if isinstance(other, int) and other >=0:
-            i=0
-            res=[]
-            while 2**i<=other:
-                and_=2**i & other
+        if isinstance(other, int) and other >= 0:
+            i = 0
+            res = []
+            while 2 ** i <= other:
+                and_ = 2 ** i & other
                 if and_:
                     res.append(i)
-            return (self, IntegerPolynomial(dict([(i, BooleConstant(1)) for i in res])))
-        if not isinstance(other,  IntegerPolynomial):
-            other=Polynomial(other)
+            return (self, IntegerPolynomial(dict([(i, BooleConstant(1)) for i
+                in res])))
+        if not isinstance(other, IntegerPolynomial):
+            other = Polynomial(other)
         return (self, IntegerPolynomial(dict([(0, other)])))
 
     def __add__(self, other):
@@ -42,26 +46,29 @@ class IntegerPolynomial(object):
         {1: x(2), 2: x(1)}
         """
         if not isinstance(other, IntegerPolynomial):
-            (self, other)=coerce(self, other)
-            return self+other
+            (self, other) = coerce(self, other)
+            return self + other
         assert isinstance(other, IntegerPolynomial)
-        def add_simple_poly(p,i):
-            p=Polynomial(p)
+
+        def add_simple_poly(p, i):
+            p = Polynomial(p)
             if p.is_zero():
                 return
-            res_p=Polynomial(res.get(i, Polynomial(0, p.ring())))
-            res[i]=res_p+p
+            res_p = Polynomial(res.get(i, Polynomial(0, p.ring())))
+            res[i] = res_p + p
             if res[i].is_zero():
                 del res[i]
-            inter=BooleSet(res_p).intersect(BooleSet(p))
-            add_simple_poly(inter, i+1)
+            inter = BooleSet(res_p).intersect(BooleSet(p))
+            add_simple_poly(inter, i + 1)
             return
-        res=dict(self.boolean_polys.iteritems())
-        for (k,p) in other.boolean_polys.iteritems():
-            add_simple_poly(p=p,i=k)
+        res = dict(self.boolean_polys.iteritems())
+        for (k, p) in other.boolean_polys.iteritems():
+            add_simple_poly(p=p, i=k)
         return IntegerPolynomial(res)
+
     def __unicode__(self):
         return unicode(self.boolean_polys)
+
     def __repr__(self):
         return unicode(self)
 
