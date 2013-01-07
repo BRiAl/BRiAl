@@ -1,0 +1,13 @@
+[Desktop Entry]
+Categories=Education;Science;Math
+Comment=PolyBoRi GUI
+Exec=PolyGUI
+GenericName=Boolean Groebner Basis System
+Icon=PolyGUI
+MimeType=
+Name=PolyGUI
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application

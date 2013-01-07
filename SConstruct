@@ -346,6 +346,7 @@ def setup_env(defaultenv):
              '$INSTALLDIR/doc')
     opts.Add('MANDIR', 'Man-pages installation directory',
              '$PREFIX/man')
+    opts.Add('ICONDIR', 'Icon installation directory', '$PREFIX/share/pixmaps')
     opts.Add('PYINSTALLPREFIX',
              'python modules directory (default is built-in site)', '$PYTHONSITE')
 
@@ -438,6 +439,10 @@ def setup_env(defaultenv):
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
     opts.Add('PKGCONFIGPATH', 
              "Write settings to pkg-config file in path, if given", '')
+
+    opts.Add('DESKTOPPATH', 
+             "Generate .desktop file in given path, if given", '')
+
     opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
 
 
@@ -1871,7 +1876,14 @@ Libs: %s
         env.AlwaysBuild(pcfiles)
         env.Alias('install', pcfiles)
 
-    
+    desktoppath = env['DESKTOPPATH']
+    if desktoppath:
+        desktopfiles = [env.Install(desktoppath, GUIPath('PolyGUI.desktop')),
+                        env.Install(env['ICONDIR'], GUIPath('PolyGUI.xpm'))]
+
+        env.AlwaysBuild(desktopfiles)
+        env.Alias('install', desktopfiles)
+
 
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
