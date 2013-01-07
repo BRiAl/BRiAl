@@ -1160,7 +1160,7 @@ documentable_python_modules = [PyRootPath('polybori', f)
                                heuristics.py gbcore.py interpolate.py
                                interred.py ncf.py partial.py simplebb.py
                                PyPolyBoRi.py __init__.py dynamic/__init__.py""")
-                               ] 
+                               ]
 
 
 # Currently all python modules are at place
@@ -1284,7 +1284,9 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
                                source = documentable_python_modules)
 
         env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
-                  glob(PyRootPath('polybori/dynamic/*.pyc')))
+                  glob(PyRootPath('polybori/dynamic/*.pyc')) +
+                  glob(DocPath('python/polybori.*.html')) )
+
         env.Depends(pydocu, PyRootPath('polybori/dynamic/__init__.py'))
 #        env.Ignore(pydocu, dynamic_modules)
     #bld=Builder("cd")
@@ -1598,6 +1600,9 @@ else:
     
 # Clean, even, if L2H/TexToHt are not available anymore
 env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
+env.Clean(DocPath('tutorial'),
+          [glob(DocPath('tutorial/tutorial' + sfx)) for sfx 
+           in Split("*.html .4ct .aux .4tc .css .dvi .idv .l*g .tmp .xref")])
 
 documastersubdirs = "tutorial/tutorial python"
 if HAVE_DOXYGEN:
