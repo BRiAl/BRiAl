@@ -407,7 +407,7 @@ def setup_env(defaultenv):
 
     opts.Add('SHLIBVERSIONSUFFIX',
              'Shared libraries suffix for library versioning.',
-             '-' + pboriversion +'.' + pborirelease +
+             '-' + pboriversion +
              defaultenv['SHLIBSUFFIX'] + '.$LIBRARY_VERSION')
 
 
@@ -432,7 +432,8 @@ def setup_env(defaultenv):
             if var != "LIBSUFFIX":
                 print "Variable", var, "not in default environment!"
 
-    opts.Add('LIBRARY_VERSION', "libtool-style library version", '0.0.0')
+    opts.Add('LIBRARY_VERSION', "libtool-style library version", 
+             pborirelease + '.0.0')
 
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
     opts.Add('PKGCONFIGPATH', 
@@ -1859,10 +1860,12 @@ Libs: %s
             return None
 
         pcfiles = [env.Command(path.join(pkgconfigdirname,
-                                         "polybori-groebner.pc"),
+                                         "polybori-groebner-" + pboriversion +
+                                         ".pc"),
                                libgbShared, build_pcfile),
                    env.Command(path.join(pkgconfigdirname,
-                                         "polybori.pc"), libpbShared, build_pcfile)
+                                         "polybori-" + pboriversion + ".pc"),
+                               libpbShared, build_pcfile)
                    ]
 
         env.AlwaysBuild(pcfiles)
