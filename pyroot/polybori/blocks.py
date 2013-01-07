@@ -70,8 +70,8 @@ class AlternatingBlock(object):
             for n in var_names:
                 names.append(n + "(" + str(i) + ")")
         self.indices = indices
-    self.index2pos = dict([(v, k) for (k, v) in enumerate(indices)])
-    self.names = names
+        self.index2pos = dict([(v, k) for (k, v) in enumerate(indices)])
+        self.names = names
 
     def __len__(self):
         return self.size_per_variable * len(self.var_names)
