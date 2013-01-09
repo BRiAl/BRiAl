@@ -1,2 +1,2 @@
-#!/usr/bin/env sh
-python${0##*ipbori} ${0%${0##*ipbori}} $@
+#!/bin/sh
+python${0##*ipbori} ${0%${0##*ipbori}} "$@"
