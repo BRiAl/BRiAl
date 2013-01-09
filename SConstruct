@@ -904,7 +904,7 @@ else: # when cleaning
  
 # end of not cleaning
 
-env.Clean('.',  glob("config.log") + glob(".scon*") + \
+env.Clean('.',  ['build'] + glob("config.log") + glob(".scon*") + \
           glob(PBPath('*' + env['LIBSUFFIX'])) + \
           glob(GBPath('*' + env['LIBSUFFIX'])) + \
           glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
