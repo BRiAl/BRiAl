@@ -610,6 +610,7 @@ class PythonConfig(object):
 
         self.python = python_executable
         self.version = querycmd("get_python_version()")
+        self.major = self.version.split('.')[0]
         self.sitedir = querycmd("get_python_lib()")
         self.libdir = querycmd("get_config_vars()['LIBDIR']")
         self.incdir = querycmd("get_python_inc()")
@@ -1743,7 +1744,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['GUIPYPREFIX'] = env.relpath(InstPath(GUIPath()),
                                      '$PYINSTALLPREFIX')
     
-    for instfile in [ IPBPath('ipbori') ]:
+    for instfile in [ IPBPath(fname) for fname in ['ipbori', 'ipbori2'] ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
     for instfile in [ GUIPath('PolyGUI') ]:
@@ -1813,8 +1814,11 @@ if 'install' in COMMAND_LINE_TARGETS:
                                           '$PYINSTALLPREFIX')       
 
     # Symlink from executable into bin directory
-    ipboribin = env.SymLink(InstExecPath('ipbori'),
-                            InstPath(IPBPath('ipbori')))
+    ipboribin = [env.SymLink(InstExecPath('ipbori' + sfx),
+                             InstPath(IPBPath('ipbori' + sfx)))
+                 for sfx in ['', pyconf.major] 
+                 ]+ [ env.SymLink(InstExecPath('ipbori' + pyconf.version),
+                                  InstExecPath('ipbori' + pyconf.major)) ]
 
 
     guibin = env.SymLink(InstExecPath('PolyGUI'),
