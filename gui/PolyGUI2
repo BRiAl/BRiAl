@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+python${0##*PolyGUI} ${0%${0##*PolyGUI}} $@

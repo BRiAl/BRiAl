@@ -1744,10 +1744,10 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['GUIPYPREFIX'] = env.relpath(InstPath(GUIPath()),
                                      '$PYINSTALLPREFIX')
     
-    for instfile in [ IPBPath(fname) for fname in ['ipbori', 'ipbori2'] ]:
+    for instfile in [ IPBPath('ipbori' + sfx) for sfx in ['', pyconf.major] ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
-    for instfile in [ GUIPath('PolyGUI') ]:
+    for instfile in [ GUIPath('PolyGUI'+ sfx) for sfx in ['', pyconf.major] ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
         
     for instfile in [GUIPath('cnf2ideal.py')]:
@@ -1821,8 +1821,11 @@ if 'install' in COMMAND_LINE_TARGETS:
                                   InstExecPath('ipbori' + pyconf.major)) ]
 
 
-    guibin = env.SymLink(InstExecPath('PolyGUI'),
-                         InstPath(GUIPath('PolyGUI')))
+    guibin = [env.SymLink(InstExecPath('PolyGUI' + sfx),
+                          InstPath(GUIPath('PolyGUI' + sfx)))
+              for sfx in ['', pyconf.major] 
+              ]+ [ env.SymLink(InstExecPath('PolyGUI' + pyconf.version),
+                               InstExecPath('PolyGUI' + pyconf.major)) ]
     
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
