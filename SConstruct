@@ -901,7 +901,7 @@ else: # when cleaning
     for elt in [PyRootPath('polybori/dynamic')]:
         if os.path.exists(elt) and os.path.islink(elt):
             os.remove(elt)
- 
+
 # end of not cleaning
 
 env.Clean('.',  ['build'] + glob("config.log") + glob(".scon*") + \
@@ -909,6 +909,9 @@ env.Clean('.',  ['build'] + glob("config.log") + glob(".scon*") + \
           glob(GBPath('*' + env['LIBSUFFIX'])) + \
           glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
 
+for root, dirs, files in os.walk('build'):
+    env.Clean(root, [path.join(root, elt) for elt in dirs] + files)
+env.Alias('build', env.Dir('build'));
 
 have_pydoc = env['HAVE_PYDOC']
 
