@@ -1922,3 +1922,4 @@ if 'dump' in COMMAND_LINE_TARGETS:
 env.Alias('dump', 'SConstruct')
 env.Alias('dump_default', 'SConstruct')
 
+env.Clean('.', '.sconsign.dblite')
