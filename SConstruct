@@ -910,7 +910,15 @@ env.Clean('.',  ['build'] + glob("config.log") + glob(".sconf*") + \
           glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
 
 for root, dirs, files in os.walk('build'):
-    env.Clean(root, [path.join(root, elt) for elt in dirs] + files)
+
+    for elt in [path.join(root, dname) for dname in dirs + files]:
+        # Work around bug in older SCons (didn't remove symlinks to files)
+        if scons_version() < ['1','3','0'] and os.path.islink(elt) \
+                and env.GetOption('clean'):
+            os.remove(elt)
+        else:
+            env.Clean(root, elt)
+
 env.Alias('build', env.Dir('build'));
 
 have_pydoc = env['HAVE_PYDOC']
@@ -1905,6 +1913,9 @@ Libs: %s
 
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
+
+Default(env.SymLink(IPBPath('ipbori' + pyconf.version),
+                    IPBPath('ipbori' + pyconf.major)))
 
 
 Default(BuildPath())
