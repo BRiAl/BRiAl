@@ -1,2 +1,9 @@
 #!/bin/sh
-python${0##*PolyGUI} ${0%${0##*PolyGUI}} "$@"
+VER=${0##*PolyGUI}
+if [ "$1" = '-d' ];  then
+TMP=${2##*PolyGUI}
+VER=${TMP%%.*}
+shift
+shift
+fi
+python${VER} ${0%%[0-9]*} "$@"

@@ -1,2 +1,2 @@
 #!/bin/sh
-python${0##*ipbori} ${0%${0##*ipbori}} "$@"
+python${0##*ipbori} ${0%%[0-9]*} "$@"

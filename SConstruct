@@ -1889,7 +1889,14 @@ Libs: %s
     desktoppath = env['DESKTOPPATH']
     if desktoppath:
         desktopfiles = [env.Install(desktoppath, GUIPath('PolyGUI.desktop')),
-                        env.Install(env['ICONDIR'], GUIPath('PolyGUI.xpm'))]
+                        env.Install(env['ICONDIR'], GUIPath('PolyGUI.xpm')),
+                        env.SymLink(path.join(desktoppath, 'PolyGUI' + 
+                                              pyconf.major + '.desktop'),
+                                    path.join(desktoppath, 'PolyGUI.desktop')),
+                        env.SymLink(path.join(desktoppath, 'PolyGUI' + 
+                                              pyconf.version + '.desktop'),
+                                    path.join(desktoppath, 'PolyGUI.desktop'))
+                        ]
 
         env.AlwaysBuild(desktopfiles)
         env.Alias('install', desktopfiles)

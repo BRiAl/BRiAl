@@ -1,7 +1,7 @@
 [Desktop Entry]
 Categories=Education;Science;Math
 Comment=PolyBoRi GUI
-Exec=PolyGUI
+Exec=PolyGUI2 -d %k
 GenericName=Boolean Groebner Basis System
 Icon=PolyGUI
 MimeType=
