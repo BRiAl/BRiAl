@@ -1,8 +1,8 @@
 import sys
 from pydoc import *
 import os
-from os import sep,chdir
-from os.path import abspath
+from os import sep, chdir, makedirs
+from os.path import abspath, exists
 
 # work around for python 2.5 on SAGE; deactivated, should work now on SAGE
 ## def writedocs(dir, pkgpath='', done=None):
@@ -26,7 +26,13 @@ from os.path import abspath
 
 pyroot=sys.argv[1]
 pyroot=abspath(pyroot)
-chdir("doc/python")
+docpath=sys.argv[2]
+if not docpath:
+    docpath='doc/python'
+if not exists(docpath):
+    makedirs(docpath)
+
+chdir(docpath)
 sys.path.append(pyroot)
 try:
     import polybori

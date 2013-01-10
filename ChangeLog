@@ -1,8 +1,15 @@
+* library version naming scheme defaults to libpolybori*.x.y.so.z.0.0 now
+* fixend broken PolyGUI
 * new option groebner_basis(..., fglm_bound=40000)
 * improved boost libraries detection
 * skip python docs for external python extension
 * removed spaces from arguments for shell_output to fix SConstruct on darwin
 * added header polybori/embed.h for easy python/polybori integration
+* support pkgconfig and .desktop files
+* ipbori2, ipbori2.*, PolyGUI2, PolyGUI2.x for supporting multiple python  
+* side-by-side installation of python module documentation for multiple python
+* LIBRARY_VERSION customizable
+* fixed boost::python::range disambiguity by explicitly using namespace
 
 Release Name: 0.8.2
 * Dependencies of optional rpm package gui fixed

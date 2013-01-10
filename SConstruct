@@ -904,7 +904,7 @@ else: # when cleaning
 
 # end of not cleaning
 
-env.Clean('.',  ['build'] + glob("config.log") + glob(".scon*") + \
+env.Clean('.',  ['build'] + glob("config.log") + glob(".sconf*") + \
           glob(PBPath('*' + env['LIBSUFFIX'])) + \
           glob(GBPath('*' + env['LIBSUFFIX'])) + \
           glob('*' + env['SHLIBSUFFIX'] + "*") + glob('*.pyc')  )
@@ -1265,6 +1265,8 @@ elif extern_python_ext:
 else:
     print "no python extension"
 
+docpybase = path.basename(env['PYTHON'])
+DocPyPath = PathJoiner(DocPath(docpybase))
 if HAVE_PYTHON_EXTENSION or extern_python_ext:
     # Generating python documentation
     def pypb_emitter(target,source,env):
@@ -1280,7 +1282,8 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
 
         return (target, source)
 
-    bld = Builder(action = "$PYTHON doc/python/genpythondoc.py " + pyroot,
+    bld = Builder(action = "$PYTHON doc/genpythondoc.py " + pyroot +
+                  " $TARGET.dir",
                   emitter = pypb_emitter)
 
     # Add the new Builder to the list of builders
@@ -1289,19 +1292,19 @@ if HAVE_PYTHON_EXTENSION or extern_python_ext:
     # Generate foo.vds from foo.txt using mk_vds
     #for f in Split("ll.py nf.py gbrefs.py blocks.py PyPolyBoRi.so specialsets.py"):
     if have_pydoc:
-        pydocu = env.PYTHONDOC(target=[DocPath('python/polybori.html'),
-                                       DocPath('python/polybori.dynamic.html')],
+        pydocu = env.PYTHONDOC(target=[DocPyPath('polybori.html'),
+                                       DocPyPath('polybori.dynamic.html')],
                                source = documentable_python_modules)
 
-        env.Clean(pydocu, glob(PyRootPath('polybori/*.pyc')) +
-                  glob(PyRootPath('polybori/dynamic/*.pyc')) +
-                  glob(DocPath('python/polybori.*.html')) )
+        env.Clean(pydocu,
+                  glob(DocPath('python*')) + 
+                  glob(DocPath('python*/polybori*.html')) )
 
         env.Depends(pydocu, PyRootPath('polybori/dynamic/__init__.py'))
-#        env.Ignore(pydocu, dynamic_modules)
-    #bld=Builder("cd")
+        env.Alias('doc/python', pydocu)
 
-    
+env.Clean(PyRootPath('polybori'), glob(PyRootPath('polybori/*.pyc')) +
+          glob(PyRootPath('polybori/dynamic/*.pyc')))
 
 # Source distribution archive generation
 env.Append(DISTTAR_EXCLUDEEXTS = Split(""".o .os .so .a .dll .cache .pyc
@@ -1510,7 +1513,6 @@ def docu_master(target, source, env):
 
     basefiles = ['index.html', 'polybori.html', 'tutorial.html']
     basesfound = []
-    
     for item in source:
         if os.path.isdir(str(item)):
             for root, dirs, files in os.walk(str(item)):
@@ -1612,15 +1614,13 @@ else:
 env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
 env.Clean(DocPath('tutorial'),
           [glob(DocPath('tutorial/tutorial' + sfx)) for sfx 
-           in Split("*.html .4ct .aux .4tc .css .dvi .idv .l*g .tmp .xref")])
+           in Split("*.html .4* .aux .css .dvi .idv .l*g .tmp .xref")])
 
-documastersubdirs = "tutorial/tutorial python"
-if HAVE_DOXYGEN:
-    documastersubdirs += " c++"
+documastersubdirs = ["tutorial/tutorial", "c++"] + list(set([docpybase] + [
+                     path.basename(elt) for elt in glob("doc/python*")]))
 
 env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
-    env.Dir(DocPath(srcs)) for srcs in Split(documastersubdirs) ] + [
-    env.Dir('Cudd/cudd/doc')])  
+    env.Dir(DocPath(srcs)) for srcs in documastersubdirs ]) 
 
 pbrpmname = pboriname + '-' + pboriversion + "." + pborirelease 
 
@@ -1769,15 +1769,15 @@ if 'install' in COMMAND_LINE_TARGETS:
     htmlpatterns = Split("*.html *.css *.png *gif *.jpg")
 
     # Copy python documentation
-    pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath('python')),
-                               env.Dir(DocPath('python')))
+    pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath(docpybase)),
+                               env.Dir(DocPyPath()))
 
     env.Depends(pydocuinst, pydocu)
     env.Clean(pydocuinst, pydocuinst)
 
     # Copy Cudd documentation
-    CopyAll(InstDocPath('cudd'), 'Cudd/cudd/doc', env) 
-    CopyAll(InstDocPath('cudd/icons'), 'Cudd/cudd/doc/icons', env)
+    #CopyAll(InstDocPath('cudd'), 'Cudd/cudd/doc', env) 
+    #CopyAll(InstDocPath('cudd/icons'), 'Cudd/cudd/doc/icons', env)
 
     # Copy Tutorial
     if have_l2h or have_t4h :
@@ -1786,10 +1786,11 @@ if 'install' in COMMAND_LINE_TARGETS:
                     COPYALL_PATTERNS = htmlpatterns)
 
     # Generate html master
+    instdocumastersubdirs = ["tutorial", "c++"] + list(set([docpybase] + [
+                             path.basename(elt) for elt in glob("doc/python*")] ))
     FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
                                     [DocPath('index.html.in')] + [ 
-        env.Dir(InstDocPath(srcs)) for srcs in Split("""tutorial python
-        c++ cudd""") ] ))
+        env.Dir(InstDocPath(srcs)) for srcs in instdocumastersubdirs]))
 
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
