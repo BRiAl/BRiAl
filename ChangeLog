@@ -1,3 +1,4 @@
+Release Name: 0.8.3
 * library version naming scheme defaults to libpolybori*.x.y.so.z.0.0 now
 * fixend broken PolyGUI
 * new option groebner_basis(..., fglm_bound=40000)
@@ -10,7 +11,9 @@
 * side-by-side installation of python module documentation for multiple python
 * LIBRARY_VERSION customizable
 * fixed boost::python::range disambiguity by explicitly using namespace
-
+* added target docs and install-docs for building and installing platform-
+  independent documentation (DOCS=False to suppress them on build and install)
+	
 Release Name: 0.8.2
 * Dependencies of optional rpm package gui fixed
 * Fixed bug which prevented self-testing of polybori.plot

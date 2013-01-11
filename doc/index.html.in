@@ -33,21 +33,85 @@ ipython Documentation</a></p>
 
 <h2>Further Reading</h2>
 See the following references for the mathematical background of the <i>PolyBoRi</i>
-framework. 
+framework and related articles. 
  <ul>
-
-    <li>M. Brickenstein, A. Dreyer,
-      <i><i>PolyBoRi</i>: A Gr&ouml;bner Basis Framework for Boolean
-	Polynomials</i>,
+      <li>
+        Brickenstein. Michael; Dreyer, Alexander.
+        <i>Gr&ouml;bner-free normal forms for Boolean polynomials</i>,
+        Journal of Symbolic Computation, Volume 48, January 2013, pp. 37-53,
+        ISSN 0747-7171, doi: 10.1016/j.jsc.2011.04.002.
+      </li>
+      <li>
+        Brickenstein, Michael; Dreyer, Alexander.
+        <i>PolyBoRi: A framework for Gr&ouml;bner-basis computations with Boolean polynomials</i>,
+        J. Symb. Comput. 44, No. 9, 1326-1345 (2009).
+      </li>
+      <li>
+        Albrecht, Martin; Cid, Carlos. <i>Algebraic techniques in differential cryptanalysis</i>,
+        In: <i>Fast Software Encryption</i>,
+        Lecture Notes in Computer Science Volume 5665, 2009, pp 193-208 
+      </li>
+      <li>
+        Kreuzer, Martin<i>Algebraic attacks Galore!</i>
+        Groups-Complexity-Cryptology,
+        Volume 1 (2009), No. 2, 231-259.
+      </li>
+      <li>
+        Er&ouml;cal, Burcin; Stein, William.
+        <i>The Sage project: Unifying free mathematical software to create a
+          viable alternative to Magma, Maple, Mathematica and MATLAB</i>, 
+             <a href="http://www.sagemath.org">http://www.sagemath.org</a>
+      </li>
+      <li>
+        Brickenstein, Michael. <i>Slimgb: Gr&ouml;bner bases with slim polynomials</i>,
+        Rev. Mat. Complut. 23, No. 2, 453-466 (2010).
+      </li>
+      <li>
+        Brickenstein, Michael.
+        <i>Boolean Gr&ouml;bner bases. Theory, algorithms and applications</i>,
+        Berlin: Logos Verlag; Kaiserslautern: TU Kaiserslautern, Fachbereich Mathematik (Diss. 2010) (ISBN 978-3-8325-2597-2/pbk). x, 149&nbsp;p. (2010).
+      </li>
+      <li>
+        Chai, Fengjuan; Gao, Xiao-Shan; Yuan, Chunming.
+        <i>A characteristic set method for solving Boolean equations and applications in cryptanalysis of stream ciphers</i>,
+        J. Syst. Sci. Complex. 21, No. 2, 191-208 (2008).
+        
+      </li>
+      <li>
+        Eibach, Tobias; V&ouml;lkel, Gunnar; Pilz, Enrico.
+        <i>Optimising Gr&ouml;bner bases on Bivium</i>,
+        Math. Comput. Sci. 3, No. 2, 159-172 (2010).
+      </li>
+      <li>
+        Bulygin, Stanislav; Brickenstein, Michael<i>Obtaining and solving systems of equations in key variables only for the small variants of AES</i>,
+        
+        Math. Comput. Sci. 3, No. 2, 185-200 (2010).
+      </li>
+      <li>
+        Sato, Yosuke; Inoue, Shutaro; Suzuki, Akira; Nabeshima, Katsusuke;
+        Sakai, Ko.
+        <i>Boolean Gr&ouml;bner bases</i>,
+        J. Symb. Comput. 46, No. 5, 622-632 (2011).
+      </li>
+      <li>
+        
+        Albrecht, Martin; Cid, Carlos; Dullien, Thomas; Faug&egrave;re, Jean-Charles; Perret, Ludovic.
+        <i>Algebraic precomputations in differential and integral cryptanalysis. </i>,
+        Lai, Xuejia (ed.) et al., Information security and cryptology. 6th
+        international conference, Inscrypt 2010, Shanghai, China, October 20-24, 2010. Revised selected papers. Berlin: Springer (ISBN 978-3-642-21517-9/pbk). Lecture Notes in Computer Science 6584, 387-403 (2011).
+      </li>
+      <li>Brickenstein, Michael; Dreyer, Alexander.
+        <i>PolyBoRi: A Gr&ouml;bner Basis Framework for Boolean
+          Polynomials</i>,
         <a 
-         href="http://www.itwm.fhg.de/zentral/download/berichte/bericht122.pdf">
-        Reports of Fraunhofer ITWM, No. 122,
+          href="http://www.itwm.fhg.de/zentral/download/berichte/bericht122.pdf">
+          Reports of Fraunhofer ITWM, No. 122,
         </a>
         Kaiserslautern, Germany, 2007.
       </li>
-
-       <li>M. Brickenstein, A. Dreyer,
-       <i><i>PolyBoRi</i>: A framework for Gr&ouml;bner basis computations with
+      
+       <li>Brickenstein, Michael; Dreyer, Alexander.
+       <i>PolyBoRi: A framework for Gr&ouml;bner basis computations with
 	Boolean polynomials</i>,
      
         <a href="http://www.ricam.oeaw.ac.at/mega2007/openconf/electronic/electronic.html">   Electronic Proceedings of the MEGA 2007&nbsp;- Effective Methods in
@@ -55,26 +119,26 @@ framework.
                       </a>
        Strobl, Austria, June 2007.
        </li>
-       <li>M. Brickenstein,
+       <li>Brickenstein, Michael.
      
         <a href="http://www.mathematik.uni-kl.de/~zca/Reports_on_ca/35/paper_35_full.ps.gz">  
           <i>Slimgb: Gr&ouml;bner Bases with Slim Polynomials</i></a>, 
         Reports On Computer Algebra, Centre for Computer Algebra, University of         
         Kaiserslautern, Volume 25, September 2005
        </li>
-       <li>Fabio Somenzi 
+       <li>Somenzi, Fabio.
      
         <a href="http://vlsi.colorado.edu/~fabio/CUDD/">  
-          <i> CUDD: CU Decision Diagram Package Release 2.4.1</i>
-        </a>, 
+          <i> CUDD: CU Decision Diagram Package</i></a>, 
         Department of Electrical and Computer Engineering,
         University of Colorado at Boulder     
        </li>
        <li>
         Gregory V. Bard,
         <a href="http://eprint.iacr.org/2006/251.pdf">  
-          <i>Accelerating Cryptanalysis with the Method of Four Russians</i>
-        </a>, Preprint July 22, 2006.
+          <i>Accelerating Cryptanalysis with the Method of Four
+            Russians</i></a>, 
+        Preprint July 22, 2006.
        </li>
 </ul>
 
@@ -84,7 +148,7 @@ SourceForge</a></p>
 <p> <a href="http://www.itwm.fraunhofer.de/polybori.html"></p>	
 <i>PolyBoRi</i>'s project page at Fraunhofer ITWM</a>
 
-<P><img src="images/logo.png" alt="<i>PolyBoRi</i>" align="middle" border="0"></p>	
-<P> Copyright &copy; 2007-2008 The <i>PolyBoRi</i> Team</p>	
+<P><img src="images/logo.png" alt="<i>PolyBoRi</i>," align="middle" border="0"></p>	
+<P> Copyright &copy; 2007-2012 The <i>PolyBoRi</i>, Team</p>	
 </BODY>
 </HTML>

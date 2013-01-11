@@ -363,7 +363,7 @@ def setup_env(defaultenv):
                           'Assume rpm knows about M4RI', False))   
 
     opts.Add(BoolVariable('HAVE_DOXYGEN',
-                        'Generate doxygen-based documentation, if available', True))
+                        'Generate doxygen-based documentation, if available', '$DOCS'))
     opts.Add(BoolVariable('HAVE_PYTHON_EXTENSION',
                         'Build python extension, if possible', True))
 
@@ -381,7 +381,7 @@ def setup_env(defaultenv):
     opts.Add(BoolVariable('HAVE_L2H', 'Switch latex2html on/off (deprecated)', 
                           False))
     opts.Add(BoolVariable('HAVE_HEVEA', 'Switch hevea on/off (deprecated)', False))
-    opts.Add(BoolVariable('HAVE_TEX4HT', 'Switch tex4ht on/off', True))
+    opts.Add(BoolVariable('HAVE_TEX4HT', 'Switch tex4ht on/off', '$DOCS'))
 
 
     opts.Add(BoolVariable('HAVE_PYDOC', 'Switch python doc generation on/off',
@@ -445,7 +445,10 @@ def setup_env(defaultenv):
 
     opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
 
-
+    opts.Add(BoolVariable('DOCS',
+                          "Build/install platform-independent documantation",
+                          True))
+    
     opts.Add('PLATFORM', "Manually set another platform (unusual)",
              defaultenv['PLATFORM'])
 
@@ -922,6 +925,7 @@ for root, dirs, files in os.walk('build'):
 env.Alias('build', env.Dir('build'));
 
 have_pydoc = env['HAVE_PYDOC']
+# Platoform-independent stuff
 
 env['PBVERSION'] = pboriversion
 env['PBRELEASE'] = pborirelease
@@ -1110,11 +1114,14 @@ CPPPATH=env['CPPPATH']+[GBPath('include')]
 ######################################################################
 # Doxygen-based docu
 ######################################################################
-
 docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
+
 if HAVE_DOXYGEN:
-    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')], target=docutarget)
- 
+    cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')],
+                          target=docutarget)
+
+    for fl in cxxdocu: print str(fl)
+        
 env.Clean(DocPath('c++'), docutarget)
 
 ######################################################################
@@ -1273,7 +1280,7 @@ elif extern_python_ext:
 else:
     print "no python extension"
 
-docpybase = path.basename(env['PYTHON'])
+docpybase = path.basename(env.subst('$PYTHON'))
 DocPyPath = PathJoiner(DocPath(docpybase))
 if HAVE_PYTHON_EXTENSION or extern_python_ext:
     # Generating python documentation
@@ -1557,8 +1564,9 @@ def docu_emitter(target, source, env):
         TargetPath = PathJoiner(target[0].dir)
 
         for src in relsrcs:
-            FinalizeNonExecs(env.InstallAs(env.File(TargetPath(src)),
-                                           SrcPath(src)))
+            env.Depends(target,
+                        FinalizeNonExecs(env.InstallAs(env.File(TargetPath(src)),
+                                                       SrcPath(src))))
         fhandle.close()
         
         
@@ -1605,30 +1613,36 @@ env.Append(BUILDERS={'SpecBuilder': specbld,
                      'RPMBuilder': rpmbld, 'SRPMBuilder': srpmbld,
                      'DebBuilder': debbld})
 
+if have_l2h or have_t4h or HAVE_DOXYGEN:
+    version4tex = env.Command([DocPath('tutorial/versionnumber')],
+                              DocPath('tutorial/versionnumber.in'),
+                              preprocessed_substitute)
 
-version4tex = env.Command([DocPath('tutorial/versionnumber')],
-                          DocPath('tutorial/versionnumber.in'),
-                          preprocessed_substitute)
+    tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + version4tex + glob(DocPath('tutorial/*.tex'))
+    if have_l2h:
+        tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')), tutorial_srcs)
+    else:
+        if have_t4h :
+            tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
+                                   tutorial_srcs)    
 
-tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + version4tex + glob(DocPath('tutorial/*.tex'))
-if have_l2h:
-    tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')), tutorial_srcs)
-else:
-    if have_t4h :
-        tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
-                               tutorial_srcs)
+    documastersubdirs = ["tutorial/tutorial", "c++"] + [
+        path.basename(elt) for elt in glob("doc/python*")]
     
+    if docpybase not in documastersubdirs:
+        documastersubdirs += [docpybase]
+
+    env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
+        env.Dir(DocPath(srcs)) for srcs in documastersubdirs ])
+
+    # build-independent doc targets
+    env.Alias('docs', [DocPath('c++'), DocPath('tutorial')])
+
 # Clean, even, if L2H/TexToHt are not available anymore
 env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
 env.Clean(DocPath('tutorial'),
           [glob(DocPath('tutorial/tutorial' + sfx)) for sfx 
            in Split("*.html .4* .aux .css .dvi .idv .l*g .tmp .xref")])
-
-documastersubdirs = ["tutorial/tutorial", "c++"] + list(set([docpybase] + [
-                     path.basename(elt) for elt in glob("doc/python*")]))
-
-env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
-    env.Dir(DocPath(srcs)) for srcs in documastersubdirs ]) 
 
 pbrpmname = pboriname + '-' + pboriversion + "." + pborirelease 
 
@@ -1715,7 +1729,7 @@ def GeneratePyc(sources):
 
        
 # Installation precedure for end users
-if 'install' in COMMAND_LINE_TARGETS:
+if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     # Setting umask for newly generated directories
     try:
         umask = os.umask(022)
@@ -1731,6 +1745,7 @@ if 'install' in COMMAND_LINE_TARGETS:
     for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
                       InstManPath()]:
         env.Alias('install', inst_path)
+                
     env.Install(InstManPath('man1'), DocPath('man/ipbori.1'))
     env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1'))
     
@@ -1772,8 +1787,8 @@ if 'install' in COMMAND_LINE_TARGETS:
         cxxdocinst = CopyAll(InstDocPath('c++'),
                              DocPath('c++/html'), env) 
         env.Depends(cxxdocinst, cxxdocu)
-        env.Clean(cxxdocinst, cxxdocinst)
 
+        
     htmlpatterns = Split("*.html *.css *.png *gif *.jpg")
 
     # Copy python documentation
@@ -1788,17 +1803,30 @@ if 'install' in COMMAND_LINE_TARGETS:
     #CopyAll(InstDocPath('cudd/icons'), 'Cudd/cudd/doc/icons', env)
 
     # Copy Tutorial
-    if have_l2h or have_t4h :
-        env.CopyAll(env.Dir(InstDocPath('tutorial')),
-                    env.Dir(DocPath('tutorial/tutorial')),
-                    COPYALL_PATTERNS = htmlpatterns)
-
+    if have_l2h or have_t4h:
+        tutorialinst = env.CopyAll(env.Dir(InstDocPath('tutorial')),
+                                   env.Dir(DocPath('tutorial/tutorial')),
+                                   COPYALL_PATTERNS = htmlpatterns)
+        env.Depends(tutorialinst, tutorial)
+         
+        
     # Generate html master
-    instdocumastersubdirs = ["tutorial", "c++"] + list(set([docpybase] + [
-                             path.basename(elt) for elt in glob("doc/python*")] ))
-    FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
-                                    [DocPath('index.html.in')] + [ 
+    instdocumastersubdirs = ["tutorial", "c++"] +  [
+        path.basename(elt) for elt in glob("doc/python*")]
+
+    if ('install' in COMMAND_LINE_TARGETS) and \
+           (docpybase not in instdocumastersubdirs):
+        instdocumastersubdirs += [docpybase]
+        
+    instdocu = FinalizeNonExecs(env.DocuMaster(InstDocPath('index.html'),
+                                               [DocPath('index.html.in')] + [ 
         env.Dir(InstDocPath(srcs)) for srcs in instdocumastersubdirs]))
+
+    if have_l2h or have_t4h:
+        env.Depends(instdocu, tutorialinst)
+
+    if HAVE_DOXYGEN:
+        env.Depends(instdocu, cxxdocinst)
 
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
@@ -1926,7 +1954,11 @@ Type=Application
         env.AlwaysBuild(desktopfiles)
         env.Alias('install', desktopfiles)
 
+    if have_l2h or have_t4h or  HAVE_DOXYGEN:   
+        env.Alias('install', 'install-docs')
+        env.Alias('install-docs', instdocu)
 
+        
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 
@@ -1951,4 +1983,7 @@ if 'dump' in COMMAND_LINE_TARGETS:
 env.Alias('dump', 'SConstruct')
 env.Alias('dump_default', 'SConstruct')
 
+
+
+# This one last!
 env.Clean('.', '.sconsign.dblite')
