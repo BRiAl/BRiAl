@@ -1755,12 +1755,12 @@ if 'install' in COMMAND_LINE_TARGETS:
     env['GUIPYPREFIX'] = env.relpath(InstPath(GUIPath()),
                                      '$PYINSTALLPREFIX')
     
-    for instfile in [ IPBPath('ipbori' + sfx) for sfx in ['', pyconf.major] ]:
+    for instfile in [ IPBPath('ipbori')]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
 
-    for instfile in [ GUIPath('PolyGUI'+ sfx) for sfx in ['', pyconf.major] ]:
+    for instfile in [ GUIPath('PolyGUI') ]:
         FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
-        
+
     for instfile in [GUIPath('cnf2ideal.py')]:
         pyfiles += env.InstallAs(InstPath(instfile), instfile)
         
@@ -1826,18 +1826,20 @@ if 'install' in COMMAND_LINE_TARGETS:
                                           '$PYINSTALLPREFIX')       
 
     # Symlink from executable into bin directory
-    ipboribin = [env.SymLink(InstExecPath('ipbori' + sfx),
-                             InstPath(IPBPath('ipbori' + sfx)))
-                 for sfx in ['', pyconf.major] 
-                 ]+ [ env.SymLink(InstExecPath('ipbori' + pyconf.version),
-                                  InstExecPath('ipbori' + pyconf.major)) ]
+    ipboribin = env.SymLink(InstExecPath('ipbori'),
+                            InstPath(IPBPath('ipbori'))) + \
+    env.SymLink(InstExecPath('ipbori' + pyconf.major),
+                InstExecPath('ipbori')) + \
+    env.SymLink(InstExecPath('ipbori' + pyconf.version),
+                InstExecPath('ipbori'))
 
 
-    guibin = [env.SymLink(InstExecPath('PolyGUI' + sfx),
-                          InstPath(GUIPath('PolyGUI' + sfx)))
-              for sfx in ['', pyconf.major] 
-              ]+ [ env.SymLink(InstExecPath('PolyGUI' + pyconf.version),
-                               InstExecPath('PolyGUI' + pyconf.major)) ]
+    guibin = env.SymLink(InstExecPath('PolyGUI'),
+                         InstPath(GUIPath('PolyGUI'))) + \
+    env.SymLink(InstExecPath('PolyGUI' + pyconf.major),
+                InstExecPath('PolyGUI')) + \
+    env.SymLink(InstExecPath('PolyGUI' + pyconf.version),
+                InstExecPath('PolyGUI'))
     
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
@@ -1897,16 +1899,30 @@ Libs: %s
 
     desktoppath = env['DESKTOPPATH']
     if desktoppath:
-        desktopfiles = [env.Install(desktoppath, GUIPath('PolyGUI.desktop')),
-                        env.Install(env['ICONDIR'], GUIPath('PolyGUI.xpm')),
-                        env.SymLink(path.join(desktoppath, 'PolyGUI' + 
-                                              pyconf.major + '.desktop'),
-                                    path.join(desktoppath, 'PolyGUI.desktop')),
-                        env.SymLink(path.join(desktoppath, 'PolyGUI' + 
-                                              pyconf.version + '.desktop'),
-                                    path.join(desktoppath, 'PolyGUI.desktop'))
-                        ]
+        def build_desktop(target, source, env):
+            page = """[Desktop Entry]
+Categories=Education;Science;Math
+Comment=PolyBoRi GUI
+Exec=%s
+GenericName=Boolean Groebner Basis System
+Icon=PolyGUI
+MimeType=
+Name=PolyGUI
+Path=
+StartupNotify=false
+Terminal=false
+TerminalOptions=
+Type=Application
+""" % path.basename(str(source[0]))
+            open(str(target[0]), 'w').writelines(page)
+            return None
 
+        desktopfiles = [env.Command(path.join(desktoppath,
+                                              path.basename(str(elt)) + \
+                                                  '.desktop'),
+                                    elt, build_desktop)
+                        for elt in guibin ]
+        
         env.AlwaysBuild(desktopfiles)
         env.Alias('install', desktopfiles)
 
@@ -1914,9 +1930,11 @@ Libs: %s
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
 env.Alias('prepare-install', [pyroot, DocPath()])
 
-Default(env.SymLink(IPBPath('ipbori' + pyconf.version),
-                    IPBPath('ipbori' + pyconf.major)))
-
+for sfx in [pyconf.major, pyconf.version]:
+    Default(env.SymLink(IPBPath('ipbori' + sfx),
+                        IPBPath('ipbori')))
+    Default(env.SymLink(GUIPath('PolyGUI' + sfx),
+                        GUIPath('PolyGUI')))
 
 Default(BuildPath())
 

@@ -1,4 +1,9 @@
-#!/usr/bin/env python
+#!/bin/sh
+_skip_for_python='''' 
+eval 'exec python${0##*ipbori} $0 "$@" '
+'''
+del _skip_for_python
+#!python
 # 
 # @author Alexander Dreyer
 # @date 2007-10-19
@@ -9,7 +14,6 @@ This starts an interactive python-based shell -- IPython where available --
 which imports the PolyBoRi framework.
 
 """
-
 from optparse import OptionParser
 parser = OptionParser()
 
