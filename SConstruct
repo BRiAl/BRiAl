@@ -1114,13 +1114,12 @@ CPPPATH=env['CPPPATH']+[GBPath('include')]
 ######################################################################
 # Doxygen-based docu
 ######################################################################
-docutarget = [DocPath('c++', elt) for elt in Split("html latex")]
+docutarget = [DocPath('c++', elt) for elt in Split("html")]
 
 if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')],
                           target=docutarget)
 
-    for fl in cxxdocu: print str(fl)
         
 env.Clean(DocPath('c++'), docutarget)
 
