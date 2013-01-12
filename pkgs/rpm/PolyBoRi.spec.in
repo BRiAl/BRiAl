@@ -196,7 +196,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%attr(755, root, root) %{_bindir}/ipbori
+%attr(755, root, root) %{_bindir}/ipbori*
 %attr(644,root,man) %{_mandir}/man1/ipbori.1*
 %{pbori_instdir}
 %exclude %{pbori_instdir}/gui
@@ -217,7 +217,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files gui
 %defattr(-,root,root,-)
-%attr(755, root, root) %{_bindir}/PolyGUI
+%attr(755, root, root) %{_bindir}/PolyGUI*
 %attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
 %{pbori_instdir}/gui
 
