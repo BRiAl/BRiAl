@@ -445,6 +445,10 @@ def setup_env(defaultenv):
 
     opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
 
+    opts.Add('M4RIURL', 
+             "Fallback URLs for m4ri (download if missing); '' skips",
+             'http://m4ri.sagemath.org/downloads/m4ri-20121224.tar.gz')
+
     opts.Add(BoolVariable('DOCS',
                           "Build/install platform-independent documantation",
                           True))
@@ -669,6 +673,9 @@ def check_boost_variants(conf, libname, header=None):
                           [[pyconf.version], ['gcc'], ['mt', 'mt-p'], 
                            ['_'.join(map(str,  env['BOOST_VERSION'][0:nlen]))
                             for nlen in [2,3] ] ], [3,0,2,1])
+
+m4ri_png = False
+retrieve_m4ri = False
     
 if not env.GetOption('clean'):
     def BoostVersion(context):
@@ -853,21 +860,38 @@ if not env.GetOption('clean'):
                 print "Warning: No LaTeX to html converter found,",
                 print "Tutorial will not be installed"
     external_m4ri = conf.CheckLib('m4ri', autoadd=0)
-    m4ri_png = False
+
+    if not external_m4ri:
+        if not env['M4RIURL']:
+            print "Warning m4ri not found, but M4RIURL empty!"
+            print "Set accordingly or download and extract to M4RI to embed."
+        else:
+            if not path.exists("m4ri.download"):
+                markerfile = open("m4ri.download", "w")
+                markerfile.write(env.subst('$M4RIURL'))
+                markerfile.close()
+            env.Clean('.', "m4ri.download")
+            external_m4ri=True
+            m4ri_png = True
+            retrieve_m4ri = True
+            
+
     if external_m4ri:
        env.Append(LIBS='m4ri')
        if conf.CheckFunc('testing_m4ri_PNGs', """
                    #include <m4ri/io.h>
                    #define testing_m4ri_PNGs() mzd_to_png(NULL,"",0,"",0)"""):
            m4ri_png = True
-           env.Append(CPPDEFINES=["PBORI_HAVE_M4RI_PNG"])
-           for suffix in ['', '12', '13', '10', '11']:
-               if conf.CheckLib('png' + suffix, autoadd=0):
-                   GD_LIBS = ['png' + suffix]
-                   break
     else:
        env['CPPPATH'] = [m4ri_inc] + env['CPPPATH']
-       
+
+    if m4ri_png:
+        env.Append(CPPDEFINES=["PBORI_HAVE_M4RI_PNG"])
+        for suffix in ['', '12', '13', '10', '11']:
+            if conf.CheckLib('png' + suffix, autoadd=0):
+                GD_LIBS = ['png' + suffix]
+            break  
+
     conf.GuessM4RIFlags(external_m4ri)
 
     if not m4ri_png:
@@ -979,6 +1003,7 @@ DevelInstInclPath = PathJoiner(env['DEVEL_INCLUDE_PREFIX'], 'polybori')
 DevelInstLibPath = PathJoiner(env['DEVEL_LIB_PREFIX'])
 
 BuildLibPath = PathJoiner(BuildPath(DevelInstLibPath().lstrip(sep)))
+BuildInclPath = PathJoiner(BuildPath(DevelInstInclPath().lstrip(sep)))
 BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep)))
 
 
@@ -1499,7 +1524,7 @@ if have_t4h :
         if tex_to_ht == 'htlatex':
             t4h_opts = ' "html,2,charset=utf-8" " -cunihtf -utf8" "-d%s/"' % subdir
    
-        return ('cd %s;' + tex_to_ht + ' %s ' +  t4h_opts) % (source[0].dir, source[0].abspath)
+        return ('cd %s;' + tex_to_ht + ' %s ' +  t4h_opts) % (source[0].dir, source[0].name)
 
     tex_to_ht_bld = Builder(generator = t4h_action, emitter = t4h_emitter)
     env.Append(BUILDERS={'TeXToHt' : tex_to_ht_bld})
@@ -1618,6 +1643,7 @@ if have_l2h or have_t4h or HAVE_DOXYGEN:
                               preprocessed_substitute)
 
     tutorial_srcs = [DocPath('tutorial/tutorial.tex')] + version4tex + glob(DocPath('tutorial/*.tex'))
+
     if have_l2h:
         tutorial = env.L2H(env.Dir(DocPath('tutorial/tutorial')), tutorial_srcs)
     else:
@@ -1948,14 +1974,15 @@ Type=Application
                                               path.basename(str(elt)) + \
                                                   '.desktop'),
                                     elt, build_desktop)
-                        for elt in guibin ]
-        
+                        for elt in guibin ] + \
+                        [env.Install(env['ICONDIR'], GUIPath('PolyGUI.xpm'))]
+
         env.AlwaysBuild(desktopfiles)
         env.Alias('install', desktopfiles)
 
     if have_l2h or have_t4h or  HAVE_DOXYGEN:   
-        env.Alias('install', 'install-docs')
         env.Alias('install-docs', instdocu)
+        env.Alias('install', 'install-docs')
 
         
 env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
@@ -1983,6 +2010,56 @@ env.Alias('dump', 'SConstruct')
 env.Alias('dump_default', 'SConstruct')
 
 
+if retrieve_m4ri:
+    def download_srcs(target, source, env):
+        import urllib
+        try:
+            file = open(source[0].abspath)
+            url = file.read()
+            print repr(url)
+            file.close()
+            print "Attempt to download", target[0].name, " sources from", url
+            (tmpfile, headers) = urllib.urlretrieve(url)
+            import tarfile
+            tar = tarfile.open(tmpfile)
+            dir = target[0].dir.dir.abspath
+            print "Extracting to", dir
+            if not path.exists(dir): Mkdir(dir)
+            tar.extractall(dir)
+            tar.close()
+        except:
+            return "Could not download or extract m4ri!"
+
+    
+    m4riname = path.basename(env.subst('$M4RIURL')).split('.')[0]
+    m4risrcs = env.Command(env.Dir(BuildPath('tmp', m4riname, 'configure')),
+                           "m4ri.download", download_srcs)
+
+    env.Alias("m4ri-srcs", m4risrcs)
+
+    m4ribld = env.Command([BuildLibPath("libm4ri.so"),
+                           BuildLibPath("libm4ri-0.0." + m4riname[-8:] + ".so"),
+                           BuildLibPath("libm4ri.a")], m4risrcs,
+                          "cd ${SOURCE.dir}; ./configure --prefix=" + \
+                              env.Dir(BuildPath()).abspath + " " + \
+                              "--libdir=${TARGET.dir.abspath} --includedir=" +\
+                              env.Dir(BuildInclPath()).abspath + \
+                              " && make && make install")
+
+    env.Alias("install",
+              env.Install(DevelInstLibPath(), m4ribld))
+    if env['PKGCONFIGPATH']:
+        env.Install(env.subst('$PKGCONFIGPATH'),
+                    BuildLibPath('pkginfo/m4ri.pc'))
+
+    env.Alias("devel-install",
+              env.CopyAll(env.Dir(DevelInstInclPath('m4ri')), 
+                          env.Dir(BuildInclPath('m4ri'))))
+
+    env.Alias("m4ri-build", m4ribld)
+    env['CPPPATH'] = [BuildInclPath()] + env['CPPPATH']
+    env['LIBPATH'] = [BuildLibPath()] + env['LIBPATH']
+    env.Depends(gb + libgbShared+ gb_shared + pypb + wrapper_files, BuildLibPath("libm4ri.so"))
 
 # This one last!
 env.Clean('.', '.sconsign.dblite')
