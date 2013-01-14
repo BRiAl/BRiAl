@@ -1,6 +1,7 @@
 Release Name: 0.8.3
 * library version naming scheme defaults to libpolybori*.x.y.so.z.0.0 now
-* fixend broken PolyGUI
+* Removed directory M4RI, m4ri not embedded anymore (but downloaded on demand)
+* fixed broken PolyGUI
 * new option groebner_basis(..., fglm_bound=40000)
 * improved boost libraries detection
 * skip python docs for external python extension
