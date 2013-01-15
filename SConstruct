@@ -1177,7 +1177,7 @@ if HAVE_DOXYGEN:
                           target=docutarget)
 
         
-env.Clean(DocPath('c++'), docutarget)
+env.Clean(DocPath('c++'), glob(DocPath('c++/*')))
 
 ######################################################################
 # Boost-test based tests
@@ -1683,7 +1683,7 @@ if have_l2h or have_t4h or HAVE_DOXYGEN:
                                    tutorial_srcs)    
 
     documastersubdirs = ["tutorial/tutorial", "c++"] + [
-        path.basename(elt) for elt in glob("doc/python*")]
+        path.basename(elt) for elt in glob(DocPath("python*"))]
     
     if docpybase not in documastersubdirs:
         documastersubdirs += [docpybase]
