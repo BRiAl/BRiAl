@@ -691,7 +691,8 @@ BuildPyPBPath = PathJoiner(BuildPath(InstPyPath('polybori/dynamic').lstrip(sep))
 
 m4ri_png = False
 retrieve_m4ri = False
-    
+libm4ri = []
+
 if not env.GetOption('clean'):
     def BoostVersion(context):
         # Boost versions are in format major.minor.subminor
@@ -909,12 +910,11 @@ if not env.GetOption('clean'):
 
     external_m4ri = conf.CheckLib('m4ri', autoadd=0)
     if external_m4ri:
-        env.Append(LIBS='m4ri')
+        libm4ri = ['m4ri']
         if conf.CheckFunc('testing_m4ri_PNGs', """
         #include <m4ri/io.h>
         #define testing_m4ri_PNGs() mzd_to_png(NULL,"",0,"",0)"""):
             m4ri_png = True
-        env['LIBS'].remove('m4ri')
            
     else:
             tmpdir = BuildPath('tmp')
@@ -924,7 +924,7 @@ if not env.GetOption('clean'):
 
             if conf.M4RIConfig(url, tmpdir):
                 env.Prepend(CPPPATH=m4ri_dir)
-                env.Append(LIBS='m4ri') 
+                libm4ri = ['m4ri']
                 external_m4ri = retrieve_m4ri = m4ri_png = True
             else:
                 print "  Cannot build without m4ri!"
@@ -1222,7 +1222,7 @@ if BOOST_TEST:
                     CPPPATH=testCPPPATH,
                     LIBS = env['LIBS'] + \
                     [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS + \
-                    [env['BOOST_PYTHON'], pyconf.libname],
+                    [env['BOOST_PYTHON'], pyconf.libname] + libm4ri,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
         
 
@@ -1261,10 +1261,10 @@ if HAVE_PYTHON_EXTENSION:
 
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
                             wrapper_files,
-                            LIBS = pyconf.libs + LIBS + \
-                                GD_LIBS + libpbShared + libgbShared,
-                            LDMODULESUFFIX = pyconf.module_suffix,
-                            LDMODULEPREFIX = "",
+                            LIBS=pyconf.libs + LIBS + \
+                            GD_LIBS + libpbShared + libgbShared + libm4ri,
+                            LDMODULESUFFIX=pyconf.module_suffix,
+                            LDMODULEPREFIX="",
                             )
 
     env.Depends(pypb, pb_symlinks + gb_symlinks)
