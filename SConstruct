@@ -1157,7 +1157,7 @@ gb_shared = shared_object(gb_src)#env.SharedObject(gb_src)
 shared_resources += gb_shared
 
 libgbShared = slib(BuildLibPath(libgb_name), list(gb_shared),
-                   LIBS = libpbShared + env['LIBS'] + GD_LIBS)
+                   LIBS = libpbShared + env['LIBS'] + libm4ri + GD_LIBS)
 
 
 gb_symlinks = SymlinkReadableLibname(libgbShared)
@@ -1209,7 +1209,7 @@ if BOOST_TEST:
         env.Program(target, sources + testmain, 
                     CPPPATH=testCPPPATH,
                     LIBS = env['LIBS'] + \
-                        [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS,
+                        [BOOST_TEST] + libpbShared + libgbShared  + libm4ri + GD_LIBS,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
 
     test_building(TestsPath("unittests"), testfiles, env)
@@ -1221,7 +1221,7 @@ if BOOST_TEST:
         env.Program(TestsPath("embedTest"), [TestsPath('src', "embedTest.cc")] + testmain, 
                     CPPPATH=testCPPPATH,
                     LIBS = env['LIBS'] + \
-                    [BOOST_TEST] + libpbShared + libgbShared  + GD_LIBS + \
+                    [BOOST_TEST] + libpbShared + libgbShared  + libm4ri + GD_LIBS + \
                     [env['BOOST_PYTHON'], pyconf.libname] + libm4ri,
                     CPPDEFINES = ["BOOST_TEST_DYN_LINK"] )
         
@@ -1262,7 +1262,7 @@ if HAVE_PYTHON_EXTENSION:
     pypb=env.LoadableModule(BuildPyPBPath('PyPolyBoRi'),
                             wrapper_files,
                             LIBS=pyconf.libs + LIBS + \
-                            GD_LIBS + libpbShared + libgbShared + libm4ri,
+                            libpbShared + libgbShared + libm4ri + GD_LIBS,
                             LDMODULESUFFIX=pyconf.module_suffix,
                             LDMODULEPREFIX="",
                             )
@@ -1322,7 +1322,8 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
     to_append_for_profile = [libpb, gb]
     #to_append_for_profile=File('/lib/libutil.a')
     env.Program(PyPBPath('profiled'), wrapper_files+to_append_for_profile,
-            LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + pyconf.libs + GD_LIBS,
+                LIBS = LIBS + ["python" + str(pyconf.version)] + USERLIBS + \
+                pyconf.libs + libm4ri + GD_LIBS,
             CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
 elif extern_python_ext:
