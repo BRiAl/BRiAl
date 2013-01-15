@@ -1309,7 +1309,6 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", "%(source)s")
     pypb_init_py = env.Command(BuildPyPBPath('__init__.py'), pypb, 
                                [Touch("$TARGET")])
     env.Depends(pypb_init_py, dynamic_init_py)
-
     # Define the dynamic python modules in pyroot
     documentable_python_modules += dynamic_modules
    
@@ -2047,7 +2046,7 @@ if retrieve_m4ri:
                            BuildLibPath("libm4ri.a")],
                           [BuildPath('tmp', m4ri_name, 'configure'),
                            BuildPath('tmp', m4ri_name, 'm4ri/config.h')],
-                          "make && make install")
+                          "cd ${SOURCE.dir.abspath}; make && make install")
     
     env.Alias("install",
               env.Install(DevelInstLibPath(), m4ribld))
