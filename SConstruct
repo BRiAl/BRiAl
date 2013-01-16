@@ -1176,8 +1176,8 @@ if HAVE_DOXYGEN:
     cxxdocu = env.Doxygen(source=[DocPath('doxygen.conf')],
                           target=docutarget)
 
-        
 env.Clean(DocPath('c++'), glob(DocPath('c++/*')))
+env.Clean(DocPath(), DocPath('c++'))
 
 ######################################################################
 # Boost-test based tests
@@ -1233,14 +1233,8 @@ if BOOST_TEST:
 LIBS = env['LIBS']+[env['BOOST_PYTHON']]+USERLIBS
 
 
-documentable_python_modules = [PyRootPath('polybori', f)
-                               for f in Split("""ll.py check_claims.py nf.py
-                               gbrefs.py statistics.py randompoly.py blocks.py 
-                               specialsets.py memusage.py
-                               heuristics.py gbcore.py interpolate.py
-                               interred.py ncf.py partial.py simplebb.py
-                               PyPolyBoRi.py __init__.py dynamic/__init__.py""")
-                               ]
+documentable_python_modules = glob(PyRootPath('polybori/*.py')) + \
+    [PyRootPath('polybori/dynamic/__init__.py')]
 
 
 # Currently all python modules are at place
@@ -1438,32 +1432,36 @@ readabledevellibs = pb_symlinks + gb_symlinks + pypb_symlinks
 
 dylibs_inst  = env.Install(DevelInstLibPath(), dylibs)
 stlibs_inst  = env.Install(DevelInstLibPath(), stlibs)
+env.Alias('install-static', stlibs_inst)
+
 dylibs_readable_inst = SymlinkReadableLibname(dylibs_inst)
 
 devellibs_inst = dylibs_readable_inst + dylibs_inst + stlibs_inst
 
 
 # Installation for development purposes
-if 'devel-install' in COMMAND_LINE_TARGETS:
-
+if 'devel-install' in COMMAND_LINE_TARGETS or \
+        'install-devel' in COMMAND_LINE_TARGETS or \
+        'install-headers' in COMMAND_LINE_TARGETS:
+    
     for elt in ['..', '.'] + [path.basename(elt)
                               for elt in glob(PBInclPath('*'))
-                              if path.isdir(elt) and path.basename(elt) != 'cudd' ]:
+                              if path.isdir(elt) and \
+                                  path.basename(elt) != 'cudd' ]:
         env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
 
     env.Install(DevelInstInclPath('groebner'),
                 glob(GBPath('include/polybori/groebner/*.h')))
 
-    # Install our own copy the cudd header to ensure correct (patched) version 
+    # To ensure correct (patched) version of cudd we install our own
+    # copy of the cudd headers (to our inclusion "namespace" to avoid clashes)
     env.Install(DevelInstInclPath('cudd'), cudd_headers)
 
     if not(external_m4ri):
         env.Install(DevelInstInclPath('m4ri'), glob('M4RI/m4ri/*.h'))
-        
-    env.Alias('devel-install', DevelInstPath())
-    env.Alias('devel-install', DevelInstInclPath())
-    env.Alias('devel-install', DevelInstLibPath())
-    
+
+    env.Alias('install-headers', DevelInstInclPath())
+  
 env.Append(COPYALL_PATTERNS = ['*'])
 
 # Copy glob('*') from one directory to the other
@@ -1488,16 +1486,6 @@ def cp_all(target, source, env):
                 env.Execute([Copy(result, filename), Chmod(result, 0644)])
 
     return None
-
-def CopyAll(targetdir, sourcedir, env):
-    targets = []
-    for patt in env['COPYALL_PATTERNS']:
-        for filename in glob(path.join(sourcedir, patt)):
-            if not path.isdir(filename):
-                result = str(path.join(targetdir, path.basename(filename)))
-                targets += env.Install(targetdir, filename)
-
-    return FinalizeNonExecs(targets)            
 
 # Copy python docu from one directory to the other and correct paths to modules
 def cp_pydoc(target, source, env):
@@ -1688,11 +1676,13 @@ if have_l2h or have_t4h or HAVE_DOXYGEN:
     if docpybase not in documastersubdirs:
         documastersubdirs += [docpybase]
 
-    env.DocuMaster(DocPath('index.html'), [DocPath('index.html.in')] + [
-        env.Dir(DocPath(srcs)) for srcs in documastersubdirs ])
-
+    docmstr = env.DocuMaster(DocPath('index.html'),
+                             [DocPath('index.html.in')] + [
+            env.Dir(DocPath(srcs)) for srcs in documastersubdirs ])
+    
     # build-independent doc targets
-    env.Alias('docs', [DocPath('c++'), DocPath('tutorial')])
+    env.Alias('prepare-docs', docmstr + [DocPath('c++'), DocPath('tutorial')])
+    env.Alias('docs', 'prepare-docs')
 
 # Clean, even, if L2H/TexToHt are not available anymore
 env.Clean(DocPath('tutorial'), DocPath('tutorial/tutorial'))
@@ -1840,11 +1830,10 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     
     # Copy c++ documentation
     if HAVE_DOXYGEN:
-        cxxdocinst = CopyAll(InstDocPath('c++'),
-                             DocPath('c++/html'), env) 
+        cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
+                                 env.Dir(DocPath('c++/html')))
         env.Depends(cxxdocinst, cxxdocu)
 
-        
     htmlpatterns = Split("*.html *.css *.png *gif *.jpg")
 
     # Copy python documentation
@@ -2013,11 +2002,17 @@ Type=Application
 
     if have_l2h or have_t4h or  HAVE_DOXYGEN:   
         env.Alias('install-docs', instdocu)
+        env.Depends('install-docs', 'prepare-docs')
         env.Alias('install', 'install-docs')
 
-        
-env.Alias('prepare-devel', dylibs + stlibs + readabledevellibs)
-env.Alias('prepare-install', [pyroot, DocPath()])
+
+env.Alias('prepare-static',  stlibs)
+env.Alias('prepare-install',
+          dylibs + readabledevellibs + [BuildPyPBPath(), pyroot, DocPath()])
+
+env.Alias('prepare-devel',  ['prepare-static', 'prepare-install'])
+
+
 
 for sfx in [pyconf.major, pyconf.version]:
     Default(env.SymLink(IPBPath('ipbori' + sfx),
@@ -2055,16 +2050,20 @@ if retrieve_m4ri:
         env.Install(env.subst('$PKGCONFIGPATH'),
                     BuildLibPath('pkginfo/m4ri.pc'))
 
-    env.Alias("devel-install",
+    env.Alias("install-headers",
               env.CopyAll(env.Dir(DevelInstInclPath('m4ri')), 
                           env.Dir(BuildInclTopPath('m4ri'))))
+    env.Alias('install-static', DevelInstLibPath("libm4ri.a"))
 
     env.Alias("m4ri-build", m4ribld)
     env.Append(LIBPATH=BuildLibPath())
     env.Depends(libgbShared + pypb, m4ribld)
     env.Clean(BuildPath('tmp'), m4ri_dir)
-    
-env.Clean('.', "m4ri.download")
+
+
+
+env.Alias('install-devel', ['install-static', 'install-headers'])
+env.Alias('devel-install', 'install-devel') # allow old naming convention
 
 # This one last!
 env.Clean('.', '.sconsign.dblite')

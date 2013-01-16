@@ -8,13 +8,18 @@ Release Name: 0.8.3
 * removed spaces from arguments for shell_output to fix SConstruct on darwin
 * added header polybori/embed.h for easy python/polybori integration
 * support pkgconfig and .desktop files
-* ipbori2, ipbori2.*, PolyGUI2, PolyGUI2.x for supporting multiple python  
+* ipbori2, ipbori2.*, PolyGUI2, PolyGUI2.x for supporting multiple python
 * side-by-side installation of python module documentation for multiple python
 * LIBRARY_VERSION customizable
 * fixed boost::python::range disambiguity by explicitly using namespace
 * added target docs and install-docs for building and installing platform-
   independent documentation (DOCS=False to suppress them on build and install)
-	
+* target naming: prepare-install, prepare-docs, prepare-static, prepare-devel
+        install, install-docs, install-headers, install-static, install-devel
+	build (without docs, but with static libs)
+  aliases: devel-install (=install-devel), docs (=prepare-docs)
+  Note: prepare-install and install do not care for static libs anymore
+
 Release Name: 0.8.2
 * Dependencies of optional rpm package gui fixed
 * Fixed bug which prevented self-testing of polybori.plot
