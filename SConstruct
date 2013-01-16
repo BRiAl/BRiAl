@@ -278,7 +278,7 @@ def setup_env(defaultenv):
              defaultenv.get('CPPPATH', []), converter = SplitColonSep)
 
     opts.Add('TEST_CPPPATH', 'list of include paths for tests (colon or whitespace separated)',
-             None, converter = SplitColonSep)
+             '', converter = SplitColonSep)
 
     opts.Add('CPPDEFINES', 'list of preprocessor defines (whitespace separated)',
              defaultenv.get('CPPDEFINES',[]) + ['PBORI_NDEBUG'], converter = Split)
@@ -415,11 +415,11 @@ def setup_env(defaultenv):
     "hash_map extension, even if unordered_map is available (avoiding of buggy " +
     "unordered_map)", False))
 
-    opts.Add('RPATH', "rpath setting",  converter = SplitColonSep)
+    opts.Add('RPATH', "rpath setting", '', converter = SplitColonSep)
 
 
     for m in pbori_cache_macros:
-        opts.Add(m, 'PolyBoRi Cache macro value: '+m, None)
+        opts.Add(m, 'PolyBoRi Cache macro value: '+m, '')
 
 
     for var in Split("""CCCOM CXXCOM SHCCCOM SHCXXCOM SHLINKCOM LINKCOM LINK SHLINK
