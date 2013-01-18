@@ -1448,17 +1448,23 @@ if 'devel-install' in COMMAND_LINE_TARGETS or \
                               for elt in glob(PBInclPath('*'))
                               if path.isdir(elt) and \
                                   path.basename(elt) != 'cudd' ]:
-        env.Install(DevelInstInclPath(elt), glob(PBInclPath(elt, '*.h')))
+        env.Alias('install-headers', 
+                  env.Install(DevelInstInclPath(elt), 
+                              glob(PBInclPath(elt, '*.h'))))
 
-    env.Install(DevelInstInclPath('groebner'),
-                glob(GBPath('include/polybori/groebner/*.h')))
+    env.Alias('install-headers', 
+              env.Install(DevelInstInclPath('groebner'),
+                          glob(GBPath('include/polybori/groebner/*.h'))))
 
     # To ensure correct (patched) version of cudd we install our own
     # copy of the cudd headers (to our inclusion "namespace" to avoid clashes)
-    env.Install(DevelInstInclPath('cudd'), cudd_headers)
+    env.Alias('install-headers', 
+              env.Install(DevelInstInclPath('cudd'), cudd_headers))
 
     if not(external_m4ri):
-        env.Install(DevelInstInclPath('m4ri'), glob('M4RI/m4ri/*.h'))
+        env.Alias('install-headers', 
+                  env.Install(DevelInstInclPath('m4ri'), 
+                              glob('M4RI/m4ri/*.h')))
 
     env.Alias('install-headers', DevelInstInclPath())
   
