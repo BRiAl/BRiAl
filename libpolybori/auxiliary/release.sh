@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 VALUE=`echo "_$1" | grep "^_-"`
 
