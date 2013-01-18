@@ -1396,7 +1396,7 @@ disttar.py doxygen.py""")
     # doc is not distributed completely
     allsrcs += [ DocPath(dsrc) for dsrc in Split("""doxygen.conf index.html.in
     tutorial/tutorial.tex tutorial/tutorial_content.tex tutorial/PolyGui.png
-    tutorial/PolyGui-Options.png tutorial/versionnumber.in python/genpythondoc.py
+    tutorial/PolyGui-Options.png tutorial/versionnumber.in genpythondoc.py
     man/ipbori.1 man/PolyGUI.1 """) ]
     allsrcs.append(env.Dir(DocPath('images')))
     
