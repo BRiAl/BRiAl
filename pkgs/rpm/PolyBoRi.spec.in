@@ -155,7 +155,7 @@ be used for developing computer-algebra applications for Boolean polynomials.
 
 
 
-%package        static
+%package:       static
 Summary:        Static libraries for %{name}
 Group:          Development/Libraries/C and C++
 Requires:       %{name}-devel = %{version}
@@ -228,6 +228,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_includedir}/polybori.h
 
 %files static
+%defattr(-,root,root,-)
 %attr(644, root, root) %{_libdir}/libpolybori*.a
 
 
