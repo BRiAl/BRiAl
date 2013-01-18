@@ -762,7 +762,8 @@ if not env.GetOption('clean'):
                     tar.close()
                     return None
 
-                context.Message("  Downloading m4ri sources from " + url + " to " + tmpdir + " ... ")
+                context.Message("  Downloading m4ri sources from " + repr(url) \
+                                + " to " + repr(tmpdir) + " ... ")
                 ret = context.TryAction(action=Action(userAction))[0]
                 context.Result(ret)
                 if ret == 1:
@@ -1797,10 +1798,20 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
                       InstManPath()]:
         env.Alias('install', inst_path)
-                
+       
+    # The distribution usually take core of gzipping and symlink correction         
     env.Install(InstManPath('man1'), DocPath('man/ipbori.1'))
     env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1'))
-    
+
+    env.SymLink(InstManPath('man1/ipbori.1' + pyconf.major),
+                InstManPath('man1/ipbori.1'))
+    env.SymLink(InstManPath('man1/ipbori.1' + pyconf.version),
+                InstManPath('man1/ipbori.1')) 
+    env.SymLink(InstManPath('man1/PolyGUI.1' + pyconf.major),
+                InstManPath('man1/PolyGUI.1'))
+    env.SymLink(InstManPath('man1/PolyGUI' + pyconf.version + ".1"),
+                InstManPath('man1/PolyGUI.1')) 
+
     # Executables and shared libraries to be installed
     so_pyfiles = []
 

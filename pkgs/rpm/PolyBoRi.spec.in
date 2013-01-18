@@ -26,7 +26,7 @@
         INSTALLDIR=%{buildroot}%{pbori_instdir} \\\
         PYTHON=%{__python} \\\
         DOCDIR=%{buildroot}%{pbori_docpath} \\\
-        MANDIR=%{buildroot}%{_mandir}
+        MANDIR=%{buildroot}%{_mandir} # M4RIURL=''
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
@@ -66,13 +66,13 @@ BuildRequires: doxygen %{?fedora:tex4ht} %{?pbori_m4ri_devel}
 %if 0%{?suse_version} >= 1100
 BuildRequires: texlive-latex texlive-tex4ht
 %endif
-#BuildRequires: %{pbori_pyqt}
+
 
 Summary: Framework for Boolean Rings
 Name: PolyBoRi
-Version: $PBVERSION.$PBRELEASE
+Version: $PBVERSION.${PBRELEASE}
 Release: 0
-License: GPLv2+
+License: GPL-2+
 Group: Productivity/Scientific/Math
 URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.bz2
@@ -108,7 +108,8 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Productivity/Scientific/Math
-Requires:       %{name}-libs = %{version}
+Requires: libpolybori-$PBVERSION${PBRELEASE}_0_0 = %{version}
+Requires: libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 = %{version}
 %if %{defined suse_version}
 Requires: python-base = %{py_ver}
 %endif
@@ -120,14 +121,21 @@ with high-level routines.
 
 
 
-%package        libs
-Summary:        Core libraries for %{name}
+%package        -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+Summary:        Core Groebner library for %{name}
 Group:          Productivity/Scientific/Math
 
-%description    libs
-This package contains the core libraries for %{name} for Boolean polynomial
+%description    -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+This package contains the core Groebner library for %{name} for Boolean polynomial
 data structures and Groebner basis algorithms.
 
+%package        -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
+Summary:        Polynomial core library for %{name}
+Group:          Productivity/Scientific/Math
+
+%description    -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
+This package contains the polynomial core library for %{name} for Boolean polynomial
+data structures and Groebner basis algorithms.
 
 %package        gui
 Summary:        Qt GUI for %{name}
@@ -146,7 +154,8 @@ heuristics and parameters on click.
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries/C and C++
-Requires:       %{name}-libs = %{version}
+Requires:       libpolybori-${PBVERSION}${PBRELEASE}_0_0 = %{version}
+Requires:       libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 = %{version}
 Requires:       boost-devel %{?pbori_m4ri_devel}
 
 %description    devel
@@ -191,20 +200,26 @@ ipbori/ipbori -t
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post libs -p /sbin/ldconfig
-%postun libs -p /sbin/ldconfig
+%post -n libpolybori-${PBVERSION}${PBRELEASE}_0_0  -p /sbin/ldconfig
+%post -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
+%postun -n libpolybori-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
+%postun -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
 %attr(755, root, root) %{_bindir}/ipbori*
-%attr(644,root,man) %{_mandir}/man1/ipbori.1*
+%attr(644,root,man) %{_mandir}/man1/ipbori*.1*
 %{pbori_instdir}
 %exclude %{pbori_instdir}/gui
 %doc README LICENSE ChangeLog
 
-%files libs
+%files -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
 %defattr(-,root,root,-)
-%attr(755, root, root) %{_libdir}/libpolybori*.so.*
+%attr(755, root, root) %{_libdir}/libpolybori-${PBVERSION}.so.${PBRELEASE}*
+
+%files -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+%defattr(-,root,root,-)
+%attr(755, root, root) %{_libdir}/libpolybori_groebner${PBVERSION}.so.${PBRELEASE}*
 
 %files -n python-%{name}
 %defattr(-,root,root,-)
@@ -218,7 +233,7 @@ rm -rf $RPM_BUILD_ROOT
 %files gui
 %defattr(-,root,root,-)
 %attr(755, root, root) %{_bindir}/PolyGUI*
-%attr(644,root,man) %{_mandir}/man1/PolyGUI.1*
+%attr(644,root,man) %{_mandir}/man1/PolyGUI*.1*
 %{pbori_instdir}/gui
 
 %files devel
@@ -233,8 +248,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> $PBVERSION.$PBRELEASE-0
-- Latest sources (PolyBoRi $PBVERSION.$PBRELEASE)
+* Wed Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> ${PBVERSION}.${PBRELEASE}-0
+- Latest sources (PolyBoRi ${PBVERSION}.${PBRELEASE})
 * Mon Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> - 
 - Libraries moved to libs package.
 * Wed Aug 17 2011 Alexander Dreyer <adreyer@gmx.de> - 
