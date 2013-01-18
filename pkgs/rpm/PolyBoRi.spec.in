@@ -155,7 +155,7 @@ be used for developing computer-algebra applications for Boolean polynomials.
 
 
 
-%package:       static
+%package        static
 Summary:        Static libraries for %{name}
 Group:          Development/Libraries/C and C++
 Requires:       %{name}-devel = %{version}
