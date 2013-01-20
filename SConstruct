@@ -1813,11 +1813,11 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     env.Install(InstManPath('man1'), DocPath('man/ipbori.1'))
     env.Install(InstManPath('man1'), DocPath('man/PolyGUI.1'))
 
-    env.SymLink(InstManPath('man1/ipbori.1' + pyconf.major),
+    env.SymLink(InstManPath('man1/ipbori' + pyconf.major + '.1'),
                 InstManPath('man1/ipbori.1'))
-    env.SymLink(InstManPath('man1/ipbori.1' + pyconf.version),
+    env.SymLink(InstManPath('man1/ipbori' + pyconf.version + '.1'),
                 InstManPath('man1/ipbori.1')) 
-    env.SymLink(InstManPath('man1/PolyGUI.1' + pyconf.major),
+    env.SymLink(InstManPath('man1/PolyGUI' + pyconf.major + '.1'),
                 InstManPath('man1/PolyGUI.1'))
     env.SymLink(InstManPath('man1/PolyGUI' + pyconf.version + ".1"),
                 InstManPath('man1/PolyGUI.1')) 
