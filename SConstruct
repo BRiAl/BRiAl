@@ -1483,7 +1483,7 @@ def cp_all(target, source, env):
 
     if not path.exists(target):
         try:
-            env.Execute(Mkdir(target))
+            os.makedirs(target)#env.Execute(Mkdir(target))
         except:
             # Maybe just a race condition occured, because two processes trixy
             # to generate the directory at the same time. (This I could ignore.)
