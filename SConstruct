@@ -1113,7 +1113,9 @@ pb_src=[PBPath('src', source) for source in pb_src]
 libpb_name = 'polybori'
 libpb_name_static = libpb_name
 
-libpb=env.StaticLibrary(PBPath(libpb_name_static), pb_src + cudd_resources)
+libpb=env.StaticLibrary(PBPath(libpb_name_static), pb_src + cudd_resources, 
+                        CCFLAGS=['-g'] + env['CCFLAGS'])
+
 
 if isinstance(libpb,list):
     libpb=libpb[0]
@@ -1147,7 +1149,8 @@ if not(external_m4ri):
 libgb_name = libpb_name + '_groebner'
 libgb_name_static = libgb_name
 
-gb=env.StaticLibrary(GBPath(libgb_name_static), gb_src)
+gb=env.StaticLibrary(GBPath(libgb_name_static), gb_src, 
+                     CCFLAGS=['-g'] + env['CCFLAGS'])
 
 #print "gb:", gb, dir(gb)
 #sometimes l seems to be boxed by a list
@@ -1475,15 +1478,16 @@ env.Append(COPYALL_PATTERNS = ['*'])
 def cp_all(target, source, env):
     source = source[0].path
     target = target[0].path
+    import time
+    time.sleep(0.001)
 
     if not path.exists(target):
         try:
-            import time
-            time.sleep(0.001)
             env.Execute(Mkdir(target))
         except:
             # Maybe just a race condition occured, because two processes trixy
             # to generate the directory at the same time. (This I could ignore.)
+            time.sleep(0.001)
             if not path.exists(target):
                 raise RuntimeError, "Could not mkdir " + target
 

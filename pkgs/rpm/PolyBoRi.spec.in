@@ -24,7 +24,8 @@
 %endif
 
 %define pbori_instdir %{_datadir}/%{name}
-%define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
+%define pbori_docpath %{_defaultdocdir}/%{name}
+#%{_docdir_fmt}
 %define pbori_tmpdoc docs
 
 
