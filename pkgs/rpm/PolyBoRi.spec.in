@@ -25,7 +25,7 @@
 
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
-%define pbori_tmpdoc /usr/share/doc/
+%define pbori_tmpdoc docs
 
 
 
@@ -155,6 +155,7 @@ heuristics and parameters on click.
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries/C and C++
+Requires:       %{name} = %{version}
 Requires:       libpolybori-%{pbori_vernaming} = %{version}
 Requires:       libpolybori_groebner-%{pbori_vernaming} = %{version}
 Requires:       boost-devel %{?pbori_m4ri_devel}
@@ -224,8 +225,8 @@ ipbori/ipbori -t
 
 %install
 %{pbori_scons} install devel-install
+%{__mv } $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
 
- 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -259,9 +260,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files doc
 %defattr(-,root,root,-)
-%doc README LICENSE ChangeLog 
-%{pbori_docpath}
-
+%doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
 
 %files gui
 %defattr(-,root,root,-)
