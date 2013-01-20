@@ -8,25 +8,26 @@
 #
 # norootforbuild
 
+%define pbori_vernaming 0_8-${PBRELEASE}
 
 %define pbori_pythonsearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib())")
 %define pbori_pysite_fallback %{?python_sitelib}%{!?python_sitelib:%pbori_pythonsearch}
 %define pbori_pyinstprefix %{?py_sitedir}%{!?py_sitedir:%pbori_pysite_fallback}
 
+%if $PB_M4RI_RPM
+%define pbori_have_mr4i_rpm 1
+%define pbori_have_not_mr4i_rpm 0
+%define pbori_mr4i_url M4RIURL=''
+%else
+%define pbori_have_mr4i_rpm 0
+%define pbori_have_not_mr4i_rpm 1
+%endif
+
 %define pbori_instdir %{_datadir}/%{name}
 %define pbori_docpath %{_defaultdocdir}/%{_docdir_fmt}
-%define pbori_tmpdoc docs
-%define pbori_scons scons %{?jobs:-j%jobs} \\\
-        LINKFLAGS="-s" CCFLAGS="%{optflags}" \\\
-        EPREFIX=%{buildroot}%{_bindir} \\\
-        DEVEL_PREFIX=%{buildroot}%{_prefix} \\\
-        DEVEL_INCLUDE_PREFIX=%{buildroot}%{_includedir} \\\
-        DEVEL_LIB_PREFIX=%{buildroot}%{_libdir} \\\
-        PYINSTALLPREFIX=%{buildroot}%{pbori_pyinstprefix} \\\
-        INSTALLDIR=%{buildroot}%{pbori_instdir} \\\
-        PYTHON=%{__python} \\\
-        DOCDIR=%{buildroot}%{pbori_docpath} \\\
-        MANDIR=%{buildroot}%{_mandir} # M4RIURL=''
+%define pbori_tmpdoc /usr/share/doc/
+
+
 
 # Note: m4ri of official fc14 is too old
 %if 0%{?fedora_version} >= 15
@@ -35,7 +36,7 @@
 
 %else
 # Note: Using inofficial m4ri build
-%if $PB_M4RI_RPM
+%if %{pbori_have_mr4i_rpm}
 %if 0%{?redhat_version}%{?centos_version}%{?suse_version}
 %define pbori_m4ri m4ri
 %define pbori_m4ri_devel m4ri-devel
@@ -108,8 +109,8 @@ This package contains the documentation and tutorial of %{name}.
 %package -n python-%{name}
 Summary: Python core package for %{name} 
 Group: Productivity/Scientific/Math
-Requires: libpolybori-$PBVERSION${PBRELEASE}_0_0 = %{version}
-Requires: libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 = %{version}
+Requires: libpolybori-%{pbori_vernaming} = %{version}
+Requires: libpolybori_groebner-%{pbori_vernaming} = %{version}
 %if %{defined suse_version}
 Requires: python-base = %{py_ver}
 %endif
@@ -121,19 +122,19 @@ with high-level routines.
 
 
 
-%package        -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+%package        -n libpolybori_groebner-%{pbori_vernaming}
 Summary:        Core Groebner library for %{name}
 Group:          Productivity/Scientific/Math
 
-%description    -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+%description    -n libpolybori_groebner-%{pbori_vernaming}
 This package contains the core Groebner library for %{name} for Boolean polynomial
 data structures and Groebner basis algorithms.
 
-%package        -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
+%package        -n libpolybori-%{pbori_vernaming}
 Summary:        Polynomial core library for %{name}
 Group:          Productivity/Scientific/Math
 
-%description    -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
+%description    -n libpolybori-%{pbori_vernaming}
 This package contains the polynomial core library for %{name} for Boolean polynomial
 data structures and Groebner basis algorithms.
 
@@ -154,8 +155,8 @@ heuristics and parameters on click.
 %package        devel
 Summary:        Development files for %{name}
 Group:          Development/Libraries/C and C++
-Requires:       libpolybori-${PBVERSION}${PBRELEASE}_0_0 = %{version}
-Requires:       libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 = %{version}
+Requires:       libpolybori-%{pbori_vernaming} = %{version}
+Requires:       libpolybori_groebner-%{pbori_vernaming} = %{version}
 Requires:       boost-devel %{?pbori_m4ri_devel}
 
 %description    devel
@@ -174,7 +175,38 @@ This package contains static libraries for %{name}. It may to be used for
 developing computer-algebra applications for Boolean polynomials without using
 having shared libraries in place at runtime.
 
+%if %{pbori_have_not_mr4i_rpm}
+%package        -n m4ri
+Summary:        The m4ri dependency for %{name}
+Group:          Development/Libraries/C and C++
 
+%description    -n m4ri
+This package contains m4ri runtime libraries for %{name}.
+This is just for experminents, if the actual m4ri rpm is not available.
+It should not be used for public rpms.
+
+%package        -n m4ri-devel
+Summary:        The m4ri dependency for %{name}
+Group:          Development/Libraries/C and C++
+Requires:       m4ri
+
+%description    -n m4ri-devel
+This package contains m4ri development libraries and headers for %{name}.
+This is just for experminents, if the actual m4ri rpm is not available.
+It should not be used for public rpms.
+%endif
+
+%define pbori_scons scons %{?jobs:-j%jobs} \\\
+        LINKFLAGS="-s" CCFLAGS="%{optflags}" \\\
+        EPREFIX=%{buildroot}%{_bindir} \\\
+        DEVEL_PREFIX=%{buildroot}%{_prefix} \\\
+        DEVEL_INCLUDE_PREFIX=%{buildroot}%{_includedir} \\\
+        DEVEL_LIB_PREFIX=%{buildroot}%{_libdir} \\\
+        PYINSTALLPREFIX=%{buildroot}%{pbori_pyinstprefix} \\\
+        INSTALLDIR=%{buildroot}%{pbori_instdir} \\\
+        PYTHON=%{__python} \\\
+        DOCDIR=%{buildroot}/%{pbori_docpath} \\\
+        MANDIR=%{buildroot}%{_mandir} %{?pbori_mr4i_url}
 
 
 %prep
@@ -192,18 +224,15 @@ ipbori/ipbori -t
 
 %install
 %{pbori_scons} install devel-install
- 
 
-# rpm likes to copy docs (not to be installed), but install needs correct DOCDIR
-%__mv $RPM_BUILD_ROOT/%{pbori_docpath} %{pbori_tmpdoc}
  
 %clean
 rm -rf $RPM_BUILD_ROOT
 
-%post -n libpolybori-${PBVERSION}${PBRELEASE}_0_0  -p /sbin/ldconfig
-%post -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
-%postun -n libpolybori-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
-%postun -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0 -p /sbin/ldconfig
+%post -n libpolybori-%{pbori_vernaming}  -p /sbin/ldconfig
+%post -n libpolybori_groebner-%{pbori_vernaming} -p /sbin/ldconfig
+%postun -n libpolybori-%{pbori_vernaming} -p /sbin/ldconfig
+%postun -n libpolybori_groebner-%{pbori_vernaming} -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
@@ -213,22 +242,26 @@ rm -rf $RPM_BUILD_ROOT
 %exclude %{pbori_instdir}/gui
 %doc README LICENSE ChangeLog
 
-%files -n libpolybori-${PBVERSION}${PBRELEASE}_0_0
+%files -n libpolybori-%{pbori_vernaming}
 %defattr(-,root,root,-)
 %attr(755, root, root) %{_libdir}/libpolybori-${PBVERSION}.so.${PBRELEASE}*
 
-%files -n libpolybori_groebner-${PBVERSION}${PBRELEASE}_0_0
+
+%files -n libpolybori_groebner-%{pbori_vernaming}
 %defattr(-,root,root,-)
-%attr(755, root, root) %{_libdir}/libpolybori_groebner${PBVERSION}.so.${PBRELEASE}*
+%attr(755, root, root) %{_libdir}/libpolybori_groebner-${PBVERSION}.so.${PBRELEASE}*
+
 
 %files -n python-%{name}
 %defattr(-,root,root,-)
 %{pbori_pyinstprefix}/polybori
-%doc README LICENSE ChangeLog
+
 
 %files doc
 %defattr(-,root,root,-)
-%doc README LICENSE ChangeLog %{pbori_tmpdoc}/*
+%doc README LICENSE ChangeLog 
+%{pbori_docpath}
+
 
 %files gui
 %defattr(-,root,root,-)
@@ -241,11 +274,23 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{_libdir}/libpolybori*.so
 %{_includedir}/polybori
 %{_includedir}/polybori.h
+%doc README LICENSE ChangeLog
 
 %files static
 %defattr(-,root,root,-)
 %attr(644, root, root) %{_libdir}/libpolybori*.a
 
+%if %{pbori_have_not_mr4i_rpm}
+%files  -n m4ri
+%defattr(-,root,root,-)
+%attr(755, root, root) %{_libdir}/libm4ri-*.so*
+
+%files  -n m4ri-devel
+%defattr(-,root,root,-)
+%attr(755, root, root) %{_libdir}/libm4ri.so
+%attr(644, root, root) %{_libdir}/libm4ri.a
+%{_includedir}/m4ri
+%endif
 
 %changelog
 * Wed Feb 13 2012 Alexander Dreyer <adreyer@gmx.de> ${PBVERSION}.${PBRELEASE}-0

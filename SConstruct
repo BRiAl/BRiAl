@@ -1488,9 +1488,14 @@ def cp_all(target, source, env):
 
     for patt in env['COPYALL_PATTERNS']:
         for filename in glob(path.join(source, patt)):
+            print filename
             if not path.isdir(filename):
                 result = str(path.join(target, path.basename(filename)))
-                env.Execute([Copy(result, filename), Chmod(result, 0644)])
+                try:
+                    env.Execute([Delete(result), Copy(result, filename),
+                                 Chmod(result, 0644)])
+                except:
+                    raise RuntimeError, "error with ", result
 
     return None
 
@@ -1889,6 +1894,7 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
 
     if HAVE_DOXYGEN:
         env.Depends(instdocu, cxxdocinst)
+        env.Depends(cxxdocinst, tutorialinst)
 
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
@@ -2062,13 +2068,20 @@ if retrieve_m4ri:
                           "cd ${SOURCE.dir.abspath}; make && make install")
     
     env.Alias("install",
-              env.Install(DevelInstLibPath(), m4ribld))
+              env.Install(DevelInstLibPath(), 
+                          [BuildLibPath("libm4ri-0.0." + m4ri_name[-8:] + \
+                                            ".so"),
+                           BuildLibPath("libm4ri.a")]) +
+              env.SymLink(DevelInstLibPath("libm4ri.so"),
+                          DevelInstLibPath("libm4ri-0.0." + m4ri_name[-8:] + \
+                                           ".so")))
+    
     if env['PKGCONFIGPATH']:
         env.Install(env.subst('$PKGCONFIGPATH'),
                     BuildLibPath('pkginfo/m4ri.pc'))
 
     env.Alias("install-headers",
-              env.CopyAll(env.Dir(DevelInstInclPath('m4ri')), 
+              env.CopyAll(env.Dir(DevelInstInclPath('../m4ri')), 
                           env.Dir(BuildInclTopPath('m4ri'))))
     env.Alias('install-static', DevelInstLibPath("libm4ri.a"))
 
