@@ -1,5 +1,7 @@
 # Emacs edit mode for this file is -*- python -*-
 
+
+
 # Backward compatibility
 if not 'Variables' in globals():
     Variables = Options
@@ -910,6 +912,7 @@ if not env.GetOption('clean'):
                 print "Tutorial will not be installed"
 
     external_m4ri = conf.CheckLib('m4ri', autoadd=0)
+    postpone_m4ri = False
     if external_m4ri:
         libm4ri = ['m4ri']
         if conf.CheckFunc('testing_m4ri_PNGs', """
@@ -923,13 +926,18 @@ if not env.GetOption('clean'):
             m4ri_name = path.basename(url).split('.')[0]
             m4ri_dir = path.join(tmpdir, m4ri_name)
 
-            if conf.M4RIConfig(url, tmpdir):
-                env.Prepend(CPPPATH=m4ri_dir)
-                libm4ri = ['m4ri']
-                external_m4ri = retrieve_m4ri = m4ri_png = True
+            if set(COMMAND_LINE_TARGETS).difference(set(Split("""distribute
+            prepare_deb prepare_rpm srpm"""))):
+                if conf.M4RIConfig(url, tmpdir):
+                    env.Prepend(CPPPATH=m4ri_dir)
+                    libm4ri = ['m4ri']
+                    external_m4ri = retrieve_m4ri = m4ri_png = True
+                else:
+                    print "  Cannot build without m4ri!"
+                    Exit(1)
             else:
-                print "  Cannot build without m4ri!"
-                Exit(1)
+                print "Postponing m4ri configuration for now!"
+                postpone_m4ri = True
 
     if m4ri_png:
         env.Append(CPPDEFINES=["PBORI_HAVE_M4RI_PNG"])
@@ -938,7 +946,8 @@ if not env.GetOption('clean'):
                 GD_LIBS = ['png' + suffix]
             break  
 
-    conf.GuessM4RIFlags(external_m4ri)
+    if not postpone_m4ri:
+        conf.GuessM4RIFlags(external_m4ri)
 
     if not m4ri_png:
         gdlibs = env["GD_LIBS"]
@@ -1880,6 +1889,9 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
                                    env.Dir(DocPath('tutorial/tutorial')),
                                    COPYALL_PATTERNS = htmlpatterns)
         env.Depends(tutorialinst, tutorial)
+    else:
+        tutorialinst = []
+        
          
         
     # Generate html master
@@ -1894,9 +1906,8 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
                                                [DocPath('index.html.in')] + [ 
         env.Dir(InstDocPath(srcs)) for srcs in instdocumastersubdirs]))
 
-    if have_l2h or have_t4h:
-        env.Depends(instdocu, tutorialinst)
-
+    env.Depends(instdocu, tutorialinst)
+        
     if HAVE_DOXYGEN:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)

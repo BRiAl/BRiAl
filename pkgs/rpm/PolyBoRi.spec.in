@@ -73,7 +73,7 @@ Summary: Framework for Boolean Rings
 Name: PolyBoRi
 Version: $PBVERSION.${PBRELEASE}
 Release: 0
-License: GPL-2+
+License: GPL-2.0+
 Group: Productivity/Scientific/Math
 URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.bz2
