@@ -1,5 +1,8 @@
 # Emacs edit mode for this file is -*- python -*-
 
+
+
+
 # Backward compatibility
 if not 'Variables' in globals():
     Variables = Options
@@ -1478,8 +1481,6 @@ env.Append(COPYALL_PATTERNS = ['*'])
 def cp_all(target, source, env):
     source = source[0].path
     target = target[0].path
-    import time
-    time.sleep(0.001)
 
     if not path.exists(target):
         try:
@@ -1487,7 +1488,6 @@ def cp_all(target, source, env):
         except:
             # Maybe just a race condition occured, because two processes trixy
             # to generate the directory at the same time. (This I could ignore.)
-            time.sleep(0.001)
             if not path.exists(target):
                 raise RuntimeError, "Could not mkdir " + target
 
@@ -1513,7 +1513,13 @@ def cp_pydoc(target, source, env):
     patt = re.compile('(file:|)/[^\" ]*' + pyroot, re.VERBOSE)
 
     if not path.exists(target):
-        env.Execute(Mkdir(target))
+        try:
+            os.makedirs(target)#env.Execute(Mkdir(target))
+        except:
+            # Maybe just a race condition occured, because two processes trixy
+            # to generate the directory at the same time. (This I could ignore.)
+            if not path.exists(target):
+                raise RuntimeError, "Could not mkdir " + target
     showpath = env.relpath(env.Dir(target).abspath,
                            env.Dir(env['PYINSTALLPREFIX']).abspath)
 
@@ -1793,6 +1799,7 @@ def GeneratePyc(sources):
        
 # Installation precedure for end users
 if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
+
     # Setting umask for newly generated directories
     try:
         umask = os.umask(022)
@@ -1804,7 +1811,8 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     InstExecPath = PathJoiner(env['EPREFIX'])
     InstDocPath = PathJoiner(env['DOCDIR'])
     InstManPath = PathJoiner(env['MANDIR'])
-    
+
+   
     for inst_path in [InstPath(), InstExecPath(), InstDocPath(), InstPyPath(),
                       InstManPath()]:
         env.Alias('install', inst_path)
@@ -1898,11 +1906,14 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
         env.Dir(InstDocPath(srcs)) for srcs in instdocumastersubdirs]))
 
     env.Depends(instdocu, tutorialinst)
-
+    env.Execute(Mkdir(InstDocPath()))
+    
     if HAVE_DOXYGEN:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)
 
+    env.Execute(Mkdir(InstDocPath())) # Avoid race condition Which CopyAll first
+    
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
 

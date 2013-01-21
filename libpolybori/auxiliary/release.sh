@@ -115,7 +115,7 @@ tarresult=${TARBALL/$patt1/$patt2}
 
 cp $BUILDDIR/$TARBALL $RELEASE_DIR/$tarresult
 
-cp `find pkgs -name "*.src.rpm" -o -name "*.spec"  -o -name "*.tar.*"` $RELEASE_DIR/ \
+cp `find pkgs -name "*.src.rpm" -o -name "*.spec" -o -name "*.rpmlintrc" -o -name "*.tar.*"` $RELEASE_DIR/ \
 || (echo "Copying results failed!" ; exit 1)
 
 hg parents

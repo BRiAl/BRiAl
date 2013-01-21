@@ -144,6 +144,7 @@ Group:          Productivity/Scientific/Math
 Requires:       python-%{name} = %{version}
 Requires:       %{pbori_pyqt} 
 
+
 %description    gui
 This packagae contains a PyQt-based GUI for %{name}. It comes with the simple
 tool PolyGUI which can load digital systems stored in various formats. The
@@ -178,7 +179,7 @@ having shared libraries in place at runtime.
 
 %if %{pbori_have_not_mr4i_rpm}
 %package        -n m4ri
-Summary:        The m4ri dependency for %{name}
+Summary:        The linear algebra dependency for %{name}
 Group:          Development/Libraries/C and C++
 
 %description    -n m4ri
@@ -187,9 +188,9 @@ This is just for experminents, if the actual m4ri rpm is not available.
 It should not be used for public rpms.
 
 %package        -n m4ri-devel
-Summary:        The m4ri dependency for %{name}
+Summary:        The linear algebra dependency for %{name}
 Group:          Development/Libraries/C and C++
-Requires:       m4ri
+Requires:       m4ri = %{version}
 
 %description    -n m4ri-devel
 This package contains m4ri development libraries and headers for %{name}.
@@ -289,6 +290,10 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{_libdir}/libm4ri.so
 %attr(644, root, root) %{_libdir}/libm4ri.a
 %{_includedir}/m4ri
+
+%post -n m4ri -p /sbin/ldconfig
+%postun -n m4ri -p /sbin/ldconfig
+
 %endif
 
 %changelog
