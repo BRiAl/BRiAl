@@ -1707,11 +1707,16 @@ if have_l2h or have_t4h or HAVE_DOXYGEN:
             tutorial = env.TeXToHt(env.Dir(DocPath('tutorial/tutorial')),
                                    tutorial_srcs)    
 
-    documastersubdirs = ["tutorial/tutorial", "c++"] + [
-        path.basename(elt) for elt in glob(DocPath("python*"))]
-    
-    if docpybase not in documastersubdirs:
-        documastersubdirs += [docpybase]
+    documastersubdirs = []
+    if have_l2h or have_t4h:
+        documastersubdirs += ["tutorial/tutorial"]
+    if HAVE_DOXYGEN:
+        documastersubdirs += ["c++"]
+
+    if have_pydoc and HAVE_PYTHON_EXTENSION:
+        documastersubdirs += [path.basename(elt) for elt in glob(DocPath("python*"))]
+        if docpybase not in documastersubdirs:
+            documastersubdirs += [docpybase]
 
     docmstr = env.DocuMaster(DocPath('index.html'),
                              [DocPath('index.html.in')] + [
@@ -2066,16 +2071,16 @@ Type=Application
         env.Depends('install-docs', 'prepare-docs')
         env.Alias('install', 'install-docs')
 
-
 env.Alias('prepare-static',  stlibs)
-env.Alias('prepare-install',
-          dylibs + readabledevellibs + [DocPath()])
+env.Alias('prepare-install', dylibs + readabledevellibs)
+
+if have_l2h or have_t4h or  HAVE_DOXYGEN or have_pydoc:
+    env.Alias('prepare-install', [DocPath()])
 
 if HAVE_PYTHON_EXTENSION:
     env.Alias('prepare-install', [BuildPyPBPath(), pyroot])
 
 env.Alias('prepare-devel',  ['prepare-static', 'prepare-install'])
-
 
 
 for sfx in [pyconf.major, pyconf.version]:
