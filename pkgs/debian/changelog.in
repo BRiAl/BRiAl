@@ -2,7 +2,7 @@ polybori (0.8.3-0) experimental; urgency=low
 
   * Minor release of the PolyBoRi framework. (obsolete soon: official package scheduled)
 
- -- Alexander Dreyer <adreyer@gmx.de> Fri Jan 18 14:33:32 CET 2013
+ -- Alexander Dreyer <adreyer@gmx.de> Fri, 18 Jan 2013 14:33:32 +0100
 
 polybori (0.8.2-0) experimental; urgency=low
 
