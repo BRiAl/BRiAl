@@ -447,8 +447,11 @@ def setup_env(defaultenv):
     opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
 
     opts.Add('M4RIURL', 
-             "Fallback URL (or local file) for missing m4ri download: '' skips",
-             'http://m4ri.sagemath.org/downloads/m4ri-20121224.tar.gz')
+             """Source destinations for missing m4ri download: 
+space-separated list of local files or pairs <URL>#<MD5>, '' skips""",
+             """m4ri-20121224.tar.gz
+             http://m4ri.sagemath.org/downloads/m4ri-20121224.tar.gz#1a2a59b547fed9e825ff9135a21ba53b""",
+             converter=Split)
 
     opts.Add(BoolVariable('DOCS',
                           "Build/install platform-independent documantation",
@@ -752,17 +755,23 @@ if not env.GetOption('clean'):
 
 
 
-    def M4RIConfig(context, url, tmpdir):
+    def M4RIConfig(context, url, hash, tmpdir):
 
                 def userAction(target,source,env):
                     import urllib
                     (tmpfile, headers) = urllib.urlretrieve(url, target[0].abspath)
+                    if hash or not path.exists(env.File(url).abspath):
+                        import hashlib
+                        m = hashlib.md5()
+                        for elt in open(tmpfile,"rb").readlines(): m.update(elt)
+                        if m.hexdigest() != hash: return "hash mismatch"
 
                     import tarfile
                     tar = tarfile.open(tmpfile)
                     if not path.exists(tmpdir): Mkdir(tmpdir)
                     tar.extractall(tmpdir)
                     tar.close()
+                    env.Execute(Move(path.join(tmpdir, path.basename(url)), tmpfile))
                     return None
 
                 context.Message("  Downloading m4ri sources from " + repr(url) \
@@ -922,15 +931,19 @@ if not env.GetOption('clean'):
            
     else:
             tmpdir = BuildPath('tmp')
-            url = env.subst('$M4RIURL')
-            m4ri_name = path.basename(url).split('.')[0]
-            m4ri_dir = path.join(tmpdir, m4ri_name)
+            urls = [(elt + '#').split('#')[:2] for elt in Split(env.subst('$M4RIURL'))]
+            for (url, hash) in urls:
+                m4ri_name = path.basename(url).split('.')[0]
+                m4ri_dir = path.join(tmpdir, m4ri_name)
 
-            if conf.M4RIConfig(url, tmpdir):
-                env.Prepend(CPPPATH=m4ri_dir)
-                libm4ri = ['m4ri']
-                external_m4ri = retrieve_m4ri = m4ri_png = True
-            else:
+                if conf.M4RIConfig(url, hash, tmpdir):
+                    env.Prepend(CPPPATH=m4ri_dir)
+                    libm4ri = ['m4ri']
+                    external_m4ri = retrieve_m4ri = m4ri_png = True
+                    env['PB_M4RI_SRC'] = m4ri_name + '.tar.gz'
+                    env['M4RIVERSION'] = m4ri_name[-8:]
+                    break
+            if not external_m4ri:
                 print "  Cannot build without m4ri!"
                 Exit(1)
 
@@ -1007,6 +1020,7 @@ if env['M4RI_RPM']:
     env['PB_M4RI_RPM'] = "1"
 else:
     env['PB_M4RI_RPM'] = "0"
+    
 
 # Resoruces for including anything into the PyPolyBoRi shared library
 shared_resources = []
@@ -1724,12 +1738,17 @@ if rpm_generation:
                                                    pbrpmname),
                                            allsrcs, DISTTAR_FORMAT = 'bz2'))
     env.AddPostAction(rpmsrcs, correctgid)
-    
+
     pbspec = FinalizeNonExecs(env.SpecBuilder(SpecsPath(pboriname +'.spec'),
                                               RPMPath('PolyBoRi.spec.in')))
-
-        
+       
     env.AddPostAction(pbspec, correctgid)
+
+    if retrieve_m4ri:
+        m4ri_srcs = Install(RPMPath('SOURCES'),
+                            BuildPath('tmp', m4ri_name + '.tar.gz'))
+        env.AddPostAction(m4ri_srcs, correctgid)
+        env.Depends(pbspec, m4ri_srcs)
 
     env.AlwaysBuild(pbspec)
     env.Alias('prepare-rpm', pbspec)
@@ -1750,7 +1769,8 @@ if rpm_generation:
     env.Alias('srpm', pbsrpm)
     env.Alias('rpm', pbrpm)
 
-
+    env.Clean(RPMPath, [RPMPath(elt) for elt in Split("""RPMS SRPMS BUILD
+        SPEC SOURCES""")])
 
 if prepare_deb or generate_deb:
     debsrc = env.SubstInstallAs(DebInstPath('changelog'),
@@ -2079,19 +2099,19 @@ env.Alias('dump_default', 'SConstruct')
 
 if retrieve_m4ri:
     m4ribld = env.Command([BuildLibPath("libm4ri.so"),
-                           BuildLibPath("libm4ri-0.0." + m4ri_name[-8:] + ".so"),
+                           BuildLibPath("libm4ri-0.0." + env['M4RIVERSION'] + ".so"),
                            BuildLibPath("libm4ri.a")],
                           [BuildPath('tmp', m4ri_name, 'configure'),
                            BuildPath('tmp', m4ri_name, 'm4ri/config.h')],
                           "cd ${SOURCE.dir.abspath}; make && make install")
     
     env.Alias("install",
-              env.Install(DevelInstLibPath(), 
-                          [BuildLibPath("libm4ri-0.0." + m4ri_name[-8:] + \
+              env.Install(DevelInstLibPath(),
+                          [BuildLibPath("libm4ri-0.0." + env['M4RIVERSION'] + \
                                             ".so"),
                            BuildLibPath("libm4ri.a")]) +
               env.SymLink(DevelInstLibPath("libm4ri.so"),
-                          DevelInstLibPath("libm4ri-0.0." + m4ri_name[-8:] + \
+                          DevelInstLibPath("libm4ri-0.0." + env['M4RIVERSION'] + \
                                            ".so")))
     
     if env['PKGCONFIGPATH']:
@@ -2107,7 +2127,6 @@ if retrieve_m4ri:
     env.Append(LIBPATH=BuildLibPath())
     env.Depends(libgbShared + pypb, m4ribld)
     env.Clean(BuildPath('tmp'), m4ri_dir)
-
 
 
 env.Alias('install-devel', ['install-static', 'install-headers'])

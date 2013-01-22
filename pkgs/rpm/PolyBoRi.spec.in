@@ -21,6 +21,7 @@
 %else
 %define pbori_have_mr4i_rpm 0
 %define pbori_have_not_mr4i_rpm 1
+%define pbori_mr4i_url M4RIURL=%{SOURCE1}
 %endif
 
 %define pbori_instdir %{_datadir}/%{name}
@@ -77,6 +78,9 @@ License: GPL-2.0+
 Group: Productivity/Scientific/Math
 URL: http://polybori.sf.net
 Source0: %{name}-%{version}.tar.bz2
+%if %{pbori_have_not_mr4i_rpm}
+Source1: $PB_M4RI_SRC
+%endif
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Requires: python-%{name} = %{version}-%{release}
 %if 0%{?fedora_version} >= 16
@@ -235,6 +239,11 @@ rm -rf $RPM_BUILD_ROOT
 %post -n libpolybori_groebner-%{pbori_vernaming} -p /sbin/ldconfig
 %postun -n libpolybori-%{pbori_vernaming} -p /sbin/ldconfig
 %postun -n libpolybori_groebner-%{pbori_vernaming} -p /sbin/ldconfig
+%if %{pbori_have_not_mr4i_rpm}
+%post -n m4ri -p /sbin/ldconfig
+%postun -n m4ri -p /sbin/ldconfig
+%endif
+
 
 %files
 %defattr(-,root,root,-)
@@ -290,9 +299,6 @@ rm -rf $RPM_BUILD_ROOT
 %attr(755, root, root) %{_libdir}/libm4ri.so
 %attr(644, root, root) %{_libdir}/libm4ri.a
 %{_includedir}/m4ri
-
-%post -n m4ri -p /sbin/ldconfig
-%postun -n m4ri -p /sbin/ldconfig
 
 %endif
 
