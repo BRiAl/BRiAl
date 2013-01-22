@@ -1931,9 +1931,7 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
         env.Dir(InstDocPath(srcs)) for srcs in instdocumastersubdirs]))
 
     env.Depends(instdocu, tutorialinst)
-    if not path.exists(InstDocPath()):
-        env.Execute(Mkdir(InstDocPath()))
-    
+     
     if HAVE_DOXYGEN:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)
