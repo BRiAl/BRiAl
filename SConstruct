@@ -33,6 +33,16 @@ m4ri=[path.join("M4RI/m4ri", m) for m in m4ri]
 
 m4ri_inc = 'M4RI'
 
+def ensure_dir(target):
+    if not path.exists(target):
+        try:
+            os.makedirs(target)
+        except:
+            # Maybe just a race condition occured, because two processes trixy
+            # to generate the directory at the same time. (This I could ignore.)
+            if not path.exists(target) and os.isdir(target):
+                raise RuntimeError, "Could not mkdir " + target
+
 
 def pathsplit(p, rest=[]):
     (h,t) = os.path.split(p)
@@ -768,7 +778,7 @@ if not env.GetOption('clean'):
 
                     import tarfile
                     tar = tarfile.open(tmpfile)
-                    if not path.exists(tmpdir): Mkdir(tmpdir)
+                    if not path.exists(tmpdir): ensure_dir(tmpdir)
                     tar.extractall(tmpdir)
                     tar.close()
                     env.Execute(Move(path.join(tmpdir, path.basename(url)), tmpfile))
@@ -1496,14 +1506,7 @@ def cp_all(target, source, env):
     source = source[0].path
     target = target[0].path
 
-    if not path.exists(target):
-        try:
-            os.makedirs(target)#env.Execute(Mkdir(target))
-        except:
-            # Maybe just a race condition occured, because two processes trixy
-            # to generate the directory at the same time. (This I could ignore.)
-            if not path.exists(target):
-                raise RuntimeError, "Could not mkdir " + target
+    ensure_dir(target)
 
     for patt in env['COPYALL_PATTERNS']:
         for filename in glob(path.join(source, patt)):
@@ -1526,14 +1529,8 @@ def cp_pydoc(target, source, env):
     import re
     patt = re.compile('(file:|)/[^\" ]*' + pyroot, re.VERBOSE)
 
-    if not path.exists(target):
-        try:
-            os.makedirs(target)#env.Execute(Mkdir(target))
-        except:
-            # Maybe just a race condition occured, because two processes trixy
-            # to generate the directory at the same time. (This I could ignore.)
-            if not path.exists(target):
-                raise RuntimeError, "Could not mkdir " + target
+    ensure_dir(target)
+
     showpath = env.relpath(env.Dir(target).abspath,
                            env.Dir(env['PYINSTALLPREFIX']).abspath)
 
@@ -1766,8 +1763,7 @@ if rpm_generation:
                            pbspec + rpmsrcs)
 
     def provide_builddir(target, source, env):
-        if not path.exists(RPMPath('BUILD')):
-            env.Execute(Mkdir(RPMPath('BUILD')))
+        ensure_dir(RPMPath('BUILD'))
     
     env.AddPreAction(pbrpm, provide_builddir)
     env.AlwaysBuild(pbrpm)
@@ -1936,8 +1932,7 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)
 
-    if not path.exists(InstDocPath()):
-        env.Execute(Mkdir(InstDocPath())) # Avoid race condition Which CopyAll first
+    ensure_dir(InstDocPath())
     
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
