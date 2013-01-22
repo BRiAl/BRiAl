@@ -55,8 +55,8 @@ def build_and_print_matrices(v, strat):
 
     global mat_counter
     mat_counter = mat_counter + 1
-    import Image
-    import ImageDraw
+    from PIL import Image
+    from PIL import ImageDraw
 
     rows = len(polys_in_mat)
     cols = len(m2i)
@@ -131,9 +131,9 @@ def build_and_print_matrices_deg_colored(v, strat):
     polys_in_mat.sort(key=pkey)
     global mat_counter
     mat_counter = mat_counter + 1
-    import Image
-    import ImageDraw
-    import ImageColor
+    from PIL import Image
+    from PIL import ImageDraw
+    from PIL import ImageColor
 
     rows = len(polys_in_mat)
     cols = len(m2i)
