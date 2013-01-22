@@ -1932,7 +1932,8 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)
 
-    env.Execute(Mkdir(InstDocPath())) # Avoid race condition Which CopyAll first
+    if not path.exists(InstDocPath()):
+        env.Execute(Mkdir(InstDocPath())) # Avoid race condition Which CopyAll first
     
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
