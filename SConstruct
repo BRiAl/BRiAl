@@ -2069,7 +2069,10 @@ Type=Application
 
 env.Alias('prepare-static',  stlibs)
 env.Alias('prepare-install',
-          dylibs + readabledevellibs + [BuildPyPBPath(), pyroot, DocPath()])
+          dylibs + readabledevellibs + [DocPath()])
+
+if HAVE_PYTHON_EXTENSION:
+    env.Alias('prepare-install', [BuildPyPBPath(), pyroot])
 
 env.Alias('prepare-devel',  ['prepare-static', 'prepare-install'])
 
