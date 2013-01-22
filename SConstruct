@@ -2128,7 +2128,7 @@ if retrieve_m4ri:
 
     env.Alias("m4ri-build", m4ribld)
     env.Append(LIBPATH=BuildLibPath())
-    env.Depends(libgbShared + pypb, m4ribld)
+    env.Depends(libgbShared, m4ribld)
     env.Clean(BuildPath('tmp'), m4ri_dir)
 
 
