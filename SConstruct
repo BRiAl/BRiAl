@@ -1469,6 +1469,7 @@ dylibs_readable_inst = SymlinkReadableLibname(dylibs_inst)
 
 devellibs_inst = dylibs_readable_inst + dylibs_inst + stlibs_inst
 
+env.Alias('install', dylibs_inst + dylibs_readable_inst)
 
 # Installation for development purposes
 if 'devel-install' in COMMAND_LINE_TARGETS or \
