@@ -2046,7 +2046,6 @@ Name=PolyGUI
 Path=
 StartupNotify=false
 Terminal=false
-TerminalOptions=
 Type=Application
 """ % path.basename(str(source[0]))
             open(str(target[0]), 'w').writelines(page)
