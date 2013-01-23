@@ -40,7 +40,7 @@ def ensure_dir(target):
         except:
             # Maybe just a race condition occured, because two processes trixy
             # to generate the directory at the same time. (This I could ignore.)
-            if not path.exists(target) and os.isdir(target):
+            if not path.exists(target):
                 raise RuntimeError, "Could not mkdir " + target
 
 
@@ -1721,7 +1721,12 @@ if have_l2h or have_t4h or HAVE_DOXYGEN:
             env.Dir(DocPath(srcs)) for srcs in documastersubdirs ])
     
     # build-independent doc targets
-    env.Alias('prepare-docs', docmstr + [DocPath('c++'), DocPath('tutorial')])
+    if have_l2h or have_t4h:
+        env.Alias('prepare-docs', DocPath('tutorial'))
+    if HAVE_DOXYGEN:
+        env.Alias('prepare-docs', DocPath('c++'))
+
+    env.Alias('prepare-docs', docmstr)
     env.Alias('docs', 'prepare-docs')
 
 # Clean, even, if L2H/TexToHt are not available anymore
@@ -2069,8 +2074,6 @@ Type=Application
 env.Alias('prepare-static',  stlibs)
 env.Alias('prepare-install', dylibs + readabledevellibs)
 
-if have_l2h or have_t4h or  HAVE_DOXYGEN or have_pydoc:
-    env.Alias('prepare-install', [DocPath()])
 
 if HAVE_PYTHON_EXTENSION:
     env.Alias('prepare-install', [BuildPyPBPath(), pyroot])
