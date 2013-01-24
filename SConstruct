@@ -936,7 +936,11 @@ if not env.GetOption('clean'):
         libm4ri = ['m4ri']
         if conf.CheckFunc('testing_m4ri_PNGs', """
         #include <m4ri/io.h>
-        #define testing_m4ri_PNGs() mzd_to_png(NULL,"",0,"",0)"""):
+        #if defined(__M4RI_HAVE_LIBPNG) && __M4RI_HAVE_LIBPNG
+        #define testing_m4ri_PNGs() 
+        #else
+        #define testing_m4ri_PNGs() fail fail fail
+        #endif """):
             m4ri_png = True
            
     else:
