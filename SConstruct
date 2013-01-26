@@ -1903,11 +1903,12 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
     htmlpatterns = Split("*.html *.css *.png *gif *.jpg")
 
     # Copy python documentation
-    pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath(docpybase)),
-                               env.Dir(DocPyPath()))
+    if have_pydoc and HAVE_PYTHON_EXTENSION:
+        pydocuinst = env.CopyPyDoc(env.Dir(InstDocPath(docpybase)),
+                                   env.Dir(DocPyPath()))
 
-    env.Depends(pydocuinst, pydocu)
-    env.Clean(pydocuinst, pydocuinst)
+        env.Depends(pydocuinst, pydocu)
+        env.Clean(pydocuinst, pydocuinst)
 
     # Copy Cudd documentation
     #CopyAll(InstDocPath('cudd'), 'Cudd/cudd/doc', env) 
@@ -1925,8 +1926,9 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
          
         
     # Generate html master
-    instdocumastersubdirs = ["tutorial", "c++"] +  [
-        path.basename(elt) for elt in glob("doc/python*")]
+    instdocumastersubdirs = ["tutorial", "c++"]
+    if have_pydoc and HAVE_PYTHON_EXTENSION:
+        instdocumastersubdirs +=  [path.basename(elt) for elt in glob("doc/python*")]
 
     if ('install' in COMMAND_LINE_TARGETS) and \
            (docpybase not in instdocumastersubdirs):
