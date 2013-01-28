@@ -33,7 +33,8 @@ m4ri=[path.join("M4RI/m4ri", m) for m in m4ri]
 
 m4ri_inc = 'M4RI'
 
-def ensure_dir(target):
+def ensure_dir(target, env):
+    target = env.subst(target)
     if not path.exists(target):
         try:
             os.makedirs(target)
@@ -778,7 +779,7 @@ if not env.GetOption('clean'):
 
                     import tarfile
                     tar = tarfile.open(tmpfile)
-                    if not path.exists(tmpdir): ensure_dir(tmpdir)
+                    if not path.exists(tmpdir): ensure_dir(tmpdir, env)
                     tar.extractall(tmpdir)
                     tar.close()
                     env.Execute(Move(path.join(tmpdir, path.basename(url)), tmpfile))
@@ -1530,7 +1531,7 @@ def cp_all(target, source, env):
     source = source[0].path
     target = target[0].path
 
-    ensure_dir(target)
+    ensure_dir(target, env)
 
     for patt in env['COPYALL_PATTERNS']:
         for filename in glob(path.join(source, patt)):
@@ -1553,7 +1554,7 @@ def cp_pydoc(target, source, env):
     import re
     patt = re.compile('(file:|)/[^\" ]*' + pyroot, re.VERBOSE)
 
-    ensure_dir(target)
+    ensure_dir(target, env)
 
     showpath = env.relpath(env.Dir(target).abspath,
                            env.Dir(env['PYINSTALLPREFIX']).abspath)
@@ -1792,7 +1793,7 @@ if rpm_generation:
                            pbspec + rpmsrcs)
 
     def provide_builddir(target, source, env):
-        ensure_dir(RPMPath('BUILD'))
+        ensure_dir(RPMPath('BUILD'), env)
     
     env.AddPreAction(pbrpm, provide_builddir)
     env.AlwaysBuild(pbrpm)
@@ -1963,7 +1964,7 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
         env.Depends(instdocu, cxxdocinst)
         env.Depends(cxxdocinst, tutorialinst)
 
-    ensure_dir(InstDocPath())
+    ensure_dir(InstDocPath(), env)
     
     # Non-executables to be installed
     pyfile_srcs = glob(PyRootPath('polybori/*.py'))
