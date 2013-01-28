@@ -12,9 +12,13 @@ if not 'Variables' in globals():
 pboriname = 'PolyBoRi'
 try:
     versionnumber = open('versionnumber', 'r').read().rstrip() + "-0"
-    (pboriversion, pborirelease) = versionnumber.split('-')[:2]
+    (pboriversion, pborirevision) = versionnumber.split('-')[:2]
+    pborifullrevision = (pborirevision.split('.') + ['0', '0', '0'])[:3]
+    pborirelease = pborifullrevision[0]
 except:
     pboriversion = "0.0"
+    pborirevision = "0"
+    pborifullrevision = ['0', '0', '0']
     pborirelease = "0"
 
 
@@ -446,7 +450,7 @@ def setup_env(defaultenv):
                 print "Variable", var, "not in default environment!"
 
     opts.Add('LIBRARY_VERSION', "libtool-style library version", 
-             pborirelease + '.0.0')
+             '.'.join(pborifullrevision))
 
     opts.Add('CONFFILE', "Dump settings to file, if given", '')
     opts.Add('PKGCONFIGPATH', 
@@ -602,7 +606,7 @@ def config_h_build(target, source, env):
 %(defs)s
 #endif /* polybori_config_h_ */
 """
-    config_ver = pboriversion + '.' + pborirelease
+    config_ver = pboriversion + '.' + pborirevision
 
     for a_target, a_source in zip(target, source):
         config_h = file(str(a_target), "w")
@@ -1029,7 +1033,7 @@ have_pydoc = env['HAVE_PYDOC']
 # Platoform-independent stuff
 
 env['PBVERSION'] = pboriversion
-env['PBRELEASE'] = pborirelease
+env['PBRELEASE'] = pborirevision
 
 if env['M4RI_RPM']:
     env['PB_M4RI_RPM'] = "1"
@@ -1753,7 +1757,7 @@ env.Clean(DocPath('tutorial'),
           [glob(DocPath('tutorial/tutorial' + sfx)) for sfx 
            in Split("*.html .4* .aux .css .dvi .idv .l*g .tmp .xref")])
 
-pbrpmname = pboriname + '-' + pboriversion + "." + pborirelease 
+pbrpmname = pboriname + '-' + pboriversion + "." + pborirevision 
 
 if rpm_generation:
     # Some file servers use invalid group-ids, so change to current gid
@@ -1816,7 +1820,7 @@ if prepare_deb or generate_deb:
         debsrc += env.Install(DebInstPath(), DebPath(src))
         
     debsrc += env.InstallAs(DebInstPath('libpolybori-' + pboriversion +
-                                        '.' + pborirelease   +'-0.install'),
+                                        '.' + pborirevision   +'-0.install'),
                             DebPath('libpolybori0.install'))
         
     env.Alias('prepare-debian', DebInstPath())
@@ -2038,7 +2042,7 @@ Requires: %s
 Cflags: $CXXFLAGS $CCFLAGS $_CCCOMCOM
 Libs: %s
             """ % (env.File(target[0]).name.replace('.pc',''),
-                   pboriversion + '.' + pborirelease,
+                   pboriversion + '.' + pborirevision,
                    libs, libflags)
             page = localenv.subst_target_source(page).replace(env.subst("$DESTDIR"),'') + '\n'
             open(str(target[0]), 'w').writelines(page)
