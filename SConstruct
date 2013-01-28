@@ -1373,7 +1373,7 @@ imp.load_dynamic("polybori.dynamic.PyPolyBoRi", _location())
                 pyconf.libs + libm4ri + GD_LIBS,
             CPPDEFINES=env["CPPDEFINES"]+["PB_STATIC_PROFILING_VERSION"])
 
-elif extern_python_ext:
+elif env['EXTERNAL_PYTHON_EXTENSION']:
     dynamic_init_py = env.Command(PyRootPath('polybori/dynamic/__init__.py'), 
                                   [], [Touch("$TARGET")])
 
