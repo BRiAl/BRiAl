@@ -1902,17 +1902,17 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
                                      '$PYINSTALLPREFIX')
     
     for instfile in [ IPBPath('ipbori')]:
-        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile + pyconf.version), instfile))
 
     for instfile in [ GUIPath('PolyGUI') ]:
-        FinalizeExecs(env.SubstInstallAs(InstPath(instfile), instfile))
+        FinalizeExecs(env.SubstInstallAs(InstPath(instfile + pyconf.version), instfile))
 
     for instfile in [GUIPath('cnf2ideal.py')]:
         pyfiles += env.InstallAs(InstPath(instfile), instfile)
         
     for instfile in [ GUIPath('polybori.png') ]:
         env.InstallAs(InstPath(instfile), instfile)
-    
+
     # Copy c++ documentation
     if HAVE_DOXYGEN:
         cxxdocinst = env.CopyAll(env.Dir(InstDocPath('c++')),
@@ -1991,20 +1991,20 @@ if 'install' in COMMAND_LINE_TARGETS or 'install-docs' in COMMAND_LINE_TARGETS:
                                           '$PYINSTALLPREFIX')       
 
     # Symlink from executable into bin directory
-    ipboribin = env.SymLink(InstExecPath('ipbori'),
-                            InstPath(IPBPath('ipbori'))) + \
+    ipboribin = env.SymLink(InstExecPath('ipbori' + pyconf.version),
+                            InstPath(IPBPath('ipbori' + pyconf.version))) + \
     env.SymLink(InstExecPath('ipbori' + pyconf.major),
-                InstExecPath('ipbori')) + \
-    env.SymLink(InstExecPath('ipbori' + pyconf.version),
-                InstExecPath('ipbori'))
+                InstExecPath('ipbori' + pyconf.version)) + \
+    env.SymLink(InstExecPath('ipbori'),
+                InstExecPath('ipbori' + pyconf.version))
 
 
-    guibin = env.SymLink(InstExecPath('PolyGUI'),
-                         InstPath(GUIPath('PolyGUI'))) + \
+    guibin = env.SymLink(InstExecPath('PolyGUI' + pyconf.version),
+                         InstPath(GUIPath('PolyGUI' + pyconf.version))) + \
     env.SymLink(InstExecPath('PolyGUI' + pyconf.major),
-                InstExecPath('PolyGUI')) + \
-    env.SymLink(InstExecPath('PolyGUI' + pyconf.version),
-                InstExecPath('PolyGUI'))
+                InstExecPath('PolyGUI' + pyconf.version)) + \
+    env.SymLink(InstExecPath('PolyGUI'),
+                InstExecPath('PolyGUI' + pyconf.version))
     
     env.AlwaysBuild(ipboribin)   
     env.Alias('install', ipboribin)
