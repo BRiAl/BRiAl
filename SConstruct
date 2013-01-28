@@ -348,7 +348,7 @@ def setup_env(defaultenv):
     opts.Add('GD_LIBS', 'Library gb and its dependencies (if needed)', 
              ["gd"], converter = Split)
 
-    opts.Add('PREFIX', 'installation prefix directory', '/usr/local')
+    opts.Add('PREFIX', 'installation prefix directory', '$DESTDIR/usr/local')
     opts.Add('EPREFIX','executables installation prefix directory', '$PREFIX/bin')
 
     opts.Add('INSTALLDIR', 'end user installation directory',
@@ -359,7 +359,7 @@ def setup_env(defaultenv):
              '$PREFIX/man')
     opts.Add('ICONDIR', 'Icon installation directory', '$PREFIX/share/pixmaps')
     opts.Add('PYINSTALLPREFIX',
-             'python modules directory (default is built-in site)', '$PYTHONSITE')
+             'python modules directory (default is built-in site)', '$DESTDIR$PYTHONSITE')
 
     opts.Add('DEVEL_PREFIX',
              'development version installation directory','$PREFIX' )
@@ -454,7 +454,7 @@ def setup_env(defaultenv):
     opts.Add('DESKTOPPATH', 
              "Generate .desktop file in given path, if given", '')
 
-    opts.Add('TMPINSTALLDIR', "Temporary installation directory, if given", '')
+    opts.Add('DESTDIR', "Temporary installation directory, if given", '')
 
     opts.Add('M4RIURL', 
              """Source destinations for missing m4ri download: 
@@ -2045,7 +2045,7 @@ Libs: %s
             """ % (env.File(target[0]).name.replace('.pc',''),
                    pboriversion + '.' + pborirelease,
                    libs, libflags)
-            page = localenv.subst_target_source(page).replace(env.subst("$TMPINSTALLDIR"),'') + '\n'
+            page = localenv.subst_target_source(page).replace(env.subst("$DESTDIR"),'') + '\n'
             open(str(target[0]), 'w').writelines(page)
 
             return None
