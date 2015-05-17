@@ -1,0 +1,10 @@
+ACLOCAL_AMFLAGS = -I m4
+
+SUBDIRS = Cudd/cudd libpolybori . groebner
+
+lib_LTLIBRARIES = libpolybori.la
+
+libpolybori_la_SOURCES =
+libpolybori_la_LIBADD = \
+	Cudd/cudd/libcudd.la \
+	libpolybori/src/libpolybori_base.la
