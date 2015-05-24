@@ -29,7 +29,6 @@ nobase_include_HEADERS = \
 	polybori/diagram/CCuddDDFacade.h \
 	polybori/diagram/CDDOperations.h \
 	polybori/diagram/CNodeCounter.h \
-	polybori/embed.h \
 	polybori/except/CErrorInfo.h \
 	polybori/except/PBoRiError.h \
 	polybori/except/PBoRiGenericError.h \

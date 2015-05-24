@@ -3,10 +3,10 @@ Michael Brickenstein (MFO), brickenstein@mfo.de
 Alexander Dreyer (ITWM), alexander.dreyer@itwm.fraunhofer.de
 
 PolyBoRi is a joint project of the following institutions
-* Mathematisches Forschungsinstitut Oberwolfach (MFO), 
+* Mathematisches Forschungsinstitut Oberwolfach (MFO),
   Oberwolfach, Germany,
 * University of Kaiserslautern, Department of Mathematics,
-  Algebra, Geometry and Computer Algebra Group, 
+  Algebra, Geometry and Computer Algebra Group,
   Kaiserslautern, Germany, and
 * Fraunhofer Institute for Industrial Mathematics (ITWM),
   Department of System Analysis, Prognosis and Control,
@@ -20,154 +20,6 @@ Prerequisites:
 For building the PolyBoRi framework, the following tools and libraries are
 needed:
 * gcc 3.3.0 or newer
-* python 2.4 (deprecated) or python 2.5 (recommended)
-* scons (v0.96 or later, recommended v0.98 or later)
-* the boost library, version 1.33.1 (for python 2.4; deprecated) or 
-  version 1.34.1 (for python 2.5; recommended), version 1.36.1 (for unit tests)
+* the boost library, version 1.33.1
 
 In addition, for running the ipbori command line tool IPython is needed.
-
-
-Installation:
-=============
-Changing to the build directory (where you find this README file), and typing  
-
-  scons install PREFIX=/prefix/path/ PYINSTALLPREFIX=/python/path/site-packages
-
-should be enough to build and install PolyBoRi.
-PREFIX defaults to /usr/local. The standard value from PYINSTALLPREFIX is extracted from the
-corresponding python executable (customizable via PYTHON).
-
-There are several installation locations which depend on PREFIX per default,
-(e.g. INSTALLDIR and DOCDIR). But those are custumizable, too. See
-
-  scons -h
-
-for more information and default values. There's also an exhaustive 'ipbori'
-tutorial in the DOCDIR.
-
-If might also be useful to add some custom setting to the file 'custom.py' in
-the build directory, see the following example.
-
---- custom.py ---
-# User variables
-CFLAGS = ""
-CCFLAGS = "-g -O3  -ansi --pedantic -Wno-long-long -pg"
-CXXFLAGS = "$CCFLAGS -ftemplate-depth-100"
-LINKFLAGS=" -Xlinker -export-dynamic -pthread -ldl  -pg" 
-
-# DEFAULT_<flags> will be appended by default. State the default flags
-# explicitely, if you want to append flags afterwards, e.g.
-LINKFLAGS='-Ddef1 $$DEFAULT_LINKFLAGS -Ddef2'
-
-# See also SHCFLAGS, SHCCFLAGS, SHCXXFLAGS, and SHLINKFLAGS
-
-LIBS=["util"]
-# means that this line is not activated.
-#LIBPATH = ["/custom/lib/path1", "/custom/lib/path2"]
-#CPPPATH = ["/custom/include/path1", "/custom/include/path2"]
-#PYPREFIX = 
-#PBP = "python"
------------------
-
-Typing 
-
-  scons devel-install DEVEL-PREFIX=/prefix/for/usr
-
-generates and installs PolyBoRi headers and libraries for developers.
-
-
-Type 
-
-  scons -h
-
-for more infos about possible custom settings.
-
-
-Additional targets
-==================
-
-Type
-
-  scons <target>
-
-for making other targets by alias. Valid aliases are
-
-distribute      gzipped source tarball
-srpm, rpm       generate (source)-rpm from data in pkgs/rpm
-prepare-debian  generate debian/ folder from data in pkgs/debian
-deb             generate debian package
-
-install         install ipbori, documentation, and python iterface
-prepare-install build, what install needs
-
-devel-install   headers and standalone libraries (without python interface)
-prepare-devel   build, what devel-install needs
-
-Usage:
-======
-Provided that /prefix/for/executables/bin is in your path, typing 
-
-  ipbori
-
-starts an IPython session with the PolyBoRi framework loaded.
-
-
-Python embedding
-================
-For utilizing its full capabilites please use PolyBoRi via python. To simplify
-embedding into C++-based software you may include the header polybori/embed.h
-and use the functionality defined therein.
-See testsuite/src/embedTest.cc for an extensive example.
-
-
-Workaround for scons 0.96.x
-===========================
-
-Please note, that scons 0.96.x is not officially supported anymore, so the
-following may be out of date
-
-The currently used CFLAGS/CCFLAGS/CXXFLAGS mechanism was introduced in the 0.97
-branch of scons. Using a version from the 0.96 branch CCFLAGS must contain all
-flags for the C-compiler, while CXXFLAGS has to carry all flags for CXX.
-
-These settings may be changed using the file custom.py described above. One has
-to add the following lines:
-
-CXXFLAGS = "-O3 -std=c++98 -ftemplate-depth-100"
-CCFLAGS  = "-O3 -std=c99"
-
-Alternatively, one can append the following lines to custom.py:
-
-CXXFLAGS += " " + CCFLAGS
-CCFLAGS += " $CFLAGS"
-
-
-Sun Studio compiler
-===================
-We recommend to use gcc for compiling PolyBoRi, but compiling with Sun STudio's
-C++ in principle possible (albeit untested) with the following settings:
-CC="/opt/SUNWspro/bin/cc"
-CXX="/opt/SUNWspro/bin/CC"
-CXXFLAGS="-library=stlport4"
-CCFLAGS="-library=stlport4"
-
-Also CPPPATH, LIBPATH and PYTHON might be adjusted to use library/binaries, which
-are compatible with the stlport4 option.
-
-
-cygwin
-======
-In the main directory generate a file custom.py with the following content:
-
-BOOST_PYTHON = 'boost_python-mt'
-BOOST_TEST = 'boost_unit_test_framework-mt'
-HAVE_L2H = False
-HAVE_HEVEA = False
-HAVE_TEX4HT = False
-DEFAULT_LINKFLAGS=[]
-SHLIBVERSIONING=False
-DEVEL_LIB_PREFIX = '$EPREFIX' # dlls needs to be placed here?
-
-====================
-See also: Singular/README

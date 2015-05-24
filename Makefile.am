@@ -8,3 +8,8 @@ libpolybori_la_SOURCES =
 libpolybori_la_LIBADD = \
 	Cudd/cudd/libcudd.la \
 	libpolybori/src/libpolybori_base.la
+
+EXTRA_DIST = \
+	Cudd/LICENSE \
+	LICENSE \
+	README
