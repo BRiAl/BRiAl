@@ -16,5 +16,7 @@ cuddincludedir = $(includedir)/polybori/cudd
 
 cuddinclude_HEADERS = \
 	cudd.h \
-	cuddInt.h \
+	cuddInt.h
+
+noinst_HEADERS = \
 	util.h

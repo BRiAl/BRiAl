@@ -81,3 +81,7 @@ nobase_include_HEADERS = \
 	polybori/routines/pbori_routines_misc.h \
 	polybori/routines/pbori_routines_order.h \
 	polybori.h
+
+noinst_HEADERS = \
+	polybori/cudd/cudd.h \
+	polybori/cudd/cuddInt.h
