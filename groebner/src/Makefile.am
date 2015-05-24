@@ -2,8 +2,11 @@ include $(top_srcdir)/common.mk
 
 lib_LTLIBRARIES = libpolybori_groebner.la
 
-libpolybori_groebner_la_LDFLAGS = -lpng12 -lm4ri
-libpolybori_groebner_la_LIBADD = $(top_srcdir)/libpolybori.la
+libpolybori_groebner_la_LIBADD = \
+	$(top_srcdir)/libpolybori.la \
+	$(LIBPNG_LIBADD) \
+	$(M4RI_LIBS) \
+	$(GD_LIBS)
 
 libpolybori_groebner_la_SOURCES = \
 	dlex4data.cc \

@@ -4,3 +4,5 @@ AM_CPPFLAGS = \
 
 AM_CFLAGS = -std=c99
 AM_CXXFLAGS = -std=c++98 -ftemplate-depth-100
+
+AM_DEFAULT_SOURCE_EXT = .cc
