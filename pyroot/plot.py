@@ -144,7 +144,10 @@ def plot(p, filename, colored=True, format="png",
         highlight_path = monomial_path_in_zdd(highlight_monomial, p)
 
     def display_monomial(m):
-        return unicode(m).replace("*", u"⋅")
+        try:
+            return unicode(m).replace(u"*", u".")
+        except NameError:
+            return str(m).replace("*", "⋅")
 
     def penwidth_else(n):
         if n in highlight_path and highlight_path[n] == ELSE:
@@ -197,7 +200,7 @@ def plot(p, filename, colored=True, format="png",
     renderers = dict(genshi=render_genshi, jinja=render_jinja)
 
     dot_input = renderers[template_engine](locals())
-    if isinstance(dot_input, unicode):
+    if not isinstance(dot_input, bytes):
         dot_input = dot_input.encode('utf-8')
     process = Popen(["dot", "-T" + format, "-o", filename], stdin=PIPE,
         stdout=PIPE)
@@ -212,12 +215,12 @@ def main():
     x = Variable = VariableFactory(r)
     from os import system
     from .specialsets import all_monomials_of_degree_d, power_set
-    full_set = list(power_set([Variable(i) for i in xrange(15)]))
+    full_set = list(power_set([Variable(i) for i in range(15)]))
     from random import Random
     generator = Random(123)
     random_set = sum(generator.sample(full_set, 30))
     full_polynomial = list(all_monomials_of_degree_d(3, [Variable(i) for i in
-        xrange(30)]))
+        range(30)]))
     random_poly = sum(generator.sample(full_polynomial, 30))
     polynomials = [
     x(1) * x(2) + x(3),
@@ -225,13 +228,13 @@ def main():
     (x(1) + 1) * (x(2) + 1) * (x(3) + 1),
     x(1) * x(2) + x(2) * x(3) + x(1) * x(3) + x(1),
     x(0) + x(1) + x(2) + x(3) + x(4) + x(5),
-    all_monomials_of_degree_d(3, [x(i) for i in xrange(10)]),
-    power_set([x(i) for i in xrange(10)]),
+    all_monomials_of_degree_d(3, [x(i) for i in range(10)]),
+    power_set([x(i) for i in range(10)]),
     random_poly,
     random_set,
-    Polynomial(all_monomials_of_degree_d(3, [x(i) for i in xrange(10)])) +
-        Polynomial(power_set([x(i) for i in xrange(10)])),
-    Polynomial(power_set([x(i) for i in xrange(10)])) + 1
+    Polynomial(all_monomials_of_degree_d(3, [x(i) for i in range(10)])) +
+        Polynomial(power_set([x(i) for i in range(10)])),
+    Polynomial(power_set([x(i) for i in range(10)])) + 1
     ]
     for colored in [True, False]:
         if colored:

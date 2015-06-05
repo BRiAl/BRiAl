@@ -47,7 +47,7 @@ def sparse_random_system(ring, number_of_polynomials,
         set_random_seed(random_seed)
     random_generator = Random(random_seed)
     solutions = []
-    variables = [ring.variable(i) for i in xrange(ring.n_variables())]
+    variables = [ring.variable(i) for i in range(ring.n_variables())]
     for v in variables:
         solutions.append(v + random_generator.randint(0, 1))
     solutions = ll_encode(solutions)
@@ -60,7 +60,7 @@ def sparse_random_system(ring, number_of_polynomials,
         )
         p = Polynomial(random_set(variables_as_monomial, 2 ** (
             variables_per_polynomial - 1)))
-        p = sum([p.graded_part(i) for i in xrange(degree + 1)])
+        p = sum([p.graded_part(i) for i in range(degree + 1)])
         if p.deg() == degree:
             res.append(p)
     res = [p + ll_red_nf_redsb(p, solutions) for p in res]
@@ -75,7 +75,7 @@ def sparse_random_system_data_file_content(
     "declare_ring(['x'+str(i) for in xrange(10)])\nideal=\\\n[...]\n\n"
     """
     dummy_dict = dict()
-    r = declare_ring(['x' + str(i) for i in xrange(number_of_variables)],
+    r = declare_ring(['x' + str(i) for i in range(number_of_variables)],
         dummy_dict)
     polynomials = sparse_random_system(r, **kwds)
     polynomials = pformat(polynomials)

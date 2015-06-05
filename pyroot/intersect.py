@@ -29,10 +29,9 @@ def intersect(i, j, **gb_opts):
     uv = used_vars_set(i) * used_vars_set(j)
     t = iter(i).next().ring().variable(0)
     if uv.reducible_by(t):
-        raise ValueError, \
-            "First ring variable has to be reserved as helper variable t"
+        raise ValueError("First ring variable has to be reserved as helper variable t")
     if not t > uv:
-        raise ValueError, "need elimination ordering for first ring variable"
+        raise ValueError("need elimination ordering for first ring variable")
     gb = groebner_basis(list(chain((t * p for p in i), ((1 + t) * p for p in j
         ))), **gb_opts)
     return [p for p in gb if p.navigation().value() > t.index()]

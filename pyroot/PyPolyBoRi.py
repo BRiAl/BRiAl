@@ -92,7 +92,7 @@ if _sageify:
 
         pbnames = names
         if pbnames is None:
-            pbnames = ['x(' + str(idx) + ')' for idx in xrange(n)]
+            pbnames = ['x(' + str(idx) + ')' for idx in range(n)]
         order = TermOrder_from_pb_order(n, order, blocks)
         R = BooleanPolynomialRing(n, names=pbnames, order=order)
         return R

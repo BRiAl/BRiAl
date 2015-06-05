@@ -3,7 +3,7 @@ def input_signals(p):
 
 
 def output_signal(p):
-    return iter(p.lex_lead().variables()).next()
+    return next(iter(p.lex_lead().variables()))
 
 
 def rank(data):

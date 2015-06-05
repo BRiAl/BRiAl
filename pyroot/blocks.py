@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 if __name__ == '__main__':
     import pathadjuster
@@ -20,7 +22,7 @@ class Block(object):
     def __init__(self, var_name, size, start_index=0, reverse=False):
         indices = range(start_index, start_index + size)
         if reverse:
-            indices.reverse()
+            indices = reversed(indices)
     #self.index2pos=dict([(v,k) for (k,v) in enumerate(indices)])
         self.names = [var_name + "(" + str(i) + ")" for i in indices]
         self.var_name = var_name
@@ -64,7 +66,7 @@ class AlternatingBlock(object):
         indices = range(start_index, start_index + size_per_variable)
 
         if reverse:
-            indices.reverse()
+            indices = reversed(indices)
         names = []
         for i in indices:
             for n in var_names:
@@ -135,13 +137,13 @@ class AdderBlock(AlternatingBlock):
         a = shift(a, self.start_index)
         b = shift(b, self.start_index)
         carries = [Polynomial(a(0).ring().zero())]
-        for i in xrange(self.adder_bits):
+        for i in range(self.adder_bits):
             #print i, ":"
             c = 1 + (1 + a(i) * b(i)) * (1 + carries[-1] * a(i)) * (1 +
                 carries[-1] * b(i))
             carries.append(c)
 
-        self.add_results = [a(i) + b(i) + carries[i] for i in xrange(self.
+        self.add_results = [a(i) + b(i) + carries[i] for i in range(self.
             adder_bits)]
         self.carries_polys = carries[1:]
 
@@ -152,7 +154,7 @@ class AdderBlock(AlternatingBlock):
     #context[self.sums]=s
     #context[self.carries]=c
     def implement(self, equations):
-        for i in xrange(self.adder_bits):
+        for i in range(self.adder_bits):
             equations.append(self.s(i) + self.add_results[i])
             equations.append(self.c(i) + self.carries_polys[i])
         pass
@@ -173,8 +175,7 @@ class HigherOrderBlock(object):
             start_index_tuple = len(size_tuple) * (0, )
         cart = [()]
         assert len(size_tuple) == len(start_index_tuple)
-        outer_indices = range(len(size_tuple))
-        outer_indices.reverse()
+        outer_indices = reversed(range(len(size_tuple)))
         for i in outer_indices:
             s_i = start_index_tuple[i]
             s = size_tuple[i]
@@ -248,13 +249,13 @@ class MultiBlock(object):
 
         self.blocks = [Block(var_name=var_names[idx], size=sizes[idx],
             start_index=self.start_indices[idx], reverse=reverses[idx]) for
-            idx in xrange(len(var_names))]
+            idx in range(len(var_names))]
 
     def __iter__(self):
         return chain(*self.blocks)
 
     def __getitem__(self, i):
-        return islice(chain(*self.blocks), i, i + 1).next()
+        return next(islice(chain(*self.blocks), i, i + 1))
         # sum([bl.names for bl in self.blocks])[i]
 
     def __len__(self):
@@ -267,7 +268,7 @@ class MultiBlock(object):
             offset += len(bl)
 
         self.vars = [shift(context[self.blocks[idx].var_name], self.
-            start_indices[idx]) for idx in xrange(len(self.blocks))]
+            start_indices[idx]) for idx in range(len(self.blocks))]
 
 
 class PrefixedDictProxy(object):
@@ -282,7 +283,7 @@ class PrefixedDictProxy(object):
         try:
             return self.wrapped[self.prefix + k]
         except KeyError:
-            print self.prefix, k, list(self.wrapped)
+            print(self.prefix, k, list(self.wrapped))
             raise KeyError
 
     def __setitem__(self, k, v):
@@ -307,7 +308,7 @@ class MacroBlock(object):
         return (self.prefix + "_" + n for n in chain(*self.blocks))
 
     def __getitem__(self, i):
-        return self.prefix + "_" + islice(chain(*self.blocks), i, i + 1).next()
+        return self.prefix + "_" + next(islice(chain(*self.blocks), i, i + 1))
     #for bl in self.blocks:
     #  if i >= len(bl):
     #    i -= len(bl)
@@ -328,7 +329,7 @@ class MacroBlock(object):
             offset += len(bl)
 
         for ((con1, indices1), (con2, indices2)) in self.combinations:
-            for idx in xrange(min(len(indices1), len(indices2))):
+            for idx in range(min(len(indices1), len(indices2))):
                 self.connections += [context[con1](indices1[idx]) + context[
                     con2](indices2[idx])]
 
@@ -419,34 +420,34 @@ def main():
     ablock = AlternatingBlock(["a", "b", "c"], 100)
     declare_block_scheme([ablock], globals())
     for i in range(10):
-        print r.variable(i)
+        print(r.variable(i))
 
-    print list(ablock)
+    print(list(ablock))
     declare_block_scheme([
     Block(var_name="x", size=100),
     HigherOrderBlock("y", (3, 4, 11, 2)),
     AlternatingBlock(["a", "b", "c"], 100)],
     globals())
     for i in range(10):
-        print x(i)
-    print y(0, 0, 0, 0)
-    print y(0, 0, 0, 1)
-    print y(0, 0, 1, 0)
-    print y(0, 0, 1, 1)
-    print a(0), a(1), a(2), b(0), b(1), c(0)
+        print(x(i))
+    print(y(0, 0, 0, 0))
+    print(y(0, 0, 0, 1))
+    print(y(0, 0, 1, 0))
+    print(y(0, 0, 1, 1))
+    print(a(0), a(1), a(2), b(0), b(1), c(0))
     declare_block_scheme([
     Block(var_name="x", size=100, reverse=True),
     HigherOrderBlock("y", (3, 4, 11, 2), reverse=True),
     AlternatingBlock(["a", "b", "c"], 100, reverse=True)],
     globals())
     for i in range(10):
-        print x(i)
-    print y(0, 0, 0, 0)
-    print y(0, 0, 0, 1)
-    print y(0, 0, 1, 0)
-    print y(0, 0, 1, 1)
-    print a(0), a(1), a(2), b(0), b(1), c(0)
+        print(x(i))
+    print(y(0, 0, 0, 0))
+    print(y(0, 0, 0, 1))
+    print(y(0, 0, 1, 0))
+    print(y(0, 0, 1, 1))
+    print(a(0), a(1), a(2), b(0), b(1), c(0))
     declare_block_scheme(["a", "b", "c"], globals())
-    print a, b, c
+    print(a, b, c)
 if __name__ == '__main__':
     main()

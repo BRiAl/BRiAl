@@ -4,7 +4,7 @@ from .PyPolyBoRi import Monomial, Polynomial, top_index, BooleConstant
 def used_vars(l, bound=None):
     if not l:
         return BooleConstant(1)
-    m = Monomial(Polynomial(iter(l).next()).vars_as_monomial())
+    m = Monomial(Polynomial(next(iter(l))).vars_as_monomial())
     for p in l[1:]:
         m = m * Polynomial(p).vars_as_monomial()
         if bound and len(m) > bound:

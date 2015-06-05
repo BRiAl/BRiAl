@@ -5,6 +5,7 @@ untitled.py
 Created by Michael Brickenstein on 2007-03-05.
 Copyright (c) 2007 The PolyBoRi Team. See LICENSE file.
 """
+from __future__ import print_function
 
 import sys
 from optparse import OptionParser
@@ -66,9 +67,9 @@ def gen_strat(polys):
     assert polys
     strat = GroebnerStrategy(polys[0].ring())
     for p in polys:
-        print "Adding"
+        print("Adding")
         strat.add_generator(p)
-    print "finished"
+    print("finished")
     return strat
 
 
@@ -89,24 +90,24 @@ def logicalor(l):
 def proof(ifthen, strat):
     ip = ifthen.ifpart
     it = ifthen.thenpart
-    print "proofing:", ifthen
+    print("proofing:", ifthen)
     c = logicalor([1 + logicaland(ip), logicaland(it)])
     if c.is_zero():
-        print "TRUE (trivial)"
+        print("TRUE (trivial)")
         return
     else:
         c = nf3(strat.reduction_strategy, c, c.lead())
         if c.is_zero():
-            print "TRUE"
+            print("TRUE")
             return
         else:
-            print "FALSE"
+            print("FALSE")
 
 
 def proofll(ifthen, reductors, redsb=True, prot=True):
 
     if prot and (not ifthen.supposedToBeValid):
-        print "THIS THEOREM IS NOT SUPPOSED TO BE VALID"
+        print("THIS THEOREM IS NOT SUPPOSED TO BE VALID")
     ip_pre = ifthen.ifpart
     ip = []
 
@@ -131,16 +132,16 @@ def proofll(ifthen, reductors, redsb=True, prot=True):
             ip.append(p)
     it = ifthen.thenpart
     if prot:
-        print "proofing:", ifthen
+        print("proofing:", ifthen)
     ip = logicaland(ip)
     for c in it:
         if prot:
-            print "proofing part:", c
+            print("proofing part:", c)
         c = logicalor([BooleConstant(1) + ip, c])
 
         if c.is_zero():
             if prot:
-                print "TRUE (trivial)"
+                print("TRUE (trivial)")
             return True
         else:
             c_orig = c
@@ -150,12 +151,12 @@ def proofll(ifthen, reductors, redsb=True, prot=True):
                 c = ll_red_nf_noredsb(c, reductors)
             if c.is_zero():
                 if prot:
-                    print "TRUE"
+                    print("TRUE")
                 return True
             else:
                 if prot:
-                    print "FAILED"
-                    print "can construct COUNTER EXAMPLE with:", find_one(c)
+                    print("FAILED")
+                    print("can construct COUNTER EXAMPLE with:", find_one(c))
                 return False
 
 

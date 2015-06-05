@@ -1,4 +1,7 @@
 # Copyright (c) 2005-2007 by The PolyBoRi Team
+
+from __future__ import print_function
+
 import sys
 from .PyPolyBoRi import *
 from .randompoly import gen_random_poly
@@ -50,7 +53,7 @@ def nf_lex_points(f, p):
 
 def gen_random_monomial():
     d = generator.randrange(min(6, v + 1))
-    variables = generator.sample(xrange(v), d)
+    variables = generator.sample(range(v), d)
     variables = sorted(variables, key=top_index, reverse=True)
     m = variables[0]
     for x in variables[1:]:
@@ -60,7 +63,7 @@ def gen_random_monomial():
 
 def gen_random_polynomial(ring, max_len=50):
     vec = BoolePolynomialVector()
-    for i in xrange(max_len):
+    for i in range(max_len):
         vec.append(gen_random_monomial(ring))
     return add_up_polynomials(vec, Polynomial(ring.zero()))
 
@@ -112,12 +115,12 @@ if __name__ == '__main__':
     r = declare_ring([Block("x", nvariables)])
     for number_of_points in (100, 500, 1000, 2000, 3000, 4000, 5000, 10000,
         20000, 50000, 100000):
-        print "----------"
-        print "number_of_points:", number_of_points
-        print "generate points"
+        print("----------")
+        print("number_of_points:", number_of_points)
+        print("generate points")
         points = gen_random_poly(number_of_points, nvariables, [Variable(i)
             for i in range(nvariables)])
-        print "points generated"
+        print("points generated")
         bench_interpolate(nvariables, nvariables, points)
         vars_mon = Monomial(r)
         for i in reversed(range(nvariables)):

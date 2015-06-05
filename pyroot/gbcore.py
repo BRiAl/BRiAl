@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from .nf import *
 
 from .PyPolyBoRi import *
@@ -242,20 +244,20 @@ def gb_with_pre_post_option(
                 if pre:
                     pre_args = getargspec(pre)[0]
                     if prot:
-                        print "preprocessing for option:", option
+                        print("preprocessing for option:", option)
 
                     local_symbols = copy(locals())
                     (I, state) = pre(**dict([(k, v) for (k, v) in
-                        local_symbols.iteritems() if k in pre_args]))
+                        local_symbols.items() if k in pre_args]))
             I = f(I, **kwds)
             if option_set:
                 if post:
                     post_args = getargspec(post)[0]
                     if prot:
-                        print "postprocessing for option:", option
+                        print("postprocessing for option:", option)
                     local_symbols = copy(locals())
                     I = post(**dict([(k, v) for (k, v) \
-                            in local_symbols.iteritems() if k in post_args]))
+                            in local_symbols.items() if k in post_args]))
 
             return I
         wrapper.__name__ = f.__name__
@@ -495,7 +497,7 @@ def incremental_pre(I, prot, kwds):
         inc_sys.append(p)
         inc_sys = groebner_basis(inc_sys, **kwds)
         if prot:
-            print "incrementally calculating GB, adding generator:", p
+            print("incrementally calculating GB, adding generator:", p)
     inc_sys.append(I[:-1])
     return (inc_sys, None)
 
@@ -522,7 +524,7 @@ def eliminate_identical_variables_pre(I, prot):
 
         def my_sort_key(l):
             return l.navigation().value()
-        for (t, leads) in rules.iteritems():
+        for (t, leads) in rules.items():
             if len(leads) > 1:
                 changed = True
                 leads = sorted(leads, key=my_sort_key, reverse=True)
@@ -582,19 +584,19 @@ def groebner_basis(I, heuristic=True, unique_ideal_generator=False,
     if full_prot:
         prot = True
     if prot:
-        print "number of passed generators:", len(I)
+        print("number of passed generators:", len(I))
     if not convert_with_fglm_from_ring is None:
         from_ring = convert_with_fglm_from_ring
         to_ring = convert_with_fglm_to_ring
         return _fglm(I, from_ring, to_ring)
 
     if interpolation_gb:
-        first = iter(I).next()
+        first = next(iter(I))
         if len(I) != 1 or first.ring().get_order_code() != OrderCode.lp:
             raise ValueError
         return lex_groebner_basis_for_polynomial_via_variety(first)
     if deg_bound is False:
-        deg_bound = 100000000L
+        deg_bound = 100000000
     I = [Polynomial(p) for p in I if not p.is_zero()]
     if unique_ideal_generator and I:
         prod = 1
@@ -613,7 +615,7 @@ def groebner_basis(I, heuristic=True, unique_ideal_generator=False,
 
     if preprocess_only:
         for p in I:
-            print p
+            print(p)
         import sys
         sys.exit(0)
 
@@ -630,7 +632,7 @@ def groebner_basis(I, heuristic=True, unique_ideal_generator=False,
             400000, None]:
             try:
                 return call_algorithm(I, max_generators=max_generators)
-            except GeneratorLimitExceeded, e:
+            except GeneratorLimitExceeded as e:
                 I = list(e.strat.all_generators())
                 del e.strat
                 if prot:

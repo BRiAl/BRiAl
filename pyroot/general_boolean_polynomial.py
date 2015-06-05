@@ -1,4 +1,6 @@
 # -*- python -*-
+from __future__ import print_function
+
 import sys
 import resource
 from .gbcore import *
@@ -15,8 +17,8 @@ from .interred import interred
 # Just for debugging
 def print_matrix(A):
     res = ""
-    for i in xrange(len(A)):
-        for j in xrange(len(A[i])):
+    for i in range(len(A)):
+        for j in range(len(A[i])):
             res += str(A[i][j]) + " "
         res += "\n"
     return res
@@ -45,7 +47,7 @@ class GeneralBooleanPolynomial:
         self.polys = []
         self.k = k
         self.ring = polynomial.ring()
-        for i in xrange(k):
+        for i in range(k):
             if i in coeff:
                 self.polys.append(polynomial)
             else:
@@ -77,7 +79,7 @@ class GeneralBooleanPolynomial:
         """
         if not len(self) == len(other):
             return False
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i] != other[i]:
                 return False
         return True
@@ -92,7 +94,7 @@ class GeneralBooleanPolynomial:
         res = ""
         # Build a list of all terms occurring
         terms = set([])
-        for i in xrange(self.k):
+        for i in range(self.k):
             if not isinstance(self.polys[i], Polynomial):
                 assert isinstance(self.polys[i], Monomial) or isinstance(self.
                     polys[i], Variable)
@@ -103,7 +105,7 @@ class GeneralBooleanPolynomial:
         terms.sort()
         # Determine the coefficient for each term and build up the string
         for t in terms:
-            comps = [j for j in xrange(self.k) if t in set(Polynomial(self[j])
+            comps = [j for j in range(self.k) if t in set(Polynomial(self[j])
                 .terms())]
             if len(comps) == self.k:
                 # We use this simplified notation of the coefficient it 1
@@ -121,12 +123,12 @@ class GeneralBooleanPolynomial:
         Addition of two GeneralBooleanPolynomial
         """
         if not len(self) == len(other):
-            print "Cannot add polynomials defined over different rings"
-            print "Len(self)=", len(self)
-            print "Len(other)=", len(other)
+            print("Cannot add polynomials defined over different rings")
+            print("Len(self)=", len(self))
+            print("Len(other)=", len(other))
             assert len(self) == len(other)
         sum = GeneralBooleanPolynomial(self.k, [], Polynomial(0, self.ring))
-        for i in xrange(self.k):
+        for i in range(self.k):
             sum[i] = self[i] + other[i]
         return sum
 
@@ -135,12 +137,12 @@ class GeneralBooleanPolynomial:
         Multiplication of two GeneralBooleanPolynomial
         """
         if not len(self) == len(other):
-            print "Cannot multiply polynomials defined over different rings"
-            print "Len(self)=", len(self)
-            print "Len(other)=", len(other)
+            print("Cannot multiply polynomials defined over different rings")
+            print("Len(self)=", len(self))
+            print("Len(other)=", len(other))
             assert len(self) == len(other)
         prod = GeneralBooleanPolynomial(self.k, [], Polynomial(0, self.ring))
-        for i in xrange(self.k):
+        for i in range(self.k):
             prod[i] = Polynomial(self[i]) * Polynomial(other[i])
         return prod
 
@@ -149,12 +151,12 @@ class GeneralBooleanPolynomial:
         Subtraction of two GeneralBooleanPolynomial
         """
         if not len(self) == len(other):
-            print "Cannot subtract polynomials defined over different rings"
-            print "Len(self)=", len(self)
-            print "Len(other)=", len(other)
+            print("Cannot subtract polynomials defined over different rings")
+            print("Len(self)=", len(self))
+            print("Len(other)=", len(other))
             assert len(self) == len(other)
         sub = GeneralBooleanPolynomial(self.k, [], Polynomial(1, self.ring))
-        for i in xrange(self.k):
+        for i in range(self.k):
             sub[i] = self[i] - other[i]
         return sub
 
@@ -171,11 +173,11 @@ class GeneralBooleanPolynomial:
         non-zero components of the leading coefficient.
         """
         max_term = 1
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if not self[i].is_zero():
                 if self[i].lead() > max_term:
                     max_term = self[i].lead()
-        comps = [j for j in xrange(len(self)) if max_term
+        comps = [j for j in range(len(self)) if max_term
                  in set(self[j].terms())]
         return comps
 
@@ -193,7 +195,7 @@ class GeneralBooleanPolynomial:
         """
         lc_set = self.lc_as_set()
         lc_binary = [0] * len(self)
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if i in lc_set:
                 lc_binary[i] = 1
         return lc_binary
@@ -203,11 +205,11 @@ class GeneralBooleanPolynomial:
         Leading term in form of a GeneralBooleanPolynomial
         """
         max_term = 1
-        for i in xrange(self.k):
+        for i in range(self.k):
             if not self[i].is_zero():
                 if self[i].lead() > max_term:
                     max_term = self[i].lead()
-        comps = [j for j in xrange(self.k) if max_term in set(self[j].terms())]
+        comps = [j for j in range(self.k) if max_term in set(self[j].terms())]
         return GeneralBooleanPolynomial(self.k, comps, max_term)
 
     def lm(self):
@@ -216,14 +218,14 @@ class GeneralBooleanPolynomial:
         """
         max_term = 1
         contains_non_zero_term = False
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if not self[i].is_zero():
                 contains_non_zero_term = True
                 if self[i].lead() > max_term:
                     max_term = self[i].lead()
         if not contains_non_zero_term:
             raise ValueError("lm of zero polynomial is not defined")
-        return GeneralBooleanPolynomial(self.k, [i for i in xrange(self.k)],
+        return GeneralBooleanPolynomial(self.k, [i for i in range(self.k)],
             max_term)
 
     def constant_part_binary(self):
@@ -231,7 +233,7 @@ class GeneralBooleanPolynomial:
         Constant part as binary tuple indicading which coefficients are non-zero
         """
         comps = []
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i].has_constant_part():
                 comps.append(1)
             else:
@@ -243,7 +245,7 @@ class GeneralBooleanPolynomial:
         Constant part as array containing the indices of the non-zero coefficients of the constant part (sorted increasingly)
         """
         res = []
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i].has_constant_part():
                 res.append(i)
         return res
@@ -259,7 +261,7 @@ class GeneralBooleanPolynomial:
         Constant part as GeneralBoolenPolynomial
         """
         res = GeneralBooleanPolynomial(len(self), [], Polynomial(0, self.ring))
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i].has_constant_part():
                 res[i] = Polynomial(1, self.ring)
             else:
@@ -273,7 +275,7 @@ class GeneralBooleanPolynomial:
         F_2^k
         """
         assert self.k == len(new_variables)
-        return sum(new_variables[i] * self.polys[i] for i in xrange(self.k))
+        return sum(new_variables[i] * self.polys[i] for i in range(self.k))
 
     def is_monomial(self):
         """
@@ -281,7 +283,7 @@ class GeneralBooleanPolynomial:
         """
         # Build a list of all terms occurring
         terms = set([])
-        for i in xrange(self.k):
+        for i in range(self.k):
             if not isinstance(self.polys[i], Polynomial):
                 assert isinstance(self.polys[i], Monomial) or isinstance(self.
                     polys[i], Variable)
@@ -296,7 +298,7 @@ class GeneralBooleanPolynomial:
         """
         Tests if self is zero
         """
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i] != 0:
                 return False
         return True
@@ -306,7 +308,7 @@ class GeneralBooleanPolynomial:
         Returns a PolyBoRi Monomial representing the leading monomial of self, where self should be a monomial
         """
         assert self.is_monomial()
-        for i in xrange(self.k):
+        for i in range(self.k):
             if self.polys[i] != Polynomial(0, self.ring):
                 return self.polys[i].lead()
         return Polynomial(0, self.ring)
@@ -318,7 +320,7 @@ class GeneralBooleanPolynomial:
         assert len(self) == len(other)
         assert (self.is_monomial() and other.is_monomial())
         self_divides_other = True
-        for i in xrange(len(self)):
+        for i in range(len(self)):
             if self[i] == 0:
                 if other[i] != 0:
                     return False
@@ -346,28 +348,28 @@ def triangulate_over_F2(A, b):
     assert len(A) == len(b)
     n = len(b)
     m = len(A[0])
-    print "n: ", n, "m: ", m
-    print "A, b", A, b
-    for i in xrange(0, min(n, m)):    # Row
-        print "i", i
+    print("n: ", n, "m: ", m)
+    print("A, b", A, b)
+    for i in range(0, min(n, m)):    # Row
+        print("i", i)
         if A[i][i] == 0:
             # permutate rows
             changed = False
             for l in range(i, n):
                 if A[l][i] != 0:
-                    for k in xrange(n):
+                    for k in range(n):
                         A[l][k], A[i][k] = A[i][k], A[l][k]
                     b[l], b[i] = b[i], b[l]
                 changed = True
             if not changed:
                 return -1
-        for j in xrange(0, i):
+        for j in range(0, i):
             if A[i][j] != 0:
-                for k in xrange(j, n):
+                for k in range(j, n):
                     A[i][k] += A[i - 1][k]
                 b[i] += b[i - 1]
-    res_A = [[A[i][j] % 2 for j in xrange(m)] for i in xrange(n)]
-    res_b = [b[i] % 2 for i in xrange(n)]
+    res_A = [[A[i][j] % 2 for j in range(m)] for i in range(n)]
+    res_b = [b[i] % 2 for i in range(n)]
     return (res_A, res_b)
 
 
@@ -398,7 +400,7 @@ def expanded_polynomial2general_polynomial(polynomial, new_variables, ring):
         for e in new_variables]
     sum2 = GeneralBooleanPolynomial(len(new_variables), [0] * len(
         new_variables), Polynomial(0, ring))
-    for i in xrange(len(new_variables)):
+    for i in range(len(new_variables)):
         sum2[i] = comps[i]
     return sum2
 
@@ -416,7 +418,7 @@ def reduce_general_boolean_polynomial(F, polynomial):
 
     def calc_Is():
         ret = []
-        for i in xrange(s):
+        for i in range(s):
             if (F[i].is_zero() and not r.is_zero()):
                 continue
             if (F[i].lm()).divides(r.lm()):
@@ -425,7 +427,7 @@ def reduce_general_boolean_polynomial(F, polynomial):
 
     def calc_X():
         ret = []
-        for i in xrange(len(Is)):
+        for i in range(len(Is)):
             ret.append((r.lm()).monomial() / (F[Is[i]].lm()).monomial())
         return ret
 
@@ -445,20 +447,20 @@ def reduce_general_boolean_polynomial(F, polynomial):
     lc_polynomial_binary = polynomial.lc_binary()
 
     while len(Is) is not 0:
-        exp = [F[i].lm() for i in xrange(s)]
-        matrix = [[included(i, F[j].lc_as_set()) for j in Is] for i in xrange(
+        exp = [F[i].lm() for i in range(s)]
+        matrix = [[included(i, F[j].lc_as_set()) for j in Is] for i in range(
             k)]
 
         # Compute solution
-        coeff = [[0] * len(Is) for j in xrange(k)]
-        for j in xrange(k):
+        coeff = [[0] * len(Is) for j in range(k)]
+        for j in range(k):
             if lc_polynomial_binary[j]:
                 coeff[j][0] = 1
 
         sum = GeneralBooleanPolynomial(k, [0] * k, Polynomial(0, self.ring))
-        for i in xrange(len(Is)):
-            c = [coeff[l][i] for l in xrange(k)]
-            c_set = [l for l in xrange(k) if coeff[l][i] == 1]
+        for i in range(len(Is)):
+            c = [coeff[l][i] for l in range(k)]
+            c_set = [l for l in range(k) if coeff[l][i] == 1]
             poly1 = GeneralBooleanPolynomial(k, c_set, X[i])
 
             sum += GeneralBooleanPolynomial(k, c_set, X[i]) * F[Is[i]].lt()
@@ -520,8 +522,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
     while len(dict) > 0:
         # We copy the keys of dict into I in order to sort them.
         # This way the elements are traversed in a unique order.
-        I = dict.keys()
-        I.sort()
+        I = sorted(dict.keys())
         p = I[0]
 
         p_gb = dict[p]
@@ -529,14 +530,14 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
         del dict[p]
 
         if debug > 1:
-            print "Processing p", p
-            print "A before proceeding", A
+            print("Processing p", p)
+            print("A before proceeding", A)
 
         if p_gb.is_zero():
             LMs.append(Polynomial(0, self.ring))
             A.append(p)
             if debug > 1:
-                print "Adding p that becomes zero"
+                print("Adding p that becomes zero")
             continue
 
         p_gb_lm = p_gb.lm()
@@ -547,7 +548,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
             A.append(p)
             LMs.append(p_gb_lm)
             if debug > 1:
-                print "Appending", p, "since its lm is not contained in A yet"
+                print("Appending", p, "since its lm is not contained in A yet")
             continue
 
         # Index of p_gb_lm in LMs
@@ -565,7 +566,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
         # Leading coefficients as GeneralBooleanPolynomial
         lc_b_gb = b_gb.lc()
         lc_r_gb = r_gb.lc()
-        unit = GeneralBooleanPolynomial(len(e_vars), [o for o in xrange(len(
+        unit = GeneralBooleanPolynomial(len(e_vars), [o for o in range(len(
             e_vars))], Polynomial(1, p.ring()))
 
         b1_gb = b_gb * (unit + lc_r_gb) + r_gb
@@ -576,7 +577,7 @@ def stratify_dict_I_gb_I_our_alg(dict, e_vars, debug=0):
 
         A[i] = b1
         if debug > 1:
-            print "New polynomial in A (replaced)", A[i]
+            print("New polynomial in A (replaced)", A[i])
 
         if r2 != 0 and r2 not in A:
             dict[r2] = r2_gb

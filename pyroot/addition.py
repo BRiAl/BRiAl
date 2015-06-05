@@ -16,12 +16,12 @@ def add_bits_old(bits):
     bits = list(bits)
     n = len(bits)
     deg_d_monomials = [Polynomial(all_monomials_of_degree_d(i, bits)) for i in
-        xrange(n + 1)]
+        range(n + 1)]
     full = power_set(bits)
     bits_expr = []  # [sum(bits)]
     step = 0
     while n > 2 ** step:
-        to_one = sum([deg_d_monomials[i] for i in xrange(n + 1) if i & 2 **
+        to_one = sum([deg_d_monomials[i] for i in range(n + 1) if i & 2 **
             step])
         to_one = Polynomial(to_one)
         fun = PartialFunction(ones=to_one, zeros=full.diff(to_one))
@@ -74,7 +74,7 @@ def add_bit_expressions(bit_expressions):
     bit_variables = []
     if bit_expressions:
         ring = bit_expressions[0].ring()
-        bit_variables = [ring.variable(i) for i in xrange(len(bit_expressions)
+        bit_variables = [ring.variable(i) for i in range(len(bit_expressions)
             )]
     for expr in bit_expressions:
         assert BooleSet(expr).navigation().value() >= len(bit_variables)

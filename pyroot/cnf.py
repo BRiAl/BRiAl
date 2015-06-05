@@ -30,7 +30,7 @@ class CNFEncoder(object):
         res = list()
 
         def choose_old(s):
-            return iter(rest).next()  # somewhat
+            return next(iter(rest))  # somewhat
 
             #inefficient compared to polynomials lex_lead
         def choose(s):
@@ -54,7 +54,7 @@ class CNFEncoder(object):
             res = self.one_set
             for i in reversed(indices):
                 res = ite(i, res, self.empty_set)
-            return iter(res).next()
+            return next(iter(res))
         while not rest.empty():
             l = choose(rest)
             l_variables = set(l.variables())
@@ -94,7 +94,7 @@ class CNFEncoder(object):
         f_plus_one = f + 1
         blocks = self.zero_blocks(f + 1)
         negated_blocks = [dict([(variable, 1 - value) for (variable, value)
-            in b.iteritems()]) for b in blocks]
+            in b.items()]) for b in blocks]
         # we form an expression for a var configuration *not* lying in the
         # block it is evaluated to 0 by f, iff it is not lying in any zero
         # block of f+1
@@ -121,7 +121,7 @@ class CNFEncoder(object):
             # performance
             return res
         return [product([variable + value for (variable, value)
-                         in b.iteritems()]) for b in self.clauses(f)]
+                         in b.items()]) for b in self.clauses(f)]
 
     def to_dimacs_index(self, v):
         return v.index() + 1
@@ -132,7 +132,7 @@ class CNFEncoder(object):
                 return 1
             return -1
 
-        items = sorted(c.iteritems(), reverse=True)
+        items = sorted(c.items(), reverse=True)
         return " ".join(
         [str(v) for v in
             [

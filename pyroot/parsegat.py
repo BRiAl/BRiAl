@@ -1,4 +1,6 @@
+from __future__ import print_function
 #import pathadjuster
+
 if __name__ == '__main__':
     from sys import path as search_path
     from os import path as file_path
@@ -24,7 +26,10 @@ from .ll import ll_encode
 from optparse import OptionParser
 from .statistics import used_vars_set
 from itertools import chain
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 from sys import stderr
 parser = OptionParser()
 
@@ -74,7 +79,7 @@ def add_negated(str, log, tokens):
     l = p.lead()
     if not l in assigned and r.randint(0, 200) == 0:
         assigned.add(l)
-        print "NEG", p + 1
+        print("NEG", p + 1)
         return p + 1
     else:
         return "NONE"
@@ -128,7 +133,7 @@ class VariableManager(object):
         self.ands = dict()
         self.xors = dict()
         self.tails = []
-        for (k, v) in kwd.iteritems():
+        for (k, v) in kwd.items():
             setattr(self, k, v)
 
     def gauss(self, determining_equations):
@@ -313,12 +318,12 @@ class VariableManager(object):
                             for v in (op1v, op2v)]
                         assert len(op1a) == 2
                         assert len(op2a) == 2
-                        print >> stderr, "+"
+                        print("+", file=stderr)
                         for op1a in [[op1a[0], op1a[1]], op1a]:
                             for op2a in [[op2a[0], op2a[1]], op2a]:
-                                print >> stderr, op1a[0], op2a[0]
+                                print(op1a[0], op2a[0], file=stderr)
                                 if op1a[0] == op2a[0] + 1:
-                                    print >> stderr, "-"
+                                    print("-", file=stderr)
                                     if op1a[1] in self.ands and \
                                         op2a[1] in self.ands and \
                                         op1a[1] not in self.xors \
@@ -456,19 +461,19 @@ def format_grouped(l, group_size=10, indent=0):
 
 def generate_three_ideal_output(ideal_state, ideal_intermediate,
     ideal_next_state, variables):
-    print "declare_ring(" + format_grouped([repr(str(v)) for v in variables],
-        indent=4) + ")"
-    print "block_start_hints=" + repr(block_starts)
-    print "ideal_intermediate=["
-    print ",\n".join((str(p) for p in ideal_intermediate))
-    print "]"
-    print "ideal_state=["
-    print ",\n".join((str(p) for p in ideal_state))
-    print "]"
-    print "ideal_next_state=["
-    print ",\n".join((str(p) for p in ideal_next_state))
-    print "]"
-    print "ideal = ideal_state+ideal_next_state+ideal_intermediate"
+    print("declare_ring(" + format_grouped([repr(str(v)) for v in variables],
+        indent=4) + ")")
+    print("block_start_hints=" + repr(block_starts))
+    print("ideal_intermediate=[")
+    print(",\n".join((str(p) for p in ideal_intermediate)))
+    print("]")
+    print("ideal_state=[")
+    print(",\n".join((str(p) for p in ideal_state)))
+    print("]")
+    print("ideal_next_state=[")
+    print(",\n".join((str(p) for p in ideal_next_state)))
+    print("]")
+    print("ideal = ideal_state+ideal_next_state+ideal_intermediate")
 
 if __name__ == '__main__':
     (options, args) = parser.parse_args()

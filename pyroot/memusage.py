@@ -1,5 +1,5 @@
 import os
-from sys import maxint
+
 _proc_status = '/proc/%d/status' % os.getpid()
 #_scale = {'kB': 1024.0, 'mB': 1024.0*1024.0,
 #          'KB': 1024.0, 'MB': 1024.0*1024.0}

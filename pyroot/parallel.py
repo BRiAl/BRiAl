@@ -13,7 +13,10 @@ from .PyPolyBoRi import (Polynomial, Ring, WeakRingRef, Monomial,
     Variable)
 from .gbcore import groebner_basis
 from zlib import compress, decompress
-import copy_reg
+try:
+    import copy_reg as copyreg
+except ImportError:
+    import copyreg
 
 
 def to_fast_pickable(l):
@@ -88,7 +91,7 @@ def to_fast_pickable(l):
     for (i, n) in enumerate(nodes_sorted):
         nodes2i[n] = i + 2
 
-    for i in xrange(len(nodes_sorted)):
+    for i in range(len(nodes_sorted)):
         n = nodes_sorted[i]
         t = nodes2i[n.then_branch()]
         e = nodes2i[n.else_branch()]
@@ -131,7 +134,7 @@ def from_fast_pickable(l, r):
     i2poly = {0: r.zero(), 1: r.one()}
     (indices, terms) = l
 
-    for i in reversed(xrange(len(terms))):
+    for i in reversed(range(len(terms))):
         (v, t, e) = terms[i]
         t = i2poly[t]
         e = i2poly[e]
@@ -146,7 +149,7 @@ def _calculate_gb_with_keywords(args):
     try:
         return groebner_basis(I, **kwds_as_single_arg)
     except:
-        raise ValueError, traceback.format_exc()
+        raise ValueError(traceback.format_exc())
 
 
 def _decode_polynomial(code):
@@ -160,25 +163,25 @@ def _encode_polynomial(poly):
 def pickle_polynomial(self):
     return (_decode_polynomial, (_encode_polynomial(self), ))
 
-copy_reg.pickle(Polynomial, pickle_polynomial)
+copyreg.pickle(Polynomial, pickle_polynomial)
 
 
 def pickle_bset(self):
     return (BooleSet, (Polynomial(self), ))
 
-copy_reg.pickle(BooleSet, pickle_bset)
+copyreg.pickle(BooleSet, pickle_bset)
 
 
 def pickle_monom(self):
     return (Monomial, ([var for var in self.variables()], ))
 
-copy_reg.pickle(Monomial, pickle_monom)
+copyreg.pickle(Monomial, pickle_monom)
 
 
 def pickle_var(self):
     return (Variable, (self.index(), self.ring()))
 
-copy_reg.pickle(Variable, pickle_var)
+copyreg.pickle(Variable, pickle_var)
 
 
 def _decode_ring(code):
@@ -230,7 +233,7 @@ def _encode_ring(ring):
     else:
         nvars = ring.n_variables()
         data = (nvars, ring.get_order_code())
-        varnames = '\n'.join([str(ring.variable(idx)) for idx in xrange(nvars)
+        varnames = '\n'.join([str(ring.variable(idx)) for idx in range(nvars)
             ])
         blocks = list(ring.blocks())
         code = (identifier, data, compress(varnames), blocks[:-1])
@@ -242,7 +245,7 @@ def _encode_ring(ring):
 def pickle_ring(self):
     return (_decode_ring, (_encode_ring(self), ))
 
-copy_reg.pickle(Ring, pickle_ring)
+copyreg.pickle(Ring, pickle_ring)
 
 
 def groebner_basis_first_finished(I, *l):
@@ -270,7 +273,7 @@ def groebner_basis_first_finished(I, *l):
     pool = Pool(processes=len(l))
     it = pool.imap_unordered(_calculate_gb_with_keywords,
                              [(I, kwds) for kwds in l])
-    res = it.next()
+    res = next(it)
 
     pool.terminate()
 

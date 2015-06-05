@@ -27,7 +27,7 @@ def less_than_n_solutions(ideal, n):
         return False
     g = GroebnerStrategy(l[0].ring())
     all_monomials = Monomial([Variable(i) for i
-        in xrange(number_of_variables())]).divisors()
+        in range(number_of_variables())]).divisors()
     monomials_not_in_leading_ideal = all_monomials
     for p in l:
         g.add_generator(p)
@@ -52,7 +52,7 @@ def less_than_n_solutions(ideal, n):
 def gauss(matrix):
     """Toy Gaussian elimination.
     Example: gauss([[0,1],[1,1]]) """
-    from gbcore import groebner_basis
+    from .gbcore import groebner_basis
 
     def get_num(idx, vars):
         if idx in [var.index() for var in vars.variables()]:
@@ -61,12 +61,12 @@ def gauss(matrix):
 
     nrows = len(matrix)
     ncols = len(matrix[0])
-    eqs = [sum([matrix[row][col] * Variable(col) for col in xrange(ncols)])
-            for row in xrange(nrows)]
+    eqs = [sum([matrix[row][col] * Variable(col) for col in range(ncols)])
+            for row in range(nrows)]
     result = groebner_basis(eqs)
     result = result + [BooleConstant(0)] * (nrows - len(result))
 
-    return [[get_num(idx, elt.set().vars()) for idx in xrange(ncols)]
+    return [[get_num(idx, elt.set().vars()) for idx in range(ncols)]
             for elt in result]
 
     return result

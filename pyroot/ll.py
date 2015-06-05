@@ -1,7 +1,12 @@
+from __future__ import print_function
+
 from .PyPolyBoRi import *
 from .statistics import used_vars_set
 
 from .rank import rank
+
+from functools import reduce
+
 lead_index = top_index
 
 #(p):
@@ -66,7 +71,7 @@ def ll_encode(polys, reduce=False, prot=False, reduce_by_linear=True):
             counter = counter + 1
             progress = (counter * 100) / len(linear_lead)
             if last != progress:
-                print str(progress) + "%"
+                print(str(progress) + "%")
             last = progress
         reductors = combine(reductors, p, reduce=reduce)
     return reductors
@@ -132,7 +137,7 @@ def eliminate(polys, on_the_fly=False, prot=False, reduction_function=None,
 
 def construct_map_by_indices(to_ring, idx_mapping):
     v = BoolePolynomialVector((max(idx_mapping.keys()) + 1) * [to_ring.zero()])
-    for (from_idx, to_idx) in idx_mapping.iteritems():
+    for (from_idx, to_idx) in idx_mapping.items():
         val = to_ring.variable(to_idx)
         v[from_idx] = val
     return v
@@ -236,7 +241,7 @@ class RingMap(object):
         """
 
         def vars(ring):
-            return [ring.variable(i) for i in xrange(ring.n_variables())]
+            return [ring.variable(i) for i in range(ring.n_variables())]
 
         def indices(vars):
             return dict([(str(v), idx) for (idx, v) in enumerate(vars)])

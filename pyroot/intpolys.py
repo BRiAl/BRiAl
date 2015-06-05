@@ -61,16 +61,22 @@ class IntegerPolynomial(object):
             inter = BooleSet(res_p).intersect(BooleSet(p))
             add_simple_poly(inter, i + 1)
             return
-        res = dict(self.boolean_polys.iteritems())
-        for (k, p) in other.boolean_polys.iteritems():
+        res = dict(self.boolean_polys.items())
+        for (k, p) in other.boolean_polys.items():
             add_simple_poly(p=p, i=k)
         return IntegerPolynomial(res)
 
     def __unicode__(self):
         return unicode(self.boolean_polys)
 
+    def __str__(self):
+        return str(self.boolean_polys)
+
     def __repr__(self):
-        return unicode(self)
+        try:
+            return unicode(self)
+        except NameError:
+            return str(self)
 
 
 def _test():

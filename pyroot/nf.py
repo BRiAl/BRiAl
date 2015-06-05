@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from .PyPolyBoRi import *
 from .easy_polynomials import (easy_linear_polynomials as
     easy_linear_polynomials_func)
@@ -63,7 +65,7 @@ def build_and_print_matrices(v, strat):
     #print cols,rows
     im = Image.new("1", (cols, rows), "white")
     #im=Image.new("1",(,10000),"white")
-    for i in xrange(len(polys_in_mat)):
+    for i in range(len(polys_in_mat)):
         p = polys_in_mat[i]
         for j in p:
             assert i < rows
@@ -77,7 +79,7 @@ def build_and_print_matrices(v, strat):
     im.save(file_name)
     del im
 
-    print "MATRIX_SIZE:", rows, "x", cols
+    print("MATRIX_SIZE:", rows, "x", cols)
 
 
 def multiply_polynomials(l, ring):
@@ -138,7 +140,7 @@ def build_and_print_matrices_deg_colored(v, strat):
     rows = len(polys_in_mat)
     cols = len(m2i)
     im = Image.new("RGB", (cols, rows), "white")
-    for i in xrange(len(polys_in_mat)):
+    for i in range(len(polys_in_mat)):
         p = polys_in_mat[i]
         for j in p:
             assert i < rows
@@ -151,7 +153,7 @@ def build_and_print_matrices_deg_colored(v, strat):
     im.save(file_name)
     del im
 
-    print "MATRIX_SIZE:", rows, "x", cols
+    print("MATRIX_SIZE:", rows, "x", cols)
 
 
 def high_probability_polynomials_trick(p, strat):
@@ -211,16 +213,16 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
     modified_linear_algebra=True, draw_matrices=False,
     easy_linear_polynomials=True):
     if use_noro and use_faugere:
-        raise ValueError, 'both use_noro and use_faugere specified'
+        raise ValueError('both use_noro and use_faugere specified')
 
     def add_to_basis(strat, p):
         if p.is_zero():
             if prot:
-                print "-"
+                print("-")
         else:
             if prot:
                 if full_prot:
-                    print p
+                    print(p)
                 print("Result: ", "deg:", p.deg(), "lm: ", p.lead(), "el: ", p
                     .elength())
             if easy_linear_polynomials and p.lead_deg() > 2:
@@ -235,7 +237,7 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
 
 
             if prot:
-                print "#Generators:", len(strat)
+                print("#Generators:", len(strat))
 
     if (isinstance(G, list)):
         if len(G) == 0:
@@ -265,7 +267,7 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
         strat = G
 
     if prot:
-        print "added delayed"
+        print("added delayed")
     i = 0
     try:
         while strat.npairs() > 0:
@@ -273,7 +275,7 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
                 raise GeneratorLimitExceeded(strat)
             i = i + 1
             if prot:
-                print "Current Degree:", strat.top_sugar()
+                print("Current Degree:", strat.top_sugar())
             if (strat.top_sugar() > deg_bound) and (over_deg_bound <= 0):
                 return strat
             if (strat.top_sugar() > deg_bound):
@@ -296,14 +298,14 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
                 ps = new_ps
 
             if prot:
-                print "(", strat.npairs(), ")"
+                print("(", strat.npairs(), ")")
             if prot:
-                print "start reducing"
+                print("start reducing")
                 print("Chain Crit. : ", strat.chain_criterions, "VC:", strat.
                     variable_chain_criterions, "EASYP", strat.
                     easy_product_criterions, "EXTP", strat.
                     extended_product_criterions)
-                print len(ps), "spolys added"
+                print(len(ps), "spolys added")
 
             if use_noro or use_faugere:
                 v = BoolePolynomialVector()
@@ -336,7 +338,7 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
                             ), max_growth)
 
             if prot:
-                print "end reducing"
+                print("end reducing")
 
 
             if len(res) > 0 and res[0].ring().has_degree_order():
@@ -361,10 +363,10 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
                     strat.implications(len(strat) - 1)
                 if p.is_one():
                     if prot:
-                        print "GB is 1"
+                        print("GB is 1")
                     return strat
                 if prot:
-                    print "(", strat.npairs(), ")"
+                    print("(", strat.npairs(), ")")
 
             strat.clean_top_by_chain_criterion()
         return strat
@@ -375,10 +377,10 @@ def symmGB_F2_python(G, deg_bound=1000000000000, over_deg_bound=0,
 
 def GPS(G, vars_start, vars_end):
     def step(strat, trace, var, val):
-        print "plugin: ", var, val
-        print "npairs", strat.npairs()
+        print("plugin: ", var, val)
+        print("npairs", strat.npairs())
         strat = GroebnerStrategy(strat)
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
         strat.add_generator_delayed(Polynomial(Monomial(Variable(var, strat.r)
             ) + val))
         strat = symmGB_F2_python(strat, prot=True, deg_bound=2,
@@ -391,7 +393,7 @@ def GPS(G, vars_start, vars_end):
         else:
             if var <= vars_start:
                 #bug: may contain Delayed polynomials
-                print "!!!!!!! SOLUTION", trace
+                print("!!!!!!! SOLUTION", trace)
                 raise Exception
                 #yield trace
             else:
@@ -413,12 +415,12 @@ def GPS(G, vars_start, vars_end):
 
 def GPS_with_proof_path(G, proof_path, deg_bound, over_deg_bound):
     def step(strat, trace, proof_path, pos, val):
-        print proof_path
-        print "plugin: ", pos, val, proof_path[pos]
-        print "npairs", strat.npairs()
+        print(proof_path)
+        print("plugin: ", pos, val, proof_path[pos])
+        print("npairs", strat.npairs())
         strat = GroebnerStrategy(strat)
-        print "npairs", strat.npairs()
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
+        print("npairs", strat.npairs())
         plug_p = Polynomial(proof_path[pos]) + val
         plug_p_lead = plug_p.lead()
         if len(plug_p) == 2 and (plug_p + plug_p_lead).deg() == 0:
@@ -426,25 +428,25 @@ def GPS_with_proof_path(G, proof_path, deg_bound, over_deg_bound):
                 strat.add_generator_delayed(v + 1)
         else:
             strat.add_generator_delayed(plug_p)
-        print "npairs", strat.npairs()
-        print "pos:", pos
+        print("npairs", strat.npairs())
+        print("pos:", pos)
         strat = symmGB_F2_python(strat, deg_bound=deg_bound, opt_lazy=False,
             over_deg_bound=over_deg_bound, prot=True)
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
         pos = pos + 1
         if pos >= len(proof_path):
-            print "OVER"
+            print("OVER")
             strat = symmGB_F2_python(strat, prot=True)
         if strat.containsOne():
             pass
         else:
             if pos >= len(proof_path):
-                print "npairs", strat.npairs()
-                print "minimized:"
+                print("npairs", strat.npairs())
+                print("minimized:")
                 for p in strat.minimalize_and_tail_reduce():
-                    print p
+                    print(p)
                 #bug: may contain Delayed polynomials
-                print "!!!!!!! SOLUTION", trace
+                print("!!!!!!! SOLUTION", trace)
                 raise Exception
                 #yield trace
             else:
@@ -464,14 +466,14 @@ def GPS_with_proof_path(G, proof_path, deg_bound, over_deg_bound):
 def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
     opt_red_tail=True, initial_bb=True):
     def step(strat, trace, var, val):
-        print trace
+        print(trace)
         plug_p = val + var
-        print "plugin: ", len(trace), plug_p
+        print("plugin: ", len(trace), plug_p)
         trace = trace + [plug_p]
         strat = GroebnerStrategy(strat)
 
         strat.add_generator_delayed(plug_p)
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
 
         strat = symmGB_F2_python(strat, deg_bound=deg_bound,
             opt_lazy=opt_lazy, over_deg_bound=over_deg_bound, prot=True)
@@ -481,7 +483,7 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
             branch(strat, trace)
 
     def branch(strat, trace):
-        print "branching"
+        print("branching")
         index = strat.suggestPluginVariable()
 
         if index < 0:
@@ -492,17 +494,17 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
             if len(candidates) > 0:
                 index = iter(candidates).next().index()
         if index >= 0:
-            print "chosen index:", index
+            print("chosen index:", index)
             step(strat, trace, Polynomial(Monomial(Variable(index))), 0)
             step(strat, trace, Polynomial(Monomial(Variable(index))), 1)
         else:
-            print "FINAL!!!", index
+            print("FINAL!!!", index)
             strat = symmGB_F2_python(strat, prot=True)
             if not strat.containsOne():
-                print "TRACE", trace
-                print "SOLUTION"
+                print("TRACE", trace)
+                print("SOLUTION")
                 for p in strat.minimalize_and_tail_reduce():
-                    print p
+                    print(p)
                 raise Exception
 
     def sort_crit(p):
@@ -523,14 +525,14 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
     higher_deg = {}
     if initial_bb:
         for g in G:
-            print g
+            print(g)
             index = strat.select(g.lead())
             if p.deg() == 1:  # (index<0):
                 strat.add_as_you_wish(g)
             else:
                 first_deg_bound = max(first_deg_bound, g.deg())
                 strat.add_generator_delayed(g)
-            print g, len(strat)
+            print(g, len(strat))
     else:
         for g in G:
             strat.add_as_you_wish(g)
@@ -538,42 +540,42 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
         strat = symmGB_F2_python(strat, deg_bound=max(deg_bound,
             first_deg_bound), opt_lazy=opt_lazy, over_deg_bound=0, prot=True)
     strat.opt_lazy = opt_lazy
-    print "INITIALIZED"
+    print("INITIALIZED")
     branch(strat, [])
 
 
 def GPS_with_non_binary_proof_path(G, proof_path, deg_bound, over_deg_bound):
     def step(strat, trace, proof_path, pos, choice):
-        print proof_path
-        print "plugin: ", pos
-        print "npairs", strat.npairs()
+        print(proof_path)
+        print("plugin: ", pos)
+        print("npairs", strat.npairs())
         strat = GroebnerStrategy(strat)
-        print "npairs", strat.npairs()
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
+        print("npairs", strat.npairs())
         for p in proof_path[pos][choice]:
-            print p
+            print(p)
             strat.add_generator_delayed(Polynomial(p))
 
-        print "npairs", strat.npairs()
-        print "pos:", pos
+        print("npairs", strat.npairs())
+        print("pos:", pos)
         strat = symmGB_F2_python(strat, deg_bound=deg_bound,
             over_deg_bound=over_deg_bound, prot=True)
-        print "npairs", strat.npairs()
+        print("npairs", strat.npairs())
         pos = pos + 1
         if pos >= len(proof_path):
-            print "OVER"
+            print("OVER")
             strat = symmGB_F2_python(strat)
         if strat.containsOne():
             pass
         else:
             if pos >= len(proof_path):
-                print "npairs", strat.npairs()
+                print("npairs", strat.npairs())
                 #strat.to_std_out()
                 l = [p for p in strat]
                 strat2 = symmGB_F2_python(l)
                 #strat2.to_std_out()
                 #bug: may contain Delayed polynomials
-                print "!!!!!!! SOLUTION", trace
+                print("!!!!!!! SOLUTION", trace)
                 raise Exception
                 #yield trace
             else:
@@ -583,7 +585,7 @@ def GPS_with_non_binary_proof_path(G, proof_path, deg_bound, over_deg_bound):
                 #step(strat,trace+[(var,val)],var-1, 1)
 
     def branch(strat, trace, proof_path, pos):
-        for i in xrange(len(proof_path[pos])):
+        for i in range(len(proof_path[pos])):
             step(strat, trace, proof_path, pos, i)
 
     strat = GroebnerStrategy(G[0].ring())
@@ -606,7 +608,7 @@ def symmGB_F2_C(G, opt_exchange=True,
     draw_matrices=False):
     #print implications
     if use_noro:
-        raise NotImplementedError, "noro not implemented for symmgb"
+        raise NotImplementedError("noro not implemented for symmgb")
     if (isinstance(G, list)):
         if len(G) == 0:
             return []

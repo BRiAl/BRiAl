@@ -37,7 +37,7 @@ def fglm(I, from_ring, to_ring):
     """
     for poly in I:
         if poly.ring().id() != from_ring.id():
-            raise ValueError, "Ideal I must be from the first ring argument"
+            raise ValueError("Ideal I must be from the first ring argument")
     return _fglm(I, from_ring, to_ring)
 
 

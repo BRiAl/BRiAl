@@ -1,7 +1,13 @@
+from __future__ import print_function
+
 from .PyPolyBoRi import Polynomial
 from .nf import symmGB_F2_C
 from .ll import ll_encode
-from itertools import ifilter
+
+try:
+    from itertools import ifilter as filter
+except ImportError:
+    pass
 
 
 class OccCounter(object):
@@ -23,7 +29,7 @@ class OccCounter(object):
     def uniques(self):
         def filter_fun(k):
             return self.impl[k] == 1
-        return ifilter(filter_fun, self.impl.keys())
+        return filter(filter_fun, self.impl.keys())
 
 
 def preprocess(I, prot=True):
@@ -37,7 +43,7 @@ def preprocess(I, prot=True):
   # ction_size=10000,opt_red_tail=True)
     lin = min_gb(lin)  # list(lin_strat.minimalize_and_tail_reduce())
     for m in sorted([p.lead() for p in lin]):
-        print m
+        print(m)
     lin_ll = ll_encode(lin)
     square = [p.lead() for p in I if p.deg() == 2 and len(p) == 1]
     assert(len(lin) + len(square) == len(I))
@@ -80,6 +86,6 @@ def preprocess(I, prot=True):
         u_im = ll_red_nf(u_var, lin_ll)
         res.extend([u_im * p for p in min_gb(systems[u])])
       #print [u_im*p for p in min_gb(systems[u])]
-    print "lin:", len(lin), "res:", len(res), "square:", len(square)
+    print("lin:", len(lin), "res:", len(res), "square:", len(square))
     res = [p for p in (Polynomial(p) for p in res) if not p.is_zero()]
     return res

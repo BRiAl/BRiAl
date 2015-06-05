@@ -1,6 +1,9 @@
 from re import sub
 import gzip
-from StringIO import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 import uu
 import re
 import imp
@@ -124,7 +127,7 @@ def declare_ring(blocks, context=None):
     context=globals()
   return orig_declare_ring(blocks,context)
 """
-    exec import_header + content in module.__dict__
+    exec(import_header + content, module.__dict__)
     if hasattr(module, "ideal"):
         module.ideal = [Polynomial(p) for p in module.ideal]
     return module

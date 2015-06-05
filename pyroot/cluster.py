@@ -24,7 +24,7 @@ class ClusterAlgorithmFailed(Exception):
 class ClusterAlgorithm(object):
     def __init__(self, ideal, determination_modifier=1):
         if len(ideal) == 0:
-            raise ValueError, 'ideal generators list should be non empty'
+            raise ValueError('ideal generators list should be non empty')
 
         self.ideal = ideal
 
@@ -44,7 +44,7 @@ class ClusterAlgorithm(object):
 
     def build_variables_usage(self):
         self.variables_usage = dict()
-        for (p, variables) in self.used_variables_of_polynomial.iteritems():
+        for (p, variables) in self.used_variables_of_polynomial.items():
             for v in variables:
                 self.variables_usage.setdefault(v, []).append(p)
 
@@ -55,7 +55,7 @@ class ClusterAlgorithm(object):
         def var_set_to_tuple(s):
             return tuple(sorted(s, key=Variable.index))
         self.variables_introduction_mapping.clear()
-        for (p, var_set) in self.used_variables_of_polynomial.iteritems():
+        for (p, var_set) in self.used_variables_of_polynomial.items():
             if p in self.cluster:
                 continue
             as_tuple = var_set_to_tuple(var_set.difference(self.
@@ -91,7 +91,7 @@ class ClusterAlgorithm(object):
         def max_key(entry):
             (entry_variable, entry_polynomials) = entry
             return len(entry_polynomials)
-        (variable, polynomials) = max(self.variables_usage.iteritems(),
+        (variable, polynomials) = max(self.variables_usage.items(),
             key=max_key)
 
         def min_key(p):
@@ -99,8 +99,8 @@ class ClusterAlgorithm(object):
         return min(polynomials, key=min_key)
 
     def increase_cluster(self):
-        introduced_variables_possibilities = (self.
-            variables_introduction_mapping.keys())
+        introduced_variables_possibilities = (list(self.
+            variables_introduction_mapping.keys()))
         introduced_variables = min(introduced_variables_possibilities, key=len)
         polynomials = self.variables_introduction_mapping[introduced_variables]
         assert len(polynomials) > 0
