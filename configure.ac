@@ -10,6 +10,8 @@ LT_INIT
 
 AC_LANG([C++])
 
+AM_PATH_PYTHON([2.7])
+
 AC_CHECK_TYPE([long long],
               [AC_DEFINE([PBORI_HAVE_LONG_LONG],[],[has long long])])
 
@@ -85,5 +87,6 @@ AC_CONFIG_FILES([
                  libpolybori/Makefile
                  libpolybori/include/Makefile
                  libpolybori/src/Makefile
+                 pyroot/polybori/Makefile
                  ])
 AC_OUTPUT
