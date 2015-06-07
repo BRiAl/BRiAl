@@ -3,7 +3,7 @@ include $(top_srcdir)/common.mk
 lib_LTLIBRARIES = libpolybori_groebner.la
 
 libpolybori_groebner_la_LIBADD = \
-	$(top_srcdir)/libpolybori.la \
+	$(top_builddir)/libpolybori.la \
 	$(LIBPNG_LIBADD) \
 	$(M4RI_LIBS) \
 	$(GD_LIBS)
