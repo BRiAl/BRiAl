@@ -1,4 +1,7 @@
-Release Name:
+Release Name: 0.8.4.1
+* Fix python import statements
+
+Release Name: 0.8.4
 * software renamed to BRiAl (note that this is a successor to PolyBoRi and should not be installed alongside PolyBoRi)
 * new autotools based build system (still a work in progress)
 

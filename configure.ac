@@ -1,4 +1,4 @@
-AC_INIT([BRiAl], [0.8.4])
+AC_INIT([BRiAl], [0.8.4.1])
 
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror tar-ustar])
@@ -87,6 +87,6 @@ AC_CONFIG_FILES([
                  libpolybori/Makefile
                  libpolybori/include/Makefile
                  libpolybori/src/Makefile
-                 pyroot/polybori/Makefile
+                 pyroot/Makefile
                  ])
 AC_OUTPUT

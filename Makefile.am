@@ -1,6 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = Cudd/cudd libpolybori . groebner pyroot/polybori
+SUBDIRS = Cudd/cudd libpolybori . groebner pyroot
 
 lib_LTLIBRARIES = libpolybori.la
 
