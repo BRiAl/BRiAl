@@ -77,6 +77,8 @@ else
     fi
 fi
 
+AC_SUBST(PYTHON)
+AC_SUBST(pythondir)
 AC_CONFIG_HEADERS([libpolybori/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
