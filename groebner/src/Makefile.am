@@ -1,6 +1,10 @@
 include $(top_srcdir)/common.mk
 
+AM_CFLAGS = $(M4RI_CFLAGS)
+
 lib_LTLIBRARIES = libbrial_groebner.la
+
+libbrial_groebner_la_CFLAGS = $(AM_CFLAGS)
 
 libbrial_groebner_la_LIBADD = \
 	$(top_builddir)/libbrial.la \
