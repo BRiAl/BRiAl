@@ -1,3 +1,7 @@
+Release Name: 0.8.5
+* Updated python files to use python 3 compatible syntax
+* renamed libpolybori[_groebner] to libbrial[_groebner]
+
 Release Name: 0.8.4.2
 * Fix issue that caused some linux systems to install to the wrong site-packages.
 
