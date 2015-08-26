@@ -1,14 +1,14 @@
 include $(top_srcdir)/common.mk
 
-lib_LTLIBRARIES = libpolybori_groebner.la
+lib_LTLIBRARIES = libbrial_groebner.la
 
-libpolybori_groebner_la_LIBADD = \
-	$(top_builddir)/libpolybori.la \
+libbrial_groebner_la_LIBADD = \
+	$(top_builddir)/libbrial.la \
 	$(LIBPNG_LIBADD) \
 	$(M4RI_LIBS) \
 	$(GD_LIBS)
 
-libpolybori_groebner_la_SOURCES = \
+libbrial_groebner_la_SOURCES = \
 	dlex4data.cc \
 	dp_asc4data.cc \
 	FGLMStrategy.cc \

@@ -1,13 +1,13 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = Cudd/cudd libpolybori . groebner pyroot
+SUBDIRS = Cudd/cudd libbrial . groebner pyroot
 
-lib_LTLIBRARIES = libpolybori.la
+lib_LTLIBRARIES = libbrial.la
 
-libpolybori_la_SOURCES =
-libpolybori_la_LIBADD = \
+libbrial_la_SOURCES =
+libbrial_la_LIBADD = \
 	Cudd/cudd/libcudd.la \
-	libpolybori/src/libpolybori_base.la
+	libbrial/src/libbrial_base.la
 
 EXTRA_DIST = \
 	Cudd/LICENSE \

@@ -1,8 +1,8 @@
 include $(top_srcdir)/common.mk
 
-noinst_LTLIBRARIES = libpolybori_base.la
+noinst_LTLIBRARIES = libbrial_base.la
 
-libpolybori_base_la_SOURCES = \
+libbrial_base_la_SOURCES = \
 	BlockDegLexOrder.cc \
 	BlockDegRevLexAscOrder.cc \
 	BooleEnv.cc \

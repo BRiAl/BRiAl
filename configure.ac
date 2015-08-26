@@ -79,16 +79,16 @@ fi
 
 AC_SUBST(PYTHON)
 AC_SUBST(pythondir)
-AC_CONFIG_HEADERS([libpolybori/include/polybori/config.h])
+AC_CONFIG_HEADERS([libbrial/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
                  Cudd/cudd/Makefile
                  groebner/Makefile
                  groebner/include/Makefile
                  groebner/src/Makefile
-                 libpolybori/Makefile
-                 libpolybori/include/Makefile
-                 libpolybori/src/Makefile
+                 libbrial/Makefile
+                 libbrial/include/Makefile
+                 libbrial/src/Makefile
                  pyroot/Makefile
                  ])
 AC_OUTPUT
