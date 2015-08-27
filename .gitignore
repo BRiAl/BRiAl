@@ -20,7 +20,7 @@ autoconf.h*
 /install-sh
 /libtool
 /ltmain.sh
-/m4/
+/m4/lt*.m4
 /missing
 stamp-*
 /compile
