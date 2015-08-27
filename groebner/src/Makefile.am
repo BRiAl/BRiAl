@@ -2,7 +2,7 @@ include $(top_srcdir)/common.mk
 
 lib_LTLIBRARIES = libbrial_groebner.la
 
-libbrial_groebner_la_CFLAGS = $(AM_CFLAGS) $(SIMMD_CFLAGS)
+libbrial_groebner_la_CXXFLAGS = $(AM_CXXFLAGS) $(SIMMD_CFLAGS)
 
 libbrial_groebner_la_LIBADD = \
 	$(top_builddir)/libbrial.la \
