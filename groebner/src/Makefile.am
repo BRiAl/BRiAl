@@ -2,7 +2,7 @@ include $(top_srcdir)/common.mk
 
 lib_LTLIBRARIES = libpolybori_groebner.la
 
-libpolybori_groebner_la_CFLAGS = $(AM_CFLAGS) $(SIMMD_CFLAGS)
+libpolybori_groebner_la_CXXFLAGS = $(AM_CXXFLAGS) $(SIMMD_CFLAGS)
 
 libpolybori_groebner_la_LIBADD = \
 	$(top_builddir)/libpolybori.la \
