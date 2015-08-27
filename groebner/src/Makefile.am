@@ -2,6 +2,8 @@ include $(top_srcdir)/common.mk
 
 lib_LTLIBRARIES = libbrial_groebner.la
 
+libbrial_groebner_la_CPPFLAGS = $(AM_CPPFLAGS) $(SIMMD_CPPFLAGS)
+
 libbrial_groebner_la_LIBADD = \
 	$(top_builddir)/libbrial.la \
 	$(LIBPNG_LIBADD) \
