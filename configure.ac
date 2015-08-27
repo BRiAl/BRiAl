@@ -85,7 +85,6 @@ fi
 
 AC_SUBST(PYTHON)
 AC_SUBST(pythondir)
-AC_SUBST(SIMMD_CPPFLAGS)
 AC_CONFIG_HEADERS([libbrial/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
