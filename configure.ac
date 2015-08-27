@@ -38,6 +38,23 @@ AC_EGREP_CPP([pbori_have_m4ri_png],
              ],
              [m4ri_png="yes"], [m4ri_png="no"])
 
+dnl Find out M4RI SIMMD flags
+SIMMD_CPPFLAGS=""
+AC_RUN_IFELSE(
+  AC_LANG_SOURCE(
+    [[
+#include <stdio.h>
+#include <m4ri/m4ri_config.h>
+int main(){
+printf("%s\n",__M4RI_SIMD_CFLAGS);
+return 0;
+}
+   ]]),
+   [AC_MSG_RESULT([Found m4ri SIMMD Flags]);
+    SIMMD_CPPFLAGS=`./conftest$EXEEXT`],
+   [AC_MSG_ERROR([Couldn't get m4ri SIMMD flags])]
+)
+
 if test "x$m4ri_png" = "xyes"; then
     PKG_CHECK_MODULES([PNG], [libpng],
         [have_libpng="yes"; LIBPNG_LIBADD="$PNG_LIBS"],
@@ -79,6 +96,7 @@ fi
 
 AC_SUBST(PYTHON)
 AC_SUBST(pythondir)
+AC_SUBST(SIMMD_CPPFLAGS)
 AC_CONFIG_HEADERS([libpolybori/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile

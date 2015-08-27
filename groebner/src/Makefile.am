@@ -2,6 +2,8 @@ include $(top_srcdir)/common.mk
 
 lib_LTLIBRARIES = libpolybori_groebner.la
 
+libpolybori_groebner_la_CPPFLAGS = $(AM_CPPFLAGS) $(SIMMD_CPPFLAGS)
+
 libpolybori_groebner_la_LIBADD = \
 	$(top_builddir)/libpolybori.la \
 	$(LIBPNG_LIBADD) \
