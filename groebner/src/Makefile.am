@@ -10,6 +10,8 @@ libbrial_groebner_la_LIBADD = \
 	$(M4RI_LIBS) \
 	$(GD_LIBS)
 
+libbrial_groebner_la_LDFLAGS = -no-undefined $(AM_LDFLAGS)
+
 libbrial_groebner_la_SOURCES = \
 	dlex4data.cc \
 	dp_asc4data.cc \
