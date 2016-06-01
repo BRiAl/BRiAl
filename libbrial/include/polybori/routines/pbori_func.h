@@ -623,7 +623,7 @@ public:
   }
 };
 
-template <class Type>
+template <class Type, typename Comparator>
 class generate_index_map {
 
   typedef typename Type::idx_type idx_type;
@@ -637,9 +637,9 @@ public:
      typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
 #  else
 #    ifdef PBORI_HAVE_HASH_MAP
-      typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
+       typedef __gnu_cxx::hash_map<Type, idx_type, hashes<Type> > type;
 #    else
-       typedef std::map<Type, idx_type> type;
+       typedef std::map<Type, idx_type, Comparator> type;
 #    endif
 #  endif
 #endif
