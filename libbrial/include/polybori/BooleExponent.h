@@ -26,6 +26,34 @@
 
 BEGIN_NAMESPACE_PBORI
 
+
+/// Less than comparison (and sortability) of exponents
+template<typename T>
+class MapComparator {
+public:
+  // Auxiliary sort order for exponents as required by std::map
+  //
+  // Implemented as template since we cannot forward declare
+  // BooleExponent::bool_type, but will only be used with T ==
+  // BooleExponent.
+  typename T::bool_type operator()(const T& lhs, const T& rhs) const {
+    typename T::const_iterator li = lhs.begin();
+    typename T::const_iterator ri = rhs.begin();
+    while (true) {
+      if (li == lhs.end())
+        return true;
+      if (ri == rhs.end())
+        return false;
+      if (*li < *ri)
+        return true;
+      li++, ri++;
+    };
+    return false;
+  }
+};
+
+
+
 /** @class BooleExponent
  * @brief This class is just a wrapper for using variables for storing indices
  * as interim data structure for BooleMonomial
@@ -73,7 +101,7 @@ class BooleExponent:
   typedef poly_type::set_type set_type;
 
   /// Type for index maps
-  typedef generate_index_map<self>::type idx_map_type;
+  typedef generate_index_map<self, MapComparator<BooleExponent> >::type idx_map_type;
 
   /// This type has no easy equality check
   typedef invalid_tag easy_equality_property;
@@ -246,6 +274,7 @@ protected:
   /// The actual exponent indices
   data_type m_data;
 };
+
 
 
 /// Multiplication of monomials

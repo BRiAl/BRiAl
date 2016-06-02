@@ -21,6 +21,7 @@ autoconf.h*
 /libtool
 /ltmain.sh
 /m4/lt*.m4
+/m4/libtool.m4
 /missing
 stamp-*
 /compile
