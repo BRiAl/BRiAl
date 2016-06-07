@@ -17,15 +17,15 @@ prot=True
 try:
     from custom_profile import filename as datafilename
 except:
-    print 'No filename in custom_profile.py file! Using ' + datafilename + '.'
+    print('No filename in custom_profile.py file! Using ' + datafilename + '.')
 try:
     from custom_profile import ordering as ordername
 except:
-    print 'No ordering in custom_profile.py file! Using ' + ordername + '.'
+    print('No ordering in custom_profile.py file! Using ' + ordername + '.')
 try:
     from custom_profile import protocol as prot
 except:
-    print 'No protocol in custom_profile.py file! Using ' + prot + '.'
+    print('No protocol in custom_profile.py file! Using ' + prot + '.')
     
 data=load_data(datafilename, base_dir="../../polybori-testsuite/")
 ring = data.ideal[0].ring().clone(ordering=getattr(OrderCode,ordername))
