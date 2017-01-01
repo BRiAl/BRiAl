@@ -19,13 +19,7 @@ AC_CHECK_SIZEOF(void *)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
 
-AC_CHECK_HEADER([unordered_map],[AC_DEFINE([PBORI_HAVE_UNORDERD_MAP],[],[has unordered map])])
-if ! test "x$ac_cv_header_unordered_map" = xyes; then
-    AC_CHECK_HEADER([tr1/unordered_map],[AC_DEFINE([PBORI_HAVE_TR1_UNORDERED_MAP],[],[has tr1 unordered map])])
-    if ! test "x$ac_cv_header_tr1_unordered_map" = xyes; then
-        AC_CHECK_HEADER([ext/hash_map],[AC_DEFINE([PBORI_HAVE_HASH_MAP],[],[has hash map])])
-    fi
-fi
+AC_CHECK_HEADER([unordered_map],[AC_DEFINE([PBORI_HAVE_UNORDERED_MAP],[],[has unordered map])])
 
 PKG_CHECK_MODULES([M4RI], m4ri, [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
 AC_EGREP_CPP([pbori_have_m4ri_png],
