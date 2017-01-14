@@ -5,6 +5,8 @@ SUBDIRS = Cudd/cudd libbrial . groebner pyroot
 lib_LTLIBRARIES = libbrial.la
 
 libbrial_la_SOURCES =
+# Dummy C++ source to cause C++ linking.
+nodist_EXTRA_libbrial_la_SOURCES = dummy.cxx
 libbrial_la_LIBADD = \
 	Cudd/cudd/libcudd.la \
 	libbrial/src/libbrial_base.la
