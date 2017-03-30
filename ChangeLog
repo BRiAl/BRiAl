@@ -1,3 +1,9 @@
+Release Name: 0.8.6
+* Various python 3 fix
+* c++ fixes for newer g++
+* restrict map type that can be used, again for c++ compatibily with newer compilers
+* Ongoing clean up
+
 Release Name: 0.8.5
 * Updated python files to use python 3 compatible syntax
 * renamed libpolybori[_groebner] to libbrial[_groebner]
