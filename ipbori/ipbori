@@ -50,7 +50,7 @@ polybori_dir = \
 sys.path.insert(0, polybori_dir)
 
 def _test(args):
-  print "Testing..."
+  print("Testing...")
   from glob import glob
   from imp import new_module
   from os.path import basename, dirname, splitext
@@ -76,22 +76,22 @@ def _test(args):
       # Some PolyBoRi modules do have optional (possibly hidden) dependencies
       if '_exists' in dir(module):
         if not module._exists():
-          print "# Prerequisites for optional file", file, "missing. Skipping."
+          print("# Prerequisites for optional file {} missing. Skipping.".format(file))
           continue
 
 
     except ImportError:
-      print "# Error importing", file
+      print("# Error importing {}".format(file))
       if opts.verbose:
         import traceback
         traceback.print_exc(file=sys.stdout)
       continue
 
-    print sys.argv[0], '-t', file
+    print('{} -t {}'.format(sys.argv[0], file))
     (failure_count, test_count) = doctest.testmod(module, verbose=opts.verbose)
     failed += failure_count
   
-  if not failed: print 'OK'
+  if not failed: print('OK')
   return failed
 
 
@@ -123,4 +123,3 @@ def ipbori_shell(context):
 
 # Call the available shell
 ipbori_shell(globals()).mainloop()
-
