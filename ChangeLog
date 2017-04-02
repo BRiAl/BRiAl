@@ -1,3 +1,8 @@
+Release Name: 0.8.7
+* Turns out that we need some form of "unordered_map" to work with sage.
+  Standard "map" is not enough. Rewrote the configuration and header file
+  with that in mind.
+
 Release Name: 0.8.6
 * Various python 3 fix
 * c++ fixes for newer g++
