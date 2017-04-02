@@ -19,7 +19,12 @@ AC_CHECK_SIZEOF(void *)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
 
-AC_CHECK_HEADER([unordered_map],[AC_DEFINE([PBORI_HAVE_UNORDERED_MAP],[],[has unordered map])])
+AC_CHECK_HEADER([unordered_map],
+              [AC_DEFINE([PBORI_HAVE_UNORDERED_MAP],[],[has unordered map])],
+              [AC_CHECK_HEADER([tr1/unordered_map],
+			    [],
+                            [AC_MSG_ERROR("No unordered_map headers found for this compiler")])]
+)
 
 PKG_CHECK_MODULES([M4RI], m4ri, [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
 AC_EGREP_CPP([pbori_have_m4ri_png],

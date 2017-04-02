@@ -29,7 +29,7 @@
 #ifdef PBORI_HAVE_UNORDERED_MAP
 #include <unordered_map>
 #else
-#include <map>
+#include <tr1/unordered_map>
 #endif
 
 BEGIN_NAMESPACE_PBORI
@@ -625,7 +625,7 @@ public:
 #ifdef PBORI_HAVE_UNORDERED_MAP
    typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
 #else
-   typedef std::map<Type, idx_type, Comparator> type;
+   typedef std::tr1::unordered_map<Type, idx_type, hashes<Type> > type;
 #endif
 };
 
