@@ -1,18 +1,20 @@
 ACLOCAL_AMFLAGS = -I m4
 
-SUBDIRS = Cudd/cudd libbrial . groebner pyroot
+SUBDIRS = cudd libbrial . groebner tests
 
 lib_LTLIBRARIES = libbrial.la
 
 libbrial_la_SOURCES =
 libbrial_la_LIBADD = \
-	Cudd/cudd/libcudd.la \
+	cudd/libcudd.la \
 	libbrial/src/libbrial_base.la
-libbrial_la_LDFLAGS = -no-undefined $(AM_LDFLAGS)
+libbrial_la_LDFLAGS = -no-undefined $(AM_LDFLAGS) -version-info @LT_CURRENT@:@LT_REVISION@:@LT_AGE@
 
 EXTRA_DIST = \
-	Cudd/LICENSE \
+	cudd/LICENSE \
 	LICENSE \
-	README
+	README \
+	sage-brial
+
 # Dummy C++ source to cause C++ linking.
 nodist_EXTRA_libbrial_la_SOURCES = dummy.cc

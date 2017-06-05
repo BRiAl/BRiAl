@@ -1,0 +1,5 @@
+This directory contains a subset of the Cudd 2.5.0 package 
+with its original license and release notes.
+This is not the complete sources of this release of Cudd.
+Cudd's complete sources and documentation can be obtained at
+http://vlsi.colorado.edu/~fabio

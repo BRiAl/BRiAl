@@ -17,6 +17,6 @@
 #ifndef polybori_cudd_cuddInt_h_
 #define polybori_cudd_cuddInt_h_
 
-#include "../../../../Cudd/cudd/cuddInt.h"
+#include "../../../../cudd/cuddInt.h"
 
 #endif

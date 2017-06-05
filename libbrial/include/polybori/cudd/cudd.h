@@ -17,6 +17,6 @@
 #ifndef polybori_cudd_cudd_h_
 #define polybori_cudd_cudd_h_
 
-#include "../../../../Cudd/cudd/cudd.h"
+#include "../../../../cudd/cudd.h"
 
 #endif

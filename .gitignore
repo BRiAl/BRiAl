@@ -10,6 +10,7 @@ config.h.in
 Makefile
 Makefile.in
 autoconf.h*
+test-driver
 /aclocal.m4
 /ar-lib
 /autom4te.cache/

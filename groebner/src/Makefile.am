@@ -10,7 +10,7 @@ libbrial_groebner_la_LIBADD = \
 	$(M4RI_LIBS) \
 	$(GD_LIBS)
 
-libbrial_groebner_la_LDFLAGS = -no-undefined $(AM_LDFLAGS)
+libbrial_groebner_la_LDFLAGS = -no-undefined $(AM_LDFLAGS) -version-info @LT_CURRENT@:@LT_REVISION@:@LT_AGE@
 
 libbrial_groebner_la_SOURCES = \
 	dlex4data.cc \

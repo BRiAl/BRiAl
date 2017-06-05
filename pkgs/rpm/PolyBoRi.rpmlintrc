@@ -1,2 +1,0 @@
-# PolyBoRi does not contain any binary - but the subpackages do
-addFilter("^PolyBoRi\..*: W: no-binary")

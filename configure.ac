@@ -1,16 +1,26 @@
-AC_INIT([BRiAl], [0.8.7])
+AC_INIT([BRiAl], [1.0.0])
 
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror tar-ustar])
-
-AC_PROG_CC
-AC_PROG_CXX
 AM_PROG_AR
+
 LT_INIT
+LT_CURRENT=1
+LT_REVISION=0
+LT_AGE=0
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+AC_PROG_CC_C99
+if test "x$ac_cv_prog_cc_c99" = "xno"; then
+    AC_MSG_ERROR("A C99 capable compiler is required")
+fi
+AC_PROG_CXX
+AC_PROG_INSTALL
+AC_PROG_LIBTOOL
 
 AC_LANG([C++])
-
-AM_PATH_PYTHON([2.7])
 
 AC_CHECK_TYPE([long long],
               [AC_DEFINE([PBORI_HAVE_LONG_LONG],[],[has long long])])
@@ -25,6 +35,13 @@ AC_CHECK_HEADER([unordered_map],
 			    [],
                             [AC_MSG_ERROR("No unordered_map headers found for this compiler")])]
 )
+
+dnl Check that boost is available
+AX_BOOST_BASE([1.58.0],[],
+              [AC_MSG_ERROR("No suitable version of boost was found (1.58.0 or higher)")])
+
+dnl Check that the boost unit test framework is present for running the testsuite
+AX_BOOST_UNIT_TEST_FRAMEWORK
 
 PKG_CHECK_MODULES([M4RI], m4ri, [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
 AC_EGREP_CPP([pbori_have_m4ri_png],
@@ -82,18 +99,16 @@ else
     fi
 fi
 
-AC_SUBST(PYTHON)
-AC_SUBST(pythondir)
 AC_CONFIG_HEADERS([libbrial/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
-                 Cudd/cudd/Makefile
+                 cudd/Makefile
                  groebner/Makefile
                  groebner/include/Makefile
                  groebner/src/Makefile
                  libbrial/Makefile
                  libbrial/include/Makefile
                  libbrial/src/Makefile
-                 pyroot/Makefile
+                 tests/Makefile
                  ])
 AC_OUTPUT
