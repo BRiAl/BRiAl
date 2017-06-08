@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-setup( name="pybrial"
+setup( name="brial"
      , version="1.0.1"
      , description="Python implementation of BRiAl"
      , long_description="BRiAl is the legacy implementation of PolyBoRi"
