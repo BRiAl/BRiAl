@@ -68,32 +68,32 @@ from sage.rings.polynomial.pbori import *
 
 import weakref
 
-    class OrderCode:
-        pass
+class OrderCode:
+    pass
 
-    OrderCode.__dict__ = order_dict
-    OrderCode.__module__ = __name__
-
-
-    def Ring(n, order='lp', names=None, blocks=[]):
-
-        pbnames = names
-        if pbnames is None:
-            pbnames = ['x(' + str(idx) + ')' for idx in range(n)]
-        order = TermOrder_from_pb_order(n, order, blocks)
-        R = BooleanPolynomialRing(n, names=pbnames, order=order)
-        return R
-
-    BoolePolynomialVector = BooleanPolynomialVector
+OrderCode.__dict__ = order_dict
+OrderCode.__module__ = __name__
 
 
-    #todo: PolyBoRi's original interface uses its WeakRingPtr here
-    def WeakRingRef(ring):
-        return weakref.weakref(ring)
+def Ring(n, order='lp', names=None, blocks=[]):
 
-    Monomial = MonomialFactory()
-    Polynomial = PolynomialFactory()
-    Variable = VariableFactory()
+    pbnames = names
+    if pbnames is None:
+        pbnames = ['x(' + str(idx) + ')' for idx in range(n)]
+    order = TermOrder_from_pb_order(n, order, blocks)
+    R = BooleanPolynomialRing(n, names=pbnames, order=order)
+    return R
+
+BoolePolynomialVector = BooleanPolynomialVector
+
+
+#todo: PolyBoRi's original interface uses its WeakRingPtr here
+def WeakRingRef(ring):
+    return weakref.weakref(ring)
+
+Monomial = MonomialFactory()
+Polynomial = PolynomialFactory()
+Variable = VariableFactory()
 
 
 _add_up_polynomials = add_up_polynomials
