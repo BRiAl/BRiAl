@@ -101,7 +101,7 @@ public:
 
 protected:
   /// Boolean value is stored as simple bool
-  const bool m_value;
+  bool m_value;
 };
 
 /// Stream output operator
