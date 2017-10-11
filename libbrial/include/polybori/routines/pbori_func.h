@@ -25,6 +25,7 @@
 #include <string>
 #include <sstream>
 
+#include <boost/functional.hpp>
 
 #ifdef PBORI_HAVE_UNORDERED_MAP
 #include <unordered_map>
@@ -750,7 +751,7 @@ public:
 
 template <class BinaryFunction, class ConstantOp>
 class constant_binder2nd :
-  public constant_binder_base<std::binder2nd, BinaryFunction,
+  public constant_binder_base<boost::binder2nd, BinaryFunction,
                               typename BinaryFunction::second_argument_type,
                               ConstantOp> {
 };
@@ -758,7 +759,7 @@ class constant_binder2nd :
 
 template <class BinaryFunction, class ConstantOp>
 class constant_binder1st :
-  public constant_binder_base<std::binder1st, BinaryFunction,
+  public constant_binder_base<boost::binder1st, BinaryFunction,
                               typename BinaryFunction::first_argument_type,
                               ConstantOp> {
 };
@@ -778,10 +779,10 @@ public:
 
 template <class BinaryFunction>
 class default_binder2nd :
-  public default_binder_base<std::binder2nd, BinaryFunction,
+  public default_binder_base<boost::binder2nd, BinaryFunction,
                               typename BinaryFunction::second_argument_type> {
 public:
-  typedef default_binder_base<std::binder2nd, BinaryFunction,
+  typedef default_binder_base<boost::binder2nd, BinaryFunction,
                               typename BinaryFunction::second_argument_type>
   base;
 
@@ -791,7 +792,7 @@ public:
 
 template <class BinaryFunction>
 class default_binder1st :
-  public default_binder_base<std::binder1st, BinaryFunction,
+  public default_binder_base<boost::binder1st, BinaryFunction,
                               typename BinaryFunction::first_argument_type> {
 };
 
