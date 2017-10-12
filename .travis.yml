@@ -29,11 +29,13 @@ install:
   - $CXX --version
   - autoconf --version
   - wget https://github.com/malb/m4ri/archive/release-20140914.tar.gz
-  - tar -xzvf release-20140914.tar.gz
+  - tar -xzf release-20140914.tar.gz
   - pushd m4ri-release-20140914/ && autoreconf --install && ./configure && make && sudo make install && popd
-  - wget -O boost_1_58_0.tar.bz2 https://sourceforge.net/projects/boost/files/boost/1.58.0/boost_1_58_0.tar.bz2/download
-  - tar -xjvf boost_1_58_0.tar.bz2
-  - pushd boost_1_58_0 && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install && popd
+  - export BOOST_VERSION=${BOOST_MAJOR_VERSION}.${BOOST_MINOR_VERSION}.${BOOST_MAINTENANCE_VERSION}
+  - export BOOST_DIR=boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_MAINTENANCE_VERSION}
+  - wget -O ${BOOST_DIR}.tar.bz2 https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download
+  - tar -xjf ${BOOST_DIR}.tar.bz2
+  - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install && popd
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 script:
@@ -46,17 +48,65 @@ matrix:
   include:
     - os: linux
       compiler: "gcc-4.8"
-      env: COMPILER=g++-4.8
+      env:
+        - COMPILER=g++-4.8
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
       addons: *gcc48
     - os: linux
       compiler: "gcc-4.9"
-      env: COMPILER=g++-4.9
+      env:
+        - COMPILER=g++-4.9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
       addons: *gcc49
     - os: linux
       compiler: "gcc-5"
-      env: COMPILER=g++-5
+      env:
+        - COMPILER=g++-5
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
       addons: *gcc5
     - os: linux
       compiler: "gcc-6"
-      env: COMPILER=g++-6
+      env:
+        - COMPILER=g++-6
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc6
+    - os: linux
+      compiler: "gcc-4.8"
+      env:
+        - COMPILER=g++-4.8
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc48
+    - os: linux
+      compiler: "gcc-4.9"
+      env:
+        - COMPILER=g++-4.9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc49
+    - os: linux
+      compiler: "gcc-5"
+      env:
+        - COMPILER=g++-5
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc5
+    - os: linux
+      compiler: "gcc-6"
+      env:
+        - COMPILER=g++-6
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc6
