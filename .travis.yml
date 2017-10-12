@@ -35,7 +35,7 @@ install:
   - export BOOST_DIR=boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_MAINTENANCE_VERSION}
   - wget -O ${BOOST_DIR}.tar.bz2 https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download
   - tar -xjf ${BOOST_DIR}.tar.bz2
-  - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install && popd
+  - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install > /dev/null 2>&1 && popd
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
 
 script:
