@@ -25,8 +25,6 @@
 #include <string>
 #include <sstream>
 
-#include <boost/functional.hpp>
-
 #ifdef PBORI_HAVE_UNORDERED_MAP
 #include <unordered_map>
 #else
@@ -733,67 +731,6 @@ public:
     return value_type();
   }
 
-};
-
-template <template<class> class BindType, class BinaryFunction, 
-          class ValueType, class ConstantOp>
-class constant_binder_base :
-  public BindType<BinaryFunction>{
-public:
-  typedef BinaryFunction bin_op; 
-  typedef ConstantOp const_type;
-  typedef BindType<bin_op> base;
-
-  typedef ValueType value_type;
-
-  constant_binder_base(const bin_op& op = bin_op()): base(op, const_type()()) {}
-};
-
-template <class BinaryFunction, class ConstantOp>
-class constant_binder2nd :
-  public constant_binder_base<boost::binder2nd, BinaryFunction,
-                              typename BinaryFunction::second_argument_type,
-                              ConstantOp> {
-};
-
-
-template <class BinaryFunction, class ConstantOp>
-class constant_binder1st :
-  public constant_binder_base<boost::binder1st, BinaryFunction,
-                              typename BinaryFunction::first_argument_type,
-                              ConstantOp> {
-};
-
-template <template<class> class BindType,
-          class BinaryFunction, class ValueType>
-class default_binder_base :
-  public BindType<BinaryFunction>{
-public:
-  typedef BinaryFunction bin_op; 
-  typedef BindType<bin_op> base;
-
-  typedef ValueType value_type;
-
-  default_binder_base(const value_type&  val): base(bin_op(), val) {}
-};
-
-template <class BinaryFunction>
-class default_binder2nd :
-  public default_binder_base<boost::binder2nd, BinaryFunction,
-                              typename BinaryFunction::second_argument_type> {
-public:
-  typedef default_binder_base<boost::binder2nd, BinaryFunction,
-                              typename BinaryFunction::second_argument_type>
-  base;
-
-  default_binder2nd(const typename base::value_type&  val): base(val) {}
-};
-
-
-template <class BinaryFunction>
-class default_binder1st :
-  public default_binder_base<boost::binder1st, BinaryFunction,
-                              typename BinaryFunction::first_argument_type> {
 };
 
 // /** @class property_owner
