@@ -1,0 +1,112 @@
+language: cpp
+sudo: required
+dist: trusty
+
+compiler:
+  - gcc
+
+addons_shortcuts:
+  addons_gcc48: &gcc48
+    apt:
+      sources: ['ubuntu-toolchain-r-test']
+      packages: [ 'g++-4.8', 'autoconf-archive', 'libgmp-dev' ]
+  addons_gcc49: &gcc49
+    apt:
+      sources: ['ubuntu-toolchain-r-test']
+      packages: [ 'g++-4.9', 'autoconf-archive', 'libgmp-dev' ]
+  addons_gcc5: &gcc5
+    apt:
+      sources: ['ubuntu-toolchain-r-test']
+      packages: [ 'g++-5', 'autoconf-archive', 'libgmp-dev' ]
+  addons_gcc6: &gcc6
+    apt:
+      sources: ['ubuntu-toolchain-r-test']
+      packages: [ 'g++-6', 'autoconf-archive', 'libgmp-dev' ]
+
+
+install:
+  - export CXX="$COMPILER"
+  - $CXX --version
+  - autoconf --version
+  - wget https://github.com/malb/m4ri/archive/release-20140914.tar.gz
+  - tar -xzf release-20140914.tar.gz
+  - pushd m4ri-release-20140914/ && autoreconf --install && ./configure && make && sudo make install && popd
+  - export BOOST_VERSION=${BOOST_MAJOR_VERSION}.${BOOST_MINOR_VERSION}.${BOOST_MAINTENANCE_VERSION}
+  - export BOOST_DIR=boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_MAINTENANCE_VERSION}
+  - wget -O ${BOOST_DIR}.tar.bz2 https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download
+  - tar -xjf ${BOOST_DIR}.tar.bz2
+  - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install > /dev/null 2>&1 && popd
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
+script:
+  - autoreconf --install
+  - ./configure
+  - make
+  - make check
+
+matrix:
+  include:
+    - os: linux
+      compiler: "gcc-4.8"
+      env:
+        - COMPILER=g++-4.8
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc48
+    - os: linux
+      compiler: "gcc-4.9"
+      env:
+        - COMPILER=g++-4.9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc49
+    - os: linux
+      compiler: "gcc-5"
+      env:
+        - COMPILER=g++-5
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc5
+    - os: linux
+      compiler: "gcc-6"
+      env:
+        - COMPILER=g++-6
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=58
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc6
+    - os: linux
+      compiler: "gcc-4.8"
+      env:
+        - COMPILER=g++-4.8
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc48
+    - os: linux
+      compiler: "gcc-4.9"
+      env:
+        - COMPILER=g++-4.9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc49
+    - os: linux
+      compiler: "gcc-5"
+      env:
+        - COMPILER=g++-5
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc5
+    - os: linux
+      compiler: "gcc-6"
+      env:
+        - COMPILER=g++-6
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc6
