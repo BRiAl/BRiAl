@@ -25,11 +25,7 @@
 #include <string>
 #include <sstream>
 
-#ifdef PBORI_HAVE_UNORDERED_MAP
 #include <unordered_map>
-#else
-#include <tr1/unordered_map>
-#endif
 
 BEGIN_NAMESPACE_PBORI
 
@@ -620,12 +616,7 @@ class generate_index_map {
   typedef typename Type::idx_type idx_type;
 public:
   /// Type for index maps
-
-#ifdef PBORI_HAVE_UNORDERED_MAP
-   typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
-#else
-   typedef std::tr1::unordered_map<Type, idx_type, hashes<Type> > type;
-#endif
+  typedef std::unordered_map<Type, idx_type, hashes<Type> > type;
 };
 
 /** @class sizes_less

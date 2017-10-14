@@ -20,6 +20,9 @@ AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LIBTOOL
 
+dnl C++11 is now the default
+AX_CXX_COMPILE_STDCXX(11,,mandatory)
+
 AC_LANG([C++])
 
 AC_CHECK_TYPE([long long],
@@ -28,13 +31,6 @@ AC_CHECK_TYPE([long long],
 AC_CHECK_SIZEOF(void *)
 AC_CHECK_SIZEOF(int)
 AC_CHECK_SIZEOF(long)
-
-AC_CHECK_HEADER([unordered_map],
-              [AC_DEFINE([PBORI_HAVE_UNORDERED_MAP],[],[has unordered map])],
-              [AC_CHECK_HEADER([tr1/unordered_map],
-			    [],
-                            [AC_MSG_ERROR("No unordered_map headers found for this compiler")])]
-)
 
 dnl Check that boost is available
 AX_BOOST_BASE([1.58.0],[],
