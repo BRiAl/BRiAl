@@ -12,10 +12,10 @@
  *
 **/
 //*****************************************************************************
-
 #include <boost/test/unit_test.hpp>
 #include <boost/version.hpp>
 #include <boost/test/output_test_stream.hpp>
+
 using boost::test_tools::output_test_stream;
 
 #include <polybori/pbori_defs.h>
@@ -344,13 +344,13 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 3006002441743652495);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 5907816585472828820);
 #else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 16982317933699389295);
-  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 16982317933699389295u);
+  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 14511566905035657723u);
   BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 15553547522801749128);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 14746308500923705671);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 15553547522801749128u);
+  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 14746308500923705671u);
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 6609543853578108291);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 13745298887294022704);
+  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 13745298887294022704u);
 #endif // BOOST_VERSION
 #else
 #if BOOST_VERSION < 106200
@@ -597,13 +597,13 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
     BOOST_CHECK_EQUAL(poly1.leadStableHash(), 173100285919);
     BOOST_CHECK_EQUAL(poly2.leadStableHash(), 173100285919);
 #else // BOOST_VERSION
-    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295);
-    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723);
+    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
+    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
     BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
     BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
                       994909422134781907);
-    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723);
-    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723);
+    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723u);
+    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723u);
 #endif // BOOST_VERSION
 #else
 #if BOOST_VERSION < 106200
@@ -717,12 +717,12 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
   BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244161997016);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(),11091674972829);
 #else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
   BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
 		    994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 13332077148710286618);
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 13332077148710286618u);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 994909422134781907);
 #endif // BOOST_VERSION
 #else
@@ -830,12 +830,12 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>
   BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244162000938);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 11091674956572);
 #else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
   BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
 		    994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16171595639562729641);
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16171595639562729641u);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 298249910754104916);
 #endif // BOOST_VERSION
 #else
@@ -945,13 +945,13 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::blo
   BOOST_CHECK_EQUAL(poly1.leadStableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 173100285919);
 #else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 16982317933699389295);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 16982317933699389295u);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
   BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
 		    994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723u);
+  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723u);
 #endif // BOOST_VERSION
 #else
 #if BOOST_VERSION < 106200
@@ -1060,12 +1060,12 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
   BOOST_CHECK_EQUAL(poly1.leadStableHash(), 706244162000938);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 11091674972829);
 #else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723);
+  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
+  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
   BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
 		    994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16171595639562729641);
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16171595639562729641u);
   BOOST_CHECK_EQUAL(poly2.leadStableHash(), 994909422134781907);
 #endif // BOOST_VERSION
 #else
