@@ -39,7 +39,11 @@ unittests_SOURCES = \
 	unittests.cc
 
 AM_LDFLAGS = $(BOOST_UNIT_TEST_FRAMEWORK_LIB)
-LIBS = $(top_builddir)/groebner/src/libbrial_groebner.la $(top_builddir)/libbrial.la
+LIBS = $(top_builddir)/groebner/src/libbrial_groebner.la \
+	$(top_builddir)/libbrial.la \
+	$(LIBPNG_LIBADD) \
+	$(M4RI_LIBS) \
+	$(GD_LIBS)
 
 check_PROGRAMS = unittests
 
