@@ -459,11 +459,11 @@ block_deg_lex_idx_compare(IdxType lhs, IdxType rhs,
     return CTypes::equality;
 
   Iterator lhsend = std::find_if(start, finish, 
-                                 std::bind2nd(std::greater<IdxType>(), lhs));
+                                 std::bind(std::greater<IdxType>(), std::placeholders::_1, lhs));
 
 
   Iterator rhsend = std::find_if(start, finish, 
-                                 std::bind2nd(std::greater<IdxType>(), rhs));
+                                 std::bind(std::greater<IdxType>(), std::placeholders::_1, rhs));
 
   CTypes::comp_type result = CTypes::equality;
 

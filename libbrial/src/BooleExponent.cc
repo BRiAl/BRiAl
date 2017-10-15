@@ -143,7 +143,7 @@ BooleExponent::insertConst(idx_type idx) const {
   PBORI_TRACE_FUNC( "BooleExponent::insertConst(idx_type) const " );
 
   const_iterator pos =
-    std::find_if(begin(), end(), bind2nd(std::greater_equal<idx_type>(), idx));
+    std::find_if(begin(), end(), std::bind(std::greater_equal<idx_type>(), std::placeholders::_1, idx));
 
   self result;
   result.m_data.resize(size() + 1);
@@ -174,7 +174,7 @@ BooleExponent::insert(idx_type idx) {
 
   iterator pos = 
     std::find_if(internalBegin(), internalEnd(), 
-                 bind2nd(std::greater_equal<idx_type>(), idx));
+                 std::bind(std::greater_equal<idx_type>(), std::placeholders::_1, idx));
 
   if (pos == end())
     m_data.push_back(idx);
@@ -199,7 +199,7 @@ BooleExponent::push_back(idx_type idx) {
     else if (lastIdx > idx) {
       iterator pos = 
         std::find_if(internalBegin(), internalEnd(), 
-                     bind2nd(std::greater_equal<idx_type>(), idx));
+                     std::bind(std::greater_equal<idx_type>(), std::placeholders::_1, idx));
       if (*pos != idx)
         m_data.insert(pos, idx);
     }
