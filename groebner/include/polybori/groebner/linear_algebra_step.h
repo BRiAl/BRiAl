@@ -549,9 +549,9 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     } else
         rank_step2=0;
 
-        if PBORI_UNLIKELY(log){
-            std::cout<<"finished gauss"<<std::endl;
-        }
+    if PBORI_UNLIKELY(log){
+        std::cout<<"finished gauss"<<std::endl;
+    }
 
     translate_back(polys, leads_from_strat, mat_step2,step2.ring_order2lex, step2.terms_as_exp,step2.terms_as_exp_lex,rank_step2);
     mzd_free(mat_step2);

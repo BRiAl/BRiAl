@@ -436,7 +436,7 @@ public:
 
   }
 
-   void decrement() {
+  void decrement() {
 
     if PBORI_UNLIKELY(base::markedOne()) {
       base::clearOne();
@@ -757,6 +757,7 @@ public:
       base::terminate();    
     }
   }
+
   void followDeg() {
     PBORI_ASSERT(!base::empty());
     
@@ -806,13 +807,13 @@ public:
       if (base::atBegin()) 
         return;
 
-        while (!base::atEnd() && (base::size() < size) ) {
-          base::incrementBranch();
-        }
-        base::gotoEnd();
+      while (!base::atEnd() && (base::size() < size) ) {
+        base::incrementBranch();
+      }
+      base::gotoEnd();
 
-        if ((doloop = (base::isInvalid() || (base::size() != size)) ) )
-          base::decrementNode();
+      if ((doloop = (base::isInvalid() || (base::size() != size)) ) )
+        base::decrementNode();
 
     } while (!base::empty() && doloop);
 
