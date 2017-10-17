@@ -4,6 +4,7 @@ dist: trusty
 
 compiler:
   - gcc
+  - clang
 
 addons_shortcuts:
   addons_gcc48: &gcc48
