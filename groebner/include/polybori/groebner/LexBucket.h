@@ -10,7 +10,7 @@
 #include "groebner_defs.h"
 
 #include "LiteralFactorization.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <queue>
 #include <algorithm>
 #include <utility>

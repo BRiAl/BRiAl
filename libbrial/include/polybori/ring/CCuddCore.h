@@ -30,7 +30,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 BEGIN_NAMESPACE_PBORI
 
@@ -69,7 +69,7 @@ public:
   typedef COrderingBase order_type;
   
   /// Smart pointer for handling mterm orderings
-  typedef boost::shared_ptr<order_type> order_ptr;
+  typedef std::shared_ptr<order_type> order_ptr;
 
   /// Reference for handling mterm orderings
   typedef order_type& order_reference;

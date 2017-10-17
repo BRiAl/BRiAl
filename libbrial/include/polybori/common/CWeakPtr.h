@@ -36,7 +36,7 @@ public:
   typedef ValueType value_type;
 
   typedef value_type* data_type;
-  typedef boost::shared_ptr<data_type> ptr_type;
+  typedef std::shared_ptr<data_type> ptr_type;
 
 
   /// Construct from something, which supports weak pointers
