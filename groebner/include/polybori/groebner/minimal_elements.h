@@ -80,8 +80,8 @@ minimal_elements_internal2(MonomialSet s){
     
         MonomialSet::size_type z;
         MonomialSet cv_set(s.ring());
-        for(z=cv.size()-1;z>=0;z--){
-            Monomial mv=Variable(cv[z], s.ring());
+        for(z=cv.size();z>0;z--){
+            Monomial mv=Variable(cv[z-1], s.ring());
             cv_set=cv_set.unite(mv.diagram());
         }
         for(z=0;z<cv.size();z++){
@@ -168,12 +168,13 @@ minimal_elements_internal3(MonomialSet s){
             occ_sets[i].insert(occ_vecs[i].begin(),occ_vecs[i].end());
         }*/
         std::vector<bool> still_minimal(exponents.size());
-        for(MonomialSet::size_type i=exponents.size()-1;i>=0;i--){
-            still_minimal[i]=true;
+        for(MonomialSet::size_type i=exponents.size();i>0;i--){
+            still_minimal[i-1]=true;
         }
 
         //lex smalles is last so backwards
-        for(MonomialSet::size_type i=exponents.size()-1;i>=0;i--){
+        for(MonomialSet::size_type i,j=exponents.size();j>0;j--){
+	    i=j-1;
             if (still_minimal[i]){
                 //we assume, that each exponents has deg>0
                 Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
