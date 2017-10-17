@@ -18,11 +18,11 @@
 
 // include basic definitions
 #include "groebner_defs.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 BEGIN_NAMESPACE_PBORIGB
 
-typedef boost::shared_ptr<PairData> pair_data_ptr;
+typedef std::shared_ptr<PairData> pair_data_ptr;
 
 enum {
   VARIABLE_PAIR,

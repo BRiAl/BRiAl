@@ -27,7 +27,7 @@
 #include "GroebnerOptions.h"
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 #include <polybori/routines/pbori_algo.h> // member-for_each etc.
 
@@ -202,7 +202,7 @@ private:
 public:
   /// @name public available parameters
   ReductionStrategy generators;
-  boost::shared_ptr<CacheManager> cache;
+  std::shared_ptr<CacheManager> cache;
 
   unsigned int reductionSteps;
   int normalForms;

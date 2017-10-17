@@ -18,7 +18,7 @@
 
 // include basic definitions
 #include <polybori/pbori_defs.h>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 
 BEGIN_NAMESPACE_PBORI
@@ -40,7 +40,7 @@ class CWeakPtrFacade {
 public:
   typedef ValueType value_type;
   typedef value_type* data_type;
-  typedef boost::shared_ptr<data_type> ptr_type;
+  typedef std::shared_ptr<data_type> ptr_type;
 
   friend class CWeakPtr<value_type>;
 

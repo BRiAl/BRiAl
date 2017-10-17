@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <utility>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "groebner_defs.h"
 #ifndef PBORI_GB_CACHE_H
 #define PBORI_GB_CACHE_H
@@ -30,7 +30,7 @@ class CacheManager{
         typedef Polynomial::poly_vec_map_type impl_type;
         
         typedef std::vector<Polynomial> poly_vec_type;
-        typedef boost::shared_ptr<poly_vec_type> res_type;
+        typedef std::shared_ptr<poly_vec_type> res_type;
         typedef Polynomial::poly_vec_map_type::const_iterator impl_iterator_type;
     protected:
         impl_type impl;

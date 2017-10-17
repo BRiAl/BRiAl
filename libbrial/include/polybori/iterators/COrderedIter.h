@@ -37,7 +37,7 @@ public:
 
   typedef CAbstractStackBase<NavigatorType> self;
   typedef CTermStackBase<NavigatorType, self> iterator_core;
-  typedef boost::shared_ptr<iterator_core> core_pointer;
+  typedef std::shared_ptr<iterator_core> core_pointer;
 
   virtual void increment() = 0;
   virtual core_pointer copy() const = 0;
@@ -57,7 +57,7 @@ public:
   typedef typename base::navigator navigator;
 
   typedef typename base::iterator_core iterator_core;
-  typedef boost::shared_ptr<iterator_core> core_pointer;
+  typedef std::shared_ptr<iterator_core> core_pointer;
 
   template <class MgrType>
   CWrappedStack(navigator navi, const MgrType& mgr):
@@ -136,7 +136,7 @@ public:
   typedef NavigatorType navigator;
  
   // Store shared pointer of iterator
-  typedef boost::shared_ptr<iterator_core> core_pointer;
+  typedef std::shared_ptr<iterator_core> core_pointer;
 
   /// Extract plain Boolean type
   typedef bool bool_type;
