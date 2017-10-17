@@ -331,7 +331,6 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     int remaining_cols;
     mzd_t* mat_step1;
     std::vector<int> compactified_columns2old_columns;
-    int rows_step1;
     std::vector<int> row_start;
     //std::vector<Polynomial> result;
     MatrixMonomialOrderTables step1(terms_step1);
@@ -339,8 +338,8 @@ std::  sort(polys_lm.begin(), polys_lm.end(), PolyMonomialPairComparerLess());
     {
         int rows=polys_triangular.size();
         int cols=terms_step1.size();
-        rows_step1=rows;
-        if PBORI_UNLIKELY(log){
+
+	if PBORI_UNLIKELY(log){
             std::cout<<"STEP1: ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
         }
 

@@ -566,22 +566,22 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
 
   PBORI_ASSERT(generators.empty() || p.ring().id() == generators[0].p.ring().id());
   std::vector<Polynomial> impl;
-  int way=0;
+
   if ((have_ordering_for_tables(p.ring())) ||
       ((have_base_ordering_for_tables(p.ring())) &&
        (p.inSingleBlock()))) { 
 
     int u_v=p.usedVariablesExp().deg();
     if  (u_v<=4) {
-      way = 1;
+
       impl = add4ImplDelayed(p, p.leadExp(), p.usedVariablesExp());
     } else {
-      way=2;
+
       if (((optAllowRecursion) && (u_v<=15))||(u_v<=10)){
-        way=3;
+
         LiteralFactorization f(p);
         if (f.rest.usedVariablesExp().deg()<=4){
-          way = 4;
+
           impl = addHigherImplDelayedUsing4(f);
         } else {
           deg_type rest_lead_exp_deg=f.rest.leadExp().deg();
@@ -609,8 +609,6 @@ void GroebnerStrategy::addGeneratorTrySplit(const Polynomial & p, bool is_minima
             }
           }
         }
-
-      } else {
 
       }
 
@@ -734,7 +732,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
         }
     }
     if PBORI_UNLIKELY(polys.size()==0) return std::vector<Polynomial>();
-    typedef std::map<int,Exponent> to_term_map_type;
+    //typedef std::map<int,Exponent> to_term_map_type;
     typedef Exponent::idx_map_type from_term_map_type;
     
     int rows=polys.size();
@@ -751,7 +749,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
 
     std::sort(terms_as_exp.begin(),terms_as_exp.end(),
-	      ExpGreater(polys[0].ring()));
+              ExpGreater(polys[0].ring()));
 
 
     from_term_map_type from_term_map;
