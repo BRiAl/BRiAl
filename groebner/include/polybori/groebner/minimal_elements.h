@@ -56,7 +56,6 @@ minimal_elements_internal(const MonomialSet& s){
     MonomialSet s1=minimal_elements_internal(s.subset1(i).diff(s0_raw));
     if (!(s0.isZero())){
       s1=s1.diff(s0.unateProduct(Polynomial(s1).usedVariablesExp().divisors(s.ring())));
-        
     }
     return s0.unite(s1.change(i));
 
@@ -67,9 +66,6 @@ minimal_elements_internal2(MonomialSet s){
     if (s.isZero()) return s;
     if (Polynomial(s).isOne()) return s;
     
-    
-    
-    
     if (Polynomial(s).hasConstantPart()) 
       return MonomialSet(Polynomial(true, s.ring()));
     MonomialSet result(s.ring());
@@ -77,7 +73,6 @@ minimal_elements_internal2(MonomialSet s){
     if ((cv.size()>0) && (s.length()==cv.size())){
         return s;
     } else {
-    
         MonomialSet::size_type z;
         MonomialSet cv_set(s.ring());
         for(z=cv.size();z>0;z--){
@@ -92,8 +87,6 @@ minimal_elements_internal2(MonomialSet s){
     
     if (s.isZero()) return result;
     PBORI_ASSERT(!(Polynomial(s).hasConstantPart()));
-    
-    
     
     MonomialSet::navigator nav=s.navigation();
     idx_type i;
@@ -167,14 +160,11 @@ minimal_elements_internal3(MonomialSet s){
         for(i=occ_sets.size()-1;i>=0;i--){
             occ_sets[i].insert(occ_vecs[i].begin(),occ_vecs[i].end());
         }*/
-        std::vector<bool> still_minimal(exponents.size());
-        for(MonomialSet::size_type i=exponents.size();i>0;i--){
-            still_minimal[i-1]=true;
-        }
+        std::vector<bool> still_minimal(exponents.size(), true);
 
         //lex smalles is last so backwards
         for(MonomialSet::size_type i,j=exponents.size();j>0;j--){
-	    i=j-1;
+            i=j-1;
             if (still_minimal[i]){
                 //we assume, that each exponents has deg>0
                 Exponent::const_iterator it=((const Exponent&) exponents[i]).begin();
@@ -183,7 +173,6 @@ minimal_elements_internal3(MonomialSet s){
                 std::vector<int> occ_set=occ_vecs[first_index];
                 it++;
                 while(it!=end){
-                    
                     std::vector<int> occ_set_next;
                     set_intersection(
                         occ_set.begin(),
@@ -290,10 +279,13 @@ minimal_elements_cudd_style_unary(MonomialSet m){
 inline MonomialSet
 do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   Polynomial p_mod=mod;
+
   if (m.isZero()) return m;
-  if (mod.ownsOne())
-    return MonomialSet(mod.ring());
+
+  if (mod.ownsOne()) return MonomialSet(mod.ring());
+
   if (m.ownsOne()) return Polynomial(1,m.ring()).diagram();
+
   MonomialSet mod_cv=contained_variables_cudd_style(mod);
   m=mod_var_set(m,mod_cv);
   mod=mod_var_set(mod,mod_cv);
@@ -306,21 +298,18 @@ do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
   mod=mod_var_set(mod,cv_orig);
   m=mod_var_set(m,cv_orig);
   m=m.diff(mod);
+
   if (m.isZero()) return cv;
+
   bool cv_empty=cv.isZero();
   
   MonomialSet result(m.ring());
   int index=*m.navigation();
   
-  
-  
-  
-  if (!mod.isZero())
-  {
+  if (!mod.isZero()){
     MonomialSet::navigator nav_mod=mod.navigation();
     while((!(nav_mod.isConstant())) && (index>*nav_mod)){
       nav_mod.incrementElse();
-     
     }
     mod=MonomialSet(nav_mod, m.ring());
   }
@@ -359,20 +348,19 @@ do_minimal_elements_cudd_style(MonomialSet m, MonomialSet mod){
           result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), mod);
         MonomialSet result1= do_minimal_elements_cudd_style(
           cache_mgr.generate(ms1),result0.unite(mod));
-        if (result1.isZero()) {result=result0;}
-        else
-          {result= MonomialSet(index,result1,result0);}
+        if (result1.isZero()) result=result0;
+        else result= MonomialSet(index,result1,result0);
       } else {
-      PBORI_ASSERT(index==*mod_nav);
-      MonomialSet::navigator mod0=mod_nav.elseBranch();
-      MonomialSet::navigator mod1=mod_nav.thenBranch();
-      MonomialSet
-        result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), cache_mgr.generate(mod0));
-      //MonomialSet mod1=mod.subset1(index);
-      MonomialSet result1=
-        do_minimal_elements_cudd_style(cache_mgr.generate(ms1), 
-                                       result0.unite(cache_mgr.generate(ms0).unite(cache_mgr.generate(mod1))));
-      result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
+        PBORI_ASSERT(index==*mod_nav);
+        MonomialSet::navigator mod0=mod_nav.elseBranch();
+        MonomialSet::navigator mod1=mod_nav.thenBranch();
+        MonomialSet
+          result0=do_minimal_elements_cudd_style(cache_mgr.generate(ms0), cache_mgr.generate(mod0));
+        //MonomialSet mod1=mod.subset1(index);
+        MonomialSet result1=
+          do_minimal_elements_cudd_style(cache_mgr.generate(ms1), 
+                                         result0.unite(cache_mgr.generate(ms0).unite(cache_mgr.generate(mod1))));
+        result= MonomialSet(index,result1,result0);//result0.unite(result1.change(index));
     }
   }
   cache_mgr.insert(m.navigation(), mod.navigation(), result.navigation());
