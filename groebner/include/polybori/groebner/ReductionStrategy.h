@@ -73,9 +73,6 @@ public:
 
     void llReduceAll();
 
-    operator const PolyEntryVector&() const {
-      return static_cast<const PolyEntryVector&>(*this);
-    }
 
 protected:
   void llReduce(const PolyEntry& entry, const Exponent& ll_e);
