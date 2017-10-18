@@ -56,7 +56,7 @@ public:
       //I am sure, there exists combinatorial formulas
       MonomialSet common_lead_space=lead_lcm.divisors();
       Monomial gcd=e1.lead.GCD(e2.lead);
-      int gcd_deg = gcd_deg;
+      int gcd_deg = gcd.deg();
       int standard_monomials_in_common_lead=
       // common_lead_space.diff(
       //     common_lead_space.multiplesOf(e1.lead)).diff(

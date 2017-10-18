@@ -8,7 +8,6 @@
  */
 
 #include <polybori.h>
-#include <boost/integer.hpp>
 #ifndef PBORI_GB_DEFS_H
 #define PBORI_GB_DEFS_H
 #ifndef PBORI_NO_NAMESPACES
