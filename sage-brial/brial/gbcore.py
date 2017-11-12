@@ -109,7 +109,7 @@ def change_order_heuristic(d):
         # wrong place
         code = iter(I).next().ring().get_order_code()
         if code in switch_table:
-            max_non_linear = len(I) / 2
+            max_non_linear = len(I) // 2
             non_linear = 0
             if code == OrderCode.lp:
                 for p in I:
