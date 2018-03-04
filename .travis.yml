@@ -2,9 +2,9 @@ language: cpp
 sudo: required
 dist: trusty
 
-compiler:
-  - gcc
-  - clang
+#compiler:
+  #- gcc
+  #- clang
 
 addons_shortcuts:
   addons_gcc48: &gcc48
