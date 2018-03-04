@@ -38,6 +38,7 @@ install:
   - tar -xjf ${BOOST_DIR}.tar.bz2
   - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install > /dev/null 2>&1 && popd
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+  - export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/lib
 
 script:
   - autoreconf --install
