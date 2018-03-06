@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_TEST_MESSAGE( "stableHash");
 
 #ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 106200) || defined(__APPLE__)
+#if (BOOST_VERSION < 106200) || ( __APPLE__ == 1 )
   BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 11091674931773);
