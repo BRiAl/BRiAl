@@ -41,11 +41,6 @@ public:
   
   MonomType usedVariables(const DDType& dd){
 
-  // get type definitions from DDType
-  typedef typename DDType::idx_type idx_type;
-  typedef typename DDType::navigator navigator;
-  typedef MonomType monom_type;
-
   CCacheManagement<BoolePolyRing, CCacheTypes::used_variables> cache_mgr((BoolePolyRing)dd.ring());
   return cached_used_vars(cache_mgr, dd.navigation(),  
                           MonomType(cache_mgr.one()));

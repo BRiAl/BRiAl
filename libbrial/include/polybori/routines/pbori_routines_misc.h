@@ -756,7 +756,6 @@ cached_used_vars(const CacheType& cache, NaviType navi, MonomType init) {
   // Look whether result was cached before
   NaviType cached_result = cache.find(navi);
 
-  typedef typename MonomType::poly_type poly_type;
   if (cached_result.isValid())
     return CDDOperations<typename MonomType::dd_type, 
     MonomType>().getMonomial(cache.generate(cached_result));

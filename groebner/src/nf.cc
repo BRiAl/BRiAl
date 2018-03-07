@@ -207,7 +207,7 @@ Polynomial nf3_short(const ReductionStrategy& strat, Polynomial p){
   return p;
 }
 
-const int FARE_WORSE=10;
+//const int FARE_WORSE=10;
 // Polynomial nf_delaying(GroebnerStrategy& strat, Polynomial p){
 //   //parameter by value, so I can modify it
 //   wlen_type initial=p.eliminationLength();

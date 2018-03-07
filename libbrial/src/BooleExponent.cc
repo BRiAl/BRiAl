@@ -131,8 +131,6 @@ BooleExponent::change(idx_type idx) const {
 
   PBORI_TRACE_FUNC( "BooleExponent::change(idx_type) const " );
 
-  const_iterator pos = std::find(begin(), end(), idx);
-
   return self(*this).changeAssign(idx);
 }
 
@@ -248,7 +246,6 @@ template<class ExpType, class RhsType, class ResultType>
 void
 exp_divide(const ExpType& lhs, const RhsType& rhs, ResultType& result) {
 
-  typedef ExpType self; 
   typedef ResultType data_type; 
 
   if (lhs.reducibleBy(rhs)) {
@@ -328,7 +325,6 @@ void
 exp_multiply(const ExpType& lhs, RhsIterator start, RhsIterator finish,
              SizeType nlen, ResultType& result) {
 
-  typedef ExpType self; 
   typedef ResultType data_type; 
 
   result.reserve(lhs.size() + nlen);

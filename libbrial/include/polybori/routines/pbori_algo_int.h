@@ -190,7 +190,6 @@ minimal_of_two_terms(NaviType navi, NaviType& multiples,
 
   typedef typename NaviType::value_type idx_type;
   typedef typename std::vector<idx_type> vector_type;
-  typedef typename vector_type::iterator iterator;
   typedef typename vector_type::size_type size_type;
   typedef typename vector_type::const_reverse_iterator const_reverse_iterator;
 
