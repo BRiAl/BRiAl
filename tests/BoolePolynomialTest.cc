@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_TEST_MESSAGE( "stableHash");
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if BOOST_VERSION < 106200 || defined(__APPLE__)
   BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 11091674931773);
@@ -588,7 +588,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
                               "{d,f}, {d}, {f}, {}}"));
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if (BOOST_VERSION < 106200) || defined(__APPLE__)
     BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 4801919416);
     BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
     BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
@@ -708,7 +708,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
                               "{d,f}, {d}, {f}, {}}"));
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if (BOOST_VERSION < 106200) || defined(__APPLE__)
   BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
@@ -821,7 +821,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>
                               "{d,f}, {d}, {f}, {}}"));
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if (BOOST_VERSION < 106200) || defined(__APPLE__)
   BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
@@ -936,7 +936,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::blo
                               "{d,f}, {d}, {f}, {}}"));
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if (BOOST_VERSION < 106200) || defined(__APPLE__)
   BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);
@@ -1051,7 +1051,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
                               "{d,f}, {d}, {f}, {}}"));
 
 #ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 106200
+#if (BOOST_VERSION < 106200) || defined(__APPLE__)
   BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 4801919416);
   BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 173100285919);
   BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 11091674931773);

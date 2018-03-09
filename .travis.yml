@@ -2,8 +2,9 @@ language: cpp
 sudo: required
 dist: trusty
 
-compiler:
-  - gcc
+#compiler:
+  #- gcc
+  #- clang
 
 addons_shortcuts:
   addons_gcc48: &gcc48
@@ -30,13 +31,14 @@ install:
   - autoconf --version
   - wget https://github.com/malb/m4ri/archive/release-20140914.tar.gz
   - tar -xzf release-20140914.tar.gz
-  - pushd m4ri-release-20140914/ && autoreconf --install && ./configure && make && sudo make install && popd
+  - pushd m4ri-release-20140914/ && autoreconf --install && ./configure --disable-openmp && make && sudo make install && popd
   - export BOOST_VERSION=${BOOST_MAJOR_VERSION}.${BOOST_MINOR_VERSION}.${BOOST_MAINTENANCE_VERSION}
   - export BOOST_DIR=boost_${BOOST_MAJOR_VERSION}_${BOOST_MINOR_VERSION}_${BOOST_MAINTENANCE_VERSION}
   - wget -O ${BOOST_DIR}.tar.bz2 https://sourceforge.net/projects/boost/files/boost/${BOOST_VERSION}/${BOOST_DIR}.tar.bz2/download
   - tar -xjf ${BOOST_DIR}.tar.bz2
   - pushd ${BOOST_DIR} && ./bootstrap.sh && sudo ./b2 --with-test --prefix=/usr/local install > /dev/null 2>&1 && popd
   - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+  - export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/usr/local/lib
 
 script:
   - autoreconf --install
@@ -110,3 +112,10 @@ matrix:
         - BOOST_MINOR_VERSION=65
         - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc6
+    - os: osx
+      osx_image: xcode9.1
+      env:
+        - COMPILER=clang++
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
