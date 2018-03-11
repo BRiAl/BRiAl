@@ -16,6 +16,7 @@ libbrial_base_la_SOURCES = \
 	CCuddFirstIter.cc \
 	CCuddLastIter.cc \
 	CErrorInfo.cc \
+	COrderingBase.cc \
 	DegLexOrder.cc \
 	DegRevLexAscOrder.cc \
 	LexOrder.cc \

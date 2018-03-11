@@ -20,9 +20,6 @@ using boost::test_tools::output_test_stream;
 
 #include <polybori/LexOrder.h>
 
-// make sure we can find _LIBCPP_VERSION if it exists
-#include <ciso646>
-
 USING_NAMESPACE_PBORI
 
 
@@ -150,20 +147,14 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   output_test_stream output;
   BoolePolyRing::block_iterator start(order.blockBegin()),finish(order.blockEnd());
 
-// This test fails with clang's libcxx
-#ifndef _LIBCPP_VERSION
   BOOST_CHECK(start == finish);
-#endif
   BOOST_CHECK_THROW(order.appendBlock(-1), std::exception);
   order.appendBlock(0);
   order.appendBlock(2);
   order.appendBlock(6);
   start = order.blockBegin();
   finish = order.blockEnd();
-// This test fails with clang's libcxx
-#ifndef _LIBCPP_VERSION
   BOOST_CHECK(start == finish);
-#endif
   
   BOOST_CHECK(order.lieInSameBlock(0,1));
   BOOST_CHECK(order.lieInSameBlock(-1,4));
@@ -171,10 +162,7 @@ BOOST_AUTO_TEST_CASE(test_blocks) {
   order.clearBlocks();
   start = order.blockBegin();
   finish = order.blockEnd();
-// This test fails with clang's libcxx
-#ifndef _LIBCPP_VERSION
   BOOST_CHECK(start==finish);
-#endif
 }
 
 
