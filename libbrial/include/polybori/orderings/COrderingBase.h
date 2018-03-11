@@ -46,6 +46,9 @@ class COrderingBase:
   /// Type of *this
   typedef COrderingBase self;
 
+  // an empty vector to be able to return valid iterators in the implementation of blockBegin()/blockEnd()
+  static const std::vector<idx_type> empty;
+
 public:
   /// @name Adopt polynomial type definitions
   //@{
@@ -145,8 +148,8 @@ public:
 
   /// @name interface for block orderings
   //@{
-  virtual block_iterator blockBegin() const { return block_iterator(); }
-  virtual block_iterator blockEnd() const { return block_iterator(); }
+  virtual block_iterator blockBegin() const { return empty.begin(); }
+  virtual block_iterator blockEnd() const { return empty.end(); }
   virtual void appendBlock(checked_idx_type) {}
   virtual void clearBlocks() {}
   //@}

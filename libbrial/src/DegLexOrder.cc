@@ -31,8 +31,6 @@
 
 BEGIN_NAMESPACE_PBORI
 
-
-
 // Comparison of monomials
 DegLexOrder::comp_type
 DegLexOrder::compare(const monom_type& lhs, const monom_type& rhs) const {
