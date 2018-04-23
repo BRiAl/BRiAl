@@ -68,11 +68,8 @@ from sage.rings.polynomial.pbori import *
 
 import weakref
 
-class OrderCode:
-    pass
 
-OrderCode.__dict__ = order_dict
-OrderCode.__module__ = __name__
+OrderCode = type('OrderCode', (object,), order_dict)
 
 
 def Ring(n, order='lp', names=None, blocks=[]):

@@ -13,12 +13,16 @@ from .heuristics import dense_system, gauss_on_linear
 from .easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from .interpolate import lex_groebner_basis_for_polynomial_via_variety
-from inspect import getargspec
 from .fglm import _fglm
+
+try:
+    from inspect import getfullargspec as getargspec
+except ImportError:
+    from inspect import getargspec
 
 
 def get_options_from_function(f):
-    (argnames, varargs, varopts, defaults) = getargspec(f)
+    (argnames, varargs, varopts, defaults) = getargspec(f)[:4]
     return dict(
         zip(
             argnames[-len(defaults):], defaults))
@@ -75,7 +79,7 @@ def ll_is_good(I):
         if not p.is_zero():
             m = p.lex_lead()
             if m.deg() == 1:
-                lex_lead.add(iter(m.variables()).next().index())
+                lex_lead.add(next(iter(m.variables())).index())
     if len(lex_lead) >= 0.8 * len(I):
         uv = used_vars_set(I).deg()  # don't use len here, which will yield 1
         if len(lex_lead) > 0.9 * uv:
@@ -107,7 +111,7 @@ def change_order_heuristic(d):
     if not "other_ordering_first" in d:
         # TODO after ll situation might look much different, so heuristic is on
         # wrong place
-        code = iter(I).next().ring().get_order_code()
+        code = next(iter(I)).ring().get_order_code()
         if code in switch_table:
             max_non_linear = len(I) // 2
             non_linear = 0
@@ -143,7 +147,7 @@ def linear_algebra_heuristic(d):
             return False
         n_used_vars = None
         bound = None
-        if iter(I).next().ring().has_degree_order():
+        if next(iter(I)).ring().has_degree_order():
             new_bound = 200
             n_used_vars = used_vars_set(I, bound=new_bound).deg()
             if n_used_vars < new_bound:
@@ -192,7 +196,7 @@ class HeuristicalFunction(object):
 
     def __init__(self, f, heuristic_function):
         (self.argnames, self.varargs, self.varopts, self.defaults) = (
-            getargspec(f))
+                getargspec(f)[:4])
         if hasattr(f, "options"):
             self.options = f.options
         else:
@@ -396,7 +400,7 @@ def other_ordering_pre(I, option_set, kwds):
     main_kwds = kwds
     options = option_set
 
-    old_ring = iter(I).next().ring()
+    old_ring = next(iter(I)).ring()
     ocode = old_ring.get_order_code()
     try:
         new_ring = old_ring.clone(ordering=options["switch_to"])

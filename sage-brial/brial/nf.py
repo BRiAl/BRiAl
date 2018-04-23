@@ -7,8 +7,8 @@ from .statistics import used_vars_set
 from random import Random
 from warnings import warn
 import copy
+import os
 import sys
-from exceptions import NotImplementedError
 
 
 class GeneratorLimitExceeded(Exception):
@@ -74,8 +74,8 @@ def build_and_print_matrices(v, strat):
             im.putpixel((j, i), 0)
 
     file_name = matrix_prefix + str(mat_counter) + ".png"
-    import os
-    os.system("rm -f " + file_name)
+    if os.path.exists(file_name):
+        os.remove(file_name)
     im.save(file_name)
     del im
 
@@ -148,8 +148,8 @@ def build_and_print_matrices_deg_colored(v, strat):
             im.putpixel((j, i), ImageColor.getrgb("hsl(" + str(270 - (270 *
                 i2deg[j]) / max_deg) + ",100%,50%)"))
     file_name = matrix_prefix + str(mat_counter) + ".png"
-    import os
-    os.system("rm -f file_name")
+    if os.path.exists(file_name):
+        os.remove(file_name)
     im.save(file_name)
     del im
 
@@ -488,11 +488,11 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
 
         if index < 0:
             uv = set(used_vars_set(strat))
-            lv = set([iter(p.lead()).next().index() for p in strat if p.
+            lv = set([next(iter(p.lead())).index() for p in strat if p.
                 lead_deg() == 1])
             candidates = uv.difference(lv)
             if len(candidates) > 0:
-                index = iter(candidates).next().index()
+                index = next(iter(candidates)).index()
         if index >= 0:
             print("chosen index:", index)
             step(strat, trace, Polynomial(Monomial(Variable(index))), 0)

@@ -21,7 +21,7 @@ def used_vars_set(l, bound=None):
         if bound and len(s) > bound:
             break
     sorted_s = sorted(list(s), key=top_index, reverse=True)
-    m = Monomial(iter(l).next().ring())
+    m = Monomial(next(iter(l)).ring())
     for v in sorted_s:
         m = v * m
 
