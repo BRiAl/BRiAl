@@ -8,7 +8,6 @@ from random import Random
 from warnings import warn
 import copy
 import sys
-from exceptions import NotImplementedError
 
 
 class GeneratorLimitExceeded(Exception):
