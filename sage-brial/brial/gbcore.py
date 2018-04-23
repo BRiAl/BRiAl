@@ -13,12 +13,16 @@ from .heuristics import dense_system, gauss_on_linear
 from .easy_polynomials import easy_linear_polynomials
 from itertools import chain
 from .interpolate import lex_groebner_basis_for_polynomial_via_variety
-from inspect import getargspec
 from .fglm import _fglm
+
+try:
+    from inspect import getfullargspec as getargspec
+except ImportError:
+    from inspect import getargspec
 
 
 def get_options_from_function(f):
-    (argnames, varargs, varopts, defaults) = getargspec(f)
+    (argnames, varargs, varopts, defaults) = getargspec(f)[:4]
     return dict(
         zip(
             argnames[-len(defaults):], defaults))
@@ -192,7 +196,7 @@ class HeuristicalFunction(object):
 
     def __init__(self, f, heuristic_function):
         (self.argnames, self.varargs, self.varopts, self.defaults) = (
-            getargspec(f))
+                getargspec(f)[:4])
         if hasattr(f, "options"):
             self.options = f.options
         else:
