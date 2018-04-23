@@ -27,7 +27,7 @@ def intersect(i, j, **gb_opts):
         return []
 
     uv = used_vars_set(i) * used_vars_set(j)
-    t = iter(i).next().ring().variable(0)
+    t = next(iter(i)).ring().variable(0)
     if uv.reducible_by(t):
         raise ValueError("First ring variable has to be reserved as helper variable t")
     if not t > uv:

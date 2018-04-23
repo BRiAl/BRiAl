@@ -488,11 +488,11 @@ def GPS_with_suggestions(G, deg_bound, over_deg_bound, opt_lazy=True,
 
         if index < 0:
             uv = set(used_vars_set(strat))
-            lv = set([iter(p.lead()).next().index() for p in strat if p.
+            lv = set([next(iter(p.lead())).index() for p in strat if p.
                 lead_deg() == 1])
             candidates = uv.difference(lv)
             if len(candidates) > 0:
-                index = iter(candidates).next().index()
+                index = next(iter(candidates)).index()
         if index >= 0:
             print("chosen index:", index)
             step(strat, trace, Polynomial(Monomial(Variable(index))), 0)
