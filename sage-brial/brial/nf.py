@@ -7,6 +7,7 @@ from .statistics import used_vars_set
 from random import Random
 from warnings import warn
 import copy
+import os
 import sys
 
 
@@ -73,8 +74,8 @@ def build_and_print_matrices(v, strat):
             im.putpixel((j, i), 0)
 
     file_name = matrix_prefix + str(mat_counter) + ".png"
-    import os
-    os.system("rm -f " + file_name)
+    if os.path.exists(file_name):
+        os.remove(file_name)
     im.save(file_name)
     del im
 
@@ -147,8 +148,8 @@ def build_and_print_matrices_deg_colored(v, strat):
             im.putpixel((j, i), ImageColor.getrgb("hsl(" + str(270 - (270 *
                 i2deg[j]) / max_deg) + ",100%,50%)"))
     file_name = matrix_prefix + str(mat_counter) + ".png"
-    import os
-    os.system("rm -f file_name")
+    if os.path.exists(file_name):
+        os.remove(file_name)
     im.save(file_name)
     del im
 
