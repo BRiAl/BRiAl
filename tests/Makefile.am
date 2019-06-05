@@ -45,7 +45,5 @@ LIBS = $(top_builddir)/groebner/src/libbrial_groebner.la \
 	$(M4RI_LIBS) \
 	$(GD_LIBS)
 
+TESTS = unittests
 check_PROGRAMS = unittests
-
-check: unittests
-	./unittests
