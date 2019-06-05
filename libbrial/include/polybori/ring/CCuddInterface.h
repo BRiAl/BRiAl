@@ -62,17 +62,45 @@ inline const char* error_text(PBORI_PREFIX(DdManager)* mgr) {
     return("Unexpected error.");
   }
 
-/// Increment reference count
-inline void 
-intrusive_ptr_add_ref(PBORI_PREFIX(DdManager)* ptr){
-  ++(ptr->hooks);
+
+/**
+ * Reference counting abuses ptr->hooks field, a char*, that the
+ * underlying CUDD happens to have. The problem is that the compiler
+ * is free to (and gcc9 will) ignore a statement like
+ *
+ *   --pointer == NULL
+ *
+ * C++11 Standard 5.7.5 says that pointer arithmetic on a pointer that
+ * is not pointing into an element of an array is undefined
+ * behavior. So in particular the compiler is free to assume that
+ * --pointer cannot be NULL, since you can't have allocated an array
+ * that starts at 0x1.
+ *
+ * This why we need to reinterpret_cast<> the pointer first to an
+ * integer type before it can be used to count.
+ */
+
+/// Initialize the reference count to zero
+inline void
+intrusive_ptr_zero(PBORI_PREFIX(DdManager)* ptr){
+  ptr->hooks = reinterpret_cast<char*>(0);
 }
 
-/// Release current pointer by decrementing reference counting
+/// Increment reference count (called by boost::intrusive_ptr)
+inline void 
+intrusive_ptr_add_ref(PBORI_PREFIX(DdManager)* ptr){
+  intptr_t counter = reinterpret_cast<intptr_t>(ptr->hooks);
+  counter ++;
+  ptr->hooks = reinterpret_cast<char*>(counter);
+}
+
+/// Release current pointer by decrementing reference counting (called by boost::intrusive_ptr)
 inline void 
 intrusive_ptr_release(PBORI_PREFIX(DdManager)* ptr) {
-  if (!(--(ptr->hooks))) {
-
+  intptr_t counter = reinterpret_cast<intptr_t>(ptr->hooks);
+  counter--;
+  ptr->hooks = reinterpret_cast<char*>(counter);
+  if (!counter) {
     PBORI_ASSERT(PBORI_PREFIX(Cudd_CheckZeroRef)(ptr) == 0);
     PBORI_PREFIX(Cudd_Quit)(ptr);
   }
@@ -314,8 +342,8 @@ protected:
     DdManager* ptr = PBORI_PREFIX(Cudd_Init)(numVars, numVarsZ, numSlots, cacheSize, maxMemory);
     if PBORI_UNLIKELY(ptr==NULL)
       throw PBoRiError(CTypes::failed);
-    
-    ptr->hooks = NULL;          // abusing hooks pointer for reference counting
+
+    intrusive_ptr_zero(ptr);
 
     return ptr;
   }
