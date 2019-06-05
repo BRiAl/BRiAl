@@ -27,3 +27,7 @@ test-driver
 stamp-*
 /compile
 /py-compile
+test-suite.log
+unittests
+unittests.log
+unittests.trs
