@@ -7,10 +7,6 @@ dist: trusty
   #- clang
 
 addons_shortcuts:
-  addons_gcc48: &gcc48
-    apt:
-      sources: ['ubuntu-toolchain-r-test']
-      packages: [ 'g++-4.8', 'autoconf-archive', 'libgmp-dev' ]
   addons_gcc49: &gcc49
     apt:
       sources: ['ubuntu-toolchain-r-test']
@@ -23,6 +19,10 @@ addons_shortcuts:
     apt:
       sources: ['ubuntu-toolchain-r-test']
       packages: [ 'g++-6', 'autoconf-archive', 'libgmp-dev' ]
+  addons_gcc9: &gcc9
+    apt:
+      sources: ['ubuntu-toolchain-r-test']
+      packages: [ 'g++-9', 'autoconf-archive', 'libgmp-dev' ]
 
 
 install:
@@ -47,47 +47,6 @@ script:
   - make check
 
 matrix:
-  include:
-    - os: linux
-      compiler: "gcc-4.8"
-      env:
-        - COMPILER=g++-4.8
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=58
-        - BOOST_MAINTENANCE_VERSION=0
-      addons: *gcc48
-    - os: linux
-      compiler: "gcc-4.9"
-      env:
-        - COMPILER=g++-4.9
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=58
-        - BOOST_MAINTENANCE_VERSION=0
-      addons: *gcc49
-    - os: linux
-      compiler: "gcc-5"
-      env:
-        - COMPILER=g++-5
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=58
-        - BOOST_MAINTENANCE_VERSION=0
-      addons: *gcc5
-    - os: linux
-      compiler: "gcc-6"
-      env:
-        - COMPILER=g++-6
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=58
-        - BOOST_MAINTENANCE_VERSION=0
-      addons: *gcc6
-    - os: linux
-      compiler: "gcc-4.8"
-      env:
-        - COMPILER=g++-4.8
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=65
-        - BOOST_MAINTENANCE_VERSION=1
-      addons: *gcc48
     - os: linux
       compiler: "gcc-4.9"
       env:
@@ -112,6 +71,14 @@ matrix:
         - BOOST_MINOR_VERSION=65
         - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc6
+    - os: linux
+      compiler: "gcc-9"
+      env:
+        - COMPILER=g++-9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+      addons: *gcc9
     - os: osx
       osx_image: xcode9.1
       env:
