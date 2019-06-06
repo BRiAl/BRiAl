@@ -47,6 +47,7 @@ script:
   - make check
 
 matrix:
+  include:
     - os: linux
       compiler: "gcc-4.9"
       env:
