@@ -6,7 +6,10 @@ import sys
 from .PyPolyBoRi import *
 from .randompoly import gen_random_poly
 from random import Random
-from time import clock
+try:
+    from time import process_time as clock
+except ImportError:
+    from time import clock
 
 generator = Random()
 
