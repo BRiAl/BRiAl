@@ -6,7 +6,7 @@ except ImportError:
     from io import StringIO
 import uu
 import re
-import imp
+from types import ModuleType
 from .PyPolyBoRi import *
 AUTO = "auto"
 SINGLE = "single"
@@ -118,7 +118,7 @@ def my_import(name, globals=None, locals=None):
 
 
 def dyn_generate(content, name):
-    module = imp.new_module(name)
+    module = ModuleType(name)
     import_header = """from .PyPolyBoRi import Variable,Monomial, Polynomial, Ring, OrderCode
 from itertools import chain
 from .blocks import AlternatingBlock,Block,AdderBlock,if_then,HigherOrderBlock,declare_ring as orig_declare_ring,declare_block_scheme,MacroBlock\n
