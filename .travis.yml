@@ -48,7 +48,7 @@ matrix:
         - BOOST_MINOR_VERSION=65
         - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc5
-   - os: linux
+    - os: linux
       compiler: "gcc-9"
       env:
         - COMPILER=g++-9
@@ -78,7 +78,7 @@ matrix:
         - BOOST_MINOR_VERSION=72
         - BOOST_MAINTENANCE_VERSION=0
       addons: *gcc5
-   - os: linux
+    - os: linux
       compiler: "gcc-9"
       env:
         - COMPILER=g++-9
