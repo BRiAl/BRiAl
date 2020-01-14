@@ -22,23 +22,10 @@
 #include <polybori/groebner/ZeroFunction.h>
 #include <polybori/groebner/SetBitUInt.h>
 
-#define PBORI_HAVE_DLEX4_DATA 1
-
-#ifdef PBORI_HAVE_DLEX4_DATA
+// Data ordering tables
 #include <polybori/groebner/dlex4data.h>
-#endif
-
-#define PBORI_HAVE_LP4_DATA 1
-
-#ifdef PBORI_HAVE_LP4_DATA
 #include <polybori/groebner/lp4data.h>
-#endif
-
-#define PBORI_HAVE_DP_ASC4_DATA 1
-
-#ifdef PBORI_HAVE_DP_ASC4_DATA
 #include <polybori/groebner/dp_asc4data.h>
-#endif
 
 BEGIN_NAMESPACE_PBORIGB
 
@@ -82,18 +69,12 @@ p2code_4(Polynomial p, const std::vector<char> & ring_2_0123){
 inline unsigned int
 get_table_entry4(const BoolePolyRing& ring, int p_code, int pos){
   switch(ring.ordering().getBaseOrderCode()){
-        #ifdef PBORI_HAVE_LP4_DATA
         case COrderEnums::lp:
             return lp4var_data[p_code][pos];
-        #endif
-        #ifdef  PBORI_HAVE_DLEX4_DATA
         case COrderEnums::dlex:
             return dlex4var_data[p_code][pos];
-        #endif
-        #ifdef PBORI_HAVE_DP_ASC4_DATA
         case COrderEnums::dp_asc:
             return dp_asc4var_data[p_code][pos];
-        #endif
         default:
           throw std::runtime_error("Groebner tables used with forbidden order");
     }
@@ -130,18 +111,12 @@ code_2_poly_4(const BoolePolyRing& ring,
 
 inline bool 
 have_ordering_for_tables(const int order_code) {
-    #ifdef PBORI_HAVE_DLEX4_DATA
         if (order_code==COrderEnums::dlex)
            return true;
-    #endif
-    #ifdef PBORI_HAVE_LP4_DATA
         if (order_code==COrderEnums::lp)
            return true;
-    #endif
-    #ifdef PBORI_HAVE_DP_ASC4_DATA
         if (order_code==COrderEnums::dp_asc)
            return true;
-    #endif
     return false;
 }
 
