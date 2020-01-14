@@ -1,24 +1,16 @@
 language: cpp
 sudo: required
-dist: trusty
+dist: xenial
 
 #compiler:
   #- gcc
   #- clang
 
 addons_shortcuts:
-  addons_gcc49: &gcc49
-    apt:
-      sources: ['ubuntu-toolchain-r-test']
-      packages: [ 'g++-4.9', 'autoconf-archive', 'libgmp-dev' ]
   addons_gcc5: &gcc5
     apt:
       sources: ['ubuntu-toolchain-r-test']
       packages: [ 'g++-5', 'autoconf-archive', 'libgmp-dev' ]
-  addons_gcc6: &gcc6
-    apt:
-      sources: ['ubuntu-toolchain-r-test']
-      packages: [ 'g++-6', 'autoconf-archive', 'libgmp-dev' ]
   addons_gcc9: &gcc9
     apt:
       sources: ['ubuntu-toolchain-r-test']
@@ -49,14 +41,6 @@ script:
 matrix:
   include:
     - os: linux
-      compiler: "gcc-4.9"
-      env:
-        - COMPILER=g++-4.9
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=65
-        - BOOST_MAINTENANCE_VERSION=1
-      addons: *gcc49
-    - os: linux
       compiler: "gcc-5"
       env:
         - COMPILER=g++-5
@@ -64,15 +48,7 @@ matrix:
         - BOOST_MINOR_VERSION=65
         - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc5
-    - os: linux
-      compiler: "gcc-6"
-      env:
-        - COMPILER=g++-6
-        - BOOST_MAJOR_VERSION=1
-        - BOOST_MINOR_VERSION=65
-        - BOOST_MAINTENANCE_VERSION=1
-      addons: *gcc6
-    - os: linux
+   - os: linux
       compiler: "gcc-9"
       env:
         - COMPILER=g++-9
@@ -81,9 +57,46 @@ matrix:
         - BOOST_MAINTENANCE_VERSION=1
       addons: *gcc9
     - os: osx
-      osx_image: xcode9.1
+      osx_image: xcode9.4
       env:
         - COMPILER=clang++
         - BOOST_MAJOR_VERSION=1
         - BOOST_MINOR_VERSION=65
         - BOOST_MAINTENANCE_VERSION=1
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - COMPILER=clang++
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=65
+        - BOOST_MAINTENANCE_VERSION=1
+    - os: linux
+      compiler: "gcc-5"
+      env:
+        - COMPILER=g++-5
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=72
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc5
+   - os: linux
+      compiler: "gcc-9"
+      env:
+        - COMPILER=g++-9
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=72
+        - BOOST_MAINTENANCE_VERSION=0
+      addons: *gcc9
+    - os: osx
+      osx_image: xcode9.4
+      env:
+        - COMPILER=clang++
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=72
+        - BOOST_MAINTENANCE_VERSION=0
+    - os: osx
+      osx_image: xcode11.3
+      env:
+        - COMPILER=clang++
+        - BOOST_MAJOR_VERSION=1
+        - BOOST_MINOR_VERSION=72
+        - BOOST_MAINTENANCE_VERSION=0
