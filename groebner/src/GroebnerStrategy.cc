@@ -701,7 +701,7 @@ Polynomial GroebnerStrategy::nf(Polynomial p) const{
     return generators.nf(p);
 }
 
-#if  defined(PBORI_HAVE_M4RI) || defined(PBORI_HAVE_NTL)
+#if defined(PBORI_HAVE_M4RI)
 std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>& orig_system){
 
     if (orig_system.empty())
@@ -740,11 +740,7 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
     if PBORI_UNLIKELY(this->enabledLog){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
-    #ifndef PBORI_HAVE_M4RI
-    mat_GF2 mat(INIT_SIZE,rows,cols);
-    #else
     mzd_t* mat=mzd_init(rows,cols);
-    #endif
     std::vector<Exponent> terms_as_exp(terms.size());
     std::copy(terms.expBegin(),terms.expEnd(),terms_as_exp.begin());
 
@@ -762,19 +758,11 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
-            #ifndef PBORI_HAVE_M4RI
-            mat[i][from_term_map[*it]]=1;
-            #else
             mzd_write_bit(mat,i,from_term_map[*it],1);
-            #endif
             it++;
         }
     }
     polys.clear();
-    #ifndef PBORI_HAVE_M4RI
-
-    int rank=gauss(mat);
-    #else
     {        
        if PBORI_UNLIKELY(optDrawMatrices){
             std::ostringstream matname;   
@@ -789,16 +777,11 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
             //mzd_echelonize_pluq(mat,TRUE);
     else
             rank=0;
-    #endif
     for(int i=rank-1;i>=0;i--){
         int j=0;
         std::vector<Exponent> p_t;
         for(;j<cols;j++){
-            #ifndef PBORI_HAVE_M4RI
-            if (mat[i][j]==1)
-            #else
             if (mzd_read_bit(mat,i,j))
-            #endif
               {
                 p_t.push_back(terms_as_exp[j]);
               }
@@ -811,15 +794,10 @@ std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>
 	  break;
 	}
     }
-    #ifdef PBORI_HAVE_M4RI
     mzd_free(mat);
-    #endif
     return polys;
 }
-#endif
 
-
-#if  defined(PBORI_HAVE_NTL) || defined(PBORI_HAVE_M4RI)
 std::vector<Polynomial>
 GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
 

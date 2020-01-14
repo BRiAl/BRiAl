@@ -30,11 +30,6 @@
 #include "PseudoLongProduct.h"
 #include "Long64From32BitsPair.h"
 
-#ifdef PBORI_HAVE_NTL
-#include <NTL/GF2.h>
-#include <NTL/mat_GF2.h>
-NTL_CLIENT
-#endif
 #ifdef PBORI_HAVE_M4RI
 const int M4RI_MAXKAY = 16;
 #endif
@@ -58,7 +53,7 @@ select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
 }
 
 
-#if  defined(PBORI_HAVE_NTL) || defined(PBORI_HAVE_M4RI)
+#if defined(PBORI_HAVE_M4RI)
 
 typedef Exponent::idx_map_type from_term_map_type;
 
@@ -117,13 +112,9 @@ fill_matrix(mzd_t* mat,std::vector<Polynomial> polys, from_term_map_type from_te
         Polynomial::exp_iterator it=polys[i].expBegin();//not order dependend
         Polynomial::exp_iterator end=polys[i].expEnd();
         while(it!=end){
-            #ifndef PBORI_HAVE_M4RI
-            mat[i][from_term_map[*it]]=1;
-            #else
             from_term_map_type::const_iterator from_it=from_term_map.find(*it);
             PBORI_ASSERT(from_it!=from_term_map.end());
             mzd_write_bit(mat,i,from_it->second,1);
-            #endif 
             it++;
         }
     }
@@ -141,11 +132,7 @@ translate_back(std::vector<Polynomial>& polys, MonomialSet leads_from_strat,mzd_
     
         bool from_strat=false;
         for(j=0;j<cols;j++){
-            #ifndef PBORI_HAVE_M4RI
-            if (mat[i][j]==1){
-            #else
             if PBORI_UNLIKELY(mzd_read_bit(mat,i,j)==1){
-            #endif
                 if (p_t_i.size()==0){
                     if (leads_from_strat.owns(terms_as_exp[j])) {
                         from_strat=true;break;
@@ -179,19 +166,12 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
     if PBORI_UNLIKELY(log){
         std::cout<<"ROWS:"<<rows<<"COLUMNS:"<<cols<<std::endl;
     }
-    #ifndef PBORI_HAVE_M4RI
-    mat_GF2 mat(INIT_SIZE,rows,cols);
-    #else
     mzd_t* mat=mzd_init(rows,cols);
-    #endif
     MatrixMonomialOrderTables  tabs(terms);
 
     fill_matrix(mat,polys,tabs.from_term_map);
 
     polys.clear();
-    #ifndef PBORI_HAVE_M4RI
-    int rank=gauss(mat);
-    #else
     if PBORI_UNLIKELY(optDrawMatrices){
          ++round;
 	 std::ostringstream matname;
@@ -199,15 +179,12 @@ linalg_step(std::vector<Polynomial>& polys, MonomialSet terms,MonomialSet leads_
          draw_matrix(mat, matname.str().c_str());
      }
     int rank=mzd_echelonize_m4ri(mat, TRUE, 0);//optimal_k_for_gauss(mat->nrows,mat->ncols,strat));
-    #endif
     if PBORI_UNLIKELY(log){
         std::cout<<"finished gauss"<<std::endl;
     }
     translate_back(polys, leads_from_strat, mat,tabs.ring_order2lex, tabs.terms_as_exp,tabs.terms_as_exp_lex,rank);
     
-    #ifdef PBORI_HAVE_M4RI
     mzd_free(mat);
-    #endif
 }
 
 inline void
