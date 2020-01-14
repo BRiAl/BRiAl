@@ -16,7 +16,6 @@
 #include "groebner_alg.h"
 
 
-#ifdef PBORI_HAVE_M4RI
 extern "C"{
 #include <m4ri/m4ri.h>
 
@@ -24,7 +23,7 @@ extern "C"{
 #define __M4RI_TWOPOW TWOPOW
 #endif
 }
-#endif
+
 #ifndef PBORI_GB_NF_H
 #define PBORI_GB_NF_H
 BEGIN_NAMESPACE_PBORIGB

@@ -1,6 +1,9 @@
 /* has gd png support */
 #undef PBORI_HAVE_GD
 
+/* has m4ri support */
+#undef PBORI_HAVE_M4RI
+
 /* has m4ri png support */
 #undef PBORI_HAVE_M4RI_PNG
 

@@ -30,9 +30,7 @@
 #include "PseudoLongProduct.h"
 #include "Long64From32BitsPair.h"
 
-#ifdef PBORI_HAVE_M4RI
 const int M4RI_MAXKAY = 16;
-#endif
 
 #include <vector>
 #include <utility>
@@ -52,8 +50,6 @@ select_largest_degree(const ReductionStrategy& strat, const Monomial& m){
     }
 }
 
-
-#if defined(PBORI_HAVE_M4RI)
 
 typedef Exponent::idx_map_type from_term_map_type;
 
@@ -549,7 +545,6 @@ gauss_on_polys(const std::vector<Polynomial>& orig_system){
   linalg_step(polys, terms, from_strat, false);
   return polys;
 }
-#endif
 
 END_NAMESPACE_PBORIGB
 

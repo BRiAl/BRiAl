@@ -597,7 +597,6 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
     to_reduce.pop();
 
     Monomial lm=curr[0].lead();
-    #ifdef PBORI_HAVE_M4RI
     if (strat.optLinearAlgebraInLastBlock){
         if (!(lm.deg()==0)){
             
@@ -621,7 +620,6 @@ std::vector<Polynomial> parallel_reduce(std::vector<Polynomial> inp, GroebnerStr
             }
         }
     }
-    #endif 
     while ((!(to_reduce.empty())) && (to_reduce.top().lead()==lm)){
       curr.push_back(to_reduce.top());
       to_reduce.pop();
