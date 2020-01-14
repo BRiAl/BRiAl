@@ -22,7 +22,7 @@
 #include <polybori/groebner/ZeroFunction.h>
 #include <polybori/groebner/SetBitUInt.h>
 
-# Data ordering tables
+// Data ordering tables
 #include <polybori/groebner/dlex4data.h>
 #include <polybori/groebner/lp4data.h>
 #include <polybori/groebner/dp_asc4data.h>
