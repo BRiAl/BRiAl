@@ -1,0 +1,14 @@
+/* has gd png support */
+#undef PBORI_HAVE_GD
+
+/* has m4ri png support */
+#undef PBORI_HAVE_M4RI_PNG
+
+/* The size of `int', as computed by sizeof. */
+#undef SIZEOF_INT
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* The size of `void *', as computed by sizeof. */
+#undef SIZEOF_VOID_P

@@ -95,7 +95,7 @@ else
     fi
 fi
 
-AC_CONFIG_HEADERS([libbrial/include/polybori/config.h])
+AC_CONFIG_HEADERS([config_dummy.h libbrial/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
                  cudd/Makefile
