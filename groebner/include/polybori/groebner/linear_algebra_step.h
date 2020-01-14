@@ -549,6 +549,7 @@ gauss_on_polys(const std::vector<Polynomial>& orig_system){
   linalg_step(polys, terms, from_strat, false);
   return polys;
 }
+#endif
 
 END_NAMESPACE_PBORIGB
 
