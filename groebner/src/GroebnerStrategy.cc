@@ -701,7 +701,6 @@ Polynomial GroebnerStrategy::nf(Polynomial p) const{
     return generators.nf(p);
 }
 
-#if defined(PBORI_HAVE_M4RI)
 std::vector<Polynomial> GroebnerStrategy::noroStep(const std::vector<Polynomial>& orig_system){
 
     if (orig_system.empty())
@@ -815,7 +814,5 @@ GroebnerStrategy::faugereStepDense(const std::vector<Polynomial>& orig_system){
                 matrixPrefix.data());
   return polys;
 }
- 
-#endif
 
 END_NAMESPACE_PBORIGB
