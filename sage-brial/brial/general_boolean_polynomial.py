@@ -446,7 +446,7 @@ def reduce_general_boolean_polynomial(F, polynomial):
     lm_polynomial = (polynomial.lm()).monomial()
     lc_polynomial_binary = polynomial.lc_binary()
 
-    while len(Is) is not 0:
+    while len(Is) != 0:
         exp = [F[i].lm() for i in range(s)]
         matrix = [[included(i, F[j].lc_as_set()) for j in Is] for i in range(
             k)]
