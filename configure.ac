@@ -88,7 +88,7 @@ else
         [AC_CHECK_LIB([gd], [gdImagePng],
             [have_gd="yes"],
             [have_gd="no"])
-        ])
+        ],[have_gd="no"])
     if test "x$have_gd" = "xyes" ; then
         AC_SUBST(GD_LIBS)
         AC_DEFINE([PBORI_HAVE_GD],[],[has gd png support])
