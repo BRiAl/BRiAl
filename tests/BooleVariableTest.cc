@@ -14,7 +14,13 @@
 //*****************************************************************************
 
 #include <boost/test/unit_test.hpp>
+#include <boost/version.hpp>
+#if BOOST_VERSION < 107100
 #include <boost/test/output_test_stream.hpp>
+#else
+#include <boost/test/tools/output_test_stream.hpp>
+#endif
+
 using boost::test_tools::output_test_stream;
 
 #include <polybori/pbori_defs.h>
