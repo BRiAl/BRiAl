@@ -69,7 +69,7 @@
 #include "cuddInt.h"
 
 #ifndef PBORI_FORCE_ORIGINAL_CUDD
-#include <polybori/cudd/prefix_internal.h>
+#include <polybori/cuddaux/prefix_internal.h>
 #endif
 
 /*---------------------------------------------------------------------------*/

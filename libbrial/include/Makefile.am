@@ -21,8 +21,8 @@ nobase_include_HEADERS = \
 	polybori/common/traits.h \
 	polybori/common/TransformedSequence.h \
 	polybori/config.h \
-	polybori/cudd/prefix.h \
-	polybori/cudd/prefix_internal.h \
+	polybori/cuddaux/prefix.h \
+	polybori/cuddaux/prefix_internal.h \
 	polybori/DegLexOrder.h \
 	polybori/DegRevLexAscOrder.h \
 	polybori/diagram/CApplyNodeFacade.h \
@@ -81,7 +81,3 @@ nobase_include_HEADERS = \
 	polybori/routines/pbori_routines_misc.h \
 	polybori/routines/pbori_routines_order.h \
 	polybori.h
-
-noinst_HEADERS = \
-	polybori/cudd/cudd.h \
-	polybori/cudd/cuddInt.h

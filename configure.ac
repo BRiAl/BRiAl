@@ -95,6 +95,24 @@ else
     fi
 fi
 
+EXTERNAL_CUDD=""
+AC_ARG_WITH([external-cudd],
+	[AS_HELP_STRING([--with-external-cudd], [Utilize a system-installed CUDD library])],
+	[
+		CUDD_CPPFLAGS="-DPBORI_USE_ORIGINAL_CUDD"
+		AC_CHECK_HEADERS([cudd/cuddInt.h], [], [AC_MSG_ERROR([Requested system CUDD but cannot resolve <cudd/cuddInt.h>])])
+		CUDD_LIBS="-lcudd"
+		EXTERNAL_CUDD=1
+	],
+	[
+		CUDD_CPPFLAGS='-I${top_srcdir}/libbrial/include/polybori'
+		CUDD_LIBS='${top_builddir}/cudd/libcudd.la'
+	]
+)
+AM_CONDITIONAL([EXTERNAL_CUDD], [test -n "$EXTERNAL_CUDD"])
+AC_SUBST([CUDD_CPPFLAGS])
+AC_SUBST([CUDD_LIBS])
+
 AC_CONFIG_HEADERS([config_dummy.h libbrial/include/polybori/config.h])
 AC_CONFIG_FILES([
                  Makefile
