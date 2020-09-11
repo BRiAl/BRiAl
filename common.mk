@@ -1,7 +1,8 @@
 AM_CPPFLAGS = \
 	-I$(top_srcdir)/groebner/include \
 	-I$(top_builddir)/libbrial/include \
-	-I$(top_srcdir)/libbrial/include
+	-I$(top_srcdir)/libbrial/include \
+	${CUDD_CPPFLAGS}
 
 AM_CXXFLAGS = -ftemplate-depth-100
 

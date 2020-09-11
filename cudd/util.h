@@ -8,7 +8,7 @@
 #ifndef polybori_cuddy_util_h_
 #define polybori_cuddy_util_h_
 
-#include <polybori/cudd/prefix.h>
+#include <polybori/cuddaux/prefix.h>
 #ifdef __cplusplus
 
 #include <ctime>

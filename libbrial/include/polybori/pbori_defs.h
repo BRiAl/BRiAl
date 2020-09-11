@@ -24,7 +24,7 @@
 #include <iostream>
 
 /// @note PolyBoRi comes with a special copy of Cudd
-#include <polybori/cudd/cudd.h>
+#include <cudd/cudd.h>
 
 #include "config.h"
 
