@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/BRiAl/BRiAl.svg?branch=master)](https://travis-ci.org/BRiAl/BRiAl)
+[![Build Status](https://travis-ci.com/BRiAl/BRiAl.svg?branch=master)](https://travis-ci.com/BRiAl/BRiAl)
 
 BRiAl is the legacy version of PolyBoRi maintained by sagemath developers.
 
