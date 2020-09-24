@@ -15,3 +15,18 @@
 
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
