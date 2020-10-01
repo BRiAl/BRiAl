@@ -22,7 +22,6 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 #include <polybori/common/tags.h>
-#include <polybori/cuddaux/prefix.h>
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/seq/for_each.hpp>

@@ -19,7 +19,7 @@
 #include <polybori/pbori_defs.h>
 
 // Get Cudd definitions
-#include <cudd/cudd.h>
+#include <polybori/cudd/cudd.h>
 
 #include <polybori/routines/pbori_routines.h>
 #include <polybori/cache/CCacheManagement.h>

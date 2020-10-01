@@ -19,8 +19,8 @@
 // include basic definitions
 #include <polybori/pbori_defs.h>
 
-#include <cudd/cudd.h>
-#include <polybori/cuddaux/prefix.h>
+#include <polybori/cudd/cudd.h>
+#include <polybori/cudd/prefix.h>
 #include "CApplyNodeFacade.h"
 #include "CNodeCounter.h"
 

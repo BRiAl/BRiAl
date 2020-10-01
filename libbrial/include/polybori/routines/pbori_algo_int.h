@@ -22,7 +22,7 @@
 // get polybori's functionals
 #include "pbori_func.h"
 #include <polybori/iterators/CCuddNavigator.h>
-#include <cudd/cudd.h>
+#include <polybori/cudd/cudd.h>
 
 BEGIN_NAMESPACE_PBORI
 

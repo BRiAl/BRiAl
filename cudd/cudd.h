@@ -72,7 +72,7 @@
 
 #else
 #include <polybori/config.h>
-#include <polybori/cuddaux/prefix.h>
+#include <polybori/cudd/prefix.h>
 
 #ifndef CUDD_ASSERT
 
