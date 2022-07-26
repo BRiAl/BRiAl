@@ -148,7 +148,6 @@ struct manager_traits {
   typedef node_type (*unary_int_function)(mgrcore_type, int);
   typedef node_type (*void_function)(mgrcore_type);
 
-  typedef DD_CTFP binary_function;
   typedef node_type (*binary_int_function)(mgrcore_type, node_type, int);
   typedef 
   node_type (*ternary_function)(mgrcore_type, node_type, node_type, node_type);
@@ -165,7 +164,6 @@ struct manager_traits {
   typedef fromspace::mgrcore_type mgrcore_type;               \
   typedef fromspace::unary_int_function unary_int_function;   \
   typedef fromspace::void_function void_function;             \
-  typedef fromspace::binary_function binary_function;         \
   typedef fromspace::binary_int_function binary_int_function; \
   typedef fromspace::ternary_function ternary_function;       \
   typedef fromspace::int_unary_function int_unary_function;   \
