@@ -53,8 +53,7 @@ get_ordering(CTypes::ordercode_type order) {
 /// @class lex_compare_predicate
 /// @brief defines lexicographic comparison functor
 template <class LhsType, class RhsType, class BinaryPredicate>
-class lex_compare_predicate:
-  public std::binary_function<LhsType, RhsType, bool> {
+class lex_compare_predicate {
 public:
 
   /// Constructor
