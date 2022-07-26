@@ -110,9 +110,7 @@ public:
 /// @brief Accessing .uniteAssign()
 template <class RhsType,
           class LhsType = typename pbori_traits<RhsType>::idx_type >
-class unite_assign:
-  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
-
+class unite_assign {
 public:
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
     return (rhs = rhs.unite(lhs));
@@ -422,8 +420,7 @@ template <class RhsType = void,
 class inserts;
 
 template <class RhsType, class LhsType>
-class inserts:
-  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+class inserts {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -450,8 +447,7 @@ template <class RhsType = void,
 class insert_assign;
 
 template <class RhsType, class LhsType>
-class insert_assign:
-  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+class insert_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -480,8 +476,7 @@ class removes;
 
 
 template <class RhsType, class LhsType>
-class removes:
-  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+class removes {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -510,8 +505,7 @@ class remove_assign;
 
 
 template <class RhsType, class LhsType>
-class remove_assign:
-  public std::binary_function<RhsType&, const LhsType&, RhsType&> {
+class remove_assign {
 public:
 
   RhsType& operator() (RhsType& rhs, const LhsType& lhs) const {
@@ -623,9 +617,7 @@ public:
  * @brief A functional for size comparisons.
  **/
 template <class ListType>
-class sizes_less:
-  public std::binary_function<const ListType&, const ListType&, bool> {
-
+class sizes_less {
 public:
   bool operator()(const ListType& lhs, const ListType& rhs) const {
     return (lhs.size() < rhs.size());
