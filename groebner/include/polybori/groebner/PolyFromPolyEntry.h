@@ -29,8 +29,7 @@ BEGIN_NAMESPACE_PBORIGB
  *
  **/
 
-class PolyFromPolyEntry:
-  public std::unary_function<PolyEntry, Polynomial> {
+class PolyFromPolyEntry {
 public:
   const Polynomial& operator()(const PolyEntry& entry) const {
     return entry.p;

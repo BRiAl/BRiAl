@@ -685,8 +685,7 @@ protected:
 
 
 template <class DDType>
-class navigates:
-  public std::unary_function<DDType, typename DDType::navigator> {
+class navigates {
 public:
   /// Type of decision diagram
   typedef DDType dd_type;
