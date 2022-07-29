@@ -39,10 +39,12 @@ BEGIN_NAMESPACE_PBORIGB
  * @note The operator stored references of t0 and T only.
  **/
 
-class BoundedDivisorsOf: 
-  public std::unary_function<Monomial, MonomialSet> {
+class BoundedDivisorsOf {
 
 public:
+  /// typedef to replace unary_function - this are expected in other files
+  typedef Monomial argument_type;
+  typedef MonomialSet result_type;
   /// Initialize mapping with given parameters
   BoundedDivisorsOf(const Monomial& term, const MonomialSet& terms):
     m_factor(term), m_terms(terms) {}

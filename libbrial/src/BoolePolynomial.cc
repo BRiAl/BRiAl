@@ -764,14 +764,14 @@ public:
 };
 
 template <class SizeType>
-class AddEliminationDegree:
-public std::binary_function<SizeType, SizeType, SizeType>{
+class AddEliminationDegree {
 public:
   typedef SizeType size_type;
-  typedef std::binary_function<size_type, size_type, size_type> base;
+  
+  //typedef std::binary_function<size_type, size_type, size_type> base;
 
   AddEliminationDegree(size_type min): 
-    base(), m_min(min) {}
+    m_min(min) {}
 
   size_type& operator()(size_type& rhs, size_type lhs) {
     ++rhs;
