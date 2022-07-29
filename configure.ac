@@ -1,4 +1,4 @@
-AC_INIT([BRiAl], [1.2.10])
+AC_INIT([BRiAl],[1.2.11])
 
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror tar-ustar])
@@ -6,19 +6,16 @@ AM_PROG_AR
 
 LT_INIT
 LT_CURRENT=3
-LT_REVISION=6
+LT_REVISION=7
 LT_AGE=0
 AC_SUBST(LT_CURRENT)
 AC_SUBST(LT_REVISION)
 AC_SUBST(LT_AGE)
 
-AC_PROG_CC_C99
-if test "x$ac_cv_prog_cc_c99" = "xno"; then
-    AC_MSG_ERROR("A C99 capable compiler is required")
-fi
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
+LT_INIT
 
 dnl C++11 is now the default
 AX_CXX_COMPILE_STDCXX(11,,mandatory)
