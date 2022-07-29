@@ -693,8 +693,12 @@ public:
   /// Type for navigation through diagram
   typedef typename DDType::navigator navigator;
 
-  /// Generic access to base type
-  typedef std::unary_function<dd_type, navigator> base;
+  /// Generic access to base type (replaced from unary_function)
+  class base {
+  public:
+    typedef dd_type argument_type;
+    typedef navigator result_type;
+  };
 
   /// The actual operation
   typename base::result_type operator()(const dd_type& rhs) const{
