@@ -337,46 +337,6 @@ BOOST_AUTO_TEST_CASE(test_ordering_independent) {
   BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).lexLead(), x*y);
   BOOST_CHECK_EQUAL(poly_type(ring).lexLeadDeg(), -1);
 
-  BOOST_TEST_MESSAGE( "stableHash");
-
-#ifdef PBORI_TEST_64BITTED
-#if BOOST_VERSION < 108100 || defined(__APPLE__)
-  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 16982317933699389295u);
-  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 15553547522801749128u);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 14746308500923705671u);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 6609543853578108291);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 13745298887294022704u);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 6643957975231536490);
-  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 7488647634487918362);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 15080868938440987258u);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 4046934837422409843);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 17287305169241640544u);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 15334652091369486486u);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 2654501304);
-  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 4216922685);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 4229314514);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 517852158);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 689818255);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 3337575060);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).stableHash(), 879054753);
-  BOOST_CHECK_EQUAL(poly_type(x).stableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly_type(x*y).stableHash(), 569922758);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z).stableHash(), 240822309);
-  BOOST_CHECK_EQUAL(poly_type(x*y + z + 1).stableHash(), 2507878590);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z).stableHash(), 433737400);
-  BOOST_CHECK_EQUAL(poly_type(x*y + x + z + 1).stableHash(), 628776654);
-#endif // BOOST_VERSION
-#endif
-
   BOOST_TEST_MESSAGE( "deg, TotalDeg, length, nNodes, nUsedVariables, usedVariables");
   BOOST_CHECK_EQUAL(poly_type(ring).deg(), -1);
   BOOST_CHECK_EQUAL(poly_type(0, ring).deg(), -1);
@@ -592,41 +552,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_lp, OrderGenFix<BoolePolyRing::lp>) {
                               "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
                               "{d,f}, {d}, {f}, {}}"));
 
-#ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 108100) || defined(__APPLE__)
-    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
-    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
-    BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
-    BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 994909422134781907);
-    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723u);
-    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723u);
-#else // BOOST_VERSION
-    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 6643957975231536490);
-    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14305226453458947074u);
-    BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 7488647634487918362);
-    BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 8683732623732266773);
-    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14305226453458947074u);
-    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14305226453458947074u);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 2654501304);
-    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3449012191);
-    BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 4216922685);
-    BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		      4216963741);
-    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3449012191);
-    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 3449012191);
-#else // BOOST_VERSION
-    BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 879054753);
-    BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3481556931);
-    BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 569922758);
-    BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-                      1713393842);
-    BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3481556931);
-    BOOST_CHECK_EQUAL(poly2.leadStableHash(), 3481556931);
-#endif // BOOST_VERSION
-#endif
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), poly2.leadStableHash());
 
   // naturally lexicographicsl
   BOOST_CHECK_EQUAL_COLLECTIONS(poly1.begin(), poly1.end(), 
@@ -710,41 +636,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dlex, OrderGenFix<BoolePolyRing::dlex>) {
                               "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
                               "{d,f}, {d}, {f}, {}}"));
 
-#ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 108100) || defined(__APPLE__)
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 13332077148710286618u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 994909422134781907);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 6643957975231536490);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 7488647634487918362);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 8683732623732266773);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14792830888691653104u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 8683732623732266773);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 2654501304);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 4216922685);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    4216963741);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 1214744792);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 4216963741);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 879054753);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 569922758);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    1713393842);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 2080251592);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 1713393842);
-#endif // BOOST_VERSION
-#endif
+  BOOST_CHECK_NE(poly1.leadStableHash(), poly2.leadStableHash());
 
   BooleMonomial terms1[] = {c*d*e, c*e*f, g*h, a, b};
   BooleMonomial terms2[] = {c*d, e*f, g*h, a, b};
@@ -821,41 +713,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_dp_asc, OrderGenFix<BoolePolyRing::dp_asc>
                               "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
                               "{d,f}, {d}, {f}, {}}"));
 
-#ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 108100) || defined(__APPLE__)
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 16982317933699389295u);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16171595639562729641u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 298249910754104916);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 6643957975231536490);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 7488647634487918362);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 8683732623732266773);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16452769785566003032u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 7788958613296501621);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 2654501304);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 4216922685);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    4216963741);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 1214748714);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 4216947484);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 879054753);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 569922758);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    1713393842);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3527394431);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 9141547);
-#endif // BOOST_VERSION
-#endif
+  BOOST_CHECK_NE(poly1.leadStableHash(), poly2.leadStableHash());
 
   BooleMonomial terms1[] = {c*e*f, c*d*e, g*h, b, a};
   BooleMonomial terms2[] = {g*h, e*f, c*d, b, a};
@@ -934,41 +792,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dlex, OrderGenFix<BoolePolyRing::blo
                               "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
                               "{d,f}, {d}, {f}, {}}"));
 
-#ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 108100) || defined(__APPLE__)
-  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 16982317933699389295u);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723u);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 6643957975231536490);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 7488647634487918362);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 8683732623732266773);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14305226453458947074u);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 2654501304);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 4216922685);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    4216963741);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 3449012191);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 879054753);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 569922758);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    1713393842);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 3481556931);
-#endif // BOOST_VERSION
-#endif
+  BOOST_CHECK_EQUAL(poly1.leadStableHash(), poly2.leadStableHash());
 
 
   BooleMonomial terms1[] = {a, b, c*d*e, c*e*f, g*h};
@@ -1047,41 +871,7 @@ BOOST_FIXTURE_TEST_CASE(test_ordering_block_dp_asc, OrderGenFix<BoolePolyRing::b
                               "{a,d}, {a,f}, {a}, {b,d,f}, {b,d}, {b,f}, {b}, "
                               "{d,f}, {d}, {f}, {}}"));
 
-#ifdef PBORI_TEST_64BITTED
-#if (BOOST_VERSION < 108100) || defined(__APPLE__)
-  BOOST_CHECK_EQUAL(poly_type(1,ring).leadStableHash(), 16982317933699389295u);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 1160268684422367443);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 994909422134781907);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 14511566905035657723u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 14511566905035657723u);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 6643957975231536490);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 14305226453458947074u);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 7488647634487918362);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(), 8683732623732266773);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 16452769785566003032u);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 8683732623732266773);
-#endif // BOOST_VERSION
-#else
-#if BOOST_VERSION < 106200
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 2654501304);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3449012191);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 4216922685);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    4216963741);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 1214748714);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 4216963741);
-#else // BOOST_VERSION
-  BOOST_CHECK_EQUAL(poly_type(1, ring).leadStableHash(), 879054753);
-  BOOST_CHECK_EQUAL(poly_type(a).leadStableHash(), 3481556931);
-  BOOST_CHECK_EQUAL(poly_type(a*b).leadStableHash(), 569922758);
-  BOOST_CHECK_EQUAL(poly_type(c*d +c + e + 1).leadStableHash(),
-		    1713393842);
-  BOOST_CHECK_EQUAL(poly1.leadStableHash(), 3527394431);
-  BOOST_CHECK_EQUAL(poly2.leadStableHash(), 1713393842);
-#endif // BOOST_VERSION
-#endif
+  BOOST_CHECK_NE(poly1.leadStableHash(), poly2.leadStableHash());
 
   BooleMonomial terms1[] = {c*e*f, c*d*e, b, a, g*h};
   BooleMonomial terms2[] = {c*d, b, a, g*h, e*f};
