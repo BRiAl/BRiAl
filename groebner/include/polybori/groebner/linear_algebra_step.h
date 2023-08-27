@@ -226,7 +226,7 @@ linalg_step_modified(std::vector < Polynomial > &polys, MonomialSet terms, Monom
 {
     BoolePolyRing current_ring(terms.ring());
     PBORI_ASSERT(current_ring.id() ==  leads_from_strat.ring().id());
-#ifndef PBORI_NDEBUG
+#ifdef PBORI_DEBUG
     std::vector < Polynomial >::const_iterator start(polys.begin()),
       finish(polys.end());
 

@@ -164,7 +164,7 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
  			&& (lead!=strat[index].lead)))
 
 {     wlen_type dummy;
-      #ifndef PBORI_NDEBUG
+      #ifdef PBORI_DEBUG
       Polynomial p_old=p;
       #endif
       
@@ -172,7 +172,7 @@ Polynomial nf3_degree_order(const ReductionStrategy& strat, Polynomial p, Monomi
       Polynomial pg=p.gradedPart(deg);
       p=p-pg+reduce_complete(pg,strat[index],dummy);
       //p=reduce_complete(p,strat.generators[index],dummy);
-      #ifndef PBORI_NDEBUG
+      #ifdef PBORI_DEBUG
       PBORI_ASSERT(p.isZero()||p.lead()<p_old.lead());
       #endif
 

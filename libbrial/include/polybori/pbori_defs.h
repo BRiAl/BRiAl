@@ -112,7 +112,7 @@
 #endif
 
 // @todo force assertIon of PBORI_DEBUG
-#if defined(PBORI_NDEBUG)
+#ifndef PBORI_DEBUG
 #define PBORI_ASSERT(arg) (static_cast<void>(0))
 #else
 #define PBORI_ASSERT(arg) assert(arg)

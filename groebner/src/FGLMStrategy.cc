@@ -709,7 +709,7 @@ PolynomialVector FGLMStrategy::main(){
     mzd_free(acc1);
     mzd_free(acc2);
 
-#ifndef PBORI_NDEBUG
+#ifdef PBORI_DEBUG
     for (std::size_t idx = 0; idx < F.size(); ++idx) {
       PBORI_ASSERT(to.id() == F[idx].ring().id());
     }
@@ -719,7 +719,7 @@ PolynomialVector FGLMStrategy::main(){
 }
 
 void FGLMStrategy::testMultiplicationTables(){
-    #ifndef PBORI_NDEBUG
+    #ifdef PBORI_DEBUG
 
     for(std::size_t i=0;i<varsVector.size();i++){
         Variable v=varsVector[i];
@@ -807,7 +807,7 @@ FGLMStrategy::FGLMStrategy(const ring_with_ordering_type& from_ring, const ring_
             cout<<"multiplication tables..."<<endl;
         setupMultiplicationTables();
 
-#ifndef PBORI_NDEBUG
+#ifdef PBORI_DEBUG
         if (prot)
             cout<<"test multiplication table..."<<endl;
         testMultiplicationTables();

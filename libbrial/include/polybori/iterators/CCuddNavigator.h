@@ -213,7 +213,7 @@ CCuddNavigator::incrementElse() {
 inline CCuddNavigator
 explicit_navigator_cast(CCuddNavigator::pointer_type ptr) {
 
-#ifndef PBORI_NDEBUG
+#ifdef PBORI_DEBUG
   if (ptr == NULL)
     return CCuddNavigator();
   else
