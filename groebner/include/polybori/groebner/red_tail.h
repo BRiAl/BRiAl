@@ -63,6 +63,8 @@ red_tail_general(const ReductionStrategy& strat, Polynomial p){
         rest_lead=*it;
         }
     else irr_p=p;
+
+#ifdef PBORI_DEBUG
     int s;
     s=irr.size();
     PBORI_ASSERT(s==irr_p.length());
@@ -70,6 +72,7 @@ red_tail_general(const ReductionStrategy& strat, Polynomial p){
     //for(i=0;i<s;i++){
     //    res_vec.push_back(irr[i]);
     //}
+#endif
     res_vec.push_back(irr_p);
     //p=p-irr_p;
     p=Polynomial(p.diagram().diff(irr_p.diagram()));
@@ -161,10 +164,12 @@ red_tail_generic(const ReductionStrategy& strat, Polynomial p){
         
         }
     else irr_p=p;
+
+#ifdef PBORI_DEBUG
     size_t s;
     s=irr.size();
-
     PBORI_ASSERT((s==irr_p.length())||(rest_is_irreducible));
+#endif
 
     res_vec.push_back(irr_p);
 
