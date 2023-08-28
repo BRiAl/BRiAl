@@ -36,6 +36,12 @@ AX_BOOST_BASE([1.58.0],[],
 dnl Check that the boost unit test framework is present for running the testsuite
 AX_BOOST_UNIT_TEST_FRAMEWORK
 
+AC_ARG_ENABLE([debug],
+              [AS_HELP_STRING([--enable-debug],
+                              [enable extra debugging statements in BRiAl's code [default=no]])],
+              [AC_DEFINE([PBORI_DEBUG],[],[enable extra debugging statements])])
+
+
 PKG_CHECK_MODULES([M4RI], m4ri, [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
 AC_EGREP_CPP([pbori_have_m4ri_png],
              [#include <m4ri/io.h>

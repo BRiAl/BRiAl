@@ -16,6 +16,9 @@
 /* The size of `void *', as computed by sizeof. */
 #undef SIZEOF_VOID_P
 
+/* enable extra debugging statements */
+#undef PBORI_DEBUG
+
 /* Name of package */
 #undef PACKAGE
 
