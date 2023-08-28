@@ -104,7 +104,7 @@
 #endif // PBORI_NO_NAMESPACES
 
 /// Generate trace function if debugging
-#ifdef PBORI_DEBUG_TRACE
+#ifdef PBORI_DEBUG
 # include <iostream>
 # define PBORI_TRACE_FUNC(text) std::cerr << text << std::endl;
 #else
