@@ -1,0 +1,12 @@
+prefix=/usr/local
+exec_prefix=/usr/local
+libdir=${exec_prefix}/lib
+includedir=/usr/local/include
+
+Name: BRiAl
+Description: BRiAl is the legacy version of PolyBoRi maintained by sagemath developers.
+URL: https://github.com/BRiAl/BRiAl
+Version: 1.2.13
+Requires: m4ri
+Libs: -L${libdir} -lbrial_groebner -lbrial -lpng16
+Cflags: -I${includedir}
