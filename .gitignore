@@ -5,9 +5,10 @@
 *.lo
 *.la
 *.pyc
-*.in
 config.h
 config_dummy.h
+config_dummy.h.in
+brial.pc
 Makefile
 Makefile.in
 autoconf.h*
