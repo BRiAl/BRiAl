@@ -41,8 +41,8 @@ AC_ARG_ENABLE([debug],
                               [enable extra debugging statements in BRiAl's code [default=no]])],
               [AC_DEFINE([PBORI_DEBUG],[],[enable extra debugging statements])])
 
-
-PKG_CHECK_MODULES([M4RI], m4ri, [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
+dnl version constraint to prevent broken pkg-config file from m4ri
+PKG_CHECK_MODULES([M4RI], [m4ri >= 20250128], [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
 AC_EGREP_CPP([pbori_have_m4ri_png],
              [#include <m4ri/io.h>
               #if defined(__M4RI_HAVE_LIBPNG)
