@@ -3,6 +3,7 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = cudd libbrial . groebner tests
 
 lib_LTLIBRARIES = libbrial.la
+pkgconfig_DATA = brial.pc
 
 libbrial_la_SOURCES =
 libbrial_la_LIBADD = \
@@ -17,3 +18,5 @@ EXTRA_DIST = \
 
 # Dummy C++ source to cause C++ linking.
 nodist_EXTRA_libbrial_la_SOURCES = dummy.cc
+
+brial.pc: ${top_builddir}/config.status
