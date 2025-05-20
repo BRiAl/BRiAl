@@ -40,6 +40,10 @@ AC_ARG_ENABLE([debug],
               [AS_HELP_STRING([--enable-debug],
                               [enable extra debugging statements in BRiAl's code [default=no]])],
               [AC_DEFINE([PBORI_DEBUG],[],[enable extra debugging statements])])
+AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
+	[Path to the pkgconfig directory [[LIBDIR/pkgconfig]]]),
+	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
+AC_SUBST([pkgconfigdir])
 
 dnl version constraint to prevent broken pkg-config file from m4ri
 PKG_CHECK_MODULES([M4RI], [m4ri >= 20250128], [AC_DEFINE([PBORI_HAVE_M4RI],[],[has m4ri])])
