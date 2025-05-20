@@ -13,8 +13,7 @@ libbrial_la_LDFLAGS = -no-undefined $(AM_LDFLAGS) -version-info @LT_CURRENT@:@LT
 EXTRA_DIST = \
 	cudd/LICENSE \
 	LICENSE \
-	README \
-	sage-brial
+	README
 
 # Dummy C++ source to cause C++ linking.
 nodist_EXTRA_libbrial_la_SOURCES = dummy.cc
