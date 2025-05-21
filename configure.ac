@@ -1,4 +1,4 @@
-AC_INIT([BRiAl],[1.2.13],[https://github.com/BRiAl/BRiAl/issues],,[https://github.com/BRiAl/BRiAl])
+AC_INIT([BRiAl],[1.2.14],[https://github.com/BRiAl/BRiAl/issues],,[https://github.com/BRiAl/BRiAl])
 
 AC_CONFIG_MACRO_DIRS([m4])
 AM_INIT_AUTOMAKE([foreign -Wall -Werror tar-ustar])
