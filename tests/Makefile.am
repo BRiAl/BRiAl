@@ -1,4 +1,5 @@
 AM_CPPFLAGS = \
+	$(BOOST_CPPFLAGS) \
 	-I$(top_srcdir)/groebner/include \
 	-I$(top_builddir)/libbrial/include \
 	-I$(top_srcdir)/libbrial/include \
@@ -38,12 +39,16 @@ unittests_SOURCES = \
 	weak_pointersTest.cc \
 	unittests.cc
 
-AM_LDFLAGS = $(BOOST_UNIT_TEST_FRAMEWORK_LIB)
+AM_LDFLAGS = \
+        $(BOOST_LDFLAGS)
+
 LIBS = $(top_builddir)/groebner/src/libbrial_groebner.la \
 	$(top_builddir)/libbrial.la \
 	$(LIBPNG_LIBADD) \
 	$(M4RI_LIBS) \
-	$(GD_LIBS)
+	$(GD_LIBS) \
+	$(BOOST_LIBS) \
+	$(BOOST_UNIT_TEST_FRAMEWORK_LIB)
 
 TESTS = unittests
 check_PROGRAMS = unittests
