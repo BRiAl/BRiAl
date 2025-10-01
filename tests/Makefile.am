@@ -1,5 +1,6 @@
 AM_CPPFLAGS = \
 	$(BOOST_CPPFLAGS) \
+	$(M4RI_CFLAGS) \
 	-I$(top_srcdir)/groebner/include \
 	-I$(top_builddir)/libbrial/include \
 	-I$(top_srcdir)/libbrial/include \
