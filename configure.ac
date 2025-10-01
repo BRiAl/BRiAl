@@ -62,6 +62,8 @@ AX_M4RI_CFLAGS()
 SIMMD_CFLAGS=$ax_cv_m4ri_cflags
 AC_SUBST(SIMMD_CFLAGS)
 
+M4RI_CFLAGS=$pkg_cv_M4RI_CFLAGS
+AC_SUBST(M4RI_CFLAGS)
 
 if test "x$m4ri_png" = "xyes"; then
     PKG_CHECK_MODULES([PNG], [libpng],
