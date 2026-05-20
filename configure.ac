@@ -36,10 +36,18 @@ AX_BOOST_BASE([1.58.0],[],
 dnl Check that the boost unit test framework is present for running the testsuite
 AX_BOOST_UNIT_TEST_FRAMEWORK
 
+AC_MSG_CHECKING([for debugging being enabled])
 AC_ARG_ENABLE([debug],
               [AS_HELP_STRING([--enable-debug],
                               [enable extra debugging statements in BRiAl's code [default=no]])],
-              [AC_DEFINE([PBORI_DEBUG],[],[enable extra debugging statements])])
+              [if test "$enableval" = "yes"; then
+                   AC_DEFINE([PBORI_DEBUG],[],[enable extra debugging statements])
+                   AC_MSG_RESULT([yes])
+               else
+                   AC_MSG_RESULT([no])
+               fi
+              ], [AC_MSG_RESULT([no])])
+
 AC_ARG_WITH([pkgconfigdir], AS_HELP_STRING([--with-pkgconfigdir=PATH],
 	[Path to the pkgconfig directory [[LIBDIR/pkgconfig]]]),
 	[pkgconfigdir="$withval"], [pkgconfigdir='${libdir}/pkgconfig'])
