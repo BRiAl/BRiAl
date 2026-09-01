@@ -773,7 +773,7 @@ public:
   AddEliminationDegree(size_type min): 
     m_min(min) {}
 
-  size_type& operator()(size_type& rhs, size_type lhs) {
+  size_type operator()(size_type rhs, size_type lhs) const {
     ++rhs;
     if (lhs > m_min)
       rhs += (lhs - m_min);

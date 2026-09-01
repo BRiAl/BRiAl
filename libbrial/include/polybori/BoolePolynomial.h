@@ -578,14 +578,14 @@ operator%(const BoolePolynomial& lhs, const RHSType& rhs){
 inline BoolePolynomial::bool_type
 operator==(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 
-  return (rhs == lhs); 
+  return rhs.operator==(lhs);
 }
 
 /// Nonquality check (with constant lhs)
 inline BoolePolynomial::bool_type
 operator!=(BoolePolynomial::bool_type lhs, const BoolePolynomial& rhs) {
 
-  return (rhs != lhs); 
+  return rhs.operator!=(lhs);
 }
 
 /// Stream output operator
